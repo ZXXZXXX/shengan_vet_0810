@@ -95,7 +95,7 @@ function WarehousePage() {
         {/* Categories */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((c) => (
-            <Card key={c.name} className="border-border bg-card shadow-card p-6">
+            <Card key={c.name} className="border-border bg-card p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="h-10 w-10 rounded-md bg-brand-subtle flex items-center justify-center">
                   <c.icon className="h-4 w-4 text-primary" strokeWidth={1.75} />
@@ -154,7 +154,7 @@ function WarehousePage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Inventory table */}
-          <Card className="lg:col-span-2 border-border bg-card shadow-card overflow-hidden">
+          <Card className="lg:col-span-2 border-border bg-card overflow-hidden">
             <div className="flex items-center justify-between p-6 pb-4">
               <div className="flex items-center gap-2">
                 <Warehouse className="h-4 w-4 text-primary" strokeWidth={1.75} />
@@ -203,7 +203,7 @@ function WarehousePage() {
           </Card>
 
           {/* Recent ops */}
-          <Card className="border-border bg-card shadow-card">
+          <Card className="border-border bg-card">
             <div className="p-6 pb-4 flex items-center gap-2">
               <RefreshCw className="h-4 w-4 text-primary" strokeWidth={1.75} />
               <h3 className="text-card-title text-foreground">最近操作</h3>

@@ -76,7 +76,7 @@ function OrganizationPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((s) => (
-            <Card key={s.label} className="border-border bg-card shadow-card p-6 flex items-center gap-4">
+            <Card key={s.label} className="border-border bg-card p-6 flex items-center gap-4">
               <div className="h-10 w-10 rounded-md bg-brand-subtle flex items-center justify-center">
                 <s.icon className="h-4 w-4 text-primary" strokeWidth={1.75} />
               </div>
@@ -110,7 +110,7 @@ function OrganizationPage() {
 
           <TabsContent value="people" className="grid grid-cols-1 lg:grid-cols-4 gap-4 mt-0">
             {/* Org tree */}
-            <Card className="border-border bg-card shadow-card p-6">
+            <Card className="border-border bg-card p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-card-title text-foreground">组织树</h3>
                 <button className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary hover:bg-surface-subtle hover:text-foreground">
@@ -145,7 +145,7 @@ function OrganizationPage() {
             </Card>
 
             {/* People table */}
-            <Card className="lg:col-span-3 border-border bg-card shadow-card overflow-hidden">
+            <Card className="lg:col-span-3 border-border bg-card overflow-hidden">
               <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
                 <div>
                   <h3 className="text-card-title text-foreground">兽医部 · 人员列表</h3>
@@ -216,7 +216,7 @@ function OrganizationPage() {
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {roles.map((r) => (
-                  <div key={r.name} className="rounded-md border border-border p-5 hover:border-primary/40 hover:shadow-card transition-all">
+                  <div key={r.name} className="rounded-md border border-border p-5 hover:border-primary/40 transition-all">
                     <div className="flex items-start justify-between mb-3">
                       <div className="h-9 w-9 rounded-md bg-brand-subtle flex items-center justify-center">
                         <Shield className="h-4 w-4 text-primary" strokeWidth={1.75} />
@@ -240,13 +240,13 @@ function OrganizationPage() {
           </TabsContent>
 
           <TabsContent value="org" className="mt-0">
-            <Card className="border-border bg-card shadow-card p-12 text-center">
+            <Card className="border-border bg-card p-12 text-center">
               <p className="text-body text-text-tertiary">选择上方人员账号 Tab 查看组织树详情，或扩展此处的可视化组织架构图。</p>
             </Card>
           </TabsContent>
 
           <TabsContent value="team" className="mt-0">
-            <Card className="border-border bg-card shadow-card p-12 text-center">
+            <Card className="border-border bg-card p-12 text-center">
               <p className="text-body text-text-tertiary">班组、排班与责任范围管理界面 — 待扩展。</p>
             </Card>
           </TabsContent>

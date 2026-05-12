@@ -69,7 +69,7 @@ function SettingsPage() {
           {modules.map((m) => (
             <Card
               key={m.id}
-              className="border-border bg-card shadow-card hover:shadow-elevated hover:border-primary/30 transition-all cursor-pointer group p-6 relative overflow-hidden"
+              className="border-border bg-card hover:border-primary/30 transition-all cursor-pointer group p-6 relative overflow-hidden"
             >
               {m.ai && <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-ai" />}
               <div className={`h-10 w-10 rounded-md flex items-center justify-center mb-4 ${
@@ -107,7 +107,7 @@ function SettingsPage() {
           </TabsList>
 
           <TabsContent value="ai" className="space-y-4 mt-0">
-            <Card className="border-border bg-card shadow-card relative overflow-hidden">
+            <Card className="border-border bg-card relative overflow-hidden">
               <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-ai" />
               <div className="p-6 pb-4 flex items-center justify-between flex-wrap gap-3">
                 <div>
@@ -165,7 +165,7 @@ function SettingsPage() {
                 { icon: Shield, title: "敏感数据脱敏", desc: "训练与推理前自动脱敏个人信息", on: true },
                 { icon: Bell, title: "AI 异常熔断", desc: "置信度低于 60% 自动转人工", on: true },
               ].map((q) => (
-                <Card key={q.title} className="border-border bg-card shadow-card p-5 flex items-center gap-3">
+                <Card key={q.title} className="border-border bg-card p-5 flex items-center gap-3">
                   <div className="h-9 w-9 rounded-md bg-[var(--effect-ai-purple)]/10 flex items-center justify-center">
                     <q.icon className="h-4 w-4 text-[var(--effect-ai-purple)]" strokeWidth={1.75} />
                   </div>
@@ -180,7 +180,7 @@ function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="rules" className="mt-0">
-            <Card className="border-border bg-card shadow-card overflow-hidden">
+            <Card className="border-border bg-card overflow-hidden">
               <div className="p-6 pb-4 flex items-center justify-between flex-wrap gap-3">
                 <div>
                   <div className="flex items-center gap-2">
@@ -219,7 +219,7 @@ function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="workorder" className="mt-0">
-            <Card className="border-border bg-card shadow-card p-6">
+            <Card className="border-border bg-card p-6">
               <div className="flex items-center gap-2 mb-5">
                 <Layers className="h-4 w-4 text-primary" strokeWidth={1.75} />
                 <h3 className="text-card-title text-foreground">工单类型</h3>
@@ -229,7 +229,7 @@ function SettingsPage() {
                   "疾病疑似工单", "免疫接种工单", "防疫消杀工单", "治疗执行工单",
                   "复查确认工单", "饲料配送工单", "设备保养工单", "盘点工单",
                 ].map((t) => (
-                  <div key={t} className="rounded-md border border-border p-5 hover:border-primary/40 hover:shadow-card transition-all cursor-pointer group">
+                  <div key={t} className="rounded-md border border-border p-5 hover:border-primary/40 transition-all cursor-pointer group">
                     <div className="flex items-center justify-between mb-3">
                       <div className="h-8 w-8 rounded-md bg-brand-subtle flex items-center justify-center">
                         <ClipboardList className="h-4 w-4 text-primary" strokeWidth={1.75} />
@@ -248,7 +248,7 @@ function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="knowledge" className="mt-0">
-            <Card className="border-border bg-card shadow-card p-12 text-center">
+            <Card className="border-border bg-card p-12 text-center">
               <div className="h-12 w-12 rounded-md bg-brand-subtle flex items-center justify-center mx-auto mb-3">
                 <BookOpen className="h-5 w-5 text-primary" strokeWidth={1.75} />
               </div>

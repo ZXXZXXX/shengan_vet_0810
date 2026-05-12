@@ -74,7 +74,7 @@ function ProductionPage() {
       <AppHeader title="生产对象管理" breadcrumb={["首页", "生产对象"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         {/* Lifecycle distribution */}
-        <Card className="border-border bg-card shadow-card p-6">
+        <Card className="border-border bg-card p-6">
           <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -111,7 +111,7 @@ function ProductionPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((s) => (
-            <Card key={s.label} className="border-border bg-card shadow-card p-5 flex items-center gap-4">
+            <Card key={s.label} className="border-border bg-card p-5 flex items-center gap-4">
               <div className={`h-10 w-10 rounded-md flex items-center justify-center ${
                 s.danger ? "bg-[var(--state-danger)]/10" : "bg-brand-subtle"
               }`}>
@@ -163,7 +163,7 @@ function ProductionPage() {
           {animals.map((a) => (
             <Card
               key={a.id}
-              className="border-border bg-card shadow-card hover:shadow-elevated hover:border-primary/30 transition-all cursor-pointer group relative overflow-hidden"
+              className="border-border bg-card hover:border-primary/30 transition-all cursor-pointer group relative overflow-hidden"
             >
               {a.alert && <div className="absolute top-0 inset-x-0 h-[2px] bg-[var(--state-danger)]" />}
               <div className="p-6 space-y-4">
