@@ -34,6 +34,8 @@ const currentUser = {
 };
 
 export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
+  const navigate = useNavigate();
+  const [confirmOpen, setConfirmOpen] = useState(false);
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card">
       <div className="flex h-14 items-center gap-3 px-6">
