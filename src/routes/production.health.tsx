@@ -46,22 +46,22 @@ type WorkOrder = {
   target: string;
   type: WorkType;
   who: string;
-  due: string;
-  level: "高" | "中" | "低";
+  event: string;
+  proposer: string;
   status: WorkStatus;
   desc: string;
   createdAt: string;
 };
 
 const orders: WorkOrder[] = [
-  { id: "WO-2381", target: "#A2381", type: "疾病治疗", who: "李雨晴", due: "今日 14:00", level: "高", status: "待审核", desc: "3 号牛舍 #A2381 持续高烧 2 小时，需进行抗生素治疗与隔离观察。", createdAt: "2026-05-12 09:08" },
-  { id: "WO-2298", target: "#A2298", type: "疾病治疗", who: "李雨晴", due: "今日 16:30", level: "高", status: "执行中", desc: "1 号牛舍 #A2298 乳房炎复诊，按治疗方案完成第二轮处置。", createdAt: "2026-05-11 14:20" },
-  { id: "WO-2401", target: "犊牛舍 A", type: "免疫", who: "周凯", due: "明日", level: "中", status: "执行中", desc: "犊牛舍 A 5 月口蹄疫加强免疫，覆盖 84 头犊牛。", createdAt: "2026-05-11 10:00" },
-  { id: "WO-2324", target: "#A2324", type: "普修", who: "王建国", due: "今日", level: "中", status: "已驳回", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。", createdAt: "2026-05-10 18:42" },
-  { id: "WO-2150", target: "#A2150", type: "修蹄", who: "孙明", due: "昨日", level: "中", status: "已完成", desc: "1 号牛舍批次修蹄已完成，无异常反馈。", createdAt: "2026-05-09 09:30" },
-  { id: "WO-2120", target: "#A2120", type: "干奶", who: "李雨晴", due: "前日", level: "低", status: "已完成", desc: "干奶处置完成，进入干奶舍管理。", createdAt: "2026-05-08 11:15" },
-  { id: "WO-2099", target: "1 号牛舍", type: "驱虫", who: "周凯", due: "今日", level: "中", status: "待审核", desc: "1 号牛舍季度体内驱虫批次，需调拨广谱驱虫药 15 盒。", createdAt: "2026-05-12 08:20" },
-  { id: "WO-2078", target: "#A2078", type: "免疫", who: "李雨晴", due: "今日", level: "高", status: "已驳回", desc: "#A2078 免疫后体温异常升高，需复查并评估处置方案。", createdAt: "2026-05-11 16:55" },
+  { id: "WO-2381", target: "#A2381", type: "疾病治疗", who: "李雨晴", event: "持续高烧 2 小时", proposer: "陈晓东", status: "待审核", desc: "3 号牛舍 #A2381 持续高烧 2 小时，需进行抗生素治疗与隔离观察。", createdAt: "2026-05-12 09:08" },
+  { id: "WO-2298", target: "#A2298", type: "疾病治疗", who: "李雨晴", event: "乳房炎复诊", proposer: "李雨晴", status: "执行中", desc: "1 号牛舍 #A2298 乳房炎复诊，按治疗方案完成第二轮处置。", createdAt: "2026-05-11 14:20" },
+  { id: "WO-2401", target: "犊牛舍 A", type: "免疫", who: "周凯", event: "口蹄疫加强免疫", proposer: "周凯", status: "执行中", desc: "犊牛舍 A 5 月口蹄疫加强免疫，覆盖 84 头犊牛。", createdAt: "2026-05-11 10:00" },
+  { id: "WO-2324", target: "#A2324", type: "普修", who: "王建国", event: "采食量持续下降", proposer: "张伟", status: "已驳回", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。", createdAt: "2026-05-10 18:42" },
+  { id: "WO-2150", target: "#A2150", type: "修蹄", who: "孙明", event: "批次修蹄", proposer: "孙明", status: "已完成", desc: "1 号牛舍批次修蹄已完成，无异常反馈。", createdAt: "2026-05-09 09:30" },
+  { id: "WO-2120", target: "#A2120", type: "干奶", who: "李雨晴", event: "进入干奶期", proposer: "李雨晴", status: "已完成", desc: "干奶处置完成，进入干奶舍管理。", createdAt: "2026-05-08 11:15" },
+  { id: "WO-2099", target: "1 号牛舍", type: "驱虫", who: "周凯", event: "季度体内驱虫", proposer: "周凯", status: "待审核", desc: "1 号牛舍季度体内驱虫批次，需调拨广谱驱虫药 15 盒。", createdAt: "2026-05-12 08:20" },
+  { id: "WO-2078", target: "#A2078", type: "免疫", who: "李雨晴", event: "免疫后体温异常", proposer: "陈晓东", status: "已驳回", desc: "#A2078 免疫后体温异常升高，需复查并评估处置方案。", createdAt: "2026-05-11 16:55" },
 ];
 
 const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
@@ -139,10 +139,10 @@ function HealthPage() {
           <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-y border-border bg-surface-subtle">
             <div className="col-span-2">工单号</div>
             <div className="col-span-2">对象</div>
-            <div className="col-span-2">类型</div>
-            <div className="col-span-2">负责人</div>
-            <div className="col-span-2">截止</div>
-            <div className="col-span-1">优先级</div>
+            <div className="col-span-1">类型</div>
+            <div className="col-span-3">提出事件</div>
+            <div className="col-span-1">负责人</div>
+            <div className="col-span-2">提出者</div>
             <div className="col-span-1 text-right">操作</div>
           </div>
           {filtered.length === 0 ? (
@@ -152,14 +152,10 @@ function HealthPage() {
               <div key={t.id} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
                 <div className="col-span-2 font-mono text-body text-foreground">{t.id}</div>
                 <div className="col-span-2 text-body text-foreground">{t.target}</div>
-                <div className="col-span-2"><span className="tag tag-muted">{t.type}</span></div>
-                <div className="col-span-2 text-body-sm text-text-secondary">{t.who}</div>
-                <div className="col-span-2 text-body-sm text-text-tertiary">{t.due}</div>
-                <div className="col-span-1">
-                  <span className={`tag ${t.level === "高" ? "tag-danger" : t.level === "中" ? "tag-warning" : "tag-muted"}`}>
-                    {t.level === "高" ? "高优先" : t.level === "中" ? "中优先" : "低优先"}
-                  </span>
-                </div>
+                <div className="col-span-1"><span className="tag tag-muted">{t.type}</span></div>
+                <div className="col-span-3 text-body-sm text-text-secondary truncate">{t.event}</div>
+                <div className="col-span-1 text-body-sm text-text-secondary truncate">{t.who}</div>
+                <div className="col-span-2 text-body-sm text-text-secondary truncate">{t.proposer}</div>
                 <div className="col-span-1 flex items-center justify-end">
                   <Button
                     variant="ghost"
@@ -192,14 +188,11 @@ function HealthPage() {
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
                 <Field label="工单类型" value={detail.type} />
-                <Field
-                  label="优先级"
-                  value={detail.level === "高" ? "高优先" : detail.level === "中" ? "中优先" : "低优先"}
-                />
                 <Field label="处理对象" value={detail.target} />
+                <Field label="提出事件" value={detail.event} />
+                <Field label="提出者" value={detail.proposer} />
                 <Field label="负责人" value={detail.who} />
                 <Field label="创建时间" value={detail.createdAt} />
-                <Field label="截止时间" value={detail.due} />
               </div>
 
               <div className="rounded-md border border-border p-4">
