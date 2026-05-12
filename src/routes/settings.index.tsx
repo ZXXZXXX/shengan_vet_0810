@@ -4,6 +4,16 @@ import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ClipboardList, ChevronRight, Plus, Layers } from "lucide-react";
 
 export const Route = createFileRoute("/settings/")({
@@ -20,9 +30,18 @@ function WorkOrderPage() {
   const [types, setTypes] = useState(
     initialTypes.map((name, i) => ({ name, enabled: i !== 6 }))
   );
+  const [pending, setPending] = useState<{ name: string; next: boolean } | null>(null);
 
-  const toggle = (name: string) =>
-    setTypes((prev) => prev.map((t) => (t.name === name ? { ...t, enabled: !t.enabled } : t)));
+  const requestToggle = (name: string, enabled: boolean) =>
+    setPending({ name, next: !enabled });
+
+  const confirmToggle = () => {
+    if (!pending) return;
+    setTypes((prev) =>
+      prev.map((t) => (t.name === pending.name ? { ...t, enabled: pending.next } : t))
+    );
+    setPending(null);
+  };
 
   return (
     <>
@@ -52,7 +71,7 @@ function WorkOrderPage() {
                   </span>
                   <Switch
                     checked={t.enabled}
-                    onCheckedChange={() => toggle(t.name)}
+                    onCheckedChange={() => requestToggle(t.name, t.enabled)}
                     aria-label={`切换 ${t.name} 启用状态`}
                   />
                 </div>
@@ -66,6 +85,25 @@ function WorkOrderPage() {
           ))}
         </div>
       </main>
+
+      <AlertDialog open={!!pending} onOpenChange={(o) => !o && setPending(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              确认{pending?.next ? "启用" : "停用"}该工单类型？
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pending?.next
+                ? `启用后，"${pending?.name}" 将可在生产端被创建与下发。`
+                : `停用后，"${pending?.name}" 将不再出现在新建工单选项中，已存在的工单不受影响。`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmToggle}>确认</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
