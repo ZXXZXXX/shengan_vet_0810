@@ -463,6 +463,104 @@ function ObjectListPage() {
           </div>
         </div>
       </main>
+
+      {/* 新增 / 重命名 弹窗 */}
+      <Dialog open={!!edit} onOpenChange={(o) => !o && setEdit(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>
+              {edit?.kind === "farm-add" && "新增牧场"}
+              {edit?.kind === "farm-rename" && "重命名牧场"}
+              {edit?.kind === "barn-add" && "新增牛舍"}
+              {edit?.kind === "barn-rename" && "重命名牛舍"}
+            </DialogTitle>
+            {(edit?.kind === "farm-add" || edit?.kind === "farm-rename") && (
+              <DialogDescription>
+                牧场信息将与「组织管理」双向同步。
+              </DialogDescription>
+            )}
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="edit-name" className="text-body-sm">
+              名称
+            </Label>
+            <Input
+              id="edit-name"
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submitEdit()}
+              placeholder={
+                edit?.kind?.startsWith("farm") ? "请输入牧场名称" : "请输入牛舍名称"
+              }
+            />
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setEdit(null)}>
+              取消
+            </Button>
+            <Button
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={submitEdit}
+              disabled={!editValue.trim()}
+            >
+              确定
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 删除确认 */}
+      <AlertDialog open={!!del} onOpenChange={(o) => !o && setDel(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              确认删除{del?.kind === "farm" ? "牧场" : "牛舍"}「{del?.name}」？
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {del?.kind === "farm"
+                ? "删除牧场将同时移除其下所有牛舍，且会同步至组织管理，操作不可撤销。"
+                : "删除后该牛舍下的牛只档案需要重新分配，操作不可撤销。"}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+              onClick={submitDelete}
+            >
+              确认删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
+  );
+}
+
+function IconBtn({
+  children,
+  onClick,
+  title,
+  danger,
+}: {
+  children: React.ReactNode;
+  onClick?: (e: React.MouseEvent) => void;
+  title?: string;
+  danger?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      className={`h-5 w-5 inline-flex items-center justify-center rounded transition-colors ${
+        danger
+          ? "text-text-tertiary hover:text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10"
+          : "text-text-tertiary hover:text-primary hover:bg-brand-subtle"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
