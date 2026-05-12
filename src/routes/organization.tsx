@@ -216,12 +216,12 @@ function OrganizationPage() {
           </TabsContent>
 
           <TabsContent value="role" className="mt-0">
-            <Card className="border-border bg-card shadow-card p-6">
+            <Card className="border-border bg-card p-6">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-card-title text-foreground">角色定义</h3>
-                <Badge className="bg-[var(--effect-ai-purple)]/10 text-[var(--effect-ai-purple)] border-0 gap-1 font-normal">
-                  <Sparkles className="h-3 w-3" /> AI 推荐 2 项岗位调整
-                </Badge>
+                <Button size="sm" variant="outline" className="h-8 text-body-sm font-normal gap-1.5">
+                  <Plus className="h-3.5 w-3.5" /> 新增角色
+                </Button>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {roles.map((r) => (
