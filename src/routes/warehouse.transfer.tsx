@@ -96,8 +96,9 @@ function TransferPage() {
             <div className="col-span-2">关联工单</div>
             <div className="col-span-3">物资 · 数量</div>
             <div className="col-span-2">流向</div>
-            <div className="col-span-2">申请人 / 时间</div>
+            <div className="col-span-1">申请人 / 时间</div>
             <div className="col-span-1 text-right">状态</div>
+            <div className="col-span-1 text-right">操作</div>
           </div>
           {list.map((r) => (
             <div key={r.id} className="grid grid-cols-12 gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors">
@@ -118,17 +119,87 @@ function TransferPage() {
                 <ArrowRight className="h-3 w-3 text-text-tertiary" />
                 <span>{r.to}</span>
               </div>
-              <div className="col-span-2 leading-tight">
-                <div className="text-body-sm text-foreground">{r.applicant}</div>
-                <div className="text-caption text-text-tertiary">{r.time}</div>
+              <div className="col-span-1 leading-tight min-w-0">
+                <div className="text-body-sm text-foreground truncate">{r.applicant}</div>
+                <div className="text-caption text-text-tertiary truncate">{r.time}</div>
               </div>
               <div className="col-span-1 flex justify-end">
                 <span className={statusTag[r.status]}>{r.status}</span>
+              </div>
+              <div className="col-span-1 flex justify-end">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+                  onClick={() => setDetail(r)}
+                >
+                  <Eye className="h-3.5 w-3.5 mr-1" /> 详情
+                </Button>
               </div>
             </div>
           ))}
         </Card>
       </main>
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">调拨申请详情</DialogTitle>
+          </DialogHeader>
+          {detail && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-body-sm text-foreground">{detail.id}</span>
+                <span className={statusTag[detail.status]}>{detail.status}</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
+                <Field label="物资名称" value={detail.item} />
+                <Field label="数量" value={detail.qty} />
+                <Field label="调拨流向" value={`${detail.from} → ${detail.to}`} />
+                <Field label="申请人" value={detail.applicant} />
+                <Field label="申请日期" value={detail.time} />
+              </div>
+
+              <div className="rounded-md border border-border p-4 space-y-2">
+                <div className="flex items-center gap-2 text-body-sm">
+                  <ClipboardList className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-text-tertiary">关联工单</span>
+                  <span className="font-mono text-foreground">{detail.workOrder}</span>
+                  <span className="tag tag-muted">{detail.workOrderType}</span>
+                </div>
+                <p className="text-body-sm text-text-secondary leading-relaxed">
+                  {detail.workOrderDesc}
+                </p>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              className="gap-1.5"
+              onClick={() => setDetail(null)}
+            >
+              <X className="h-3.5 w-3.5" /> 不通过
+            </Button>
+            <Button
+              className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => setDetail(null)}
+            >
+              <Check className="h-3.5 w-3.5" /> 通过
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="leading-tight">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="text-body-sm text-foreground mt-0.5">{value}</div>
+    </div>
   );
 }
