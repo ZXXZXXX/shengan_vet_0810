@@ -26,17 +26,12 @@ type OrgRow = {
 };
 
 const rows: OrgRow[] = [
-  { code: "GRP-001", name: "奇点牧业集团", level: "集团（租户）", parent: "—", leader: "陈志远", people: 96, status: "启用" },
+  { code: "GRP-001", name: "奇点牧业集团", level: "集团（租户）", parent: "—", leader: "陈志远", people: 192, status: "启用" },
   { code: "ORG-101", name: "1 号牧场", level: "经营主体", parent: "奇点牧业集团", leader: "张磊", people: 48, status: "启用" },
-  { code: "DEP-1011", name: "饲养部", level: "部门", parent: "1 号牧场", leader: "王建国", people: 18, status: "启用" },
-  { code: "DEP-1012", name: "兽医部", level: "部门", parent: "1 号牧场", leader: "李雨晴", people: 9, status: "启用" },
-  { code: "DEP-1013", name: "挤奶车间", level: "部门", parent: "1 号牧场", leader: "刘倩", people: 12, status: "启用" },
-  { code: "DEP-1014", name: "运维支持", level: "部门", parent: "1 号牧场", leader: "周凯", people: 9, status: "启用" },
   { code: "ORG-102", name: "2 号牧场", level: "经营主体", parent: "奇点牧业集团", leader: "高建波", people: 32, status: "启用" },
-  { code: "DEP-1021", name: "饲养部", level: "部门", parent: "2 号牧场", leader: "孙明", people: 14, status: "启用" },
-  { code: "DEP-1022", name: "挤奶车间", level: "部门", parent: "2 号牧场", leader: "赵岩", people: 10, status: "启用" },
-  { code: "ORG-201", name: "总部职能", level: "经营主体", parent: "奇点牧业集团", leader: "陈思琪", people: 16, status: "启用" },
-  { code: "ORG-301", name: "试验性饲养基地", level: "经营主体", parent: "奇点牧业集团", leader: "—", people: 0, status: "停用" },
+  { code: "ORG-103", name: "3 号牧场", level: "经营主体", parent: "奇点牧业集团", leader: "周凯", people: 28, status: "启用" },
+  { code: "ORG-104", name: "西部育成基地", level: "经营主体", parent: "奇点牧业集团", leader: "孙明", people: 22, status: "启用" },
+  { code: "ORG-105", name: "试验性饲养基地", level: "经营主体", parent: "奇点牧业集团", leader: "—", people: 0, status: "停用" },
 ];
 
 function OrgStructurePage() {
