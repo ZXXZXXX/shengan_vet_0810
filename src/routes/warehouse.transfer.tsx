@@ -34,22 +34,11 @@ type Req = {
 
 type Status = "待审核" | "审核通过" | "已驳回" | "已完成";
 
-const requests: {
-  id: string;
-  workOrder: string;
-  workOrderType: string;
-  item: string;
-  qty: string;
-  from: string;
-  to: string;
-  applicant: string;
-  time: string;
-  status: Status;
-}[] = [
-  { id: "TR-2026-0142", workOrder: "WO-2026-0581", workOrderType: "疾病治疗", item: "乳房炎抗生素 5mg", qty: "20 盒", from: "1 号库", to: "2 号库", applicant: "李雨晴", time: "今日 10:24", status: "待审核" },
-  { id: "TR-2026-0141", workOrder: "WO-2026-0577", workOrderType: "免疫", item: "免疫疫苗 A 型", qty: "60 支", from: "中央库", to: "1 号库", applicant: "周凯", time: "今日 09:08", status: "审核通过" },
-  { id: "TR-2026-0140", workOrder: "WO-2026-0570", workOrderType: "驱虫", item: "广谱驱虫药", qty: "15 盒", from: "中央库", to: "3 号库", applicant: "刘倩", time: "昨日 16:42", status: "已完成" },
-  { id: "TR-2026-0139", workOrder: "WO-2026-0563", workOrderType: "修蹄", item: "修蹄耗材包", qty: "8 套", from: "1 号库", to: "现场", applicant: "王建国", time: "昨日 11:30", status: "已驳回" },
+const requests: Req[] = [
+  { id: "TR-2026-0142", workOrder: "WO-2026-0581", workOrderType: "疾病治疗", workOrderDesc: "3 号牛舍 #A2381 乳房炎复诊处置", item: "乳房炎抗生素 5mg", qty: "20 盒", from: "1 号库", to: "2 号库", applicant: "李雨晴", time: "今日 10:24", status: "待审核" },
+  { id: "TR-2026-0141", workOrder: "WO-2026-0577", workOrderType: "免疫", workOrderDesc: "1 号牧场 5 月口蹄疫加强免疫", item: "免疫疫苗 A 型", qty: "60 支", from: "中央库", to: "1 号库", applicant: "周凯", time: "今日 09:08", status: "审核通过" },
+  { id: "TR-2026-0140", workOrder: "WO-2026-0570", workOrderType: "驱虫", workOrderDesc: "3 号牛舍季度体内驱虫批次", item: "广谱驱虫药", qty: "15 盒", from: "中央库", to: "3 号库", applicant: "刘倩", time: "昨日 16:42", status: "已完成" },
+  { id: "TR-2026-0139", workOrder: "WO-2026-0563", workOrderType: "修蹄", workOrderDesc: "1 号牛舍 8 头牛集中修蹄", item: "修蹄耗材包", qty: "8 套", from: "1 号库", to: "现场", applicant: "王建国", time: "昨日 11:30", status: "已驳回" },
 ];
 
 const statusTag: Record<Status, string> = {
