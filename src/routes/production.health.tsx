@@ -164,6 +164,61 @@ function HealthPage() {
           )}
         </Card>
       </main>
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">工单详情</DialogTitle>
+          </DialogHeader>
+          {detail && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-body-sm text-foreground">{detail.id}</span>
+                <span className={toneStyles[statusList.find((s) => s.key === detail.status)!.tone].tag}>
+                  {detail.status}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
+                <Field label="工单类型" value={detail.type} />
+                <Field
+                  label="优先级"
+                  value={detail.level === "高" ? "高优先" : detail.level === "中" ? "中优先" : "低优先"}
+                />
+                <Field label="处理对象" value={detail.target} />
+                <Field label="负责人" value={detail.who} />
+                <Field label="创建时间" value={detail.createdAt} />
+                <Field label="截止时间" value={detail.due} />
+              </div>
+
+              <div className="rounded-md border border-border p-4">
+                <div className="text-caption text-text-tertiary mb-1.5">工单说明</div>
+                <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc}</p>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="gap-1.5" onClick={() => setDetail(null)}>
+              <X className="h-3.5 w-3.5" /> 不通过
+            </Button>
+            <Button
+              className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => setDetail(null)}
+            >
+              <Check className="h-3.5 w-3.5" /> 通过
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="leading-tight">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="text-body-sm text-foreground mt-0.5">{value}</div>
+    </div>
   );
 }
