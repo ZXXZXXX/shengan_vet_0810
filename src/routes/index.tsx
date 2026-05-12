@@ -45,12 +45,60 @@ const kpis = [
   { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList },
 ];
 
-const alerts = [
-  { level: "高", title: "3 号牛舍体温异常", desc: "牛只 #A2381 持续 2 小时高于阈值", time: "8 分钟前", tone: "danger" },
-  { level: "中", title: "饲料库存接近下限", desc: "精饲料库余量 12%，建议 24h 内补货", time: "32 分钟前", tone: "warning" },
-  { level: "中", title: "免疫工单逾期", desc: "5 头待免疫牛只超出计划日期", time: "1 小时前", tone: "warning" },
-  { level: "低", title: "5 号挤奶设备需保养", desc: "已运行 320 小时，建议安排维护", time: "今日 09:12", tone: "muted" },
+type RequestType = "transfer" | "health";
+type PendingRequest = {
+  id: string;
+  type: RequestType;
+  title: string;
+  desc: string;
+  applicant: string;
+  time: string;
+  detail: string;
+};
+
+const pendingRequests: PendingRequest[] = [
+  {
+    id: "REQ-2381",
+    type: "health",
+    title: "3 号牛舍体温异常处置申请",
+    desc: "申请对牛只 #A2381 启动隔离观察并使用抗生素",
+    applicant: "李兽医",
+    time: "8 分钟前",
+    detail: "牛只 #A2381 持续 2 小时体温高于 40℃，建议转入隔离区并安排血常规检测，预计耗材：抗生素 1 支、采血管 2 支。",
+  },
+  {
+    id: "REQ-2380",
+    type: "transfer",
+    title: "精饲料跨场调拨申请",
+    desc: "由 2 号牧场调拨精饲料 3 吨至 1 号牧场",
+    applicant: "王仓管",
+    time: "32 分钟前",
+    detail: "1 号牧场精饲料库余量 12%，预计 24 小时内告罄。申请由 2 号牧场库存中调拨 3 吨,由调度车次 LK-07 承运。",
+  },
+  {
+    id: "REQ-2379",
+    type: "health",
+    title: "免疫工单延期申请",
+    desc: "5 头待免疫牛只因发情期申请延后 3 天",
+    applicant: "赵兽医",
+    time: "1 小时前",
+    detail: "5 头待免疫牛只目前处于发情期，按规程不宜立即免疫。申请将本批免疫计划由 5/12 顺延至 5/15 执行。",
+  },
+  {
+    id: "REQ-2378",
+    type: "transfer",
+    title: "兽药领用调拨申请",
+    desc: "总仓向 5 号牛舍调拨 3 类兽药",
+    applicant: "孙库管",
+    time: "今日 09:12",
+    detail: "5 号牛舍周保养所需消毒液 5 L、驱虫剂 2 盒、营养补充剂 1 箱，请审批后由总仓出库配送。",
+  },
 ];
+
+const requestTypeMeta: Record<RequestType, { label: string; tone: string }> = {
+  transfer: { label: "调拨申请", tone: "info" },
+  health: { label: "健康防护", tone: "warning" },
+};
 
 const todos = [
   { title: "复查疑似乳房炎处理结果", owner: "李兽医", due: "今天 18:00" },
