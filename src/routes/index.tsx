@@ -333,6 +333,63 @@ function HomePage() {
           </div>
         </Card>
       </main>
+
+      <Dialog
+        open={!!activeRequest}
+        onOpenChange={(open) => {
+          if (!open) {
+            setActiveRequest(null);
+            setRejectReason("");
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[520px]">
+          {activeRequest && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`tag ${activeRequest.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
+                    {requestTypeMeta[activeRequest.type].label}
+                  </span>
+                  <span className="text-caption text-text-tertiary tabular-nums">{activeRequest.id}</span>
+                </div>
+                <DialogTitle className="text-card-title">{activeRequest.title}</DialogTitle>
+                <DialogDescription className="text-body-sm text-text-secondary">
+                  提出者 {activeRequest.applicant} · {activeRequest.time}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-3 py-1">
+                <div className="rounded-md bg-surface-subtle border border-border p-3">
+                  <p className="text-caption text-text-tertiary mb-1">申请详情</p>
+                  <p className="text-body-sm text-foreground leading-relaxed">{activeRequest.detail}</p>
+                </div>
+                <div>
+                  <label className="text-caption text-text-tertiary">不通过原因（驳回时必填）</label>
+                  <Textarea
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="如需驳回，请简要说明原因…"
+                    className="mt-1.5 min-h-[72px] text-body-sm"
+                  />
+                </div>
+              </div>
+
+              <DialogFooter className="gap-2">
+                <Button variant="outline" className="h-9 text-body-sm font-normal" onClick={handleReject}>
+                  不通过
+                </Button>
+                <Button
+                  className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                  onClick={handleApprove}
+                >
+                  通过
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
