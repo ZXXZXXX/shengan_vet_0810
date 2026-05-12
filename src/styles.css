@@ -201,9 +201,10 @@
     box-shadow: none;
     white-space: nowrap;
   }
-  .tag-success  { background-color: color-mix(in srgb, var(--state-success) 18%, transparent); color: var(--core-brand); }
-  .tag-warning  { background-color: color-mix(in srgb, var(--state-warning) 35%, transparent); color: var(--text-primary); }
-  .tag-danger   { background-color: color-mix(in srgb, var(--state-danger) 12%, transparent);  color: var(--state-danger); }
+  /* Tag text always uses the same hue family as the background */
+  .tag-success  { background-color: color-mix(in srgb, var(--state-success) 22%, transparent); color: #2F7A3A; }
+  .tag-warning  { background-color: color-mix(in srgb, var(--state-warning) 45%, transparent); color: #8A5A0A; }
+  .tag-danger   { background-color: color-mix(in srgb, var(--state-danger) 14%, transparent);  color: #B23A3A; }
   .tag-muted    { background-color: var(--bg-surface-subtle); color: var(--text-secondary); }
   .tag-brand    { background-color: var(--brand-subtle); color: var(--brand); }
   .tag-outline  { background-color: transparent; color: var(--text-secondary); box-shadow: inset 0 0 0 1px var(--border-default); }
