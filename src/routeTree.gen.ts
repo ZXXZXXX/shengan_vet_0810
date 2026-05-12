@@ -19,7 +19,6 @@ import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as ProductionIndexRouteImport } from './routes/production.index'
 import { Route as OrganizationIndexRouteImport } from './routes/organization.index'
 import { Route as WarehouseTransferRouteImport } from './routes/warehouse.transfer'
-import { Route as WarehouseOpsRouteImport } from './routes/warehouse.ops'
 import { Route as SettingsRulesRouteImport } from './routes/settings.rules'
 import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowledge'
 import { Route as ProductionHealthRouteImport } from './routes/production.health'
@@ -76,11 +75,6 @@ const WarehouseTransferRoute = WarehouseTransferRouteImport.update({
   path: '/transfer',
   getParentRoute: () => WarehouseRoute,
 } as any)
-const WarehouseOpsRoute = WarehouseOpsRouteImport.update({
-  id: '/ops',
-  path: '/ops',
-  getParentRoute: () => WarehouseRoute,
-} as any)
 const SettingsRulesRoute = SettingsRulesRouteImport.update({
   id: '/rules',
   path: '/rules',
@@ -118,7 +112,6 @@ export interface FileRoutesByFullPath {
   '/production/health': typeof ProductionHealthRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
-  '/warehouse/ops': typeof WarehouseOpsRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
@@ -132,7 +125,6 @@ export interface FileRoutesByTo {
   '/production/health': typeof ProductionHealthRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
-  '/warehouse/ops': typeof WarehouseOpsRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/organization': typeof OrganizationIndexRoute
   '/production': typeof ProductionIndexRoute
@@ -151,7 +143,6 @@ export interface FileRoutesById {
   '/production/health': typeof ProductionHealthRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
-  '/warehouse/ops': typeof WarehouseOpsRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
@@ -171,7 +162,6 @@ export interface FileRouteTypes {
     | '/production/health'
     | '/settings/knowledge'
     | '/settings/rules'
-    | '/warehouse/ops'
     | '/warehouse/transfer'
     | '/organization/'
     | '/production/'
@@ -185,7 +175,6 @@ export interface FileRouteTypes {
     | '/production/health'
     | '/settings/knowledge'
     | '/settings/rules'
-    | '/warehouse/ops'
     | '/warehouse/transfer'
     | '/organization'
     | '/production'
@@ -203,7 +192,6 @@ export interface FileRouteTypes {
     | '/production/health'
     | '/settings/knowledge'
     | '/settings/rules'
-    | '/warehouse/ops'
     | '/warehouse/transfer'
     | '/organization/'
     | '/production/'
@@ -291,13 +279,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WarehouseTransferRouteImport
       parentRoute: typeof WarehouseRoute
     }
-    '/warehouse/ops': {
-      id: '/warehouse/ops'
-      path: '/ops'
-      fullPath: '/warehouse/ops'
-      preLoaderRoute: typeof WarehouseOpsRouteImport
-      parentRoute: typeof WarehouseRoute
-    }
     '/settings/rules': {
       id: '/settings/rules'
       path: '/rules'
@@ -383,13 +364,11 @@ const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
 )
 
 interface WarehouseRouteChildren {
-  WarehouseOpsRoute: typeof WarehouseOpsRoute
   WarehouseTransferRoute: typeof WarehouseTransferRoute
   WarehouseIndexRoute: typeof WarehouseIndexRoute
 }
 
 const WarehouseRouteChildren: WarehouseRouteChildren = {
-  WarehouseOpsRoute: WarehouseOpsRoute,
   WarehouseTransferRoute: WarehouseTransferRoute,
   WarehouseIndexRoute: WarehouseIndexRoute,
 }
@@ -408,3 +387,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
