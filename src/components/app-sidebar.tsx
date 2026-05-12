@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -8,6 +9,7 @@ import {
   PanelLeft,
   LogOut,
   User,
+  ChevronRight,
 } from "lucide-react";
 
 import {
@@ -23,12 +25,56 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const items = [
+type NavItem = {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  children?: { title: string; url: string }[];
+};
+
+const items: NavItem[] = [
   { title: "首页总览", url: "/", icon: LayoutDashboard },
-  { title: "组织与人员", url: "/organization", icon: Users },
-  { title: "生产对象", url: "/production", icon: Boxes },
-  { title: "仓库管理", url: "/warehouse", icon: Warehouse },
-  { title: "配置中心", url: "/settings", icon: Settings },
+  {
+    title: "组织与人员",
+    url: "/organization",
+    icon: Users,
+    children: [
+      { title: "人员账号", url: "/organization?tab=people" },
+      { title: "组织架构", url: "/organization?tab=org" },
+      { title: "角色权限", url: "/organization?tab=role" },
+      { title: "分组作业", url: "/organization?tab=team" },
+    ],
+  },
+  {
+    title: "生产对象",
+    url: "/production",
+    icon: Boxes,
+    children: [
+      { title: "对象档案", url: "/production?tab=all" },
+      { title: "健康防护", url: "/production?tab=health" },
+      { title: "谱系记录", url: "/production?tab=lineage" },
+    ],
+  },
+  {
+    title: "仓库管理",
+    url: "/warehouse",
+    icon: Warehouse,
+    children: [
+      { title: "库存清单", url: "/warehouse?tab=all" },
+      { title: "出入库", url: "/warehouse?tab=ops" },
+      { title: "调拨盘点", url: "/warehouse?tab=transfer" },
+    ],
+  },
+  {
+    title: "配置中心",
+    url: "/settings",
+    icon: Settings,
+    children: [
+      { title: "工单配置", url: "/settings?tab=workorder" },
+      { title: "规则配置", url: "/settings?tab=rules" },
+      { title: "知识库", url: "/settings?tab=knowledge" },
+    ],
+  },
 ];
 
 export function AppSidebar() {
@@ -40,6 +86,18 @@ export function AppSidebar() {
 
   const isActive = (path: string) =>
     path === "/" ? currentPath === "/" : currentPath.startsWith(path);
+
+  // Auto-expand active group
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
+    const init: Record<string, boolean> = {};
+    items.forEach((i) => {
+      if (i.children && isActive(i.url)) init[i.title] = true;
+    });
+    return init;
+  });
+
+  const toggle = (title: string) =>
+    setExpanded((p) => ({ ...p, [title]: !p[title] }));
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border bg-card">
@@ -77,9 +135,11 @@ export function AppSidebar() {
       <SidebarContent className="bg-card pt-2">
         <SidebarGroup className="px-2">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="gap-0.5">
               {items.map((item) => {
                 const active = isActive(item.url);
+                const open = expanded[item.title] ?? active;
+                const hasChildren = !!item.children?.length;
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
@@ -91,11 +151,46 @@ export function AppSidebar() {
                         data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
                       isActive={active}
                     >
-                      <Link to={item.url} className="flex items-center gap-3">
+                      <Link
+                        to={item.url}
+                        className="flex items-center gap-3"
+                        onClick={(e) => {
+                          if (hasChildren && !collapsed && active) {
+                            e.preventDefault();
+                            toggle(item.title);
+                          } else if (hasChildren && !collapsed) {
+                            setExpanded((p) => ({ ...p, [item.title]: true }));
+                          }
+                        }}
+                      >
                         <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
-                        {!collapsed && <span>{item.title}</span>}
+                        {!collapsed && (
+                          <>
+                            <span className="flex-1">{item.title}</span>
+                            {hasChildren && (
+                              <ChevronRight
+                                className={`h-3.5 w-3.5 text-text-tertiary transition-transform ${open ? "rotate-90" : ""}`}
+                              />
+                            )}
+                          </>
+                        )}
                       </Link>
                     </SidebarMenuButton>
+
+                    {hasChildren && !collapsed && open && (
+                      <ul className="mt-0.5 mb-1 ml-[26px] border-l border-border pl-2 space-y-0.5">
+                        {item.children!.map((c) => (
+                          <li key={c.title}>
+                            <Link
+                              to={item.url}
+                              className="flex items-center h-8 px-2.5 rounded-md text-body-sm text-text-secondary hover:bg-[var(--sidebar-hover)] hover:text-foreground transition-colors"
+                            >
+                              {c.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </SidebarMenuItem>
                 );
               })}
