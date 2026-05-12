@@ -20,7 +20,7 @@ const roles = [
 function RolePage() {
   return (
     <>
-      <AppHeader title="角色权限" breadcrumb={["首页", "组织与人员", "角色权限"]} />
+      <AppHeader title="角色权限" breadcrumb={["组织与人员", "角色权限"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-end">
           <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">

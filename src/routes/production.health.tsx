@@ -24,7 +24,7 @@ const tasks = [
 function HealthPage() {
   return (
     <>
-      <AppHeader title="健康防护" breadcrumb={["首页", "生产对象", "健康防护"]} />
+      <AppHeader title="健康防护" breadcrumb={["生产对象", "健康防护"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {stats.map((s) => (

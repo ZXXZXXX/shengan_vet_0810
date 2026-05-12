@@ -20,7 +20,7 @@ const rules = [
 function RulesPage() {
   return (
     <>
-      <AppHeader title="规则配置" breadcrumb={["首页", "配置中心", "规则配置"]} />
+      <AppHeader title="规则配置" breadcrumb={["配置中心", "规则配置"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">

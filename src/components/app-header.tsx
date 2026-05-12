@@ -1,11 +1,24 @@
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, Building2, Users, Briefcase } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface AppHeaderProps {
   title: string;
   breadcrumb?: string[];
 }
+
+const currentUser = {
+  name: "张磊",
+  initial: "ZL",
+  role: "场长",
+  org: "奇点牧业集团 / 1 号牧场（生产域）",
+  team: "兽医部 · 巡检 A 组",
+};
 
 export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
   return (
@@ -36,11 +49,53 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
             <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-destructive" />
           </button>
 
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-brand-subtle text-primary text-body-sm font-medium">
-              ZL
-            </AvatarFallback>
-          </Avatar>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+                <Avatar className="h-8 w-8 cursor-pointer">
+                  <AvatarFallback className="bg-brand-subtle text-primary text-body-sm font-medium">
+                    {currentUser.initial}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-72 p-0 border-border">
+              <div className="flex items-center gap-3 p-4 border-b border-border">
+                <Avatar className="h-10 w-10">
+                  <AvatarFallback className="bg-brand-subtle text-primary text-body font-medium">
+                    {currentUser.initial}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="leading-tight min-w-0">
+                  <div className="text-body text-foreground font-medium truncate">{currentUser.name}</div>
+                  <div className="text-caption text-text-tertiary">当前账号</div>
+                </div>
+              </div>
+              <div className="p-4 space-y-3">
+                <div className="flex items-start gap-2.5">
+                  <Users className="h-3.5 w-3.5 text-text-tertiary mt-0.5 shrink-0" />
+                  <div className="leading-tight">
+                    <div className="text-caption text-text-tertiary">角色</div>
+                    <div className="text-body-sm text-foreground">{currentUser.role}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <Building2 className="h-3.5 w-3.5 text-text-tertiary mt-0.5 shrink-0" />
+                  <div className="leading-tight min-w-0">
+                    <div className="text-caption text-text-tertiary">所属集团 / 生产域</div>
+                    <div className="text-body-sm text-foreground break-words">{currentUser.org}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <Briefcase className="h-3.5 w-3.5 text-text-tertiary mt-0.5 shrink-0" />
+                  <div className="leading-tight">
+                    <div className="text-caption text-text-tertiary">所属班组</div>
+                    <div className="text-body-sm text-foreground">{currentUser.team}</div>
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 

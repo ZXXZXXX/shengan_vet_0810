@@ -38,7 +38,7 @@ function statusTag(s: string) {
 function InventoryPage() {
   return (
     <>
-      <AppHeader title="库存清单" breadcrumb={["首页", "仓库管理", "库存清单"]} />
+      <AppHeader title="库存清单" breadcrumb={["仓库管理", "库存清单"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((c) => (

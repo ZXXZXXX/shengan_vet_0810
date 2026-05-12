@@ -12,7 +12,7 @@ export const Route = createFileRoute("/settings/knowledge")({
 function KnowledgePage() {
   return (
     <>
-      <AppHeader title="知识库" breadcrumb={["首页", "配置中心", "知识库"]} />
+      <AppHeader title="知识库" breadcrumb={["配置中心", "知识库"]} />
       <main className="flex-1 px-6 py-6">
         <Card className="border-border bg-card p-12 text-center">
           <div className="h-12 w-12 rounded-md bg-brand-subtle flex items-center justify-center mx-auto mb-3">

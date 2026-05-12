@@ -65,7 +65,7 @@ function TrendIcon({ trend }: { trend: string }) {
 function HomePage() {
   return (
     <>
-      <AppHeader title="首页总览" breadcrumb={["首页", "运营驾驶舱"]} />
+      <AppHeader title="首页总览" breadcrumb={["首页总览"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         {/* Greeting strip */}
         <Card className="border-border bg-card overflow-hidden">
