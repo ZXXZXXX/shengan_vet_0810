@@ -319,11 +319,11 @@ function OrganizationPage() {
                       <span className="text-body-sm text-foreground">{d}</span>
                       <span className="text-caption text-text-tertiary tabular-nums">{count}</span>
                       <button
-                        onClick={() => removeDept(d)}
-                        className="h-5 w-5 inline-flex items-center justify-center rounded text-text-tertiary hover:text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="删除"
+                        onClick={() => setDeptDetail(d)}
+                        className="h-5 w-5 inline-flex items-center justify-center rounded text-text-tertiary hover:text-primary hover:bg-brand-subtle transition-colors"
+                        title="部门详情"
                       >
-                        <X className="h-3 w-3" />
+                        <MoreHorizontal className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   );
