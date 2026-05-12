@@ -15,7 +15,6 @@ import {
   Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine,
   Package, Pill, Wheat, FlaskConical, TrendingDown, TrendingUp,
   ShoppingCart, FileText, Trash2, MoreHorizontal, Pencil,
-  CheckSquare2, Square,
 } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/")({
@@ -251,11 +250,11 @@ function InventoryPage() {
                     title={inCart ? "已加入采购清单" : "加入采购清单"}
                     className={`inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors ${
                       inCart
-                        ? "text-primary hover:bg-brand-subtle"
-                        : "text-text-tertiary hover:text-foreground hover:bg-surface-subtle"
+                        ? "text-primary bg-brand-subtle hover:bg-brand-subtle/70"
+                        : "text-text-tertiary hover:text-primary hover:bg-brand-subtle/60"
                     }`}
                   >
-                    {inCart ? <CheckSquare2 className="h-4 w-4" strokeWidth={1.75} /> : <Square className="h-4 w-4" strokeWidth={1.75} />}
+                    <ShoppingCart className="h-4 w-4" strokeWidth={1.75} />
                   </button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
