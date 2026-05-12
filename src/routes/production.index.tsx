@@ -198,13 +198,7 @@ function ObjectListPage() {
                     <span className="tag tag-muted">{a.stage}</span>
                   </div>
                   <div className="col-span-2">
-                    {a.alert ? (
-                      <span className="inline-flex items-center gap-1 text-body-sm text-[var(--state-danger)]">
-                        <AlertCircle className="h-3 w-3" /> {a.alert}
-                      </span>
-                    ) : (
-                      <span className={statusTag(a.status)}>{a.status}</span>
-                    )}
+                    <span className={statusTag(a.status)}>{a.status}</span>
                   </div>
                   <div className="col-span-3">
                     <HealthBars score={a.health} />
