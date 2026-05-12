@@ -14,6 +14,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProductionRouteImport } from './routes/production'
 import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WarehouseIndexRouteImport } from './routes/warehouse.index'
 import { Route as ProductionIndexRouteImport } from './routes/production.index'
 import { Route as OrganizationIndexRouteImport } from './routes/organization.index'
 import { Route as ProductionHealthRouteImport } from './routes/production.health'
@@ -45,6 +46,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const WarehouseIndexRoute = WarehouseIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WarehouseRoute,
 } as any)
 const ProductionIndexRoute = ProductionIndexRouteImport.update({
   id: '/',
@@ -82,24 +88,25 @@ export interface FileRoutesByFullPath {
   '/organization': typeof OrganizationRouteWithChildren
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRoute
-  '/warehouse': typeof WarehouseRoute
+  '/warehouse': typeof WarehouseRouteWithChildren
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
+  '/warehouse/': typeof WarehouseIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
-  '/warehouse': typeof WarehouseRoute
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
   '/organization': typeof OrganizationIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/warehouse': typeof WarehouseIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,13 +114,14 @@ export interface FileRoutesById {
   '/organization': typeof OrganizationRouteWithChildren
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRoute
-  '/warehouse': typeof WarehouseRoute
+  '/warehouse': typeof WarehouseRouteWithChildren
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
+  '/warehouse/': typeof WarehouseIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,17 +137,18 @@ export interface FileRouteTypes {
     | '/production/health'
     | '/organization/'
     | '/production/'
+    | '/warehouse/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/settings'
-    | '/warehouse'
     | '/organization/people'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
     | '/organization'
     | '/production'
+    | '/warehouse'
   id:
     | '__root__'
     | '/'
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/production/health'
     | '/organization/'
     | '/production/'
+    | '/warehouse/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -160,7 +170,7 @@ export interface RootRouteChildren {
   OrganizationRoute: typeof OrganizationRouteWithChildren
   ProductionRoute: typeof ProductionRouteWithChildren
   SettingsRoute: typeof SettingsRoute
-  WarehouseRoute: typeof WarehouseRoute
+  WarehouseRoute: typeof WarehouseRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -199,6 +209,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/warehouse/': {
+      id: '/warehouse/'
+      path: '/'
+      fullPath: '/warehouse/'
+      preLoaderRoute: typeof WarehouseIndexRouteImport
+      parentRoute: typeof WarehouseRoute
     }
     '/production/': {
       id: '/production/'
@@ -277,13 +294,35 @@ const ProductionRouteWithChildren = ProductionRoute._addFileChildren(
   ProductionRouteChildren,
 )
 
+interface WarehouseRouteChildren {
+  WarehouseIndexRoute: typeof WarehouseIndexRoute
+}
+
+const WarehouseRouteChildren: WarehouseRouteChildren = {
+  WarehouseIndexRoute: WarehouseIndexRoute,
+}
+
+const WarehouseRouteWithChildren = WarehouseRoute._addFileChildren(
+  WarehouseRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OrganizationRoute: OrganizationRouteWithChildren,
   ProductionRoute: ProductionRouteWithChildren,
   SettingsRoute: SettingsRoute,
-  WarehouseRoute: WarehouseRoute,
+  WarehouseRoute: WarehouseRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
