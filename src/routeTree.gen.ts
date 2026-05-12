@@ -13,18 +13,27 @@ import { Route as WarehouseRouteImport } from './routes/warehouse'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProductionRouteImport } from './routes/production'
 import { Route as OrganizationRouteImport } from './routes/organization'
+import { Route as MRouteImport } from './routes/m'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WarehouseIndexRouteImport } from './routes/warehouse.index'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as ProductionIndexRouteImport } from './routes/production.index'
 import { Route as OrganizationIndexRouteImport } from './routes/organization.index'
+import { Route as MIndexRouteImport } from './routes/m.index'
 import { Route as WarehouseTransferRouteImport } from './routes/warehouse.transfer'
 import { Route as SettingsRulesRouteImport } from './routes/settings.rules'
 import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowledge'
 import { Route as ProductionHealthRouteImport } from './routes/production.health'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
+import { Route as MMeRouteImport } from './routes/m.me'
+import { Route as MLoginRouteImport } from './routes/m.login'
+import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
+import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
+import { Route as MHealthReportRouteImport } from './routes/m.health.report'
+import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
+import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
 
 const WarehouseRoute = WarehouseRouteImport.update({
   id: '/warehouse',
@@ -44,6 +53,11 @@ const ProductionRoute = ProductionRouteImport.update({
 const OrganizationRoute = OrganizationRouteImport.update({
   id: '/organization',
   path: '/organization',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MRoute = MRouteImport.update({
+  id: '/m',
+  path: '/m',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -76,6 +90,11 @@ const OrganizationIndexRoute = OrganizationIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrganizationRoute,
 } as any)
+const MIndexRoute = MIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MRoute,
+} as any)
 const WarehouseTransferRoute = WarehouseTransferRouteImport.update({
   id: '/transfer',
   path: '/transfer',
@@ -106,114 +125,202 @@ const OrganizationRoleRoute = OrganizationRoleRouteImport.update({
   path: '/role',
   getParentRoute: () => OrganizationRoute,
 } as any)
+const MMeRoute = MMeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => MRoute,
+} as any)
+const MLoginRoute = MLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => MRoute,
+} as any)
+const MHealthIndexRoute = MHealthIndexRouteImport.update({
+  id: '/health/',
+  path: '/health/',
+  getParentRoute: () => MRoute,
+} as any)
+const MAnimalsIndexRoute = MAnimalsIndexRouteImport.update({
+  id: '/animals/',
+  path: '/animals/',
+  getParentRoute: () => MRoute,
+} as any)
+const MHealthReportRoute = MHealthReportRouteImport.update({
+  id: '/health/report',
+  path: '/health/report',
+  getParentRoute: () => MRoute,
+} as any)
+const MHealthIdRoute = MHealthIdRouteImport.update({
+  id: '/health/$id',
+  path: '/health/$id',
+  getParentRoute: () => MRoute,
+} as any)
+const MAnimalsIdRoute = MAnimalsIdRouteImport.update({
+  id: '/animals/$id',
+  path: '/animals/$id',
+  getParentRoute: () => MRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/m': typeof MRouteWithChildren
   '/organization': typeof OrganizationRouteWithChildren
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
+  '/m/login': typeof MLoginRoute
+  '/m/me': typeof MMeRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
+  '/m/': typeof MIndexRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
+  '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/health/$id': typeof MHealthIdRoute
+  '/m/health/report': typeof MHealthReportRoute
+  '/m/animals/': typeof MAnimalsIndexRoute
+  '/m/health/': typeof MHealthIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/m/login': typeof MLoginRoute
+  '/m/me': typeof MMeRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
+  '/m': typeof MIndexRoute
   '/organization': typeof OrganizationIndexRoute
   '/production': typeof ProductionIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/warehouse': typeof WarehouseIndexRoute
+  '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/health/$id': typeof MHealthIdRoute
+  '/m/health/report': typeof MHealthReportRoute
+  '/m/animals': typeof MAnimalsIndexRoute
+  '/m/health': typeof MHealthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/m': typeof MRouteWithChildren
   '/organization': typeof OrganizationRouteWithChildren
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
+  '/m/login': typeof MLoginRoute
+  '/m/me': typeof MMeRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
+  '/m/': typeof MIndexRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
+  '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/health/$id': typeof MHealthIdRoute
+  '/m/health/report': typeof MHealthReportRoute
+  '/m/animals/': typeof MAnimalsIndexRoute
+  '/m/health/': typeof MHealthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/login'
+    | '/m'
     | '/organization'
     | '/production'
     | '/settings'
     | '/warehouse'
+    | '/m/login'
+    | '/m/me'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
     | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/transfer'
+    | '/m/'
     | '/organization/'
     | '/production/'
     | '/settings/'
     | '/warehouse/'
+    | '/m/animals/$id'
+    | '/m/health/$id'
+    | '/m/health/report'
+    | '/m/animals/'
+    | '/m/health/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
+    | '/m/login'
+    | '/m/me'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
     | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/transfer'
+    | '/m'
     | '/organization'
     | '/production'
     | '/settings'
     | '/warehouse'
+    | '/m/animals/$id'
+    | '/m/health/$id'
+    | '/m/health/report'
+    | '/m/animals'
+    | '/m/health'
   id:
     | '__root__'
     | '/'
     | '/login'
+    | '/m'
     | '/organization'
     | '/production'
     | '/settings'
     | '/warehouse'
+    | '/m/login'
+    | '/m/me'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
     | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/transfer'
+    | '/m/'
     | '/organization/'
     | '/production/'
     | '/settings/'
     | '/warehouse/'
+    | '/m/animals/$id'
+    | '/m/health/$id'
+    | '/m/health/report'
+    | '/m/animals/'
+    | '/m/health/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  MRoute: typeof MRouteWithChildren
   OrganizationRoute: typeof OrganizationRouteWithChildren
   ProductionRoute: typeof ProductionRouteWithChildren
   SettingsRoute: typeof SettingsRouteWithChildren
@@ -248,6 +355,13 @@ declare module '@tanstack/react-router' {
       path: '/organization'
       fullPath: '/organization'
       preLoaderRoute: typeof OrganizationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/m': {
+      id: '/m'
+      path: '/m'
+      fullPath: '/m'
+      preLoaderRoute: typeof MRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -292,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationIndexRouteImport
       parentRoute: typeof OrganizationRoute
     }
+    '/m/': {
+      id: '/m/'
+      path: '/'
+      fullPath: '/m/'
+      preLoaderRoute: typeof MIndexRouteImport
+      parentRoute: typeof MRoute
+    }
     '/warehouse/transfer': {
       id: '/warehouse/transfer'
       path: '/transfer'
@@ -334,8 +455,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationRoleRouteImport
       parentRoute: typeof OrganizationRoute
     }
+    '/m/me': {
+      id: '/m/me'
+      path: '/me'
+      fullPath: '/m/me'
+      preLoaderRoute: typeof MMeRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/login': {
+      id: '/m/login'
+      path: '/login'
+      fullPath: '/m/login'
+      preLoaderRoute: typeof MLoginRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/health/': {
+      id: '/m/health/'
+      path: '/health'
+      fullPath: '/m/health/'
+      preLoaderRoute: typeof MHealthIndexRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/animals/': {
+      id: '/m/animals/'
+      path: '/animals'
+      fullPath: '/m/animals/'
+      preLoaderRoute: typeof MAnimalsIndexRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/health/report': {
+      id: '/m/health/report'
+      path: '/health/report'
+      fullPath: '/m/health/report'
+      preLoaderRoute: typeof MHealthReportRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/health/$id': {
+      id: '/m/health/$id'
+      path: '/health/$id'
+      fullPath: '/m/health/$id'
+      preLoaderRoute: typeof MHealthIdRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/animals/$id': {
+      id: '/m/animals/$id'
+      path: '/animals/$id'
+      fullPath: '/m/animals/$id'
+      preLoaderRoute: typeof MAnimalsIdRouteImport
+      parentRoute: typeof MRoute
+    }
   }
 }
+
+interface MRouteChildren {
+  MLoginRoute: typeof MLoginRoute
+  MMeRoute: typeof MMeRoute
+  MIndexRoute: typeof MIndexRoute
+  MAnimalsIdRoute: typeof MAnimalsIdRoute
+  MHealthIdRoute: typeof MHealthIdRoute
+  MHealthReportRoute: typeof MHealthReportRoute
+  MAnimalsIndexRoute: typeof MAnimalsIndexRoute
+  MHealthIndexRoute: typeof MHealthIndexRoute
+}
+
+const MRouteChildren: MRouteChildren = {
+  MLoginRoute: MLoginRoute,
+  MMeRoute: MMeRoute,
+  MIndexRoute: MIndexRoute,
+  MAnimalsIdRoute: MAnimalsIdRoute,
+  MHealthIdRoute: MHealthIdRoute,
+  MHealthReportRoute: MHealthReportRoute,
+  MAnimalsIndexRoute: MAnimalsIndexRoute,
+  MHealthIndexRoute: MHealthIndexRoute,
+}
+
+const MRouteWithChildren = MRoute._addFileChildren(MRouteChildren)
 
 interface OrganizationRouteChildren {
   OrganizationRoleRoute: typeof OrganizationRoleRoute
@@ -400,6 +594,7 @@ const WarehouseRouteWithChildren = WarehouseRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  MRoute: MRouteWithChildren,
   OrganizationRoute: OrganizationRouteWithChildren,
   ProductionRoute: ProductionRouteWithChildren,
   SettingsRoute: SettingsRouteWithChildren,
