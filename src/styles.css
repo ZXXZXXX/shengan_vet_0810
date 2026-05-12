@@ -148,6 +148,15 @@
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "tnum" 0;
   }
+  /* Globally remove shadows on inputs / buttons / badges per UX spec */
+  button,
+  input,
+  textarea,
+  select,
+  [data-slot="button"],
+  [data-slot="input"] {
+    box-shadow: none !important;
+  }
 }
 
 @layer utilities {
