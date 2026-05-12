@@ -12,6 +12,16 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   ClipboardList,
   PlayCircle,
   AlertTriangle,
@@ -71,6 +81,7 @@ const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
 function HealthPage() {
   const [active, setActive] = useState<WorkStatus>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
+  const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
   const counts = Object.fromEntries(statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length])) as Record<WorkStatus, number>;
   const filtered = orders.filter((o) => o.status === active);
 
@@ -198,18 +209,48 @@ function HealthPage() {
             </div>
           )}
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="gap-1.5" onClick={() => setDetail(null)}>
+            <Button variant="outline" className="gap-1.5" onClick={() => setConfirm("reject")}>
               <X className="h-3.5 w-3.5" /> 不通过
             </Button>
             <Button
               className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-              onClick={() => setDetail(null)}
+              onClick={() => setConfirm("approve")}
             >
               <Check className="h-3.5 w-3.5" /> 通过
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              确认{confirm === "approve" ? "通过" : "驳回"}该工单？
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {detail ? `工单 ${detail.id} · ${detail.target} · ${detail.type}` : ""}
+              ，操作后状态将更新,无法撤销。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                confirm === "approve"
+                  ? "bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                  : "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+              }
+              onClick={() => {
+                setConfirm(null);
+                setDetail(null);
+              }}
+            >
+              确认{confirm === "approve" ? "通过" : "驳回"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
