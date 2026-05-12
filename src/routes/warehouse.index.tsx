@@ -5,13 +5,21 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine,
   Package, Pill, Wheat, FlaskConical, TrendingDown, TrendingUp,
-  ShoppingCart, FileText, Trash2,
+  ShoppingCart, FileText, Trash2, MoreHorizontal, Pencil,
+  CheckSquare2, Square,
 } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/")({
-  head: () => ({ meta: [{ title: "库存信息 — 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "库存管理 — 奇点智牧" }] }),
   component: InventoryPage,
 });
 
@@ -22,23 +30,24 @@ const categories = [
   { name: "通用物资", value: 2150, unit: "件", icon: Package, trend: 1, outbound: 408 },
 ];
 
+type Status = "物资正常" | "物资临期" | "余量紧张";
 type Item = {
   sku: string; name: string; cat: string; stock: number; min: number;
-  unit: string; loc: string; expiry: string; status: string;
+  unit: string; loc: string; expiry: string; status: Status;
 };
 
 const inventory: Item[] = [
-  { sku: "FD-0021", name: "泌乳期精饲料", cat: "饲料", stock: 142, min: 200, unit: "袋", loc: "A-01", expiry: "2026-08", status: "库存偏低" },
-  { sku: "MD-0108", name: "乳房炎抗生素 5mg", cat: "兽药", stock: 86, min: 50, unit: "盒", loc: "C-12", expiry: "2026-11", status: "正常" },
-  { sku: "FD-0015", name: "犊牛代乳粉", cat: "饲料", stock: 28, min: 40, unit: "袋", loc: "A-04", expiry: "2026-07", status: "近效期" },
-  { sku: "RG-0042", name: "体温检测试纸", cat: "试剂耗材", stock: 320, min: 100, unit: "盒", loc: "B-08", expiry: "2027-03", status: "正常" },
-  { sku: "MD-0214", name: "免疫疫苗 A 型", cat: "兽药", stock: 12, min: 30, unit: "支", loc: "C-02", expiry: "2026-06", status: "库存偏低" },
-  { sku: "GN-0073", name: "挤奶杯组配件", cat: "通用物资", stock: 56, min: 20, unit: "件", loc: "D-15", expiry: "—", status: "正常" },
+  { sku: "FD-0021", name: "泌乳期精饲料", cat: "饲料", stock: 142, min: 200, unit: "袋", loc: "A-01", expiry: "2026-08", status: "余量紧张" },
+  { sku: "MD-0108", name: "乳房炎抗生素 5mg", cat: "兽药", stock: 86, min: 50, unit: "盒", loc: "C-12", expiry: "2026-11", status: "物资正常" },
+  { sku: "FD-0015", name: "犊牛代乳粉", cat: "饲料", stock: 28, min: 40, unit: "袋", loc: "A-04", expiry: "2026-07", status: "物资临期" },
+  { sku: "RG-0042", name: "体温检测试纸", cat: "试剂耗材", stock: 320, min: 100, unit: "盒", loc: "B-08", expiry: "2027-03", status: "物资正常" },
+  { sku: "MD-0214", name: "免疫疫苗 A 型", cat: "兽药", stock: 12, min: 30, unit: "支", loc: "C-02", expiry: "2026-06", status: "余量紧张" },
+  { sku: "GN-0073", name: "挤奶杯组配件", cat: "通用物资", stock: 56, min: 20, unit: "件", loc: "D-15", expiry: "—", status: "物资正常" },
 ];
 
-function statusTag(s: string) {
-  if (s === "正常") return "tag tag-success";
-  if (s === "近效期") return "tag tag-warning";
+function statusTag(s: Status) {
+  if (s === "物资正常") return "tag tag-success";
+  if (s === "物资临期") return "tag tag-warning";
   return "tag tag-danger";
 }
 
@@ -52,8 +61,13 @@ function InventoryPage() {
   });
   const [showCart, setShowCart] = useState(false);
 
-  const addToCart = (item: Item) => {
-    setCart((p) => ({ ...p, [item.sku]: (p[item.sku] ?? 0) + Math.max(item.min - item.stock, 10) }));
+  const toggleCart = (item: Item) => {
+    setCart((p) => {
+      const n = { ...p };
+      if (n[item.sku]) delete n[item.sku];
+      else n[item.sku] = Math.max(item.min - item.stock, 10);
+      return n;
+    });
   };
   const removeFromCart = (sku: string) =>
     setCart((p) => {
@@ -69,7 +83,7 @@ function InventoryPage() {
 
   return (
     <>
-      <AppHeader title="库存信息" breadcrumb={["仓库管理", "库存信息"]} />
+      <AppHeader title="库存管理" breadcrumb={["仓库管理", "库存管理"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((c) => (
@@ -156,7 +170,7 @@ function InventoryPage() {
             </div>
             {cartItems.length === 0 ? (
               <div className="px-6 py-8 text-center text-body-sm text-text-tertiary">
-                暂未加入物资,可在下方列表点击"加入采购"。
+                暂未加入物资,可在下方列表点击采购图标加入。
               </div>
             ) : (
               <>
@@ -206,8 +220,8 @@ function InventoryPage() {
             <div className="col-span-2">库存</div>
             <div className="col-span-1">库位</div>
             <div className="col-span-2">效期</div>
-            <div className="col-span-1">状态</div>
-            <div className="col-span-3 text-right">操作</div>
+            <div className="col-span-2">状态</div>
+            <div className="col-span-2 text-right">操作</div>
           </div>
           {inventory.map((item) => {
             const inCart = !!cart[item.sku];
@@ -227,25 +241,47 @@ function InventoryPage() {
                 </div>
                 <div className="col-span-1 font-mono text-body-sm text-text-tertiary">{item.loc}</div>
                 <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{item.expiry}</div>
-                <div className="col-span-1">
+                <div className="col-span-2">
                   <span className={statusTag(item.status)}>{item.status}</span>
                 </div>
-                <div className="col-span-3 flex justify-end items-center gap-1">
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:text-foreground">
-                    <ArrowDownToLine className="h-3.5 w-3.5 mr-1" /> 入库
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:text-foreground">
-                    <ArrowUpFromLine className="h-3.5 w-3.5 mr-1" /> 出库
-                  </Button>
-                  <Button
-                    variant={inCart ? "secondary" : "ghost"}
-                    size="sm"
-                    className={`h-7 px-2 text-body-sm font-normal ${inCart ? "" : "text-primary hover:text-primary"}`}
-                    onClick={() => (inCart ? removeFromCart(item.sku) : addToCart(item))}
+                <div className="col-span-2 flex justify-end items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => toggleCart(item)}
+                    title={inCart ? "已加入采购清单" : "加入采购清单"}
+                    className={`inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors ${
+                      inCart
+                        ? "text-primary hover:bg-brand-subtle"
+                        : "text-text-tertiary hover:text-foreground hover:bg-surface-subtle"
+                    }`}
                   >
-                    <ShoppingCart className="h-3.5 w-3.5 mr-1" />
-                    {inCart ? "已加入" : "加入采购"}
-                  </Button>
+                    {inCart ? <CheckSquare2 className="h-4 w-4" strokeWidth={1.75} /> : <Square className="h-4 w-4" strokeWidth={1.75} />}
+                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-tertiary hover:text-foreground hover:bg-surface-subtle transition-colors"
+                      >
+                        <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-36">
+                      <DropdownMenuItem>
+                        <ArrowDownToLine className="h-3.5 w-3.5 mr-2" /> 入库
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <ArrowUpFromLine className="h-3.5 w-3.5 mr-2" /> 出库
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Pencil className="h-3.5 w-3.5 mr-2" /> 编辑信息
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-[var(--state-danger)] focus:text-[var(--state-danger)]">
+                        <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             );
