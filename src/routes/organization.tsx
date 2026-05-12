@@ -221,7 +221,7 @@ function OrganizationPage() {
                       <div className="h-9 w-9 rounded-md bg-brand-subtle flex items-center justify-center">
                         <Shield className="h-4 w-4 text-primary" strokeWidth={1.75} />
                       </div>
-                      <Badge variant="outline" className="text-caption font-normal border-border">{r.count} 人</Badge>
+                      <span className="tag tag-outline">{r.count} 人</span>
                     </div>
                     <div className="text-card-title text-foreground">{r.name}</div>
                     <div className="text-caption text-text-tertiary mt-1">数据范围 · {r.scope}</div>
