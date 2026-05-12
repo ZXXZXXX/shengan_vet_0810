@@ -50,6 +50,8 @@ const statusTag: Record<Status, string> = {
 
 function TransferPage() {
   const [tab, setTab] = useState<Status | "全部">("全部");
+  const [detail, setDetail] = useState<Req | null>(null);
+
   const counts: Record<Status | "全部", number> = {
     "全部": requests.length,
     "待审核": requests.filter((r) => r.status === "待审核").length,
