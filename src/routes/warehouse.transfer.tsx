@@ -4,12 +4,33 @@ import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowRight, ClipboardList } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Search, Plus, ArrowRight, ClipboardList, Eye, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/transfer")({
   head: () => ({ meta: [{ title: "调拨申请 — 奇点智牧" }] }),
   component: TransferPage,
 });
+
+type Req = {
+  id: string;
+  workOrder: string;
+  workOrderType: string;
+  workOrderDesc: string;
+  item: string;
+  qty: string;
+  from: string;
+  to: string;
+  applicant: string;
+  time: string;
+  status: Status;
+};
 
 type Status = "待审核" | "审核通过" | "已驳回" | "已完成";
 
