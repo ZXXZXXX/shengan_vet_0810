@@ -67,7 +67,7 @@ function TransferPage() {
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-1 rounded-md bg-surface-subtle p-1">
-            {(["全部", "待审核", "审核通过", "已驳回", "已完成"] as const).map((s) => (
+            {(["全部", "待审核", "执行中", "已驳回", "已完成"] as const).map((s) => (
               <button
                 key={s}
                 onClick={() => setTab(s)}
