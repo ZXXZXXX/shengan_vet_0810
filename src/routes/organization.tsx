@@ -1,21 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Building2,
-  ChevronRight,
   Filter,
   Plus,
   Search,
   Shield,
   UserPlus,
   Users,
-  Sparkles,
   MoreHorizontal,
   Briefcase,
   ChevronDown,
@@ -78,7 +76,7 @@ function OrganizationPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((s) => (
-            <Card key={s.label} className="border-border bg-card shadow-card p-6 flex items-center gap-4">
+            <Card key={s.label} className="border-border bg-card p-6 flex items-center gap-4">
               <div className="h-10 w-10 rounded-md bg-brand-subtle flex items-center justify-center">
                 <s.icon className="h-4 w-4 text-primary" strokeWidth={1.75} />
               </div>
@@ -112,7 +110,7 @@ function OrganizationPage() {
 
           <TabsContent value="people" className="grid grid-cols-1 lg:grid-cols-4 gap-4 mt-0">
             {/* Org tree */}
-            <Card className="border-border bg-card shadow-card p-6">
+            <Card className="border-border bg-card p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-card-title text-foreground">组织树</h3>
                 <button className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary hover:bg-surface-subtle hover:text-foreground">
@@ -147,7 +145,7 @@ function OrganizationPage() {
             </Card>
 
             {/* People table */}
-            <Card className="lg:col-span-3 border-border bg-card shadow-card overflow-hidden">
+            <Card className="lg:col-span-3 border-border bg-card overflow-hidden">
               <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
                 <div>
                   <h3 className="text-card-title text-foreground">兽医部 · 人员列表</h3>
@@ -193,18 +191,9 @@ function OrganizationPage() {
                   <div className="col-span-2 text-body-sm text-text-secondary">{p.dept}</div>
                   <div className="col-span-3 font-mono text-body-sm text-text-tertiary">{p.phone}</div>
                   <div className="col-span-2">
-                    <Badge
-                      className={`h-6 px-2 text-caption font-normal border-0 rounded ${
-                        p.status === "在岗"
-                          ? "bg-[var(--state-success)]/15 text-[var(--core-brand)]"
-                          : "bg-[var(--state-warning)]/30 text-foreground"
-                      }`}
-                    >
-                      <span className={`h-1 w-1 rounded-full mr-1.5 ${
-                        p.status === "在岗" ? "bg-[var(--state-success)]" : "bg-[var(--state-warning)]"
-                      }`} />
+                    <span className={`tag ${p.status === "在岗" ? "tag-success" : "tag-warning"}`}>
                       {p.status}
-                    </Badge>
+                    </span>
                   </div>
                   <div className="col-span-2 flex items-center justify-end gap-1">
                     <Button variant="ghost" size="sm" className="h-7 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">权限</Button>
@@ -218,21 +207,21 @@ function OrganizationPage() {
           </TabsContent>
 
           <TabsContent value="role" className="mt-0">
-            <Card className="border-border bg-card shadow-card p-6">
+            <Card className="border-border bg-card p-6">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-card-title text-foreground">角色定义</h3>
-                <Badge className="bg-[var(--effect-ai-purple)]/10 text-[var(--effect-ai-purple)] border-0 gap-1 font-normal">
-                  <Sparkles className="h-3 w-3" /> AI 推荐 2 项岗位调整
-                </Badge>
+                <Button size="sm" variant="outline" className="h-8 text-body-sm font-normal gap-1.5">
+                  <Plus className="h-3.5 w-3.5" /> 新增角色
+                </Button>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {roles.map((r) => (
-                  <div key={r.name} className="rounded-md border border-border p-5 hover:border-primary/40 hover:shadow-card transition-all">
+                  <div key={r.name} className="rounded-md border border-border p-5 hover:border-primary/40 transition-all">
                     <div className="flex items-start justify-between mb-3">
                       <div className="h-9 w-9 rounded-md bg-brand-subtle flex items-center justify-center">
                         <Shield className="h-4 w-4 text-primary" strokeWidth={1.75} />
                       </div>
-                      <Badge variant="outline" className="text-caption font-normal border-border">{r.count} 人</Badge>
+                      <span className="tag tag-outline">{r.count} 人</span>
                     </div>
                     <div className="text-card-title text-foreground">{r.name}</div>
                     <div className="text-caption text-text-tertiary mt-1">数据范围 · {r.scope}</div>
@@ -251,13 +240,13 @@ function OrganizationPage() {
           </TabsContent>
 
           <TabsContent value="org" className="mt-0">
-            <Card className="border-border bg-card shadow-card p-12 text-center">
+            <Card className="border-border bg-card p-12 text-center">
               <p className="text-body text-text-tertiary">选择上方人员账号 Tab 查看组织树详情，或扩展此处的可视化组织架构图。</p>
             </Card>
           </TabsContent>
 
           <TabsContent value="team" className="mt-0">
-            <Card className="border-border bg-card shadow-card p-12 text-center">
+            <Card className="border-border bg-card p-12 text-center">
               <p className="text-body text-text-tertiary">班组、排班与责任范围管理界面 — 待扩展。</p>
             </Card>
           </TabsContent>

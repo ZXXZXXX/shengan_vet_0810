@@ -1,5 +1,4 @@
-import { Bell, Search, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Bell, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -31,15 +30,6 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
               className="h-9 w-64 rounded-md border-border bg-card pl-9 text-body-sm placeholder:text-text-tertiary focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
             />
           </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 gap-1.5 rounded-md border-border bg-card text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-[var(--effect-ai-purple)]" />
-            AI 助手
-          </Button>
 
           <button className="relative h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors">
             <Bell className="h-4 w-4" />
