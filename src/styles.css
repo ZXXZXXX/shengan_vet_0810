@@ -208,4 +208,7 @@
   .tag-muted    { background-color: var(--bg-surface-subtle); color: var(--text-secondary); }
   .tag-brand    { background-color: var(--brand-subtle); color: var(--brand); }
   .tag-outline  { background-color: transparent; color: var(--text-secondary); box-shadow: inset 0 0 0 1px var(--border-default); }
+
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
 }
