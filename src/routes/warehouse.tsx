@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,7 +9,6 @@ import {
   Search,
   Filter,
   Plus,
-  Sparkles,
   ArrowDownToLine,
   ArrowUpFromLine,
   RefreshCw,
@@ -21,14 +19,13 @@ import {
   FlaskConical,
   TrendingDown,
   TrendingUp,
-  ChevronRight,
 } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse")({
   head: () => ({
     meta: [
       { title: "仓库管理 — 奇点智牧" },
-      { name: "description", content: "库存档案、出入库操作与 AI 预警建议" },
+      { name: "description", content: "库存档案、出入库与调拨盘点" },
     ],
   }),
   component: WarehousePage,
@@ -42,25 +39,25 @@ const categories = [
 ];
 
 const inventory = [
-  { sku: "FD-0021", name: "泌乳期精饲料", cat: "饲料", stock: 142, min: 200, unit: "袋", loc: "A-01", expiry: "2026-08", status: "低" },
+  { sku: "FD-0021", name: "泌乳期精饲料", cat: "饲料", stock: 142, min: 200, unit: "袋", loc: "A-01", expiry: "2026-08", status: "库存偏低" },
   { sku: "MD-0108", name: "乳房炎抗生素 5mg", cat: "兽药", stock: 86, min: 50, unit: "盒", loc: "C-12", expiry: "2026-11", status: "正常" },
   { sku: "FD-0015", name: "犊牛代乳粉", cat: "饲料", stock: 28, min: 40, unit: "袋", loc: "A-04", expiry: "2026-07", status: "近效期" },
   { sku: "RG-0042", name: "体温检测试纸", cat: "试剂耗材", stock: 320, min: 100, unit: "盒", loc: "B-08", expiry: "2027-03", status: "正常" },
-  { sku: "MD-0214", name: "免疫疫苗 A 型", cat: "兽药", stock: 12, min: 30, unit: "支", loc: "C-02", expiry: "2026-06", status: "低" },
+  { sku: "MD-0214", name: "免疫疫苗 A 型", cat: "兽药", stock: 12, min: 30, unit: "支", loc: "C-02", expiry: "2026-06", status: "库存偏低" },
   { sku: "GN-0073", name: "挤奶杯组配件", cat: "通用物资", stock: 56, min: 20, unit: "件", loc: "D-15", expiry: "—", status: "正常" },
 ];
 
 const recentOps = [
   { type: "入库", who: "王建国", item: "泌乳期精饲料", qty: "+200 袋", time: "10:42", icon: ArrowDownToLine, tone: "success" },
-  { type: "领用", who: "李雨晴", item: "乳房炎抗生素", qty: "-12 盒", time: "09:18", icon: ArrowUpFromLine, tone: "ai" },
+  { type: "领用", who: "李雨晴", item: "乳房炎抗生素", qty: "-12 盒", time: "09:18", icon: ArrowUpFromLine, tone: "primary" },
   { type: "调拨", who: "周凯", item: "体温检测试纸", qty: "→ 2 号库", time: "昨日", icon: RefreshCw, tone: "primary" },
   { type: "报损", who: "刘倩", item: "犊牛代乳粉", qty: "-3 袋", time: "昨日", icon: AlertTriangle, tone: "danger" },
 ];
 
-function statusBadge(s: string) {
-  if (s === "正常") return "bg-[var(--state-success)]/15 text-[var(--core-brand)]";
-  if (s === "近效期") return "bg-[var(--state-warning)]/30 text-foreground";
-  return "bg-[var(--state-danger)]/10 text-[var(--state-danger)]";
+function statusTag(s: string) {
+  if (s === "正常") return "tag tag-success";
+  if (s === "近效期") return "tag tag-warning";
+  return "tag tag-danger";
 }
 
 function WarehousePage() {
@@ -68,30 +65,6 @@ function WarehousePage() {
     <>
       <AppHeader title="仓库管理" breadcrumb={["首页", "仓库管理"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
-        {/* AI alert banner */}
-        <Card className="border-[var(--effect-ai-purple)]/20 bg-card shadow-card overflow-hidden relative">
-          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-ai" />
-          <div className="p-6 flex items-center gap-4 flex-wrap">
-            <div className="h-11 w-11 rounded-md bg-gradient-ai flex items-center justify-center shrink-0">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-card-title text-foreground">AI 预警建议</span>
-                <Badge className="bg-[var(--effect-ai-purple)]/10 text-[var(--effect-ai-purple)] border-0 text-caption font-normal">
-                  3 项需处理
-                </Badge>
-              </div>
-              <p className="text-body-sm text-text-secondary mt-1">
-                泌乳期精饲料库存预计 4 天内告罄，建议下单 300 袋；免疫疫苗 A 型已低于安全线
-              </p>
-            </div>
-            <Button size="sm" className="h-9 text-body-sm font-normal bg-[var(--effect-ai-purple)] hover:bg-[var(--effect-ai-purple)]/90 text-white gap-1.5">
-              查看建议 <ChevronRight className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </Card>
-
         {/* Categories */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((c) => (
@@ -122,8 +95,8 @@ function WarehousePage() {
             <TabsList className="bg-transparent h-auto p-0 gap-6 border-b-0 rounded-none">
               {[
                 { v: "all", l: "全部库存" },
-                { v: "ops", l: "出入库操作" },
-                { v: "alert", l: "预警建议" },
+                { v: "ops", l: "出入库" },
+                { v: "transfer", l: "调拨盘点" },
               ].map((t) => (
                 <TabsTrigger
                   key={t.v}
@@ -193,9 +166,7 @@ function WarehousePage() {
                   <div className="col-span-2 font-mono text-body-sm text-text-tertiary">{item.loc}</div>
                   <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{item.expiry}</div>
                   <div className="col-span-2 flex justify-end">
-                    <Badge className={`h-6 px-2 text-caption font-normal border-0 rounded ${statusBadge(item.status)}`}>
-                      {item.status}
-                    </Badge>
+                    <span className={statusTag(item.status)}>{item.status}</span>
                   </div>
                 </div>
               ))}
@@ -213,7 +184,6 @@ function WarehousePage() {
                 <div key={i} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                   <div className={`h-8 w-8 rounded-md flex items-center justify-center ${
                     op.tone === "success" ? "bg-[var(--state-success)]/15 text-[var(--core-brand)]" :
-                    op.tone === "ai" ? "bg-[var(--effect-ai-purple)]/10 text-[var(--effect-ai-purple)]" :
                     op.tone === "danger" ? "bg-[var(--state-danger)]/10 text-[var(--state-danger)]" :
                     "bg-brand-subtle text-primary"
                   }`}>
