@@ -28,7 +28,7 @@ export const Route = createFileRoute("/production/health")({
   component: HealthPage,
 });
 
-type WorkStatus = "待审核" | "待执行" | "异常再报" | "已完结";
+type WorkStatus = "待审核" | "执行中" | "已驳回" | "已完成";
 type WorkType = "修蹄" | "干奶" | "疾病治疗" | "免疫" | "驱虫" | "普修";
 
 type WorkOrder = {
@@ -45,20 +45,20 @@ type WorkOrder = {
 
 const orders: WorkOrder[] = [
   { id: "WO-2381", target: "#A2381", type: "疾病治疗", who: "李雨晴", due: "今日 14:00", level: "高", status: "待审核", desc: "3 号牛舍 #A2381 持续高烧 2 小时，需进行抗生素治疗与隔离观察。", createdAt: "2026-05-12 09:08" },
-  { id: "WO-2298", target: "#A2298", type: "疾病治疗", who: "李雨晴", due: "今日 16:30", level: "高", status: "待执行", desc: "1 号牛舍 #A2298 乳房炎复诊，按治疗方案完成第二轮处置。", createdAt: "2026-05-11 14:20" },
-  { id: "WO-2401", target: "犊牛舍 A", type: "免疫", who: "周凯", due: "明日", level: "中", status: "待执行", desc: "犊牛舍 A 5 月口蹄疫加强免疫，覆盖 84 头犊牛。", createdAt: "2026-05-11 10:00" },
-  { id: "WO-2324", target: "#A2324", type: "普修", who: "王建国", due: "今日", level: "中", status: "异常再报", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。", createdAt: "2026-05-10 18:42" },
-  { id: "WO-2150", target: "#A2150", type: "修蹄", who: "孙明", due: "昨日", level: "中", status: "已完结", desc: "1 号牛舍批次修蹄已完成，无异常反馈。", createdAt: "2026-05-09 09:30" },
-  { id: "WO-2120", target: "#A2120", type: "干奶", who: "李雨晴", due: "前日", level: "低", status: "已完结", desc: "干奶处置完成，进入干奶舍管理。", createdAt: "2026-05-08 11:15" },
+  { id: "WO-2298", target: "#A2298", type: "疾病治疗", who: "李雨晴", due: "今日 16:30", level: "高", status: "执行中", desc: "1 号牛舍 #A2298 乳房炎复诊，按治疗方案完成第二轮处置。", createdAt: "2026-05-11 14:20" },
+  { id: "WO-2401", target: "犊牛舍 A", type: "免疫", who: "周凯", due: "明日", level: "中", status: "执行中", desc: "犊牛舍 A 5 月口蹄疫加强免疫，覆盖 84 头犊牛。", createdAt: "2026-05-11 10:00" },
+  { id: "WO-2324", target: "#A2324", type: "普修", who: "王建国", due: "今日", level: "中", status: "已驳回", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。", createdAt: "2026-05-10 18:42" },
+  { id: "WO-2150", target: "#A2150", type: "修蹄", who: "孙明", due: "昨日", level: "中", status: "已完成", desc: "1 号牛舍批次修蹄已完成，无异常反馈。", createdAt: "2026-05-09 09:30" },
+  { id: "WO-2120", target: "#A2120", type: "干奶", who: "李雨晴", due: "前日", level: "低", status: "已完成", desc: "干奶处置完成，进入干奶舍管理。", createdAt: "2026-05-08 11:15" },
   { id: "WO-2099", target: "1 号牛舍", type: "驱虫", who: "周凯", due: "今日", level: "中", status: "待审核", desc: "1 号牛舍季度体内驱虫批次，需调拨广谱驱虫药 15 盒。", createdAt: "2026-05-12 08:20" },
-  { id: "WO-2078", target: "#A2078", type: "免疫", who: "李雨晴", due: "今日", level: "高", status: "异常再报", desc: "#A2078 免疫后体温异常升高，需复查并评估处置方案。", createdAt: "2026-05-11 16:55" },
+  { id: "WO-2078", target: "#A2078", type: "免疫", who: "李雨晴", due: "今日", level: "高", status: "已驳回", desc: "#A2078 免疫后体温异常升高，需复查并评估处置方案。", createdAt: "2026-05-11 16:55" },
 ];
 
 const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
   { key: "待审核", label: "待审核", icon: ClipboardList, tone: "warning" },
-  { key: "待执行", label: "待执行", icon: PlayCircle, tone: "info" },
-  { key: "异常再报", label: "异常再报", icon: AlertTriangle, tone: "danger" },
-  { key: "已完结", label: "已完结", icon: CheckCircle2, tone: "success" },
+  { key: "执行中", label: "执行中", icon: PlayCircle, tone: "info" },
+  { key: "已驳回", label: "已驳回", icon: AlertTriangle, tone: "danger" },
+  { key: "已完成", label: "已完成", icon: CheckCircle2, tone: "success" },
 ];
 
 const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
