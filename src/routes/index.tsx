@@ -179,30 +179,37 @@ function HomePage() {
           <Card className="lg:col-span-2 border-border bg-card">
             <div className="flex items-center justify-between p-6 pb-4">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-[var(--state-danger)]" strokeWidth={1.75} />
-                <h3 className="text-card-title text-foreground">异常告警</h3>
-                <span className="tag tag-muted">{alerts.length} 条</span>
+                <Inbox className="h-4 w-4 text-primary" strokeWidth={1.75} />
+                <h3 className="text-card-title text-foreground">待处理申请</h3>
+                <span className="tag tag-muted">{pendingRequests.length} 条</span>
               </div>
               <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
                 查看全部 <ChevronRight className="h-3 w-3 ml-0.5" />
               </Button>
             </div>
             <div className="divide-y divide-border">
-              {alerts.map((a, i) => (
-                <div key={i} className="px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors group">
-                  <span className={`tag tag-${a.tone === "muted" ? "muted" : a.tone}`}>
-                    {a.level}级告警
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-body text-foreground truncate">{a.title}</p>
-                    <p className="text-caption text-text-tertiary truncate mt-0.5">{a.desc}</p>
-                  </div>
-                  <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap">{a.time}</span>
-                  <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity h-7 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">
-                    指派
-                  </Button>
-                </div>
-              ))}
+              {pendingRequests.map((r) => {
+                const meta = requestTypeMeta[r.type];
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setActiveRequest(r)}
+                    className="w-full text-left px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors"
+                  >
+                    <span className={`tag ${r.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
+                      {meta.label}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-body text-foreground truncate">{r.title}</p>
+                      <p className="text-caption text-text-tertiary truncate mt-0.5">
+                        提出者 · {r.applicant} · {r.desc}
+                      </p>
+                    </div>
+                    <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap">{r.time}</span>
+                  </button>
+                );
+              })}
             </div>
           </Card>
 
