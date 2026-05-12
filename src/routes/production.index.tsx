@@ -207,7 +207,7 @@ function ObjectListPage() {
                     )}
                   </div>
                   <div className="col-span-3">
-                    <HealthStars score={a.health} />
+                    <HealthBars score={a.health} />
                   </div>
                   <div className="col-span-1 flex items-center justify-end">
                     <Button
