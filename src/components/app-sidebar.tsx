@@ -5,7 +5,9 @@ import {
   Boxes,
   Warehouse,
   Settings,
-  Sparkles,
+  PanelLeft,
+  LogOut,
+  User,
 } from "lucide-react";
 
 import {
@@ -14,7 +16,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -31,7 +32,7 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
   const collapsed = state === "collapsed";
   const currentPath = useRouterState({
     select: (router) => router.location.pathname,
@@ -41,43 +42,57 @@ export function AppSidebar() {
     path === "/" ? currentPath === "/" : currentPath.startsWith(path);
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
-      <SidebarHeader className="border-b border-sidebar-border">
-        <Link to="/" className="flex items-center gap-2.5 px-2 py-3">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-primary shadow-glow">
-            <Sparkles className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col leading-tight">
-              <span className="text-sm font-semibold tracking-tight">智牧 AI</span>
-              <span className="text-[10px] text-muted-foreground tracking-wider uppercase">
-                Smart Farm Platform
-              </span>
-            </div>
+    <Sidebar collapsible="icon" className="border-r border-border bg-card">
+      <SidebarHeader className="border-b border-border bg-card">
+        <div className="flex items-center justify-between px-2 py-3">
+          {!collapsed ? (
+            <>
+              <Link to="/" className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle">
+                  <span className="text-card-title text-primary font-semibold leading-none">奇</span>
+                </div>
+                <div className="flex flex-col leading-tight">
+                  <span className="text-card-title font-medium text-foreground leading-tight">奇点</span>
+                  <span className="text-caption text-text-tertiary leading-tight">智牧管理系统</span>
+                </div>
+              </Link>
+              <button
+                onClick={toggleSidebar}
+                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary hover:bg-surface-subtle hover:text-foreground transition-colors"
+              >
+                <PanelLeft className="h-4 w-4" />
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={toggleSidebar}
+              className="mx-auto flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle text-primary font-semibold"
+            >
+              奇
+            </button>
           )}
-        </Link>
+        </div>
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
-          {!collapsed && (
-            <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70">
-              Workspace
-            </SidebarGroupLabel>
-          )}
+      <SidebarContent className="bg-card pt-2">
+        <SidebarGroup className="px-2">
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1">
               {items.map((item) => {
                 const active = isActive(item.url);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
+                      tooltip={collapsed ? item.title : undefined}
+                      className={`relative h-10 rounded-md px-3 text-body transition-colors
+                        hover:bg-[var(--sidebar-hover)] hover:text-foreground
+                        data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium
+                        data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
                       isActive={active}
-                      className="h-10 data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-medium"
                     >
                       <Link to={item.url} className="flex items-center gap-3">
-                        <item.icon className="h-4 w-4" />
+                        <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
                         {!collapsed && <span>{item.title}</span>}
                       </Link>
                     </SidebarMenuButton>
@@ -89,20 +104,20 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border">
-        {!collapsed ? (
-          <div className="rounded-lg bg-gradient-mesh p-3 m-2">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-              <span className="text-xs font-medium">AI 助手在线</span>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              已分析 12 项异常，3 条建议待采纳
-            </p>
+      <SidebarFooter className="border-t border-border bg-card p-2">
+        {collapsed ? (
+          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-md bg-surface-subtle">
+            <User className="h-4 w-4 text-text-secondary" />
           </div>
         ) : (
-          <div className="flex justify-center py-2">
-            <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+          <div className="flex items-center gap-2 px-2 py-1.5">
+            <div className="h-7 w-7 rounded-md bg-surface-subtle flex items-center justify-center">
+              <User className="h-3.5 w-3.5 text-text-secondary" />
+            </div>
+            <span className="text-body-sm text-foreground flex-1">管理员</span>
+            <button className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary hover:bg-surface-subtle hover:text-foreground transition-colors">
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
           </div>
         )}
       </SidebarFooter>
