@@ -1,4 +1,3 @@
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, Search, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,50 +5,60 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface AppHeaderProps {
   title: string;
-  subtitle?: string;
+  breadcrumb?: string[];
 }
 
-export function AppHeader({ title, subtitle }: AppHeaderProps) {
+export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-6 backdrop-blur-xl">
-      <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-      <div className="flex flex-col leading-tight mr-auto">
-        <h1 className="text-sm font-semibold tracking-tight">{title}</h1>
-        {subtitle && (
-          <span className="text-[11px] text-muted-foreground">{subtitle}</span>
+    <header className="sticky top-0 z-30 border-b border-border bg-card">
+      <div className="flex h-14 items-center gap-3 px-6">
+        {breadcrumb && breadcrumb.length > 0 && (
+          <nav className="text-body-sm text-text-tertiary flex items-center gap-1.5">
+            {breadcrumb.map((b, i) => (
+              <span key={i} className="flex items-center gap-1.5">
+                {i > 0 && <span className="text-text-tertiary/60">/</span>}
+                <span className={i === breadcrumb.length - 1 ? "text-foreground" : ""}>{b}</span>
+              </span>
+            ))}
+          </nav>
         )}
+
+        <div className="ml-auto flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
+            <Input
+              placeholder="请输入工单编号"
+              className="h-9 w-64 rounded-md border-border bg-card pl-9 text-body-sm placeholder:text-text-tertiary focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+            />
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5 rounded-md border-border bg-card text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-[var(--effect-ai-purple)]" />
+            AI 助手
+          </Button>
+
+          <button className="relative h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors">
+            <Bell className="h-4 w-4" />
+            <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-destructive" />
+          </button>
+
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="bg-brand-subtle text-primary text-body-sm font-medium">
+              ZL
+            </AvatarFallback>
+          </Avatar>
+        </div>
       </div>
 
-      <div className="relative hidden md:block">
-        <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="搜索 / 命令..."
-          className="h-9 w-72 rounded-lg border-border/60 bg-muted/40 pl-9 text-xs"
-        />
-        <kbd className="absolute right-2.5 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-flex">
-          ⌘K
-        </kbd>
-      </div>
-
-      <Button
-        variant="outline"
-        size="sm"
-        className="h-9 gap-1.5 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary"
-      >
-        <Sparkles className="h-3.5 w-3.5" />
-        <span className="text-xs">AI 助手</span>
-      </Button>
-
-      <Button variant="ghost" size="icon" className="relative h-9 w-9">
-        <Bell className="h-4 w-4" />
-        <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-destructive" />
-      </Button>
-
-      <Avatar className="h-8 w-8 ring-2 ring-primary/10">
-        <AvatarFallback className="bg-gradient-primary text-[11px] font-medium text-primary-foreground">
-          ZL
-        </AvatarFallback>
-      </Avatar>
+      {title && (
+        <div className="px-6 pb-4 pt-1">
+          <h1 className="text-page-title text-foreground">{title}</h1>
+        </div>
+      )}
     </header>
   );
 }
