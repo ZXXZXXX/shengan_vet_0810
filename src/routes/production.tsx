@@ -61,10 +61,10 @@ const stats = [
   { label: "近 30 日产奶", value: "548K L", icon: TrendingUp },
 ];
 
-function statusBadge(status: string) {
-  if (status === "健康") return "bg-[var(--state-success)]/15 text-[var(--core-brand)]";
-  if (status === "关注") return "bg-[var(--state-warning)]/30 text-foreground";
-  return "bg-[var(--state-danger)]/10 text-[var(--state-danger)]";
+function statusTag(status: string) {
+  if (status === "健康") return "tag tag-success";
+  if (status === "关注") return "tag tag-warning";
+  return "tag tag-danger";
 }
 
 function ProductionPage() {
