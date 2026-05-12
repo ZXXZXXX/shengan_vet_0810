@@ -476,6 +476,81 @@ function OrganizationPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!deptDetail} onOpenChange={(o) => !o && setDeptDetail(null)}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-primary" strokeWidth={1.75} />
+              {deptDetail}
+            </DialogTitle>
+            <DialogDescription>
+              隶属 {farm.name} · 共 {farm.people.filter((p) => p.dept === deptDetail).length} 名成员
+            </DialogDescription>
+          </DialogHeader>
+          {deptDetail && (
+            <div className="space-y-3 py-2">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="rounded-md border border-border bg-surface-subtle p-3">
+                  <div className="text-caption text-text-tertiary">成员数</div>
+                  <div className="text-section-title tabular-nums text-foreground">
+                    {farm.people.filter((p) => p.dept === deptDetail).length}
+                  </div>
+                </div>
+                <div className="rounded-md border border-border bg-surface-subtle p-3">
+                  <div className="text-caption text-text-tertiary">在岗</div>
+                  <div className="text-section-title tabular-nums text-foreground">
+                    {farm.people.filter((p) => p.dept === deptDetail && p.status === "正常").length}
+                  </div>
+                </div>
+                <div className="rounded-md border border-border bg-surface-subtle p-3">
+                  <div className="text-caption text-text-tertiary">已冻结</div>
+                  <div className="text-section-title tabular-nums text-foreground">
+                    {farm.people.filter((p) => p.dept === deptDetail && p.status === "已冻结").length}
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-md border border-border overflow-hidden">
+                <div className="grid grid-cols-12 gap-2 px-3 h-9 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
+                  <div className="col-span-4">姓名</div>
+                  <div className="col-span-4">角色</div>
+                  <div className="col-span-4">联系方式</div>
+                </div>
+                {farm.people.filter((p) => p.dept === deptDetail).length === 0 ? (
+                  <div className="px-3 py-6 text-center text-body-sm text-text-tertiary">暂无成员</div>
+                ) : (
+                  farm.people
+                    .filter((p) => p.dept === deptDetail)
+                    .map((p, i) => (
+                      <div key={p.name + i} className="grid grid-cols-12 gap-2 px-3 h-10 items-center text-body-sm border-b border-border last:border-0">
+                        <div className="col-span-4 text-foreground">{p.name}</div>
+                        <div className="col-span-4"><span className="tag tag-brand">{p.role}</span></div>
+                        <div className="col-span-4 font-mono text-text-tertiary">{p.phone}</div>
+                      </div>
+                    ))
+                )}
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              className="text-[var(--state-danger)] hover:text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 border-border"
+              onClick={() => {
+                if (deptDetail) {
+                  removeDept(deptDetail);
+                  setDeptDetail(null);
+                }
+              }}
+            >
+              删除部门
+            </Button>
+            <Button onClick={() => setDeptDetail(null)} className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
+              关闭
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
