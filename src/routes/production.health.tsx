@@ -70,6 +70,7 @@ const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
 
 function HealthPage() {
   const [active, setActive] = useState<WorkStatus>("待审核");
+  const [detail, setDetail] = useState<WorkOrder | null>(null);
   const counts = Object.fromEntries(statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length])) as Record<WorkStatus, number>;
   const filtered = orders.filter((o) => o.status === active);
 
