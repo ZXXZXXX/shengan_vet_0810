@@ -122,6 +122,26 @@ function TrendIcon({ trend }: { trend: string }) {
 }
 
 function HomePage() {
+  const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+
+  const handleApprove = () => {
+    if (!activeRequest) return;
+    toast.success(`已通过：${activeRequest.title}`);
+    setActiveRequest(null);
+    setRejectReason("");
+  };
+  const handleReject = () => {
+    if (!activeRequest) return;
+    if (!rejectReason.trim()) {
+      toast.error("请填写不通过原因");
+      return;
+    }
+    toast.success(`已驳回：${activeRequest.title}`);
+    setActiveRequest(null);
+    setRejectReason("");
+  };
+
   return (
     <>
       <AppHeader title="首页总览" breadcrumb={["首页总览"]} />
