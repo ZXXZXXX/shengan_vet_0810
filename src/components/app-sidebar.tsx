@@ -32,16 +32,6 @@ type NavItem = {
 const items: NavItem[] = [
   { title: "首页总览", url: "/", icon: LayoutDashboard },
   {
-    title: "组织与人员",
-    url: "/organization",
-    icon: Users,
-    children: [
-      { title: "组织管理", url: "/organization" },
-      { title: "角色权限", url: "/organization/role" },
-      { title: "分组作业", url: "/organization/team" },
-    ],
-  },
-  {
     title: "生产对象",
     url: "/production",
     icon: Boxes,
@@ -58,6 +48,16 @@ const items: NavItem[] = [
       { title: "库存清单", url: "/warehouse" },
       { title: "出入库", url: "/warehouse/ops" },
       { title: "调拨盘点", url: "/warehouse/transfer" },
+    ],
+  },
+  {
+    title: "组织管理",
+    url: "/organization",
+    icon: Users,
+    children: [
+      { title: "组织管理", url: "/organization" },
+      { title: "角色权限", url: "/organization/role" },
+      { title: "分组作业", url: "/organization/team" },
     ],
   },
   {
