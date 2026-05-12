@@ -7,7 +7,7 @@ import {
   ArrowUpRight,
   Beef,
   ClipboardList,
-  Droplet,
+  Package,
   Stethoscope,
   TrendingUp,
   TrendingDown,
@@ -29,8 +29,8 @@ export const Route = createFileRoute("/")({
 
 const kpis = [
   { label: "存栏总数", value: "2,486", unit: "头", trend: "up", delta: "+1.2%", icon: Beef },
-  { label: "今日产奶", value: "18,420", unit: "L", trend: "up", delta: "+3.8%", icon: Droplet },
-  { label: "健康事件", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope },
+  { label: "仓库物资", value: "186", unit: "类", trend: "down", delta: "-3 类临期", icon: Package },
+  { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope },
   { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList },
 ];
 
