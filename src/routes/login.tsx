@@ -34,44 +34,74 @@ function LoginPage() {
       <div className="relative hidden lg:flex flex-col justify-between overflow-hidden p-12 text-white"
         style={{
           background:
-            "linear-gradient(135deg, #2F5230 0%, #416F42 45%, #5C8A5D 100%)",
+            "linear-gradient(135deg, #2F5230 0%, #416F42 50%, #1F3F2A 100%)",
         }}
       >
+        {/* AI ambient blobs — ai-purple / ai-cyan */}
         <div
-          className="absolute -top-32 -right-32 h-[420px] w-[420px] rounded-full opacity-30 blur-3xl"
+          className="absolute -top-40 -right-32 h-[460px] w-[460px] rounded-full opacity-40 blur-3xl"
+          style={{ background: "radial-gradient(circle, var(--effect-ai-cyan) 0%, transparent 70%)" }}
+        />
+        <div
+          className="absolute -bottom-40 -left-24 h-[520px] w-[520px] rounded-full opacity-35 blur-3xl"
+          style={{ background: "radial-gradient(circle, var(--effect-ai-purple) 0%, transparent 70%)" }}
+        />
+        <div
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 h-[280px] w-[280px] rounded-full opacity-25 blur-2xl"
           style={{ background: "radial-gradient(circle, #A6E3FA 0%, transparent 70%)" }}
         />
+
+        {/* Subtle grid + dotted noise overlay */}
         <div
-          className="absolute -bottom-40 -left-20 h-[480px] w-[480px] rounded-full opacity-25 blur-3xl"
-          style={{ background: "radial-gradient(circle, #C8B6FF 0%, transparent 70%)" }}
+          className="absolute inset-0 opacity-[0.08] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+            maskImage:
+              "radial-gradient(ellipse at center, black 40%, transparent 80%)",
+          }}
         />
+
+        {/* Decorative AI ring */}
+        <svg
+          className="absolute right-10 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none"
+          width="380" height="380" viewBox="0 0 380 380" fill="none"
+        >
+          <defs>
+            <linearGradient id="aiRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="var(--effect-ai-cyan)" />
+              <stop offset="100%" stopColor="var(--effect-ai-purple)" />
+            </linearGradient>
+          </defs>
+          <circle cx="190" cy="190" r="180" stroke="url(#aiRing)" strokeWidth="1" strokeDasharray="2 6" />
+          <circle cx="190" cy="190" r="130" stroke="url(#aiRing)" strokeWidth="1" />
+          <circle cx="190" cy="190" r="80" stroke="url(#aiRing)" strokeWidth="1" strokeDasharray="4 4" />
+        </svg>
 
         <div className="relative flex items-center gap-2.5">
           <div className="h-9 w-9 rounded-lg bg-white/15 backdrop-blur flex items-center justify-center">
-            <Sparkles className="h-4.5 w-4.5" />
+            <Sparkles className="h-4 w-4" />
           </div>
           <div className="text-body font-medium tracking-wide">奇点牧业 · 智能管理平台</div>
         </div>
 
-        <div className="relative space-y-5">
+        <div className="relative space-y-5 max-w-md">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption backdrop-blur"
+            style={{
+              background: "linear-gradient(90deg, color-mix(in oklab, var(--effect-ai-purple) 35%, transparent), color-mix(in oklab, var(--effect-ai-cyan) 35%, transparent))",
+              border: "1px solid rgba(255,255,255,0.18)",
+            }}
+          >
+            <Sparkles className="h-3 w-3" />
+            <span>AI 驱动的牧场协同平台</span>
+          </div>
           <h2 className="text-[36px] leading-[48px] font-medium">
             连接每一头牛 ·<br />让牧场决策更敏捷
           </h2>
-          <p className="text-body text-white/75 max-w-md">
+          <p className="text-body text-white/75">
             从生产巡检到健康防护，从仓储调度到组织协同，统一的数据底座让一线动作与管理决策高效闭环。
           </p>
-          <div className="flex gap-6 pt-4">
-            {[
-              { v: "98.7%", l: "工单按时完成率" },
-              { v: "1,200+", l: "在管牛只" },
-              { v: "24/7", l: "AI 异常监测" },
-            ].map((s) => (
-              <div key={s.l}>
-                <div className="text-[24px] leading-[34px] font-medium">{s.v}</div>
-                <div className="text-caption text-white/65 mt-0.5">{s.l}</div>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div className="relative text-caption text-white/55">
