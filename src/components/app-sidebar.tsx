@@ -45,7 +45,7 @@ const items: NavItem[] = [
     url: "/warehouse",
     icon: Warehouse,
     children: [
-      { title: "库存信息", url: "/warehouse" },
+      { title: "库存管理", url: "/warehouse" },
       { title: "调拨申请", url: "/warehouse/transfer" },
     ],
   },
