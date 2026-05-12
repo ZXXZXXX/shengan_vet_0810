@@ -15,6 +15,7 @@ import { Route as ProductionRouteImport } from './routes/production'
 import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrganizationIndexRouteImport } from './routes/organization.index'
+import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as OrganizationPeopleRouteImport } from './routes/organization.people'
 
 const WarehouseRoute = WarehouseRouteImport.update({
@@ -47,6 +48,11 @@ const OrganizationIndexRoute = OrganizationIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrganizationRoute,
 } as any)
+const OrganizationRoleRoute = OrganizationRoleRouteImport.update({
+  id: '/role',
+  path: '/role',
+  getParentRoute: () => OrganizationRoute,
+} as any)
 const OrganizationPeopleRoute = OrganizationPeopleRouteImport.update({
   id: '/people',
   path: '/people',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/warehouse': typeof WarehouseRoute
   '/organization/people': typeof OrganizationPeopleRoute
+  '/organization/role': typeof OrganizationRoleRoute
   '/organization/': typeof OrganizationIndexRoute
 }
 export interface FileRoutesByTo {
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/warehouse': typeof WarehouseRoute
   '/organization/people': typeof OrganizationPeopleRoute
+  '/organization/role': typeof OrganizationRoleRoute
   '/organization': typeof OrganizationIndexRoute
 }
 export interface FileRoutesById {
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/warehouse': typeof WarehouseRoute
   '/organization/people': typeof OrganizationPeopleRoute
+  '/organization/role': typeof OrganizationRoleRoute
   '/organization/': typeof OrganizationIndexRoute
 }
 export interface FileRouteTypes {
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/warehouse'
     | '/organization/people'
+    | '/organization/role'
     | '/organization/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/warehouse'
     | '/organization/people'
+    | '/organization/role'
     | '/organization'
   id:
     | '__root__'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/warehouse'
     | '/organization/people'
+    | '/organization/role'
     | '/organization/'
   fileRoutesById: FileRoutesById
 }
@@ -161,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationIndexRouteImport
       parentRoute: typeof OrganizationRoute
     }
+    '/organization/role': {
+      id: '/organization/role'
+      path: '/role'
+      fullPath: '/organization/role'
+      preLoaderRoute: typeof OrganizationRoleRouteImport
+      parentRoute: typeof OrganizationRoute
+    }
     '/organization/people': {
       id: '/organization/people'
       path: '/people'
@@ -173,11 +192,13 @@ declare module '@tanstack/react-router' {
 
 interface OrganizationRouteChildren {
   OrganizationPeopleRoute: typeof OrganizationPeopleRoute
+  OrganizationRoleRoute: typeof OrganizationRoleRoute
   OrganizationIndexRoute: typeof OrganizationIndexRoute
 }
 
 const OrganizationRouteChildren: OrganizationRouteChildren = {
   OrganizationPeopleRoute: OrganizationPeopleRoute,
+  OrganizationRoleRoute: OrganizationRoleRoute,
   OrganizationIndexRoute: OrganizationIndexRoute,
 }
 
