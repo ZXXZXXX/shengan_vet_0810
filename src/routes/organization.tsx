@@ -191,18 +191,9 @@ function OrganizationPage() {
                   <div className="col-span-2 text-body-sm text-text-secondary">{p.dept}</div>
                   <div className="col-span-3 font-mono text-body-sm text-text-tertiary">{p.phone}</div>
                   <div className="col-span-2">
-                    <Badge
-                      className={`h-6 px-2 text-caption font-normal border-0 rounded ${
-                        p.status === "在岗"
-                          ? "bg-[var(--state-success)]/15 text-[var(--core-brand)]"
-                          : "bg-[var(--state-warning)]/30 text-foreground"
-                      }`}
-                    >
-                      <span className={`h-1 w-1 rounded-full mr-1.5 ${
-                        p.status === "在岗" ? "bg-[var(--state-success)]" : "bg-[var(--state-warning)]"
-                      }`} />
+                    <span className={`tag ${p.status === "在岗" ? "tag-success" : "tag-warning"}`}>
                       {p.status}
-                    </Badge>
+                    </span>
                   </div>
                   <div className="col-span-2 flex items-center justify-end gap-1">
                     <Button variant="ghost" size="sm" className="h-7 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">权限</Button>
