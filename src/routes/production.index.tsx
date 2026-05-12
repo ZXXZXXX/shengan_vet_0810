@@ -1,9 +1,28 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Beef,
   Search,
@@ -11,8 +30,12 @@ import {
   Plus,
   AlertCircle,
   ChevronRight,
-  
+  ChevronDown,
+  Building2,
   Home,
+  Pencil,
+  Trash2,
+  RefreshCw,
 } from "lucide-react";
 
 export const Route = createFileRoute("/production/")({
@@ -25,13 +48,32 @@ export const Route = createFileRoute("/production/")({
   component: ObjectListPage,
 });
 
-const barns = [
-  { name: "1 号牛舍", count: 320 },
-  { name: "2 号牛舍", count: 312 },
-  { name: "3 号牛舍", count: 298 },
-  { name: "犊牛舍 A", count: 84 },
-  { name: "干奶舍", count: 56 },
-  { name: "隔离区", count: 6 },
+type Barn = { id: string; name: string };
+type Farm = { id: string; name: string; barns: Barn[] };
+
+const initialFarms: Farm[] = [
+  {
+    id: "farm-1",
+    name: "1 号牧场",
+    barns: [
+      { id: "b-1", name: "1 号牛舍" },
+      { id: "b-2", name: "2 号牛舍" },
+      { id: "b-iso", name: "隔离区" },
+    ],
+  },
+  {
+    id: "farm-2",
+    name: "2 号牧场",
+    barns: [
+      { id: "b-3", name: "3 号牛舍" },
+      { id: "b-dry", name: "干奶舍" },
+    ],
+  },
+  {
+    id: "farm-3",
+    name: "3 号牧场",
+    barns: [{ id: "b-calf-a", name: "犊牛舍 A" }],
+  },
 ];
 
 type Animal = {
