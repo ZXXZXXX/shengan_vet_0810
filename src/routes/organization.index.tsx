@@ -34,7 +34,6 @@ import {
   MoreHorizontal,
   Filter,
   Warehouse,
-  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/organization/")({
