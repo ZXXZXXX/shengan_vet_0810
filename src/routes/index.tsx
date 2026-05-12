@@ -32,7 +32,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "首页总览 — 奇点智牧" },
-      { name: "description", content: "运营驾驶舱：核心指标、异常告警与待办" },
+      { name: "description", content: "运营驾驶舱：核心指标、待处理申请与待办" },
     ],
   }),
   component: HomePage,
