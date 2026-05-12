@@ -15,6 +15,7 @@ import { Route as ProductionRouteImport } from './routes/production'
 import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrganizationIndexRouteImport } from './routes/organization.index'
+import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as OrganizationPeopleRouteImport } from './routes/organization.people'
 
@@ -48,6 +49,11 @@ const OrganizationIndexRoute = OrganizationIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrganizationRoute,
 } as any)
+const OrganizationTeamRoute = OrganizationTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => OrganizationRoute,
+} as any)
 const OrganizationRoleRoute = OrganizationRoleRouteImport.update({
   id: '/role',
   path: '/role',
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/warehouse': typeof WarehouseRoute
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
+  '/organization/team': typeof OrganizationTeamRoute
   '/organization/': typeof OrganizationIndexRoute
 }
 export interface FileRoutesByTo {
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/warehouse': typeof WarehouseRoute
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
+  '/organization/team': typeof OrganizationTeamRoute
   '/organization': typeof OrganizationIndexRoute
 }
 export interface FileRoutesById {
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/warehouse': typeof WarehouseRoute
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
+  '/organization/team': typeof OrganizationTeamRoute
   '/organization/': typeof OrganizationIndexRoute
 }
 export interface FileRouteTypes {
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/warehouse'
     | '/organization/people'
     | '/organization/role'
+    | '/organization/team'
     | '/organization/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/warehouse'
     | '/organization/people'
     | '/organization/role'
+    | '/organization/team'
     | '/organization'
   id:
     | '__root__'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/warehouse'
     | '/organization/people'
     | '/organization/role'
+    | '/organization/team'
     | '/organization/'
   fileRoutesById: FileRoutesById
 }
@@ -173,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationIndexRouteImport
       parentRoute: typeof OrganizationRoute
     }
+    '/organization/team': {
+      id: '/organization/team'
+      path: '/team'
+      fullPath: '/organization/team'
+      preLoaderRoute: typeof OrganizationTeamRouteImport
+      parentRoute: typeof OrganizationRoute
+    }
     '/organization/role': {
       id: '/organization/role'
       path: '/role'
@@ -193,12 +212,14 @@ declare module '@tanstack/react-router' {
 interface OrganizationRouteChildren {
   OrganizationPeopleRoute: typeof OrganizationPeopleRoute
   OrganizationRoleRoute: typeof OrganizationRoleRoute
+  OrganizationTeamRoute: typeof OrganizationTeamRoute
   OrganizationIndexRoute: typeof OrganizationIndexRoute
 }
 
 const OrganizationRouteChildren: OrganizationRouteChildren = {
   OrganizationPeopleRoute: OrganizationPeopleRoute,
   OrganizationRoleRoute: OrganizationRoleRoute,
+  OrganizationTeamRoute: OrganizationTeamRoute,
   OrganizationIndexRoute: OrganizationIndexRoute,
 }
 
