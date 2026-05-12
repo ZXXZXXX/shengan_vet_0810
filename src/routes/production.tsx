@@ -106,7 +106,7 @@ function ProductionPage() {
                   s.tone === "success" ? "bg-success/10 text-success" :
                   "bg-destructive/10 text-destructive"
                 }`}>
-                  <s.icon className="h-4.5 w-4.5" />
+                  <s.icon className="h-5 w-5" />
                 </div>
                 <div>
                   <div className="text-xl font-semibold tabular-nums">{s.value}</div>
