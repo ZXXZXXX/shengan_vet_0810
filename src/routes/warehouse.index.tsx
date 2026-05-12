@@ -15,7 +15,6 @@ import {
   Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine,
   Package, Pill, Wheat, FlaskConical, TrendingDown, TrendingUp,
   ShoppingCart, FileText, Trash2, MoreHorizontal, Pencil,
-  CheckSquare2, Square,
 } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/")({
