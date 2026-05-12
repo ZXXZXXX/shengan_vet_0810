@@ -25,7 +25,6 @@ import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowled
 import { Route as ProductionHealthRouteImport } from './routes/production.health'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
-import { Route as OrganizationPeopleRouteImport } from './routes/organization.people'
 
 const WarehouseRoute = WarehouseRouteImport.update({
   id: '/warehouse',
@@ -107,11 +106,6 @@ const OrganizationRoleRoute = OrganizationRoleRouteImport.update({
   path: '/role',
   getParentRoute: () => OrganizationRoute,
 } as any)
-const OrganizationPeopleRoute = OrganizationPeopleRouteImport.update({
-  id: '/people',
-  path: '/people',
-  getParentRoute: () => OrganizationRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -119,7 +113,6 @@ export interface FileRoutesByFullPath {
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
-  '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
@@ -134,7 +127,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
@@ -154,7 +146,6 @@ export interface FileRoutesById {
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
-  '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
@@ -175,7 +166,6 @@ export interface FileRouteTypes {
     | '/production'
     | '/settings'
     | '/warehouse'
-    | '/organization/people'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
@@ -190,7 +180,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/organization/people'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
@@ -209,7 +198,6 @@ export interface FileRouteTypes {
     | '/production'
     | '/settings'
     | '/warehouse'
-    | '/organization/people'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
@@ -345,25 +333,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationRoleRouteImport
       parentRoute: typeof OrganizationRoute
     }
-    '/organization/people': {
-      id: '/organization/people'
-      path: '/people'
-      fullPath: '/organization/people'
-      preLoaderRoute: typeof OrganizationPeopleRouteImport
-      parentRoute: typeof OrganizationRoute
-    }
   }
 }
 
 interface OrganizationRouteChildren {
-  OrganizationPeopleRoute: typeof OrganizationPeopleRoute
   OrganizationRoleRoute: typeof OrganizationRoleRoute
   OrganizationTeamRoute: typeof OrganizationTeamRoute
   OrganizationIndexRoute: typeof OrganizationIndexRoute
 }
 
 const OrganizationRouteChildren: OrganizationRouteChildren = {
-  OrganizationPeopleRoute: OrganizationPeopleRoute,
   OrganizationRoleRoute: OrganizationRoleRoute,
   OrganizationTeamRoute: OrganizationTeamRoute,
   OrganizationIndexRoute: OrganizationIndexRoute,
@@ -429,3 +408,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
