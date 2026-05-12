@@ -1,11 +1,24 @@
-import { Bell, Search, Building2, Users, Briefcase } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { Bell, Search, Building2, Users, Briefcase, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface AppHeaderProps {
   title: string;
@@ -21,6 +34,8 @@ const currentUser = {
 };
 
 export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
+  const navigate = useNavigate();
+  const [confirmOpen, setConfirmOpen] = useState(false);
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card">
       <div className="flex h-14 items-center gap-3 px-6">
@@ -94,6 +109,15 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
                   </div>
                 </div>
               </div>
+              <div className="border-t border-border p-2">
+                <button
+                  onClick={() => setConfirmOpen(true)}
+                  className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-body-sm text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  退出登录
+                </button>
+              </div>
             </PopoverContent>
           </Popover>
         </div>
@@ -104,6 +128,29 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
           <h1 className="text-page-title text-foreground">{title}</h1>
         </div>
       )}
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认退出登录？</AlertDialogTitle>
+            <AlertDialogDescription>
+              退出后将返回登录页面，未保存的内容可能会丢失。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => {
+                setConfirmOpen(false);
+                navigate({ to: "/login" });
+              }}
+            >
+              确认退出
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </header>
   );
 }
