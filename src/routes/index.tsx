@@ -1,9 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  AlertTriangle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import {
+  Inbox,
   ArrowUpRight,
   Beef,
   ClipboardList,
@@ -21,7 +32,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "首页总览 — 奇点智牧" },
-      { name: "description", content: "运营驾驶舱：核心指标、异常告警与待办" },
+      { name: "description", content: "运营驾驶舱：核心指标、待处理申请与待办" },
     ],
   }),
   component: HomePage,
@@ -34,12 +45,60 @@ const kpis = [
   { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList },
 ];
 
-const alerts = [
-  { level: "高", title: "3 号牛舍体温异常", desc: "牛只 #A2381 持续 2 小时高于阈值", time: "8 分钟前", tone: "danger" },
-  { level: "中", title: "饲料库存接近下限", desc: "精饲料库余量 12%，建议 24h 内补货", time: "32 分钟前", tone: "warning" },
-  { level: "中", title: "免疫工单逾期", desc: "5 头待免疫牛只超出计划日期", time: "1 小时前", tone: "warning" },
-  { level: "低", title: "5 号挤奶设备需保养", desc: "已运行 320 小时，建议安排维护", time: "今日 09:12", tone: "muted" },
+type RequestType = "transfer" | "health";
+type PendingRequest = {
+  id: string;
+  type: RequestType;
+  title: string;
+  desc: string;
+  applicant: string;
+  time: string;
+  detail: string;
+};
+
+const pendingRequests: PendingRequest[] = [
+  {
+    id: "REQ-2381",
+    type: "health",
+    title: "3 号牛舍体温异常处置申请",
+    desc: "申请对牛只 #A2381 启动隔离观察并使用抗生素",
+    applicant: "李兽医",
+    time: "8 分钟前",
+    detail: "牛只 #A2381 持续 2 小时体温高于 40℃，建议转入隔离区并安排血常规检测，预计耗材：抗生素 1 支、采血管 2 支。",
+  },
+  {
+    id: "REQ-2380",
+    type: "transfer",
+    title: "精饲料跨场调拨申请",
+    desc: "由 2 号牧场调拨精饲料 3 吨至 1 号牧场",
+    applicant: "王仓管",
+    time: "32 分钟前",
+    detail: "1 号牧场精饲料库余量 12%，预计 24 小时内告罄。申请由 2 号牧场库存中调拨 3 吨,由调度车次 LK-07 承运。",
+  },
+  {
+    id: "REQ-2379",
+    type: "health",
+    title: "免疫工单延期申请",
+    desc: "5 头待免疫牛只因发情期申请延后 3 天",
+    applicant: "赵兽医",
+    time: "1 小时前",
+    detail: "5 头待免疫牛只目前处于发情期，按规程不宜立即免疫。申请将本批免疫计划由 5/12 顺延至 5/15 执行。",
+  },
+  {
+    id: "REQ-2378",
+    type: "transfer",
+    title: "兽药领用调拨申请",
+    desc: "总仓向 5 号牛舍调拨 3 类兽药",
+    applicant: "孙库管",
+    time: "今日 09:12",
+    detail: "5 号牛舍周保养所需消毒液 5 L、驱虫剂 2 盒、营养补充剂 1 箱，请审批后由总仓出库配送。",
+  },
 ];
+
+const requestTypeMeta: Record<RequestType, { label: string; tone: string }> = {
+  transfer: { label: "调拨申请", tone: "info" },
+  health: { label: "健康防护", tone: "warning" },
+};
 
 const todos = [
   { title: "复查疑似乳房炎处理结果", owner: "李兽医", due: "今天 18:00" },
@@ -63,6 +122,26 @@ function TrendIcon({ trend }: { trend: string }) {
 }
 
 function HomePage() {
+  const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+
+  const handleApprove = () => {
+    if (!activeRequest) return;
+    toast.success(`已通过：${activeRequest.title}`);
+    setActiveRequest(null);
+    setRejectReason("");
+  };
+  const handleReject = () => {
+    if (!activeRequest) return;
+    if (!rejectReason.trim()) {
+      toast.error("请填写不通过原因");
+      return;
+    }
+    toast.success(`已驳回：${activeRequest.title}`);
+    setActiveRequest(null);
+    setRejectReason("");
+  };
+
   return (
     <>
       <AppHeader title="首页总览" breadcrumb={["首页总览"]} />
@@ -76,12 +155,12 @@ function HomePage() {
               </div>
               <h2 className="text-section-title text-foreground">早上好，场长张磊</h2>
               <p className="text-body-sm text-text-secondary mt-1">
-                今日整体运行稳定，3 项异常需关注，请及时处理告警与待办
+                今日整体运行稳定，4 项申请待审批，请及时处理待办与申请
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" className="h-9 text-body-sm font-normal">
-                查看告警
+                待处理申请
               </Button>
               <Button className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
                 今日待办 <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
@@ -120,30 +199,37 @@ function HomePage() {
           <Card className="lg:col-span-2 border-border bg-card">
             <div className="flex items-center justify-between p-6 pb-4">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-[var(--state-danger)]" strokeWidth={1.75} />
-                <h3 className="text-card-title text-foreground">异常告警</h3>
-                <span className="tag tag-muted">{alerts.length} 条</span>
+                <Inbox className="h-4 w-4 text-primary" strokeWidth={1.75} />
+                <h3 className="text-card-title text-foreground">待处理申请</h3>
+                <span className="tag tag-muted">{pendingRequests.length} 条</span>
               </div>
               <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
                 查看全部 <ChevronRight className="h-3 w-3 ml-0.5" />
               </Button>
             </div>
             <div className="divide-y divide-border">
-              {alerts.map((a, i) => (
-                <div key={i} className="px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors group">
-                  <span className={`tag tag-${a.tone === "muted" ? "muted" : a.tone}`}>
-                    {a.level}级告警
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-body text-foreground truncate">{a.title}</p>
-                    <p className="text-caption text-text-tertiary truncate mt-0.5">{a.desc}</p>
-                  </div>
-                  <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap">{a.time}</span>
-                  <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity h-7 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">
-                    指派
-                  </Button>
-                </div>
-              ))}
+              {pendingRequests.map((r) => {
+                const meta = requestTypeMeta[r.type];
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setActiveRequest(r)}
+                    className="w-full text-left px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors"
+                  >
+                    <span className={`tag ${r.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
+                      {meta.label}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-body text-foreground truncate">{r.title}</p>
+                      <p className="text-caption text-text-tertiary truncate mt-0.5">
+                        提出者 · {r.applicant} · {r.desc}
+                      </p>
+                    </div>
+                    <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap">{r.time}</span>
+                  </button>
+                );
+              })}
             </div>
           </Card>
 
@@ -247,6 +333,63 @@ function HomePage() {
           </div>
         </Card>
       </main>
+
+      <Dialog
+        open={!!activeRequest}
+        onOpenChange={(open) => {
+          if (!open) {
+            setActiveRequest(null);
+            setRejectReason("");
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[520px]">
+          {activeRequest && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`tag ${activeRequest.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
+                    {requestTypeMeta[activeRequest.type].label}
+                  </span>
+                  <span className="text-caption text-text-tertiary tabular-nums">{activeRequest.id}</span>
+                </div>
+                <DialogTitle className="text-card-title">{activeRequest.title}</DialogTitle>
+                <DialogDescription className="text-body-sm text-text-secondary">
+                  提出者 {activeRequest.applicant} · {activeRequest.time}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-3 py-1">
+                <div className="rounded-md bg-surface-subtle border border-border p-3">
+                  <p className="text-caption text-text-tertiary mb-1">申请详情</p>
+                  <p className="text-body-sm text-foreground leading-relaxed">{activeRequest.detail}</p>
+                </div>
+                <div>
+                  <label className="text-caption text-text-tertiary">不通过原因（驳回时必填）</label>
+                  <Textarea
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="如需驳回，请简要说明原因…"
+                    className="mt-1.5 min-h-[72px] text-body-sm"
+                  />
+                </div>
+              </div>
+
+              <DialogFooter className="gap-2">
+                <Button variant="outline" className="h-9 text-body-sm font-normal" onClick={handleReject}>
+                  不通过
+                </Button>
+                <Button
+                  className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                  onClick={handleApprove}
+                >
+                  通过
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
