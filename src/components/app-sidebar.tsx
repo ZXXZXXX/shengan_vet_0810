@@ -39,10 +39,10 @@ const items: NavItem[] = [
     url: "/organization",
     icon: Users,
     children: [
-      { title: "人员账号", url: "/organization?tab=people" },
-      { title: "组织架构", url: "/organization?tab=org" },
-      { title: "角色权限", url: "/organization?tab=role" },
-      { title: "分组作业", url: "/organization?tab=team" },
+      { title: "组织架构", url: "/organization" },
+      { title: "人员账号", url: "/organization/people" },
+      { title: "角色权限", url: "/organization/role" },
+      { title: "分组作业", url: "/organization/team" },
     ],
   },
   {
@@ -50,9 +50,8 @@ const items: NavItem[] = [
     url: "/production",
     icon: Boxes,
     children: [
-      { title: "对象档案", url: "/production?tab=all" },
-      { title: "健康防护", url: "/production?tab=health" },
-      { title: "谱系记录", url: "/production?tab=lineage" },
+      { title: "对象档案", url: "/production" },
+      { title: "健康防护", url: "/production/health" },
     ],
   },
   {
@@ -60,9 +59,9 @@ const items: NavItem[] = [
     url: "/warehouse",
     icon: Warehouse,
     children: [
-      { title: "库存清单", url: "/warehouse?tab=all" },
-      { title: "出入库", url: "/warehouse?tab=ops" },
-      { title: "调拨盘点", url: "/warehouse?tab=transfer" },
+      { title: "库存清单", url: "/warehouse" },
+      { title: "出入库", url: "/warehouse/ops" },
+      { title: "调拨盘点", url: "/warehouse/transfer" },
     ],
   },
   {
@@ -70,9 +69,9 @@ const items: NavItem[] = [
     url: "/settings",
     icon: Settings,
     children: [
-      { title: "工单配置", url: "/settings?tab=workorder" },
-      { title: "规则配置", url: "/settings?tab=rules" },
-      { title: "知识库", url: "/settings?tab=knowledge" },
+      { title: "工单配置", url: "/settings" },
+      { title: "规则配置", url: "/settings/rules" },
+      { title: "知识库", url: "/settings/knowledge" },
     ],
   },
 ];
