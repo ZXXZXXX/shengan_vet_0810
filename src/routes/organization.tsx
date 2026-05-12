@@ -8,14 +8,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Building2,
-  ChevronRight,
   Filter,
   Plus,
   Search,
   Shield,
   UserPlus,
   Users,
-  Sparkles,
   MoreHorizontal,
   Briefcase,
   ChevronDown,
