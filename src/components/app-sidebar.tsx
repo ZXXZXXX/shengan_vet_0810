@@ -36,8 +36,7 @@ const items: NavItem[] = [
     url: "/organization",
     icon: Users,
     children: [
-      { title: "组织架构", url: "/organization" },
-      { title: "人员账号", url: "/organization/people" },
+      { title: "组织管理", url: "/organization" },
       { title: "角色权限", url: "/organization/role" },
       { title: "分组作业", url: "/organization/team" },
     ],
