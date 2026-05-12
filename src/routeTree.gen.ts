@@ -21,6 +21,7 @@ import { Route as OrganizationIndexRouteImport } from './routes/organization.ind
 import { Route as WarehouseTransferRouteImport } from './routes/warehouse.transfer'
 import { Route as WarehouseOpsRouteImport } from './routes/warehouse.ops'
 import { Route as SettingsRulesRouteImport } from './routes/settings.rules'
+import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowledge'
 import { Route as ProductionHealthRouteImport } from './routes/production.health'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
@@ -86,6 +87,11 @@ const SettingsRulesRoute = SettingsRulesRouteImport.update({
   path: '/rules',
   getParentRoute: () => SettingsRoute,
 } as any)
+const SettingsKnowledgeRoute = SettingsKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const ProductionHealthRoute = ProductionHealthRouteImport.update({
   id: '/health',
   path: '/health',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
+  '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/ops': typeof WarehouseOpsRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
+  '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/ops': typeof WarehouseOpsRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
+  '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/ops': typeof WarehouseOpsRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
+    | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/ops'
     | '/warehouse/transfer'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
+    | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/ops'
     | '/warehouse/transfer'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
+    | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/ops'
     | '/warehouse/transfer'
@@ -305,6 +317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRulesRouteImport
       parentRoute: typeof SettingsRoute
     }
+    '/settings/knowledge': {
+      id: '/settings/knowledge'
+      path: '/knowledge'
+      fullPath: '/settings/knowledge'
+      preLoaderRoute: typeof SettingsKnowledgeRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/production/health': {
       id: '/production/health'
       path: '/health'
@@ -369,11 +388,13 @@ const ProductionRouteWithChildren = ProductionRoute._addFileChildren(
 )
 
 interface SettingsRouteChildren {
+  SettingsKnowledgeRoute: typeof SettingsKnowledgeRoute
   SettingsRulesRoute: typeof SettingsRulesRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsKnowledgeRoute: SettingsKnowledgeRoute,
   SettingsRulesRoute: SettingsRulesRoute,
   SettingsIndexRoute: SettingsIndexRoute,
 }
