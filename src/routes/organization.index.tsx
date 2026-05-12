@@ -156,6 +156,7 @@ function OrganizationPage() {
   const [selectedId, setSelectedId] = useState<string>(initialFarms[0].id);
   const [groupOpen, setGroupOpen] = useState(true);
   const [newDept, setNewDept] = useState("");
+  const [deptDetail, setDeptDetail] = useState<string | null>(null);
   const [editing, setEditing] = useState<{ index: number; person: Person } | null>(null);
 
   const farm = farms.find((f) => f.id === selectedId)!;
