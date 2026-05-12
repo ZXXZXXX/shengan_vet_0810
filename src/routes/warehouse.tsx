@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,7 @@ import {
 export const Route = createFileRoute("/warehouse")({
   head: () => ({
     meta: [
-      { title: "仓库管理 — 智牧 AI 平台" },
+      { title: "仓库管理 — 奇点智牧" },
       { name: "description", content: "库存档案、出入库操作与 AI 预警建议" },
     ],
   }),
@@ -35,81 +35,83 @@ export const Route = createFileRoute("/warehouse")({
 });
 
 const categories = [
-  { name: "饲料", value: 4280, unit: "袋", icon: Wheat, tone: "warning", trend: -8 },
-  { name: "兽药", value: 1320, unit: "盒", icon: Pill, tone: "ai", trend: 3 },
-  { name: "试剂耗材", value: 860, unit: "件", icon: FlaskConical, tone: "primary", trend: 12 },
-  { name: "通用物资", value: 2150, unit: "件", icon: Package, tone: "success", trend: 1 },
+  { name: "饲料", value: 4280, unit: "袋", icon: Wheat, trend: -8 },
+  { name: "兽药", value: 1320, unit: "盒", icon: Pill, trend: 3 },
+  { name: "试剂耗材", value: 860, unit: "件", icon: FlaskConical, trend: 12 },
+  { name: "通用物资", value: 2150, unit: "件", icon: Package, trend: 1 },
 ];
 
 const inventory = [
-  { sku: "FD-0021", name: "泌乳期精饲料", cat: "饲料", stock: 142, min: 200, unit: "袋", loc: "A-01", expiry: "2026-08", status: "低", alert: true },
-  { sku: "MD-0108", name: "乳房炎抗生素 5mg", cat: "兽药", stock: 86, min: 50, unit: "盒", loc: "C-12", expiry: "2026-11", status: "正常", alert: false },
-  { sku: "FD-0015", name: "犊牛代乳粉", cat: "饲料", stock: 28, min: 40, unit: "袋", loc: "A-04", expiry: "2026-07", status: "近效期", alert: true },
-  { sku: "RG-0042", name: "体温检测试纸", cat: "试剂耗材", stock: 320, min: 100, unit: "盒", loc: "B-08", expiry: "2027-03", status: "正常", alert: false },
-  { sku: "MD-0214", name: "免疫疫苗 A 型", cat: "兽药", stock: 12, min: 30, unit: "支", loc: "C-02", expiry: "2026-06", status: "低", alert: true },
-  { sku: "GN-0073", name: "挤奶杯组配件", cat: "通用物资", stock: 56, min: 20, unit: "件", loc: "D-15", expiry: "—", status: "正常", alert: false },
+  { sku: "FD-0021", name: "泌乳期精饲料", cat: "饲料", stock: 142, min: 200, unit: "袋", loc: "A-01", expiry: "2026-08", status: "低" },
+  { sku: "MD-0108", name: "乳房炎抗生素 5mg", cat: "兽药", stock: 86, min: 50, unit: "盒", loc: "C-12", expiry: "2026-11", status: "正常" },
+  { sku: "FD-0015", name: "犊牛代乳粉", cat: "饲料", stock: 28, min: 40, unit: "袋", loc: "A-04", expiry: "2026-07", status: "近效期" },
+  { sku: "RG-0042", name: "体温检测试纸", cat: "试剂耗材", stock: 320, min: 100, unit: "盒", loc: "B-08", expiry: "2027-03", status: "正常" },
+  { sku: "MD-0214", name: "免疫疫苗 A 型", cat: "兽药", stock: 12, min: 30, unit: "支", loc: "C-02", expiry: "2026-06", status: "低" },
+  { sku: "GN-0073", name: "挤奶杯组配件", cat: "通用物资", stock: 56, min: 20, unit: "件", loc: "D-15", expiry: "—", status: "正常" },
 ];
 
 const recentOps = [
   { type: "入库", who: "王建国", item: "泌乳期精饲料", qty: "+200 袋", time: "10:42", icon: ArrowDownToLine, tone: "success" },
   { type: "领用", who: "李雨晴", item: "乳房炎抗生素", qty: "-12 盒", time: "09:18", icon: ArrowUpFromLine, tone: "ai" },
   { type: "调拨", who: "周凯", item: "体温检测试纸", qty: "→ 2 号库", time: "昨日", icon: RefreshCw, tone: "primary" },
-  { type: "报损", who: "刘倩", item: "犊牛代乳粉", qty: "-3 袋", time: "昨日", icon: AlertTriangle, tone: "destructive" },
+  { type: "报损", who: "刘倩", item: "犊牛代乳粉", qty: "-3 袋", time: "昨日", icon: AlertTriangle, tone: "danger" },
 ];
+
+function statusBadge(s: string) {
+  if (s === "正常") return "bg-[var(--state-success)]/15 text-[var(--core-brand)]";
+  if (s === "近效期") return "bg-[var(--state-warning)]/30 text-foreground";
+  return "bg-[var(--state-danger)]/10 text-[var(--state-danger)]";
+}
 
 function WarehousePage() {
   return (
     <>
-      <AppHeader title="仓库管理" subtitle="库存档案 · 出入库操作 · 预警建议" />
-      <main className="flex-1 p-6 space-y-5">
+      <AppHeader title="仓库管理" breadcrumb={["首页", "仓库管理"]} />
+      <main className="flex-1 px-6 py-6 space-y-4">
         {/* AI alert banner */}
-        <div className="relative overflow-hidden rounded-2xl border border-ai/20 bg-gradient-mesh p-5">
-          <div className="flex items-center gap-4">
-            <div className="h-11 w-11 rounded-xl bg-gradient-ai flex items-center justify-center shadow-glow">
-              <Sparkles className="h-5 w-5 text-ai-foreground" />
+        <Card className="border-[var(--effect-ai-purple)]/20 bg-card shadow-card overflow-hidden relative">
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-ai" />
+          <div className="p-6 flex items-center gap-4 flex-wrap">
+            <div className="h-11 w-11 rounded-md bg-gradient-ai flex items-center justify-center shrink-0">
+              <Sparkles className="h-5 w-5 text-white" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold">AI 预警建议</span>
-                <Badge className="bg-ai/10 text-ai border-0 text-[10px]">3 项需处理</Badge>
+                <span className="text-card-title text-foreground">AI 预警建议</span>
+                <Badge className="bg-[var(--effect-ai-purple)]/10 text-[var(--effect-ai-purple)] border-0 text-caption font-normal">
+                  3 项需处理
+                </Badge>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-body-sm text-text-secondary mt-1">
                 泌乳期精饲料库存预计 4 天内告罄，建议下单 300 袋；免疫疫苗 A 型已低于安全线
               </p>
             </div>
-            <Button size="sm" className="bg-gradient-ai border-0 text-ai-foreground shadow-glow gap-1.5">
+            <Button size="sm" className="h-9 text-body-sm font-normal bg-[var(--effect-ai-purple)] hover:bg-[var(--effect-ai-purple)]/90 text-white gap-1.5">
               查看建议 <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Categories */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((c) => (
-            <Card key={c.name} className="border-border/60 shadow-soft group hover:shadow-elegant transition-all">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${
-                    c.tone === "primary" ? "bg-primary/10 text-primary" :
-                    c.tone === "ai" ? "bg-ai/10 text-ai" :
-                    c.tone === "success" ? "bg-success/10 text-success" :
-                    "bg-warning/15 text-warning-foreground"
-                  }`}>
-                    <c.icon className="h-5 w-5" />
-                  </div>
-                  <Badge variant="outline" className={`text-[10px] gap-0.5 font-mono ${
-                    c.trend < 0 ? "text-destructive border-destructive/30" : "text-success border-success/30"
-                  }`}>
-                    {c.trend < 0 ? <TrendingDown className="h-2.5 w-2.5" /> : <TrendingUp className="h-2.5 w-2.5" />}
-                    {c.trend > 0 ? "+" : ""}{c.trend}%
-                  </Badge>
+            <Card key={c.name} className="border-border bg-card shadow-card p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="h-10 w-10 rounded-md bg-brand-subtle flex items-center justify-center">
+                  <c.icon className="h-4 w-4 text-primary" strokeWidth={1.75} />
                 </div>
-                <div className="text-xs text-muted-foreground">{c.name}</div>
-                <div className="flex items-baseline gap-1 mt-1">
-                  <span className="text-2xl font-semibold tabular-nums tracking-tight">{c.value.toLocaleString()}</span>
-                  <span className="text-xs text-muted-foreground">{c.unit}</span>
+                <div className={`flex items-center gap-1 text-caption ${
+                  c.trend < 0 ? "text-[var(--state-danger)]" : "text-[var(--core-brand)]"
+                }`}>
+                  {c.trend < 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
+                  <span className="tabular-nums">{c.trend > 0 ? "+" : ""}{c.trend}%</span>
                 </div>
-              </CardContent>
+              </div>
+              <div className="text-body-sm text-text-tertiary">{c.name}</div>
+              <div className="flex items-baseline gap-1 mt-1">
+                <span className="text-page-title tabular-nums text-foreground">{c.value.toLocaleString()}</span>
+                <span className="text-caption text-text-tertiary">{c.unit}</span>
+              </div>
             </Card>
           ))}
         </div>
@@ -117,24 +119,34 @@ function WarehousePage() {
         {/* Toolbar */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Tabs defaultValue="all">
-            <TabsList className="bg-muted/50 h-9">
-              <TabsTrigger value="all" className="text-xs data-[state=active]:bg-card">全部库存</TabsTrigger>
-              <TabsTrigger value="ops" className="text-xs data-[state=active]:bg-card">出入库操作</TabsTrigger>
-              <TabsTrigger value="alert" className="text-xs data-[state=active]:bg-card">预警建议</TabsTrigger>
+            <TabsList className="bg-transparent h-auto p-0 gap-6 border-b-0 rounded-none">
+              {[
+                { v: "all", l: "全部库存" },
+                { v: "ops", l: "出入库操作" },
+                { v: "alert", l: "预警建议" },
+              ].map((t) => (
+                <TabsTrigger
+                  key={t.v}
+                  value={t.v}
+                  className="px-0 pb-3 pt-2 rounded-none text-body text-text-secondary data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-[inset_0_-2px_0_var(--brand)] hover:text-foreground"
+                >
+                  {t.l}
+                </TabsTrigger>
+              ))}
             </TabsList>
           </Tabs>
           <div className="flex items-center gap-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="按 SKU / 物资名称搜索" className="h-9 w-72 pl-9 text-xs bg-card" />
+              <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
+              <Input placeholder="按 SKU / 物资名称搜索" className="h-9 w-72 pl-9 text-body-sm bg-card border-border" />
             </div>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs">
+            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
               <ArrowDownToLine className="h-3.5 w-3.5" /> 入库
             </Button>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs">
+            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
               <ArrowUpFromLine className="h-3.5 w-3.5" /> 出库
             </Button>
-            <Button size="sm" className="h-9 gap-1.5 text-xs bg-gradient-primary border-0 shadow-glow">
+            <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
               <Plus className="h-3.5 w-3.5" /> 新增物资
             </Button>
           </div>
@@ -142,99 +154,85 @@ function WarehousePage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Inventory table */}
-          <Card className="lg:col-span-2 border-border/60 shadow-soft">
-            <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Warehouse className="h-4 w-4 text-primary" /> 库存清单
-              </CardTitle>
-              <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs">
-                <Filter className="h-3 w-3" /> 筛选
+          <Card className="lg:col-span-2 border-border bg-card shadow-card overflow-hidden">
+            <div className="flex items-center justify-between p-6 pb-4">
+              <div className="flex items-center gap-2">
+                <Warehouse className="h-4 w-4 text-primary" strokeWidth={1.75} />
+                <h3 className="text-card-title text-foreground">库存清单</h3>
+              </div>
+              <Button variant="ghost" size="sm" className="h-8 gap-1 text-body-sm font-normal text-text-tertiary">
+                <Filter className="h-3.5 w-3.5" />
               </Button>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-12 gap-3 px-6 py-2 text-[11px] font-medium text-muted-foreground uppercase tracking-wider border-y border-border/60 bg-muted/20">
-                <div className="col-span-4">物资</div>
-                <div className="col-span-2">库存</div>
-                <div className="col-span-2">库位</div>
-                <div className="col-span-2">效期</div>
-                <div className="col-span-2 text-right">状态</div>
-              </div>
-              <div className="max-h-[520px] overflow-y-auto">
-                {inventory.map((item) => (
-                  <div
-                    key={item.sku}
-                    className="grid grid-cols-12 gap-3 px-6 py-3.5 items-center text-sm border-b border-border/40 last:border-0 hover:bg-muted/30 transition-colors"
-                  >
-                    <div className="col-span-4">
-                      <div className="font-medium">{item.name}</div>
-                      <div className="text-[11px] text-muted-foreground font-mono">{item.sku} · {item.cat}</div>
-                    </div>
-                    <div className="col-span-2">
-                      <div className="flex items-baseline gap-1">
-                        <span className={`font-semibold tabular-nums ${item.alert ? "text-destructive" : ""}`}>
-                          {item.stock}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">/ {item.min} {item.unit}</span>
-                      </div>
-                      <div className="h-1 bg-muted rounded-full overflow-hidden mt-1">
-                        <div
-                          className={item.stock < item.min ? "h-full bg-destructive" : "h-full bg-success"}
-                          style={{ width: `${Math.min(100, (item.stock / item.min) * 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-span-2 font-mono text-xs text-muted-foreground">{item.loc}</div>
-                    <div className="col-span-2 text-xs text-muted-foreground tabular-nums">{item.expiry}</div>
-                    <div className="col-span-2 flex justify-end">
-                      <Badge
-                        variant="outline"
-                        className={`text-[10px] h-5 ${
-                          item.status === "正常" ? "border-success/30 text-success bg-success/5" :
-                          item.status === "近效期" ? "border-warning/40 text-warning-foreground bg-warning/10" :
-                          "border-destructive/30 text-destructive bg-destructive/5"
-                        }`}
-                      >
-                        {item.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Recent ops */}
-          <Card className="border-border/60 shadow-soft">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <RefreshCw className="h-4 w-4 text-primary" /> 最近操作
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1">
-              {recentOps.map((op, i) => (
-                <div key={i} className="flex items-center gap-3 py-2.5 border-b border-border/40 last:border-0">
-                  <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
-                    op.tone === "success" ? "bg-success/10 text-success" :
-                    op.tone === "ai" ? "bg-ai/10 text-ai" :
-                    op.tone === "primary" ? "bg-primary/10 text-primary" :
-                    "bg-destructive/10 text-destructive"
-                  }`}>
-                    <op.icon className="h-3.5 w-3.5" />
+            <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-y border-border bg-surface-subtle">
+              <div className="col-span-4">物资</div>
+              <div className="col-span-2">库存</div>
+              <div className="col-span-2">库位</div>
+              <div className="col-span-2">效期</div>
+              <div className="col-span-2 text-right">状态</div>
+            </div>
+            <div className="max-h-[520px] overflow-y-auto">
+              {inventory.map((item) => (
+                <div
+                  key={item.sku}
+                  className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors"
+                >
+                  <div className="col-span-4 leading-tight">
+                    <div className="text-body text-foreground">{item.name}</div>
+                    <div className="text-caption text-text-tertiary font-mono">{item.sku} · {item.cat}</div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-medium">{op.type}</span>
-                      <span className="text-[10px] text-muted-foreground">· {op.who}</span>
+                  <div className="col-span-2">
+                    <div className="flex items-baseline gap-1">
+                      <span className={`text-body font-medium tabular-nums ${item.stock < item.min ? "text-[var(--state-danger)]" : "text-foreground"}`}>
+                        {item.stock}
+                      </span>
+                      <span className="text-caption text-text-tertiary">/ {item.min} {item.unit}</span>
                     </div>
-                    <div className="text-[11px] text-muted-foreground truncate">{op.item}</div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xs font-mono tabular-nums">{op.qty}</div>
-                    <div className="text-[10px] text-muted-foreground">{op.time}</div>
+                  <div className="col-span-2 font-mono text-body-sm text-text-tertiary">{item.loc}</div>
+                  <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{item.expiry}</div>
+                  <div className="col-span-2 flex justify-end">
+                    <Badge className={`h-6 px-2 text-caption font-normal border-0 rounded ${statusBadge(item.status)}`}>
+                      {item.status}
+                    </Badge>
                   </div>
                 </div>
               ))}
-            </CardContent>
+            </div>
+          </Card>
+
+          {/* Recent ops */}
+          <Card className="border-border bg-card shadow-card">
+            <div className="p-6 pb-4 flex items-center gap-2">
+              <RefreshCw className="h-4 w-4 text-primary" strokeWidth={1.75} />
+              <h3 className="text-card-title text-foreground">最近操作</h3>
+            </div>
+            <div className="px-6 pb-6 divide-y divide-border">
+              {recentOps.map((op, i) => (
+                <div key={i} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                  <div className={`h-8 w-8 rounded-md flex items-center justify-center ${
+                    op.tone === "success" ? "bg-[var(--state-success)]/15 text-[var(--core-brand)]" :
+                    op.tone === "ai" ? "bg-[var(--effect-ai-purple)]/10 text-[var(--effect-ai-purple)]" :
+                    op.tone === "danger" ? "bg-[var(--state-danger)]/10 text-[var(--state-danger)]" :
+                    "bg-brand-subtle text-primary"
+                  }`}>
+                    <op.icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  </div>
+                  <div className="flex-1 min-w-0 leading-tight">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-body-sm text-foreground font-medium">{op.type}</span>
+                      <span className="text-caption text-text-tertiary">· {op.who}</span>
+                    </div>
+                    <div className="text-caption text-text-tertiary truncate">{op.item}</div>
+                  </div>
+                  <div className="text-right leading-tight">
+                    <div className="text-body-sm font-mono tabular-nums text-foreground">{op.qty}</div>
+                    <div className="text-caption text-text-tertiary">{op.time}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </Card>
         </div>
       </main>
