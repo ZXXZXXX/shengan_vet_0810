@@ -16,6 +16,7 @@ import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductionIndexRouteImport } from './routes/production.index'
 import { Route as OrganizationIndexRouteImport } from './routes/organization.index'
+import { Route as ProductionHealthRouteImport } from './routes/production.health'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as OrganizationPeopleRouteImport } from './routes/organization.people'
@@ -55,6 +56,11 @@ const OrganizationIndexRoute = OrganizationIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrganizationRoute,
 } as any)
+const ProductionHealthRoute = ProductionHealthRouteImport.update({
+  id: '/health',
+  path: '/health',
+  getParentRoute: () => ProductionRoute,
+} as any)
 const OrganizationTeamRoute = OrganizationTeamRouteImport.update({
   id: '/team',
   path: '/team',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
+  '/production/health': typeof ProductionHealthRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
 }
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
+  '/production/health': typeof ProductionHealthRoute
   '/organization': typeof OrganizationIndexRoute
   '/production': typeof ProductionIndexRoute
 }
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
+  '/production/health': typeof ProductionHealthRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
 }
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/organization/people'
     | '/organization/role'
     | '/organization/team'
+    | '/production/health'
     | '/organization/'
     | '/production/'
   fileRoutesByTo: FileRoutesByTo
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/organization/people'
     | '/organization/role'
     | '/organization/team'
+    | '/production/health'
     | '/organization'
     | '/production'
   id:
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/organization/people'
     | '/organization/role'
     | '/organization/team'
+    | '/production/health'
     | '/organization/'
     | '/production/'
   fileRoutesById: FileRoutesById
@@ -202,6 +214,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationIndexRouteImport
       parentRoute: typeof OrganizationRoute
     }
+    '/production/health': {
+      id: '/production/health'
+      path: '/health'
+      fullPath: '/production/health'
+      preLoaderRoute: typeof ProductionHealthRouteImport
+      parentRoute: typeof ProductionRoute
+    }
     '/organization/team': {
       id: '/organization/team'
       path: '/team'
@@ -245,10 +264,12 @@ const OrganizationRouteWithChildren = OrganizationRoute._addFileChildren(
 )
 
 interface ProductionRouteChildren {
+  ProductionHealthRoute: typeof ProductionHealthRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
 }
 
 const ProductionRouteChildren: ProductionRouteChildren = {
+  ProductionHealthRoute: ProductionHealthRoute,
   ProductionIndexRoute: ProductionIndexRoute,
 }
 
