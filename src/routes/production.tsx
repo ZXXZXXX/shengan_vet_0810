@@ -47,9 +47,9 @@ const lifecycle = [
 ];
 
 const stageTones = [
-  "bg-[var(--effect-ai-cyan)]",
+  "bg-[#A8D5A9]",
   "bg-[var(--state-success)]",
-  "bg-[var(--effect-ai-purple)]",
+  "bg-[#5B8C5C]",
   "bg-primary",
   "bg-[var(--state-warning)]",
 ];
