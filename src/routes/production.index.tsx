@@ -51,7 +51,7 @@ function healthBar(h: number) {
 function ObjectListPage() {
   return (
     <>
-      <AppHeader title="对象档案" breadcrumb={["首页", "生产对象", "对象档案"]} />
+      <AppHeader title="对象档案" breadcrumb={["生产对象", "对象档案"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">

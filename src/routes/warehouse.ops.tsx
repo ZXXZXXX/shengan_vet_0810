@@ -26,7 +26,7 @@ function tagFor(type: string) {
 function OpsPage() {
   return (
     <>
-      <AppHeader title="出入库" breadcrumb={["首页", "仓库管理", "出入库"]} />
+      <AppHeader title="出入库" breadcrumb={["仓库管理", "出入库"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-end gap-2">
           <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">

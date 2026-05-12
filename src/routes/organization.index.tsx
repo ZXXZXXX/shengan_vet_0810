@@ -42,7 +42,7 @@ const rows: OrgRow[] = [
 function OrgStructurePage() {
   return (
     <>
-      <AppHeader title="组织架构" breadcrumb={["首页", "组织与人员", "组织架构"]} />
+      <AppHeader title="组织架构" breadcrumb={["组织与人员", "组织架构"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
