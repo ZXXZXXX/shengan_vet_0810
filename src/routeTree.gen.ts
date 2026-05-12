@@ -29,6 +29,11 @@ import { Route as OrganizationTeamRouteImport } from './routes/organization.team
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLoginRouteImport } from './routes/m.login'
+import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
+import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
+import { Route as MHealthReportRouteImport } from './routes/m.health.report'
+import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
+import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
 
 const WarehouseRoute = WarehouseRouteImport.update({
   id: '/warehouse',
@@ -130,6 +135,31 @@ const MLoginRoute = MLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => MRoute,
 } as any)
+const MHealthIndexRoute = MHealthIndexRouteImport.update({
+  id: '/health/',
+  path: '/health/',
+  getParentRoute: () => MRoute,
+} as any)
+const MAnimalsIndexRoute = MAnimalsIndexRouteImport.update({
+  id: '/animals/',
+  path: '/animals/',
+  getParentRoute: () => MRoute,
+} as any)
+const MHealthReportRoute = MHealthReportRouteImport.update({
+  id: '/health/report',
+  path: '/health/report',
+  getParentRoute: () => MRoute,
+} as any)
+const MHealthIdRoute = MHealthIdRouteImport.update({
+  id: '/health/$id',
+  path: '/health/$id',
+  getParentRoute: () => MRoute,
+} as any)
+const MAnimalsIdRoute = MAnimalsIdRouteImport.update({
+  id: '/animals/$id',
+  path: '/animals/$id',
+  getParentRoute: () => MRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -152,6 +182,11 @@ export interface FileRoutesByFullPath {
   '/production/': typeof ProductionIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
+  '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/health/$id': typeof MHealthIdRoute
+  '/m/health/report': typeof MHealthReportRoute
+  '/m/animals/': typeof MAnimalsIndexRoute
+  '/m/health/': typeof MHealthIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -169,6 +204,11 @@ export interface FileRoutesByTo {
   '/production': typeof ProductionIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/warehouse': typeof WarehouseIndexRoute
+  '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/health/$id': typeof MHealthIdRoute
+  '/m/health/report': typeof MHealthReportRoute
+  '/m/animals': typeof MAnimalsIndexRoute
+  '/m/health': typeof MHealthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -192,6 +232,11 @@ export interface FileRoutesById {
   '/production/': typeof ProductionIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
+  '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/health/$id': typeof MHealthIdRoute
+  '/m/health/report': typeof MHealthReportRoute
+  '/m/animals/': typeof MAnimalsIndexRoute
+  '/m/health/': typeof MHealthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -216,6 +261,11 @@ export interface FileRouteTypes {
     | '/production/'
     | '/settings/'
     | '/warehouse/'
+    | '/m/animals/$id'
+    | '/m/health/$id'
+    | '/m/health/report'
+    | '/m/animals/'
+    | '/m/health/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -233,6 +283,11 @@ export interface FileRouteTypes {
     | '/production'
     | '/settings'
     | '/warehouse'
+    | '/m/animals/$id'
+    | '/m/health/$id'
+    | '/m/health/report'
+    | '/m/animals'
+    | '/m/health'
   id:
     | '__root__'
     | '/'
@@ -255,6 +310,11 @@ export interface FileRouteTypes {
     | '/production/'
     | '/settings/'
     | '/warehouse/'
+    | '/m/animals/$id'
+    | '/m/health/$id'
+    | '/m/health/report'
+    | '/m/animals/'
+    | '/m/health/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -409,6 +469,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MLoginRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/health/': {
+      id: '/m/health/'
+      path: '/health'
+      fullPath: '/m/health/'
+      preLoaderRoute: typeof MHealthIndexRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/animals/': {
+      id: '/m/animals/'
+      path: '/animals'
+      fullPath: '/m/animals/'
+      preLoaderRoute: typeof MAnimalsIndexRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/health/report': {
+      id: '/m/health/report'
+      path: '/health/report'
+      fullPath: '/m/health/report'
+      preLoaderRoute: typeof MHealthReportRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/health/$id': {
+      id: '/m/health/$id'
+      path: '/health/$id'
+      fullPath: '/m/health/$id'
+      preLoaderRoute: typeof MHealthIdRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/animals/$id': {
+      id: '/m/animals/$id'
+      path: '/animals/$id'
+      fullPath: '/m/animals/$id'
+      preLoaderRoute: typeof MAnimalsIdRouteImport
+      parentRoute: typeof MRoute
+    }
   }
 }
 
@@ -416,12 +511,22 @@ interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MMeRoute: typeof MMeRoute
   MIndexRoute: typeof MIndexRoute
+  MAnimalsIdRoute: typeof MAnimalsIdRoute
+  MHealthIdRoute: typeof MHealthIdRoute
+  MHealthReportRoute: typeof MHealthReportRoute
+  MAnimalsIndexRoute: typeof MAnimalsIndexRoute
+  MHealthIndexRoute: typeof MHealthIndexRoute
 }
 
 const MRouteChildren: MRouteChildren = {
   MLoginRoute: MLoginRoute,
   MMeRoute: MMeRoute,
   MIndexRoute: MIndexRoute,
+  MAnimalsIdRoute: MAnimalsIdRoute,
+  MHealthIdRoute: MHealthIdRoute,
+  MHealthReportRoute: MHealthReportRoute,
+  MAnimalsIndexRoute: MAnimalsIndexRoute,
+  MHealthIndexRoute: MHealthIndexRoute,
 }
 
 const MRouteWithChildren = MRoute._addFileChildren(MRouteChildren)
