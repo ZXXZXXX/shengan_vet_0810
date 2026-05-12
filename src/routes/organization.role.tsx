@@ -31,7 +31,7 @@ function RolePage() {
             <Card key={r.name} className="border-border bg-card p-6 hover:border-primary/40 transition-all">
               <div className="flex items-start justify-between mb-3">
                 <div className="h-9 w-9 rounded-md bg-brand-subtle flex items-center justify-center">
-                  <Shield className="h-4 w-4 text-primary" strokeWidth={1.75} />
+                  <r.icon className="h-4 w-4 text-primary" strokeWidth={1.75} />
                 </div>
                 <span className="tag tag-outline">{r.count} 人</span>
               </div>
