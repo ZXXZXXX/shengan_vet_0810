@@ -5,6 +5,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   ClipboardList,
   PlayCircle,
   AlertTriangle,
@@ -12,7 +19,8 @@ import {
   Plus,
   Search,
   Filter,
-  ChevronRight,
+  Check,
+  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/production/health")({
