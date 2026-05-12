@@ -178,16 +178,23 @@ export function AppSidebar() {
 
                     {hasChildren && !collapsed && open && (
                       <ul className="mt-0.5 mb-1 ml-[26px] border-l border-border pl-2 space-y-0.5">
-                        {item.children!.map((c) => (
-                          <li key={c.title}>
-                            <Link
-                              to={item.url}
-                              className="flex items-center h-8 px-2.5 rounded-md text-body-sm text-text-secondary hover:bg-[var(--sidebar-hover)] hover:text-foreground transition-colors"
-                            >
-                              {c.title}
-                            </Link>
-                          </li>
-                        ))}
+                        {item.children!.map((c) => {
+                          const childActive = currentPath === c.url;
+                          return (
+                            <li key={c.title}>
+                              <Link
+                                to={c.url}
+                                className={`flex items-center h-8 px-2.5 rounded-md text-body-sm transition-colors ${
+                                  childActive
+                                    ? "bg-brand-subtle text-primary font-medium"
+                                    : "text-text-secondary hover:bg-[var(--sidebar-hover)] hover:text-foreground"
+                                }`}
+                              >
+                                {c.title}
+                              </Link>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </SidebarMenuItem>
