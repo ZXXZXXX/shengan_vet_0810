@@ -7,15 +7,12 @@ import {
   Warehouse,
   Settings,
   PanelLeft,
-  LogOut,
-  User,
   ChevronRight,
 } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -204,24 +201,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter className="border-t border-border bg-card p-2">
-        {collapsed ? (
-          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-md bg-surface-subtle">
-            <User className="h-4 w-4 text-text-secondary" />
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 px-2 py-1.5">
-            <div className="h-7 w-7 rounded-md bg-surface-subtle flex items-center justify-center">
-              <User className="h-3.5 w-3.5 text-text-secondary" />
-            </div>
-            <span className="text-body-sm text-foreground flex-1">管理员</span>
-            <button className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary hover:bg-surface-subtle hover:text-foreground transition-colors">
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        )}
-      </SidebarFooter>
     </Sidebar>
   );
 }
