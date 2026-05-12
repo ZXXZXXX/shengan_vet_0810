@@ -15,6 +15,7 @@ import { Route as ProductionRouteImport } from './routes/production'
 import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WarehouseIndexRouteImport } from './routes/warehouse.index'
+import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as ProductionIndexRouteImport } from './routes/production.index'
 import { Route as OrganizationIndexRouteImport } from './routes/organization.index'
 import { Route as WarehouseTransferRouteImport } from './routes/warehouse.transfer'
@@ -53,6 +54,11 @@ const WarehouseIndexRoute = WarehouseIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => WarehouseRoute,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
 } as any)
 const ProductionIndexRoute = ProductionIndexRouteImport.update({
   id: '/',
@@ -99,7 +105,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/organization': typeof OrganizationRouteWithChildren
   '/production': typeof ProductionRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -109,11 +115,11 @@ export interface FileRoutesByFullPath {
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/settings': typeof SettingsRoute
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
@@ -122,6 +128,7 @@ export interface FileRoutesByTo {
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/organization': typeof OrganizationIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/warehouse': typeof WarehouseIndexRoute
 }
 export interface FileRoutesById {
@@ -129,7 +136,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/organization': typeof OrganizationRouteWithChildren
   '/production': typeof ProductionRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
   '/organization/people': typeof OrganizationPeopleRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -139,6 +146,7 @@ export interface FileRoutesById {
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/organization/': typeof OrganizationIndexRoute
   '/production/': typeof ProductionIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
 }
 export interface FileRouteTypes {
@@ -157,11 +165,11 @@ export interface FileRouteTypes {
     | '/warehouse/transfer'
     | '/organization/'
     | '/production/'
+    | '/settings/'
     | '/warehouse/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/settings'
     | '/organization/people'
     | '/organization/role'
     | '/organization/team'
@@ -170,6 +178,7 @@ export interface FileRouteTypes {
     | '/warehouse/transfer'
     | '/organization'
     | '/production'
+    | '/settings'
     | '/warehouse'
   id:
     | '__root__'
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/warehouse/transfer'
     | '/organization/'
     | '/production/'
+    | '/settings/'
     | '/warehouse/'
   fileRoutesById: FileRoutesById
 }
@@ -193,7 +203,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OrganizationRoute: typeof OrganizationRouteWithChildren
   ProductionRoute: typeof ProductionRouteWithChildren
-  SettingsRoute: typeof SettingsRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   WarehouseRoute: typeof WarehouseRouteWithChildren
 }
 
@@ -240,6 +250,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/warehouse/'
       preLoaderRoute: typeof WarehouseIndexRouteImport
       parentRoute: typeof WarehouseRoute
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
     }
     '/production/': {
       id: '/production/'
@@ -332,6 +349,18 @@ const ProductionRouteWithChildren = ProductionRoute._addFileChildren(
   ProductionRouteChildren,
 )
 
+interface SettingsRouteChildren {
+  SettingsIndexRoute: typeof SettingsIndexRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsIndexRoute: SettingsIndexRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 interface WarehouseRouteChildren {
   WarehouseOpsRoute: typeof WarehouseOpsRoute
   WarehouseTransferRoute: typeof WarehouseTransferRoute
@@ -352,9 +381,19 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OrganizationRoute: OrganizationRouteWithChildren,
   ProductionRoute: ProductionRouteWithChildren,
-  SettingsRoute: SettingsRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   WarehouseRoute: WarehouseRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
