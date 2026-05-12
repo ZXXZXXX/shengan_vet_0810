@@ -11,7 +11,7 @@ import {
   Plus,
   AlertCircle,
   ChevronRight,
-  Star,
+  
   Home,
 } from "lucide-react";
 
