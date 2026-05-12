@@ -5,6 +5,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   ClipboardList,
   PlayCircle,
   AlertTriangle,
@@ -12,7 +19,8 @@ import {
   Plus,
   Search,
   Filter,
-  ChevronRight,
+  Check,
+  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/production/health")({
@@ -31,17 +39,19 @@ type WorkOrder = {
   due: string;
   level: "高" | "中" | "低";
   status: WorkStatus;
+  desc: string;
+  createdAt: string;
 };
 
 const orders: WorkOrder[] = [
-  { id: "WO-2381", target: "#A2381", type: "疾病治疗", who: "李雨晴", due: "今日 14:00", level: "高", status: "待审核" },
-  { id: "WO-2298", target: "#A2298", type: "疾病治疗", who: "李雨晴", due: "今日 16:30", level: "高", status: "待执行" },
-  { id: "WO-2401", target: "犊牛舍 A", type: "免疫", who: "周凯", due: "明日", level: "中", status: "待执行" },
-  { id: "WO-2324", target: "#A2324", type: "普修", who: "王建国", due: "今日", level: "中", status: "异常再报" },
-  { id: "WO-2150", target: "#A2150", type: "修蹄", who: "孙明", due: "昨日", level: "中", status: "已完结" },
-  { id: "WO-2120", target: "#A2120", type: "干奶", who: "李雨晴", due: "前日", level: "低", status: "已完结" },
-  { id: "WO-2099", target: "1 号牛舍", type: "驱虫", who: "周凯", due: "今日", level: "中", status: "待审核" },
-  { id: "WO-2078", target: "#A2078", type: "免疫", who: "李雨晴", due: "今日", level: "高", status: "异常再报" },
+  { id: "WO-2381", target: "#A2381", type: "疾病治疗", who: "李雨晴", due: "今日 14:00", level: "高", status: "待审核", desc: "3 号牛舍 #A2381 持续高烧 2 小时，需进行抗生素治疗与隔离观察。", createdAt: "2026-05-12 09:08" },
+  { id: "WO-2298", target: "#A2298", type: "疾病治疗", who: "李雨晴", due: "今日 16:30", level: "高", status: "待执行", desc: "1 号牛舍 #A2298 乳房炎复诊，按治疗方案完成第二轮处置。", createdAt: "2026-05-11 14:20" },
+  { id: "WO-2401", target: "犊牛舍 A", type: "免疫", who: "周凯", due: "明日", level: "中", status: "待执行", desc: "犊牛舍 A 5 月口蹄疫加强免疫，覆盖 84 头犊牛。", createdAt: "2026-05-11 10:00" },
+  { id: "WO-2324", target: "#A2324", type: "普修", who: "王建国", due: "今日", level: "中", status: "异常再报", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。", createdAt: "2026-05-10 18:42" },
+  { id: "WO-2150", target: "#A2150", type: "修蹄", who: "孙明", due: "昨日", level: "中", status: "已完结", desc: "1 号牛舍批次修蹄已完成，无异常反馈。", createdAt: "2026-05-09 09:30" },
+  { id: "WO-2120", target: "#A2120", type: "干奶", who: "李雨晴", due: "前日", level: "低", status: "已完结", desc: "干奶处置完成，进入干奶舍管理。", createdAt: "2026-05-08 11:15" },
+  { id: "WO-2099", target: "1 号牛舍", type: "驱虫", who: "周凯", due: "今日", level: "中", status: "待审核", desc: "1 号牛舍季度体内驱虫批次，需调拨广谱驱虫药 15 盒。", createdAt: "2026-05-12 08:20" },
+  { id: "WO-2078", target: "#A2078", type: "免疫", who: "李雨晴", due: "今日", level: "高", status: "异常再报", desc: "#A2078 免疫后体温异常升高，需复查并评估处置方案。", createdAt: "2026-05-11 16:55" },
 ];
 
 const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
@@ -60,6 +70,7 @@ const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
 
 function HealthPage() {
   const [active, setActive] = useState<WorkStatus>("待审核");
+  const [detail, setDetail] = useState<WorkOrder | null>(null);
   const counts = Object.fromEntries(statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length])) as Record<WorkStatus, number>;
   const filtered = orders.filter((o) => o.status === active);
 
@@ -139,8 +150,13 @@ function HealthPage() {
                   </span>
                 </div>
                 <div className="col-span-1 flex items-center justify-end">
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary gap-0.5">
-                    详情 <ChevronRight className="h-3.5 w-3.5" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+                    onClick={() => setDetail(t)}
+                  >
+                    查看
                   </Button>
                 </div>
               </div>
@@ -148,6 +164,61 @@ function HealthPage() {
           )}
         </Card>
       </main>
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">工单详情</DialogTitle>
+          </DialogHeader>
+          {detail && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-body-sm text-foreground">{detail.id}</span>
+                <span className={toneStyles[statusList.find((s) => s.key === detail.status)!.tone].tag}>
+                  {detail.status}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
+                <Field label="工单类型" value={detail.type} />
+                <Field
+                  label="优先级"
+                  value={detail.level === "高" ? "高优先" : detail.level === "中" ? "中优先" : "低优先"}
+                />
+                <Field label="处理对象" value={detail.target} />
+                <Field label="负责人" value={detail.who} />
+                <Field label="创建时间" value={detail.createdAt} />
+                <Field label="截止时间" value={detail.due} />
+              </div>
+
+              <div className="rounded-md border border-border p-4">
+                <div className="text-caption text-text-tertiary mb-1.5">工单说明</div>
+                <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc}</p>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="gap-1.5" onClick={() => setDetail(null)}>
+              <X className="h-3.5 w-3.5" /> 不通过
+            </Button>
+            <Button
+              className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => setDetail(null)}
+            >
+              <Check className="h-3.5 w-3.5" /> 通过
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="leading-tight">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="text-body-sm text-foreground mt-0.5">{value}</div>
+    </div>
   );
 }

@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Search, Plus, ArrowRight, ClipboardList, Eye, Check, X } from "lucide-react";
+import { Search, Plus, ArrowRight, ClipboardList, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/transfer")({
   head: () => ({ meta: [{ title: "调拨申请 — 奇点智牧" }] }),
@@ -133,7 +133,7 @@ function TransferPage() {
                   className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
                   onClick={() => setDetail(r)}
                 >
-                  <Eye className="h-3.5 w-3.5 mr-1" /> 详情
+                  查看
                 </Button>
               </div>
             </div>

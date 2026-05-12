@@ -11,7 +11,7 @@ import {
   Plus,
   AlertCircle,
   ChevronRight,
-  Star,
+  
   Home,
 } from "lucide-react";
 
@@ -65,33 +65,22 @@ function statusTag(s: string) {
   return "tag tag-danger";
 }
 
-function HealthStars({ score }: { score: number }) {
-  const rounded = Math.round(score * 2) / 2;
+function HealthBars({ score }: { score: number }) {
+  const rounded = Math.round(score);
+  const tone =
+    rounded >= 4
+      ? "bg-[var(--state-success)]"
+      : rounded >= 3
+      ? "bg-[var(--state-warning)]"
+      : "bg-[var(--state-danger)]";
   return (
-    <div className="flex items-center gap-1.5">
-      <div className="flex items-center">
-        {[1, 2, 3, 4, 5].map((i) => {
-          const filled = i <= Math.floor(rounded);
-          const half = !filled && i - 0.5 <= rounded;
-          return (
-            <span key={i} className="relative inline-flex">
-              <Star className="h-3.5 w-3.5 text-border" strokeWidth={1.5} />
-              {(filled || half) && (
-                <span
-                  className="absolute inset-0 overflow-hidden"
-                  style={{ width: filled ? "100%" : "50%" }}
-                >
-                  <Star
-                    className="h-3.5 w-3.5 text-[var(--state-warning)] fill-[var(--state-warning)]"
-                    strokeWidth={1.5}
-                  />
-                </span>
-              )}
-            </span>
-          );
-        })}
-      </div>
-      <span className="text-body-sm tabular-nums text-foreground">{score.toFixed(1)}</span>
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span
+          key={i}
+          className={`h-1 w-4 rounded-full ${i <= rounded ? tone : "bg-border"}`}
+        />
+      ))}
     </div>
   );
 }
@@ -218,7 +207,7 @@ function ObjectListPage() {
                     )}
                   </div>
                   <div className="col-span-3">
-                    <HealthStars score={a.health} />
+                    <HealthBars score={a.health} />
                   </div>
                   <div className="col-span-1 flex items-center justify-end">
                     <Button
