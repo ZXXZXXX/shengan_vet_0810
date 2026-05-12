@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Search, Plus, ArrowRight, ClipboardList, Eye, Check, X } from "lucide-react";
+import { Search, Plus, ArrowRight, ClipboardList, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/transfer")({
   head: () => ({ meta: [{ title: "调拨申请 — 奇点智牧" }] }),
