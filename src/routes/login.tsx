@@ -191,14 +191,9 @@ function LoginPage() {
             <span className="h-px flex-1 bg-border" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Button type="button" variant="outline" className="h-10 text-body-sm">
-              企业微信
-            </Button>
-            <Button type="button" variant="outline" className="h-10 text-body-sm">
-              钉钉扫码
-            </Button>
-          </div>
+          <Button type="button" variant="outline" className="w-full h-10 text-body-sm">
+            企业微信扫码登录
+          </Button>
 
           <p className="text-caption text-text-tertiary text-center">
             登录即代表已阅读并同意
