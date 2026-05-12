@@ -174,9 +174,7 @@ function ProductionPage() {
                       <div className="text-caption text-text-tertiary">{a.breed} · {a.age}</div>
                     </div>
                   </div>
-                  <Badge className={`h-6 px-2 text-caption font-normal border-0 rounded ${statusBadge(a.status)}`}>
-                    {a.status}
-                  </Badge>
+                  <span className={statusTag(a.status)}>{a.status}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
