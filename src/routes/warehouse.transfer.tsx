@@ -11,6 +11,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Search, Plus, ArrowRight, ClipboardList, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/transfer")({
@@ -51,6 +61,7 @@ const statusTag: Record<Status, string> = {
 function TransferPage() {
   const [tab, setTab] = useState<Status | "全部">("全部");
   const [detail, setDetail] = useState<Req | null>(null);
+  const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
 
   const counts: Record<Status | "全部", number> = {
     "全部": requests.length,
@@ -178,19 +189,49 @@ function TransferPage() {
             <Button
               variant="outline"
               className="gap-1.5"
-              onClick={() => setDetail(null)}
+              onClick={() => setConfirm("reject")}
             >
               <X className="h-3.5 w-3.5" /> 不通过
             </Button>
             <Button
               className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-              onClick={() => setDetail(null)}
+              onClick={() => setConfirm("approve")}
             >
               <Check className="h-3.5 w-3.5" /> 通过
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              确认{confirm === "approve" ? "通过" : "驳回"}该调拨申请？
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {detail ? `调拨单 ${detail.id} · ${detail.item} · ${detail.qty}` : ""}
+              ，操作后状态将更新，无法撤销。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                confirm === "approve"
+                  ? "bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                  : "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+              }
+              onClick={() => {
+                setConfirm(null);
+                setDetail(null);
+              }}
+            >
+              确认{confirm === "approve" ? "通过" : "驳回"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
