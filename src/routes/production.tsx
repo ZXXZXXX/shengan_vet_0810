@@ -10,7 +10,6 @@ import {
   Search,
   Filter,
   Plus,
-  Sparkles,
   Heart,
   Calendar,
   MapPin,
