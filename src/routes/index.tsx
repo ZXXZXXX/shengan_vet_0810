@@ -155,12 +155,12 @@ function HomePage() {
               </div>
               <h2 className="text-section-title text-foreground">早上好，场长张磊</h2>
               <p className="text-body-sm text-text-secondary mt-1">
-                今日整体运行稳定，3 项异常需关注，请及时处理告警与待办
+                今日整体运行稳定，4 项申请待审批，请及时处理待办与申请
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" className="h-9 text-body-sm font-normal">
-                查看告警
+                待处理申请
               </Button>
               <Button className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
                 今日待办 <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
