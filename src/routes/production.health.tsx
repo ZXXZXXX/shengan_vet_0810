@@ -150,8 +150,13 @@ function HealthPage() {
                   </span>
                 </div>
                 <div className="col-span-1 flex items-center justify-end">
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary gap-0.5">
-                    详情 <ChevronRight className="h-3.5 w-3.5" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+                    onClick={() => setDetail(t)}
+                  >
+                    查看
                   </Button>
                 </div>
               </div>
