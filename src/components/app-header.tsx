@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Bell, Search, Building2, Users, Briefcase, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+
 import {
   Popover,
   PopoverContent,
