@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield } from "lucide-react";
+import { Plus, ShieldCheck, Briefcase, Stethoscope, HeartPulse } from "lucide-react";
 
 export const Route = createFileRoute("/organization/role")({
   head: () => ({ meta: [{ title: "角色权限 — 奇点智牧" }] }),
@@ -10,11 +10,10 @@ export const Route = createFileRoute("/organization/role")({
 });
 
 const roles = [
-  { name: "超级管理员", count: 2, scope: "全平台", perms: 128 },
-  { name: "场长", count: 3, scope: "本牧场全部", perms: 86 },
-  { name: "兽医", count: 8, scope: "健康相关数据", perms: 42 },
-  { name: "饲养员", count: 24, scope: "本班组", perms: 18 },
-  { name: "审计只读", count: 4, scope: "全平台只读", perms: 36 },
+  { name: "超级管理员", count: 2, scope: "全平台", perms: 8, icon: ShieldCheck },
+  { name: "场长", count: 3, scope: "本牧场全部", perms: 7, icon: Briefcase },
+  { name: "兽医", count: 8, scope: "健康相关数据", perms: 5, icon: Stethoscope },
+  { name: "兽医助理", count: 6, scope: "健康执行 / 录入", perms: 3, icon: HeartPulse },
 ];
 
 function RolePage() {
