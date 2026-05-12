@@ -85,9 +85,7 @@ function ProductionPage() {
                 <span className="text-body-sm text-text-tertiary">头</span>
               </div>
             </div>
-            <Badge className="bg-[var(--effect-ai-purple)]/10 text-[var(--effect-ai-purple)] border-0 gap-1.5 font-normal">
-              <Sparkles className="h-3 w-3" /> AI 谱系优化建议 3 条
-            </Badge>
+            <span className="tag tag-muted">共 5 阶段</span>
           </div>
           <div className="flex h-2.5 rounded-full overflow-hidden bg-surface-subtle">
             {lifecycle.map((l, i) => (
