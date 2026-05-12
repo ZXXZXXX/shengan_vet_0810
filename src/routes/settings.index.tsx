@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { ClipboardList, ChevronRight, Plus, Layers } from "lucide-react";
 
 export const Route = createFileRoute("/settings/")({
@@ -9,12 +11,19 @@ export const Route = createFileRoute("/settings/")({
   component: WorkOrderPage,
 });
 
-const types = [
+const initialTypes = [
   "疾病疑似工单", "免疫接种工单", "防疫消杀工单", "治疗执行工单",
   "复查确认工单", "饲料配送工单", "设备保养工单", "盘点工单",
 ];
 
 function WorkOrderPage() {
+  const [types, setTypes] = useState(
+    initialTypes.map((name, i) => ({ name, enabled: i !== 6 }))
+  );
+
+  const toggle = (name: string) =>
+    setTypes((prev) => prev.map((t) => (t.name === name ? { ...t, enabled: !t.enabled } : t)));
+
   return (
     <>
       <AppHeader title="工单配置" breadcrumb={["配置中心", "工单配置"]} />
@@ -32,15 +41,24 @@ function WorkOrderPage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {types.map((t) => (
-            <Card key={t} className="border-border bg-card p-6 hover:border-primary/40 transition-colors cursor-pointer group">
+            <Card key={t.name} className="border-border bg-card p-6 hover:border-primary/40 transition-colors group">
               <div className="flex items-center justify-between mb-3">
                 <div className="h-9 w-9 rounded-md bg-brand-subtle flex items-center justify-center">
                   <ClipboardList className="h-4 w-4 text-primary" strokeWidth={1.75} />
                 </div>
-                <span className="tag tag-success">已启用</span>
+                <div className="flex items-center gap-2">
+                  <span className={`tag ${t.enabled ? "tag-success" : "tag-muted"}`}>
+                    {t.enabled ? "已启用" : "已停用"}
+                  </span>
+                  <Switch
+                    checked={t.enabled}
+                    onCheckedChange={() => toggle(t.name)}
+                    aria-label={`切换 ${t.name} 启用状态`}
+                  />
+                </div>
               </div>
-              <div className="text-card-title text-foreground">{t}</div>
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
+              <div className="text-card-title text-foreground">{t.name}</div>
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-border cursor-pointer">
                 <span className="text-caption text-text-tertiary">字段 · 流程</span>
                 <ChevronRight className="h-3.5 w-3.5 text-text-tertiary group-hover:text-primary" />
               </div>
