@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Sparkles, ChevronRight, LogOut, Leaf, ShieldCheck, Activity } from "lucide-react";
+import { Sparkles, ChevronRight, LogOut, ShieldCheck, Activity } from "lucide-react";
 import cattleImg from "@/assets/module-cattle.jpg";
 import sheepImg from "@/assets/module-sheep.jpg";
 import riceImg from "@/assets/module-rice.jpg";
+import parkImg from "@/assets/module-park.jpg";
 
 export const Route = createFileRoute("/workspace")({
   head: () => ({ meta: [{ title: "工作台 — 选择业务模块" }] }),
@@ -17,8 +18,7 @@ type Module = {
   image: string;
   to: string;
   enabled: boolean;
-  tone: "brand" | "info" | "warm";
-  overlay: string; // gradient overlay (top transparent → bottom solid tone)
+  toneVar: string; // CSS var for the tone color
   stats: { label: string; value: string }[];
 };
 
@@ -31,9 +31,7 @@ const modules: Module[] = [
     image: cattleImg,
     to: "/",
     enabled: true,
-    tone: "brand",
-    overlay:
-      "linear-gradient(180deg, color-mix(in oklab, var(--brand) 18%, transparent) 0%, color-mix(in oklab, var(--brand) 55%, transparent) 45%, color-mix(in oklab, var(--brand) 92%, transparent) 100%)",
+    toneVar: "var(--brand)",
     stats: [
       { label: "在管牧场", value: "6" },
       { label: "在栏头数", value: "12,486" },
@@ -48,9 +46,7 @@ const modules: Module[] = [
     image: sheepImg,
     to: "/workspace",
     enabled: false,
-    tone: "info",
-    overlay:
-      "linear-gradient(180deg, color-mix(in oklab, var(--effect-ai-cyan) 18%, transparent) 0%, color-mix(in oklab, var(--effect-ai-cyan) 55%, transparent) 45%, color-mix(in oklab, var(--effect-ai-cyan) 92%, transparent) 100%)",
+    toneVar: "var(--effect-ai-cyan)",
     stats: [
       { label: "在管牧场", value: "—" },
       { label: "在栏只数", value: "—" },
@@ -65,13 +61,26 @@ const modules: Module[] = [
     image: riceImg,
     to: "/workspace",
     enabled: false,
-    tone: "warm",
-    overlay:
-      "linear-gradient(180deg, color-mix(in oklab, var(--state-warning) 18%, transparent) 0%, color-mix(in oklab, var(--state-warning) 55%, transparent) 45%, color-mix(in oklab, var(--state-warning) 92%, transparent) 100%)",
+    toneVar: "var(--state-warning)",
     stats: [
       { label: "在管农场", value: "—" },
       { label: "在管面积", value: "—" },
       { label: "状态", value: "试运行" },
+    ],
+  },
+  {
+    key: "park",
+    title: "智慧园区",
+    subtitle: "Smart Park",
+    desc: "园区设施、能耗、安防与访客一体化管理",
+    image: parkImg,
+    to: "/workspace",
+    enabled: false,
+    toneVar: "var(--effect-ai-purple)",
+    stats: [
+      { label: "在管园区", value: "—" },
+      { label: "覆盖楼宇", value: "—" },
+      { label: "状态", value: "筹备中" },
     ],
   },
 ];
@@ -82,7 +91,6 @@ function WorkspacePage() {
   return (
     <div className="min-h-screen w-full bg-background relative overflow-hidden">
       {/* ============ 背景视觉层 ============ */}
-      {/* 网格底纹 */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.35]"
         style={{
@@ -93,7 +101,6 @@ function WorkspacePage() {
             "radial-gradient(ellipse 80% 70% at 50% 30%, black 40%, transparent 85%)",
         }}
       />
-      {/* 顶部品牌渐变带 */}
       <div
         className="pointer-events-none absolute top-0 inset-x-0 h-[420px] -z-0"
         style={{
@@ -101,11 +108,9 @@ function WorkspacePage() {
             "radial-gradient(ellipse 60% 100% at 30% 0%, color-mix(in oklab, var(--brand) 10%, transparent) 0%, transparent 70%), radial-gradient(ellipse 50% 100% at 80% 0%, color-mix(in oklab, var(--effect-ai-purple) 10%, transparent) 0%, transparent 70%)",
         }}
       />
-      {/* 浮动光斑 */}
       <div className="pointer-events-none absolute -top-32 right-[8%] h-[380px] w-[380px] rounded-full bg-[var(--effect-ai-purple)]/15 blur-3xl" />
       <div className="pointer-events-none absolute top-[40%] -left-24 h-[420px] w-[420px] rounded-full bg-primary/12 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-40 right-[20%] h-[460px] w-[460px] rounded-full bg-[var(--effect-ai-cyan)]/10 blur-3xl" />
-      {/* 装饰线 */}
       <svg
         className="pointer-events-none absolute top-0 right-0 w-[680px] h-[520px] opacity-40"
         viewBox="0 0 680 520"
@@ -147,7 +152,7 @@ function WorkspacePage() {
       </header>
 
       {/* ============ 主内容 ============ */}
-      <main className="relative max-w-[1200px] mx-auto px-6 pt-16 pb-16">
+      <main className="relative max-w-[1280px] mx-auto px-6 pt-16 pb-16">
         <div className="flex items-end justify-between flex-wrap gap-6">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption bg-brand-subtle text-primary mb-3">
@@ -161,7 +166,7 @@ function WorkspacePage() {
           <div className="hidden lg:flex items-center gap-6 text-text-secondary">
             <div className="text-right">
               <div className="text-caption text-text-tertiary">在管业务</div>
-              <div className="text-section-title text-foreground tabular-nums">3 类</div>
+              <div className="text-section-title text-foreground tabular-nums">4 类</div>
             </div>
             <div className="h-10 w-px bg-border" />
             <div className="text-right">
@@ -172,66 +177,69 @@ function WorkspacePage() {
         </div>
 
         {/* 卡片网格 — PC 24px gutter */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {modules.map((m) => (
-            <button
-              key={m.key}
-              disabled={!m.enabled}
-              onClick={() => m.enabled && navigate({ to: m.to })}
-              className={`group relative text-left rounded-2xl border border-border/60 bg-card overflow-hidden h-[340px] transition-all
-                ${m.enabled
-                  ? "hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_var(--brand)] cursor-pointer"
-                  : "opacity-85 cursor-not-allowed"}`}
-            >
-              {/* 底层图片 */}
-              <img
-                src={m.image}
-                alt={m.title}
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
-              />
-              {/* 渐变 + 模糊蒙层（90%底→20%顶） */}
-              <div
-                className="absolute inset-0 backdrop-blur-[2px]"
-                style={{ background: m.overlay }}
-              />
-              {/* 顶部反光 */}
-              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/15 to-transparent" />
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modules.map((m) => {
+            // 横向渐变蒙层：左侧重(92%) → 右侧轻(18%)，从左向右透明度降低（蒙层变薄、图片更显）
+            const overlay = `linear-gradient(90deg,
+              color-mix(in oklab, ${m.toneVar} 92%, transparent) 0%,
+              color-mix(in oklab, ${m.toneVar} 70%, transparent) 35%,
+              color-mix(in oklab, ${m.toneVar} 42%, transparent) 70%,
+              color-mix(in oklab, ${m.toneVar} 18%, transparent) 100%)`;
+            return (
+              <button
+                key={m.key}
+                disabled={!m.enabled}
+                onClick={() => m.enabled && navigate({ to: m.to })}
+                className={`group relative text-left rounded-2xl border border-border/60 bg-card overflow-hidden h-[340px] transition-all
+                  ${m.enabled
+                    ? "hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_var(--brand)] cursor-pointer"
+                    : "opacity-85 cursor-not-allowed"}`}
+              >
+                <img
+                  src={m.image}
+                  alt={m.title}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+                />
+                <div
+                  className="absolute inset-0 backdrop-blur-[1.5px]"
+                  style={{ background: overlay }}
+                />
+                {/* 顶部反光 */}
+                <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/15 to-transparent" />
 
-              {/* 状态徽标 */}
-              <div className="relative p-6 flex items-center justify-between">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption bg-white/25 backdrop-blur-md text-white border border-white/30">
-                  <Leaf className="h-3 w-3" /> {m.subtitle}
-                </span>
+                {/* 状态徽标 — 仅未开通时显示在右上 */}
                 {!m.enabled && (
-                  <span className="px-2 py-0.5 rounded-full text-caption bg-black/35 backdrop-blur-md text-white border border-white/20">
-                    即将上线
-                  </span>
+                  <div className="relative p-6 flex items-center justify-end">
+                    <span className="px-2 py-0.5 rounded-full text-caption bg-black/35 backdrop-blur-md text-white border border-white/20">
+                      即将上线
+                    </span>
+                  </div>
                 )}
-              </div>
 
-              {/* 文本区，PC 卡片 padding 24 */}
-              <div className="absolute inset-x-0 bottom-0 p-6 pt-10">
-                <div className="flex items-center gap-1.5 text-white">
-                  <h3 className="text-section-title font-medium drop-shadow-sm">{m.title}</h3>
-                  {m.enabled && (
-                    <ChevronRight className="h-4 w-4 opacity-80 group-hover:translate-x-1 transition-transform" />
-                  )}
-                </div>
-                <p className="text-body-sm text-white/85 mt-1.5 leading-relaxed">{m.desc}</p>
+                {/* 文本区 */}
+                <div className="absolute inset-x-0 bottom-0 p-6 pt-10">
+                  <div className="text-caption text-white/70 tracking-wide uppercase mb-1">{m.subtitle}</div>
+                  <div className="flex items-center gap-1.5 text-white">
+                    <h3 className="text-section-title font-medium drop-shadow-sm">{m.title}</h3>
+                    {m.enabled && (
+                      <ChevronRight className="h-4 w-4 opacity-80 group-hover:translate-x-1 transition-transform" />
+                    )}
+                  </div>
+                  <p className="text-body-sm text-white/85 mt-1.5 leading-relaxed">{m.desc}</p>
 
-                {/* 数据 */}
-                <div className="mt-4 grid grid-cols-3 gap-2 pt-4 border-t border-white/20">
-                  {m.stats.map((s) => (
-                    <div key={s.label}>
-                      <div className="text-caption text-white/70">{s.label}</div>
-                      <div className="text-card-title text-white tabular-nums mt-0.5 drop-shadow-sm">{s.value}</div>
-                    </div>
-                  ))}
+                  <div className="mt-4 grid grid-cols-3 gap-2 pt-4 border-t border-white/20">
+                    {m.stats.map((s) => (
+                      <div key={s.label}>
+                        <div className="text-caption text-white/70">{s.label}</div>
+                        <div className="text-card-title text-white tabular-nums mt-0.5 drop-shadow-sm">{s.value}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
 
         <div className="mt-10 flex items-center justify-between flex-wrap gap-3">
