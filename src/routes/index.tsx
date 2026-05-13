@@ -121,6 +121,18 @@ function TrendIcon({ trend }: { trend: string }) {
   return <Minus className="h-3 w-3 text-text-tertiary" />;
 }
 
+function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
+  return (
+    <div>
+      <div className="text-caption text-white/75">{label}</div>
+      <div className="mt-0.5 flex items-baseline gap-1">
+        <span className="text-section-title tabular-nums text-white drop-shadow-sm">{value}</span>
+        {unit && <span className="text-caption text-white/75">{unit}</span>}
+      </div>
+    </div>
+  );
+}
+
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -145,53 +157,125 @@ function HomePage() {
   return (
     <>
       <AppHeader title="首页总览" breadcrumb={["首页总览"]} />
-      <main className="flex-1 px-6 py-6 space-y-4">
-        {/* Greeting strip */}
-        <Card className="border-border bg-card overflow-hidden">
-          <div className="p-6 flex items-center justify-between gap-6 flex-wrap">
-            <div>
-              <div className="text-caption text-text-tertiary mb-1">
-                2026/05/12 周二 · 1 号牧场
+      <main className="flex-1 px-6 py-6 space-y-5">
+        {/* Hero greeting — 加强视觉冲击 */}
+        <Card className="relative border-0 overflow-hidden text-white shadow-[0_20px_60px_-30px_color-mix(in_oklab,var(--brand)_70%,transparent)]">
+          {/* 背景渐变 */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(120deg, var(--brand) 0%, color-mix(in oklab, var(--brand) 75%, var(--effect-ai-cyan) 25%) 55%, color-mix(in oklab, var(--effect-ai-purple) 65%, var(--brand) 35%) 100%)",
+            }}
+          />
+          {/* 网格纹理 */}
+          <div
+            className="absolute inset-0 opacity-[0.18]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.6) 1px, transparent 1px)",
+              backgroundSize: "44px 44px",
+              maskImage:
+                "radial-gradient(ellipse 70% 80% at 80% 30%, black 30%, transparent 80%)",
+            }}
+          />
+          {/* 光晕 */}
+          <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-white/25 blur-3xl" />
+          <div className="absolute -bottom-32 left-[20%] h-72 w-72 rounded-full bg-[var(--effect-ai-cyan)]/40 blur-3xl" />
+
+          <div className="relative p-7 flex items-center justify-between gap-6 flex-wrap">
+            <div className="max-w-[640px]">
+              <div className="inline-flex items-center gap-2 text-caption text-white/85 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--state-success)] shadow-[0_0_8px_var(--state-success)]" />
+                  系统正常
+                </span>
+                <span>2026/05/12 周二 · 1 号牧场</span>
               </div>
-              <h2 className="text-section-title text-foreground">早上好，场长张磊</h2>
-              <p className="text-body-sm text-text-secondary mt-1">
-                今日整体运行稳定，4 项申请待审批，请及时处理待办与申请
+              <h2 className="text-page-title font-medium drop-shadow-sm">
+                早上好，场长张磊
+              </h2>
+              <p className="text-body text-white/85 mt-1.5">
+                今日整体运行稳定，<span className="text-white font-medium">4 项</span> 申请待审批 ·
+                <span className="text-white font-medium"> 37 项</span> 待办，请及时处理
               </p>
+
+              {/* Hero 内嵌 KPI 缩略 */}
+              <div className="mt-5 flex items-center gap-6 text-white/90">
+                <HeroStat label="今日入栏" value="38" unit="头" />
+                <span className="h-8 w-px bg-white/25" />
+                <HeroStat label="健康预警" value="12" unit="起" />
+                <span className="h-8 w-px bg-white/25" />
+                <HeroStat label="完成工单" value="86%" />
+              </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" className="h-9 text-body-sm font-normal">
+              <Button variant="outline" className="h-10 px-4 text-body-sm font-normal bg-white/10 hover:bg-white/20 border-white/25 text-white backdrop-blur-sm">
                 待处理申请
               </Button>
-              <Button className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
+              <Button className="h-10 px-4 text-body-sm font-normal bg-white text-primary hover:bg-white/90 shadow-lg">
                 今日待办 <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
               </Button>
             </div>
           </div>
         </Card>
 
-        {/* KPI grid */}
+        {/* KPI grid — 渐变描边 + 大数字 */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpis.map((k) => (
-            <Card key={k.label} className="border-border bg-card p-6">
-              <div className="flex items-start justify-between">
-                <div className="h-9 w-9 rounded-md bg-brand-subtle flex items-center justify-center">
-                  <k.icon className="h-4 w-4 text-primary" strokeWidth={1.75} />
+          {kpis.map((k, i) => {
+            const tones = [
+              "var(--brand)",
+              "var(--effect-ai-cyan)",
+              "var(--state-warning)",
+              "var(--effect-ai-purple)",
+            ];
+            const tone = tones[i % tones.length];
+            return (
+              <Card
+                key={k.label}
+                className="relative border-border bg-card p-6 overflow-hidden group hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)] transition-all"
+              >
+                {/* 顶部彩条 */}
+                <div
+                  className="absolute inset-x-0 top-0 h-[3px]"
+                  style={{ background: `linear-gradient(90deg, ${tone}, transparent)` }}
+                />
+                {/* 角落光晕 */}
+                <div
+                  className="absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity blur-2xl"
+                  style={{ background: `color-mix(in oklab, ${tone} 30%, transparent)` }}
+                />
+                <div className="relative flex items-start justify-between">
+                  <div
+                    className="h-10 w-10 rounded-lg flex items-center justify-center"
+                    style={{
+                      background: `color-mix(in oklab, ${tone} 14%, transparent)`,
+                      color: tone,
+                    }}
+                  >
+                    <k.icon className="h-4.5 w-4.5" strokeWidth={1.75} />
+                  </div>
+                  <div className="flex items-center gap-1 text-caption text-text-tertiary">
+                    <TrendIcon trend={k.trend} />
+                    <span className="tabular-nums">{k.delta}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 text-caption text-text-tertiary">
-                  <TrendIcon trend={k.trend} />
-                  <span className="tabular-nums">{k.delta}</span>
+                <div className="relative mt-5">
+                  <p className="text-body-sm text-text-tertiary">{k.label}</p>
+                  <div className="flex items-baseline gap-1 mt-1">
+                    <span
+                      className="tabular-nums font-semibold leading-none"
+                      style={{ fontSize: "32px", color: tone }}
+                    >
+                      {k.value}
+                    </span>
+                    <span className="text-caption text-text-tertiary">{k.unit}</span>
+                  </div>
+                  <p className="text-caption text-text-tertiary mt-2">较昨日</p>
                 </div>
-              </div>
-              <div className="mt-5">
-                <p className="text-body-sm text-text-tertiary">{k.label}</p>
-                <div className="flex items-baseline gap-1 mt-1">
-                  <span className="text-page-title tabular-nums">{k.value}</span>
-                  <span className="text-caption text-text-tertiary">{k.unit}</span>
-                </div>
-                <p className="text-caption text-text-tertiary mt-1">较昨日</p>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
 
         {/* Alerts + Units */}
