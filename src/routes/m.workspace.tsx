@@ -16,7 +16,7 @@ type Module = {
   image: string;
   to: string;
   enabled: boolean;
-  tone: "brand" | "info" | "warm";
+  overlay: string;
   badge?: string;
 };
 
@@ -28,7 +28,8 @@ const modules: Module[] = [
     image: cattleImg,
     to: "/m/",
     enabled: true,
-    tone: "brand",
+    overlay:
+      "linear-gradient(180deg, color-mix(in oklab, var(--brand) 20%, transparent) 0%, color-mix(in oklab, var(--brand) 60%, transparent) 50%, color-mix(in oklab, var(--brand) 92%, transparent) 100%)",
     badge: "已开通",
   },
   {
@@ -38,7 +39,8 @@ const modules: Module[] = [
     image: sheepImg,
     to: "/m/workspace",
     enabled: false,
-    tone: "info",
+    overlay:
+      "linear-gradient(180deg, color-mix(in oklab, var(--effect-ai-cyan) 20%, transparent) 0%, color-mix(in oklab, var(--effect-ai-cyan) 60%, transparent) 50%, color-mix(in oklab, var(--effect-ai-cyan) 92%, transparent) 100%)",
     badge: "即将上线",
   },
   {
@@ -48,16 +50,11 @@ const modules: Module[] = [
     image: riceImg,
     to: "/m/workspace",
     enabled: false,
-    tone: "warm",
+    overlay:
+      "linear-gradient(180deg, color-mix(in oklab, var(--state-warning) 20%, transparent) 0%, color-mix(in oklab, var(--state-warning) 60%, transparent) 50%, color-mix(in oklab, var(--state-warning) 92%, transparent) 100%)",
     badge: "试运行",
   },
 ];
-
-const toneMap: Record<string, string> = {
-  brand: "from-primary/12 to-primary/3 border-primary/20",
-  info: "from-[var(--effect-ai-cyan)]/12 to-[var(--effect-ai-cyan)]/3 border-[var(--effect-ai-cyan)]/20",
-  warm: "from-[var(--state-warning)]/12 to-[var(--state-warning)]/3 border-[var(--state-warning)]/20",
-};
 
 function MWorkspacePage() {
   const navigate = useNavigate();
@@ -65,12 +62,24 @@ function MWorkspacePage() {
   return (
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-[var(--effect-ai-purple)]/12 blur-3xl" />
-          <div className="absolute top-40 -left-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+        {/* ============ 背景视觉层（M 端更柔和） ============ */}
+        <div
+          className="pointer-events-none absolute inset-0 -z-10 opacity-50"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, color-mix(in oklab, var(--brand) 6%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--brand) 6%, transparent) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+            maskImage:
+              "radial-gradient(ellipse 80% 50% at 50% 0%, black 40%, transparent 80%)",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute -top-20 -right-12 h-56 w-56 rounded-full bg-[var(--effect-ai-purple)]/15 blur-3xl" />
+          <div className="absolute top-[30%] -left-16 h-56 w-56 rounded-full bg-primary/12 blur-3xl" />
+          <div className="absolute bottom-10 right-[-40px] h-60 w-60 rounded-full bg-[var(--effect-ai-cyan)]/10 blur-3xl" />
         </div>
 
-        {/* 顶部 */}
+        {/* 顶部 — M 端 16px page margin */}
         <header className="px-4 pt-12 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-brand-subtle text-primary font-semibold flex items-center justify-center text-body-sm">奇</div>
@@ -96,33 +105,46 @@ function MWorkspacePage() {
           <p className="text-body-sm text-text-tertiary mt-1">一个账号统管多业态</p>
         </section>
 
-        {/* 模块卡片 */}
+        {/* 模块卡片 — M 端横向图卡（与 PC 差异化） */}
         <section className="px-4 pb-10 space-y-3 flex-1">
           {modules.map((m) => (
             <button
               key={m.key}
               disabled={!m.enabled}
               onClick={() => m.enabled && navigate({ to: m.to })}
-              className={`group w-full text-left rounded-2xl border bg-gradient-to-br ${toneMap[m.tone]}
-                p-4 active:scale-[.99] transition-all
-                ${m.enabled ? "" : "opacity-70"}`}
+              className={`relative w-full text-left rounded-2xl overflow-hidden border border-border/60 h-[112px] active:scale-[.99] transition-all
+                ${m.enabled ? "" : "opacity-85"}`}
             >
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-card border border-border">
-                  <img src={m.image} alt={m.title} loading="lazy" width={48} height={48} className="h-full w-full object-cover" />
+              <img
+                src={m.image}
+                alt={m.title}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div
+                className="absolute inset-0 backdrop-blur-[1.5px]"
+                style={{ background: m.overlay }}
+              />
+              <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-black/15 to-transparent" />
+
+              <div className="relative h-full p-4 flex flex-col justify-between">
+                <div className="flex items-start justify-between">
+                  <h3 className="text-card-title text-white drop-shadow-sm">{m.title}</h3>
+                  {m.badge && (
+                    <span className={`shrink-0 px-2 py-0.5 rounded-full text-caption backdrop-blur-md border
+                      ${m.enabled
+                        ? "bg-white/25 text-white border-white/30"
+                        : "bg-black/30 text-white border-white/20"}`}>
+                      {m.badge}
+                    </span>
+                  )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-card-title text-foreground truncate">{m.title}</h3>
-                    {m.badge && (
-                      <span className={`tag ${m.enabled ? "tag-brand" : "tag-muted"} shrink-0`}>{m.badge}</span>
-                    )}
-                  </div>
-                  <p className="text-body-sm text-text-secondary mt-1 line-clamp-2 leading-relaxed">{m.desc}</p>
+                <div className="flex items-end justify-between">
+                  <p className="text-body-sm text-white/85 line-clamp-1 leading-snug pr-2">{m.desc}</p>
+                  {m.enabled && (
+                    <ChevronRight className="h-4 w-4 text-white/90 shrink-0" />
+                  )}
                 </div>
-                {m.enabled && (
-                  <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
-                )}
               </div>
             </button>
           ))}
