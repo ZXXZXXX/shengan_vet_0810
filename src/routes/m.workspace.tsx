@@ -23,7 +23,7 @@ const modules: Module[] = [
     title: "牛 · 牧场管理",
     desc: "工单 · 健康 · 档案，一线全流程作业",
     emoji: "🐄",
-    to: "/m",
+    to: "/m/",
     enabled: true,
     tone: "brand",
     badge: "已开通",
