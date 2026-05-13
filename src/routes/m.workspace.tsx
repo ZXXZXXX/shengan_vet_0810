@@ -21,6 +21,14 @@ type Module = {
   badge?: string;
 };
 
+// 蒙层方向：从右下角(浓) → 左上角(淡)，使底层图片在左上角更显
+const overlayFor = (tone: string) =>
+  `radial-gradient(125% 125% at 100% 100%,
+    color-mix(in oklab, ${tone} 92%, transparent) 0%,
+    color-mix(in oklab, ${tone} 70%, transparent) 35%,
+    color-mix(in oklab, ${tone} 42%, transparent) 70%,
+    color-mix(in oklab, ${tone} 18%, transparent) 100%)`;
+
 const modules: Module[] = [
   {
     key: "cattle",
@@ -29,8 +37,7 @@ const modules: Module[] = [
     image: cattleImg,
     to: "/m/",
     enabled: true,
-    overlay:
-      "linear-gradient(180deg, color-mix(in oklab, var(--brand) 20%, transparent) 0%, color-mix(in oklab, var(--brand) 60%, transparent) 50%, color-mix(in oklab, var(--brand) 92%, transparent) 100%)",
+    overlay: overlayFor("var(--brand)"),
     badge: "已开通",
   },
   {
@@ -40,8 +47,7 @@ const modules: Module[] = [
     image: sheepImg,
     to: "/m/workspace",
     enabled: false,
-    overlay:
-      "linear-gradient(180deg, color-mix(in oklab, var(--effect-ai-cyan) 20%, transparent) 0%, color-mix(in oklab, var(--effect-ai-cyan) 60%, transparent) 50%, color-mix(in oklab, var(--effect-ai-cyan) 92%, transparent) 100%)",
+    overlay: overlayFor("var(--effect-ai-cyan)"),
     badge: "即将上线",
   },
   {
@@ -51,9 +57,18 @@ const modules: Module[] = [
     image: riceImg,
     to: "/m/workspace",
     enabled: false,
-    overlay:
-      "linear-gradient(180deg, color-mix(in oklab, var(--state-warning) 20%, transparent) 0%, color-mix(in oklab, var(--state-warning) 60%, transparent) 50%, color-mix(in oklab, var(--state-warning) 92%, transparent) 100%)",
+    overlay: overlayFor("var(--state-warning)"),
     badge: "试运行",
+  },
+  {
+    key: "park",
+    title: "智慧园区",
+    desc: "园区设施 · 能耗 · 安防 · 访客",
+    image: parkImg,
+    to: "/m/workspace",
+    enabled: false,
+    overlay: overlayFor("var(--effect-ai-purple)"),
+    badge: "筹备中",
   },
 ];
 
