@@ -105,42 +105,50 @@ function WorkspacePage() {
 
   return (
     <div className="min-h-screen w-full bg-background relative overflow-hidden">
-      {/* ============ 背景视觉层 ============ */}
+      {/* ============ 背景视觉层 — 强化版 ============ */}
+      {/* 网格 */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        className="pointer-events-none absolute inset-0 opacity-[0.5]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, color-mix(in oklab, var(--brand) 8%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--brand) 8%, transparent) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
+            "linear-gradient(to right, color-mix(in oklab, var(--brand) 10%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--brand) 10%, transparent) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
           maskImage:
-            "radial-gradient(ellipse 80% 70% at 50% 30%, black 40%, transparent 85%)",
+            "radial-gradient(ellipse 80% 70% at 50% 30%, black 35%, transparent 80%)",
         }}
       />
+      {/* 顶部光带 */}
       <div
-        className="pointer-events-none absolute top-0 inset-x-0 h-[420px] -z-0"
+        className="pointer-events-none absolute top-0 inset-x-0 h-[520px]"
         style={{
           background:
-            "radial-gradient(ellipse 60% 100% at 30% 0%, color-mix(in oklab, var(--brand) 10%, transparent) 0%, transparent 70%), radial-gradient(ellipse 50% 100% at 80% 0%, color-mix(in oklab, var(--effect-ai-purple) 10%, transparent) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 100% at 25% 0%, color-mix(in oklab, var(--brand) 22%, transparent) 0%, transparent 65%), radial-gradient(ellipse 55% 100% at 80% 0%, color-mix(in oklab, var(--effect-ai-purple) 20%, transparent) 0%, transparent 65%), radial-gradient(ellipse 45% 80% at 55% 10%, color-mix(in oklab, var(--effect-ai-cyan) 16%, transparent) 0%, transparent 70%)",
         }}
       />
-      <div className="pointer-events-none absolute -top-32 right-[8%] h-[380px] w-[380px] rounded-full bg-[var(--effect-ai-purple)]/15 blur-3xl" />
-      <div className="pointer-events-none absolute top-[40%] -left-24 h-[420px] w-[420px] rounded-full bg-primary/12 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 right-[20%] h-[460px] w-[460px] rounded-full bg-[var(--effect-ai-cyan)]/10 blur-3xl" />
+      {/* 极光光斑（更饱和、动效） */}
+      <div className="pointer-events-none absolute -top-32 right-[6%] h-[460px] w-[460px] rounded-full bg-[var(--effect-ai-purple)]/30 blur-[120px] animate-pulse" style={{ animationDuration: "6s" }} />
+      <div className="pointer-events-none absolute top-[30%] -left-32 h-[520px] w-[520px] rounded-full bg-primary/25 blur-[120px] animate-pulse" style={{ animationDuration: "7s" }} />
+      <div className="pointer-events-none absolute -bottom-44 right-[18%] h-[520px] w-[520px] rounded-full bg-[var(--effect-ai-cyan)]/22 blur-[120px] animate-pulse" style={{ animationDuration: "8s" }} />
+      <div className="pointer-events-none absolute top-[55%] left-[40%] h-[300px] w-[300px] rounded-full bg-[var(--state-warning)]/15 blur-[100px]" />
+      {/* 顶部装饰线条 */}
       <svg
-        className="pointer-events-none absolute top-0 right-0 w-[680px] h-[520px] opacity-40"
-        viewBox="0 0 680 520"
+        className="pointer-events-none absolute top-0 right-0 w-[760px] h-[600px] opacity-60"
+        viewBox="0 0 760 600"
         fill="none"
       >
-        <path d="M680 0 L380 520" stroke="url(#g1)" strokeWidth="1" />
-        <path d="M680 80 L300 520" stroke="url(#g1)" strokeWidth="1" />
-        <path d="M680 160 L220 520" stroke="url(#g1)" strokeWidth="1" />
+        <path d="M760 0 L420 600" stroke="url(#g1)" strokeWidth="1" />
+        <path d="M760 80 L340 600" stroke="url(#g1)" strokeWidth="1" />
+        <path d="M760 160 L260 600" stroke="url(#g1)" strokeWidth="1" />
+        <path d="M760 240 L180 600" stroke="url(#g1)" strokeWidth="1.5" />
         <defs>
           <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--brand)" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="var(--brand)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--brand)" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="var(--effect-ai-purple)" stopOpacity="0" />
           </linearGradient>
         </defs>
       </svg>
+      {/* 底部加深 */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[200px] bg-gradient-to-t from-background to-transparent" />
 
       {/* ============ 顶部导航 ============ */}
       <header className="relative px-6 pt-6 flex items-center justify-between">
