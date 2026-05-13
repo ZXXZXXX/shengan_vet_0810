@@ -26,7 +26,41 @@ import {
   ChevronRight,
   CheckCircle2,
   Activity,
+  PieChart,
 } from "lucide-react";
+
+type DonutSlice = { label: string; value: number; color: string };
+
+function Donut({ data, size = 168, thickness = 22 }: { data: DonutSlice[]; size?: number; thickness?: number }) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  const r = (size - thickness) / 2;
+  const c = 2 * Math.PI * r;
+  let acc = 0;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border)" strokeWidth={thickness} opacity={0.35} />
+      {data.map((d, i) => {
+        const len = (d.value / total) * c;
+        const offset = c - acc;
+        acc += len;
+        return (
+          <circle
+            key={i}
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            fill="none"
+            stroke={d.color}
+            strokeWidth={thickness}
+            strokeDasharray={`${len} ${c - len}`}
+            strokeDashoffset={offset}
+            strokeLinecap="butt"
+          />
+        );
+      })}
+    </svg>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
