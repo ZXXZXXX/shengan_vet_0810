@@ -317,75 +317,26 @@ function HomePage() {
             </div>
           </Card>
 
-          <Card className="border-border bg-card overflow-hidden">
-            <div className="p-6 pb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Activity className="h-4 w-4 text-primary" strokeWidth={1.75} />
-                <h3 className="text-card-title text-foreground">生产单元</h3>
-              </div>
-              <span className="text-caption text-text-tertiary tabular-nums">
-                合计 {units.reduce((s, u) => s + u.count, 0)} 头
-              </span>
+          <Card className="border-border bg-card">
+            <div className="p-6 pb-4 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" strokeWidth={1.75} />
+              <h3 className="text-card-title text-foreground">生产单元状态</h3>
             </div>
-            <div className="px-6 pb-6 space-y-2">
-              {units.map((u) => {
-                const toneVar =
-                  u.tone === "success"
-                    ? "var(--state-success)"
-                    : u.tone === "warning"
-                    ? "var(--state-warning)"
-                    : "var(--state-danger)";
-                const toneText =
-                  u.tone === "success"
-                    ? "#2F7A3A"
-                    : u.tone === "warning"
-                    ? "#8A5A0A"
-                    : "#B23A3A";
-                const max = Math.max(...units.map((x) => x.count));
-                const pct = Math.max(8, Math.round((u.count / max) * 100));
-                return (
-                  <div
-                    key={u.name}
-                    className="relative rounded-lg overflow-hidden border border-border/60 group hover:-translate-y-0.5 transition-transform"
-                    style={{
-                      background: `color-mix(in oklab, ${toneVar} 8%, var(--bg-surface))`,
-                    }}
-                  >
-                    <div
-                      className="absolute inset-y-0 left-0 opacity-90"
-                      style={{
-                        width: `${pct}%`,
-                        background: `linear-gradient(90deg, color-mix(in oklab, ${toneVar} 28%, transparent) 0%, color-mix(in oklab, ${toneVar} 6%, transparent) 100%)`,
-                      }}
-                    />
-                    <div
-                      className="absolute inset-y-0 left-0 w-[3px]"
-                      style={{ background: toneVar }}
-                    />
-                    <div className="relative flex items-center gap-3 px-3.5 py-2.5">
-                      <span className="flex-1 text-body text-foreground font-medium">{u.name}</span>
-                      <div className="flex items-baseline gap-0.5">
-                        <span
-                          className="tabular-nums font-semibold leading-none"
-                          style={{ fontSize: "20px", color: toneVar }}
-                        >
-                          {u.count}
-                        </span>
-                        <span className="text-caption text-text-tertiary">头</span>
-                      </div>
-                      <span
-                        className="text-caption px-2 py-0.5 rounded font-medium"
-                        style={{
-                          background: `color-mix(in oklab, ${toneVar} 20%, transparent)`,
-                          color: toneText,
-                        }}
-                      >
-                        {u.status}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="px-6 pb-6 space-y-2.5">
+              {units.map((u) => (
+                <div key={u.name} className="flex items-center gap-3 py-1.5">
+                  <span className={`h-1.5 w-1.5 rounded-full ${
+                    u.tone === "success" ? "bg-[var(--state-success)]" :
+                    u.tone === "warning" ? "bg-[var(--state-warning)]" :
+                    "bg-[var(--state-danger)]"
+                  }`} />
+                  <span className="flex-1 text-body text-foreground">{u.name}</span>
+                  <span className="text-body-sm text-text-tertiary tabular-nums">{u.count} 头</span>
+                  <span className={`tag tag-${u.tone === "success" ? "success" : u.tone === "warning" ? "warning" : "danger"}`}>
+                    {u.status}
+                  </span>
+                </div>
+              ))}
             </div>
           </Card>
         </div>
