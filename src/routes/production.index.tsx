@@ -393,7 +393,7 @@ function ObjectListPage() {
               </div>
               <Button
                 size="sm"
-                className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground ml-auto"
               >
                 <Plus className="h-3.5 w-3.5" /> 新建档案
               </Button>
