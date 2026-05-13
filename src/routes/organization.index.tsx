@@ -354,7 +354,7 @@ function OrganizationPage() {
                     共 {farm.people.length} 人 · 正常 {farm.people.filter((p) => p.status === "正常").length} 人
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ml-auto">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
                     <Input placeholder="搜索人员、角色、手机号" className="h-9 w-64 pl-9 text-body-sm bg-card border-border" />
