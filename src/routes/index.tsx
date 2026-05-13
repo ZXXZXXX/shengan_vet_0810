@@ -26,7 +26,41 @@ import {
   ChevronRight,
   CheckCircle2,
   Activity,
+  PieChart,
 } from "lucide-react";
+
+type DonutSlice = { label: string; value: number; color: string };
+
+function Donut({ data, size = 168, thickness = 22 }: { data: DonutSlice[]; size?: number; thickness?: number }) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  const r = (size - thickness) / 2;
+  const c = 2 * Math.PI * r;
+  let acc = 0;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border)" strokeWidth={thickness} opacity={0.35} />
+      {data.map((d, i) => {
+        const len = (d.value / total) * c;
+        const offset = c - acc;
+        acc += len;
+        return (
+          <circle
+            key={i}
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            fill="none"
+            stroke={d.color}
+            strokeWidth={thickness}
+            strokeDasharray={`${len} ${c - len}`}
+            strokeDashoffset={offset}
+            strokeLinecap="butt"
+          />
+        );
+      })}
+    </svg>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -340,6 +374,84 @@ function HomePage() {
             </div>
           </Card>
         </div>
+
+        {/* 存栏结构分布 — 圆环图增加色彩量感 */}
+        <Card className="relative border-border bg-card overflow-hidden">
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.55]"
+            style={{
+              background:
+                "radial-gradient(circle at 12% 0%, color-mix(in oklab, var(--brand) 14%, transparent), transparent 55%), radial-gradient(circle at 95% 100%, color-mix(in oklab, var(--effect-ai-purple) 16%, transparent), transparent 60%)",
+            }}
+          />
+          <div className="relative p-6 pb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <PieChart className="h-4 w-4 text-primary" strokeWidth={1.75} />
+              <h3 className="text-card-title text-foreground">存栏结构分布</h3>
+              <span className="tag tag-muted">按生长阶段</span>
+            </div>
+            <span className="text-caption text-text-tertiary">数据更新于 5 分钟前</span>
+          </div>
+          <div className="relative px-6 pb-6 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-center">
+            {(() => {
+              const slices: DonutSlice[] = [
+                { label: "成母牛", value: 1420, color: "var(--brand)" },
+                { label: "青年牛", value: 612, color: "var(--effect-ai-cyan)" },
+                { label: "犊牛", value: 348, color: "var(--effect-ai-purple)" },
+                { label: "隔离 / 治疗", value: 106, color: "var(--state-warning)" },
+              ];
+              const total = slices.reduce((s, d) => s + d.value, 0);
+              return (
+                <>
+                  <div className="relative justify-self-center">
+                    <Donut data={slices} />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-caption text-text-tertiary">存栏总数</span>
+                      <span className="text-page-title tabular-nums text-foreground leading-none mt-1">
+                        {total.toLocaleString()}
+                      </span>
+                      <span className="text-caption text-text-tertiary mt-1">头</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {slices.map((s) => {
+                      const pct = ((s.value / total) * 100).toFixed(1);
+                      return (
+                        <div
+                          key={s.label}
+                          className="rounded-md border border-border bg-card/80 backdrop-blur-sm p-3 hover:-translate-y-0.5 hover:shadow-sm transition-all"
+                          style={{
+                            borderLeft: `3px solid ${s.color}`,
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="h-2 w-2 rounded-full"
+                              style={{ background: s.color }}
+                            />
+                            <span className="text-body-sm text-text-secondary">{s.label}</span>
+                            <span className="ml-auto text-caption text-text-tertiary tabular-nums">
+                              {pct}%
+                            </span>
+                          </div>
+                          <div className="mt-2 flex items-baseline gap-1">
+                            <span
+                              className="text-section-title tabular-nums leading-none"
+                              style={{ color: s.color }}
+                            >
+                              {s.value.toLocaleString()}
+                            </span>
+                            <span className="text-caption text-text-tertiary">头</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </Card>
 
         {/* 仓库物资概览 */}
         <Card className="border-border bg-card">
