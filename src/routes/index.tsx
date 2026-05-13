@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,8 +39,8 @@ export const Route = createFileRoute("/")({
 });
 
 const kpis = [
-  { label: "存栏总数", value: "2,486", unit: "头", trend: "up", delta: "+1.2%", icon: Beef },
-  { label: "仓库物资", value: "186", unit: "类", trend: "down", delta: "-3 类临期", icon: Package },
+  { label: "存栏总数", value: "2,486", unit: "头", trend: "up", delta: "+1.2%", icon: Beef, anchor: "stock" as const },
+  { label: "仓库物资", value: "186", unit: "类", trend: "down", delta: "-3 类临期", icon: Package, anchor: "warehouse" as const },
   { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope },
   { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList },
 ];
@@ -133,9 +133,89 @@ function HeroStat({ label, value, unit }: { label: string; value: string; unit?:
   );
 }
 
+const stockComposition = [
+  { name: "1 号牛舍", count: 320, color: "var(--brand)" },
+  { name: "2 号牛舍", count: 312, color: "var(--effect-ai-cyan)" },
+  { name: "3 号牛舍", count: 298, color: "var(--state-warning)" },
+  { name: "犊牛舍 A", count: 84, color: "var(--effect-ai-purple)" },
+  { name: "隔离区", count: 6, color: "var(--state-danger)" },
+  { name: "其他单元", count: 1466, color: "color-mix(in oklab, var(--brand) 30%, var(--bg-surface-subtle))" },
+];
+
+const StockCompositionCard = ({ ref }: { ref: React.RefObject<HTMLDivElement | null> }) => {
+  const total = stockComposition.reduce((s, x) => s + x.count, 0);
+  const radius = 70;
+  const inner = 44;
+  const cx = 90;
+  const cy = 90;
+  let acc = 0;
+  const arcs = stockComposition.map((seg) => {
+    const start = (acc / total) * Math.PI * 2 - Math.PI / 2;
+    acc += seg.count;
+    const end = (acc / total) * Math.PI * 2 - Math.PI / 2;
+    const large = end - start > Math.PI ? 1 : 0;
+    const x1 = cx + radius * Math.cos(start);
+    const y1 = cy + radius * Math.sin(start);
+    const x2 = cx + radius * Math.cos(end);
+    const y2 = cy + radius * Math.sin(end);
+    const xi2 = cx + inner * Math.cos(end);
+    const yi2 = cy + inner * Math.sin(end);
+    const xi1 = cx + inner * Math.cos(start);
+    const yi1 = cy + inner * Math.sin(start);
+    const d = `M ${x1} ${y1} A ${radius} ${radius} 0 ${large} 1 ${x2} ${y2} L ${xi2} ${yi2} A ${inner} ${inner} 0 ${large} 0 ${xi1} ${yi1} Z`;
+    return { d, color: seg.color, name: seg.name, count: seg.count };
+  });
+
+  return (
+    <Card ref={ref} className="border-border bg-card scroll-mt-20">
+      <div className="p-6 pb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Beef className="h-4 w-4 text-primary" strokeWidth={1.75} />
+          <h3 className="text-card-title text-foreground">存栏构成</h3>
+          <span className="tag tag-muted">共 {total.toLocaleString()} 头</span>
+        </div>
+      </div>
+      <div className="px-6 pb-6 flex items-center gap-8 flex-wrap">
+        <div className="relative">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            {arcs.map((a, i) => (
+              <path key={i} d={a.d} fill={a.color} stroke="var(--bg-surface)" strokeWidth="1.5" />
+            ))}
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-caption text-text-tertiary">存栏总数</span>
+            <span className="text-section-title tabular-nums text-foreground">{total.toLocaleString()}</span>
+            <span className="text-caption text-text-tertiary">头</span>
+          </div>
+        </div>
+        <div className="flex-1 min-w-[240px] grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {stockComposition.map((s) => {
+            const pct = ((s.count / total) * 100).toFixed(1);
+            return (
+              <div key={s.name} className="flex items-center gap-2 py-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: s.color }} />
+                <span className="text-body-sm text-foreground flex-1">{s.name}</span>
+                <span className="text-body-sm text-text-secondary tabular-nums">{s.count.toLocaleString()}</span>
+                <span className="text-caption text-text-tertiary tabular-nums w-12 text-right">{pct}%</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </Card>
+  );
+};
+
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const stockRef = useRef<HTMLDivElement | null>(null);
+  const warehouseRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToAnchor = (anchor?: "stock" | "warehouse") => {
+    const el = anchor === "stock" ? stockRef.current : anchor === "warehouse" ? warehouseRef.current : null;
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const handleApprove = () => {
     if (!activeRequest) return;
@@ -233,7 +313,11 @@ function HomePage() {
             return (
               <Card
                 key={k.label}
-                className="relative border-border bg-card p-6 overflow-hidden group hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)] transition-all"
+                onClick={k.anchor ? () => scrollToAnchor(k.anchor) : undefined}
+                role={k.anchor ? "button" : undefined}
+                tabIndex={k.anchor ? 0 : undefined}
+                onKeyDown={k.anchor ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); scrollToAnchor(k.anchor); } } : undefined}
+                className={`relative border-border bg-card p-6 overflow-hidden group transition-all ${k.anchor ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)]" : "hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)]"}`}
               >
                 {/* 顶部彩条 */}
                 <div
@@ -341,8 +425,11 @@ function HomePage() {
           </Card>
         </div>
 
+        {/* 存栏构成 */}
+        <StockCompositionCard ref={stockRef} />
+
         {/* 仓库物资概览 */}
-        <Card className="border-border bg-card">
+        <Card ref={warehouseRef} className="border-border bg-card scroll-mt-20">
           <div className="p-6 pb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" strokeWidth={1.75} />
