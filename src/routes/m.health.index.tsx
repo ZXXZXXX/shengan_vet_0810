@@ -114,7 +114,7 @@ function HealthListPage() {
               key={o.id}
               to="/m/health/$id"
               params={{ id: o.id }}
-              className="block rounded-xl bg-card border border-border p-3.5 active:bg-surface-subtle"
+              className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
             >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">

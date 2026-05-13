@@ -212,3 +212,27 @@
   .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
 }
+
+/* === Mobile typography & layout scope ===
+ * Apply to mini-program / H5 root via class="m-scope"
+ * Mobile / ZH spec — overrides PC type tokens within scope
+ */
+.m-scope {
+  /* 国内规范：16px page margin / 12px gutter / 16px card padding / 48px 触控 */
+  --m-page-margin: 16px;
+  --m-gutter: 12px;
+  --m-card-padding: 16px;
+  --m-touch: 48px;
+  font-size: 15px;
+  line-height: 26px;
+}
+.m-scope .text-page-title    { font-size: 22px; line-height: 32px; font-weight: 500; }
+.m-scope .text-section-title { font-size: 18px; line-height: 28px; font-weight: 500; }
+.m-scope .text-card-title    { font-size: 16px; line-height: 26px; font-weight: 500; }
+.m-scope .text-body          { font-size: 15px; line-height: 26px; font-weight: 400; }
+.m-scope .text-body-strong   { font-size: 15px; line-height: 26px; font-weight: 500; }
+.m-scope .text-body-sm       { font-size: 13px; line-height: 22px; font-weight: 400; }
+.m-scope .text-caption       { font-size: 12px; line-height: 20px; font-weight: 400; }
+.m-scope .text-button        { font-size: 15px; line-height: 24px; font-weight: 500; }
+.m-scope .text-state-title   { font-size: 20px; line-height: 30px; font-weight: 600; }
+.m-scope .text-state-desc    { font-size: 14px; line-height: 24px; font-weight: 400; }

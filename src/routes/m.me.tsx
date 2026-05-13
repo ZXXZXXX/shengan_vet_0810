@@ -35,7 +35,7 @@ function MePage() {
   return (
     <MobileShell>
       {/* 个人信息卡 */}
-      <header className="px-5 pt-12 pb-6 bg-gradient-to-br from-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
+      <header className="px-4 pt-12 pb-6 bg-gradient-to-br from-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
         <div className="absolute -top-12 -right-12 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
         <div className="relative flex items-center gap-3">
           <div className="h-14 w-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-section-title">
@@ -56,7 +56,7 @@ function MePage() {
       </header>
 
       {/* 角色切换 */}
-      <section className="px-5 mt-5">
+      <section className="px-4 mt-5">
         <div className="rounded-xl bg-card border border-border p-4">
           <div className="flex items-center gap-2 mb-3">
             <RefreshCw className="h-3.5 w-3.5 text-primary" />
@@ -82,7 +82,7 @@ function MePage() {
       </section>
 
       {/* 菜单 */}
-      <section className="px-5 mt-5 space-y-2">
+      <section className="px-4 mt-5 space-y-2">
         <MenuItem icon={Bell} label="消息通知" badge="3" />
         <MenuItem icon={ShieldCheck} label="账号与安全" />
         <MenuItem icon={Settings} label="偏好设置" />
@@ -90,10 +90,10 @@ function MePage() {
       </section>
 
       {/* 退出 */}
-      <section className="px-5 mt-5">
+      <section className="px-4 mt-5">
         <button
           onClick={() => setOpen(true)}
-          className="w-full h-11 rounded-xl bg-card border border-border text-body text-[var(--state-danger)] inline-flex items-center justify-center gap-1.5 active:bg-[var(--state-danger)]/5"
+          className="w-full h-12 rounded-xl bg-card border border-border text-body text-[var(--state-danger)] inline-flex items-center justify-center gap-1.5 active:bg-[var(--state-danger)]/5"
         >
           <LogOut className="h-4 w-4" /> 退出登录
         </button>
