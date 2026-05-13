@@ -115,7 +115,9 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const location = useLocation();
   const isAuthRoute =
-    location.pathname === "/login" || location.pathname.startsWith("/m");
+    location.pathname === "/login" ||
+    location.pathname === "/workspace" ||
+    location.pathname.startsWith("/m");
 
   if (isAuthRoute) {
     return (

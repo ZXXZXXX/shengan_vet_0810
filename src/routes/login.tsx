@@ -25,7 +25,7 @@ function LoginPage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ to: "/" });
+    navigate({ to: "/workspace" });
   };
 
   return (
