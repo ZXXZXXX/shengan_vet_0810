@@ -1,9 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Sparkles, ChevronRight, LogOut, ShieldCheck, Activity } from "lucide-react";
 import cattleImg from "@/assets/module-cattle.jpg";
 import sheepImg from "@/assets/module-sheep.jpg";
 import riceImg from "@/assets/module-rice.jpg";
 import parkImg from "@/assets/module-park.jpg";
+import { ModuleTransition, type TransitionState } from "@/components/module-transition";
 
 export const Route = createFileRoute("/workspace")({
   head: () => ({ meta: [{ title: "工作台 — 选择业务模块" }] }),
