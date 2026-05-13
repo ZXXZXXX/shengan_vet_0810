@@ -40,10 +40,10 @@ const groups: NavGroup[] = [
     children: [{ title: "运营看板", url: "/" }],
   },
   {
-    title: "生产对象",
+    title: "生产管理",
     icon: Boxes,
     children: [
-      { title: "对象档案", url: "/production" },
+      { title: "基础档案", url: "/production" },
       { title: "健康防护", url: "/production/health" },
     ],
   },

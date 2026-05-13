@@ -4,7 +4,7 @@ import { Search, ScanLine, Beef, Filter, ChevronRight } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
 export const Route = createFileRoute("/m/animals/")({
-  head: () => ({ meta: [{ title: "对象档案 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "基础档案 · 奇点智牧" }] }),
   component: AnimalsPage,
 });
 
@@ -57,7 +57,7 @@ function AnimalsPage() {
       {/* 顶部搜索区 */}
       <header className="px-4 pt-12 pb-3 bg-card border-b border-border sticky top-0 z-20">
         <div className="flex items-center gap-2 mb-3">
-          <h1 className="text-section-title text-foreground flex-1">对象档案</h1>
+          <h1 className="text-section-title text-foreground flex-1">基础档案</h1>
           <button className="h-8 w-8 rounded-full bg-surface-subtle text-text-secondary inline-flex items-center justify-center">
             <Filter className="h-4 w-4" />
           </button>
