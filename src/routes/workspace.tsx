@@ -105,42 +105,50 @@ function WorkspacePage() {
 
   return (
     <div className="min-h-screen w-full bg-background relative overflow-hidden">
-      {/* ============ 背景视觉层 ============ */}
+      {/* ============ 背景视觉层 — 强化版 ============ */}
+      {/* 网格 */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        className="pointer-events-none absolute inset-0 opacity-[0.5]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, color-mix(in oklab, var(--brand) 8%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--brand) 8%, transparent) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
+            "linear-gradient(to right, color-mix(in oklab, var(--brand) 10%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--brand) 10%, transparent) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
           maskImage:
-            "radial-gradient(ellipse 80% 70% at 50% 30%, black 40%, transparent 85%)",
+            "radial-gradient(ellipse 80% 70% at 50% 30%, black 35%, transparent 80%)",
         }}
       />
+      {/* 顶部光带 */}
       <div
-        className="pointer-events-none absolute top-0 inset-x-0 h-[420px] -z-0"
+        className="pointer-events-none absolute top-0 inset-x-0 h-[520px]"
         style={{
           background:
-            "radial-gradient(ellipse 60% 100% at 30% 0%, color-mix(in oklab, var(--brand) 10%, transparent) 0%, transparent 70%), radial-gradient(ellipse 50% 100% at 80% 0%, color-mix(in oklab, var(--effect-ai-purple) 10%, transparent) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 100% at 25% 0%, color-mix(in oklab, var(--brand) 22%, transparent) 0%, transparent 65%), radial-gradient(ellipse 55% 100% at 80% 0%, color-mix(in oklab, var(--effect-ai-purple) 20%, transparent) 0%, transparent 65%), radial-gradient(ellipse 45% 80% at 55% 10%, color-mix(in oklab, var(--effect-ai-cyan) 16%, transparent) 0%, transparent 70%)",
         }}
       />
-      <div className="pointer-events-none absolute -top-32 right-[8%] h-[380px] w-[380px] rounded-full bg-[var(--effect-ai-purple)]/15 blur-3xl" />
-      <div className="pointer-events-none absolute top-[40%] -left-24 h-[420px] w-[420px] rounded-full bg-primary/12 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 right-[20%] h-[460px] w-[460px] rounded-full bg-[var(--effect-ai-cyan)]/10 blur-3xl" />
+      {/* 极光光斑（更饱和、动效） */}
+      <div className="pointer-events-none absolute -top-32 right-[6%] h-[460px] w-[460px] rounded-full bg-[var(--effect-ai-purple)]/30 blur-[120px] animate-pulse" style={{ animationDuration: "6s" }} />
+      <div className="pointer-events-none absolute top-[30%] -left-32 h-[520px] w-[520px] rounded-full bg-primary/25 blur-[120px] animate-pulse" style={{ animationDuration: "7s" }} />
+      <div className="pointer-events-none absolute -bottom-44 right-[18%] h-[520px] w-[520px] rounded-full bg-[var(--effect-ai-cyan)]/22 blur-[120px] animate-pulse" style={{ animationDuration: "8s" }} />
+      <div className="pointer-events-none absolute top-[55%] left-[40%] h-[300px] w-[300px] rounded-full bg-[var(--state-warning)]/15 blur-[100px]" />
+      {/* 顶部装饰线条 */}
       <svg
-        className="pointer-events-none absolute top-0 right-0 w-[680px] h-[520px] opacity-40"
-        viewBox="0 0 680 520"
+        className="pointer-events-none absolute top-0 right-0 w-[760px] h-[600px] opacity-60"
+        viewBox="0 0 760 600"
         fill="none"
       >
-        <path d="M680 0 L380 520" stroke="url(#g1)" strokeWidth="1" />
-        <path d="M680 80 L300 520" stroke="url(#g1)" strokeWidth="1" />
-        <path d="M680 160 L220 520" stroke="url(#g1)" strokeWidth="1" />
+        <path d="M760 0 L420 600" stroke="url(#g1)" strokeWidth="1" />
+        <path d="M760 80 L340 600" stroke="url(#g1)" strokeWidth="1" />
+        <path d="M760 160 L260 600" stroke="url(#g1)" strokeWidth="1" />
+        <path d="M760 240 L180 600" stroke="url(#g1)" strokeWidth="1.5" />
         <defs>
           <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--brand)" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="var(--brand)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--brand)" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="var(--effect-ai-purple)" stopOpacity="0" />
           </linearGradient>
         </defs>
       </svg>
+      {/* 底部加深 */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[200px] bg-gradient-to-t from-background to-transparent" />
 
       {/* ============ 顶部导航 ============ */}
       <header className="relative px-6 pt-6 flex items-center justify-between">
@@ -167,87 +175,136 @@ function WorkspacePage() {
       </header>
 
       {/* ============ 主内容 ============ */}
-      <main className="relative max-w-[1280px] mx-auto px-6 pt-16 pb-16">
+      <main className="relative max-w-[1280px] mx-auto px-6 pt-20 pb-16">
         <div className="flex items-end justify-between flex-wrap gap-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption bg-brand-subtle text-primary mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-caption bg-brand-subtle text-primary mb-4 ring-1 ring-primary/25 shadow-[0_0_24px_-6px_var(--brand)]">
               <Sparkles className="h-3 w-3" /> 欢迎回来，张磊
             </div>
-            <h1 className="text-page-title text-foreground">请选择你要进入的业务模块</h1>
-            <p className="text-body text-text-secondary mt-1.5">
+            <h1
+              className="font-medium tracking-tight leading-[1.05]"
+              style={{
+                fontSize: "clamp(36px, 4.4vw, 56px)",
+                background:
+                  "linear-gradient(120deg, var(--text-primary) 0%, var(--text-primary) 40%, color-mix(in oklab, var(--brand) 75%, var(--text-primary)) 70%, var(--effect-ai-purple) 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              请选择你要进入的<br className="hidden md:block" />业务模块
+            </h1>
+            <p className="text-body text-text-secondary mt-3 max-w-[560px]">
               一个账号统管多业态，每个模块拥有独立的数据空间与权限体系
             </p>
-          </div>
-          <div className="hidden lg:flex items-center gap-6 text-text-secondary">
-            <div className="text-right">
-              <div className="text-caption text-text-tertiary">在管业务</div>
-              <div className="text-section-title text-foreground tabular-nums">4 类</div>
+            <div className="mt-4 inline-flex items-center gap-1.5 text-caption text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="tracking-wider uppercase">All systems operational</span>
             </div>
-            <div className="h-10 w-px bg-border" />
-            <div className="text-right">
+          </div>
+          <div className="hidden lg:flex items-center gap-3">
+            <div className="rounded-xl border border-border/70 bg-card/70 backdrop-blur-md px-5 py-3 shadow-[0_8px_30px_-12px_color-mix(in_oklab,var(--brand)_30%,transparent)]">
+              <div className="text-caption text-text-tertiary">在管业务</div>
+              <div className="mt-0.5 flex items-baseline gap-1">
+                <span className="text-page-title text-foreground tabular-nums font-medium">4</span>
+                <span className="text-caption text-text-tertiary">类</span>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border/70 bg-card/70 backdrop-blur-md px-5 py-3">
               <div className="text-caption text-text-tertiary">最近登录</div>
-              <div className="text-section-title text-foreground tabular-nums">今天 09:12</div>
+              <div className="text-section-title text-foreground tabular-nums mt-0.5">今天 09:12</div>
             </div>
           </div>
         </div>
 
         {/* 卡片网格 — PC 24px gutter */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {modules.map((m) => {
-            // 横向渐变蒙层：左侧重(92%) → 右侧轻(18%)，从左向右透明度降低（蒙层变薄、图片更显）
-            const overlay = `linear-gradient(90deg,
-              color-mix(in oklab, ${m.toneVar} 92%, transparent) 0%,
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modules.map((m, idx) => {
+            const overlay = `linear-gradient(135deg,
+              color-mix(in oklab, ${m.toneVar} 95%, transparent) 0%,
               color-mix(in oklab, ${m.toneVar} 70%, transparent) 35%,
-              color-mix(in oklab, ${m.toneVar} 42%, transparent) 70%,
-              color-mix(in oklab, ${m.toneVar} 18%, transparent) 100%)`;
+              color-mix(in oklab, ${m.toneVar} 38%, transparent) 70%,
+              color-mix(in oklab, ${m.toneVar} 12%, transparent) 100%)`;
             return (
               <button
                 key={m.key}
                 disabled={!m.enabled}
                 onClick={(e) => handleEnter(m, e)}
-                className={`group relative text-left rounded-2xl border border-border/60 bg-card overflow-hidden h-[340px] transition-all
+                style={{
+                  animationDelay: `${idx * 80}ms`,
+                  boxShadow: m.enabled
+                    ? `0 24px 60px -28px color-mix(in oklab, ${m.toneVar} 70%, transparent), 0 0 0 1px color-mix(in oklab, ${m.toneVar} 22%, transparent) inset`
+                    : undefined,
+                }}
+                className={`group relative text-left rounded-2xl border border-border/40 bg-card overflow-hidden h-[380px] transition-all duration-500 animate-fade-in
                   ${m.enabled
-                    ? "hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_var(--brand)] cursor-pointer"
+                    ? "hover:-translate-y-1.5 hover:scale-[1.015] cursor-pointer"
                     : "opacity-85 cursor-not-allowed"}`}
               >
                 <img
                   src={m.image}
                   alt={m.title}
                   loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.1]"
                 />
                 <div
-                  className="absolute inset-0 backdrop-blur-[1.5px]"
+                  className="absolute inset-0 transition-opacity duration-500"
                   style={{ background: overlay }}
                 />
-                {/* 顶部反光 */}
-                <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/15 to-transparent" />
-
-                {/* 状态徽标 — 仅未开通时显示在右上 */}
-                {!m.enabled && (
-                  <div className="relative p-6 flex items-center justify-end">
-                    <span className="px-2 py-0.5 rounded-full text-caption bg-black/35 backdrop-blur-md text-white border border-white/20">
-                      即将上线
-                    </span>
+                {/* 顶部高光 */}
+                <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/30 to-transparent" />
+                {/* 右下品牌色光晕 */}
+                <div
+                  className="absolute -bottom-20 -right-20 h-56 w-56 rounded-full blur-3xl opacity-0 group-hover:opacity-90 transition-opacity duration-700"
+                  style={{ background: `color-mix(in oklab, ${m.toneVar} 60%, transparent)` }}
+                />
+                {/* 扫光（hover 时） */}
+                {m.enabled && (
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div
+                      className="absolute -inset-x-10 -top-10 h-[140%] w-1/3 -translate-x-full group-hover:translate-x-[400%] transition-transform duration-[1100ms] ease-out"
+                      style={{
+                        background:
+                          "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%)",
+                      }}
+                    />
                   </div>
                 )}
 
+                {/* 状态徽标 / 序号 */}
+                <div className="relative p-6 flex items-start justify-between">
+                  <span className="text-caption text-white/85 tabular-nums tracking-[0.2em] font-medium drop-shadow">
+                    0{idx + 1}
+                  </span>
+                  {!m.enabled ? (
+                    <span className="px-2 py-0.5 rounded-full text-caption bg-black/40 backdrop-blur-md text-white border border-white/25">
+                      即将上线
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-caption bg-white/25 backdrop-blur-md text-white border border-white/40 shadow-[0_0_20px_-4px_rgba(255,255,255,0.5)]">
+                      已开通
+                    </span>
+                  )}
+                </div>
+
                 {/* 文本区 */}
-                <div className="absolute inset-x-0 bottom-0 p-6 pt-10">
-                  <div className="text-caption text-white/70 tracking-wide uppercase mb-1">{m.subtitle}</div>
-                  <div className="flex items-center gap-1.5 text-white">
-                    <h3 className="text-section-title font-medium drop-shadow-sm">{m.title}</h3>
+                <div className="absolute inset-x-0 bottom-0 p-6 pt-12">
+                  <div className="text-caption text-white/75 tracking-[0.18em] uppercase mb-1.5 font-medium">{m.subtitle}</div>
+                  <div className="flex items-center gap-2 text-white">
+                    <h3 className="text-[22px] leading-[28px] font-medium drop-shadow-md">{m.title}</h3>
                     {m.enabled && (
-                      <ChevronRight className="h-4 w-4 opacity-80 group-hover:translate-x-1 transition-transform" />
+                      <span className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/40 group-hover:bg-white group-hover:text-foreground transition-all">
+                        <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                      </span>
                     )}
                   </div>
-                  <p className="text-body-sm text-white/85 mt-1.5 leading-relaxed">{m.desc}</p>
+                  <p className="text-body-sm text-white/90 mt-2 leading-relaxed line-clamp-2">{m.desc}</p>
 
-                  <div className="mt-4 grid grid-cols-3 gap-2 pt-4 border-t border-white/20">
+                  <div className="mt-4 grid grid-cols-3 gap-2 pt-4 border-t border-white/25">
                     {m.stats.map((s) => (
                       <div key={s.label}>
-                        <div className="text-caption text-white/70">{s.label}</div>
-                        <div className="text-card-title text-white tabular-nums mt-0.5 drop-shadow-sm">{s.value}</div>
+                        <div className="text-caption text-white/75">{s.label}</div>
+                        <div className="text-card-title text-white tabular-nums mt-0.5 drop-shadow-md font-medium">{s.value}</div>
                       </div>
                     ))}
                   </div>
