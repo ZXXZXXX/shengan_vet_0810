@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -5,6 +6,7 @@ import {
   Boxes,
   Warehouse,
   Settings,
+  ChevronDown,
 } from "lucide-react";
 
 import {
@@ -12,19 +14,21 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 type LeafItem = { title: string; url: string };
 type NavGroup = {
   title: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  // 单入口分组：直接作为可点击的二级入口（无子项）
   url?: string;
   children?: LeafItem[];
 };
@@ -76,13 +80,31 @@ export function AppSidebar() {
     select: (router) => router.location.pathname,
   });
 
-  // 二级菜单严格匹配，避免一级被"自动选中"
   const isLeafActive = (url: string) =>
     url === "/" ? currentPath === "/" : currentPath === url;
 
+  const hasActiveChild = (g: NavGroup) =>
+    !!g.children?.some((c) => isLeafActive(c.url)) || (!!g.url && isLeafActive(g.url));
+
+  // 默认收起；当前页所在分组自动展开。手动开关后保持用户选择。
+  const [openMap, setOpenMap] = React.useState<Record<string, boolean>>(() =>
+    Object.fromEntries(groups.map((g) => [g.title, hasActiveChild(g)])),
+  );
+
+  // 路由切换时，确保当前活动分组展开（不强制收起其他用户已展开项）
+  React.useEffect(() => {
+    setOpenMap((prev) => {
+      const next = { ...prev };
+      groups.forEach((g) => {
+        if (hasActiveChild(g)) next[g.title] = true;
+      });
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPath]);
+
   return (
     <Sidebar collapsible="none" className="border-r border-border bg-card">
-      {/* 顶部品牌区（顶部分割线由 border-b 提供） */}
       <SidebarHeader className="border-b border-border bg-card">
         <div className="flex items-center px-2 py-3">
           <Link to="/" className="flex items-center gap-2.5">
@@ -97,68 +119,56 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      {/* 中部导航 */}
-      <SidebarContent className="bg-card pt-2">
+      {/* 中部导航：纵向滚动 */}
+      <SidebarContent className="bg-card pt-2 overflow-y-auto">
         {groups.map((group) => {
-          const hasChildren = !!group.children?.length;
+          const open = !!openMap[group.title];
 
-          // 展开态：单入口分组直接作为二级入口
-          if (!hasChildren) {
-            const active = isLeafActive(group.url!);
-            return (
-              <SidebarGroup key={group.title} className="px-2">
-                <SidebarGroupContent>
-                  <SidebarMenu className="gap-0.5">
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={active}
-                        className={`relative h-10 rounded-md px-3 text-body transition-colors
-                          hover:bg-[var(--sidebar-hover)] hover:text-foreground
-                          data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium
-                          data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
-                      >
-                        <Link to={group.url!} className="flex items-center gap-3">
-                          <group.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
-                          <span className="flex-1">{group.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            );
-          }
-
-          // 展开态：多子项分组——一级仅作分组标题，不可点击、不跳转
           return (
-            <SidebarGroup key={group.title} className="px-2">
-              <SidebarGroupLabel className="h-8 px-3 text-caption text-text-tertiary font-normal flex items-center gap-2">
-                <group.icon className="h-[14px] w-[14px] shrink-0 text-text-tertiary" strokeWidth={1.75} />
-                <span>{group.title}</span>
-              </SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu className="gap-0.5">
-                  {group.children!.map((c) => {
-                    const active = isLeafActive(c.url);
-                    return (
-                      <SidebarMenuItem key={c.title}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={active}
-                          className={`relative h-9 rounded-md pl-9 pr-3 text-body-sm transition-colors
-                            text-text-secondary
-                            hover:bg-[var(--sidebar-hover)] hover:text-foreground
-                            data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium
-                            data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
-                        >
-                          <Link to={c.url}>{c.title}</Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
+            <SidebarGroup key={group.title} className="px-2 py-0">
+              <Collapsible
+                open={open}
+                onOpenChange={(v) => setOpenMap((m) => ({ ...m, [group.title]: v }))}
+              >
+                <CollapsibleTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 h-9 px-3 rounded-lg text-body-sm text-text-secondary hover:bg-[var(--sidebar-hover)] hover:text-foreground transition-colors"
+                  >
+                    <group.icon className="h-[16px] w-[16px] shrink-0" strokeWidth={1.75} />
+                    <span className="flex-1 text-left">{group.title}</span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 shrink-0 text-text-tertiary transition-transform ${open ? "rotate-180" : ""}`}
+                      strokeWidth={1.75}
+                    />
+                  </button>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent className="overflow-hidden">
+                  <SidebarGroupContent className="pt-1 pb-1">
+                    <SidebarMenu className="gap-0.5">
+                      {group.children!.map((c) => {
+                        const active = isLeafActive(c.url);
+                        return (
+                          <SidebarMenuItem key={c.title}>
+                            <SidebarMenuButton
+                              asChild
+                              isActive={active}
+                              className={`relative h-9 rounded-lg pl-9 pr-3 text-body-sm transition-colors
+                                text-text-secondary
+                                hover:bg-[var(--sidebar-hover)] hover:text-foreground
+                                data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium
+                                data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
+                            >
+                              <Link to={c.url}>{c.title}</Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </Collapsible>
             </SidebarGroup>
           );
         })}
