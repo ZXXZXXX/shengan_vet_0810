@@ -74,8 +74,28 @@ const modules: Module[] = [
   },
 ];
 
+const toneByKey: Record<string, string> = {
+  cattle: "var(--brand)",
+  sheep: "var(--effect-ai-cyan)",
+  rice: "var(--state-warning)",
+  park: "var(--effect-ai-purple)",
+};
+
 function MWorkspacePage() {
   const navigate = useNavigate();
+  const [transition, setTransition] = useState<TransitionState>(null);
+
+  const handleEnter = (m: Module, e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!m.enabled) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    setTransition({
+      rect: { top: r.top, left: r.left, width: r.width, height: r.height },
+      tone: toneByKey[m.key] ?? "var(--brand)",
+      image: m.image,
+      variant: "mobile",
+      title: m.title,
+    });
+  };
 
   return (
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
