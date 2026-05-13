@@ -483,7 +483,7 @@ function HomePage() {
         </Card>
 
         {/* Todos */}
-        <Card className="border-border bg-card">
+        <Card ref={todosRef} className="border-border bg-card scroll-mt-20">
           <div className="p-6 pb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ClipboardList className="h-4 w-4 text-primary" strokeWidth={1.75} />
