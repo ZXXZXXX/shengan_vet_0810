@@ -144,7 +144,7 @@ export function AppSidebar() {
                   </button>
                 </CollapsibleTrigger>
 
-                <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+                <CollapsibleContent className="overflow-hidden">
                   <SidebarGroupContent className="pt-1 pb-1">
                     <SidebarMenu className="gap-0.5">
                       {group.children!.map((c) => {
