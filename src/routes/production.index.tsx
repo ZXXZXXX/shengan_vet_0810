@@ -577,10 +577,10 @@ function IconBtn({
       type="button"
       title={title}
       onClick={onClick}
-      className={`h-5 w-5 inline-flex items-center justify-center rounded transition-colors ${
+      className={`h-6 w-6 inline-flex items-center justify-center rounded-md transition-colors ${
         danger
-          ? "text-text-tertiary hover:text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10"
-          : "text-text-tertiary hover:text-primary hover:bg-brand-subtle"
+          ? "text-text-tertiary hover:text-[var(--state-danger)] hover:bg-[var(--state-danger)]/12"
+          : "text-text-tertiary hover:text-primary hover:bg-card hover:shadow-sm"
       }`}
     >
       {children}
