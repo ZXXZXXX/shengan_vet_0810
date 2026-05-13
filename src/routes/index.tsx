@@ -240,7 +240,11 @@ function HomePage() {
             return (
               <Card
                 key={k.label}
-                className="relative border-border bg-card p-6 overflow-hidden group hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)] transition-all"
+                onClick={k.anchor ? () => scrollToAnchor(k.anchor) : undefined}
+                role={k.anchor ? "button" : undefined}
+                tabIndex={k.anchor ? 0 : undefined}
+                onKeyDown={k.anchor ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); scrollToAnchor(k.anchor); } } : undefined}
+                className={`relative border-border bg-card p-6 overflow-hidden group transition-all ${k.anchor ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)]" : "hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)]"}`}
               >
                 {/* 顶部彩条 */}
                 <div
