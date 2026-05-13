@@ -90,7 +90,7 @@ function TransferPage() {
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
               <Input placeholder="按工单号 / 物资搜索" className="h-9 w-72 pl-9 text-body-sm bg-card border-border" />
