@@ -46,9 +46,9 @@ function ReportPage() {
               value={target}
               onChange={(e) => setTarget(e.target.value)}
               placeholder="输入或扫描耳标编号"
-              className="flex-1 h-11 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
+              className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
             />
-            <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
+            <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
               <ScanLine className="h-4 w-4" /> 扫码
             </button>
           </div>
@@ -143,7 +143,7 @@ function ReportPage() {
 
         {/* 抄送 */}
         <Section title="抄送">
-          <button className="w-full h-11 px-3 rounded-lg bg-card border border-border text-body-sm text-text-secondary inline-flex items-center justify-between">
+          <button className="w-full h-12 px-3 rounded-lg bg-card border border-border text-body-sm text-text-secondary inline-flex items-center justify-between">
             <span>选择牧场管理者</span>
             <ChevronDown className="h-4 w-4 text-text-tertiary" />
           </button>
@@ -155,7 +155,7 @@ function ReportPage() {
         <button
           disabled={!canSubmit || submitted}
           onClick={submit}
-          className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body disabled:opacity-50 transition-opacity"
+          className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body disabled:opacity-50 transition-opacity"
         >
           {submitted ? "已提交，工单已生成" : "提交上报"}
         </button>

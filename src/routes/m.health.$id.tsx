@@ -131,13 +131,13 @@ function OrderDetailPage() {
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 flex gap-2 pb-[calc(env(safe-area-inset-bottom)+12px)]">
           <button
             onClick={() => setConfirm("reject")}
-            className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary inline-flex items-center justify-center gap-1.5"
+            className="flex-1 h-12 rounded-lg border border-border text-body text-text-secondary inline-flex items-center justify-center gap-1.5"
           >
             <X className="h-4 w-4" /> 不通过
           </button>
           <button
             onClick={() => setConfirm("approve")}
-            className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+            className="flex-1 h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
           >
             <Check className="h-4 w-4" /> 通过
           </button>
@@ -146,7 +146,7 @@ function OrderDetailPage() {
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
           <button
             onClick={() => navigate({ to: "/m/health" })}
-            className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body"
+            className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body"
           >
             返回工单列表
           </button>

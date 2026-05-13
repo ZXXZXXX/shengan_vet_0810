@@ -93,7 +93,7 @@ function MePage() {
       <section className="px-4 mt-5">
         <button
           onClick={() => setOpen(true)}
-          className="w-full h-11 rounded-xl bg-card border border-border text-body text-[var(--state-danger)] inline-flex items-center justify-center gap-1.5 active:bg-[var(--state-danger)]/5"
+          className="w-full h-12 rounded-xl bg-card border border-border text-body text-[var(--state-danger)] inline-flex items-center justify-center gap-1.5 active:bg-[var(--state-danger)]/5"
         >
           <LogOut className="h-4 w-4" /> 退出登录
         </button>

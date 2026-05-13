@@ -86,13 +86,13 @@ function AnimalDetailPage() {
         <section className="px-4 mt-5 grid grid-cols-2 gap-2">
           <Link
             to="/m/health/report"
-            className="h-11 rounded-lg border border-border bg-card text-body text-text-secondary inline-flex items-center justify-center"
+            className="h-12 rounded-lg border border-border bg-card text-body text-text-secondary inline-flex items-center justify-center"
           >
             上报异常
           </Link>
           <Link
             to="/m/health"
-            className="h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center"
+            className="h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center"
           >
             查看工单
           </Link>
