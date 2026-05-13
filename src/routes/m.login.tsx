@@ -16,7 +16,7 @@ function MLoginPage() {
   const onLogin = () => {
     if (!agreed) return;
     setLoading(true);
-    setTimeout(() => navigate({ to: "/m" }), 600);
+    setTimeout(() => navigate({ to: "/m/workspace" }), 600);
   };
 
   return (

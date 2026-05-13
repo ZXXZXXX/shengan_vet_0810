@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as WarehouseRouteImport } from './routes/warehouse'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProductionRouteImport } from './routes/production'
@@ -27,6 +28,7 @@ import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowled
 import { Route as ProductionHealthRouteImport } from './routes/production.health'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
+import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLoginRouteImport } from './routes/m.login'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
@@ -35,6 +37,11 @@ import { Route as MHealthReportRouteImport } from './routes/m.health.report'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
 
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WarehouseRoute = WarehouseRouteImport.update({
   id: '/warehouse',
   path: '/warehouse',
@@ -125,6 +132,11 @@ const OrganizationRoleRoute = OrganizationRoleRouteImport.update({
   path: '/role',
   getParentRoute: () => OrganizationRoute,
 } as any)
+const MWorkspaceRoute = MWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => MRoute,
+} as any)
 const MMeRoute = MMeRouteImport.update({
   id: '/me',
   path: '/me',
@@ -169,8 +181,10 @@ export interface FileRoutesByFullPath {
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
+  '/workspace': typeof WorkspaceRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/workspace': typeof MWorkspaceRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
@@ -191,8 +205,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/workspace': typeof WorkspaceRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/workspace': typeof MWorkspaceRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
@@ -219,8 +235,10 @@ export interface FileRoutesById {
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
+  '/workspace': typeof WorkspaceRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/workspace': typeof MWorkspaceRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/production/health': typeof ProductionHealthRoute
@@ -248,8 +266,10 @@ export interface FileRouteTypes {
     | '/production'
     | '/settings'
     | '/warehouse'
+    | '/workspace'
     | '/m/login'
     | '/m/me'
+    | '/m/workspace'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
@@ -270,8 +290,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/workspace'
     | '/m/login'
     | '/m/me'
+    | '/m/workspace'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
@@ -297,8 +319,10 @@ export interface FileRouteTypes {
     | '/production'
     | '/settings'
     | '/warehouse'
+    | '/workspace'
     | '/m/login'
     | '/m/me'
+    | '/m/workspace'
     | '/organization/role'
     | '/organization/team'
     | '/production/health'
@@ -325,10 +349,18 @@ export interface RootRouteChildren {
   ProductionRoute: typeof ProductionRouteWithChildren
   SettingsRoute: typeof SettingsRouteWithChildren
   WarehouseRoute: typeof WarehouseRouteWithChildren
+  WorkspaceRoute: typeof WorkspaceRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/warehouse': {
       id: '/warehouse'
       path: '/warehouse'
@@ -455,6 +487,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationRoleRouteImport
       parentRoute: typeof OrganizationRoute
     }
+    '/m/workspace': {
+      id: '/m/workspace'
+      path: '/workspace'
+      fullPath: '/m/workspace'
+      preLoaderRoute: typeof MWorkspaceRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/me': {
       id: '/m/me'
       path: '/me'
@@ -510,6 +549,7 @@ declare module '@tanstack/react-router' {
 interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MMeRoute: typeof MMeRoute
+  MWorkspaceRoute: typeof MWorkspaceRoute
   MIndexRoute: typeof MIndexRoute
   MAnimalsIdRoute: typeof MAnimalsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
@@ -521,6 +561,7 @@ interface MRouteChildren {
 const MRouteChildren: MRouteChildren = {
   MLoginRoute: MLoginRoute,
   MMeRoute: MMeRoute,
+  MWorkspaceRoute: MWorkspaceRoute,
   MIndexRoute: MIndexRoute,
   MAnimalsIdRoute: MAnimalsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
@@ -599,6 +640,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductionRoute: ProductionRouteWithChildren,
   SettingsRoute: SettingsRouteWithChildren,
   WarehouseRoute: WarehouseRouteWithChildren,
+  WorkspaceRoute: WorkspaceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
