@@ -136,6 +136,13 @@ function HeroStat({ label, value, unit }: { label: string; value: string; unit?:
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const stockRef = useRef<HTMLDivElement | null>(null);
+  const warehouseRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToAnchor = (anchor?: "stock" | "warehouse") => {
+    const el = anchor === "stock" ? stockRef.current : anchor === "warehouse" ? warehouseRef.current : null;
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const handleApprove = () => {
     if (!activeRequest) return;
