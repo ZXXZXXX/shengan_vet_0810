@@ -49,7 +49,7 @@ function MHomePage() {
   return (
     <MobileShell>
       {/* 顶部欢迎 + 通知 */}
-      <header className="px-5 pt-12 pb-6 bg-gradient-to-br from-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
+      <header className="px-4 pt-12 pb-6 bg-gradient-to-br from-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
         <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
         <div className="relative flex items-start justify-between">
           <div>
@@ -75,7 +75,7 @@ function MHomePage() {
       </header>
 
       {/* 快捷入口 */}
-      <section className="px-5 mt-5">
+      <section className="px-4 mt-5">
         <div className="grid grid-cols-4 gap-2">
           {actions.map((a) => {
             const Icon = a.icon;
@@ -96,8 +96,8 @@ function MHomePage() {
       </section>
 
       {/* AI 提醒 */}
-      <section className="px-5 mt-5">
-        <div className="rounded-xl p-3.5 border border-[var(--effect-ai-purple)]/20 bg-gradient-to-br from-[var(--effect-ai-purple)]/8 to-[var(--effect-ai-cyan)]/8">
+      <section className="px-4 mt-5">
+        <div className="rounded-xl p-4 border border-[var(--effect-ai-purple)]/20 bg-gradient-to-br from-[var(--effect-ai-purple)]/8 to-[var(--effect-ai-cyan)]/8">
           <div className="flex items-center gap-2 mb-2">
             <span className="h-6 w-6 rounded-md bg-[var(--effect-ai-purple)]/15 flex items-center justify-center">
               <Sparkles className="h-3.5 w-3.5 text-[var(--effect-ai-purple)]" />
@@ -118,7 +118,7 @@ function MHomePage() {
       </section>
 
       {/* 异常预警 */}
-      <section className="px-5 mt-5">
+      <section className="px-4 mt-5">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-card-title text-foreground">异常预警</h3>
           <Link to="/m/health" className="text-caption text-text-tertiary inline-flex items-center">

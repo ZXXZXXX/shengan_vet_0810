@@ -20,7 +20,7 @@ function MLoginPage() {
   };
 
   return (
-    <div className="min-h-dvh bg-[var(--bg-page)] flex justify-center">
+    <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col relative overflow-hidden">
         {/* AI 视觉背景 */}
         <div className="absolute inset-0 -z-10">
