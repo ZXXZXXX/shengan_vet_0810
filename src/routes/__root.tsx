@@ -129,7 +129,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
+      <SidebarProvider style={{ "--sidebar-width": "248px" } as React.CSSProperties}>
         <div className="flex min-h-screen w-full bg-background">
           <AppSidebar />
           <div className="flex-1 flex flex-col min-w-0">
