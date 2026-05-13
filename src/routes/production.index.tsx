@@ -388,12 +388,28 @@ function ObjectListPage() {
                     className="h-9 w-64 pl-9 text-body-sm bg-card border-border"
                   />
                 </div>
-                <Button variant="outline" size="sm" className="h-9 text-body-sm font-normal">
-                  全部品种
-                </Button>
-                <Button variant="outline" size="sm" className="h-9 text-body-sm font-normal">
-                  全部阶段
-                </Button>
+                <Select defaultValue="all">
+                  <SelectTrigger className="h-9 w-[120px] text-body-sm bg-card border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全部品种</SelectItem>
+                    <SelectItem value="holstein">荷斯坦</SelectItem>
+                    <SelectItem value="simmental">西门塔尔</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select defaultValue="all">
+                  <SelectTrigger className="h-9 w-[120px] text-body-sm bg-card border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全部阶段</SelectItem>
+                    <SelectItem value="calf">犊牛</SelectItem>
+                    <SelectItem value="young">青年</SelectItem>
+                    <SelectItem value="mature">成母牛</SelectItem>
+                    <SelectItem value="dry">干奶</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
                   <Filter className="h-3.5 w-3.5" /> 高级筛选
                 </Button>
