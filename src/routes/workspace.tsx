@@ -89,6 +89,19 @@ const modules: Module[] = [
 
 function WorkspacePage() {
   const navigate = useNavigate();
+  const [transition, setTransition] = useState<TransitionState>(null);
+
+  const handleEnter = (m: Module, e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!m.enabled) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    setTransition({
+      rect: { top: r.top, left: r.left, width: r.width, height: r.height },
+      tone: m.toneVar,
+      image: m.image,
+      variant: "pc",
+      title: m.title,
+    });
+  };
 
   return (
     <div className="min-h-screen w-full bg-background relative overflow-hidden">
