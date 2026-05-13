@@ -352,8 +352,11 @@ function HomePage() {
           </Card>
         </div>
 
+        {/* 存栏构成 */}
+        <StockCompositionCard ref={stockRef} />
+
         {/* 仓库物资概览 */}
-        <Card className="border-border bg-card">
+        <Card ref={warehouseRef} className="border-border bg-card scroll-mt-20">
           <div className="p-6 pb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" strokeWidth={1.75} />
