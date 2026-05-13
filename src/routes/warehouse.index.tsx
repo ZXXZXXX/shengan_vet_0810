@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine,
+  Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine, ArrowLeftRight,
   Package, Pill, Wheat, FlaskConical, TrendingDown, TrendingUp,
   Download, MoreHorizontal, Pencil, Trash2,
 } from "lucide-react";
