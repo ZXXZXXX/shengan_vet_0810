@@ -41,8 +41,8 @@ export const Route = createFileRoute("/")({
 const kpis = [
   { label: "存栏总数", value: "2,486", unit: "头", trend: "up", delta: "+1.2%", icon: Beef, anchor: "stock" as const },
   { label: "仓库物资", value: "186", unit: "类", trend: "down", delta: "-3 类临期", icon: Package, anchor: "warehouse" as const },
-  { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope },
-  { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList },
+  { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope, anchor: "alerts" as const },
+  { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "todos" as const },
 ];
 
 type RequestType = "transfer" | "health";
@@ -211,9 +211,15 @@ function HomePage() {
   const [rejectReason, setRejectReason] = useState("");
   const stockRef = useRef<HTMLDivElement | null>(null);
   const warehouseRef = useRef<HTMLDivElement | null>(null);
+  const alertsRef = useRef<HTMLDivElement | null>(null);
+  const todosRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollToAnchor = (anchor?: "stock" | "warehouse") => {
-    const el = anchor === "stock" ? stockRef.current : anchor === "warehouse" ? warehouseRef.current : null;
+  const scrollToAnchor = (anchor?: "stock" | "warehouse" | "alerts" | "todos") => {
+    const el =
+      anchor === "stock" ? stockRef.current :
+      anchor === "warehouse" ? warehouseRef.current :
+      anchor === "alerts" ? alertsRef.current :
+      anchor === "todos" ? todosRef.current : null;
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -364,7 +370,7 @@ function HomePage() {
 
         {/* Alerts + Units */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <Card className="lg:col-span-2 border-border bg-card">
+          <Card ref={alertsRef} className="lg:col-span-2 border-border bg-card scroll-mt-20">
             <div className="flex items-center justify-between p-6 pb-4">
               <div className="flex items-center gap-2">
                 <Inbox className="h-4 w-4 text-primary" strokeWidth={1.75} />
@@ -477,7 +483,7 @@ function HomePage() {
         </Card>
 
         {/* Todos */}
-        <Card className="border-border bg-card">
+        <Card ref={todosRef} className="border-border bg-card scroll-mt-20">
           <div className="p-6 pb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ClipboardList className="h-4 w-4 text-primary" strokeWidth={1.75} />
