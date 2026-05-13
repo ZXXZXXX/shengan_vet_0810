@@ -218,62 +218,93 @@ function WorkspacePage() {
         </div>
 
         {/* 卡片网格 — PC 24px gutter */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {modules.map((m) => {
-            // 横向渐变蒙层：左侧重(92%) → 右侧轻(18%)，从左向右透明度降低（蒙层变薄、图片更显）
-            const overlay = `linear-gradient(90deg,
-              color-mix(in oklab, ${m.toneVar} 92%, transparent) 0%,
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modules.map((m, idx) => {
+            const overlay = `linear-gradient(135deg,
+              color-mix(in oklab, ${m.toneVar} 95%, transparent) 0%,
               color-mix(in oklab, ${m.toneVar} 70%, transparent) 35%,
-              color-mix(in oklab, ${m.toneVar} 42%, transparent) 70%,
-              color-mix(in oklab, ${m.toneVar} 18%, transparent) 100%)`;
+              color-mix(in oklab, ${m.toneVar} 38%, transparent) 70%,
+              color-mix(in oklab, ${m.toneVar} 12%, transparent) 100%)`;
             return (
               <button
                 key={m.key}
                 disabled={!m.enabled}
                 onClick={(e) => handleEnter(m, e)}
-                className={`group relative text-left rounded-2xl border border-border/60 bg-card overflow-hidden h-[340px] transition-all
+                style={{
+                  animationDelay: `${idx * 80}ms`,
+                  boxShadow: m.enabled
+                    ? `0 24px 60px -28px color-mix(in oklab, ${m.toneVar} 70%, transparent), 0 0 0 1px color-mix(in oklab, ${m.toneVar} 22%, transparent) inset`
+                    : undefined,
+                }}
+                className={`group relative text-left rounded-2xl border border-border/40 bg-card overflow-hidden h-[380px] transition-all duration-500 animate-fade-in
                   ${m.enabled
-                    ? "hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_var(--brand)] cursor-pointer"
+                    ? "hover:-translate-y-1.5 hover:scale-[1.015] cursor-pointer"
                     : "opacity-85 cursor-not-allowed"}`}
               >
                 <img
                   src={m.image}
                   alt={m.title}
                   loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.1]"
                 />
                 <div
-                  className="absolute inset-0 backdrop-blur-[1.5px]"
+                  className="absolute inset-0 transition-opacity duration-500"
                   style={{ background: overlay }}
                 />
-                {/* 顶部反光 */}
-                <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/15 to-transparent" />
-
-                {/* 状态徽标 — 仅未开通时显示在右上 */}
-                {!m.enabled && (
-                  <div className="relative p-6 flex items-center justify-end">
-                    <span className="px-2 py-0.5 rounded-full text-caption bg-black/35 backdrop-blur-md text-white border border-white/20">
-                      即将上线
-                    </span>
+                {/* 顶部高光 */}
+                <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/30 to-transparent" />
+                {/* 右下品牌色光晕 */}
+                <div
+                  className="absolute -bottom-20 -right-20 h-56 w-56 rounded-full blur-3xl opacity-0 group-hover:opacity-90 transition-opacity duration-700"
+                  style={{ background: `color-mix(in oklab, ${m.toneVar} 60%, transparent)` }}
+                />
+                {/* 扫光（hover 时） */}
+                {m.enabled && (
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div
+                      className="absolute -inset-x-10 -top-10 h-[140%] w-1/3 -translate-x-full group-hover:translate-x-[400%] transition-transform duration-[1100ms] ease-out"
+                      style={{
+                        background:
+                          "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%)",
+                      }}
+                    />
                   </div>
                 )}
 
+                {/* 状态徽标 / 序号 */}
+                <div className="relative p-6 flex items-start justify-between">
+                  <span className="text-caption text-white/85 tabular-nums tracking-[0.2em] font-medium drop-shadow">
+                    0{idx + 1}
+                  </span>
+                  {!m.enabled ? (
+                    <span className="px-2 py-0.5 rounded-full text-caption bg-black/40 backdrop-blur-md text-white border border-white/25">
+                      即将上线
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-caption bg-white/25 backdrop-blur-md text-white border border-white/40 shadow-[0_0_20px_-4px_rgba(255,255,255,0.5)]">
+                      已开通
+                    </span>
+                  )}
+                </div>
+
                 {/* 文本区 */}
-                <div className="absolute inset-x-0 bottom-0 p-6 pt-10">
-                  <div className="text-caption text-white/70 tracking-wide uppercase mb-1">{m.subtitle}</div>
-                  <div className="flex items-center gap-1.5 text-white">
-                    <h3 className="text-section-title font-medium drop-shadow-sm">{m.title}</h3>
+                <div className="absolute inset-x-0 bottom-0 p-6 pt-12">
+                  <div className="text-caption text-white/75 tracking-[0.18em] uppercase mb-1.5 font-medium">{m.subtitle}</div>
+                  <div className="flex items-center gap-2 text-white">
+                    <h3 className="text-[22px] leading-[28px] font-medium drop-shadow-md">{m.title}</h3>
                     {m.enabled && (
-                      <ChevronRight className="h-4 w-4 opacity-80 group-hover:translate-x-1 transition-transform" />
+                      <span className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/40 group-hover:bg-white group-hover:text-foreground transition-all">
+                        <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                      </span>
                     )}
                   </div>
-                  <p className="text-body-sm text-white/85 mt-1.5 leading-relaxed">{m.desc}</p>
+                  <p className="text-body-sm text-white/90 mt-2 leading-relaxed line-clamp-2">{m.desc}</p>
 
-                  <div className="mt-4 grid grid-cols-3 gap-2 pt-4 border-t border-white/20">
+                  <div className="mt-4 grid grid-cols-3 gap-2 pt-4 border-t border-white/25">
                     {m.stats.map((s) => (
                       <div key={s.label}>
-                        <div className="text-caption text-white/70">{s.label}</div>
-                        <div className="text-card-title text-white tabular-nums mt-0.5 drop-shadow-sm">{s.value}</div>
+                        <div className="text-caption text-white/75">{s.label}</div>
+                        <div className="text-card-title text-white tabular-nums mt-0.5 drop-shadow-md font-medium">{s.value}</div>
                       </div>
                     ))}
                   </div>
