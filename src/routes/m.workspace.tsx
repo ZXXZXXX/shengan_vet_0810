@@ -1,9 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Sparkles, ChevronRight, LogOut } from "lucide-react";
 import cattleImg from "@/assets/module-cattle.jpg";
 import sheepImg from "@/assets/module-sheep.jpg";
 import riceImg from "@/assets/module-rice.jpg";
 import parkImg from "@/assets/module-park.jpg";
+import { ModuleTransition, type TransitionState } from "@/components/module-transition";
 
 export const Route = createFileRoute("/m/workspace")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
@@ -72,8 +74,28 @@ const modules: Module[] = [
   },
 ];
 
+const toneByKey: Record<string, string> = {
+  cattle: "var(--brand)",
+  sheep: "var(--effect-ai-cyan)",
+  rice: "var(--state-warning)",
+  park: "var(--effect-ai-purple)",
+};
+
 function MWorkspacePage() {
   const navigate = useNavigate();
+  const [transition, setTransition] = useState<TransitionState>(null);
+
+  const handleEnter = (m: Module, e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!m.enabled) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    setTransition({
+      rect: { top: r.top, left: r.left, width: r.width, height: r.height },
+      tone: toneByKey[m.key] ?? "var(--brand)",
+      image: m.image,
+      variant: "mobile",
+      title: m.title,
+    });
+  };
 
   return (
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
@@ -136,7 +158,7 @@ function MWorkspacePage() {
             <button
               key={m.key}
               disabled={!m.enabled}
-              onClick={() => m.enabled && navigate({ to: m.to })}
+              onClick={(e) => handleEnter(m, e)}
               className={`group relative w-full text-left rounded-2xl bg-card border border-border/60 shadow-[0_8px_24px_-12px_rgba(15,42,18,0.18)] active:scale-[.99] transition-all overflow-hidden
                 ${m.enabled ? "hover:shadow-[0_12px_32px_-12px_rgba(15,42,18,0.25)]" : "opacity-75"}`}
             >
@@ -187,6 +209,17 @@ function MWorkspacePage() {
           </p>
         </section>
       </div>
+
+      <ModuleTransition
+        state={transition}
+        onDone={() => {
+          if (transition) {
+            const target = modules.find((x) => x.title === transition.title);
+            if (target) navigate({ to: target.to });
+            setTimeout(() => setTransition(null), 80);
+          }
+        }}
+      />
     </div>
   );
 }

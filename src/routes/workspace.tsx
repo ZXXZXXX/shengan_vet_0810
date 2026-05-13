@@ -1,9 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Sparkles, ChevronRight, LogOut, ShieldCheck, Activity } from "lucide-react";
 import cattleImg from "@/assets/module-cattle.jpg";
 import sheepImg from "@/assets/module-sheep.jpg";
 import riceImg from "@/assets/module-rice.jpg";
 import parkImg from "@/assets/module-park.jpg";
+import { ModuleTransition, type TransitionState } from "@/components/module-transition";
 
 export const Route = createFileRoute("/workspace")({
   head: () => ({ meta: [{ title: "工作台 — 选择业务模块" }] }),
@@ -87,6 +89,19 @@ const modules: Module[] = [
 
 function WorkspacePage() {
   const navigate = useNavigate();
+  const [transition, setTransition] = useState<TransitionState>(null);
+
+  const handleEnter = (m: Module, e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!m.enabled) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    setTransition({
+      rect: { top: r.top, left: r.left, width: r.width, height: r.height },
+      tone: m.toneVar,
+      image: m.image,
+      variant: "pc",
+      title: m.title,
+    });
+  };
 
   return (
     <div className="min-h-screen w-full bg-background relative overflow-hidden">
@@ -189,7 +204,7 @@ function WorkspacePage() {
               <button
                 key={m.key}
                 disabled={!m.enabled}
-                onClick={() => m.enabled && navigate({ to: m.to })}
+                onClick={(e) => handleEnter(m, e)}
                 className={`group relative text-left rounded-2xl border border-border/60 bg-card overflow-hidden h-[340px] transition-all
                   ${m.enabled
                     ? "hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_var(--brand)] cursor-pointer"
@@ -253,6 +268,17 @@ function WorkspacePage() {
           </p>
         </div>
       </main>
+
+      <ModuleTransition
+        state={transition}
+        onDone={() => {
+          if (transition) {
+            const target = modules.find((x) => x.title === transition.title);
+            if (target) navigate({ to: target.to });
+            setTimeout(() => setTransition(null), 80);
+          }
+        }}
+      />
     </div>
   );
 }
