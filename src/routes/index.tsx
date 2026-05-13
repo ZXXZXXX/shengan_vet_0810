@@ -121,6 +121,18 @@ function TrendIcon({ trend }: { trend: string }) {
   return <Minus className="h-3 w-3 text-text-tertiary" />;
 }
 
+function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
+  return (
+    <div>
+      <div className="text-caption text-white/75">{label}</div>
+      <div className="mt-0.5 flex items-baseline gap-1">
+        <span className="text-section-title tabular-nums text-white drop-shadow-sm">{value}</span>
+        {unit && <span className="text-caption text-white/75">{unit}</span>}
+      </div>
+    </div>
+  );
+}
+
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
