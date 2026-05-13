@@ -1,5 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Sparkles, ChevronRight, LogOut } from "lucide-react";
+import cattleImg from "@/assets/module-cattle.jpg";
+import sheepImg from "@/assets/module-sheep.jpg";
+import riceImg from "@/assets/module-rice.jpg";
 
 export const Route = createFileRoute("/workspace")({
   head: () => ({ meta: [{ title: "工作台 — 选择业务模块" }] }),
@@ -10,7 +13,7 @@ type Module = {
   key: string;
   title: string;
   desc: string;
-  emoji: string;
+  image: string;
   to: string;
   enabled: boolean;
   tone: "brand" | "info" | "warm";
@@ -22,7 +25,7 @@ const modules: Module[] = [
     key: "cattle",
     title: "牛 · 牧场管理",
     desc: "覆盖生产、健康、仓储、组织与配置全流程",
-    emoji: "🐄",
+    image: cattleImg,
     to: "/",
     enabled: true,
     tone: "brand",
@@ -36,7 +39,7 @@ const modules: Module[] = [
     key: "sheep",
     title: "羊 · 牧场管理",
     desc: "肉羊与奶羊全周期管理，模块即将上线",
-    emoji: "🐑",
+    image: sheepImg,
     to: "/workspace",
     enabled: false,
     tone: "info",
@@ -50,7 +53,7 @@ const modules: Module[] = [
     key: "rice",
     title: "水稻 · 农场管理",
     desc: "种植、灌溉、植保、仓储一体化（试运行）",
-    emoji: "🌾",
+    image: riceImg,
     to: "/workspace",
     enabled: false,
     tone: "warm",
@@ -115,8 +118,8 @@ function WorkspacePage() {
                 ${m.enabled ? "hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-20px_var(--brand)] cursor-pointer" : "opacity-70 cursor-not-allowed"}`}
             >
               <div className="flex items-start justify-between">
-                <div className="h-12 w-12 rounded-xl bg-card border border-border flex items-center justify-center text-[26px] leading-none">
-                  {m.emoji}
+                <div className="h-14 w-14 rounded-xl overflow-hidden bg-card border border-border shrink-0">
+                  <img src={m.image} alt={m.title} loading="lazy" width={56} height={56} className="h-full w-full object-cover" />
                 </div>
                 {!m.enabled && (
                   <span className="tag tag-muted">即将上线</span>
