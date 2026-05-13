@@ -41,8 +41,8 @@ export const Route = createFileRoute("/")({
 const kpis = [
   { label: "存栏总数", value: "2,486", unit: "头", trend: "up", delta: "+1.2%", icon: Beef, anchor: "stock" as const },
   { label: "仓库物资", value: "186", unit: "类", trend: "down", delta: "-3 类临期", icon: Package, anchor: "warehouse" as const },
-  { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope },
-  { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList },
+  { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope, anchor: "alerts" as const },
+  { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "todos" as const },
 ];
 
 type RequestType = "transfer" | "health";
