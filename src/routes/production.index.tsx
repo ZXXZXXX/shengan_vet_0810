@@ -273,7 +273,7 @@ function ObjectListPage() {
                       <span className="text-caption text-text-tertiary tabular-nums opacity-100 group-hover:opacity-0 transition-opacity">
                         {f.barns.length}
                       </span>
-                      <div className="absolute right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity rounded-md bg-[var(--sidebar-hover,var(--bg-surface-subtle))] pl-3 pr-1 py-0.5 shadow-sm before:content-[''] before:absolute before:-left-4 before:top-0 before:bottom-0 before:w-4 before:bg-gradient-to-r before:from-transparent before:to-[var(--sidebar-hover,var(--bg-surface-subtle))] before:pointer-events-none">
                         <IconBtn
                           title="新增牛舍"
                           onClick={() => {
