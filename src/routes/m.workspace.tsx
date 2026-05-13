@@ -3,6 +3,7 @@ import { Sparkles, ChevronRight, LogOut } from "lucide-react";
 import cattleImg from "@/assets/module-cattle.jpg";
 import sheepImg from "@/assets/module-sheep.jpg";
 import riceImg from "@/assets/module-rice.jpg";
+import parkImg from "@/assets/module-park.jpg";
 
 export const Route = createFileRoute("/m/workspace")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
