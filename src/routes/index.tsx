@@ -321,23 +321,9 @@ function HomePage() {
             <div className="p-6 pb-4 flex items-center gap-2">
               <Activity className="h-4 w-4 text-primary" strokeWidth={1.75} />
               <h3 className="text-card-title text-foreground">生产单元状态</h3>
+              <span className="ml-auto tag tag-muted">{units.reduce((s, u) => s + u.count, 0)} 头</span>
             </div>
-            <div className="px-6 pb-6 space-y-2.5">
-              {units.map((u) => (
-                <div key={u.name} className="flex items-center gap-3 py-1.5">
-                  <span className={`h-1.5 w-1.5 rounded-full ${
-                    u.tone === "success" ? "bg-[var(--state-success)]" :
-                    u.tone === "warning" ? "bg-[var(--state-warning)]" :
-                    "bg-[var(--state-danger)]"
-                  }`} />
-                  <span className="flex-1 text-body text-foreground">{u.name}</span>
-                  <span className="text-body-sm text-text-tertiary tabular-nums">{u.count} 头</span>
-                  <span className={`tag tag-${u.tone === "success" ? "success" : u.tone === "warning" ? "warning" : "danger"}`}>
-                    {u.status}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <UnitsDonut />
           </Card>
         </div>
 
