@@ -39,7 +39,7 @@ import {
 export const Route = createFileRoute("/organization/")({
   head: () => ({
     meta: [
-      { title: "组织管理 — 奇点智牧" },
+      { title: "架构管理 — 奇点智牧" },
       { name: "description", content: "组织概览与人员账号集中管理" },
     ],
   }),
@@ -183,7 +183,7 @@ function OrganizationPage() {
 
   return (
     <>
-      <AppHeader title="组织管理" breadcrumb={["组织与人员", "组织管理"]} />
+      <AppHeader title="架构管理" breadcrumb={["组织与人员", "架构管理"]} />
       <main className="flex-1 px-6 py-6">
         <div className="grid grid-cols-12 gap-4">
           {/* Left: org overview */}

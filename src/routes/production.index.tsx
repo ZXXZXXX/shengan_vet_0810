@@ -246,7 +246,7 @@ function ObjectListPage() {
             <div className="px-2 py-1.5 border-b border-border bg-surface-subtle/40 flex items-center gap-1.5">
               <RefreshCw className="h-3 w-3 text-text-tertiary" />
               <span className="text-caption text-text-tertiary flex-1">
-                牧场与组织管理双向同步
+                牧场与架构管理双向同步
               </span>
             </div>
             <div className="py-2">
@@ -499,7 +499,7 @@ function ObjectListPage() {
             </DialogTitle>
             {(edit?.kind === "farm-add" || edit?.kind === "farm-rename") && (
               <DialogDescription>
-                牧场信息将与「组织管理」双向同步。
+                牧场信息将与「架构管理」双向同步。
               </DialogDescription>
             )}
           </DialogHeader>
@@ -542,7 +542,7 @@ function ObjectListPage() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {del?.kind === "farm"
-                ? "删除牧场将同时移除其下所有牛舍，且会同步至组织管理，操作不可撤销。"
+                ? "删除牧场将同时移除其下所有牛舍，且会同步至架构管理，操作不可撤销。"
                 : "删除后该牛舍下的牛只档案需要重新分配，操作不可撤销。"}
             </AlertDialogDescription>
           </AlertDialogHeader>
