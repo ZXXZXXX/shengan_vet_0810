@@ -370,7 +370,7 @@ function HomePage() {
 
         {/* Alerts + Units */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <Card className="lg:col-span-2 border-border bg-card">
+          <Card ref={alertsRef} className="lg:col-span-2 border-border bg-card scroll-mt-20">
             <div className="flex items-center justify-between p-6 pb-4">
               <div className="flex items-center gap-2">
                 <Inbox className="h-4 w-4 text-primary" strokeWidth={1.75} />
