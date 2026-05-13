@@ -5,7 +5,6 @@ import {
   Boxes,
   Warehouse,
   Settings,
-  PanelLeft,
 } from "lucide-react";
 
 import {
@@ -18,7 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
+  
 } from "@/components/ui/sidebar";
 
 type LeafItem = { title: string; url: string };
@@ -73,8 +72,6 @@ const groups: NavGroup[] = [
 ];
 
 export function AppSidebar() {
-  const { state, toggleSidebar } = useSidebar();
-  const collapsed = state === "collapsed";
   const currentPath = useRouterState({
     select: (router) => router.location.pathname,
   });
@@ -84,38 +81,19 @@ export function AppSidebar() {
     url === "/" ? currentPath === "/" : currentPath === url;
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border bg-card">
+    <Sidebar collapsible="none" className="border-r border-border bg-card">
       {/* 顶部品牌区（顶部分割线由 border-b 提供） */}
       <SidebarHeader className="border-b border-border bg-card">
-        <div className="flex items-center justify-between px-2 py-3">
-          {!collapsed ? (
-            <>
-              <Link to="/" className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle">
-                  <span className="text-card-title text-primary font-semibold leading-none">奇</span>
-                </div>
-                <div className="flex flex-col leading-tight">
-                  <span className="text-card-title font-medium text-foreground leading-tight">奇点</span>
-                  <span className="text-caption text-text-tertiary leading-tight">智牧管理系统</span>
-                </div>
-              </Link>
-              <button
-                onClick={toggleSidebar}
-                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary hover:bg-surface-subtle hover:text-foreground transition-colors"
-                aria-label="收起侧栏"
-              >
-                <PanelLeft className="h-4 w-4" />
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={toggleSidebar}
-              className="mx-auto flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle text-primary font-semibold"
-              aria-label="展开侧栏"
-            >
-              奇
-            </button>
-          )}
+        <div className="flex items-center px-2 py-3">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle">
+              <span className="text-card-title text-primary font-semibold leading-none">奇</span>
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-card-title font-medium text-foreground leading-tight">奇点</span>
+              <span className="text-caption text-text-tertiary leading-tight">智牧管理系统</span>
+            </div>
+          </Link>
         </div>
       </SidebarHeader>
 
@@ -123,41 +101,6 @@ export function AppSidebar() {
       <SidebarContent className="bg-card pt-2">
         {groups.map((group) => {
           const hasChildren = !!group.children?.length;
-
-          // 收起态：只显示一级 icon（用作纯视觉锚点 / tooltip）
-          if (collapsed) {
-            return (
-              <SidebarGroup key={group.title} className="px-2">
-                <SidebarGroupContent>
-                  <SidebarMenu className="gap-0.5">
-                    <SidebarMenuItem>
-                      {hasChildren ? (
-                        <SidebarMenuButton
-                          tooltip={group.title}
-                          className="h-10 rounded-md px-3 text-text-tertiary hover:bg-[var(--sidebar-hover)] hover:text-foreground cursor-default"
-                        >
-                          <group.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
-                        </SidebarMenuButton>
-                      ) : (
-                        <SidebarMenuButton
-                          asChild
-                          tooltip={group.title}
-                          isActive={isLeafActive(group.url!)}
-                          className="h-10 rounded-md px-3 text-body transition-colors
-                            hover:bg-[var(--sidebar-hover)] hover:text-foreground
-                            data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium"
-                        >
-                          <Link to={group.url!} className="flex items-center gap-3">
-                            <group.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
-                          </Link>
-                        </SidebarMenuButton>
-                      )}
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            );
-          }
 
           // 展开态：单入口分组直接作为二级入口
           if (!hasChildren) {
