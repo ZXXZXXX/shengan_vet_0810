@@ -1,5 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Sparkles, ChevronRight, LogOut } from "lucide-react";
+import cattleImg from "@/assets/module-cattle.jpg";
+import sheepImg from "@/assets/module-sheep.jpg";
+import riceImg from "@/assets/module-rice.jpg";
 
 export const Route = createFileRoute("/m/workspace")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
@@ -10,7 +13,7 @@ type Module = {
   key: string;
   title: string;
   desc: string;
-  emoji: string;
+  image: string;
   to: string;
   enabled: boolean;
   tone: "brand" | "info" | "warm";
@@ -22,7 +25,7 @@ const modules: Module[] = [
     key: "cattle",
     title: "牛 · 牧场管理",
     desc: "工单 · 健康 · 档案，一线全流程作业",
-    emoji: "🐄",
+    image: cattleImg,
     to: "/m/",
     enabled: true,
     tone: "brand",
@@ -32,7 +35,7 @@ const modules: Module[] = [
     key: "sheep",
     title: "羊 · 牧场管理",
     desc: "肉羊 / 奶羊全周期，模块筹备中",
-    emoji: "🐑",
+    image: sheepImg,
     to: "/m/workspace",
     enabled: false,
     tone: "info",
@@ -42,7 +45,7 @@ const modules: Module[] = [
     key: "rice",
     title: "水稻 · 农场管理",
     desc: "种植 · 植保 · 仓储一体化",
-    emoji: "🌾",
+    image: riceImg,
     to: "/m/workspace",
     enabled: false,
     tone: "warm",
@@ -105,8 +108,8 @@ function MWorkspacePage() {
                 ${m.enabled ? "" : "opacity-70"}`}
             >
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 shrink-0 rounded-xl bg-card border border-border flex items-center justify-center text-[24px] leading-none">
-                  {m.emoji}
+                <div className="h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-card border border-border">
+                  <img src={m.image} alt={m.title} loading="lazy" width={48} height={48} className="h-full w-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
