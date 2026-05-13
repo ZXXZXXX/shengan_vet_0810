@@ -158,7 +158,7 @@ function MWorkspacePage() {
             <button
               key={m.key}
               disabled={!m.enabled}
-              onClick={() => m.enabled && navigate({ to: m.to })}
+              onClick={(e) => handleEnter(m, e)}
               className={`group relative w-full text-left rounded-2xl bg-card border border-border/60 shadow-[0_8px_24px_-12px_rgba(15,42,18,0.18)] active:scale-[.99] transition-all overflow-hidden
                 ${m.enabled ? "hover:shadow-[0_12px_32px_-12px_rgba(15,42,18,0.25)]" : "opacity-75"}`}
             >
