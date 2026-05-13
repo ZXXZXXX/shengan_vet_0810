@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -7,7 +6,6 @@ import {
   Warehouse,
   Settings,
   PanelLeft,
-  ChevronRight,
 } from "lucide-react";
 
 import {
@@ -15,6 +13,7 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -22,18 +21,23 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-type NavItem = {
+type LeafItem = { title: string; url: string };
+type NavGroup = {
   title: string;
-  url: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  children?: { title: string; url: string }[];
+  // 单入口分组：直接作为可点击的二级入口（无子项）
+  url?: string;
+  children?: LeafItem[];
 };
 
-const items: NavItem[] = [
-  { title: "首页总览", url: "/", icon: LayoutDashboard },
+const groups: NavGroup[] = [
+  {
+    title: "首页总览",
+    icon: LayoutDashboard,
+    url: "/",
+  },
   {
     title: "生产对象",
-    url: "/production",
     icon: Boxes,
     children: [
       { title: "对象档案", url: "/production" },
@@ -42,7 +46,6 @@ const items: NavItem[] = [
   },
   {
     title: "仓库管理",
-    url: "/warehouse",
     icon: Warehouse,
     children: [
       { title: "库存管理", url: "/warehouse" },
@@ -51,7 +54,6 @@ const items: NavItem[] = [
   },
   {
     title: "组织管理",
-    url: "/organization",
     icon: Users,
     children: [
       { title: "组织管理", url: "/organization" },
@@ -61,7 +63,6 @@ const items: NavItem[] = [
   },
   {
     title: "配置中心",
-    url: "/settings",
     icon: Settings,
     children: [
       { title: "工单配置", url: "/settings" },
@@ -78,23 +79,13 @@ export function AppSidebar() {
     select: (router) => router.location.pathname,
   });
 
-  const isActive = (path: string) =>
-    path === "/" ? currentPath === "/" : currentPath.startsWith(path);
-
-  // Auto-expand active group
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
-    const init: Record<string, boolean> = {};
-    items.forEach((i) => {
-      if (i.children && isActive(i.url)) init[i.title] = true;
-    });
-    return init;
-  });
-
-  const toggle = (title: string) =>
-    setExpanded((p) => ({ ...p, [title]: !p[title] }));
+  // 二级菜单严格匹配，避免一级被"自动选中"
+  const isLeafActive = (url: string) =>
+    url === "/" ? currentPath === "/" : currentPath === url;
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border bg-card">
+      {/* 顶部品牌区（顶部分割线由 border-b 提供） */}
       <SidebarHeader className="border-b border-border bg-card">
         <div className="flex items-center justify-between px-2 py-3">
           {!collapsed ? (
@@ -111,6 +102,7 @@ export function AppSidebar() {
               <button
                 onClick={toggleSidebar}
                 className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary hover:bg-surface-subtle hover:text-foreground transition-colors"
+                aria-label="收起侧栏"
               >
                 <PanelLeft className="h-4 w-4" />
               </button>
@@ -119,6 +111,7 @@ export function AppSidebar() {
             <button
               onClick={toggleSidebar}
               className="mx-auto flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle text-primary font-semibold"
+              aria-label="展开侧栏"
             >
               奇
             </button>
@@ -126,78 +119,106 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
+      {/* 中部导航 */}
       <SidebarContent className="bg-card pt-2">
-        <SidebarGroup className="px-2">
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {items.map((item) => {
-                const active = isActive(item.url);
-                const open = expanded[item.title] ?? active;
-                const hasChildren = !!item.children?.length;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      tooltip={collapsed ? item.title : undefined}
-                      className={`relative h-10 rounded-md px-3 text-body transition-colors
-                        hover:bg-[var(--sidebar-hover)] hover:text-foreground
-                        data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium
-                        data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
-                      isActive={active}
-                    >
-                      <Link
-                        to={item.url}
-                        className="flex items-center gap-3"
-                        onClick={(e) => {
-                          if (hasChildren && !collapsed && active) {
-                            e.preventDefault();
-                            toggle(item.title);
-                          } else if (hasChildren && !collapsed) {
-                            setExpanded((p) => ({ ...p, [item.title]: true }));
-                          }
-                        }}
-                      >
-                        <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
-                        {!collapsed && (
-                          <>
-                            <span className="flex-1">{item.title}</span>
-                            {hasChildren && (
-                              <ChevronRight
-                                className={`h-3.5 w-3.5 text-text-tertiary transition-transform ${open ? "rotate-90" : ""}`}
-                              />
-                            )}
-                          </>
-                        )}
-                      </Link>
-                    </SidebarMenuButton>
+        {groups.map((group) => {
+          const hasChildren = !!group.children?.length;
 
-                    {hasChildren && !collapsed && open && (
-                      <ul className="mt-0.5 mb-1 ml-[26px] border-l border-border pl-2 space-y-0.5">
-                        {item.children!.map((c) => {
-                          const childActive = currentPath === c.url;
-                          return (
-                            <li key={c.title}>
-                              <Link
-                                to={c.url}
-                                className={`flex items-center h-8 px-2.5 rounded-md text-body-sm transition-colors ${
-                                  childActive
-                                    ? "bg-brand-subtle text-primary font-medium"
-                                    : "text-text-secondary hover:bg-[var(--sidebar-hover)] hover:text-foreground"
-                                }`}
-                              >
-                                {c.title}
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+          // 收起态：只显示一级 icon（用作纯视觉锚点 / tooltip）
+          if (collapsed) {
+            return (
+              <SidebarGroup key={group.title} className="px-2">
+                <SidebarGroupContent>
+                  <SidebarMenu className="gap-0.5">
+                    <SidebarMenuItem>
+                      {hasChildren ? (
+                        <SidebarMenuButton
+                          tooltip={group.title}
+                          className="h-10 rounded-md px-3 text-text-tertiary hover:bg-[var(--sidebar-hover)] hover:text-foreground cursor-default"
+                        >
+                          <group.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
+                        </SidebarMenuButton>
+                      ) : (
+                        <SidebarMenuButton
+                          asChild
+                          tooltip={group.title}
+                          isActive={isLeafActive(group.url!)}
+                          className="h-10 rounded-md px-3 text-body transition-colors
+                            hover:bg-[var(--sidebar-hover)] hover:text-foreground
+                            data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium"
+                        >
+                          <Link to={group.url!} className="flex items-center gap-3">
+                            <group.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
+                          </Link>
+                        </SidebarMenuButton>
+                      )}
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            );
+          }
+
+          // 展开态：单入口分组直接作为二级入口
+          if (!hasChildren) {
+            const active = isLeafActive(group.url!);
+            return (
+              <SidebarGroup key={group.title} className="px-2">
+                <SidebarGroupContent>
+                  <SidebarMenu className="gap-0.5">
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        className={`relative h-10 rounded-md px-3 text-body transition-colors
+                          hover:bg-[var(--sidebar-hover)] hover:text-foreground
+                          data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium
+                          data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
+                      >
+                        <Link to={group.url!} className="flex items-center gap-3">
+                          <group.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
+                          <span className="flex-1">{group.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            );
+          }
+
+          // 展开态：多子项分组——一级仅作分组标题，不可点击、不跳转
+          return (
+            <SidebarGroup key={group.title} className="px-2">
+              <SidebarGroupLabel className="h-8 px-3 text-caption text-text-tertiary font-normal flex items-center gap-2">
+                <group.icon className="h-[14px] w-[14px] shrink-0 text-text-tertiary" strokeWidth={1.75} />
+                <span>{group.title}</span>
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu className="gap-0.5">
+                  {group.children!.map((c) => {
+                    const active = isLeafActive(c.url);
+                    return (
+                      <SidebarMenuItem key={c.title}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={active}
+                          className={`relative h-9 rounded-md pl-9 pr-3 text-body-sm transition-colors
+                            text-text-secondary
+                            hover:bg-[var(--sidebar-hover)] hover:text-foreground
+                            data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium
+                            data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
+                        >
+                          <Link to={c.url}>{c.title}</Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
     </Sidebar>
   );
