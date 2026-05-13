@@ -175,26 +175,44 @@ function WorkspacePage() {
       </header>
 
       {/* ============ 主内容 ============ */}
-      <main className="relative max-w-[1280px] mx-auto px-6 pt-16 pb-16">
+      <main className="relative max-w-[1280px] mx-auto px-6 pt-20 pb-16">
         <div className="flex items-end justify-between flex-wrap gap-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption bg-brand-subtle text-primary mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-caption bg-brand-subtle text-primary mb-4 ring-1 ring-primary/25 shadow-[0_0_24px_-6px_var(--brand)]">
               <Sparkles className="h-3 w-3" /> 欢迎回来，张磊
             </div>
-            <h1 className="text-page-title text-foreground">请选择你要进入的业务模块</h1>
-            <p className="text-body text-text-secondary mt-1.5">
+            <h1
+              className="font-medium tracking-tight leading-[1.05]"
+              style={{
+                fontSize: "clamp(36px, 4.4vw, 56px)",
+                background:
+                  "linear-gradient(120deg, var(--text-primary) 0%, var(--text-primary) 40%, color-mix(in oklab, var(--brand) 75%, var(--text-primary)) 70%, var(--effect-ai-purple) 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              请选择你要进入的<br className="hidden md:block" />业务模块
+            </h1>
+            <p className="text-body text-text-secondary mt-3 max-w-[560px]">
               一个账号统管多业态，每个模块拥有独立的数据空间与权限体系
             </p>
-          </div>
-          <div className="hidden lg:flex items-center gap-6 text-text-secondary">
-            <div className="text-right">
-              <div className="text-caption text-text-tertiary">在管业务</div>
-              <div className="text-section-title text-foreground tabular-nums">4 类</div>
+            <div className="mt-4 inline-flex items-center gap-1.5 text-caption text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="tracking-wider uppercase">All systems operational</span>
             </div>
-            <div className="h-10 w-px bg-border" />
-            <div className="text-right">
+          </div>
+          <div className="hidden lg:flex items-center gap-3">
+            <div className="rounded-xl border border-border/70 bg-card/70 backdrop-blur-md px-5 py-3 shadow-[0_8px_30px_-12px_color-mix(in_oklab,var(--brand)_30%,transparent)]">
+              <div className="text-caption text-text-tertiary">在管业务</div>
+              <div className="mt-0.5 flex items-baseline gap-1">
+                <span className="text-page-title text-foreground tabular-nums font-medium">4</span>
+                <span className="text-caption text-text-tertiary">类</span>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border/70 bg-card/70 backdrop-blur-md px-5 py-3">
               <div className="text-caption text-text-tertiary">最近登录</div>
-              <div className="text-section-title text-foreground tabular-nums">今天 09:12</div>
+              <div className="text-section-title text-foreground tabular-nums mt-0.5">今天 09:12</div>
             </div>
           </div>
         </div>
