@@ -67,6 +67,21 @@ export function ModuleTransition({
     return () => clearTimeout(t);
   }, [phase, onCancel]);
 
+  // 过渡期间锁定 body 滚动 + 补偿滚动条宽度，避免布局抖动
+  useEffect(() => {
+    if (!state) return;
+    const { body, documentElement: html } = document;
+    const scrollbarW = window.innerWidth - html.clientWidth;
+    const prevOverflow = body.style.overflow;
+    const prevPaddingRight = body.style.paddingRight;
+    body.style.overflow = "hidden";
+    if (scrollbarW > 0) body.style.paddingRight = `${scrollbarW}px`;
+    return () => {
+      body.style.overflow = prevOverflow;
+      body.style.paddingRight = prevPaddingRight;
+    };
+  }, [state]);
+
   if (!state) return null;
   const { rect } = state;
   const atRect = phase === "start" || phase === "collapsing";
@@ -80,17 +95,32 @@ export function ModuleTransition({
       }
     : { top: 0, left: 0, width: "100vw", height: "100dvh", borderRadius: 0 };
 
-  const handleBackdropClick = () => {
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (phase === "expanded") setPhase("collapsing");
   };
 
   return (
-    <div className="fixed inset-0 z-[100]" aria-modal="true" role="dialog">
-      {/* 背景遮罩 — 点击取消 */}
+    <div
+      className="fixed inset-0 z-[100]"
+      aria-modal="true"
+      role="dialog"
+      onClickCapture={(e) => e.stopPropagation()}
+      onPointerDownCapture={(e) => e.stopPropagation()}
+      onWheel={(e) => e.preventDefault()}
+      onTouchMove={(e) => e.preventDefault()}
+    >
+      {/* 背景遮罩 — 始终拦截指针事件防止穿透；回缩期间禁用按钮避免重复触发 */}
       <button
         type="button"
         aria-label="取消进入"
         onClick={handleBackdropClick}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        disabled={phase === "collapsing"}
         className="absolute inset-0 bg-background/40 backdrop-blur-sm transition-opacity duration-500 cursor-default"
         style={{ opacity: phase === "expanded" ? 1 : 0 }}
         tabIndex={-1}
