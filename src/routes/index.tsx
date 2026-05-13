@@ -211,9 +211,15 @@ function HomePage() {
   const [rejectReason, setRejectReason] = useState("");
   const stockRef = useRef<HTMLDivElement | null>(null);
   const warehouseRef = useRef<HTMLDivElement | null>(null);
+  const alertsRef = useRef<HTMLDivElement | null>(null);
+  const todosRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollToAnchor = (anchor?: "stock" | "warehouse") => {
-    const el = anchor === "stock" ? stockRef.current : anchor === "warehouse" ? warehouseRef.current : null;
+  const scrollToAnchor = (anchor?: "stock" | "warehouse" | "alerts" | "todos") => {
+    const el =
+      anchor === "stock" ? stockRef.current :
+      anchor === "warehouse" ? warehouseRef.current :
+      anchor === "alerts" ? alertsRef.current :
+      anchor === "todos" ? todosRef.current : null;
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
