@@ -204,7 +204,7 @@ function WorkspacePage() {
               <button
                 key={m.key}
                 disabled={!m.enabled}
-                onClick={() => m.enabled && navigate({ to: m.to })}
+                onClick={(e) => handleEnter(m, e)}
                 className={`group relative text-left rounded-2xl border border-border/60 bg-card overflow-hidden h-[340px] transition-all
                   ${m.enabled
                     ? "hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_var(--brand)] cursor-pointer"
