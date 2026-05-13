@@ -55,7 +55,7 @@ const groups: NavGroup[] = [
     title: "架构管理",
     icon: Users,
     children: [
-      { title: "架构管理", url: "/organization" },
+      { title: "组织管理", url: "/organization" },
       { title: "角色权限", url: "/organization/role" },
       { title: "分组作业", url: "/organization/team" },
     ],
