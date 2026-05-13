@@ -127,12 +127,21 @@ function InventoryPage() {
             >
               <Download className="h-3.5 w-3.5" /> 导出采购清单
             </Button>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-              <ArrowDownToLine className="h-3.5 w-3.5" /> 入库
-            </Button>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-              <ArrowUpFromLine className="h-3.5 w-3.5" /> 出库
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
+                  <ArrowLeftRight className="h-3.5 w-3.5" /> 出入库
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32">
+                <DropdownMenuItem>
+                  <ArrowDownToLine className="h-3.5 w-3.5 mr-2" /> 入库
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <ArrowUpFromLine className="h-3.5 w-3.5 mr-2" /> 出库
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
               <Plus className="h-3.5 w-3.5" /> 新增类别
             </Button>
