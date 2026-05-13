@@ -133,76 +133,6 @@ function HeroStat({ label, value, unit }: { label: string; value: string; unit?:
   );
 }
 
-const unitColors = [
-  "var(--brand)",
-  "var(--effect-ai-cyan)",
-  "var(--effect-ai-purple)",
-  "var(--state-warning)",
-  "var(--state-danger)",
-];
-
-function UnitsDonut() {
-  const total = units.reduce((s, u) => s + u.count, 0);
-  const size = 168;
-  const stroke = 22;
-  const r = (size - stroke) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
-  const C = 2 * Math.PI * r;
-  let offset = 0;
-  return (
-    <div className="px-6 pb-6 flex items-center gap-5">
-      <div className="relative shrink-0" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="-rotate-90">
-          <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--bg-surface-subtle)" strokeWidth={stroke} />
-          {units.map((u, i) => {
-            const frac = u.count / total;
-            const len = frac * C;
-            const dash = `${len} ${C - len}`;
-            const dashOffset = -offset;
-            offset += len;
-            return (
-              <circle
-                key={u.name}
-                cx={cx}
-                cy={cy}
-                r={r}
-                fill="none"
-                stroke={unitColors[i % unitColors.length]}
-                strokeWidth={stroke}
-                strokeDasharray={dash}
-                strokeDashoffset={dashOffset}
-                strokeLinecap="butt"
-              />
-            );
-          })}
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-caption text-text-tertiary">存栏总数</span>
-          <span className="text-page-title tabular-nums text-foreground leading-tight">{total}</span>
-          <span className="text-caption text-text-tertiary">头</span>
-        </div>
-      </div>
-      <ul className="flex-1 min-w-0 space-y-2">
-        {units.map((u, i) => {
-          const pct = Math.round((u.count / total) * 100);
-          return (
-            <li key={u.name} className="flex items-center gap-2 text-body-sm">
-              <span
-                className="h-2.5 w-2.5 rounded-sm shrink-0"
-                style={{ backgroundColor: unitColors[i % unitColors.length] }}
-              />
-              <span className="text-foreground truncate flex-1">{u.name}</span>
-              <span className="text-text-tertiary tabular-nums">{u.count}</span>
-              <span className="text-text-tertiary tabular-nums w-9 text-right">{pct}%</span>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -391,9 +321,23 @@ function HomePage() {
             <div className="p-6 pb-4 flex items-center gap-2">
               <Activity className="h-4 w-4 text-primary" strokeWidth={1.75} />
               <h3 className="text-card-title text-foreground">生产单元状态</h3>
-              <span className="ml-auto tag tag-muted">{units.reduce((s, u) => s + u.count, 0)} 头</span>
             </div>
-            <UnitsDonut />
+            <div className="px-6 pb-6 space-y-2.5">
+              {units.map((u) => (
+                <div key={u.name} className="flex items-center gap-3 py-1.5">
+                  <span className={`h-1.5 w-1.5 rounded-full ${
+                    u.tone === "success" ? "bg-[var(--state-success)]" :
+                    u.tone === "warning" ? "bg-[var(--state-warning)]" :
+                    "bg-[var(--state-danger)]"
+                  }`} />
+                  <span className="flex-1 text-body text-foreground">{u.name}</span>
+                  <span className="text-body-sm text-text-tertiary tabular-nums">{u.count} 头</span>
+                  <span className={`tag tag-${u.tone === "success" ? "success" : u.tone === "warning" ? "warning" : "danger"}`}>
+                    {u.status}
+                  </span>
+                </div>
+              ))}
+            </div>
           </Card>
         </div>
 
