@@ -102,41 +102,6 @@ export function AppSidebar() {
         {groups.map((group) => {
           const hasChildren = !!group.children?.length;
 
-          // 收起态：只显示一级 icon（用作纯视觉锚点 / tooltip）
-          if (collapsed) {
-            return (
-              <SidebarGroup key={group.title} className="px-2">
-                <SidebarGroupContent>
-                  <SidebarMenu className="gap-0.5">
-                    <SidebarMenuItem>
-                      {hasChildren ? (
-                        <SidebarMenuButton
-                          tooltip={group.title}
-                          className="h-10 rounded-md px-3 text-text-tertiary hover:bg-[var(--sidebar-hover)] hover:text-foreground cursor-default"
-                        >
-                          <group.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
-                        </SidebarMenuButton>
-                      ) : (
-                        <SidebarMenuButton
-                          asChild
-                          tooltip={group.title}
-                          isActive={isLeafActive(group.url!)}
-                          className="h-10 rounded-md px-3 text-body transition-colors
-                            hover:bg-[var(--sidebar-hover)] hover:text-foreground
-                            data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium"
-                        >
-                          <Link to={group.url!} className="flex items-center gap-3">
-                            <group.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
-                          </Link>
-                        </SidebarMenuButton>
-                      )}
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            );
-          }
-
           // 展开态：单入口分组直接作为二级入口
           if (!hasChildren) {
             const active = isLeafActive(group.url!);
