@@ -271,13 +271,13 @@ function WorkspacePage() {
 
       <ModuleTransition
         state={transition}
-        onDone={() => {
-          if (transition) {
-            const target = modules.find((x) => x.title === transition.title);
-            if (target) navigate({ to: target.to });
-            setTimeout(() => setTransition(null), 80);
-          }
+        onComplete={() => {
+          if (!transition) return;
+          const target = modules.find((x) => x.title === transition.title);
+          if (target) navigate({ to: target.to });
+          setTimeout(() => setTransition(null), 80);
         }}
+        onCancel={() => setTransition(null)}
       />
     </div>
   );
