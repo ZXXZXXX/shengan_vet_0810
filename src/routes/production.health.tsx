@@ -87,7 +87,7 @@ function HealthPage() {
 
   return (
     <>
-      <AppHeader title="健康防护" breadcrumb={["生产对象", "健康防护"]} />
+      <AppHeader title="健康防护" breadcrumb={["生产管理", "健康防护"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <h3 className="text-section-title text-foreground">工单看板</h3>

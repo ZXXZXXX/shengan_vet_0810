@@ -48,8 +48,8 @@ import {
 export const Route = createFileRoute("/production/")({
   head: () => ({
     meta: [
-      { title: "对象档案 — 奇点智牧" },
-      { name: "description", content: "生产对象档案列表" },
+      { title: "基础档案 — 奇点智牧" },
+      { name: "description", content: "生产管理档案列表" },
     ],
   }),
   component: ObjectListPage,
@@ -231,7 +231,7 @@ function ObjectListPage() {
 
   return (
     <>
-      <AppHeader title="对象档案" breadcrumb={["生产对象", "对象档案"]} />
+      <AppHeader title="基础档案" breadcrumb={["生产管理", "基础档案"]} />
       <main className="flex-1 px-6 py-6">
         <div className="grid grid-cols-12 gap-4">
           {/* 左：牧场 / 牛舍树 */}
