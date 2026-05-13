@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
@@ -14,8 +13,9 @@ import {
 import {
   Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine,
   Package, Pill, Wheat, FlaskConical, TrendingDown, TrendingUp,
-  ShoppingCart, FileText, Trash2, MoreHorizontal, Pencil,
+  Download, MoreHorizontal, Pencil, Trash2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/warehouse/")({
   head: () => ({ meta: [{ title: "库存管理 — 奇点智牧" }] }),
@@ -50,36 +50,30 @@ function statusTag(s: Status) {
   return "tag tag-danger";
 }
 
+function exportPurchaseList() {
+  const need = inventory.filter((i) => i.stock < i.min);
+  if (need.length === 0) {
+    toast.info("当前没有需要补货的物资");
+    return;
+  }
+  const headers = ["SKU", "物资名称", "分类", "当前库存", "安全库存", "建议采购数量", "单位", "库位", "效期"];
+  const rows = need.map((i) => [
+    i.sku, i.name, i.cat, i.stock, i.min, i.min - i.stock, i.unit, i.loc, i.expiry,
+  ]);
+  const csv = [headers, ...rows]
+    .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `采购清单_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast.success(`已导出 ${need.length} 项采购清单`);
+}
+
 function InventoryPage() {
-  const [cart, setCart] = useState<Record<string, number>>(() => {
-    const init: Record<string, number> = {};
-    inventory.forEach((i) => {
-      if (i.stock < i.min) init[i.sku] = Math.max(i.min - i.stock, 0);
-    });
-    return init;
-  });
-  const [showCart, setShowCart] = useState(false);
-
-  const toggleCart = (item: Item) => {
-    setCart((p) => {
-      const n = { ...p };
-      if (n[item.sku]) delete n[item.sku];
-      else n[item.sku] = Math.max(item.min - item.stock, 10);
-      return n;
-    });
-  };
-  const removeFromCart = (sku: string) =>
-    setCart((p) => {
-      const n = { ...p };
-      delete n[sku];
-      return n;
-    });
-  const setQty = (sku: string, qty: number) =>
-    setCart((p) => ({ ...p, [sku]: Math.max(qty, 1) }));
-
-  const cartItems = inventory.filter((i) => cart[i.sku]);
-  const cartCount = cartItems.length;
-
   return (
     <>
       <AppHeader title="库存管理" breadcrumb={["仓库管理", "库存管理"]} />
@@ -128,15 +122,10 @@ function InventoryPage() {
             <Button
               variant="outline"
               size="sm"
-              className="h-9 gap-1.5 text-body-sm font-normal relative"
-              onClick={() => setShowCart((s) => !s)}
+              className="h-9 gap-1.5 text-body-sm font-normal"
+              onClick={exportPurchaseList}
             >
-              <ShoppingCart className="h-3.5 w-3.5" /> 采购清单
-              {cartCount > 0 && (
-                <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-caption text-primary-foreground tabular-nums">
-                  {cartCount}
-                </span>
-              )}
+              <Download className="h-3.5 w-3.5" /> 导出采购清单
             </Button>
             <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
               <ArrowDownToLine className="h-3.5 w-3.5" /> 入库
@@ -150,69 +139,6 @@ function InventoryPage() {
           </div>
         </div>
 
-        {showCart && (
-          <Card className="border-border bg-card overflow-hidden">
-            <div className="flex items-center justify-between px-6 h-12 border-b border-border bg-brand-subtle/40">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4 text-primary" strokeWidth={1.75} />
-                <span className="text-card-title text-foreground">采购清单</span>
-                <span className="text-body-sm text-text-tertiary">共 {cartItems.length} 项</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="h-8 gap-1.5 text-body-sm font-normal">
-                  <FileText className="h-3.5 w-3.5" /> 导出清单
-                </Button>
-                <Button size="sm" className="h-8 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
-                  生成采购单
-                </Button>
-              </div>
-            </div>
-            {cartItems.length === 0 ? (
-              <div className="px-6 py-8 text-center text-body-sm text-text-tertiary">
-                暂未加入物资,可在下方列表点击采购图标加入。
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-12 gap-3 px-6 h-10 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle">
-                  <div className="col-span-4">物资</div>
-                  <div className="col-span-2">当前库存</div>
-                  <div className="col-span-2">安全库存</div>
-                  <div className="col-span-2">建议采购</div>
-                  <div className="col-span-2 text-right">操作</div>
-                </div>
-                {cartItems.map((item) => (
-                  <div key={item.sku} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0">
-                    <div className="col-span-4 leading-tight">
-                      <div className="text-body text-foreground">{item.name}</div>
-                      <div className="text-caption text-text-tertiary font-mono">{item.sku} · {item.cat}</div>
-                    </div>
-                    <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{item.stock} {item.unit}</div>
-                    <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{item.min} {item.unit}</div>
-                    <div className="col-span-2">
-                      <Input
-                        type="number"
-                        value={cart[item.sku]}
-                        onChange={(e) => setQty(item.sku, Number(e.target.value))}
-                        className="h-8 w-24 text-body-sm tabular-nums"
-                      />
-                    </div>
-                    <div className="col-span-2 flex justify-end">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 gap-1 text-body-sm text-[var(--state-danger)] hover:text-[var(--state-danger)]"
-                        onClick={() => removeFromCart(item.sku)}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" /> 移除
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </>
-            )}
-          </Card>
-        )}
-
         <Card className="border-border bg-card overflow-hidden">
           <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <div className="col-span-3">物资</div>
@@ -222,69 +148,54 @@ function InventoryPage() {
             <div className="col-span-2">状态</div>
             <div className="col-span-2 text-right">操作</div>
           </div>
-          {inventory.map((item) => {
-            const inCart = !!cart[item.sku];
-            return (
-              <div key={item.sku} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors">
-                <div className="col-span-3 leading-tight">
-                  <div className="text-body text-foreground">{item.name}</div>
-                  <div className="text-caption text-text-tertiary font-mono">{item.sku} · {item.cat}</div>
-                </div>
-                <div className="col-span-2">
-                  <div className="flex items-baseline gap-1">
-                    <span className={`text-body font-medium tabular-nums ${item.stock < item.min ? "text-[var(--state-danger)]" : "text-foreground"}`}>
-                      {item.stock}
-                    </span>
-                    <span className="text-caption text-text-tertiary">/ {item.min} {item.unit}</span>
-                  </div>
-                </div>
-                <div className="col-span-1 font-mono text-body-sm text-text-tertiary">{item.loc}</div>
-                <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{item.expiry}</div>
-                <div className="col-span-2">
-                  <span className={statusTag(item.status)}>{item.status}</span>
-                </div>
-                <div className="col-span-2 flex justify-end items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => toggleCart(item)}
-                    title={inCart ? "已加入采购清单" : "加入采购清单"}
-                    className={`inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors ${
-                      inCart
-                        ? "text-primary bg-brand-subtle hover:bg-brand-subtle/70"
-                        : "text-text-tertiary hover:text-primary hover:bg-brand-subtle/60"
-                    }`}
-                  >
-                    <ShoppingCart className="h-4 w-4" strokeWidth={1.75} />
-                  </button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-tertiary hover:text-foreground hover:bg-surface-subtle transition-colors"
-                      >
-                        <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-36">
-                      <DropdownMenuItem>
-                        <ArrowDownToLine className="h-3.5 w-3.5 mr-2" /> 入库
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <ArrowUpFromLine className="h-3.5 w-3.5 mr-2" /> 出库
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Pencil className="h-3.5 w-3.5 mr-2" /> 编辑信息
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-[var(--state-danger)] focus:text-[var(--state-danger)]">
-                        <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+          {inventory.map((item) => (
+            <div key={item.sku} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors">
+              <div className="col-span-3 leading-tight">
+                <div className="text-body text-foreground">{item.name}</div>
+                <div className="text-caption text-text-tertiary font-mono">{item.sku} · {item.cat}</div>
+              </div>
+              <div className="col-span-2">
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-body font-medium tabular-nums ${item.stock < item.min ? "text-[var(--state-danger)]" : "text-foreground"}`}>
+                    {item.stock}
+                  </span>
+                  <span className="text-caption text-text-tertiary">/ {item.min} {item.unit}</span>
                 </div>
               </div>
-            );
-          })}
+              <div className="col-span-1 font-mono text-body-sm text-text-tertiary">{item.loc}</div>
+              <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{item.expiry}</div>
+              <div className="col-span-2">
+                <span className={statusTag(item.status)}>{item.status}</span>
+              </div>
+              <div className="col-span-2 flex justify-end items-center gap-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-tertiary hover:text-foreground hover:bg-surface-subtle transition-colors"
+                    >
+                      <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-36">
+                    <DropdownMenuItem>
+                      <ArrowDownToLine className="h-3.5 w-3.5 mr-2" /> 入库
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <ArrowUpFromLine className="h-3.5 w-3.5 mr-2" /> 出库
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Pencil className="h-3.5 w-3.5 mr-2" /> 编辑信息
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="text-[var(--state-danger)] focus:text-[var(--state-danger)]">
+                      <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          ))}
         </Card>
       </main>
     </>
