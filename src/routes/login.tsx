@@ -34,7 +34,7 @@ function LoginPage() {
       <div className="relative hidden lg:flex flex-col justify-between overflow-hidden p-12 text-white"
         style={{
           background:
-            "linear-gradient(135deg, #2F5230 0%, #416F42 50%, #1F3F2A 100%)",
+            "linear-gradient(135deg, #14703B 0%, #1A8A4A 50%, #0E5A2E 100%)",
         }}
       >
         {/* AI ambient blobs — ai-purple / ai-cyan */}
