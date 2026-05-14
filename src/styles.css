@@ -67,7 +67,7 @@
 :root {
   /* === PRIMITIVES === */
   /* Core */
-  --core-brand: #2E8B3A;
+  --core-brand: #416F42;
   --core-bg: #F7F8F5;
   --core-surface: #FFFFFF;
   --core-border: #E3E8E3;
@@ -86,9 +86,9 @@
 
   /* === SEMANTIC ALIASES === */
   --brand: var(--core-brand);
-  --brand-hover: #246E2E;
-  --brand-subtle: #E8F3EA;
-  --brand-soft: #D4E8D7;
+  --brand-hover: #355A36;
+  --brand-subtle: #EEF3EE;
+  --brand-soft: #DDE7DE;
 
   --bg-page: var(--core-bg);
   --bg-surface: var(--core-surface);
@@ -111,7 +111,7 @@
   --shadow-elevated: 0 4px 16px rgba(0, 29, 43, 0.06);
   --shadow-ai: 0 0 0 1px rgba(123, 97, 255, 0.18), 0 8px 24px rgba(123, 97, 255, 0.16);
   --gradient-ai: linear-gradient(135deg, #7B61FF 0%, #47DFC7 100%);
-  --gradient-brand: linear-gradient(135deg, #2E8B3A 0%, #4FB05A 100%);
+  --gradient-brand: linear-gradient(135deg, #416F42 0%, #5B8C5C 100%);
 
   /* Sidebar specific */
   --sidebar-hover: #EEF1ED;
