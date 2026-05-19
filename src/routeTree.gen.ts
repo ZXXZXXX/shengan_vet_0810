@@ -33,6 +33,8 @@ import { Route as SettingsRulesRouteImport } from './routes/settings.rules'
 import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowledge'
 import { Route as ProductionVaccineRouteImport } from './routes/production.vaccine'
 import { Route as ProductionPostpartumRouteImport } from './routes/production.postpartum'
+import { Route as ProductionHoofRouteImport } from './routes/production.hoof'
+import { Route as ProductionDryingRouteImport } from './routes/production.drying'
 import { Route as ProductionDiseaseRouteImport } from './routes/production.disease'
 import { Route as ProductionDailyRouteImport } from './routes/production.daily'
 import { Route as OrganizationTenantRouteImport } from './routes/organization.tenant'
@@ -174,6 +176,16 @@ const ProductionPostpartumRoute = ProductionPostpartumRouteImport.update({
   path: '/postpartum',
   getParentRoute: () => ProductionRoute,
 } as any)
+const ProductionHoofRoute = ProductionHoofRouteImport.update({
+  id: '/hoof',
+  path: '/hoof',
+  getParentRoute: () => ProductionRoute,
+} as any)
+const ProductionDryingRoute = ProductionDryingRouteImport.update({
+  id: '/drying',
+  path: '/drying',
+  getParentRoute: () => ProductionRoute,
+} as any)
 const ProductionDiseaseRoute = ProductionDiseaseRouteImport.update({
   id: '/disease',
   path: '/disease',
@@ -302,6 +314,8 @@ export interface FileRoutesByFullPath {
   '/organization/tenant': typeof OrganizationTenantRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
+  '/production/drying': typeof ProductionDryingRoute
+  '/production/hoof': typeof ProductionHoofRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -343,6 +357,8 @@ export interface FileRoutesByTo {
   '/organization/tenant': typeof OrganizationTenantRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
+  '/production/drying': typeof ProductionDryingRoute
+  '/production/hoof': typeof ProductionHoofRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -390,6 +406,8 @@ export interface FileRoutesById {
   '/organization/tenant': typeof OrganizationTenantRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
+  '/production/drying': typeof ProductionDryingRoute
+  '/production/hoof': typeof ProductionHoofRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -438,6 +456,8 @@ export interface FileRouteTypes {
     | '/organization/tenant'
     | '/production/daily'
     | '/production/disease'
+    | '/production/drying'
+    | '/production/hoof'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -479,6 +499,8 @@ export interface FileRouteTypes {
     | '/organization/tenant'
     | '/production/daily'
     | '/production/disease'
+    | '/production/drying'
+    | '/production/hoof'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -525,6 +547,8 @@ export interface FileRouteTypes {
     | '/organization/tenant'
     | '/production/daily'
     | '/production/disease'
+    | '/production/drying'
+    | '/production/hoof'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -727,6 +751,20 @@ declare module '@tanstack/react-router' {
       path: '/postpartum'
       fullPath: '/production/postpartum'
       preLoaderRoute: typeof ProductionPostpartumRouteImport
+      parentRoute: typeof ProductionRoute
+    }
+    '/production/hoof': {
+      id: '/production/hoof'
+      path: '/hoof'
+      fullPath: '/production/hoof'
+      preLoaderRoute: typeof ProductionHoofRouteImport
+      parentRoute: typeof ProductionRoute
+    }
+    '/production/drying': {
+      id: '/production/drying'
+      path: '/drying'
+      fullPath: '/production/drying'
+      preLoaderRoute: typeof ProductionDryingRouteImport
       parentRoute: typeof ProductionRoute
     }
     '/production/disease': {
@@ -952,6 +990,8 @@ const OrganizationRouteWithChildren = OrganizationRoute._addFileChildren(
 interface ProductionRouteChildren {
   ProductionDailyRoute: typeof ProductionDailyRoute
   ProductionDiseaseRoute: typeof ProductionDiseaseRoute
+  ProductionDryingRoute: typeof ProductionDryingRoute
+  ProductionHoofRoute: typeof ProductionHoofRoute
   ProductionPostpartumRoute: typeof ProductionPostpartumRoute
   ProductionVaccineRoute: typeof ProductionVaccineRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
@@ -960,6 +1000,8 @@ interface ProductionRouteChildren {
 const ProductionRouteChildren: ProductionRouteChildren = {
   ProductionDailyRoute: ProductionDailyRoute,
   ProductionDiseaseRoute: ProductionDiseaseRoute,
+  ProductionDryingRoute: ProductionDryingRoute,
+  ProductionHoofRoute: ProductionHoofRoute,
   ProductionPostpartumRoute: ProductionPostpartumRoute,
   ProductionVaccineRoute: ProductionVaccineRoute,
   ProductionIndexRoute: ProductionIndexRoute,
@@ -1021,3 +1063,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
