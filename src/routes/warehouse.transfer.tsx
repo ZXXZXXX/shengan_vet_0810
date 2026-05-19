@@ -176,8 +176,8 @@ function TransferPage() {
             <div className="col-span-2">调拨单号</div>
             <div className="col-span-4">物资 · 数量</div>
             <div className="col-span-2">流向</div>
-            <div className="col-span-1">经办人</div>
-            <div className="col-span-2">经办时间</div>
+            <div className="col-span-1">操作人</div>
+            <div className="col-span-2">操作时间</div>
             <div className="col-span-1 text-right">状态</div>
           </div>
           {list.map((r) => (
@@ -249,8 +249,8 @@ function TransferPage() {
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4">
                 <Field label="调拨流向" value={`${detail.from} → ${detail.to}`} />
-                <Field label="经办人" value={detail.operator} />
-                <Field label="经办时间" value={detail.transferTime} />
+                <Field label="操作人" value={detail.operator} />
+                <Field label="操作时间" value={detail.transferTime} />
                 <Field label="状态" value={detail.status} />
               </div>
 
@@ -356,7 +356,7 @@ function CreateDialog({
               </Select>
             </div>
             <div className="space-y-1.5 col-span-2">
-              <Label className="text-caption text-text-tertiary">经办时间</Label>
+              <Label className="text-caption text-text-tertiary">操作时间</Label>
               <Input
                 value={transferTime}
                 onChange={(e) => setTransferTime(e.target.value)}
