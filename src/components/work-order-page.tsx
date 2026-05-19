@@ -578,12 +578,12 @@ export function WorkOrderPage({
                     )}
                   </div>
                 ))}
-                {/* 右冻结：工单编号、牛只耳号 */}
+                {/* 右冻结：操作 */}
                 {rightCols.map((c, i) => (
                   <div
                     key={c.key}
                     style={{ width: c.width, flexShrink: 0, right: rightOffset(c.key) }}
-                    className={`sticky z-20 px-3 bg-surface-subtle border-l border-border ${i === rightCols.length - 1 ? "pr-6" : ""}`}
+                    className={`sticky z-20 px-3 bg-surface-subtle ${i === 0 ? "border-l border-border" : ""} ${i === rightCols.length - 1 ? "pr-6" : ""}`}
                   >
                     <span>{c.label}</span>
                   </div>
