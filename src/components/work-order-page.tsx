@@ -604,11 +604,11 @@ export function WorkOrderPage({
                     key={o.id}
                     className="group/row flex h-12 items-center text-table-cell border-b border-border last:border-0"
                   >
-                    {leftCols.map((c) => (
+                    {leftCols.map((c, i) => (
                       <div
                         key={c.key}
-                        style={{ width: c.width, flexShrink: 0, left: 0 }}
-                        className="sticky z-10 px-3 pl-6 bg-card border-r border-border group-hover/row:bg-surface-subtle"
+                        style={{ width: c.width, flexShrink: 0, left: leftOffset(c.key) }}
+                        className={`sticky z-10 px-3 bg-card group-hover/row:bg-surface-subtle ${i === 0 ? "pl-6" : ""} ${i === leftCols.length - 1 ? "border-r border-border" : ""}`}
                       >
                         {renderCell(o, c.key)}
                       </div>
