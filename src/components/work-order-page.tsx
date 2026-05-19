@@ -845,6 +845,22 @@ export function makeOrders(
     const proposer = pick(proposersPool, i);
     const reviewer = pick(reviewersPool, i);
     const executor = pick(executorsPool, i);
+    // 媒体附件：每条工单按索引轮换三种媒体组合，保证演示多样性
+    const attachmentSets: WorkOrderAttachment[][] = [
+      [
+        { type: "audio", name: "现场情况语音.m4a", meta: "00:38" },
+        { type: "video", name: "现场拍摄视频.mp4", meta: "01:12" },
+        { type: "text", name: "巡检记录.txt" },
+      ],
+      [
+        { type: "audio", name: "口述说明.m4a", meta: "00:52" },
+        { type: "text", name: "处理意见.docx" },
+      ],
+      [
+        { type: "video", name: "病灶特写.mp4", meta: "00:46" },
+        { type: "text", name: "诊疗建议.txt" },
+      ],
+    ];
     const order: WorkOrder = {
       id: seqMap.get(i)!,
       target: ev.target,
@@ -853,7 +869,9 @@ export function makeOrders(
       proposer,
       status,
       createdAt: fmt(proposedAt),
+      attachments: attachmentSets[i % attachmentSets.length],
     };
+
     if (status !== "待审核") {
       order.reviewer = reviewer;
       order.reviewedAt = fmt(reviewedAt);
