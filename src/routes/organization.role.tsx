@@ -568,13 +568,13 @@ function RolePage() {
                 取消
               </Button>
               <Button
-                className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                 onClick={() => {
                   toast.success("已保存变更");
                   setDrawerRole(null);
                 }}
               >
-                <Save className="h-3.5 w-3.5" /> 保存
+                保存
               </Button>
             </SheetFooter>
           )}
