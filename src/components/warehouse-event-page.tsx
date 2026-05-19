@@ -274,17 +274,42 @@ export function WarehouseEventPage<S extends string>({
         return <span className="text-body-sm text-text-secondary">{o.operator}</span>;
       case "operatedAt":
         return <span className="text-body-sm text-text-secondary tabular-nums">{o.operatedAt}</span>;
-      case "action":
+      case "action": {
+        const canReview = reviewStatus !== undefined && o.status === reviewStatus && onReview;
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-            onClick={() => setDetail(o)}
-          >
-            查看
-          </Button>
+          <div className="inline-flex items-center gap-0.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+              onClick={() => setDetail(o)}
+            >
+              查看
+            </Button>
+            {canReview && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+                  onClick={() => onReview!(o, "approve")}
+                >
+                  通过
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 hover:text-[var(--state-danger)]"
+                  onClick={() => onReview!(o, "reject")}
+                >
+                  驳回
+                </Button>
+              </>
+            )}
+          </div>
         );
+      }
+
     }
   };
 
