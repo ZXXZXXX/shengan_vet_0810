@@ -706,7 +706,36 @@ export function WorkOrderPage({
                 <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
                 <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc}</p>
               </div>
-            </div>
+
+              {detail.attachments && detail.attachments.length > 0 && (
+                <div className="rounded-md border border-border p-4">
+                  <div className="text-caption text-text-tertiary mb-2">媒体附件</div>
+                  <div className="space-y-1.5">
+                    {detail.attachments.map((a, i) => {
+                      const Icon = a.type === "audio" ? Mic : a.type === "video" ? Video : FileText;
+                      const tone =
+                        a.type === "audio"
+                          ? "text-[var(--state-warning)] bg-[var(--state-warning)]/10"
+                          : a.type === "video"
+                            ? "text-primary bg-brand-subtle"
+                            : "text-text-secondary bg-surface-subtle";
+                      return (
+                        <button
+                          key={i}
+                          className="w-full flex items-center gap-2 px-3 h-9 rounded-md border border-border hover:bg-surface-subtle text-left"
+                        >
+                          <span className={`h-6 w-6 rounded-md inline-flex items-center justify-center ${tone}`}>
+                            <Icon className="h-3.5 w-3.5" />
+                          </span>
+                          <span className="text-body-sm text-foreground flex-1 truncate">{a.name}</span>
+                          {a.meta && <span className="text-caption text-text-tertiary">{a.meta}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
           )}
           <DialogFooter className="gap-2">
             <Button variant="outline" className="gap-1.5" onClick={() => setConfirm("reject")}>
