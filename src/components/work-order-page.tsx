@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePcRole, setPcRole, canReview, pcRoleLabel, type PcRole } from "@/lib/pc-role";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
@@ -157,6 +157,8 @@ export function WorkOrderPage({
   orders: WorkOrder[];
 }) {
   const role = usePcRole();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [active, setActive] = useState<WorkStatus>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
@@ -219,8 +221,25 @@ export function WorkOrderPage({
     });
   }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir]);
 
-  const cols = ALL_COLS.filter((c) => visible[c.key]);
-  const minW = cols.reduce((sum, c) => sum + c.width, 0);
+  const leftFrozenKeys: ColKey[] = ["action"];
+  const rightFrozenKeys: ColKey[] = ["id", "target"];
+  const middleCols = ALL_COLS.filter(
+    (c) =>
+      visible[c.key] &&
+      !leftFrozenKeys.includes(c.key) &&
+      !rightFrozenKeys.includes(c.key),
+  );
+  const leftCols = ALL_COLS.filter((c) => leftFrozenKeys.includes(c.key));
+  const rightCols = ALL_COLS.filter((c) => rightFrozenKeys.includes(c.key));
+  const leftWidth = leftCols.reduce((s, c) => s + c.width, 0);
+  const rightWidth = rightCols.reduce((s, c) => s + c.width, 0);
+  const middleWidth = middleCols.reduce((s, c) => s + c.width, 0);
+  const minW = leftWidth + middleWidth + rightWidth;
+  // right offset map: rightmost col -> 0, previous -> sum of cols to its right
+  const rightOffset = (key: ColKey) => {
+    const idx = rightCols.findIndex((c) => c.key === key);
+    return rightCols.slice(idx + 1).reduce((s, c) => s + c.width, 0);
+  };
 
   const toggleSort = (key: "proposedAt" | "reviewedAt" | "executedAt") => {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -359,16 +378,35 @@ export function WorkOrderPage({
                 <Card
                   className={`p-5 flex items-center gap-4 transition-all ${
                     isActive
-                      ? "border-primary bg-brand-subtle ring-2 ring-primary shadow-sm"
-                      : "border-border bg-card hover:border-primary/40"
+                      ? "border-primary bg-primary text-primary-foreground shadow-elevated"
+                      : "border-border bg-card hover:border-primary/40 hover:shadow-card"
                   }`}
                 >
-                  <div className={`h-10 w-10 rounded-md flex items-center justify-center ${tone.bg}`}>
-                    <s.icon className={`h-4 w-4 ${tone.text}`} strokeWidth={1.75} />
+                  <div
+                    className={`h-10 w-10 rounded-md flex items-center justify-center ${
+                      isActive ? "bg-white/15" : tone.bg
+                    }`}
+                  >
+                    <s.icon
+                      className={`h-4 w-4 ${isActive ? "text-primary-foreground" : tone.text}`}
+                      strokeWidth={1.75}
+                    />
                   </div>
                   <div>
-                    <div className={`text-section-title tabular-nums ${isActive ? "text-primary" : "text-foreground"}`}>{counts[s.key]}</div>
-                    <div className={`text-caption ${isActive ? "text-primary font-medium" : "text-text-tertiary"}`}>{s.label}</div>
+                    <div
+                      className={`text-section-title tabular-nums ${
+                        isActive ? "text-primary-foreground" : "text-foreground"
+                      }`}
+                    >
+                      {counts[s.key]}
+                    </div>
+                    <div
+                      className={`text-caption ${
+                        isActive ? "text-primary-foreground/85" : "text-text-tertiary"
+                      }`}
+                    >
+                      {s.label}
+                    </div>
                   </div>
                 </Card>
               </button>
@@ -503,15 +541,27 @@ export function WorkOrderPage({
             </div>
           )}
 
-          {/* 表格（仅在该容器内部横向滚动） */}
+          {/* 表格（仅在该容器内部横向滚动，左/右两侧列冻结） */}
           <div className="overflow-x-auto border-t border-border">
-            <div style={{ minWidth: minW }}>
+            <div style={{ minWidth: minW }} className="relative">
+              {/* 表头 */}
               <div className="flex h-12 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
-                {cols.map((c, i) => (
+                {/* 左冻结：操作 */}
+                {leftCols.map((c) => (
+                  <div
+                    key={c.key}
+                    style={{ width: c.width, flexShrink: 0, left: 0 }}
+                    className="sticky z-20 px-3 pl-6 bg-surface-subtle border-r border-border"
+                  >
+                    <span>{c.label}</span>
+                  </div>
+                ))}
+                {/* 中间可滚动 */}
+                {middleCols.map((c) => (
                   <div
                     key={c.key}
                     style={{ width: c.width, flexShrink: 0 }}
-                    className={`px-3 ${i === 0 ? "pl-6" : ""} ${i === cols.length - 1 ? "pr-6 text-right" : ""}`}
+                    className="px-3"
                   >
                     {c.isTime ? (
                       <button
@@ -526,9 +576,23 @@ export function WorkOrderPage({
                     )}
                   </div>
                 ))}
+                {/* 右冻结：工单编号、牛只耳号 */}
+                {rightCols.map((c, i) => (
+                  <div
+                    key={c.key}
+                    style={{ width: c.width, flexShrink: 0, right: rightOffset(c.key) }}
+                    className={`sticky z-20 px-3 bg-surface-subtle border-l border-border ${i === rightCols.length - 1 ? "pr-6" : ""}`}
+                  >
+                    <span>{c.label}</span>
+                  </div>
+                ))}
               </div>
 
-              {filtered.length === 0 ? (
+              {!mounted ? (
+                <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
+                  加载中…
+                </div>
+              ) : filtered.length === 0 ? (
                 <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
                   暂无符合条件的{active}工单
                 </div>
@@ -536,13 +600,31 @@ export function WorkOrderPage({
                 filtered.map((o) => (
                   <div
                     key={o.id}
-                    className="flex h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
+                    className="group/row flex h-12 items-center text-table-cell border-b border-border last:border-0"
                   >
-                    {cols.map((c, i) => (
+                    {leftCols.map((c) => (
+                      <div
+                        key={c.key}
+                        style={{ width: c.width, flexShrink: 0, left: 0 }}
+                        className="sticky z-10 px-3 pl-6 bg-card border-r border-border group-hover/row:bg-surface-subtle"
+                      >
+                        {renderCell(o, c.key)}
+                      </div>
+                    ))}
+                    {middleCols.map((c) => (
                       <div
                         key={c.key}
                         style={{ width: c.width, flexShrink: 0 }}
-                        className={`px-3 ${i === 0 ? "pl-6" : ""} ${i === cols.length - 1 ? "pr-6 flex items-center justify-end" : ""} truncate`}
+                        className="px-3 truncate group-hover/row:bg-surface-subtle"
+                      >
+                        {renderCell(o, c.key)}
+                      </div>
+                    ))}
+                    {rightCols.map((c, i) => (
+                      <div
+                        key={c.key}
+                        style={{ width: c.width, flexShrink: 0, right: rightOffset(c.key) }}
+                        className={`sticky z-10 px-3 bg-card border-l border-border group-hover/row:bg-surface-subtle ${i === rightCols.length - 1 ? "pr-6" : ""}`}
                       >
                         {renderCell(o, c.key)}
                       </div>
