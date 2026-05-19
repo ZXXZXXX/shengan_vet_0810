@@ -332,6 +332,7 @@ export function WorkOrderPage({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="manager">{pcRoleLabel.manager}</SelectItem>
                 <SelectItem value="vet">{pcRoleLabel.vet}</SelectItem>
                 <SelectItem value="assistant">{pcRoleLabel.assistant}</SelectItem>
               </SelectContent>
@@ -353,17 +354,21 @@ export function WorkOrderPage({
               <button
                 key={s.key}
                 onClick={() => setActive(s.key)}
-                className={`text-left transition-all ${isActive ? "ring-2 ring-primary rounded-lg" : ""}`}
+                className="text-left transition-all"
               >
                 <Card
-                  className={`border-border bg-card p-5 flex items-center gap-4 hover:border-primary/40 transition-colors ${isActive ? "border-primary/60" : ""}`}
+                  className={`p-5 flex items-center gap-4 transition-all ${
+                    isActive
+                      ? "border-primary bg-brand-subtle ring-2 ring-primary shadow-sm"
+                      : "border-border bg-card hover:border-primary/40"
+                  }`}
                 >
                   <div className={`h-10 w-10 rounded-md flex items-center justify-center ${tone.bg}`}>
                     <s.icon className={`h-4 w-4 ${tone.text}`} strokeWidth={1.75} />
                   </div>
                   <div>
-                    <div className="text-section-title tabular-nums text-foreground">{counts[s.key]}</div>
-                    <div className="text-caption text-text-tertiary">{s.label}</div>
+                    <div className={`text-section-title tabular-nums ${isActive ? "text-primary" : "text-foreground"}`}>{counts[s.key]}</div>
+                    <div className={`text-caption ${isActive ? "text-primary font-medium" : "text-text-tertiary"}`}>{s.label}</div>
                   </div>
                 </Card>
               </button>
@@ -374,11 +379,17 @@ export function WorkOrderPage({
         <Card className="border-border bg-card overflow-hidden">
           {/* 顶部工具栏 */}
           <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
-            <div>
-              <h3 className="text-card-title text-foreground">{active}工单</h3>
-              <p className="text-caption text-text-tertiary mt-0.5">共 {filtered.length} 条</p>
-            </div>
+            <div className="text-caption text-text-tertiary">共 {filtered.length} 条</div>
             <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
+                <Input
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder="按工单号 / 耳号 / 描述搜索"
+                  className="h-9 w-64 pl-9 text-body-sm bg-card border-border"
+                />
+              </div>
               {/* 快捷时间筛选 */}
               <div className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-surface-subtle">
                 {dateRanges.map((r) => (
@@ -394,15 +405,6 @@ export function WorkOrderPage({
                     {r.label}
                   </button>
                 ))}
-              </div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-                <Input
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="按工单号 / 耳号 / 描述搜索"
-                  className="h-9 w-64 pl-9 text-body-sm bg-card border-border"
-                />
               </div>
               <Button
                 variant="outline"
