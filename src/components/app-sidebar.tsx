@@ -44,7 +44,10 @@ const groups: NavGroup[] = [
     icon: Boxes,
     children: [
       { title: "基础档案", url: "/production" },
-      { title: "健康防护", url: "/production/health" },
+      { title: "疾病治疗", url: "/production/disease" },
+      { title: "疫苗免疫", url: "/production/vaccine" },
+      { title: "产后护理", url: "/production/postpartum" },
+      { title: "日常护理", url: "/production/daily" },
     ],
   },
   {
