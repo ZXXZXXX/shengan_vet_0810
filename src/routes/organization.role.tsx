@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import {
   Plus,
   ShieldCheck,
@@ -34,7 +35,6 @@ import {
   Stethoscope,
   HeartPulse,
   Search,
-  Save,
   Monitor,
   Smartphone,
   MoreVertical,
@@ -396,14 +396,12 @@ function RolePage() {
                 </div>
               </div>
               {viewMode === "detail" && activeRole && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 text-body-sm font-normal"
+                <button
+                  className="h-8 px-2 text-body-sm font-normal text-primary hover:underline"
                   onClick={() => setViewMode("edit")}
                 >
                   编辑
-                </Button>
+                </button>
               )}
             </div>
           </SheetHeader>
@@ -426,14 +424,32 @@ function RolePage() {
                       )}
                     </div>
                     <div>
-                      <Label className="text-caption text-text-tertiary">数据范围</Label>
+                      <Label className="text-caption text-text-tertiary">当前状态</Label>
                       {editable ? (
-                        <Input
-                          defaultValue={activeRole.scope}
-                          className="h-9 mt-1.5 bg-card border-border text-body-sm"
-                        />
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <Switch
+                            checked={activeRole.enabled}
+                            onCheckedChange={(v) => {
+                              setRoles((prev) =>
+                                prev.map((r) =>
+                                  r.key === activeRole.key ? { ...r, enabled: v } : r,
+                                ),
+                              );
+                            }}
+                          />
+                          <span className="text-body-sm text-foreground">
+                            {activeRole.enabled ? "启用" : "停用"}
+                          </span>
+                        </div>
                       ) : (
-                        <div className="mt-1.5 text-body text-foreground">{activeRole.scope}</div>
+                        <div className="mt-1.5 flex items-center gap-1.5 text-body text-foreground">
+                          <span
+                            className={`inline-block h-2 w-2 rounded-full ${
+                              activeRole.enabled ? "bg-primary" : "bg-text-tertiary"
+                            }`}
+                          />
+                          {activeRole.enabled ? "启用中" : "已停用"}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -570,13 +586,13 @@ function RolePage() {
                 取消
               </Button>
               <Button
-                className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                 onClick={() => {
                   toast.success("已保存变更");
                   setDrawerRole(null);
                 }}
               >
-                <Save className="h-3.5 w-3.5" /> 保存
+                保存
               </Button>
             </SheetFooter>
           )}
