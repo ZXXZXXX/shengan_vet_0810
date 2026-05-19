@@ -148,7 +148,7 @@ export function AppSidebar() {
           return (
             <SidebarGroup
               key={group.title}
-              className={`px-2 py-0 rounded-lg ${sectionActive ? "bg-[#F6FDF7]" : ""}`}
+              className={`px-2 py-0 rounded-lg ${sectionActive ? "bg-[#FAFEFB]" : ""}`}
             >
               <Collapsible
                 open={open}
@@ -157,16 +157,19 @@ export function AppSidebar() {
                 <CollapsibleTrigger asChild>
                   <button
                     type="button"
-                    className="flex w-full items-center gap-2 h-9 px-3 rounded-lg text-body-sm text-text-secondary hover:bg-[var(--sidebar-hover)] hover:text-foreground transition-colors"
+                    className={`flex w-full items-center gap-2 h-9 px-3 rounded-lg text-body-sm hover:bg-[var(--sidebar-hover)] hover:text-foreground transition-colors ${
+                      sectionActive ? "text-primary font-medium" : "text-text-secondary"
+                    }`}
                   >
                     <group.icon className="h-[16px] w-[16px] shrink-0" strokeWidth={1.75} />
                     <span className="flex-1 text-left">{group.title}</span>
                     <ChevronDown
-                      className={`h-3.5 w-3.5 shrink-0 text-text-tertiary transition-transform ${open ? "rotate-180" : ""}`}
+                      className={`h-3.5 w-3.5 shrink-0 transition-transform ${open ? "rotate-180" : ""} ${sectionActive ? "text-primary" : "text-text-tertiary"}`}
                       strokeWidth={1.75}
                     />
                   </button>
                 </CollapsibleTrigger>
+
 
                 <CollapsibleContent className="overflow-hidden">
                   <SidebarGroupContent className="pt-1 pb-1">
