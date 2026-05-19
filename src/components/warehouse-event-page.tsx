@@ -142,6 +142,9 @@ export function WarehouseEventPage<S extends string>({
   createLabel,
   onCreate,
   renderDetailActions,
+  reviewStatus,
+  onReview,
+  detailNote,
 }: {
   title: string;
   breadcrumb: string[];
@@ -151,7 +154,11 @@ export function WarehouseEventPage<S extends string>({
   createLabel?: string;
   onCreate?: () => void;
   renderDetailActions?: (detail: WarehouseEvent<S>, close: () => void) => ReactNode;
+  reviewStatus?: S;
+  onReview?: (e: WarehouseEvent<S>, action: "approve" | "reject") => void;
+  detailNote?: string;
 }) {
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const [active, setActive] = useState<S>(statuses[0].key);
