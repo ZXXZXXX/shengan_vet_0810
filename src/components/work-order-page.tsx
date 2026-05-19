@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { usePcRole, setPcRole, canReview, pcRoleLabel, type PcRole } from "@/lib/pc-role";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
@@ -359,16 +359,23 @@ export function WorkOrderPage({
                 <Card
                   className={`p-5 flex items-center gap-4 transition-all ${
                     isActive
-                      ? "border-primary bg-brand-subtle ring-2 ring-primary shadow-sm"
+                      ? "border-primary bg-primary shadow-md"
                       : "border-border bg-card hover:border-primary/40"
                   }`}
                 >
-                  <div className={`h-10 w-10 rounded-md flex items-center justify-center ${tone.bg}`}>
-                    <s.icon className={`h-4 w-4 ${tone.text}`} strokeWidth={1.75} />
+                  <div
+                    className={`h-10 w-10 rounded-md flex items-center justify-center ${
+                      isActive ? "bg-primary-foreground/15" : tone.bg
+                    }`}
+                  >
+                    <s.icon
+                      className={`h-4 w-4 ${isActive ? "text-primary-foreground" : tone.text}`}
+                      strokeWidth={1.75}
+                    />
                   </div>
                   <div>
-                    <div className={`text-section-title tabular-nums ${isActive ? "text-primary" : "text-foreground"}`}>{counts[s.key]}</div>
-                    <div className={`text-caption ${isActive ? "text-primary font-medium" : "text-text-tertiary"}`}>{s.label}</div>
+                    <div className={`text-section-title tabular-nums ${isActive ? "text-primary-foreground" : "text-foreground"}`}>{counts[s.key]}</div>
+                    <div className={`text-caption ${isActive ? "text-primary-foreground/85" : "text-text-tertiary"}`}>{s.label}</div>
                   </div>
                 </Card>
               </button>
@@ -503,55 +510,101 @@ export function WorkOrderPage({
             </div>
           )}
 
-          {/* 表格（仅在该容器内部横向滚动） */}
-          <div className="overflow-x-auto border-t border-border">
-            <div style={{ minWidth: minW }}>
-              <div className="flex h-12 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
-                {cols.map((c, i) => (
-                  <div
-                    key={c.key}
-                    style={{ width: c.width, flexShrink: 0 }}
-                    className={`px-3 ${i === 0 ? "pl-6" : ""} ${i === cols.length - 1 ? "pr-6 text-right" : ""}`}
-                  >
-                    {c.isTime ? (
-                      <button
-                        onClick={() => toggleSort(c.key as "proposedAt" | "reviewedAt" | "executedAt")}
-                        className="inline-flex items-center hover:text-foreground"
-                      >
-                        {c.label}
-                        {sortIcon(c.key)}
-                      </button>
-                    ) : (
-                      <span>{c.label}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
+          {/* 表格（仅在该容器内部横向滚动；首尾列冻结） */}
+          {(() => {
+            const leftKeys: ColKey[] = ["id", "target", "desc"];
+            const rightKeys: ColKey[] = ["action"];
+            const leftCols = cols.filter((c) => leftKeys.includes(c.key));
+            const rightCols = cols.filter((c) => rightKeys.includes(c.key));
+            const middleCols = cols.filter(
+              (c) => !leftKeys.includes(c.key) && !rightKeys.includes(c.key),
+            );
+            const leftOffsets: Record<string, number> = {};
+            let acc = 0;
+            leftCols.forEach((c) => { leftOffsets[c.key] = acc; acc += c.width; });
+            const rightOffsets: Record<string, number> = {};
+            let racc = 0;
+            [...rightCols].reverse().forEach((c) => { rightOffsets[c.key] = racc; racc += c.width; });
 
-              {filtered.length === 0 ? (
-                <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
-                  暂无符合条件的{active}工单
-                </div>
-              ) : (
-                filtered.map((o) => (
-                  <div
-                    key={o.id}
-                    className="flex h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
-                  >
-                    {cols.map((c, i) => (
-                      <div
-                        key={c.key}
-                        style={{ width: c.width, flexShrink: 0 }}
-                        className={`px-3 ${i === 0 ? "pl-6" : ""} ${i === cols.length - 1 ? "pr-6 flex items-center justify-end" : ""} truncate`}
-                      >
-                        {renderCell(o, c.key)}
-                      </div>
-                    ))}
+            const cellBase = (key: ColKey, base: string, rowBg: string) => {
+              if (leftKeys.includes(key)) {
+                return `${base} sticky z-10 ${rowBg} after:content-[''] after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border ${key === "desc" ? "shadow-[6px_0_8px_-6px_rgba(0,0,0,0.08)]" : ""}`;
+              }
+              if (rightKeys.includes(key)) {
+                return `${base} sticky z-10 ${rowBg} before:content-[''] before:absolute before:top-0 before:left-0 before:h-full before:w-px before:bg-border shadow-[-6px_0_8px_-6px_rgba(0,0,0,0.08)]`;
+              }
+              return base;
+            };
+
+            const cellStyle = (c: ColDef): React.CSSProperties => {
+              const s: React.CSSProperties = { width: c.width, flexShrink: 0 };
+              if (leftKeys.includes(c.key)) s.left = leftOffsets[c.key];
+              if (rightKeys.includes(c.key)) s.right = rightOffsets[c.key];
+              return s;
+            };
+
+            const orderedCols = [...leftCols, ...middleCols, ...rightCols];
+
+            return (
+              <div className="overflow-x-auto border-t border-border">
+                <div style={{ minWidth: minW }}>
+                  {/* Header */}
+                  <div className="flex h-12 items-center text-table-header text-text-secondary border-b border-border">
+                    {orderedCols.map((c, i) => {
+                      const isLast = i === orderedCols.length - 1;
+                      const padCls = `px-3 ${leftKeys.includes(c.key) && leftOffsets[c.key] === 0 ? "pl-6" : ""} ${isLast ? "pr-6 text-right" : ""}`;
+                      return (
+                        <div
+                          key={c.key}
+                          style={cellStyle(c)}
+                          className={cellBase(c.key, padCls, "bg-surface-subtle")}
+                        >
+                          {c.isTime ? (
+                            <button
+                              onClick={() => toggleSort(c.key as "proposedAt" | "reviewedAt" | "executedAt")}
+                              className="inline-flex items-center hover:text-foreground"
+                            >
+                              {c.label}
+                              {sortIcon(c.key)}
+                            </button>
+                          ) : (
+                            <span>{c.label}</span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                ))
-              )}
-            </div>
-          </div>
+
+                  {filtered.length === 0 ? (
+                    <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
+                      暂无符合条件的{active}工单
+                    </div>
+                  ) : (
+                    filtered.map((o) => (
+                      <div
+                        key={o.id}
+                        className="group/row flex h-12 items-center text-table-cell border-b border-border last:border-0"
+                      >
+                        {orderedCols.map((c, i) => {
+                          const isLast = i === orderedCols.length - 1;
+                          const padCls = `px-3 ${leftKeys.includes(c.key) && leftOffsets[c.key] === 0 ? "pl-6" : ""} ${isLast ? "pr-6 flex items-center justify-end" : ""} truncate`;
+                          return (
+                            <div
+                              key={c.key}
+                              style={cellStyle(c)}
+                              className={cellBase(c.key, padCls, "bg-card group-hover/row:bg-surface-subtle")}
+                            >
+                              {renderCell(o, c.key)}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </Card>
       </main>
 
