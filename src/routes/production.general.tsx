@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WorkOrderPage, makeOrders } from "@/components/work-order-page";
 
-const orders = makeOrders("WO", 6000, [
+const orders = makeOrders("PX", [
   { target: "#A2324", event: "采食量持续下降", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。" },
   { target: "#A2261", event: "体况评估异常", desc: "#A2261 体况评分偏低，跟踪补饲方案 3 天。" },
   { target: "#A2150", event: "普查复核", desc: "#A2150 普查理由不充分，已驳回，建议合并到批次普查工单。" },

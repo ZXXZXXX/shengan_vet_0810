@@ -11,6 +11,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -270,12 +276,29 @@ export function WorkOrderPage({
         return <span className="font-mono text-body text-foreground">{o.id}</span>;
       case "target":
         return <span className="text-body text-foreground">{o.target}</span>;
-      case "desc":
+      case "desc": {
+        const text = o.event ?? o.desc;
+        const truncated = text.length > 15 ? text.slice(0, 15) + "…" : text;
+        if (text.length > 15) {
+          return (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-body-sm text-text-secondary truncate block cursor-default">
+                  {truncated}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-sm">
+                {text}
+              </TooltipContent>
+            </Tooltip>
+          );
+        }
         return (
           <span className="text-body-sm text-text-secondary truncate block">
-            {o.event ?? o.desc}
+            {text}
           </span>
         );
+      }
       case "status":
         return (
           <span className={toneStyles[statusList.find((s) => s.key === o.status)!.tone].tag}>
@@ -343,7 +366,7 @@ export function WorkOrderPage({
   };
 
   return (
-    <>
+    <TooltipProvider delayDuration={200}>
       <AppHeader title={title} breadcrumb={["健康管理", title]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -419,17 +442,17 @@ export function WorkOrderPage({
 
         <Card className="border-border bg-card overflow-hidden">
           {/* 顶部工具栏 */}
-          <div className="flex items-center justify-end p-6 pb-4 flex-wrap gap-3">
+          <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
+              <Input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="按工单号 / 耳号 / 描述搜索"
+                className="h-9 w-64 pl-9 text-body-sm bg-card border-border"
+              />
+            </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-                <Input
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="按工单号 / 耳号 / 描述搜索"
-                  className="h-9 w-64 pl-9 text-body-sm bg-card border-border"
-                />
-              </div>
               {/* 快捷时间筛选 */}
               <div className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-surface-subtle">
                 {dateRanges.map((r) => (
@@ -717,7 +740,7 @@ export function WorkOrderPage({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </TooltipProvider>
   );
 }
 
@@ -745,27 +768,44 @@ function pick<T>(arr: T[], i: number): T { return arr[i % arr.length]; }
  * 生成 15 条 mock 工单：
  * - 状态按 [待审核, 执行中, 已完成, 已驳回] 循环
  * - 提出时间从今天起向前递推（覆盖今天 / 7天 / 30天 / 更早）
+ * - 工单编号 = 类型拼音首字母 + 月日 + 当日该类下序号（两位数字）
  */
 export function makeOrders(
-  idPrefix: string,
-  startId: number,
+  prefix: string,
   events: { target: string; event: string; desc: string }[],
 ): WorkOrder[] {
   const statuses: WorkStatus[] = ["待审核", "执行中", "已完成", "已驳回"];
   const now = new Date();
   // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
   const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
-  return Array.from({ length: 15 }, (_, i) => {
+  // 按"日期"统计当日该类工单的序号
+  const dailySeq = new Map<string, number>();
+  // 注意：按提出时间倒序生成时，需保证同一日内的序号按时间先后稳定
+  // 先按时间升序计算 seq，再返回原顺序
+  const items = offsetsH.map((h, i) => ({
+    i,
+    proposedAt: new Date(now.getTime() - h * 3600 * 1000),
+  }));
+  const seqMap = new Map<number, string>();
+  [...items]
+    .sort((a, b) => a.proposedAt.getTime() - b.proposedAt.getTime())
+    .forEach(({ i, proposedAt }) => {
+      const mmdd = `${pad(proposedAt.getMonth() + 1)}${pad(proposedAt.getDate())}`;
+      const seq = (dailySeq.get(mmdd) ?? 0) + 1;
+      dailySeq.set(mmdd, seq);
+      seqMap.set(i, `${prefix}${mmdd}${pad(seq)}`);
+    });
+
+  return items.map(({ i, proposedAt }) => {
     const ev = pick(events, i);
     const status = statuses[i % statuses.length];
-    const proposedAt = new Date(now.getTime() - offsetsH[i] * 3600 * 1000);
     const reviewedAt = new Date(proposedAt.getTime() + 60 * 60 * 1000);
     const executedAt = new Date(proposedAt.getTime() + 8 * 60 * 60 * 1000);
     const proposer = pick(proposersPool, i);
     const reviewer = pick(reviewersPool, i);
     const executor = pick(executorsPool, i);
     const order: WorkOrder = {
-      id: `${idPrefix}-${startId + i}`,
+      id: seqMap.get(i)!,
       target: ev.target,
       event: ev.event,
       desc: ev.desc,

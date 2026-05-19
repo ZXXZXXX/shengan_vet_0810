@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WorkOrderPage, makeOrders } from "@/components/work-order-page";
 
-const orders = makeOrders("WO", 2400, [
+const orders = makeOrders("YM", [
   { target: "犊牛舍 A", event: "口蹄疫加强免疫", desc: "犊牛舍 A 5 月口蹄疫加强免疫，覆盖 84 头犊牛。" },
   { target: "#A2078", event: "免疫后体温异常", desc: "#A2078 免疫后体温异常升高，需复查并评估处置方案。" },
   { target: "2 号牛舍", event: "布病强免疫", desc: "2 号牛舍布病强免疫，全部完成。" },

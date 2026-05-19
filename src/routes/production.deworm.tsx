@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WorkOrderPage, makeOrders } from "@/components/work-order-page";
 
-const orders = makeOrders("WO", 5000, [
+const orders = makeOrders("QC", [
   { target: "1 号牛舍", event: "季度体内驱虫", desc: "1 号牛舍季度体内驱虫，需调拨广谱驱虫药 15 盒。" },
   { target: "3 号牛舍", event: "体外驱虫喷淋", desc: "3 号牛舍体外驱虫喷淋作业中。" },
   { target: "2 号牛舍", event: "驱虫批次", desc: "2 号牛舍驱虫批次完成，已记录用药明细。" },

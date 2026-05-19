@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WorkOrderPage, makeOrders } from "@/components/work-order-page";
 
-const orders = makeOrders("WO", 3100, [
+const orders = makeOrders("XT", [
   { target: "1 号牛舍", event: "批次修蹄计划", desc: "1 号牛舍 32 头泌乳牛批次修蹄，预计耗时 2 天。" },
   { target: "#A2150", event: "蹄部异常复查", desc: "#A2150 蹄部红肿，已安排复查并外用药处理。" },
   { target: "2 号牛舍", event: "季度修蹄", desc: "2 号牛舍季度修蹄完成，无异常反馈。" },

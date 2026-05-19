@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WorkOrderPage, makeOrders } from "@/components/work-order-page";
 
-const orders = makeOrders("WO", 2100, [
+const orders = makeOrders("CH", [
   { target: "#A2120", event: "产后子宫复旧观察", desc: "产后第 7 天复旧良好，进入正常泌乳期。" },
   { target: "#A2135", event: "胎衣不下处理", desc: "胎衣不下 24h 以上，已介入治疗。" },
   { target: "#A2188", event: "产后低血钙", desc: "#A2188 产后低血钙，已补钙处理。" },
