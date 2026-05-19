@@ -419,8 +419,7 @@ export function WorkOrderPage({
 
         <Card className="border-border bg-card overflow-hidden">
           {/* 顶部工具栏 */}
-          <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
-            <div className="text-caption text-text-tertiary">共 {filtered.length} 条</div>
+          <div className="flex items-center justify-end p-6 pb-4 flex-wrap gap-3">
             <div className="flex items-center gap-2 flex-wrap">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
