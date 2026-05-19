@@ -626,7 +626,7 @@ export function WorkOrderPage({
                       <div
                         key={c.key}
                         style={{ width: c.width, flexShrink: 0, right: rightOffset(c.key) }}
-                        className={`sticky z-10 px-3 bg-card border-l border-border group-hover/row:bg-surface-subtle ${i === rightCols.length - 1 ? "pr-6" : ""}`}
+                        className={`sticky z-10 px-3 bg-card group-hover/row:bg-surface-subtle ${i === 0 ? "border-l border-border" : ""} ${i === rightCols.length - 1 ? "pr-6" : ""}`}
                       >
                         {renderCell(o, c.key)}
                       </div>
