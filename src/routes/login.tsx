@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { Sparkles, Eye, EyeOff, Lock, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Sparkles, Smartphone, ShieldCheck, RefreshCw, ScanLine, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -16,17 +17,67 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+type LoginTab = "phone" | "wecom";
+type WecomStage = "qr" | "bind-phone" | "bound";
+
 function LoginPage() {
   const navigate = useNavigate();
-  const [account, setAccount] = useState("zhanglei");
-  const [password, setPassword] = useState("••••••••");
-  const [show, setShow] = useState(false);
-  const [remember, setRemember] = useState(true);
+  const [tab, setTab] = useState<LoginTab>("phone");
+  const [agreed, setAgreed] = useState(true);
+
+  // 手机号登录
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
+  const [countdown, setCountdown] = useState(0);
+
+  // 企微扫码
+  const [wecomStage, setWecomStage] = useState<WecomStage>("qr");
+  const [bindPhone, setBindPhone] = useState("");
+  const [bindCode, setBindCode] = useState("");
+  const [bindCountdown, setBindCountdown] = useState(0);
+
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
+  useEffect(() => {
+    if (bindCountdown <= 0) return;
+    const t = setTimeout(() => setBindCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [bindCountdown]);
+
+  const isPhoneValid = /^1\d{10}$/.test(phone);
+  const isBindPhoneValid = /^1\d{10}$/.test(bindPhone);
+
+  const sendCode = () => {
+    if (!isPhoneValid || countdown > 0) return;
+    setCountdown(60);
+  };
+  const sendBindCode = () => {
+    if (!isBindPhoneValid || bindCountdown > 0) return;
+    setBindCountdown(60);
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed || !isPhoneValid || code.length < 4) return;
     navigate({ to: "/workspace" });
   };
+
+  // 模拟扫码：3 秒后进入绑定手机号阶段
+  useEffect(() => {
+    if (tab !== "wecom" || wecomStage !== "qr") return;
+    const t = setTimeout(() => setWecomStage("bind-phone"), 3500);
+    return () => clearTimeout(t);
+  }, [tab, wecomStage]);
+
+  const confirmBind = () => {
+    if (!agreed || !isBindPhoneValid || bindCode.length < 4) return;
+    setWecomStage("bound");
+    setTimeout(() => navigate({ to: "/workspace" }), 800);
+  };
+
 
   return (
     <div className="min-h-screen w-full grid lg:grid-cols-[1.1fr_1fr] bg-background">
