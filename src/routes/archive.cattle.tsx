@@ -21,7 +21,7 @@ const cattle: { id: string; ear: string; breed: string; sex: string; birth: stri
 ];
 
 function stageTag(s: Stage) {
-  return s === "泌乳" ? "tag tag-brand" : s === "犊牛" ? "tag tag-info" : s === "育成" ? "tag tag-warning" : "tag tag-muted";
+  return s === "泌乳" ? "tag tag-brand" : s === "犊牛" ? "tag tag-brand" : s === "育成" ? "tag tag-warning" : "tag tag-muted";
 }
 function healthTag(h: Health) {
   return h === "健康" ? "tag tag-success" : h === "观察" ? "tag tag-warning" : "tag tag-danger";

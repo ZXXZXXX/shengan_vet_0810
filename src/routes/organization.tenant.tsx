@@ -18,7 +18,7 @@ const tenants: { id: string; name: string; code: string; plan: Plan; users: numb
 ];
 
 function planTag(p: Plan) {
-  return p === "旗舰版" ? "tag tag-brand" : p === "专业版" ? "tag tag-info" : "tag tag-muted";
+  return p === "旗舰版" ? "tag tag-brand" : p === "专业版" ? "tag tag-brand" : "tag tag-muted";
 }
 
 function TenantPage() {
