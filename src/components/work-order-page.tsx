@@ -548,12 +548,12 @@ export function WorkOrderPage({
             <div style={{ minWidth: minW }} className="relative">
               {/* 表头 */}
               <div className="flex h-12 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
-                {/* 左冻结：操作 */}
-                {leftCols.map((c) => (
+                {/* 左冻结：工单编号、牛只耳号 */}
+                {leftCols.map((c, i) => (
                   <div
                     key={c.key}
-                    style={{ width: c.width, flexShrink: 0, left: 0 }}
-                    className="sticky z-20 px-3 pl-6 bg-surface-subtle border-r border-border"
+                    style={{ width: c.width, flexShrink: 0, left: leftOffset(c.key) }}
+                    className={`sticky z-20 px-3 bg-surface-subtle ${i === 0 ? "pl-6" : ""} ${i === leftCols.length - 1 ? "border-r border-border" : ""}`}
                   >
                     <span>{c.label}</span>
                   </div>
