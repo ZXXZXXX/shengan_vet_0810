@@ -16,6 +16,9 @@ import { Route as ProductionRouteImport } from './routes/production'
 import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as MRouteImport } from './routes/m'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as ArchiveRouteImport } from './routes/archive'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WarehouseIndexRouteImport } from './routes/warehouse.index'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
@@ -73,6 +76,21 @@ const MRoute = MRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeRoute = KnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchiveRoute = ArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -193,6 +211,9 @@ const MAnimalsIdRoute = MAnimalsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/archive': typeof ArchiveRoute
+  '/knowledge': typeof KnowledgeRoute
   '/login': typeof LoginRoute
   '/m': typeof MRouteWithChildren
   '/organization': typeof OrganizationRouteWithChildren
@@ -225,6 +246,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/archive': typeof ArchiveRoute
+  '/knowledge': typeof KnowledgeRoute
   '/login': typeof LoginRoute
   '/workspace': typeof WorkspaceRoute
   '/m/login': typeof MLoginRoute
@@ -253,6 +277,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/archive': typeof ArchiveRoute
+  '/knowledge': typeof KnowledgeRoute
   '/login': typeof LoginRoute
   '/m': typeof MRouteWithChildren
   '/organization': typeof OrganizationRouteWithChildren
@@ -287,6 +314,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/analytics'
+    | '/archive'
+    | '/knowledge'
     | '/login'
     | '/m'
     | '/organization'
@@ -319,6 +349,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analytics'
+    | '/archive'
+    | '/knowledge'
     | '/login'
     | '/workspace'
     | '/m/login'
@@ -346,6 +379,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/analytics'
+    | '/archive'
+    | '/knowledge'
     | '/login'
     | '/m'
     | '/organization'
@@ -379,6 +415,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  ArchiveRoute: typeof ArchiveRoute
+  KnowledgeRoute: typeof KnowledgeRoute
   LoginRoute: typeof LoginRoute
   MRoute: typeof MRouteWithChildren
   OrganizationRoute: typeof OrganizationRouteWithChildren
@@ -437,6 +476,27 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge': {
+      id: '/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/archive': {
+      id: '/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof ArchiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -697,6 +757,9 @@ const WarehouseRouteWithChildren = WarehouseRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  ArchiveRoute: ArchiveRoute,
+  KnowledgeRoute: KnowledgeRoute,
   LoginRoute: LoginRoute,
   MRoute: MRouteWithChildren,
   OrganizationRoute: OrganizationRouteWithChildren,
