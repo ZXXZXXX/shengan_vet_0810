@@ -235,10 +235,13 @@ export function WorkOrderPage({
   const rightWidth = rightCols.reduce((s, c) => s + c.width, 0);
   const middleWidth = middleCols.reduce((s, c) => s + c.width, 0);
   const minW = leftWidth + middleWidth + rightWidth;
-  // right offset map: rightmost col -> 0, previous -> sum of cols to its right
   const rightOffset = (key: ColKey) => {
     const idx = rightCols.findIndex((c) => c.key === key);
     return rightCols.slice(idx + 1).reduce((s, c) => s + c.width, 0);
+  };
+  const leftOffset = (key: ColKey) => {
+    const idx = leftCols.findIndex((c) => c.key === key);
+    return leftCols.slice(0, idx).reduce((s, c) => s + c.width, 0);
   };
 
   const toggleSort = (key: "proposedAt" | "reviewedAt" | "executedAt") => {
