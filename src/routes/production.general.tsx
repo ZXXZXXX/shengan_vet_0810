@@ -1,12 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { WorkOrderPage, type WorkOrder } from "@/components/work-order-page";
+import { WorkOrderPage, makeOrders } from "@/components/work-order-page";
 
-const orders: WorkOrder[] = [
-  { id: "WO-6034", target: "#A2324", who: "王建国", event: "采食量持续下降", proposer: "张伟", status: "待审核", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。", createdAt: "2026-05-12 11:00" },
-  { id: "WO-6029", target: "#A2261", who: "王建国", event: "体况评估异常", proposer: "李娜", status: "执行中", desc: "#A2261 体况评分偏低，跟踪补饲方案 3 天。", createdAt: "2026-05-11 10:20" },
-  { id: "WO-6010", target: "#A2150", who: "王建国", event: "普查复核", proposer: "王建国", status: "已驳回", desc: "普查理由不充分，已驳回，建议合并到批次普查工单。", createdAt: "2026-05-10 18:42" },
-  { id: "WO-5995", target: "4 号牛舍", who: "王建国", event: "月度体检", proposer: "王建国", status: "已完成", desc: "4 号牛舍月度体检完成，2 头标记为复查对象。", createdAt: "2026-05-06 16:00" },
-];
+const orders = makeOrders("WO", 6000, [
+  { target: "#A2324", event: "采食量持续下降", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。" },
+  { target: "#A2261", event: "体况评估异常", desc: "#A2261 体况评分偏低，跟踪补饲方案 3 天。" },
+  { target: "#A2150", event: "普查复核", desc: "#A2150 普查理由不充分，已驳回，建议合并到批次普查工单。" },
+  { target: "4 号牛舍", event: "月度体检", desc: "4 号牛舍月度体检完成，2 头标记为复查对象。" },
+  { target: "#A2208", event: "BCS 评分复核", desc: "#A2208 体况评分复核。" },
+  { target: "1 号牛舍", event: "环境清洁巡检", desc: "1 号牛舍环境清洁与饮水检查。" },
+  { target: "#A2298", event: "运动评分跟踪", desc: "#A2298 运动评分跟踪。" },
+  { target: "#A2099", event: "异常采食回访", desc: "#A2099 采食异常 24h 回访。" },
+]);
 
 export const Route = createFileRoute("/production/general")({
   head: () => ({ meta: [{ title: "普修工单 — 奇点智牧" }] }),
