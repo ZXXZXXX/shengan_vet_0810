@@ -90,8 +90,9 @@ const ALL_COLS: ColDef[] = [
   { key: "status", label: "当前状态", width: 110 },
   { key: "operator", label: "操作人", width: 100 },
   { key: "operatedAt", label: "操作时间", width: 160, isTime: true },
-  { key: "action", label: "操作", width: 100, locked: true },
+  { key: "action", label: "功能", width: 160, locked: true },
 ];
+
 
 const toneStyles: Record<Tone, { bg: string; text: string; tag: string }> = {
   warning: { bg: "bg-[var(--state-warning)]/10", text: "text-[var(--state-warning)]", tag: "tag tag-warning" },
