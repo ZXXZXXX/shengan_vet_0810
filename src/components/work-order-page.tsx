@@ -99,7 +99,7 @@ const ALL_COLS: ColDef[] = [
   { key: "reviewedAt", label: "审核时间", width: 160, isTime: true },
   { key: "executor", label: "执行人", width: 100 },
   { key: "executedAt", label: "执行时间", width: 160, isTime: true },
-  { key: "action", label: "操作", width: 80, locked: true },
+  { key: "action", label: "操作", width: 140, locked: true },
 ];
 
 const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
