@@ -639,3 +639,58 @@ function Field({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+// ============== 工单 mock 数据生成器 ==============
+const proposersPool = ["陈晓东", "李雨晴", "周凯", "李娜", "张伟", "孙明", "王建国", "赵璐"];
+const reviewersPool = ["王建国", "李雨晴", "孙明"];
+const executorsPool = ["李雨晴", "周凯", "孙明", "王建国", "李娜"];
+
+function pad(n: number) { return n < 10 ? `0${n}` : `${n}`; }
+function fmt(d: Date) {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function pick<T>(arr: T[], i: number): T { return arr[i % arr.length]; }
+
+/**
+ * 生成 15 条 mock 工单：
+ * - 状态按 [待审核, 执行中, 已完成, 已驳回] 循环
+ * - 提出时间从今天起向前递推（覆盖今天 / 7天 / 30天 / 更早）
+ */
+export function makeOrders(
+  idPrefix: string,
+  startId: number,
+  events: { target: string; event: string; desc: string }[],
+): WorkOrder[] {
+  const statuses: WorkStatus[] = ["待审核", "执行中", "已完成", "已驳回"];
+  const now = new Date();
+  // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
+  const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
+  return Array.from({ length: 15 }, (_, i) => {
+    const ev = pick(events, i);
+    const status = statuses[i % statuses.length];
+    const proposedAt = new Date(now.getTime() - offsetsH[i] * 3600 * 1000);
+    const reviewedAt = new Date(proposedAt.getTime() + 60 * 60 * 1000);
+    const executedAt = new Date(proposedAt.getTime() + 8 * 60 * 60 * 1000);
+    const proposer = pick(proposersPool, i);
+    const reviewer = pick(reviewersPool, i);
+    const executor = pick(executorsPool, i);
+    const order: WorkOrder = {
+      id: `${idPrefix}-${startId + i}`,
+      target: ev.target,
+      event: ev.event,
+      desc: ev.desc,
+      proposer,
+      status,
+      createdAt: fmt(proposedAt),
+    };
+    if (status !== "待审核") {
+      order.reviewer = reviewer;
+      order.reviewedAt = fmt(reviewedAt);
+    }
+    if (status === "执行中" || status === "已完成") {
+      order.executor = executor;
+      order.executedAt = fmt(executedAt);
+    }
+    return order;
+  });
+}
