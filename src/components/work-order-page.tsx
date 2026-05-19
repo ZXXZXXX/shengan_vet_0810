@@ -221,8 +221,25 @@ export function WorkOrderPage({
     });
   }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir]);
 
-  const cols = ALL_COLS.filter((c) => visible[c.key]);
-  const minW = cols.reduce((sum, c) => sum + c.width, 0);
+  const leftFrozenKeys: ColKey[] = ["action"];
+  const rightFrozenKeys: ColKey[] = ["id", "target"];
+  const middleCols = ALL_COLS.filter(
+    (c) =>
+      visible[c.key] &&
+      !leftFrozenKeys.includes(c.key) &&
+      !rightFrozenKeys.includes(c.key),
+  );
+  const leftCols = ALL_COLS.filter((c) => leftFrozenKeys.includes(c.key));
+  const rightCols = ALL_COLS.filter((c) => rightFrozenKeys.includes(c.key));
+  const leftWidth = leftCols.reduce((s, c) => s + c.width, 0);
+  const rightWidth = rightCols.reduce((s, c) => s + c.width, 0);
+  const middleWidth = middleCols.reduce((s, c) => s + c.width, 0);
+  const minW = leftWidth + middleWidth + rightWidth;
+  // right offset map: rightmost col -> 0, previous -> sum of cols to its right
+  const rightOffset = (key: ColKey) => {
+    const idx = rightCols.findIndex((c) => c.key === key);
+    return rightCols.slice(idx + 1).reduce((s, c) => s + c.width, 0);
+  };
 
   const toggleSort = (key: "proposedAt" | "reviewedAt" | "executedAt") => {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
