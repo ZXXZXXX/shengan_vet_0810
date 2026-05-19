@@ -25,8 +25,9 @@ const records: WarehouseEvent<DStatus>[] = [
     desc: "疾病治疗工单 WO-2392，#A2412 持续高烧待取药。",
     status: "待取药",
     operator: "李雨晴",
-    operatedAt: "2026-05-12 10:12",
+    operatedAt: "-",
   },
+
   {
     id: "DP-3201",
     lines: [{ item: "乳房炎抗生素 5mg", qty: "2 支" }],
