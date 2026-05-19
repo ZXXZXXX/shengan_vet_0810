@@ -735,8 +735,9 @@ export function WorkOrderPage({
                   </div>
                 </div>
               )}
-
+            </div>
           )}
+
           <DialogFooter className="gap-2">
             <Button variant="outline" className="gap-1.5" onClick={() => setConfirm("reject")}>
               <X className="h-3.5 w-3.5" /> 不通过
