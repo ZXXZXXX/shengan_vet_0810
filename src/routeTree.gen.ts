@@ -27,7 +27,6 @@ import { Route as SettingsRulesRouteImport } from './routes/settings.rules'
 import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowledge'
 import { Route as ProductionVaccineRouteImport } from './routes/production.vaccine'
 import { Route as ProductionPostpartumRouteImport } from './routes/production.postpartum'
-import { Route as ProductionHealthRouteImport } from './routes/production.health'
 import { Route as ProductionDiseaseRouteImport } from './routes/production.disease'
 import { Route as ProductionDailyRouteImport } from './routes/production.daily'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
@@ -131,11 +130,6 @@ const ProductionPostpartumRoute = ProductionPostpartumRouteImport.update({
   path: '/postpartum',
   getParentRoute: () => ProductionRoute,
 } as any)
-const ProductionHealthRoute = ProductionHealthRouteImport.update({
-  id: '/health',
-  path: '/health',
-  getParentRoute: () => ProductionRoute,
-} as any)
 const ProductionDiseaseRoute = ProductionDiseaseRouteImport.update({
   id: '/disease',
   path: '/disease',
@@ -213,7 +207,6 @@ export interface FileRoutesByFullPath {
   '/organization/team': typeof OrganizationTeamRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
-  '/production/health': typeof ProductionHealthRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -241,7 +234,6 @@ export interface FileRoutesByTo {
   '/organization/team': typeof OrganizationTeamRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
-  '/production/health': typeof ProductionHealthRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -275,7 +267,6 @@ export interface FileRoutesById {
   '/organization/team': typeof OrganizationTeamRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
-  '/production/health': typeof ProductionHealthRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -310,7 +301,6 @@ export interface FileRouteTypes {
     | '/organization/team'
     | '/production/daily'
     | '/production/disease'
-    | '/production/health'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -338,7 +328,6 @@ export interface FileRouteTypes {
     | '/organization/team'
     | '/production/daily'
     | '/production/disease'
-    | '/production/health'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -371,7 +360,6 @@ export interface FileRouteTypes {
     | '/organization/team'
     | '/production/daily'
     | '/production/disease'
-    | '/production/health'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -528,13 +516,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionPostpartumRouteImport
       parentRoute: typeof ProductionRoute
     }
-    '/production/health': {
-      id: '/production/health'
-      path: '/health'
-      fullPath: '/production/health'
-      preLoaderRoute: typeof ProductionHealthRouteImport
-      parentRoute: typeof ProductionRoute
-    }
     '/production/disease': {
       id: '/production/disease'
       path: '/disease'
@@ -667,7 +648,6 @@ const OrganizationRouteWithChildren = OrganizationRoute._addFileChildren(
 interface ProductionRouteChildren {
   ProductionDailyRoute: typeof ProductionDailyRoute
   ProductionDiseaseRoute: typeof ProductionDiseaseRoute
-  ProductionHealthRoute: typeof ProductionHealthRoute
   ProductionPostpartumRoute: typeof ProductionPostpartumRoute
   ProductionVaccineRoute: typeof ProductionVaccineRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
@@ -676,7 +656,6 @@ interface ProductionRouteChildren {
 const ProductionRouteChildren: ProductionRouteChildren = {
   ProductionDailyRoute: ProductionDailyRoute,
   ProductionDiseaseRoute: ProductionDiseaseRoute,
-  ProductionHealthRoute: ProductionHealthRoute,
   ProductionPostpartumRoute: ProductionPostpartumRoute,
   ProductionVaccineRoute: ProductionVaccineRoute,
   ProductionIndexRoute: ProductionIndexRoute,
@@ -729,3 +708,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
