@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { usePcRole, setPcRole, canReview, pcRoleLabel, type PcRole } from "@/lib/pc-role";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -283,6 +284,28 @@ export function WorkOrderPage({
           </span>
         );
       case "action":
+        if (canReview(role) && o.status === "待审核") {
+          return (
+            <div className="inline-flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+                onClick={() => { setDetail(o); setConfirm("approve"); }}
+              >
+                通过
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 hover:text-[var(--state-danger)]"
+                onClick={() => { setDetail(o); setConfirm("reject"); }}
+              >
+                驳回
+              </Button>
+            </div>
+          );
+        }
         return (
           <Button
             variant="ghost"
