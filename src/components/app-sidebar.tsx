@@ -148,8 +148,9 @@ export function AppSidebar() {
           return (
             <SidebarGroup
               key={group.title}
-              className={`px-2 py-0 rounded-lg ${sectionActive ? "bg-[#FAFEFB]" : ""}`}
+              className="px-2 py-0 rounded-lg"
             >
+
               <Collapsible
                 open={open}
                 onOpenChange={(v) => setOpenMap((m) => ({ ...m, [group.title]: v }))}
