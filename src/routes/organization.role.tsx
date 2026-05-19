@@ -396,14 +396,12 @@ function RolePage() {
                 </div>
               </div>
               {viewMode === "detail" && activeRole && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 text-body-sm font-normal"
+                <button
+                  className="h-8 px-2 text-body-sm font-normal text-primary hover:underline"
                   onClick={() => setViewMode("edit")}
                 >
                   编辑
-                </Button>
+                </button>
               )}
             </div>
           </SheetHeader>
