@@ -221,8 +221,8 @@ export function WorkOrderPage({
     });
   }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir]);
 
-  const leftFrozenKeys: ColKey[] = ["action"];
-  const rightFrozenKeys: ColKey[] = ["id", "target"];
+  const leftFrozenKeys: ColKey[] = ["id", "target"];
+  const rightFrozenKeys: ColKey[] = ["action"];
   const middleCols = ALL_COLS.filter(
     (c) =>
       visible[c.key] &&
