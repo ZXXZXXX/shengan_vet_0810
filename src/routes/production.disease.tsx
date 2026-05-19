@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WorkOrderPage, makeOrders } from "@/components/work-order-page";
 
-const orders = makeOrders("WO", 2300, [
+const orders = makeOrders("JB", [
   { target: "#A2381", event: "持续高烧 2 小时", desc: "3 号牛舍 #A2381 持续高烧 2 小时，需进行抗生素治疗与隔离观察。" },
   { target: "#A2298", event: "乳房炎复诊", desc: "1 号牛舍 #A2298 乳房炎复诊，按治疗方案完成第二轮处置。" },
   { target: "#A2270", event: "蹄叶炎复发治疗", desc: "#A2270 蹄叶炎复发，已完成包扎与外用药处置。" },
