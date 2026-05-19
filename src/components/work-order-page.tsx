@@ -366,7 +366,7 @@ export function WorkOrderPage({
   };
 
   return (
-    <>
+    <TooltipProvider delayDuration={200}>
       <AppHeader title={title} breadcrumb={["健康管理", title]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
