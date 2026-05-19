@@ -40,7 +40,6 @@ const groups: NavGroup[] = [
     icon: LayoutDashboard,
     children: [
       { title: "运营看板", url: "/" },
-      { title: "统计分析", url: "/analytics" },
     ],
   },
   {
@@ -59,7 +58,10 @@ const groups: NavGroup[] = [
       { title: "疾病治疗", url: "/production/disease" },
       { title: "疫苗免疫", url: "/production/vaccine" },
       { title: "产后护理", url: "/production/postpartum" },
-      { title: "日常护理", url: "/production/daily" },
+      { title: "修蹄工单", url: "/production/hoof" },
+      { title: "干奶工单", url: "/production/drying" },
+      { title: "驱虫工单", url: "/production/deworm" },
+      { title: "普修工单", url: "/production/general" },
     ],
   },
   {

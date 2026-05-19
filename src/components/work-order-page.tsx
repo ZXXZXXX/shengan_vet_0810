@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,18 +32,11 @@ import {
   X,
 } from "lucide-react";
 
-export const Route = createFileRoute("/production/daily")({
-  head: () => ({ meta: [{ title: "日常护理 — 奇点智牧" }] }),
-  component: DailyPage,
-});
-
 type WorkStatus = "待审核" | "执行中" | "已驳回" | "已完成";
-type WorkType = "修蹄" | "驱虫" | "普修";
 
-type WorkOrder = {
+export type WorkOrder = {
   id: string;
   target: string;
-  type: WorkType;
   who: string;
   event: string;
   proposer: string;
@@ -52,12 +44,6 @@ type WorkOrder = {
   desc: string;
   createdAt: string;
 };
-
-const orders: WorkOrder[] = [
-  { id: "WO-2324", target: "#A2324", type: "普修", who: "王建国", event: "采食量持续下降", proposer: "张伟", status: "已驳回", desc: "#A2324 采食量持续下降，需复检并调整饲喂方案。", createdAt: "2026-05-10 18:42" },
-  { id: "WO-2150", target: "#A2150", type: "修蹄", who: "孙明", event: "批次修蹄", proposer: "孙明", status: "已完成", desc: "1 号牛舍批次修蹄已完成，无异常反馈。", createdAt: "2026-05-09 09:30" },
-  { id: "WO-2099", target: "1 号牛舍", type: "驱虫", who: "周凯", event: "季度体内驱虫", proposer: "周凯", status: "待审核", desc: "1 号牛舍季度体内驱虫批次，需调拨广谱驱虫药 15 盒。", createdAt: "2026-05-12 08:20" },
-];
 
 const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
   { key: "待审核", label: "待审核", icon: ClipboardList, tone: "warning" },
@@ -73,16 +59,24 @@ const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
   success: { bg: "bg-[var(--state-success)]/10", text: "text-[var(--state-success)]", tag: "tag tag-success" },
 };
 
-function DailyPage() {
+export function WorkOrderPage({
+  title,
+  orders,
+}: {
+  title: string;
+  orders: WorkOrder[];
+}) {
   const [active, setActive] = useState<WorkStatus>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
-  const counts = Object.fromEntries(statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length])) as Record<WorkStatus, number>;
+  const counts = Object.fromEntries(
+    statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length]),
+  ) as Record<WorkStatus, number>;
   const filtered = orders.filter((o) => o.status === active);
 
   return (
     <>
-      <AppHeader title="日常护理" breadcrumb={["生产管理", "日常护理"]} />
+      <AppHeader title={title} breadcrumb={["健康管理", title]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <h3 className="text-section-title text-foreground">工单看板</h3>
@@ -127,15 +121,14 @@ function DailyPage() {
                 <Input placeholder="按工单号 / 对象搜索" className="h-9 w-64 pl-9 text-body-sm bg-card border-border" />
               </div>
               <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-                <Filter className="h-3.5 w-3.5" /> 工单类型
+                <Filter className="h-3.5 w-3.5" /> 筛选
               </Button>
             </div>
           </div>
           <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-y border-border bg-surface-subtle">
             <div className="col-span-2">工单号</div>
             <div className="col-span-2">对象</div>
-            <div className="col-span-1">类型</div>
-            <div className="col-span-3">提出事件</div>
+            <div className="col-span-4">提出事件</div>
             <div className="col-span-1">负责人</div>
             <div className="col-span-2">提出者</div>
             <div className="col-span-1 text-right">操作</div>
@@ -147,8 +140,7 @@ function DailyPage() {
               <div key={t.id} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
                 <div className="col-span-2 font-mono text-body text-foreground">{t.id}</div>
                 <div className="col-span-2 text-body text-foreground">{t.target}</div>
-                <div className="col-span-1"><span className="tag tag-muted">{t.type}</span></div>
-                <div className="col-span-3 text-body-sm text-text-secondary truncate">{t.event}</div>
+                <div className="col-span-4 text-body-sm text-text-secondary truncate">{t.event}</div>
                 <div className="col-span-1 text-body-sm text-text-secondary truncate">{t.who}</div>
                 <div className="col-span-2 text-body-sm text-text-secondary truncate">{t.proposer}</div>
                 <div className="col-span-1 flex items-center justify-end">
@@ -182,7 +174,7 @@ function DailyPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
-                <Field label="工单类型" value={detail.type} />
+                <Field label="工单类型" value={title} />
                 <Field label="处理对象" value={detail.target} />
                 <Field label="提出事件" value={detail.event} />
                 <Field label="提出者" value={detail.proposer} />
@@ -217,7 +209,7 @@ function DailyPage() {
               确认{confirm === "approve" ? "通过" : "驳回"}该工单？
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {detail ? `工单 ${detail.id} · ${detail.target} · ${detail.type}` : ""}
+              {detail ? `工单 ${detail.id} · ${detail.target}` : ""}
               ，操作后状态将更新,无法撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
