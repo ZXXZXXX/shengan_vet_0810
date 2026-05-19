@@ -38,7 +38,6 @@ import { Route as ProductionGeneralRouteImport } from './routes/production.gener
 import { Route as ProductionDryingRouteImport } from './routes/production.drying'
 import { Route as ProductionDiseaseRouteImport } from './routes/production.disease'
 import { Route as ProductionDewormRouteImport } from './routes/production.deworm'
-import { Route as ProductionDailyRouteImport } from './routes/production.daily'
 import { Route as OrganizationTenantRouteImport } from './routes/organization.tenant'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
@@ -203,11 +202,6 @@ const ProductionDewormRoute = ProductionDewormRouteImport.update({
   path: '/deworm',
   getParentRoute: () => ProductionRoute,
 } as any)
-const ProductionDailyRoute = ProductionDailyRouteImport.update({
-  id: '/daily',
-  path: '/daily',
-  getParentRoute: () => ProductionRoute,
-} as any)
 const OrganizationTenantRoute = OrganizationTenantRouteImport.update({
   id: '/tenant',
   path: '/tenant',
@@ -324,7 +318,6 @@ export interface FileRoutesByFullPath {
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/organization/tenant': typeof OrganizationTenantRoute
-  '/production/daily': typeof ProductionDailyRoute
   '/production/deworm': typeof ProductionDewormRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/drying': typeof ProductionDryingRoute
@@ -369,7 +362,6 @@ export interface FileRoutesByTo {
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/organization/tenant': typeof OrganizationTenantRoute
-  '/production/daily': typeof ProductionDailyRoute
   '/production/deworm': typeof ProductionDewormRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/drying': typeof ProductionDryingRoute
@@ -420,7 +412,6 @@ export interface FileRoutesById {
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
   '/organization/tenant': typeof OrganizationTenantRoute
-  '/production/daily': typeof ProductionDailyRoute
   '/production/deworm': typeof ProductionDewormRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/drying': typeof ProductionDryingRoute
@@ -472,7 +463,6 @@ export interface FileRouteTypes {
     | '/organization/role'
     | '/organization/team'
     | '/organization/tenant'
-    | '/production/daily'
     | '/production/deworm'
     | '/production/disease'
     | '/production/drying'
@@ -517,7 +507,6 @@ export interface FileRouteTypes {
     | '/organization/role'
     | '/organization/team'
     | '/organization/tenant'
-    | '/production/daily'
     | '/production/deworm'
     | '/production/disease'
     | '/production/drying'
@@ -567,7 +556,6 @@ export interface FileRouteTypes {
     | '/organization/role'
     | '/organization/team'
     | '/organization/tenant'
-    | '/production/daily'
     | '/production/deworm'
     | '/production/disease'
     | '/production/drying'
@@ -812,13 +800,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionDewormRouteImport
       parentRoute: typeof ProductionRoute
     }
-    '/production/daily': {
-      id: '/production/daily'
-      path: '/daily'
-      fullPath: '/production/daily'
-      preLoaderRoute: typeof ProductionDailyRouteImport
-      parentRoute: typeof ProductionRoute
-    }
     '/organization/tenant': {
       id: '/organization/tenant'
       path: '/tenant'
@@ -1026,7 +1007,6 @@ const OrganizationRouteWithChildren = OrganizationRoute._addFileChildren(
 )
 
 interface ProductionRouteChildren {
-  ProductionDailyRoute: typeof ProductionDailyRoute
   ProductionDewormRoute: typeof ProductionDewormRoute
   ProductionDiseaseRoute: typeof ProductionDiseaseRoute
   ProductionDryingRoute: typeof ProductionDryingRoute
@@ -1038,7 +1018,6 @@ interface ProductionRouteChildren {
 }
 
 const ProductionRouteChildren: ProductionRouteChildren = {
-  ProductionDailyRoute: ProductionDailyRoute,
   ProductionDewormRoute: ProductionDewormRoute,
   ProductionDiseaseRoute: ProductionDiseaseRoute,
   ProductionDryingRoute: ProductionDryingRoute,
@@ -1105,3 +1084,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
