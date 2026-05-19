@@ -442,17 +442,17 @@ export function WorkOrderPage({
 
         <Card className="border-border bg-card overflow-hidden">
           {/* 顶部工具栏 */}
-          <div className="flex items-center justify-end p-6 pb-4 flex-wrap gap-3">
+          <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
+              <Input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="按工单号 / 耳号 / 描述搜索"
+                className="h-9 w-64 pl-9 text-body-sm bg-card border-border"
+              />
+            </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-                <Input
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="按工单号 / 耳号 / 描述搜索"
-                  className="h-9 w-64 pl-9 text-body-sm bg-card border-border"
-                />
-              </div>
               {/* 快捷时间筛选 */}
               <div className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-surface-subtle">
                 {dateRanges.map((r) => (
