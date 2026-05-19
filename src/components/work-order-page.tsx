@@ -359,16 +359,23 @@ export function WorkOrderPage({
                 <Card
                   className={`p-5 flex items-center gap-4 transition-all ${
                     isActive
-                      ? "border-primary bg-brand-subtle ring-2 ring-primary shadow-sm"
+                      ? "border-primary bg-primary shadow-md"
                       : "border-border bg-card hover:border-primary/40"
                   }`}
                 >
-                  <div className={`h-10 w-10 rounded-md flex items-center justify-center ${tone.bg}`}>
-                    <s.icon className={`h-4 w-4 ${tone.text}`} strokeWidth={1.75} />
+                  <div
+                    className={`h-10 w-10 rounded-md flex items-center justify-center ${
+                      isActive ? "bg-primary-foreground/15" : tone.bg
+                    }`}
+                  >
+                    <s.icon
+                      className={`h-4 w-4 ${isActive ? "text-primary-foreground" : tone.text}`}
+                      strokeWidth={1.75}
+                    />
                   </div>
                   <div>
-                    <div className={`text-section-title tabular-nums ${isActive ? "text-primary" : "text-foreground"}`}>{counts[s.key]}</div>
-                    <div className={`text-caption ${isActive ? "text-primary font-medium" : "text-text-tertiary"}`}>{s.label}</div>
+                    <div className={`text-section-title tabular-nums ${isActive ? "text-primary-foreground" : "text-foreground"}`}>{counts[s.key]}</div>
+                    <div className={`text-caption ${isActive ? "text-primary-foreground/85" : "text-text-tertiary"}`}>{s.label}</div>
                   </div>
                 </Card>
               </button>
