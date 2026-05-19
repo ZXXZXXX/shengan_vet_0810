@@ -37,6 +37,11 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
+  Mic,
+  Video,
+  FileText,
+  Check,
+  X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -49,6 +54,12 @@ export type StatusConfig<S extends string> = {
   tone: Tone;
 };
 
+export type EventAttachment = {
+  type: "audio" | "video" | "text";
+  name: string;
+  meta?: string;
+};
+
 export type WarehouseEvent<S extends string = string> = {
   id: string;
   lines: { item: string; qty: string }[];
@@ -56,7 +67,11 @@ export type WarehouseEvent<S extends string = string> = {
   status: S;
   operator: string;
   operatedAt: string;
+  from?: string;
+  to?: string;
+  attachments?: EventAttachment[];
 };
+
 
 type ColKey = "id" | "items" | "desc" | "status" | "operator" | "operatedAt" | "action";
 
