@@ -196,7 +196,7 @@ function AccountPage() {
                   )
                 }
               />
-              <DetailRow label="最近登录" value={<span className="tabular-nums">{viewing.lastLogin}</span>} />
+              
               <DetailRow
                 label="状态"
                 value={<span className={`tag ${viewing.status === "启用" ? "tag-success" : "tag-muted"}`}>{viewing.status}</span>}
