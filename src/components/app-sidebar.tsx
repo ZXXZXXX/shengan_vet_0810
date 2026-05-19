@@ -3,9 +3,10 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Users,
-  Boxes,
-  Warehouse,
-  Settings,
+  Stethoscope,
+  Pill,
+  BookOpen,
+  FolderArchive,
   ChevronDown,
 } from "lucide-react";
 
@@ -37,13 +38,24 @@ const groups: NavGroup[] = [
   {
     title: "首页总览",
     icon: LayoutDashboard,
-    children: [{ title: "运营看板", url: "/" }],
+    children: [
+      { title: "运营看板", url: "/" },
+      { title: "统计分析", url: "/analytics" },
+    ],
   },
   {
-    title: "生产管理",
-    icon: Boxes,
+    title: "基础档案",
+    icon: FolderArchive,
     children: [
-      { title: "基础档案", url: "/production" },
+      { title: "牛场信息", url: "/archive/farm" },
+      { title: "牛舍信息", url: "/archive/barn" },
+      { title: "牛只信息", url: "/archive/cattle" },
+    ],
+  },
+  {
+    title: "健康管理",
+    icon: Stethoscope,
+    children: [
       { title: "疾病治疗", url: "/production/disease" },
       { title: "疫苗免疫", url: "/production/vaccine" },
       { title: "产后护理", url: "/production/postpartum" },
@@ -51,29 +63,32 @@ const groups: NavGroup[] = [
     ],
   },
   {
-    title: "仓库管理",
-    icon: Warehouse,
+    title: "药品管理",
+    icon: Pill,
     children: [
-      { title: "库存管理", url: "/warehouse" },
-      { title: "调拨申请", url: "/warehouse/transfer" },
+      { title: "药品档案", url: "/warehouse/drug" },
+      { title: "药品库存", url: "/warehouse" },
+      { title: "调拨转库", url: "/warehouse/transfer" },
+      { title: "取药记录", url: "/warehouse/dispense" },
+      { title: "损耗管理", url: "/warehouse/loss" },
     ],
   },
   {
-    title: "架构管理",
+    title: "诊疗知识库",
+    icon: BookOpen,
+    children: [
+      { title: "疾病知识库", url: "/knowledge/disease" },
+      { title: "症状知识库", url: "/knowledge/symptom" },
+      { title: "处方管理", url: "/knowledge/prescription" },
+    ],
+  },
+  {
+    title: "组织管理",
     icon: Users,
     children: [
-      { title: "组织管理", url: "/organization" },
-      { title: "角色权限", url: "/organization/role" },
-      { title: "分组作业", url: "/organization/team" },
-    ],
-  },
-  {
-    title: "配置中心",
-    icon: Settings,
-    children: [
-      { title: "工单配置", url: "/settings" },
-      { title: "规则配置", url: "/settings/rules" },
-      { title: "知识库", url: "/settings/knowledge" },
+      { title: "账号管理", url: "/organization/account" },
+      { title: "角色管理", url: "/organization/role" },
+      { title: "租户管理", url: "/organization/tenant" },
     ],
   },
 ];

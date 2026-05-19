@@ -16,6 +16,9 @@ import { Route as ProductionRouteImport } from './routes/production'
 import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as MRouteImport } from './routes/m'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as ArchiveRouteImport } from './routes/archive'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WarehouseIndexRouteImport } from './routes/warehouse.index'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
@@ -23,17 +26,28 @@ import { Route as ProductionIndexRouteImport } from './routes/production.index'
 import { Route as OrganizationIndexRouteImport } from './routes/organization.index'
 import { Route as MIndexRouteImport } from './routes/m.index'
 import { Route as WarehouseTransferRouteImport } from './routes/warehouse.transfer'
+import { Route as WarehouseLossRouteImport } from './routes/warehouse.loss'
+import { Route as WarehouseDrugRouteImport } from './routes/warehouse.drug'
+import { Route as WarehouseDispenseRouteImport } from './routes/warehouse.dispense'
 import { Route as SettingsRulesRouteImport } from './routes/settings.rules'
 import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowledge'
 import { Route as ProductionVaccineRouteImport } from './routes/production.vaccine'
 import { Route as ProductionPostpartumRouteImport } from './routes/production.postpartum'
 import { Route as ProductionDiseaseRouteImport } from './routes/production.disease'
 import { Route as ProductionDailyRouteImport } from './routes/production.daily'
+import { Route as OrganizationTenantRouteImport } from './routes/organization.tenant'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
+import { Route as OrganizationAccountRouteImport } from './routes/organization.account'
 import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLoginRouteImport } from './routes/m.login'
+import { Route as KnowledgeSymptomRouteImport } from './routes/knowledge.symptom'
+import { Route as KnowledgePrescriptionRouteImport } from './routes/knowledge.prescription'
+import { Route as KnowledgeDiseaseRouteImport } from './routes/knowledge.disease'
+import { Route as ArchiveFarmRouteImport } from './routes/archive.farm'
+import { Route as ArchiveCattleRouteImport } from './routes/archive.cattle'
+import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
 import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
 import { Route as MHealthReportRouteImport } from './routes/m.health.report'
@@ -75,6 +89,21 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KnowledgeRoute = KnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchiveRoute = ArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -110,6 +139,21 @@ const WarehouseTransferRoute = WarehouseTransferRouteImport.update({
   path: '/transfer',
   getParentRoute: () => WarehouseRoute,
 } as any)
+const WarehouseLossRoute = WarehouseLossRouteImport.update({
+  id: '/loss',
+  path: '/loss',
+  getParentRoute: () => WarehouseRoute,
+} as any)
+const WarehouseDrugRoute = WarehouseDrugRouteImport.update({
+  id: '/drug',
+  path: '/drug',
+  getParentRoute: () => WarehouseRoute,
+} as any)
+const WarehouseDispenseRoute = WarehouseDispenseRouteImport.update({
+  id: '/dispense',
+  path: '/dispense',
+  getParentRoute: () => WarehouseRoute,
+} as any)
 const SettingsRulesRoute = SettingsRulesRouteImport.update({
   id: '/rules',
   path: '/rules',
@@ -140,6 +184,11 @@ const ProductionDailyRoute = ProductionDailyRouteImport.update({
   path: '/daily',
   getParentRoute: () => ProductionRoute,
 } as any)
+const OrganizationTenantRoute = OrganizationTenantRouteImport.update({
+  id: '/tenant',
+  path: '/tenant',
+  getParentRoute: () => OrganizationRoute,
+} as any)
 const OrganizationTeamRoute = OrganizationTeamRouteImport.update({
   id: '/team',
   path: '/team',
@@ -148,6 +197,11 @@ const OrganizationTeamRoute = OrganizationTeamRouteImport.update({
 const OrganizationRoleRoute = OrganizationRoleRouteImport.update({
   id: '/role',
   path: '/role',
+  getParentRoute: () => OrganizationRoute,
+} as any)
+const OrganizationAccountRoute = OrganizationAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => OrganizationRoute,
 } as any)
 const MWorkspaceRoute = MWorkspaceRouteImport.update({
@@ -164,6 +218,36 @@ const MLoginRoute = MLoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => MRoute,
+} as any)
+const KnowledgeSymptomRoute = KnowledgeSymptomRouteImport.update({
+  id: '/symptom',
+  path: '/symptom',
+  getParentRoute: () => KnowledgeRoute,
+} as any)
+const KnowledgePrescriptionRoute = KnowledgePrescriptionRouteImport.update({
+  id: '/prescription',
+  path: '/prescription',
+  getParentRoute: () => KnowledgeRoute,
+} as any)
+const KnowledgeDiseaseRoute = KnowledgeDiseaseRouteImport.update({
+  id: '/disease',
+  path: '/disease',
+  getParentRoute: () => KnowledgeRoute,
+} as any)
+const ArchiveFarmRoute = ArchiveFarmRouteImport.update({
+  id: '/farm',
+  path: '/farm',
+  getParentRoute: () => ArchiveRoute,
+} as any)
+const ArchiveCattleRoute = ArchiveCattleRouteImport.update({
+  id: '/cattle',
+  path: '/cattle',
+  getParentRoute: () => ArchiveRoute,
+} as any)
+const ArchiveBarnRoute = ArchiveBarnRouteImport.update({
+  id: '/barn',
+  path: '/barn',
+  getParentRoute: () => ArchiveRoute,
 } as any)
 const MHealthIndexRoute = MHealthIndexRouteImport.update({
   id: '/health/',
@@ -193,6 +277,9 @@ const MAnimalsIdRoute = MAnimalsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/archive': typeof ArchiveRouteWithChildren
+  '/knowledge': typeof KnowledgeRouteWithChildren
   '/login': typeof LoginRoute
   '/m': typeof MRouteWithChildren
   '/organization': typeof OrganizationRouteWithChildren
@@ -200,17 +287,28 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
   '/workspace': typeof WorkspaceRoute
+  '/archive/barn': typeof ArchiveBarnRoute
+  '/archive/cattle': typeof ArchiveCattleRoute
+  '/archive/farm': typeof ArchiveFarmRoute
+  '/knowledge/disease': typeof KnowledgeDiseaseRoute
+  '/knowledge/prescription': typeof KnowledgePrescriptionRoute
+  '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/workspace': typeof MWorkspaceRoute
+  '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
+  '/organization/tenant': typeof OrganizationTenantRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
+  '/warehouse/dispense': typeof WarehouseDispenseRoute
+  '/warehouse/drug': typeof WarehouseDrugRoute
+  '/warehouse/loss': typeof WarehouseLossRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/m/': typeof MIndexRoute
   '/organization/': typeof OrganizationIndexRoute
@@ -225,19 +323,33 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/archive': typeof ArchiveRouteWithChildren
+  '/knowledge': typeof KnowledgeRouteWithChildren
   '/login': typeof LoginRoute
   '/workspace': typeof WorkspaceRoute
+  '/archive/barn': typeof ArchiveBarnRoute
+  '/archive/cattle': typeof ArchiveCattleRoute
+  '/archive/farm': typeof ArchiveFarmRoute
+  '/knowledge/disease': typeof KnowledgeDiseaseRoute
+  '/knowledge/prescription': typeof KnowledgePrescriptionRoute
+  '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/workspace': typeof MWorkspaceRoute
+  '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
+  '/organization/tenant': typeof OrganizationTenantRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
+  '/warehouse/dispense': typeof WarehouseDispenseRoute
+  '/warehouse/drug': typeof WarehouseDrugRoute
+  '/warehouse/loss': typeof WarehouseLossRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/m': typeof MIndexRoute
   '/organization': typeof OrganizationIndexRoute
@@ -253,6 +365,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/archive': typeof ArchiveRouteWithChildren
+  '/knowledge': typeof KnowledgeRouteWithChildren
   '/login': typeof LoginRoute
   '/m': typeof MRouteWithChildren
   '/organization': typeof OrganizationRouteWithChildren
@@ -260,17 +375,28 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRouteWithChildren
   '/warehouse': typeof WarehouseRouteWithChildren
   '/workspace': typeof WorkspaceRoute
+  '/archive/barn': typeof ArchiveBarnRoute
+  '/archive/cattle': typeof ArchiveCattleRoute
+  '/archive/farm': typeof ArchiveFarmRoute
+  '/knowledge/disease': typeof KnowledgeDiseaseRoute
+  '/knowledge/prescription': typeof KnowledgePrescriptionRoute
+  '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/workspace': typeof MWorkspaceRoute
+  '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
+  '/organization/tenant': typeof OrganizationTenantRoute
   '/production/daily': typeof ProductionDailyRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
+  '/warehouse/dispense': typeof WarehouseDispenseRoute
+  '/warehouse/drug': typeof WarehouseDrugRoute
+  '/warehouse/loss': typeof WarehouseLossRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
   '/m/': typeof MIndexRoute
   '/organization/': typeof OrganizationIndexRoute
@@ -287,6 +413,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/analytics'
+    | '/archive'
+    | '/knowledge'
     | '/login'
     | '/m'
     | '/organization'
@@ -294,17 +423,28 @@ export interface FileRouteTypes {
     | '/settings'
     | '/warehouse'
     | '/workspace'
+    | '/archive/barn'
+    | '/archive/cattle'
+    | '/archive/farm'
+    | '/knowledge/disease'
+    | '/knowledge/prescription'
+    | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
     | '/m/workspace'
+    | '/organization/account'
     | '/organization/role'
     | '/organization/team'
+    | '/organization/tenant'
     | '/production/daily'
     | '/production/disease'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
     | '/settings/rules'
+    | '/warehouse/dispense'
+    | '/warehouse/drug'
+    | '/warehouse/loss'
     | '/warehouse/transfer'
     | '/m/'
     | '/organization/'
@@ -319,19 +459,33 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analytics'
+    | '/archive'
+    | '/knowledge'
     | '/login'
     | '/workspace'
+    | '/archive/barn'
+    | '/archive/cattle'
+    | '/archive/farm'
+    | '/knowledge/disease'
+    | '/knowledge/prescription'
+    | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
     | '/m/workspace'
+    | '/organization/account'
     | '/organization/role'
     | '/organization/team'
+    | '/organization/tenant'
     | '/production/daily'
     | '/production/disease'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
     | '/settings/rules'
+    | '/warehouse/dispense'
+    | '/warehouse/drug'
+    | '/warehouse/loss'
     | '/warehouse/transfer'
     | '/m'
     | '/organization'
@@ -346,6 +500,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/analytics'
+    | '/archive'
+    | '/knowledge'
     | '/login'
     | '/m'
     | '/organization'
@@ -353,17 +510,28 @@ export interface FileRouteTypes {
     | '/settings'
     | '/warehouse'
     | '/workspace'
+    | '/archive/barn'
+    | '/archive/cattle'
+    | '/archive/farm'
+    | '/knowledge/disease'
+    | '/knowledge/prescription'
+    | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
     | '/m/workspace'
+    | '/organization/account'
     | '/organization/role'
     | '/organization/team'
+    | '/organization/tenant'
     | '/production/daily'
     | '/production/disease'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
     | '/settings/rules'
+    | '/warehouse/dispense'
+    | '/warehouse/drug'
+    | '/warehouse/loss'
     | '/warehouse/transfer'
     | '/m/'
     | '/organization/'
@@ -379,6 +547,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  ArchiveRoute: typeof ArchiveRouteWithChildren
+  KnowledgeRoute: typeof KnowledgeRouteWithChildren
   LoginRoute: typeof LoginRoute
   MRoute: typeof MRouteWithChildren
   OrganizationRoute: typeof OrganizationRouteWithChildren
@@ -439,6 +610,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/knowledge': {
+      id: '/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/archive': {
+      id: '/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof ArchiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -488,6 +680,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WarehouseTransferRouteImport
       parentRoute: typeof WarehouseRoute
     }
+    '/warehouse/loss': {
+      id: '/warehouse/loss'
+      path: '/loss'
+      fullPath: '/warehouse/loss'
+      preLoaderRoute: typeof WarehouseLossRouteImport
+      parentRoute: typeof WarehouseRoute
+    }
+    '/warehouse/drug': {
+      id: '/warehouse/drug'
+      path: '/drug'
+      fullPath: '/warehouse/drug'
+      preLoaderRoute: typeof WarehouseDrugRouteImport
+      parentRoute: typeof WarehouseRoute
+    }
+    '/warehouse/dispense': {
+      id: '/warehouse/dispense'
+      path: '/dispense'
+      fullPath: '/warehouse/dispense'
+      preLoaderRoute: typeof WarehouseDispenseRouteImport
+      parentRoute: typeof WarehouseRoute
+    }
     '/settings/rules': {
       id: '/settings/rules'
       path: '/rules'
@@ -530,6 +743,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionDailyRouteImport
       parentRoute: typeof ProductionRoute
     }
+    '/organization/tenant': {
+      id: '/organization/tenant'
+      path: '/tenant'
+      fullPath: '/organization/tenant'
+      preLoaderRoute: typeof OrganizationTenantRouteImport
+      parentRoute: typeof OrganizationRoute
+    }
     '/organization/team': {
       id: '/organization/team'
       path: '/team'
@@ -542,6 +762,13 @@ declare module '@tanstack/react-router' {
       path: '/role'
       fullPath: '/organization/role'
       preLoaderRoute: typeof OrganizationRoleRouteImport
+      parentRoute: typeof OrganizationRoute
+    }
+    '/organization/account': {
+      id: '/organization/account'
+      path: '/account'
+      fullPath: '/organization/account'
+      preLoaderRoute: typeof OrganizationAccountRouteImport
       parentRoute: typeof OrganizationRoute
     }
     '/m/workspace': {
@@ -564,6 +791,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/m/login'
       preLoaderRoute: typeof MLoginRouteImport
       parentRoute: typeof MRoute
+    }
+    '/knowledge/symptom': {
+      id: '/knowledge/symptom'
+      path: '/symptom'
+      fullPath: '/knowledge/symptom'
+      preLoaderRoute: typeof KnowledgeSymptomRouteImport
+      parentRoute: typeof KnowledgeRoute
+    }
+    '/knowledge/prescription': {
+      id: '/knowledge/prescription'
+      path: '/prescription'
+      fullPath: '/knowledge/prescription'
+      preLoaderRoute: typeof KnowledgePrescriptionRouteImport
+      parentRoute: typeof KnowledgeRoute
+    }
+    '/knowledge/disease': {
+      id: '/knowledge/disease'
+      path: '/disease'
+      fullPath: '/knowledge/disease'
+      preLoaderRoute: typeof KnowledgeDiseaseRouteImport
+      parentRoute: typeof KnowledgeRoute
+    }
+    '/archive/farm': {
+      id: '/archive/farm'
+      path: '/farm'
+      fullPath: '/archive/farm'
+      preLoaderRoute: typeof ArchiveFarmRouteImport
+      parentRoute: typeof ArchiveRoute
+    }
+    '/archive/cattle': {
+      id: '/archive/cattle'
+      path: '/cattle'
+      fullPath: '/archive/cattle'
+      preLoaderRoute: typeof ArchiveCattleRouteImport
+      parentRoute: typeof ArchiveRoute
+    }
+    '/archive/barn': {
+      id: '/archive/barn'
+      path: '/barn'
+      fullPath: '/archive/barn'
+      preLoaderRoute: typeof ArchiveBarnRouteImport
+      parentRoute: typeof ArchiveRoute
     }
     '/m/health/': {
       id: '/m/health/'
@@ -603,6 +872,37 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ArchiveRouteChildren {
+  ArchiveBarnRoute: typeof ArchiveBarnRoute
+  ArchiveCattleRoute: typeof ArchiveCattleRoute
+  ArchiveFarmRoute: typeof ArchiveFarmRoute
+}
+
+const ArchiveRouteChildren: ArchiveRouteChildren = {
+  ArchiveBarnRoute: ArchiveBarnRoute,
+  ArchiveCattleRoute: ArchiveCattleRoute,
+  ArchiveFarmRoute: ArchiveFarmRoute,
+}
+
+const ArchiveRouteWithChildren =
+  ArchiveRoute._addFileChildren(ArchiveRouteChildren)
+
+interface KnowledgeRouteChildren {
+  KnowledgeDiseaseRoute: typeof KnowledgeDiseaseRoute
+  KnowledgePrescriptionRoute: typeof KnowledgePrescriptionRoute
+  KnowledgeSymptomRoute: typeof KnowledgeSymptomRoute
+}
+
+const KnowledgeRouteChildren: KnowledgeRouteChildren = {
+  KnowledgeDiseaseRoute: KnowledgeDiseaseRoute,
+  KnowledgePrescriptionRoute: KnowledgePrescriptionRoute,
+  KnowledgeSymptomRoute: KnowledgeSymptomRoute,
+}
+
+const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
+  KnowledgeRouteChildren,
+)
+
 interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MMeRoute: typeof MMeRoute
@@ -630,14 +930,18 @@ const MRouteChildren: MRouteChildren = {
 const MRouteWithChildren = MRoute._addFileChildren(MRouteChildren)
 
 interface OrganizationRouteChildren {
+  OrganizationAccountRoute: typeof OrganizationAccountRoute
   OrganizationRoleRoute: typeof OrganizationRoleRoute
   OrganizationTeamRoute: typeof OrganizationTeamRoute
+  OrganizationTenantRoute: typeof OrganizationTenantRoute
   OrganizationIndexRoute: typeof OrganizationIndexRoute
 }
 
 const OrganizationRouteChildren: OrganizationRouteChildren = {
+  OrganizationAccountRoute: OrganizationAccountRoute,
   OrganizationRoleRoute: OrganizationRoleRoute,
   OrganizationTeamRoute: OrganizationTeamRoute,
+  OrganizationTenantRoute: OrganizationTenantRoute,
   OrganizationIndexRoute: OrganizationIndexRoute,
 }
 
@@ -682,11 +986,17 @@ const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
 )
 
 interface WarehouseRouteChildren {
+  WarehouseDispenseRoute: typeof WarehouseDispenseRoute
+  WarehouseDrugRoute: typeof WarehouseDrugRoute
+  WarehouseLossRoute: typeof WarehouseLossRoute
   WarehouseTransferRoute: typeof WarehouseTransferRoute
   WarehouseIndexRoute: typeof WarehouseIndexRoute
 }
 
 const WarehouseRouteChildren: WarehouseRouteChildren = {
+  WarehouseDispenseRoute: WarehouseDispenseRoute,
+  WarehouseDrugRoute: WarehouseDrugRoute,
+  WarehouseLossRoute: WarehouseLossRoute,
   WarehouseTransferRoute: WarehouseTransferRoute,
   WarehouseIndexRoute: WarehouseIndexRoute,
 }
@@ -697,6 +1007,9 @@ const WarehouseRouteWithChildren = WarehouseRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  ArchiveRoute: ArchiveRouteWithChildren,
+  KnowledgeRoute: KnowledgeRouteWithChildren,
   LoginRoute: LoginRoute,
   MRoute: MRouteWithChildren,
   OrganizationRoute: OrganizationRouteWithChildren,
@@ -708,13 +1021,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
