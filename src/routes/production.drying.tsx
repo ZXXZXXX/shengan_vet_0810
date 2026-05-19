@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WorkOrderPage, makeOrders } from "@/components/work-order-page";
 
-const orders = makeOrders("WO", 4000, [
+const orders = makeOrders("GN", [
   { target: "#A2208", event: "进入干奶期", desc: "#A2208 即将进入干奶期，需安排干奶处理及隔离。" },
   { target: "#A2185", event: "干奶药输注", desc: "#A2185 干奶药输注中，预计 3 天后转入干奶舍。" },
   { target: "#A2099", event: "干奶完成", desc: "#A2099 干奶流程结束，已转入产前观察舍。" },
