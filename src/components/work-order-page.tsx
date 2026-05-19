@@ -221,8 +221,8 @@ export function WorkOrderPage({
     });
   }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir]);
 
-  const leftFrozenKeys: ColKey[] = ["action"];
-  const rightFrozenKeys: ColKey[] = ["id", "target"];
+  const leftFrozenKeys: ColKey[] = ["id", "target"];
+  const rightFrozenKeys: ColKey[] = ["action"];
   const middleCols = ALL_COLS.filter(
     (c) =>
       visible[c.key] &&
@@ -235,10 +235,13 @@ export function WorkOrderPage({
   const rightWidth = rightCols.reduce((s, c) => s + c.width, 0);
   const middleWidth = middleCols.reduce((s, c) => s + c.width, 0);
   const minW = leftWidth + middleWidth + rightWidth;
-  // right offset map: rightmost col -> 0, previous -> sum of cols to its right
   const rightOffset = (key: ColKey) => {
     const idx = rightCols.findIndex((c) => c.key === key);
     return rightCols.slice(idx + 1).reduce((s, c) => s + c.width, 0);
+  };
+  const leftOffset = (key: ColKey) => {
+    const idx = leftCols.findIndex((c) => c.key === key);
+    return leftCols.slice(0, idx).reduce((s, c) => s + c.width, 0);
   };
 
   const toggleSort = (key: "proposedAt" | "reviewedAt" | "executedAt") => {
@@ -416,8 +419,7 @@ export function WorkOrderPage({
 
         <Card className="border-border bg-card overflow-hidden">
           {/* 顶部工具栏 */}
-          <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
-            <div className="text-caption text-text-tertiary">共 {filtered.length} 条</div>
+          <div className="flex items-center justify-end p-6 pb-4 flex-wrap gap-3">
             <div className="flex items-center gap-2 flex-wrap">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
@@ -546,12 +548,12 @@ export function WorkOrderPage({
             <div style={{ minWidth: minW }} className="relative">
               {/* 表头 */}
               <div className="flex h-12 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
-                {/* 左冻结：操作 */}
-                {leftCols.map((c) => (
+                {/* 左冻结：工单编号、牛只耳号 */}
+                {leftCols.map((c, i) => (
                   <div
                     key={c.key}
-                    style={{ width: c.width, flexShrink: 0, left: 0 }}
-                    className="sticky z-20 px-3 pl-6 bg-surface-subtle border-r border-border"
+                    style={{ width: c.width, flexShrink: 0, left: leftOffset(c.key) }}
+                    className={`sticky z-20 px-3 bg-surface-subtle ${i === 0 ? "pl-6" : ""} ${i === leftCols.length - 1 ? "border-r border-border" : ""}`}
                   >
                     <span>{c.label}</span>
                   </div>
@@ -576,12 +578,12 @@ export function WorkOrderPage({
                     )}
                   </div>
                 ))}
-                {/* 右冻结：工单编号、牛只耳号 */}
+                {/* 右冻结：操作 */}
                 {rightCols.map((c, i) => (
                   <div
                     key={c.key}
                     style={{ width: c.width, flexShrink: 0, right: rightOffset(c.key) }}
-                    className={`sticky z-20 px-3 bg-surface-subtle border-l border-border ${i === rightCols.length - 1 ? "pr-6" : ""}`}
+                    className={`sticky z-20 px-3 bg-surface-subtle ${i === 0 ? "border-l border-border" : ""} ${i === rightCols.length - 1 ? "pr-6" : ""}`}
                   >
                     <span>{c.label}</span>
                   </div>
@@ -602,11 +604,11 @@ export function WorkOrderPage({
                     key={o.id}
                     className="group/row flex h-12 items-center text-table-cell border-b border-border last:border-0"
                   >
-                    {leftCols.map((c) => (
+                    {leftCols.map((c, i) => (
                       <div
                         key={c.key}
-                        style={{ width: c.width, flexShrink: 0, left: 0 }}
-                        className="sticky z-10 px-3 pl-6 bg-card border-r border-border group-hover/row:bg-surface-subtle"
+                        style={{ width: c.width, flexShrink: 0, left: leftOffset(c.key) }}
+                        className={`sticky z-10 px-3 bg-card group-hover/row:bg-surface-subtle ${i === 0 ? "pl-6" : ""} ${i === leftCols.length - 1 ? "border-r border-border" : ""}`}
                       >
                         {renderCell(o, c.key)}
                       </div>
@@ -624,7 +626,7 @@ export function WorkOrderPage({
                       <div
                         key={c.key}
                         style={{ width: c.width, flexShrink: 0, right: rightOffset(c.key) }}
-                        className={`sticky z-10 px-3 bg-card border-l border-border group-hover/row:bg-surface-subtle ${i === rightCols.length - 1 ? "pr-6" : ""}`}
+                        className={`sticky z-10 px-3 bg-card group-hover/row:bg-surface-subtle ${i === 0 ? "border-l border-border" : ""} ${i === rightCols.length - 1 ? "pr-6" : ""}`}
                       >
                         {renderCell(o, c.key)}
                       </div>
@@ -633,6 +635,10 @@ export function WorkOrderPage({
                 ))
               )}
             </div>
+          </div>
+          {/* 吸底统计 */}
+          <div className="sticky bottom-0 z-30 flex h-10 items-center justify-end px-6 border-t border-border bg-card text-caption text-text-tertiary">
+            共 {filtered.length} 条
           </div>
         </Card>
       </main>
