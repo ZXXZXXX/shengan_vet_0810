@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import {
   WarehouseEventPage,
@@ -29,6 +28,11 @@ const initial: WarehouseEvent<LStatus>[] = [
     status: "待审核",
     operator: "孙库管",
     operatedAt: "2026-05-12 10:18",
+    attachments: [
+      { type: "audio", name: "现场情况说明.m4a", meta: "00:42" },
+      { type: "video", name: "冷柜温控记录.mp4", meta: "01:18" },
+      { type: "text", name: "损耗清单明细.txt" },
+    ],
   },
   {
     id: "LS-1085",
@@ -37,6 +41,9 @@ const initial: WarehouseEvent<LStatus>[] = [
     status: "已确认",
     operator: "王仓管",
     operatedAt: "2026-05-11 15:30",
+    attachments: [
+      { type: "video", name: "破损开箱视频.mp4", meta: "00:35" },
+    ],
   },
   {
     id: "LS-1084",
@@ -45,6 +52,9 @@ const initial: WarehouseEvent<LStatus>[] = [
     status: "已确认",
     operator: "孙库管",
     operatedAt: "2026-05-10 09:00",
+    attachments: [
+      { type: "text", name: "销毁登记表.docx" },
+    ],
   },
   {
     id: "LS-1083",
@@ -53,14 +63,20 @@ const initial: WarehouseEvent<LStatus>[] = [
     status: "已驳回",
     operator: "李雨晴",
     operatedAt: "2026-05-09 14:42",
+    attachments: [
+      { type: "audio", name: "退回沟通录音.m4a", meta: "01:05" },
+    ],
   },
 ];
 
 function LossPage() {
   const [data, setData] = useState<WarehouseEvent<LStatus>[]>(initial);
 
-  const advance = (id: string, next: LStatus) =>
-    setData((d) => d.map((r) => (r.id === id ? { ...r, status: next } : r)));
+  const handleReview = (e: WarehouseEvent<LStatus>, action: "approve" | "reject") => {
+    setData((d) =>
+      d.map((r) => (r.id === e.id ? { ...r, status: action === "approve" ? "已确认" : "已驳回" } : r)),
+    );
+  };
 
   return (
     <WarehouseEventPage<LStatus>
@@ -69,28 +85,8 @@ function LossPage() {
       statuses={statuses}
       events={data}
       searchPlaceholder="按损耗单号 / 物资 / 描述搜索"
-      renderDetailActions={(detail, close) => {
-        if (detail.status === "待审核") {
-          return (
-            <>
-              <Button
-                variant="outline"
-                className="gap-1.5 text-[var(--state-danger)] hover:text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10"
-                onClick={() => { advance(detail.id, "已驳回"); close(); }}
-              >
-                <XCircle className="h-3.5 w-3.5" /> 驳回
-              </Button>
-              <Button
-                className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                onClick={() => { advance(detail.id, "已确认"); close(); }}
-              >
-                <CheckCircle2 className="h-3.5 w-3.5" /> 确认
-              </Button>
-            </>
-          );
-        }
-        return <Button variant="outline" onClick={close}>关闭</Button>;
-      }}
+      reviewStatus="待审核"
+      onReview={handleReview}
     />
   );
 }
