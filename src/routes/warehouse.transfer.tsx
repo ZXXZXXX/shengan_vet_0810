@@ -49,6 +49,8 @@ const initialData: WarehouseEvent<TStatus>[] = [
     status: "待出库",
     operator: "王建国",
     operatedAt: "2026-05-19 10:24",
+    from: "1 号库（一级）",
+    to: "2 号库（二级）",
   },
   {
     id: "TR-2026-0141",
@@ -57,6 +59,8 @@ const initialData: WarehouseEvent<TStatus>[] = [
     status: "运输中",
     operator: "王建国",
     operatedAt: "2026-05-19 09:08",
+    from: "1 号库（一级）",
+    to: "2 号库（二级）",
   },
   {
     id: "TR-2026-0140",
@@ -68,6 +72,8 @@ const initialData: WarehouseEvent<TStatus>[] = [
     status: "已入库",
     operator: "王建国",
     operatedAt: "2026-05-18 16:42",
+    from: "1 号库（一级）",
+    to: "2 号库（二级）",
   },
   {
     id: "TR-2026-0139",
@@ -76,6 +82,8 @@ const initialData: WarehouseEvent<TStatus>[] = [
     status: "已入库",
     operator: "王建国",
     operatedAt: "2026-05-18 11:30",
+    from: "1 号库（一级）",
+    to: "2 号库（二级）",
   },
 ];
 
@@ -84,10 +92,6 @@ type Line = { item: string; qty: string };
 function TransferPage() {
   const [data, setData] = useState<WarehouseEvent<TStatus>[]>(initialData);
   const [createOpen, setCreateOpen] = useState(false);
-
-  const advance = (id: string, next: TStatus) => {
-    setData((d) => d.map((r) => (r.id === id ? { ...r, status: next } : r)));
-  };
 
   const handleCreate = (e: WarehouseEvent<TStatus>) => {
     setData((d) => [e, ...d]);
@@ -104,35 +108,7 @@ function TransferPage() {
         searchPlaceholder="按调拨单号 / 物资 / 描述搜索"
         createLabel="新建调拨"
         onCreate={() => setCreateOpen(true)}
-        renderDetailActions={(detail, close) => {
-          if (detail.status === "待出库") {
-            return (
-              <>
-                <Button variant="outline" onClick={close}>关闭</Button>
-                <Button
-                  className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                  onClick={() => { advance(detail.id, "运输中"); close(); }}
-                >
-                  <Truck className="h-3.5 w-3.5" /> 确认出库
-                </Button>
-              </>
-            );
-          }
-          if (detail.status === "运输中") {
-            return (
-              <>
-                <Button variant="outline" onClick={close}>关闭</Button>
-                <Button
-                  className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                  onClick={() => { advance(detail.id, "已入库"); close(); }}
-                >
-                  <PackageCheck className="h-3.5 w-3.5" /> 确认入库
-                </Button>
-              </>
-            );
-          }
-          return <Button variant="outline" onClick={close}>关闭</Button>;
-        }}
+        detailNote="出库与入库状态由第三方仓储系统自动同步，无需手动确认。"
       />
 
       <CreateDialog
@@ -278,6 +254,8 @@ function CreateDialog({
                 operator: "王建国",
                 operatedAt,
                 status: "待出库",
+                from,
+                to,
               })
             }
           >
