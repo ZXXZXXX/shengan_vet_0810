@@ -54,9 +54,18 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
+  Mic,
+  Video,
+  FileText,
 } from "lucide-react";
 
 type WorkStatus = "待审核" | "执行中" | "已驳回" | "已完成";
+
+export type WorkOrderAttachment = {
+  type: "audio" | "video" | "text";
+  name: string;
+  meta?: string;
+};
 
 export type WorkOrder = {
   id: string;
@@ -71,7 +80,9 @@ export type WorkOrder = {
   reviewedAt?: string;
   executor?: string;
   executedAt?: string;
+  attachments?: WorkOrderAttachment[];
 };
+
 
 type ColKey =
   | "id"
