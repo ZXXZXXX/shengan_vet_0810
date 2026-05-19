@@ -276,12 +276,29 @@ export function WorkOrderPage({
         return <span className="font-mono text-body text-foreground">{o.id}</span>;
       case "target":
         return <span className="text-body text-foreground">{o.target}</span>;
-      case "desc":
+      case "desc": {
+        const text = o.event ?? o.desc;
+        const truncated = text.length > 15 ? text.slice(0, 15) + "…" : text;
+        if (text.length > 15) {
+          return (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-body-sm text-text-secondary truncate block cursor-default">
+                  {truncated}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-sm">
+                {text}
+              </TooltipContent>
+            </Tooltip>
+          );
+        }
         return (
           <span className="text-body-sm text-text-secondary truncate block">
-            {o.event ?? o.desc}
+            {text}
           </span>
         );
+      }
       case "status":
         return (
           <span className={toneStyles[statusList.find((s) => s.key === o.status)!.tone].tag}>
