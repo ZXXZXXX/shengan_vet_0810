@@ -112,14 +112,13 @@ function AccountPage() {
         </div>
 
         <Card className="border-border bg-card overflow-hidden">
-          <div className="grid grid-cols-14 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle"
-            style={{ gridTemplateColumns: "2.4fr 1.6fr 0.9fr 2.2fr 1.8fr 1.6fr 1fr 0.6fr" }}>
+          <div className="grid gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle"
+            style={{ gridTemplateColumns: "2.4fr 1.6fr 0.9fr 2.2fr 1.8fr 1fr 0.6fr" }}>
             <div>用户</div>
             <div>手机号</div>
             <div>角色</div>
             <div>所属组织</div>
             <div>企微 ID</div>
-            <div>最近登录</div>
             <div>状态</div>
             <div className="text-right">管理</div>
           </div>
