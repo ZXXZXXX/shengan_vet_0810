@@ -424,14 +424,32 @@ function RolePage() {
                       )}
                     </div>
                     <div>
-                      <Label className="text-caption text-text-tertiary">数据范围</Label>
+                      <Label className="text-caption text-text-tertiary">当前状态</Label>
                       {editable ? (
-                        <Input
-                          defaultValue={activeRole.scope}
-                          className="h-9 mt-1.5 bg-card border-border text-body-sm"
-                        />
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <Switch
+                            checked={activeRole.enabled}
+                            onCheckedChange={(v) => {
+                              setRoles((prev) =>
+                                prev.map((r) =>
+                                  r.key === activeRole.key ? { ...r, enabled: v } : r,
+                                ),
+                              );
+                            }}
+                          />
+                          <span className="text-body-sm text-foreground">
+                            {activeRole.enabled ? "启用" : "停用"}
+                          </span>
+                        </div>
                       ) : (
-                        <div className="mt-1.5 text-body text-foreground">{activeRole.scope}</div>
+                        <div className="mt-1.5 flex items-center gap-1.5 text-body text-foreground">
+                          <span
+                            className={`inline-block h-2 w-2 rounded-full ${
+                              activeRole.enabled ? "bg-primary" : "bg-text-tertiary"
+                            }`}
+                          />
+                          {activeRole.enabled ? "启用中" : "已停用"}
+                        </div>
                       )}
                     </div>
                   </div>
