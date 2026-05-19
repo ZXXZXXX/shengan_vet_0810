@@ -175,7 +175,7 @@ export function AppSidebar() {
                               className={`relative h-9 rounded-lg pl-9 pr-3 text-body-sm transition-colors
                                 text-text-secondary
                                 hover:bg-[var(--sidebar-hover)] hover:text-foreground
-                                data-[active=true]:bg-brand-subtle data-[active=true]:text-primary data-[active=true]:font-medium
+                                data-[active=true]:bg-[var(--brand-soft)] data-[active=true]:text-primary data-[active=true]:font-medium
                                 data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full data-[active=true]:before:bg-primary`}
                             >
                               <Link to={c.url}>{c.title}</Link>
