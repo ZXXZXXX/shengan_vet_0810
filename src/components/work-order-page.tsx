@@ -157,6 +157,8 @@ export function WorkOrderPage({
   orders: WorkOrder[];
 }) {
   const role = usePcRole();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [active, setActive] = useState<WorkStatus>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
