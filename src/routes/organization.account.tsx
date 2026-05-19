@@ -124,7 +124,7 @@ function AccountPage() {
           </div>
           {accounts.map((a) => (
             <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
-              style={{ gridTemplateColumns: "2.4fr 1.6fr 0.9fr 2.2fr 1.8fr 1.6fr 1fr 0.6fr" }}>
+              style={{ gridTemplateColumns: "2.4fr 1.6fr 0.9fr 2.2fr 1.8fr 1fr 0.6fr" }}>
               <div className="flex items-center gap-2.5 min-w-0">
                 <Avatar className="h-8 w-8"><AvatarFallback className="bg-brand-subtle text-primary text-body-sm">{a.initial}</AvatarFallback></Avatar>
                 <div className="leading-tight min-w-0">
@@ -142,7 +142,6 @@ function AccountPage() {
                   <span className="tag tag-muted">未绑定</span>
                 )}
               </div>
-              <div className="text-body-sm text-text-tertiary tabular-nums">{a.lastLogin}</div>
               <div><span className={`tag ${a.status === "启用" ? "tag-success" : "tag-muted"}`}>{a.status}</span></div>
               <div className="flex justify-end">
                 <DropdownMenu>
