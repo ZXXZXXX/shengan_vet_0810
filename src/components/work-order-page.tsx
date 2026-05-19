@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { usePcRole, setPcRole, canReview, pcRoleLabel, type PcRole } from "@/lib/pc-role";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -98,7 +99,7 @@ const ALL_COLS: ColDef[] = [
   { key: "reviewedAt", label: "审核时间", width: 160, isTime: true },
   { key: "executor", label: "执行人", width: 100 },
   { key: "executedAt", label: "执行时间", width: 160, isTime: true },
-  { key: "action", label: "操作", width: 80, locked: true },
+  { key: "action", label: "操作", width: 140, locked: true },
 ];
 
 const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
@@ -155,6 +156,7 @@ export function WorkOrderPage({
   title: string;
   orders: WorkOrder[];
 }) {
+  const role = usePcRole();
   const [active, setActive] = useState<WorkStatus>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
@@ -283,6 +285,28 @@ export function WorkOrderPage({
           </span>
         );
       case "action":
+        if (canReview(role) && o.status === "待审核") {
+          return (
+            <div className="inline-flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+                onClick={() => { setDetail(o); setConfirm("approve"); }}
+              >
+                通过
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 hover:text-[var(--state-danger)]"
+                onClick={() => { setDetail(o); setConfirm("reject"); }}
+              >
+                驳回
+              </Button>
+            </div>
+          );
+        }
         return (
           <Button
             variant="ghost"
@@ -302,12 +326,23 @@ export function WorkOrderPage({
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <h3 className="text-section-title text-foreground">工单看板</h3>
-          <Button
-            size="sm"
-            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-          >
-            <Plus className="h-3.5 w-3.5" /> 新建工单
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={role} onValueChange={(v) => setPcRole(v as PcRole)}>
+              <SelectTrigger className="h-9 w-44 text-body-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="vet">{pcRoleLabel.vet}</SelectItem>
+                <SelectItem value="assistant">{pcRoleLabel.assistant}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            >
+              <Plus className="h-3.5 w-3.5" /> 新建工单
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -603,4 +638,59 @@ function Field({ label, value }: { label: string; value: string }) {
       <div className="text-body-sm text-foreground mt-0.5">{value}</div>
     </div>
   );
+}
+
+// ============== 工单 mock 数据生成器 ==============
+const proposersPool = ["陈晓东", "李雨晴", "周凯", "李娜", "张伟", "孙明", "王建国", "赵璐"];
+const reviewersPool = ["王建国", "李雨晴", "孙明"];
+const executorsPool = ["李雨晴", "周凯", "孙明", "王建国", "李娜"];
+
+function pad(n: number) { return n < 10 ? `0${n}` : `${n}`; }
+function fmt(d: Date) {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function pick<T>(arr: T[], i: number): T { return arr[i % arr.length]; }
+
+/**
+ * 生成 15 条 mock 工单：
+ * - 状态按 [待审核, 执行中, 已完成, 已驳回] 循环
+ * - 提出时间从今天起向前递推（覆盖今天 / 7天 / 30天 / 更早）
+ */
+export function makeOrders(
+  idPrefix: string,
+  startId: number,
+  events: { target: string; event: string; desc: string }[],
+): WorkOrder[] {
+  const statuses: WorkStatus[] = ["待审核", "执行中", "已完成", "已驳回"];
+  const now = new Date();
+  // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
+  const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
+  return Array.from({ length: 15 }, (_, i) => {
+    const ev = pick(events, i);
+    const status = statuses[i % statuses.length];
+    const proposedAt = new Date(now.getTime() - offsetsH[i] * 3600 * 1000);
+    const reviewedAt = new Date(proposedAt.getTime() + 60 * 60 * 1000);
+    const executedAt = new Date(proposedAt.getTime() + 8 * 60 * 60 * 1000);
+    const proposer = pick(proposersPool, i);
+    const reviewer = pick(reviewersPool, i);
+    const executor = pick(executorsPool, i);
+    const order: WorkOrder = {
+      id: `${idPrefix}-${startId + i}`,
+      target: ev.target,
+      event: ev.event,
+      desc: ev.desc,
+      proposer,
+      status,
+      createdAt: fmt(proposedAt),
+    };
+    if (status !== "待审核") {
+      order.reviewer = reviewer;
+      order.reviewedAt = fmt(reviewedAt);
+    }
+    if (status === "执行中" || status === "已完成") {
+      order.executor = executor;
+      order.executedAt = fmt(executedAt);
+    }
+    return order;
+  });
 }
