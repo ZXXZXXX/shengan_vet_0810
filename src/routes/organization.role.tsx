@@ -485,7 +485,7 @@ function RolePage() {
                       <div className="grid grid-cols-12 gap-3 px-4 h-10 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
                         <div className="col-span-7">功能</div>
                         <div className="col-span-2 text-center">查看权</div>
-                        <div className="col-span-2 text-center">编辑权</div>
+                        <div className="col-span-2 text-center">管理权</div>
                         <div className="col-span-1" />
                       </div>
 
