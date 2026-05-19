@@ -636,6 +636,10 @@ export function WorkOrderPage({
               )}
             </div>
           </div>
+          {/* 吸底统计 */}
+          <div className="sticky bottom-0 z-30 flex h-10 items-center justify-end px-6 border-t border-border bg-card text-caption text-text-tertiary">
+            共 {filtered.length} 条
+          </div>
         </Card>
       </main>
 
