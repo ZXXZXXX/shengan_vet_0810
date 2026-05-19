@@ -144,7 +144,7 @@ export function AppSidebar() {
           const groupActive = hasActiveChild(group);
 
           return (
-            <SidebarGroup key={group.title} className="px-2 py-0">
+            <SidebarGroup key={group.title} className={`px-2 py-0 rounded-lg ${groupActive ? "bg-[#F6FDF7]" : ""}`}>
               <Collapsible
                 open={open}
                 onOpenChange={(v) => setOpenMap((m) => ({ ...m, [group.title]: v }))}
