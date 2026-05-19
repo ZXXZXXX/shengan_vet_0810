@@ -25,7 +25,10 @@ import { Route as MIndexRouteImport } from './routes/m.index'
 import { Route as WarehouseTransferRouteImport } from './routes/warehouse.transfer'
 import { Route as SettingsRulesRouteImport } from './routes/settings.rules'
 import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowledge'
-import { Route as ProductionHealthRouteImport } from './routes/production.health'
+import { Route as ProductionVaccineRouteImport } from './routes/production.vaccine'
+import { Route as ProductionPostpartumRouteImport } from './routes/production.postpartum'
+import { Route as ProductionDiseaseRouteImport } from './routes/production.disease'
+import { Route as ProductionDailyRouteImport } from './routes/production.daily'
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
@@ -117,9 +120,24 @@ const SettingsKnowledgeRoute = SettingsKnowledgeRouteImport.update({
   path: '/knowledge',
   getParentRoute: () => SettingsRoute,
 } as any)
-const ProductionHealthRoute = ProductionHealthRouteImport.update({
-  id: '/health',
-  path: '/health',
+const ProductionVaccineRoute = ProductionVaccineRouteImport.update({
+  id: '/vaccine',
+  path: '/vaccine',
+  getParentRoute: () => ProductionRoute,
+} as any)
+const ProductionPostpartumRoute = ProductionPostpartumRouteImport.update({
+  id: '/postpartum',
+  path: '/postpartum',
+  getParentRoute: () => ProductionRoute,
+} as any)
+const ProductionDiseaseRoute = ProductionDiseaseRouteImport.update({
+  id: '/disease',
+  path: '/disease',
+  getParentRoute: () => ProductionRoute,
+} as any)
+const ProductionDailyRoute = ProductionDailyRouteImport.update({
+  id: '/daily',
+  path: '/daily',
   getParentRoute: () => ProductionRoute,
 } as any)
 const OrganizationTeamRoute = OrganizationTeamRouteImport.update({
@@ -187,7 +205,10 @@ export interface FileRoutesByFullPath {
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
-  '/production/health': typeof ProductionHealthRoute
+  '/production/daily': typeof ProductionDailyRoute
+  '/production/disease': typeof ProductionDiseaseRoute
+  '/production/postpartum': typeof ProductionPostpartumRoute
+  '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
@@ -211,7 +232,10 @@ export interface FileRoutesByTo {
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
-  '/production/health': typeof ProductionHealthRoute
+  '/production/daily': typeof ProductionDailyRoute
+  '/production/disease': typeof ProductionDiseaseRoute
+  '/production/postpartum': typeof ProductionPostpartumRoute
+  '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
@@ -241,7 +265,10 @@ export interface FileRoutesById {
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
-  '/production/health': typeof ProductionHealthRoute
+  '/production/daily': typeof ProductionDailyRoute
+  '/production/disease': typeof ProductionDiseaseRoute
+  '/production/postpartum': typeof ProductionPostpartumRoute
+  '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
   '/settings/rules': typeof SettingsRulesRoute
   '/warehouse/transfer': typeof WarehouseTransferRoute
@@ -272,7 +299,10 @@ export interface FileRouteTypes {
     | '/m/workspace'
     | '/organization/role'
     | '/organization/team'
-    | '/production/health'
+    | '/production/daily'
+    | '/production/disease'
+    | '/production/postpartum'
+    | '/production/vaccine'
     | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/transfer'
@@ -296,7 +326,10 @@ export interface FileRouteTypes {
     | '/m/workspace'
     | '/organization/role'
     | '/organization/team'
-    | '/production/health'
+    | '/production/daily'
+    | '/production/disease'
+    | '/production/postpartum'
+    | '/production/vaccine'
     | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/transfer'
@@ -325,7 +358,10 @@ export interface FileRouteTypes {
     | '/m/workspace'
     | '/organization/role'
     | '/organization/team'
-    | '/production/health'
+    | '/production/daily'
+    | '/production/disease'
+    | '/production/postpartum'
+    | '/production/vaccine'
     | '/settings/knowledge'
     | '/settings/rules'
     | '/warehouse/transfer'
@@ -466,11 +502,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsKnowledgeRouteImport
       parentRoute: typeof SettingsRoute
     }
-    '/production/health': {
-      id: '/production/health'
-      path: '/health'
-      fullPath: '/production/health'
-      preLoaderRoute: typeof ProductionHealthRouteImport
+    '/production/vaccine': {
+      id: '/production/vaccine'
+      path: '/vaccine'
+      fullPath: '/production/vaccine'
+      preLoaderRoute: typeof ProductionVaccineRouteImport
+      parentRoute: typeof ProductionRoute
+    }
+    '/production/postpartum': {
+      id: '/production/postpartum'
+      path: '/postpartum'
+      fullPath: '/production/postpartum'
+      preLoaderRoute: typeof ProductionPostpartumRouteImport
+      parentRoute: typeof ProductionRoute
+    }
+    '/production/disease': {
+      id: '/production/disease'
+      path: '/disease'
+      fullPath: '/production/disease'
+      preLoaderRoute: typeof ProductionDiseaseRouteImport
+      parentRoute: typeof ProductionRoute
+    }
+    '/production/daily': {
+      id: '/production/daily'
+      path: '/daily'
+      fullPath: '/production/daily'
+      preLoaderRoute: typeof ProductionDailyRouteImport
       parentRoute: typeof ProductionRoute
     }
     '/organization/team': {
@@ -589,12 +646,18 @@ const OrganizationRouteWithChildren = OrganizationRoute._addFileChildren(
 )
 
 interface ProductionRouteChildren {
-  ProductionHealthRoute: typeof ProductionHealthRoute
+  ProductionDailyRoute: typeof ProductionDailyRoute
+  ProductionDiseaseRoute: typeof ProductionDiseaseRoute
+  ProductionPostpartumRoute: typeof ProductionPostpartumRoute
+  ProductionVaccineRoute: typeof ProductionVaccineRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
 }
 
 const ProductionRouteChildren: ProductionRouteChildren = {
-  ProductionHealthRoute: ProductionHealthRoute,
+  ProductionDailyRoute: ProductionDailyRoute,
+  ProductionDiseaseRoute: ProductionDiseaseRoute,
+  ProductionPostpartumRoute: ProductionPostpartumRoute,
+  ProductionVaccineRoute: ProductionVaccineRoute,
   ProductionIndexRoute: ProductionIndexRoute,
 }
 
