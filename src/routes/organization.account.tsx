@@ -311,12 +311,9 @@ function AccountPage() {
           {filteredAccounts.map((a) => (
             <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
               style={{ gridTemplateColumns: cols }}>
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Avatar className="h-8 w-8"><AvatarFallback className="bg-brand-subtle text-primary text-body-sm">{a.initial}</AvatarFallback></Avatar>
-                <div className="leading-tight min-w-0">
-                  <div className="text-body text-foreground truncate">{a.name}</div>
-                  <div className="text-caption text-text-tertiary font-mono">{a.id}</div>
-                </div>
+              <div className="leading-tight min-w-0">
+                <div className="text-body text-foreground truncate">{a.name}</div>
+                <div className="text-caption text-text-tertiary font-mono">{a.id}</div>
               </div>
               <div><span className={`tag ${userTypeTagClass(a.userType)}`}>{a.userType}</span></div>
               <div className="text-body-sm text-text-secondary tabular-nums">{a.phone}</div>
