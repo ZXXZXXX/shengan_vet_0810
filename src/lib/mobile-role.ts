@@ -1,13 +1,19 @@
 import { useSyncExternalStore } from "react";
 
-export type Role = "worker" | "manager";
+// 内部：管理员、兽医、场长、兽医助理；外部：修蹄工等
+export type Role =
+  | "admin"
+  | "vet"
+  | "manager"
+  | "vet_assistant"
+  | "hoof_trimmer";
 
 const KEY = "mp:role";
 const listeners = new Set<() => void>();
 
 function read(): Role {
-  if (typeof window === "undefined") return "worker";
-  return (localStorage.getItem(KEY) as Role) || "worker";
+  if (typeof window === "undefined") return "vet_assistant";
+  return (localStorage.getItem(KEY) as Role) || "vet_assistant";
 }
 
 export function setRole(r: Role) {
@@ -23,11 +29,36 @@ export function useRole(): Role {
       return () => listeners.delete(cb);
     },
     read,
-    () => "worker"
+    () => "vet_assistant"
   );
 }
 
 export const roleLabel: Record<Role, string> = {
-  worker: "一线工作人员",
-  manager: "牧场管理者",
+  admin: "管理员",
+  vet: "兽医",
+  manager: "场长",
+  vet_assistant: "兽医助理",
+  hoof_trimmer: "修蹄工",
 };
+
+export const roleGroup: Record<Role, "internal" | "external"> = {
+  admin: "internal",
+  vet: "internal",
+  manager: "internal",
+  vet_assistant: "internal",
+  hoof_trimmer: "external",
+};
+
+// 权限：审批 vs 执行
+export function canApprove(r: Role) {
+  return r === "admin" || r === "vet" || r === "manager";
+}
+export function canExecute(r: Role) {
+  return (
+    r === "admin" || r === "vet_assistant" || r === "hoof_trimmer" || r === "vet"
+  );
+}
+// 是否能查看全场/经营级数据
+export function canViewOperations(r: Role) {
+  return r === "admin" || r === "manager";
+}
