@@ -291,7 +291,7 @@ function AccountPage() {
             <div>状态</div>
             <div className="text-right">管理</div>
           </div>
-          {accounts.map((a) => (
+          {filteredAccounts.map((a) => (
             <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
               style={{ gridTemplateColumns: cols }}>
               <div className="flex items-center gap-2.5 min-w-0">
