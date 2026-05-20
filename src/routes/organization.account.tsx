@@ -48,7 +48,7 @@ export const Route = createFileRoute("/organization/account")({
 });
 
 type Status = "启用" | "禁用";
-type UserType = "内部人员" | "外部固定合作人员" | "外部机构联系人";
+type UserType = "内部" | "外部";
 type Account = {
   id: string;
   name: string;
@@ -84,13 +84,13 @@ const ORG_OPTIONS = [
 const DEFAULT_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管员", "修蹄工", "供应商联系人"];
 
 const initialAccounts: Account[] = [
-  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部人员", role: "场长", org: "1 号牧场", farms: ["1 号牧场"], wecomId: "wm_zhanglei_8821", status: "启用" },
-  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部人员", role: "兽医", org: "1 号牧场 / 兽医部", farms: ["1 号牧场", "2 号牧场"], wecomId: "wm_liyuqing_3210", status: "启用" },
-  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部人员", role: "技术员", org: "1 号牧场 / 巡检 A 组", farms: ["1 号牧场"], wecomId: null, status: "启用" },
-  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部人员", role: "仓管员", org: "1 号牧场 / 仓储部", farms: ["1 号牧场", "2 号牧场", "3 号牧场"], wecomId: "wm_wangck_5601", status: "启用" },
-  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部人员", role: "仓管员", org: "2 号牧场 / 仓储部", farms: ["2 号牧场"], wecomId: null, status: "禁用" },
-  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部固定合作人员", role: "修蹄工", org: "外部合作 / 修蹄队", farms: ["1 号牧场", "3 号牧场", "金辉牧场"], wecomId: "wm_zhaoxt_9912", status: "启用" },
-  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部机构联系人", role: "供应商联系人", org: "外部机构 / 兽药供应商", farms: ["2 号牧场"], wecomId: null, status: "启用" },
+  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", role: "场长", org: "1 号牧场", farms: ["1 号牧场"], wecomId: "wm_zhanglei_8821", status: "启用" },
+  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", role: "兽医", org: "1 号牧场 / 兽医部", farms: ["1 号牧场", "2 号牧场"], wecomId: "wm_liyuqing_3210", status: "启用" },
+  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", role: "技术员", org: "1 号牧场 / 巡检 A 组", farms: ["1 号牧场"], wecomId: null, status: "启用" },
+  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", role: "仓管员", org: "1 号牧场 / 仓储部", farms: ["1 号牧场", "2 号牧场", "3 号牧场"], wecomId: "wm_wangck_5601", status: "启用" },
+  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", role: "仓管员", org: "2 号牧场 / 仓储部", farms: ["2 号牧场"], wecomId: null, status: "禁用" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", role: "修蹄工", org: "外部合作 / 修蹄队", farms: ["1 号牧场", "3 号牧场", "金辉牧场"], wecomId: "wm_zhaoxt_9912", status: "启用" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", role: "供应商联系人", org: "外部机构 / 兽药供应商", farms: ["2 号牧场"], wecomId: null, status: "启用" },
 ];
 
 function AccountPage() {
@@ -138,7 +138,7 @@ function AccountPage() {
   };
 
   const userTypeTagClass = (t: UserType) =>
-    t === "内部人员" ? "tag-brand" : t === "外部固定合作人员" ? "tag-warning" : "tag-info";
+    t === "内部" ? "tag-brand" : "tag-warning";
 
   // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 状态 管理
   const cols = "1.8fr 1.1fr 1.3fr 0.9fr 1.7fr 1.5fr 0.8fr 0.5fr";
@@ -521,7 +521,7 @@ function CreateDialog({
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [userType, setUserType] = useState<UserType>("外部固定合作人员");
+  const [userType, setUserType] = useState<UserType>("外部");
   const [roleQuery, setRoleQuery] = useState("");
   const [role, setRole] = useState<string>("");
   const [org, setOrg] = useState(ORG_OPTIONS[0]);
@@ -567,7 +567,7 @@ function CreateDialog({
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>新建账号</DialogTitle>
-          <DialogDescription>维护内部、外部固定合作人员或外部机构联系人账号</DialogDescription>
+          <DialogDescription>维护内部或外部人员账号</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -610,7 +610,7 @@ function CreateDialog({
           <div className="space-y-1.5">
             <Label className="text-body-sm text-text-secondary">
               角色
-              {userType !== "内部人员" && (
+              {userType !== "内部" && (
                 <span className="ml-1 text-caption text-text-tertiary">（找不到合适角色可直接输入名称创建）</span>
               )}
             </Label>
@@ -667,7 +667,7 @@ function CreateDialog({
             </div>
             <FarmPicker selected={farms} onToggle={toggleFarm} />
             <p className="text-caption text-text-tertiary">
-              {userType === "内部人员"
+              {userType === "内部"
                 ? "勾选一个或多个牧场，账号将按权限查看这些牧场的数据。"
                 : "外部人员仅服务一个牧场时只关联该牧场；服务多个牧场可勾选多个。"}
             </p>
