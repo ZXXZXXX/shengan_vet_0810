@@ -283,6 +283,8 @@ function TaskDetailPage() {
                 ? "确认通过该任务？"
                 : confirm === "reject"
                 ? "确认驳回该任务？"
+                : confirm === "issue"
+                ? "提交异常反馈？"
                 : "确认提交完成？"}
             </AlertDialogTitle>
             <AlertDialogDescription>
@@ -293,7 +295,7 @@ function TaskDetailPage() {
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
               className={
-                confirm === "reject"
+                confirm === "reject" || confirm === "issue"
                   ? "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
                   : "bg-primary text-primary-foreground"
               }
