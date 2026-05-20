@@ -625,16 +625,18 @@ function FarmRolePicker({
 
 function EditDialog({
   account,
-  roles,
+  internalRoles,
+  externalRoles,
   onClose,
   onSave,
   onCreateRole,
 }: {
   account: Account;
-  roles: string[];
+  internalRoles: string[];
+  externalRoles: string[];
   onClose: () => void;
   onSave: (a: Account) => void;
-  onCreateRole: (r: string) => void;
+  onCreateRole: (type: UserType, r: string) => void;
 }) {
   const [phone, setPhone] = useState(account.phone);
   const [userType, setUserType] = useState<UserType>(account.userType);
@@ -643,11 +645,13 @@ function EditDialog({
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
 
   const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
-  const allRoles = useMemo(() => {
-    const set = new Set(roles);
-    farmRoles.forEach((fr) => fr.role && set.add(fr.role));
+  const baseRoles = userType === "内部" ? internalRoles : externalRoles;
+  // 切换人员类型时，已选 farmRoles 中不属于当前类型角色的清空，避免脏数据
+  const availableRoles = useMemo(() => {
+    const set = new Set(baseRoles);
+    farmRoles.forEach((fr) => fr.role && baseRoles.includes(fr.role) && set.add(fr.role));
     return Array.from(set);
-  }, [roles, farmRoles]);
+  }, [baseRoles, farmRoles]);
 
   const incomplete = farmRoles.some((fr) => !fr.role);
   const canSave = farmRoles.length > 0 && !incomplete;
