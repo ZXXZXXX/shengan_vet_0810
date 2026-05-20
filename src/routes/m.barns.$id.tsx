@@ -51,11 +51,8 @@ function BarnDetailPage() {
   ];
 
   // 优先展示能负责的
-  const sorted = [...animals].sort((a, b) => {
-    const aMine = a.owner === me ? 0 : 1;
-    const bMine = b.owner === me ? 0 : 1;
-    return aMine - bMine;
-  });
+  // 仅返回当前账号可负责的牛只
+  const visible = animals.filter((a) => a.owner === me);
 
   return (
     <MobileShell title={`牛舍 · ${barn.name}`} back hideTabBar>
