@@ -752,15 +752,17 @@ function EditDialog({
 }
 
 function CreateDialog({
-  roles,
+  internalRoles,
+  externalRoles,
   onClose,
   onCreate,
   onCreateRole,
 }: {
-  roles: string[];
+  internalRoles: string[];
+  externalRoles: string[];
   onClose: () => void;
   onCreate: (a: Omit<Account, "id" | "initial">, newRoleCreated: string | null) => void;
-  onCreateRole: (r: string) => void;
+  onCreateRole: (type: UserType, r: string) => void;
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -768,14 +770,20 @@ function CreateDialog({
   const [org, setOrg] = useState(ORG_OPTIONS[0]);
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>([]);
 
+  const baseRoles = userType === "内部" ? internalRoles : externalRoles;
+  // 切换人员类型时，清空已选角色（保留牧场选择）
+  const handleUserTypeChange = (v: UserType) => {
+    setUserType(v);
+    setFarmRoles((cur) => cur.map((fr) => ({ ...fr, role: "" })));
+  };
+
   const incomplete = farmRoles.some((fr) => !fr.role);
   const canSubmit = !!name.trim() && !!phone.trim() && farmRoles.length > 0 && !incomplete;
 
   const submit = () => {
     if (!canSubmit) return;
-    // 找到第一个不在已有 roles 中的新角色，触发跳转配置 toast
     const firstNewRole =
-      farmRoles.map((fr) => fr.role).find((r) => !roles.includes(r)) ?? null;
+      farmRoles.map((fr) => fr.role).find((r) => !baseRoles.includes(r)) ?? null;
     onCreate(
       {
         name: name.trim(),
