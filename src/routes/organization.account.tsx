@@ -308,23 +308,43 @@ function AccountPage() {
               </div>
               <div><span className={`tag ${userTypeTagClass(a.userType)}`}>{a.userType}</span></div>
               <div className="text-body-sm text-text-secondary tabular-nums">{a.phone}</div>
-              <div className="text-body-sm text-text-secondary truncate">{a.role}</div>
               <div className="flex items-center gap-1 min-w-0 overflow-hidden">
-                {a.farms.length === 0 ? (
-                  <span className="tag tag-muted">未关联</span>
-                ) : a.farms.length === 1 ? (
-                  <span className="tag tag-muted whitespace-nowrap">{a.farms[0]}</span>
-                ) : (
-                  <>
-                    <span className="tag tag-muted whitespace-nowrap">{a.farms[0]}</span>
-                    <span
-                      className="tag tag-muted whitespace-nowrap"
-                      title={a.farms.slice(1).join("、")}
-                    >
-                      +{a.farms.length - 1}
-                    </span>
-                  </>
-                )}
+                {(() => {
+                  const rs = rolesOf(a);
+                  if (rs.length === 0) return <span className="tag tag-muted">未分配</span>;
+                  return (
+                    <>
+                      <span className="tag tag-brand whitespace-nowrap">{rs[0]}</span>
+                      {rs.length > 1 && (
+                        <span
+                          className="tag tag-brand whitespace-nowrap"
+                          title={rs.slice(1).join("、")}
+                        >
+                          +{rs.length - 1}
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+              <div className="flex items-center gap-1 min-w-0 overflow-hidden">
+                {(() => {
+                  const fs = farmsOf(a);
+                  if (fs.length === 0) return <span className="tag tag-muted">未关联</span>;
+                  return (
+                    <>
+                      <span className="tag tag-muted whitespace-nowrap">{fs[0]}</span>
+                      {fs.length > 1 && (
+                        <span
+                          className="tag tag-muted whitespace-nowrap"
+                          title={a.farmRoles.slice(1).map((x) => `${x.farm}（${x.role}）`).join("、")}
+                        >
+                          +{fs.length - 1}
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               <div className="text-body-sm tabular-nums truncate">
                 {a.wecomId ? (
