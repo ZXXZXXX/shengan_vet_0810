@@ -458,20 +458,22 @@ function AccountPage() {
       {editing && (
         <EditDialog
           account={editing}
-          roles={roles}
+          internalRoles={internalRoles}
+          externalRoles={externalRoles}
           onClose={() => setEditing(null)}
           onSave={saveEdit}
-          onCreateRole={(r) => setRoles((rs) => (rs.includes(r) ? rs : [...rs, r]))}
+          onCreateRole={addRoleFor}
         />
       )}
 
       {/* 新建 */}
       {creating && (
         <CreateDialog
-          roles={roles}
+          internalRoles={internalRoles}
+          externalRoles={externalRoles}
           onClose={() => setCreating(false)}
           onCreate={handleCreate}
-          onCreateRole={(r) => setRoles((rs) => (rs.includes(r) ? rs : [...rs, r]))}
+          onCreateRole={addRoleFor}
         />
       )}
     </>
