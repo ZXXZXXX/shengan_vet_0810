@@ -11,6 +11,7 @@ import {
   Stethoscope,
   PackageMinus,
   Footprints,
+  Home,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
