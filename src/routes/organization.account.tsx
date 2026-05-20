@@ -663,6 +663,7 @@ function CreateDialog({
         farms,
         wecomId: null,
         status: "启用",
+        createdAt: new Date().toISOString().slice(0, 10),
       },
       newRoleCreated,
     );
