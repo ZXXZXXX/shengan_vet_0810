@@ -43,6 +43,7 @@ import { Route as OrganizationTeamRouteImport } from './routes/organization.team
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as OrganizationAccountRouteImport } from './routes/organization.account'
 import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
+import { Route as MReportRouteImport } from './routes/m.report'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLoginRouteImport } from './routes/m.login'
 import { Route as KnowledgeSymptomRouteImport } from './routes/knowledge.symptom'
@@ -227,6 +228,11 @@ const MWorkspaceRoute = MWorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => MRoute,
 } as any)
+const MReportRoute = MReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => MRoute,
+} as any)
 const MMeRoute = MMeRouteImport.update({
   id: '/me',
   path: '/me',
@@ -313,6 +319,7 @@ export interface FileRoutesByFullPath {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/report': typeof MReportRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -357,6 +364,7 @@ export interface FileRoutesByTo {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/report': typeof MReportRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -407,6 +415,7 @@ export interface FileRoutesById {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/report': typeof MReportRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -458,6 +467,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/report'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -502,6 +512,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/report'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -551,6 +562,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/report'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -835,6 +847,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MWorkspaceRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/report': {
+      id: '/m/report'
+      path: '/report'
+      fullPath: '/m/report'
+      preLoaderRoute: typeof MReportRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/me': {
       id: '/m/me'
       path: '/me'
@@ -963,6 +982,7 @@ const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
 interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MMeRoute: typeof MMeRoute
+  MReportRoute: typeof MReportRoute
   MWorkspaceRoute: typeof MWorkspaceRoute
   MIndexRoute: typeof MIndexRoute
   MAnimalsIdRoute: typeof MAnimalsIdRoute
@@ -975,6 +995,7 @@ interface MRouteChildren {
 const MRouteChildren: MRouteChildren = {
   MLoginRoute: MLoginRoute,
   MMeRoute: MMeRoute,
+  MReportRoute: MReportRoute,
   MWorkspaceRoute: MWorkspaceRoute,
   MIndexRoute: MIndexRoute,
   MAnimalsIdRoute: MAnimalsIdRoute,

@@ -8,20 +8,25 @@ import {
   CheckCircle2,
   PlayCircle,
   ChevronRight,
+  Stethoscope,
+  PackageMinus,
+  Footprints,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole } from "@/lib/mobile-role";
+import { useRole, canApprove } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/health/")({
-  head: () => ({ meta: [{ title: "工单 · 奇点智牧" }] }),
-  component: HealthListPage,
+  head: () => ({ meta: [{ title: "任务 · 奇点智牧" }] }),
+  component: TaskListPage,
 });
 
-type Status = "待审核" | "执行中" | "已驳回" | "已完成";
+type Status = "待审批" | "进行中" | "已驳回" | "已完成";
+type Kind = "健康" | "损耗" | "修蹄";
 
-type Order = {
+type Task = {
   id: string;
   target: string;
+  kind: Kind;
   type: string;
   event: string;
   proposer: string;
@@ -30,41 +35,56 @@ type Order = {
   createdAt: string;
 };
 
-const orders: Order[] = [
-  { id: "WO-2381", target: "#A2381", type: "疾病治疗", event: "持续高烧 2 小时", proposer: "陈晓东", who: "李雨晴", status: "待审核", createdAt: "今日 09:08" },
-  { id: "WO-2298", target: "#A2298", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", status: "执行中", createdAt: "昨日 14:20" },
-  { id: "WO-2401", target: "犊牛舍 A", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", status: "执行中", createdAt: "昨日 10:00" },
-  { id: "WO-2324", target: "#A2324", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", status: "已驳回", createdAt: "前日 18:42" },
-  { id: "WO-2099", target: "1 号牛舍", type: "驱虫", event: "季度体内驱虫", proposer: "周凯", who: "周凯", status: "待审核", createdAt: "今日 08:20" },
-  { id: "WO-2150", target: "#A2150", type: "修蹄", event: "批次修蹄", proposer: "孙明", who: "孙明", status: "已完成", createdAt: "5 月 9 日" },
+const tasks: Task[] = [
+  { id: "WO-2381", target: "#A2381", kind: "健康", type: "疾病治疗", event: "持续高烧 2 小时", proposer: "陈晓东", who: "李雨晴", status: "待审批", createdAt: "今日 09:08" },
+  { id: "WO-2298", target: "#A2298", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", status: "进行中", createdAt: "昨日 14:20" },
+  { id: "WO-2401", target: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", status: "进行中", createdAt: "昨日 10:00" },
+  { id: "WO-2324", target: "#A2324", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", status: "已驳回", createdAt: "前日 18:42" },
+  { id: "LS-1029", target: "#A2150", kind: "损耗", type: "疾病死亡", event: "产后子宫破裂", proposer: "孙明", who: "李雨晴", status: "待审批", createdAt: "今日 08:20" },
+  { id: "LS-1011", target: "#A1988", kind: "损耗", type: "淘汰处置", event: "高龄无产能", proposer: "孙明", who: "孙明", status: "已完成", createdAt: "5 月 15 日" },
+  { id: "HF-0702", target: "#A2150", kind: "修蹄", type: "批次修蹄", event: "右后蹄趾间皮炎", proposer: "周凯", who: "外部·张师傅", status: "进行中", createdAt: "今日 07:30" },
+  { id: "HF-0688", target: "#A2270", kind: "修蹄", type: "批次修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", status: "已完成", createdAt: "5 月 12 日" },
 ];
 
 const tabs: { key: Status | "全部"; label: string }[] = [
   { key: "全部", label: "全部" },
-  { key: "待审核", label: "待审" },
-  { key: "执行中", label: "进行" },
+  { key: "待审批", label: "待审批" },
+  { key: "进行中", label: "进行中" },
   { key: "已完成", label: "已完成" },
   { key: "已驳回", label: "已驳回" },
 ];
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
-  待审核: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[var(--state-warning)]" },
-  执行中: { tag: "tag tag-brand", icon: PlayCircle, color: "text-primary" },
+  待审批: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[var(--state-warning)]" },
+  进行中: { tag: "tag tag-brand", icon: PlayCircle, color: "text-primary" },
   已驳回: { tag: "tag tag-danger", icon: AlertTriangle, color: "text-[var(--state-danger)]" },
   已完成: { tag: "tag tag-success", icon: CheckCircle2, color: "text-[var(--state-success)]" },
 };
 
-function HealthListPage() {
+const kindIcon: Record<Kind, typeof Stethoscope> = {
+  健康: Stethoscope,
+  损耗: PackageMinus,
+  修蹄: Footprints,
+};
+
+function TaskListPage() {
   const role = useRole();
-  const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("全部");
-  const list = tab === "全部" ? orders : orders.filter((o) => o.status === tab);
+  const isApprover = canApprove(role);
+  const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
+  const [kindFilter, setKindFilter] = useState<Kind | "全部">("全部");
+
+  // 修蹄工只看到自己的修蹄任务
+  let list = tasks;
+  if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
+  if (tab !== "全部") list = list.filter((o) => o.status === tab);
+  if (kindFilter !== "全部") list = list.filter((o) => o.kind === kindFilter);
 
   return (
     <MobileShell
-      title={role === "manager" ? "工单审核" : "我的工单"}
+      title={isApprover ? "任务审批" : "我的任务"}
       right={
         <Link
-          to="/m/health/report"
+          to="/m/report"
           className="h-7 w-7 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center"
         >
           <Plus className="h-4 w-4" />
@@ -76,13 +96,13 @@ function HealthListPage() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
           <input
-            placeholder="按工单号 / 对象搜索"
+            placeholder="按任务号 / 对象搜索"
             className="h-10 w-full pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary"
           />
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* 状态 Tabs */}
       <div className="px-4 mt-3 flex gap-1.5 overflow-x-auto no-scrollbar">
         {tabs.map((t) => (
           <button
@@ -99,16 +119,38 @@ function HealthListPage() {
         ))}
       </div>
 
+      {/* 类型筛选（修蹄工固定 -> 隐藏） */}
+      {role !== "hoof_trimmer" && (
+        <div className="px-4 mt-2 flex gap-1.5 overflow-x-auto no-scrollbar">
+          {(["全部", "健康", "损耗", "修蹄"] as const).map((k) => (
+            <button
+              key={k}
+              onClick={() => setKindFilter(k)}
+              className={`shrink-0 h-7 px-2.5 rounded-full text-caption transition-colors ${
+                kindFilter === k
+                  ? "bg-brand-subtle text-primary border border-primary/30"
+                  : "bg-card border border-border text-text-tertiary"
+              }`}
+            >
+              {k}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* 列表 */}
-      <div className="px-4 mt-3 space-y-2.5">
+      <div className="px-4 mt-3 space-y-2.5 pb-4">
         {list.length === 0 && (
           <div className="py-16 text-center text-body-sm text-text-tertiary">
-            暂无{tab === "全部" ? "" : tab}工单
+            暂无{tab === "全部" ? "" : tab}任务
           </div>
         )}
         {list.map((o) => {
           const s = statusTone[o.status];
           const Icon = s.icon;
+          const KIcon = kindIcon[o.kind];
+          const canApproveThis = isApprover && o.status === "待审批";
+          const canExecuteThis = !isApprover && o.status === "进行中";
           return (
             <Link
               key={o.id}
@@ -120,7 +162,9 @@ function HealthListPage() {
                 <div className="flex items-center gap-2">
                   <Icon className={`h-3.5 w-3.5 ${s.color}`} />
                   <span className="font-mono text-body-sm text-foreground">{o.id}</span>
-                  <span className="tag tag-muted">{o.type}</span>
+                  <span className="tag tag-muted inline-flex items-center gap-1">
+                    <KIcon className="h-3 w-3" /> {o.kind}
+                  </span>
                 </div>
                 <span className={s.tag}>{o.status}</span>
               </div>
@@ -133,6 +177,11 @@ function HealthListPage() {
                   {o.createdAt} <ChevronRight className="h-3 w-3 ml-0.5" />
                 </span>
               </div>
+              {(canApproveThis || canExecuteThis) && (
+                <div className="mt-2.5 pt-2.5 border-t border-border text-caption text-primary">
+                  {canApproveThis ? "前往审批 →" : "前往执行 / 反馈 →"}
+                </div>
+              )}
             </Link>
           );
         })}
