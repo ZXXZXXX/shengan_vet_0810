@@ -85,7 +85,7 @@ function AnimalDetailPage() {
         {/* 操作按钮 */}
         <section className="px-4 mt-5 grid grid-cols-2 gap-2">
           <Link
-            to="/m/health/report"
+            to="/m/report"
             className="h-12 rounded-lg border border-border bg-card text-body text-text-secondary inline-flex items-center justify-center"
           >
             上报异常

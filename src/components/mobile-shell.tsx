@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 
 const tabs = [
   { to: "/m", label: "工作台", icon: Home, exact: true },
-  { to: "/m/health", label: "工单", icon: ClipboardList },
+  { to: "/m/health", label: "任务", icon: ClipboardList },
   { to: "/m/animals", label: "档案", icon: Beef },
   { to: "/m/me", label: "我的", icon: User },
 ];

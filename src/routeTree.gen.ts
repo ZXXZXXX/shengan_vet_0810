@@ -43,6 +43,7 @@ import { Route as OrganizationTeamRouteImport } from './routes/organization.team
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as OrganizationAccountRouteImport } from './routes/organization.account'
 import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
+import { Route as MReportRouteImport } from './routes/m.report'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLoginRouteImport } from './routes/m.login'
 import { Route as KnowledgeSymptomRouteImport } from './routes/knowledge.symptom'
@@ -53,7 +54,6 @@ import { Route as ArchiveCattleRouteImport } from './routes/archive.cattle'
 import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
 import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
-import { Route as MHealthReportRouteImport } from './routes/m.health.report'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
 
@@ -227,6 +227,11 @@ const MWorkspaceRoute = MWorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => MRoute,
 } as any)
+const MReportRoute = MReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => MRoute,
+} as any)
 const MMeRoute = MMeRouteImport.update({
   id: '/me',
   path: '/me',
@@ -277,11 +282,6 @@ const MAnimalsIndexRoute = MAnimalsIndexRouteImport.update({
   path: '/animals/',
   getParentRoute: () => MRoute,
 } as any)
-const MHealthReportRoute = MHealthReportRouteImport.update({
-  id: '/health/report',
-  path: '/health/report',
-  getParentRoute: () => MRoute,
-} as any)
 const MHealthIdRoute = MHealthIdRouteImport.update({
   id: '/health/$id',
   path: '/health/$id',
@@ -313,6 +313,7 @@ export interface FileRoutesByFullPath {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/report': typeof MReportRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -338,7 +339,6 @@ export interface FileRoutesByFullPath {
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/report': typeof MHealthReportRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
 }
@@ -357,6 +357,7 @@ export interface FileRoutesByTo {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/report': typeof MReportRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -382,7 +383,6 @@ export interface FileRoutesByTo {
   '/warehouse': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/report': typeof MHealthReportRoute
   '/m/animals': typeof MAnimalsIndexRoute
   '/m/health': typeof MHealthIndexRoute
 }
@@ -407,6 +407,7 @@ export interface FileRoutesById {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/report': typeof MReportRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -432,7 +433,6 @@ export interface FileRoutesById {
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/report': typeof MHealthReportRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
 }
@@ -458,6 +458,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/report'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -483,7 +484,6 @@ export interface FileRouteTypes {
     | '/warehouse/'
     | '/m/animals/$id'
     | '/m/health/$id'
-    | '/m/health/report'
     | '/m/animals/'
     | '/m/health/'
   fileRoutesByTo: FileRoutesByTo
@@ -502,6 +502,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/report'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -527,7 +528,6 @@ export interface FileRouteTypes {
     | '/warehouse'
     | '/m/animals/$id'
     | '/m/health/$id'
-    | '/m/health/report'
     | '/m/animals'
     | '/m/health'
   id:
@@ -551,6 +551,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/report'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -576,7 +577,6 @@ export interface FileRouteTypes {
     | '/warehouse/'
     | '/m/animals/$id'
     | '/m/health/$id'
-    | '/m/health/report'
     | '/m/animals/'
     | '/m/health/'
   fileRoutesById: FileRoutesById
@@ -835,6 +835,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MWorkspaceRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/report': {
+      id: '/m/report'
+      path: '/report'
+      fullPath: '/m/report'
+      preLoaderRoute: typeof MReportRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/me': {
       id: '/m/me'
       path: '/me'
@@ -905,13 +912,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MAnimalsIndexRouteImport
       parentRoute: typeof MRoute
     }
-    '/m/health/report': {
-      id: '/m/health/report'
-      path: '/health/report'
-      fullPath: '/m/health/report'
-      preLoaderRoute: typeof MHealthReportRouteImport
-      parentRoute: typeof MRoute
-    }
     '/m/health/$id': {
       id: '/m/health/$id'
       path: '/health/$id'
@@ -963,11 +963,11 @@ const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
 interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MMeRoute: typeof MMeRoute
+  MReportRoute: typeof MReportRoute
   MWorkspaceRoute: typeof MWorkspaceRoute
   MIndexRoute: typeof MIndexRoute
   MAnimalsIdRoute: typeof MAnimalsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
-  MHealthReportRoute: typeof MHealthReportRoute
   MAnimalsIndexRoute: typeof MAnimalsIndexRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
 }
@@ -975,11 +975,11 @@ interface MRouteChildren {
 const MRouteChildren: MRouteChildren = {
   MLoginRoute: MLoginRoute,
   MMeRoute: MMeRoute,
+  MReportRoute: MReportRoute,
   MWorkspaceRoute: MWorkspaceRoute,
   MIndexRoute: MIndexRoute,
   MAnimalsIdRoute: MAnimalsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
-  MHealthReportRoute: MHealthReportRoute,
   MAnimalsIndexRoute: MAnimalsIndexRoute,
   MHealthIndexRoute: MHealthIndexRoute,
 }

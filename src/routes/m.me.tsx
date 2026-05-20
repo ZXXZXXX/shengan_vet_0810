@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
-import { Role, roleLabel, setRole, useRole } from "@/lib/mobile-role";
+import { Role, roleLabel, roleGroup, setRole, useRole } from "@/lib/mobile-role";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -63,20 +63,32 @@ function MePage() {
             <span className="text-body-sm font-medium text-foreground">角色切换</span>
             <span className="ml-auto text-caption text-text-tertiary">演示用</span>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            {(["worker", "manager"] as Role[]).map((r) => (
-              <button
-                key={r}
-                onClick={() => setRole(r)}
-                className={`h-10 rounded-lg text-body-sm transition-colors border ${
-                  role === r
-                    ? "bg-brand-subtle border-primary/40 text-primary"
-                    : "bg-surface-subtle border-transparent text-text-secondary"
-                }`}
-              >
-                {roleLabel[r]}
-              </button>
-            ))}
+          <div className="space-y-3">
+            {(["internal", "external"] as const).map((g) => {
+              const roles = (Object.keys(roleLabel) as Role[]).filter((r) => roleGroup[r] === g);
+              return (
+                <div key={g}>
+                  <div className="text-caption text-text-tertiary mb-1.5">
+                    {g === "internal" ? "内部人员" : "外部人员"}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {roles.map((r) => (
+                      <button
+                        key={r}
+                        onClick={() => setRole(r)}
+                        className={`h-10 rounded-lg text-body-sm transition-colors border ${
+                          role === r
+                            ? "bg-brand-subtle border-primary/40 text-primary"
+                            : "bg-surface-subtle border-transparent text-text-secondary"
+                        }`}
+                      >
+                        {roleLabel[r]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
