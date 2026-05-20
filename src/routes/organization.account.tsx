@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -23,6 +24,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -39,6 +45,7 @@ import {
   Power,
   Unlink,
   Sparkles,
+  RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -60,6 +67,7 @@ type Account = {
   farms: string[];
   wecomId: string | null;
   status: Status;
+  createdAt: string; // ISO 日期，用于排序
 };
 
 // 模拟较多牧场场景，验证搜索能力
@@ -84,13 +92,13 @@ const ORG_OPTIONS = [
 const DEFAULT_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管员", "修蹄工", "供应商联系人"];
 
 const initialAccounts: Account[] = [
-  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", role: "场长", org: "1 号牧场", farms: ["1 号牧场"], wecomId: "wm_zhanglei_8821", status: "启用" },
-  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", role: "兽医", org: "1 号牧场 / 兽医部", farms: ["1 号牧场", "2 号牧场"], wecomId: "wm_liyuqing_3210", status: "启用" },
-  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", role: "技术员", org: "1 号牧场 / 巡检 A 组", farms: ["1 号牧场"], wecomId: null, status: "启用" },
-  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", role: "仓管员", org: "1 号牧场 / 仓储部", farms: ["1 号牧场", "2 号牧场", "3 号牧场"], wecomId: "wm_wangck_5601", status: "启用" },
-  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", role: "仓管员", org: "2 号牧场 / 仓储部", farms: ["2 号牧场"], wecomId: null, status: "禁用" },
-  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", role: "修蹄工", org: "外部合作 / 修蹄队", farms: ["1 号牧场", "3 号牧场", "金辉牧场"], wecomId: "wm_zhaoxt_9912", status: "启用" },
-  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", role: "供应商联系人", org: "外部机构 / 兽药供应商", farms: ["2 号牧场"], wecomId: null, status: "启用" },
+  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", role: "场长", org: "1 号牧场", farms: ["1 号牧场"], wecomId: "wm_zhanglei_8821", status: "启用", createdAt: "2024-03-08" },
+  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", role: "兽医", org: "1 号牧场 / 兽医部", farms: ["1 号牧场", "2 号牧场"], wecomId: "wm_liyuqing_3210", status: "启用", createdAt: "2024-06-21" },
+  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", role: "技术员", org: "1 号牧场 / 巡检 A 组", farms: ["1 号牧场"], wecomId: null, status: "启用", createdAt: "2025-09-12" },
+  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", role: "仓管员", org: "1 号牧场 / 仓储部", farms: ["1 号牧场", "2 号牧场", "3 号牧场"], wecomId: "wm_wangck_5601", status: "启用", createdAt: "2026-02-04" },
+  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", role: "仓管员", org: "2 号牧场 / 仓储部", farms: ["2 号牧场"], wecomId: null, status: "禁用", createdAt: "2026-04-30" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", role: "修蹄工", org: "外部合作 / 修蹄队", farms: ["1 号牧场", "3 号牧场", "金辉牧场"], wecomId: "wm_zhaoxt_9912", status: "启用", createdAt: "2025-11-18" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", role: "供应商联系人", org: "外部机构 / 兽药供应商", farms: ["2 号牧场"], wecomId: null, status: "启用", createdAt: "2026-05-09" },
 ];
 
 function AccountPage() {
@@ -100,6 +108,25 @@ function AccountPage() {
   const [viewing, setViewing] = useState<Account | null>(null);
   const [editing, setEditing] = useState<Account | null>(null);
   const [creating, setCreating] = useState(false);
+
+  // 筛选状态
+  const [keyword, setKeyword] = useState("");
+  const [onlyInternal, setOnlyInternal] = useState(false);
+  const [filterRole, setFilterRole] = useState<string>("all");
+  const [filterFarm, setFilterFarm] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | Status>("all");
+  const [advOpen, setAdvOpen] = useState(false);
+
+  const resetAdv = () => {
+    setFilterRole("all");
+    setFilterFarm("all");
+    setFilterStatus("all");
+  };
+
+  const advCount =
+    (filterRole !== "all" ? 1 : 0) +
+    (filterFarm !== "all" ? 1 : 0) +
+    (filterStatus !== "all" ? 1 : 0);
 
   const toggleStatus = (id: string) => {
     setAccounts((list) =>
@@ -140,6 +167,27 @@ function AccountPage() {
   const userTypeTagClass = (t: UserType) =>
     t === "内部" ? "tag-brand" : "tag-warning";
 
+  // 过滤 + 排序：启用优先；同状态内按创建时间倒序（越新越靠前）
+  const filteredAccounts = useMemo(() => {
+    const kw = keyword.trim().toLowerCase();
+    return accounts
+      .filter((a) => {
+        if (onlyInternal && a.userType !== "内部") return false;
+        if (filterRole !== "all" && a.role !== filterRole) return false;
+        if (filterFarm !== "all" && !a.farms.includes(filterFarm)) return false;
+        if (filterStatus !== "all" && a.status !== filterStatus) return false;
+        if (kw) {
+          const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""}`.toLowerCase();
+          if (!hay.includes(kw)) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.status !== b.status) return a.status === "启用" ? -1 : 1;
+        return b.createdAt.localeCompare(a.createdAt);
+      });
+  }, [accounts, keyword, onlyInternal, filterRole, filterFarm, filterStatus]);
+
   // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 状态 管理
   const cols = "1.8fr 1.1fr 1.3fr 0.9fr 1.7fr 1.5fr 0.8fr 0.5fr";
 
@@ -148,20 +196,79 @@ function AccountPage() {
       <AppHeader title="账号管理" breadcrumb={["组织管理", "账号管理"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 flex-wrap">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-              <Input placeholder="搜索姓名 / 手机号 / 企微ID" className="h-9 w-72 pl-9 text-body-sm" />
+              <Input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="搜索姓名 / 手机号 / 企微ID"
+                className="h-9 w-72 pl-9 text-body-sm"
+              />
             </div>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-              <Filter className="h-3.5 w-3.5" /> 人员类型
-            </Button>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-              <Filter className="h-3.5 w-3.5" /> 关联牧场
-            </Button>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-              <Filter className="h-3.5 w-3.5" /> 角色
-            </Button>
+            <label className="flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card cursor-pointer select-none">
+              <Switch checked={onlyInternal} onCheckedChange={setOnlyInternal} />
+              <span className="text-body-sm text-text-secondary">仅查看内部</span>
+            </label>
+            <Popover open={advOpen} onOpenChange={setAdvOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
+                  <Filter className="h-3.5 w-3.5" /> 精细筛选
+                  {advCount > 0 && (
+                    <span className="ml-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-caption">
+                      {advCount}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-80 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-body-sm text-foreground font-medium">精细筛选</div>
+                  <button
+                    type="button"
+                    onClick={resetAdv}
+                    className="inline-flex items-center gap-1 text-caption text-text-tertiary hover:text-foreground"
+                  >
+                    <RotateCcw className="h-3 w-3" /> 重置
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="text-caption text-text-tertiary">角色</div>
+                  <Select value={filterRole} onValueChange={setFilterRole}>
+                    <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="text-body-sm">全部角色</SelectItem>
+                      {roles.map((r) => (
+                        <SelectItem key={r} value={r} className="text-body-sm">{r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="text-caption text-text-tertiary">关联牧场</div>
+                  <Select value={filterFarm} onValueChange={setFilterFarm}>
+                    <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent className="max-h-64">
+                      <SelectItem value="all" className="text-body-sm">全部牧场</SelectItem>
+                      {FARM_OPTIONS.map((f) => (
+                        <SelectItem key={f} value={f} className="text-body-sm">{f}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="text-caption text-text-tertiary">状态</div>
+                  <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as "all" | Status)}>
+                    <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="text-body-sm">全部状态</SelectItem>
+                      <SelectItem value="启用" className="text-body-sm">启用</SelectItem>
+                      <SelectItem value="禁用" className="text-body-sm">禁用</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
           <Button
             size="sm"
@@ -184,7 +291,7 @@ function AccountPage() {
             <div>状态</div>
             <div className="text-right">管理</div>
           </div>
-          {accounts.map((a) => (
+          {filteredAccounts.map((a) => (
             <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
               style={{ gridTemplateColumns: cols }}>
               <div className="flex items-center gap-2.5 min-w-0">
@@ -248,6 +355,11 @@ function AccountPage() {
               </div>
             </div>
           ))}
+          {filteredAccounts.length === 0 && (
+            <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
+              暂无符合条件的账号
+            </div>
+          )}
         </Card>
 
         <p className="text-caption text-text-tertiary">
@@ -556,6 +668,7 @@ function CreateDialog({
         farms,
         wecomId: null,
         status: "启用",
+        createdAt: new Date().toISOString().slice(0, 10),
       },
       newRoleCreated,
     );
