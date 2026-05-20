@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { X, ScanLine, AlertCircle, ClipboardPlus, RefreshCw } from "lucide-react";
+import { X, ScanLine, AlertCircle, ClipboardPlus, RefreshCw, Home, Beef } from "lucide-react";
 
 export const Route = createFileRoute("/m/scan")({
   head: () => ({ meta: [{ title: "扫码 · 奇点智牧" }] }),
