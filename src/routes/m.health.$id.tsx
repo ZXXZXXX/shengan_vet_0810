@@ -276,29 +276,33 @@ function TaskDetailPage() {
 
 
       <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
-        <AlertDialogContent className="max-w-[320px]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>
+        <AlertDialogContent className="!max-w-[440px] !w-full !top-auto !bottom-0 !left-1/2 !-translate-x-1/2 !translate-y-0 !rounded-b-none !rounded-t-2xl !border-0 !p-0 data-[state=open]:!slide-in-from-bottom-4 data-[state=closed]:!slide-out-to-bottom-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
+          <AlertDialogHeader className="px-6 pt-7 pb-2 sm:text-center">
+            <AlertDialogTitle className="text-section-title">
               {confirm === "approve"
-                ? "确认通过该任务？"
+                ? "确认通过该任务?"
                 : confirm === "reject"
-                ? "确认驳回该任务？"
+                ? "确认驳回该任务?"
                 : confirm === "issue"
-                ? "提交异常反馈？"
-                : "确认提交完成？"}
+                ? "提交异常反馈?"
+                : "确认提交完成?"}
             </AlertDialogTitle>
-            <AlertDialogDescription>
-              任务 {o.id} · {o.target} · {o.event}，操作后状态将更新。
+            <AlertDialogDescription className="text-body-sm text-text-tertiary mt-1">
+              任务 {o.id} · {o.target}
+              <br />
+              {o.event},操作后状态将更新
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
+          <AlertDialogFooter className="!flex-row gap-3 px-4 pt-5">
+            <AlertDialogCancel className="flex-1 h-12 m-0 rounded-xl bg-surface-subtle border-0 text-body text-text-secondary">
+              取消
+            </AlertDialogCancel>
             <AlertDialogAction
-              className={
+              className={`flex-1 h-12 rounded-xl text-body ${
                 confirm === "reject" || confirm === "issue"
                   ? "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
                   : "bg-primary text-primary-foreground"
-              }
+              }`}
               onClick={() => {
                 setConfirm(null);
                 navigate({ to: "/m/health" });
