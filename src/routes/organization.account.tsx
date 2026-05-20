@@ -86,10 +86,13 @@ const ORG_OPTIONS = [
   "2 号牧场",
   "2 号牧场 / 仓储部",
   "外部合作 / 修蹄队",
-  "外部机构 / 兽药供应商",
+  "外部合作 / 干奶服务队",
+  "外部合作 / 驱虫服务队",
 ];
 
-const DEFAULT_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管员", "修蹄工", "供应商联系人"];
+const INTERNAL_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管员"];
+const EXTERNAL_ROLES = ["修蹄工", "普修工", "干奶工", "驱虫工"];
+const DEFAULT_ROLES = [...INTERNAL_ROLES, ...EXTERNAL_ROLES];
 
 const initialAccounts: Account[] = [
   { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", role: "场长" }], wecomId: "wm_zhanglei_8821", status: "启用", createdAt: "2024-03-08" },
@@ -97,8 +100,8 @@ const initialAccounts: Account[] = [
   { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", org: "1 号牧场 / 巡检 A 组", farmRoles: [{ farm: "1 号牧场", role: "技术员" }], wecomId: null, status: "启用", createdAt: "2025-09-12" },
   { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", org: "1 号牧场 / 仓储部", farmRoles: [{ farm: "1 号牧场", role: "仓管员" }, { farm: "2 号牧场", role: "仓管员" }, { farm: "3 号牧场", role: "技术员" }], wecomId: "wm_wangck_5601", status: "启用", createdAt: "2026-02-04" },
   { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", org: "2 号牧场 / 仓储部", farmRoles: [{ farm: "2 号牧场", role: "仓管员" }], wecomId: null, status: "禁用", createdAt: "2026-04-30" },
-  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", org: "外部合作 / 修蹄队", farmRoles: [{ farm: "1 号牧场", role: "修蹄工" }, { farm: "3 号牧场", role: "修蹄工" }, { farm: "金辉牧场", role: "修蹄工" }], wecomId: "wm_zhaoxt_9912", status: "启用", createdAt: "2025-11-18" },
-  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", org: "外部机构 / 兽药供应商", farmRoles: [{ farm: "2 号牧场", role: "供应商联系人" }], wecomId: null, status: "启用", createdAt: "2026-05-09" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", org: "外部合作 / 修蹄队", farmRoles: [{ farm: "1 号牧场", role: "修蹄工" }, { farm: "3 号牧场", role: "修蹄工" }, { farm: "金辉牧场", role: "普修工" }], wecomId: "wm_zhaoxt_9912", status: "启用", createdAt: "2025-11-18" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", org: "外部合作 / 干奶服务队", farmRoles: [{ farm: "2 号牧场", role: "干奶工" }], wecomId: null, status: "启用", createdAt: "2026-05-09" },
 ];
 
 // 辅助：从 farmRoles 派生
@@ -109,7 +112,16 @@ const rolesOf = (a: Pick<Account, "farmRoles">) =>
 function AccountPage() {
   const navigate = useNavigate();
   const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
-  const [roles, setRoles] = useState<string[]>(DEFAULT_ROLES);
+  const [internalRoles, setInternalRoles] = useState<string[]>(INTERNAL_ROLES);
+  const [externalRoles, setExternalRoles] = useState<string[]>(EXTERNAL_ROLES);
+  const roles = useMemo(() => [...internalRoles, ...externalRoles], [internalRoles, externalRoles]);
+  const addRoleFor = (type: UserType, r: string) => {
+    if (type === "内部") {
+      setInternalRoles((rs) => (rs.includes(r) ? rs : [...rs, r]));
+    } else {
+      setExternalRoles((rs) => (rs.includes(r) ? rs : [...rs, r]));
+    }
+  };
   const [viewing, setViewing] = useState<Account | null>(null);
   const [editing, setEditing] = useState<Account | null>(null);
   const [creating, setCreating] = useState(false);
@@ -154,7 +166,7 @@ function AccountPage() {
     const initial = acc.name.slice(0, 2).toUpperCase();
     setAccounts((list) => [...list, { ...acc, id, initial }]);
     if (newRoleCreated) {
-      setRoles((rs) => (rs.includes(newRoleCreated) ? rs : [...rs, newRoleCreated]));
+      addRoleFor(acc.userType, newRoleCreated);
       toast.success(`已创建账号「${acc.name}」`, {
         description: `新角色「${newRoleCreated}」暂无权限，请尽快前往角色权限完成配置。`,
         action: {
@@ -446,20 +458,22 @@ function AccountPage() {
       {editing && (
         <EditDialog
           account={editing}
-          roles={roles}
+          internalRoles={internalRoles}
+          externalRoles={externalRoles}
           onClose={() => setEditing(null)}
           onSave={saveEdit}
-          onCreateRole={(r) => setRoles((rs) => (rs.includes(r) ? rs : [...rs, r]))}
+          onCreateRole={addRoleFor}
         />
       )}
 
       {/* 新建 */}
       {creating && (
         <CreateDialog
-          roles={roles}
+          internalRoles={internalRoles}
+          externalRoles={externalRoles}
           onClose={() => setCreating(false)}
           onCreate={handleCreate}
-          onCreateRole={(r) => setRoles((rs) => (rs.includes(r) ? rs : [...rs, r]))}
+          onCreateRole={addRoleFor}
         />
       )}
     </>
@@ -611,16 +625,18 @@ function FarmRolePicker({
 
 function EditDialog({
   account,
-  roles,
+  internalRoles,
+  externalRoles,
   onClose,
   onSave,
   onCreateRole,
 }: {
   account: Account;
-  roles: string[];
+  internalRoles: string[];
+  externalRoles: string[];
   onClose: () => void;
   onSave: (a: Account) => void;
-  onCreateRole: (r: string) => void;
+  onCreateRole: (type: UserType, r: string) => void;
 }) {
   const [phone, setPhone] = useState(account.phone);
   const [userType, setUserType] = useState<UserType>(account.userType);
@@ -629,11 +645,13 @@ function EditDialog({
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
 
   const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
-  const allRoles = useMemo(() => {
-    const set = new Set(roles);
-    farmRoles.forEach((fr) => fr.role && set.add(fr.role));
+  const baseRoles = userType === "内部" ? internalRoles : externalRoles;
+  // 切换人员类型时，已选 farmRoles 中不属于当前类型角色的清空，避免脏数据
+  const availableRoles = useMemo(() => {
+    const set = new Set(baseRoles);
+    farmRoles.forEach((fr) => fr.role && baseRoles.includes(fr.role) && set.add(fr.role));
     return Array.from(set);
-  }, [roles, farmRoles]);
+  }, [baseRoles, farmRoles]);
 
   const incomplete = farmRoles.some((fr) => !fr.role);
   const canSave = farmRoles.length > 0 && !incomplete;
@@ -654,7 +672,16 @@ function EditDialog({
 
           <div className="space-y-1.5">
             <Label className="text-body-sm text-text-secondary">人员类型</Label>
-            <Select value={userType} onValueChange={(v) => setUserType(v as UserType)}>
+            <Select
+              value={userType}
+              onValueChange={(v) => {
+                const next = v as UserType;
+                if (next !== userType) {
+                  setUserType(next);
+                  setFarmRoles((cur) => cur.map((fr) => ({ ...fr, role: "" })));
+                }
+              }}
+            >
               <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
@@ -690,8 +717,8 @@ function EditDialog({
             <FarmRolePicker
               value={farmRoles}
               onChange={setFarmRoles}
-              roles={allRoles}
-              onCreateRole={onCreateRole}
+              roles={availableRoles}
+              onCreateRole={(r) => onCreateRole(userType, r)}
             />
             {incomplete && (
               <p className="text-caption text-warning">请为每个关联牧场选择角色后再保存</p>
@@ -734,15 +761,17 @@ function EditDialog({
 }
 
 function CreateDialog({
-  roles,
+  internalRoles,
+  externalRoles,
   onClose,
   onCreate,
   onCreateRole,
 }: {
-  roles: string[];
+  internalRoles: string[];
+  externalRoles: string[];
   onClose: () => void;
   onCreate: (a: Omit<Account, "id" | "initial">, newRoleCreated: string | null) => void;
-  onCreateRole: (r: string) => void;
+  onCreateRole: (type: UserType, r: string) => void;
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -750,14 +779,20 @@ function CreateDialog({
   const [org, setOrg] = useState(ORG_OPTIONS[0]);
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>([]);
 
+  const baseRoles = userType === "内部" ? internalRoles : externalRoles;
+  // 切换人员类型时，清空已选角色（保留牧场选择）
+  const handleUserTypeChange = (v: UserType) => {
+    setUserType(v);
+    setFarmRoles((cur) => cur.map((fr) => ({ ...fr, role: "" })));
+  };
+
   const incomplete = farmRoles.some((fr) => !fr.role);
   const canSubmit = !!name.trim() && !!phone.trim() && farmRoles.length > 0 && !incomplete;
 
   const submit = () => {
     if (!canSubmit) return;
-    // 找到第一个不在已有 roles 中的新角色，触发跳转配置 toast
     const firstNewRole =
-      farmRoles.map((fr) => fr.role).find((r) => !roles.includes(r)) ?? null;
+      farmRoles.map((fr) => fr.role).find((r) => !baseRoles.includes(r)) ?? null;
     onCreate(
       {
         name: name.trim(),
@@ -795,7 +830,7 @@ function CreateDialog({
 
           <div className="space-y-1.5">
             <Label className="text-body-sm text-text-secondary">人员类型</Label>
-            <Select value={userType} onValueChange={(v) => setUserType(v as UserType)}>
+            <Select value={userType} onValueChange={(v) => handleUserTypeChange(v as UserType)}>
               <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
@@ -824,11 +859,11 @@ function CreateDialog({
             <FarmRolePicker
               value={farmRoles}
               onChange={setFarmRoles}
-              roles={roles}
-              onCreateRole={onCreateRole}
+              roles={baseRoles}
+              onCreateRole={(r) => onCreateRole(userType, r)}
             />
             <p className="text-caption text-text-tertiary">
-              勾选牧场后请为每个牧场指定角色；找不到合适角色可在右上方输入新角色名后创建。
+              勾选牧场后请为每个牧场指定角色；当前为「{userType}」人员，可在右上方输入新角色名创建。
             </p>
             {incomplete && (
               <p className="text-caption text-warning">请为每个关联牧场选择角色后再创建</p>
