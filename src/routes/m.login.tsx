@@ -39,7 +39,7 @@ function MLoginPage() {
         <div className="flex-1 flex items-center justify-center px-8">
           <div className="relative w-full aspect-square max-w-[260px]">
             <div className="absolute inset-4 rounded-full border border-primary/20 animate-pulse" />
-            <div className="absolute inset-10 rounded-full border border-[var(--effect-ai-cyan)]/30" />
+            <div className="absolute inset-10 rounded-full border border-primary/15" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="h-24 w-24 rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-[0_20px_60px_-20px_var(--brand)] flex items-center justify-center">
                 <span className="text-[40px] leading-none text-primary-foreground font-medium">智</span>
