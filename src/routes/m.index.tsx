@@ -6,7 +6,6 @@ import {
   ClipboardList,
   Beef,
   AlertTriangle,
-  Sparkles,
   ChevronRight,
   Activity,
   Droplets,
