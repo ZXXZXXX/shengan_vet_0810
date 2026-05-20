@@ -105,9 +105,8 @@ function ManualEntry({
 }) {
   return (
     <Link
-      // @ts-expect-error generic to/params for demo entries
-      to={to}
-      params={params}
+      to={to as never}
+      params={params as never}
       className="flex items-center gap-3 p-3 rounded-xl bg-white/8 hover:bg-white/12 active:bg-white/15"
     >
       <span className="h-10 w-10 rounded-lg bg-primary/20 text-primary inline-flex items-center justify-center">

@@ -43,6 +43,7 @@ import { Route as OrganizationTeamRouteImport } from './routes/organization.team
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as OrganizationAccountRouteImport } from './routes/organization.account'
 import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
+import { Route as MScanRouteImport } from './routes/m.scan'
 import { Route as MReportRouteImport } from './routes/m.report'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLoginRouteImport } from './routes/m.login'
@@ -228,6 +229,11 @@ const MWorkspaceRoute = MWorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => MRoute,
 } as any)
+const MScanRoute = MScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
+  getParentRoute: () => MRoute,
+} as any)
 const MReportRoute = MReportRouteImport.update({
   id: '/report',
   path: '/report',
@@ -320,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/report': typeof MReportRoute
+  '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -365,6 +372,7 @@ export interface FileRoutesByTo {
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/report': typeof MReportRoute
+  '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -416,6 +424,7 @@ export interface FileRoutesById {
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/report': typeof MReportRoute
+  '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
@@ -468,6 +477,7 @@ export interface FileRouteTypes {
     | '/m/login'
     | '/m/me'
     | '/m/report'
+    | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -513,6 +523,7 @@ export interface FileRouteTypes {
     | '/m/login'
     | '/m/me'
     | '/m/report'
+    | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -563,6 +574,7 @@ export interface FileRouteTypes {
     | '/m/login'
     | '/m/me'
     | '/m/report'
+    | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
@@ -847,6 +859,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MWorkspaceRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/scan': {
+      id: '/m/scan'
+      path: '/scan'
+      fullPath: '/m/scan'
+      preLoaderRoute: typeof MScanRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/report': {
       id: '/m/report'
       path: '/report'
@@ -983,6 +1002,7 @@ interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MMeRoute: typeof MMeRoute
   MReportRoute: typeof MReportRoute
+  MScanRoute: typeof MScanRoute
   MWorkspaceRoute: typeof MWorkspaceRoute
   MIndexRoute: typeof MIndexRoute
   MAnimalsIdRoute: typeof MAnimalsIdRoute
@@ -996,6 +1016,7 @@ const MRouteChildren: MRouteChildren = {
   MLoginRoute: MLoginRoute,
   MMeRoute: MMeRoute,
   MReportRoute: MReportRoute,
+  MScanRoute: MScanRoute,
   MWorkspaceRoute: MWorkspaceRoute,
   MIndexRoute: MIndexRoute,
   MAnimalsIdRoute: MAnimalsIdRoute,
