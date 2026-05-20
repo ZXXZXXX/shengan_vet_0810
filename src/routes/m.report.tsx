@@ -23,8 +23,11 @@ const levels = ["低", "中", "高"];
 
 function ReportPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const locked = !!search.lock && !!search.target;
   const [kind, setKind] = useState<ReportKind>("health");
-  const [target, setTarget] = useState("");
+  const [target, setTarget] = useState(search.target ?? "");
+  const [barn] = useState(search.barn ?? "");
   const [type, setType] = useState<string>("体温异常");
   const [level, setLevel] = useState<string>("中");
   const [desc, setDesc] = useState("");
