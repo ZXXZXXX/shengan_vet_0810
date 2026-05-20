@@ -708,8 +708,8 @@ function EditDialog({
             <FarmRolePicker
               value={farmRoles}
               onChange={setFarmRoles}
-              roles={allRoles}
-              onCreateRole={onCreateRole}
+              roles={availableRoles}
+              onCreateRole={(r) => onCreateRole(userType, r)}
             />
             {incomplete && (
               <p className="text-caption text-warning">请为每个关联牧场选择角色后再保存</p>
