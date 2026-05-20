@@ -54,7 +54,6 @@ import { Route as ArchiveCattleRouteImport } from './routes/archive.cattle'
 import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
 import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
-import { Route as MHealthReportRouteImport } from './routes/m.health.report'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
 
@@ -283,11 +282,6 @@ const MAnimalsIndexRoute = MAnimalsIndexRouteImport.update({
   path: '/animals/',
   getParentRoute: () => MRoute,
 } as any)
-const MHealthReportRoute = MHealthReportRouteImport.update({
-  id: '/health/report',
-  path: '/health/report',
-  getParentRoute: () => MRoute,
-} as any)
 const MHealthIdRoute = MHealthIdRouteImport.update({
   id: '/health/$id',
   path: '/health/$id',
@@ -345,7 +339,6 @@ export interface FileRoutesByFullPath {
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/report': typeof MHealthReportRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
 }
@@ -390,7 +383,6 @@ export interface FileRoutesByTo {
   '/warehouse': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/report': typeof MHealthReportRoute
   '/m/animals': typeof MAnimalsIndexRoute
   '/m/health': typeof MHealthIndexRoute
 }
@@ -441,7 +433,6 @@ export interface FileRoutesById {
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/report': typeof MHealthReportRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
 }
@@ -493,7 +484,6 @@ export interface FileRouteTypes {
     | '/warehouse/'
     | '/m/animals/$id'
     | '/m/health/$id'
-    | '/m/health/report'
     | '/m/animals/'
     | '/m/health/'
   fileRoutesByTo: FileRoutesByTo
@@ -538,7 +528,6 @@ export interface FileRouteTypes {
     | '/warehouse'
     | '/m/animals/$id'
     | '/m/health/$id'
-    | '/m/health/report'
     | '/m/animals'
     | '/m/health'
   id:
@@ -588,7 +577,6 @@ export interface FileRouteTypes {
     | '/warehouse/'
     | '/m/animals/$id'
     | '/m/health/$id'
-    | '/m/health/report'
     | '/m/animals/'
     | '/m/health/'
   fileRoutesById: FileRoutesById
@@ -924,13 +912,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MAnimalsIndexRouteImport
       parentRoute: typeof MRoute
     }
-    '/m/health/report': {
-      id: '/m/health/report'
-      path: '/health/report'
-      fullPath: '/m/health/report'
-      preLoaderRoute: typeof MHealthReportRouteImport
-      parentRoute: typeof MRoute
-    }
     '/m/health/$id': {
       id: '/m/health/$id'
       path: '/health/$id'
@@ -987,7 +968,6 @@ interface MRouteChildren {
   MIndexRoute: typeof MIndexRoute
   MAnimalsIdRoute: typeof MAnimalsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
-  MHealthReportRoute: typeof MHealthReportRoute
   MAnimalsIndexRoute: typeof MAnimalsIndexRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
 }
@@ -1000,7 +980,6 @@ const MRouteChildren: MRouteChildren = {
   MIndexRoute: MIndexRoute,
   MAnimalsIdRoute: MAnimalsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
-  MHealthReportRoute: MHealthReportRoute,
   MAnimalsIndexRoute: MAnimalsIndexRoute,
   MHealthIndexRoute: MHealthIndexRoute,
 }
@@ -1105,3 +1084,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
