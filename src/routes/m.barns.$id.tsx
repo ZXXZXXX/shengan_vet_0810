@@ -1,5 +1,13 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { Home, Beef, ChevronRight, Activity, Pill } from "lucide-react";
+import {
+  Home,
+  PlayCircle,
+  ChevronRight,
+  ClipboardPlus,
+  Stethoscope,
+  Footprints,
+  Syringe,
+} from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel } from "@/lib/mobile-role";
 
@@ -16,15 +24,20 @@ const roleToName: Record<string, string> = {
   hoof_trimmer: "张师傅",
 };
 
-type Animal = {
+type WO = {
   id: string;
-  sex: "公" | "母";
-  breed: string;
-  health: "健康" | "观察中" | "异常";
-  treating: boolean;
-  workKind: "健康" | "修蹄" | "免疫" | "普检";
+  target: string;
+  kind: "健康" | "修蹄" | "免疫";
+  type: string;
+  event: string;
   owner: string;
 };
+
+const kindIcon = {
+  健康: Stethoscope,
+  修蹄: Footprints,
+  免疫: Syringe,
+} as const;
 
 function BarnDetailPage() {
   const { id } = useParams({ from: "/m/barns/$id" });
@@ -40,23 +53,21 @@ function BarnDetailPage() {
     stock: 186,
   };
 
-  // mock 需处理牛只
-  const animals: Animal[] = [
-    { id: "A2381", sex: "母", breed: "荷斯坦", health: "异常", treating: true, workKind: "健康", owner: "李雨晴" },
-    { id: "A2298", sex: "母", breed: "荷斯坦", health: "观察中", treating: true, workKind: "健康", owner: "李雨晴" },
-    { id: "A2150", sex: "母", breed: "荷斯坦", health: "观察中", treating: false, workKind: "修蹄", owner: "张师傅" },
-    { id: "A2270", sex: "母", breed: "荷斯坦", health: "观察中", treating: false, workKind: "修蹄", owner: "张师傅" },
-    { id: "A2324", sex: "母", breed: "西门塔尔", health: "观察中", treating: false, workKind: "普检", owner: "王建国" },
-    { id: "A2401", sex: "公", breed: "荷斯坦", health: "健康", treating: false, workKind: "免疫", owner: "周凯" },
+  // mock 该牛舍内全部待执行工单（不区分负责人）
+  const all: WO[] = [
+    { id: "WO-2381", target: "#A2381", kind: "健康", type: "疾病治疗", event: "持续高烧 39.6℃", owner: "李雨晴" },
+    { id: "WO-2298", target: "#A2298", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", owner: "李雨晴" },
+    { id: "HF-0702", target: "#A2150", kind: "修蹄", type: "趾间皮炎处置", event: "右后蹄清创", owner: "张师傅" },
+    { id: "HF-0688", target: "#A2270", kind: "修蹄", type: "蹄底溃疡", event: "处置 + 包蹄", owner: "张师傅" },
+    { id: "WO-2401", target: "犊牛舍 A", kind: "免疫", type: "口蹄疫加强", event: "批次免疫", owner: "周凯" },
   ];
 
-  // 优先展示能负责的
-  // 仅返回当前账号可负责的牛只
-  const visible = animals.filter((a) => a.owner === me);
+  // 仅返回当前账号负责的工单
+  const mine = all.filter((o) => o.owner === me);
 
   return (
     <MobileShell title={`牛舍 · ${barn.name}`} back hideTabBar>
-      <div className="pb-10">
+      <div className="pb-28">
         {/* 头图 + 基础信息 */}
         <div className="px-4 pt-4">
           <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary/70 p-5 text-primary-foreground relative overflow-hidden">
@@ -81,52 +92,70 @@ function BarnDetailPage() {
           </div>
         </div>
 
-        {/* 需处理牛只 */}
+        {/* 我的待执行工单 */}
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">需处理牛只</h3>
+            <h3 className="text-card-title text-foreground">我的待执行工单</h3>
             <span className="text-caption text-text-tertiary">
-              {me}（{roleLabel[role]}）· 共 {visible.length} 头
+              {me}（{roleLabel[role]}）· {mine.length} 项
             </span>
           </div>
 
-          {visible.length === 0 ? (
+          {mine.length === 0 ? (
             <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
-              <div className="text-body-sm text-text-tertiary">暂无您负责的待处理牛只</div>
+              <div className="text-body-sm text-text-tertiary">本牛舍暂无您负责的待执行工单</div>
+              <div className="text-caption text-text-tertiary mt-1">
+                可直接通过下方「健康上报」记录异常
+              </div>
             </div>
           ) : (
             <div className="space-y-2">
-              {visible.map((a) => (
-                <Link
-                  key={a.id}
-                  to="/m/animals/$id"
-                  params={{ id: a.id }}
-                  className="block rounded-xl border bg-card border-border p-3 flex items-center gap-3 active:bg-surface-subtle"
-                >
-                  <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center">
-                    <Beef className="h-4 w-4" />
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="font-mono text-body-sm text-foreground">#{a.id}</span>
-                      <span className="tag tag-muted">{a.sex} · {a.breed}</span>
-                      <HealthTag health={a.health} />
-                      {a.treating && (
-                        <span className="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-caption bg-[var(--state-warning)]/12 text-[var(--state-warning)]">
-                          <Pill className="h-3 w-3" /> 治疗中
+              {mine.map((o) => {
+                const KIcon = kindIcon[o.kind];
+                return (
+                  <Link
+                    key={o.id}
+                    to="/m/health/$id"
+                    params={{ id: o.id }}
+                    className="block rounded-xl border bg-card border-border p-3 flex items-center gap-3 active:bg-surface-subtle"
+                  >
+                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center">
+                      <PlayCircle className="h-4 w-4" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-body-sm text-foreground truncate">
+                          {o.id}
                         </span>
-                      )}
+                        <span className="tag tag-muted inline-flex items-center gap-1">
+                          <KIcon className="h-3 w-3" /> {o.kind}
+                        </span>
+                      </div>
+                      <div className="text-body-sm text-foreground mt-1 truncate">
+                        {o.target} · {o.event}
+                      </div>
+                      <div className="text-caption text-text-tertiary mt-0.5 truncate">
+                        {o.type}
+                      </div>
                     </div>
-                    <div className="text-caption text-text-tertiary mt-1">
-                      待处理：<span className="text-text-secondary">{a.workKind}</span>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-text-tertiary" />
-                </Link>
-              ))}
+                    <ChevronRight className="h-4 w-4 text-text-tertiary" />
+                  </Link>
+                );
+              })}
             </div>
           )}
         </section>
+      </div>
+
+      {/* 底部固定：健康上报入口（带牛舍） */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        <Link
+          to="/m/report"
+          search={{ barn: barn.name, lock: 1 } as never}
+          className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+        >
+          <ClipboardPlus className="h-4 w-4" /> 健康上报
+        </Link>
       </div>
     </MobileShell>
   );
@@ -140,20 +169,5 @@ function Stat({ label, value, highlight }: { label: string; value: string; highl
         {value}
       </div>
     </div>
-  );
-}
-
-function HealthTag({ health }: { health: Animal["health"] }) {
-  const tone =
-    health === "异常"
-      ? "bg-[var(--state-danger)]/12 text-[var(--state-danger)]"
-      : health === "观察中"
-      ? "bg-[var(--state-warning)]/12 text-[var(--state-warning)]"
-      : "bg-[var(--state-success)]/12 text-[var(--state-success)]";
-  return (
-    <span className={`inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-caption ${tone}`}>
-      <Activity className="h-3 w-3" />
-      {health}
-    </span>
   );
 }
