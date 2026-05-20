@@ -24,7 +24,9 @@ const levels = ["低", "中", "高"];
 function ReportPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
-  const locked = !!search.lock && !!search.target;
+  const locked = !!search.lock && (!!search.target || !!search.barn);
+  const lockTarget = !!search.lock && !!search.target;
+  const lockBarn = !!search.lock && !!search.barn;
   const [kind, setKind] = useState<ReportKind>("health");
   const [target, setTarget] = useState(search.target ?? "");
   const [barn] = useState(search.barn ?? "");
@@ -84,13 +86,27 @@ function ReportPage() {
         <Section title={kind === "health" ? "处理对象" : "损耗对象"} required>
           {locked ? (
             <div className="space-y-2">
-              <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
-                <span className="font-mono">#{target}</span>
-                <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
-                  <Lock className="h-3 w-3" /> 已锁定
-                </span>
-              </div>
-              {barn && (
+              {lockTarget ? (
+                <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
+                  <span className="font-mono">#{target}</span>
+                  <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+                    <Lock className="h-3 w-3" /> 已锁定
+                  </span>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    value={target}
+                    onChange={(e) => setTarget(e.target.value)}
+                    placeholder="输入或扫描耳标编号"
+                    className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
+                  />
+                  <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
+                    <ScanLine className="h-4 w-4" /> 扫码
+                  </button>
+                </div>
+              )}
+              {lockBarn && (
                 <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
                   <span className="text-body-sm text-text-tertiary mr-2">牛舍</span>
                   <span>{barn}</span>
@@ -100,7 +116,7 @@ function ReportPage() {
                 </div>
               )}
               <div className="text-caption text-text-tertiary">
-                通过牛只档案进入,基础信息已自动填写,不可编辑
+                由扫码进入,{lockTarget ? "耳标" : "牛舍"}信息已自动填写,不可编辑
               </div>
             </div>
           ) : (
