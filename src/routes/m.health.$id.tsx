@@ -41,9 +41,11 @@ function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
   const navigate = useNavigate();
-  const [confirm, setConfirm] = useState<"approve" | "reject" | "finish" | null>(null);
-  const [feedback, setFeedback] = useState("");
+  const [confirm, setConfirm] = useState<"approve" | "reject" | "finish" | "issue" | null>(null);
+  const [execNote, setExecNote] = useState("");
+  const [issueNote, setIssueNote] = useState("");
   const [showExec, setShowExec] = useState(false);
+  const [showIssue, setShowIssue] = useState(false);
 
   // mock —— 修蹄工默认看到的是修蹄类，否则健康类
   const isHoof = role === "hoof_trimmer";
