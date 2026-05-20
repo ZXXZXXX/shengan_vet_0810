@@ -41,9 +41,11 @@ function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
   const navigate = useNavigate();
-  const [confirm, setConfirm] = useState<"approve" | "reject" | "finish" | null>(null);
-  const [feedback, setFeedback] = useState("");
+  const [confirm, setConfirm] = useState<"approve" | "reject" | "finish" | "issue" | null>(null);
+  const [execNote, setExecNote] = useState("");
+  const [issueNote, setIssueNote] = useState("");
   const [showExec, setShowExec] = useState(false);
+  const [showIssue, setShowIssue] = useState(false);
 
   // mock —— 修蹄工默认看到的是修蹄类，否则健康类
   const isHoof = role === "hoof_trimmer";
@@ -139,14 +141,19 @@ function TaskDetailPage() {
           </div>
         </div>
 
-        {/* 执行 / 反馈面板 */}
+        {/* 执行记录面板（流程性） */}
         {showExec && (
           <div className="rounded-xl bg-card border border-primary/30 p-4 space-y-3">
-            <div className="text-body-sm font-medium text-foreground">执行记录 / 现场反馈</div>
+            <div className="flex items-center justify-between">
+              <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
+                <PlayCircle className="h-4 w-4 text-primary" /> 执行记录
+              </div>
+              <span className="text-caption text-text-tertiary">按流程填写处置内容</span>
+            </div>
             <textarea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="填写执行过程、用药/处置、现场观察等"
+              value={execNote}
+              onChange={(e) => setExecNote(e.target.value)}
+              placeholder="填写执行过程、用药 / 处置、操作要点等"
               rows={4}
               className="w-full p-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary resize-none"
             />
@@ -161,11 +168,58 @@ function TaskDetailPage() {
                 暂存
               </button>
               <button
-                disabled={!feedback.trim()}
+                disabled={!execNote.trim()}
                 onClick={() => setConfirm("finish")}
                 className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 <Send className="h-4 w-4" /> 提交完成
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 异常反馈面板（异常分支） */}
+        {showIssue && (
+          <div className="rounded-xl bg-card border border-[var(--state-danger)]/30 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
+                <AlertTriangle className="h-4 w-4 text-[var(--state-danger)]" /> 异常反馈
+              </div>
+              <span className="text-caption text-text-tertiary">执行中发现的异常情况</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {["牛只状态异常", "用药不足", "环境/设施问题", "操作受阻", "其他"].map((t) => (
+                <button
+                  key={t}
+                  className="px-2.5 h-7 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary"
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+            <textarea
+              value={issueNote}
+              onChange={(e) => setIssueNote(e.target.value)}
+              placeholder="描述异常现象、影响范围、当前处置建议等"
+              rows={4}
+              className="w-full p-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary resize-none"
+            />
+            <button className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5">
+              <Camera className="h-4 w-4" /> 上传异常照片 / 视频
+            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowIssue(false)}
+                className="flex-1 h-11 rounded-lg border border-border text-body-sm text-text-secondary"
+              >
+                取消
+              </button>
+              <button
+                disabled={!issueNote.trim()}
+                onClick={() => setConfirm("issue")}
+                className="flex-1 h-11 rounded-lg bg-[var(--state-danger)] text-white text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                <Send className="h-4 w-4" /> 提交反馈
               </button>
             </div>
           </div>
@@ -189,12 +243,24 @@ function TaskDetailPage() {
           </button>
         </div>
       ) : showExecBtn ? (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 flex gap-2 pb-[calc(env(safe-area-inset-bottom)+12px)]">
           <button
-            onClick={() => setShowExec((v) => !v)}
-            className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+            onClick={() => {
+              setShowIssue((v) => !v);
+              if (!showIssue) setShowExec(false);
+            }}
+            className="flex-1 h-12 rounded-lg border border-[var(--state-danger)]/40 text-[var(--state-danger)] text-body inline-flex items-center justify-center gap-1.5"
           >
-            <Send className="h-4 w-4" /> {showExec ? "收起执行面板" : "执行 / 反馈"}
+            <AlertTriangle className="h-4 w-4" /> 异常反馈
+          </button>
+          <button
+            onClick={() => {
+              setShowExec((v) => !v);
+              if (!showExec) setShowIssue(false);
+            }}
+            className="flex-1 h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+          >
+            <PlayCircle className="h-4 w-4" /> {showExec ? "收起执行" : "执行记录"}
           </button>
         </div>
       ) : (
@@ -208,6 +274,7 @@ function TaskDetailPage() {
         </div>
       )}
 
+
       <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
         <AlertDialogContent className="max-w-[320px]">
           <AlertDialogHeader>
@@ -216,6 +283,8 @@ function TaskDetailPage() {
                 ? "确认通过该任务？"
                 : confirm === "reject"
                 ? "确认驳回该任务？"
+                : confirm === "issue"
+                ? "提交异常反馈？"
                 : "确认提交完成？"}
             </AlertDialogTitle>
             <AlertDialogDescription>
@@ -226,7 +295,7 @@ function TaskDetailPage() {
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
               className={
-                confirm === "reject"
+                confirm === "reject" || confirm === "issue"
                   ? "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
                   : "bg-primary text-primary-foreground"
               }

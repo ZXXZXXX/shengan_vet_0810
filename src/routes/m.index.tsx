@@ -2,12 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Bell,
   Camera,
-  ScanLine,
   ClipboardList,
   Beef,
   AlertTriangle,
   ChevronRight,
-  Activity,
   Droplets,
   Stethoscope,
   Footprints,
@@ -15,6 +13,10 @@ import {
   TrendingUp,
   Users,
   Warehouse,
+  Sun,
+  CloudSun,
+  Wind,
+  Thermometer,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canApprove, canViewOperations } from "@/lib/mobile-role";
@@ -38,58 +40,67 @@ function MHomePage() {
   const isApprover = canApprove(role);
   const isOps = canViewOperations(role);
 
-  // 快捷入口（按角色）
-  const actions =
-    role === "manager" || role === "admin"
-      ? [
-          { to: "/m/health", label: "待审任务", icon: ClipboardList, color: "warning" },
-          { to: "/m/animals", label: "异常监控", icon: Activity, color: "danger" },
-          { to: "/m/animals", label: "牛只档案", icon: Beef, color: "brand" },
-          { to: "/m/report", label: "现场上报", icon: Camera, color: "muted" },
-        ]
-      : role === "vet"
-      ? [
-          { to: "/m/health", label: "待审任务", icon: ClipboardList, color: "warning" },
-          { to: "/m/report", label: "现场上报", icon: Camera, color: "info" },
-          { to: "/m/animals", label: "扫耳标", icon: ScanLine, color: "brand" },
-          { to: "/m/animals", label: "牛只档案", icon: Beef, color: "muted" },
-        ]
-      : role === "hoof_trimmer"
-      ? [
-          { to: "/m/health", label: "我的任务", icon: Footprints, color: "warning" },
-          { to: "/m/animals", label: "扫耳标", icon: ScanLine, color: "brand" },
-          { to: "/m/report", label: "现场反馈", icon: Camera, color: "info" },
-          { to: "/m/animals", label: "牛只档案", icon: Beef, color: "muted" },
-        ]
-      : [
-          { to: "/m/report", label: "现场上报", icon: Camera, color: "warning" },
-          { to: "/m/animals", label: "扫耳标", icon: ScanLine, color: "brand" },
-          { to: "/m/health", label: "我的任务", icon: ClipboardList, color: "info" },
-          { to: "/m/animals", label: "牛只档案", icon: Beef, color: "muted" },
-        ];
-
   return (
     <MobileShell>
-      {/* 顶部欢迎 + 通知 */}
-      <header className="px-4 pt-12 pb-6 bg-gradient-to-br from-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
-        <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+      {/* 顶部欢迎 + 通知 + 现场上报快捷入口 */}
+      <header className="px-4 pt-12 pb-6 bg-gradient-to-br from-primary via-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
+        {/* 视觉装饰层 */}
+        <div className="absolute inset-0 opacity-[0.18] pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 30%, white 1px, transparent 1.5px), radial-gradient(circle at 70% 60%, white 1px, transparent 1.5px), radial-gradient(circle at 40% 80%, white 1px, transparent 1.5px)",
+            backgroundSize: "120px 120px, 160px 160px, 140px 140px",
+          }}
+        />
+        <div className="absolute -top-10 -right-10 h-44 w-44 rounded-full bg-white/15 blur-2xl" />
+        <div className="absolute top-20 -left-12 h-32 w-32 rounded-full bg-[var(--effect-ai-cyan)]/25 blur-2xl" />
+        <div className="absolute bottom-0 right-1/3 h-24 w-24 rounded-full bg-white/10 blur-xl" />
+        {/* 山形剪影 */}
+        <svg
+          className="absolute bottom-0 left-0 right-0 w-full h-12 opacity-25"
+          viewBox="0 0 400 60"
+          preserveAspectRatio="none"
+          fill="white"
+        >
+          <path d="M0,60 L0,40 L60,15 L120,35 L180,10 L240,30 L300,8 L360,28 L400,18 L400,60 Z" />
+        </svg>
+
         <div className="relative flex items-start justify-between">
           <div>
-            <div className="text-caption opacity-80">{roleLabel[role]} · 早上好</div>
-            <div className="text-section-title mt-1">李师傅</div>
+            <div className="flex items-center gap-1.5">
+              <Sun className="h-3.5 w-3.5 opacity-90" />
+              <span className="text-caption opacity-90">{roleLabel[role]} · 早上好</span>
+            </div>
+            <div className="text-section-title mt-1.5">李师傅</div>
             <div className="text-caption opacity-80 mt-0.5">1 号牧场 · 工号 W-1024</div>
           </div>
-          <Link
-            to="/m/me"
-            className="relative h-9 w-9 rounded-full bg-white/15 flex items-center justify-center"
-          >
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[var(--state-danger)]" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/m/report"
+              className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] active:scale-[.97] transition-transform"
+            >
+              <Camera className="h-4 w-4" />
+              现场上报
+            </Link>
+            <Link
+              to="/m/me"
+              className="relative h-9 w-9 rounded-full bg-white/15 backdrop-blur flex items-center justify-center"
+            >
+              <Bell className="h-4 w-4" />
+              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[var(--state-danger)]" />
+            </Link>
+          </div>
+        </div>
+
+        {/* 天气 / 环境带 */}
+        <div className="relative mt-4 flex items-center gap-3 text-caption opacity-90">
+          <span className="inline-flex items-center gap-1"><CloudSun className="h-3.5 w-3.5" />晴转多云</span>
+          <span className="inline-flex items-center gap-1"><Thermometer className="h-3.5 w-3.5" />18 ~ 26℃</span>
+          <span className="inline-flex items-center gap-1"><Wind className="h-3.5 w-3.5" />东南风 2 级</span>
         </div>
 
         {/* 今日概览 */}
-        <div className="relative mt-5 grid grid-cols-3 gap-3 rounded-xl bg-white/12 backdrop-blur border border-white/15 p-3">
+        <div className="relative mt-4 grid grid-cols-3 gap-3 rounded-xl bg-white/12 backdrop-blur border border-white/20 p-3 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.3)]">
           {isApprover ? (
             <>
               <Stat label="待审任务" value="6" hi />
@@ -106,26 +117,7 @@ function MHomePage() {
         </div>
       </header>
 
-      {/* 快捷入口 */}
-      <section className="px-4 mt-5">
-        <div className="grid grid-cols-4 gap-2">
-          {actions.map((a) => {
-            const Icon = a.icon;
-            return (
-              <Link
-                key={a.label}
-                to={a.to}
-                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-card border border-border active:scale-[.97] transition-transform"
-              >
-                <span className={`h-10 w-10 rounded-lg flex items-center justify-center ${colorMap[a.color]}`}>
-                  <Icon className="h-4.5 w-4.5" strokeWidth={1.75} />
-                </span>
-                <span className="text-caption text-text-secondary">{a.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+
 
       {/* 牧场数据快览（差异化展示） */}
       <section className="px-4 mt-5">
