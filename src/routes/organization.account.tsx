@@ -405,17 +405,19 @@ function AccountPage() {
               <DetailRow label="姓名" value={viewing.name} />
               <DetailRow label="人员类型" value={<span className={`tag ${userTypeTagClass(viewing.userType)}`}>{viewing.userType}</span>} />
               <DetailRow label="手机号" value={<span className="tabular-nums">{viewing.phone}</span>} />
-              <DetailRow label="角色" value={<span className="tag tag-brand">{viewing.role}</span>} />
               <DetailRow label="所属组织" value={viewing.org} />
               <DetailRow
-                label="关联牧场"
+                label="关联牧场 / 角色"
                 value={
-                  <div className="flex flex-wrap justify-end gap-1">
-                    {viewing.farms.length === 0 ? (
+                  <div className="flex flex-col items-end gap-1">
+                    {viewing.farmRoles.length === 0 ? (
                       <span className="tag tag-muted">未关联</span>
                     ) : (
-                      viewing.farms.map((f) => (
-                        <span key={f} className="tag tag-muted">{f}</span>
+                      viewing.farmRoles.map((fr) => (
+                        <div key={fr.farm} className="flex items-center gap-1.5">
+                          <span className="tag tag-muted whitespace-nowrap">{fr.farm}</span>
+                          <span className="tag tag-brand whitespace-nowrap">{fr.role}</span>
+                        </div>
                       ))
                     )}
                   </div>
