@@ -11,6 +11,7 @@ import {
   Stethoscope,
   PackageMinus,
   Footprints,
+  Home,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
@@ -26,6 +27,7 @@ type Kind = "健康" | "损耗" | "修蹄";
 type Task = {
   id: string;
   target: string;
+  barn: string;
   kind: Kind;
   type: string;
   event: string;
@@ -36,14 +38,14 @@ type Task = {
 };
 
 const tasks: Task[] = [
-  { id: "WO-2381", target: "#A2381", kind: "健康", type: "疾病治疗", event: "持续高烧 2 小时", proposer: "陈晓东", who: "李雨晴", status: "待审批", createdAt: "今日 09:08" },
-  { id: "WO-2298", target: "#A2298", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", status: "进行中", createdAt: "昨日 14:20" },
-  { id: "WO-2401", target: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", status: "进行中", createdAt: "昨日 10:00" },
-  { id: "WO-2324", target: "#A2324", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", status: "已驳回", createdAt: "前日 18:42" },
-  { id: "LS-1029", target: "#A2150", kind: "损耗", type: "疾病死亡", event: "产后子宫破裂", proposer: "孙明", who: "李雨晴", status: "待审批", createdAt: "今日 08:20" },
-  { id: "LS-1011", target: "#A1988", kind: "损耗", type: "淘汰处置", event: "高龄无产能", proposer: "孙明", who: "孙明", status: "已完成", createdAt: "5 月 15 日" },
-  { id: "HF-0702", target: "#A2150", kind: "修蹄", type: "批次修蹄", event: "右后蹄趾间皮炎", proposer: "周凯", who: "外部·张师傅", status: "进行中", createdAt: "今日 07:30" },
-  { id: "HF-0688", target: "#A2270", kind: "修蹄", type: "批次修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", status: "已完成", createdAt: "5 月 12 日" },
+  { id: "WO-2381", target: "#A2381", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "持续高烧 2 小时", proposer: "陈晓东", who: "李雨晴", status: "待审批", createdAt: "今日 09:08" },
+  { id: "WO-2298", target: "#A2298", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", status: "进行中", createdAt: "昨日 14:20" },
+  { id: "WO-2401", target: "犊牛舍 A", barn: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", status: "进行中", createdAt: "昨日 10:00" },
+  { id: "WO-2324", target: "#A2324", barn: "5 号牛舍", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", status: "已驳回", createdAt: "前日 18:42" },
+  { id: "LS-1029", target: "#A2150", barn: "2 号牛舍", kind: "损耗", type: "疾病死亡", event: "产后子宫破裂", proposer: "孙明", who: "李雨晴", status: "待审批", createdAt: "今日 08:20" },
+  { id: "LS-1011", target: "#A1988", barn: "5 号牛舍", kind: "损耗", type: "淘汰处置", event: "高龄无产能", proposer: "孙明", who: "孙明", status: "已完成", createdAt: "5 月 15 日" },
+  { id: "HF-0702", target: "#A2150", barn: "2 号牛舍", kind: "修蹄", type: "批次修蹄", event: "右后蹄趾间皮炎", proposer: "周凯", who: "外部·张师傅", status: "进行中", createdAt: "今日 07:30" },
+  { id: "HF-0688", target: "#A2270", barn: "3 号牛舍", kind: "修蹄", type: "批次修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", status: "已完成", createdAt: "5 月 12 日" },
 ];
 
 const tabs: { key: Status | "全部"; label: string }[] = [
@@ -138,53 +140,73 @@ function TaskListPage() {
         </div>
       )}
 
-      {/* 列表 */}
-      <div className="px-4 mt-3 space-y-2.5 pb-4">
+      {/* 列表 —— 按牛舍分组 */}
+      <div className="px-4 mt-3 pb-4 space-y-4">
         {list.length === 0 && (
           <div className="py-16 text-center text-body-sm text-text-tertiary">
             暂无{tab === "全部" ? "" : tab}任务
           </div>
         )}
-        {list.map((o) => {
-          const s = statusTone[o.status];
-          const Icon = s.icon;
-          const KIcon = kindIcon[o.kind];
-          const canApproveThis = isApprover && o.status === "待审批";
-          const canExecuteThis = !isApprover && o.status === "进行中";
-          return (
-            <Link
-              key={o.id}
-              to="/m/health/$id"
-              params={{ id: o.id }}
-              className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <Icon className={`h-3.5 w-3.5 ${s.color}`} />
-                  <span className="font-mono text-body-sm text-foreground">{o.id}</span>
-                  <span className="tag tag-muted inline-flex items-center gap-1">
-                    <KIcon className="h-3 w-3" /> {o.kind}
-                  </span>
-                </div>
-                <span className={s.tag}>{o.status}</span>
-              </div>
-              <div className="text-body text-foreground">
-                {o.target} · {o.event}
-              </div>
-              <div className="mt-2 flex items-center justify-between text-caption text-text-tertiary">
-                <span>提出 {o.proposer} · 负责 {o.who}</span>
-                <span className="inline-flex items-center">
-                  {o.createdAt} <ChevronRight className="h-3 w-3 ml-0.5" />
+        {Object.entries(
+          list.reduce<Record<string, Task[]>>((acc, t) => {
+            (acc[t.barn] ||= []).push(t);
+            return acc;
+          }, {})
+        )
+          .sort(([a], [b]) => a.localeCompare(b, "zh"))
+          .map(([barn, items]) => (
+            <section key={barn}>
+              <div className="sticky top-0 z-[1] -mx-4 px-4 py-2 bg-background/85 backdrop-blur flex items-center gap-2">
+                <span className="h-6 w-6 rounded-md bg-brand-subtle text-primary inline-flex items-center justify-center">
+                  <Home className="h-3.5 w-3.5" />
                 </span>
+                <span className="text-body-sm font-medium text-foreground">{barn}</span>
+                <span className="text-caption text-text-tertiary">共 {items.length} 项</span>
               </div>
-              {(canApproveThis || canExecuteThis) && (
-                <div className="mt-2.5 pt-2.5 border-t border-border text-caption text-primary">
-                  {canApproveThis ? "前往审批 →" : "前往执行 / 反馈 →"}
-                </div>
-              )}
-            </Link>
-          );
-        })}
+              <div className="space-y-2.5 mt-1">
+                {items.map((o) => {
+                  const s = statusTone[o.status];
+                  const Icon = s.icon;
+                  const KIcon = kindIcon[o.kind];
+                  const canApproveThis = isApprover && o.status === "待审批";
+                  const canExecuteThis = !isApprover && o.status === "进行中";
+                  return (
+                    <Link
+                      key={o.id}
+                      to="/m/health/$id"
+                      params={{ id: o.id }}
+                      className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <Icon className={`h-3.5 w-3.5 ${s.color}`} />
+                          <span className="font-mono text-body-sm text-foreground">{o.id}</span>
+                          <span className="tag tag-muted inline-flex items-center gap-1">
+                            <KIcon className="h-3 w-3" /> {o.kind}
+                          </span>
+                        </div>
+                        <span className={s.tag}>{o.status}</span>
+                      </div>
+                      <div className="text-body text-foreground">
+                        {o.target} · {o.event}
+                      </div>
+                      <div className="mt-2 flex items-center justify-between text-caption text-text-tertiary">
+                        <span>提出 {o.proposer} · 负责 {o.who}</span>
+                        <span className="inline-flex items-center">
+                          {o.createdAt} <ChevronRight className="h-3 w-3 ml-0.5" />
+                        </span>
+                      </div>
+                      {(canApproveThis || canExecuteThis) && (
+                        <div className="mt-2.5 pt-2.5 border-t border-border text-caption text-primary">
+                          {canApproveThis ? "前往审批 →" : "前往执行 / 反馈 →"}
+                        </div>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
       </div>
     </MobileShell>
   );
