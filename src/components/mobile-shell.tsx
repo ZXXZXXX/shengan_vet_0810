@@ -1,10 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, ClipboardList, Beef, User } from "lucide-react";
+import { Home, ClipboardList, Beef, User, ScanLine } from "lucide-react";
 import { ReactNode } from "react";
 
-const tabs = [
+const leftTabs = [
   { to: "/m", label: "工作台", icon: Home, exact: true },
   { to: "/m/health", label: "任务", icon: ClipboardList },
+];
+const rightTabs = [
   { to: "/m/animals", label: "档案", icon: Beef },
   { to: "/m/me", label: "我的", icon: User },
 ];
