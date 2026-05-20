@@ -2,12 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Bell,
   Camera,
-  ScanLine,
   ClipboardList,
   Beef,
   AlertTriangle,
   ChevronRight,
-  Activity,
   Droplets,
   Stethoscope,
   Footprints,
@@ -15,6 +13,10 @@ import {
   TrendingUp,
   Users,
   Warehouse,
+  Sun,
+  CloudSun,
+  Wind,
+  Thermometer,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canApprove, canViewOperations } from "@/lib/mobile-role";
