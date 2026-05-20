@@ -112,7 +112,16 @@ const rolesOf = (a: Pick<Account, "farmRoles">) =>
 function AccountPage() {
   const navigate = useNavigate();
   const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
-  const [roles, setRoles] = useState<string[]>(DEFAULT_ROLES);
+  const [internalRoles, setInternalRoles] = useState<string[]>(INTERNAL_ROLES);
+  const [externalRoles, setExternalRoles] = useState<string[]>(EXTERNAL_ROLES);
+  const roles = useMemo(() => [...internalRoles, ...externalRoles], [internalRoles, externalRoles]);
+  const addRoleFor = (type: UserType, r: string) => {
+    if (type === "内部") {
+      setInternalRoles((rs) => (rs.includes(r) ? rs : [...rs, r]));
+    } else {
+      setExternalRoles((rs) => (rs.includes(r) ? rs : [...rs, r]));
+    }
+  };
   const [viewing, setViewing] = useState<Account | null>(null);
   const [editing, setEditing] = useState<Account | null>(null);
   const [creating, setCreating] = useState(false);
