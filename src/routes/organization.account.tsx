@@ -67,6 +67,7 @@ type Account = {
   farms: string[];
   wecomId: string | null;
   status: Status;
+  createdAt: string; // ISO 日期，用于排序
 };
 
 // 模拟较多牧场场景，验证搜索能力
@@ -91,13 +92,13 @@ const ORG_OPTIONS = [
 const DEFAULT_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管员", "修蹄工", "供应商联系人"];
 
 const initialAccounts: Account[] = [
-  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", role: "场长", org: "1 号牧场", farms: ["1 号牧场"], wecomId: "wm_zhanglei_8821", status: "启用" },
-  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", role: "兽医", org: "1 号牧场 / 兽医部", farms: ["1 号牧场", "2 号牧场"], wecomId: "wm_liyuqing_3210", status: "启用" },
-  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", role: "技术员", org: "1 号牧场 / 巡检 A 组", farms: ["1 号牧场"], wecomId: null, status: "启用" },
-  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", role: "仓管员", org: "1 号牧场 / 仓储部", farms: ["1 号牧场", "2 号牧场", "3 号牧场"], wecomId: "wm_wangck_5601", status: "启用" },
-  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", role: "仓管员", org: "2 号牧场 / 仓储部", farms: ["2 号牧场"], wecomId: null, status: "禁用" },
-  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", role: "修蹄工", org: "外部合作 / 修蹄队", farms: ["1 号牧场", "3 号牧场", "金辉牧场"], wecomId: "wm_zhaoxt_9912", status: "启用" },
-  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", role: "供应商联系人", org: "外部机构 / 兽药供应商", farms: ["2 号牧场"], wecomId: null, status: "启用" },
+  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", role: "场长", org: "1 号牧场", farms: ["1 号牧场"], wecomId: "wm_zhanglei_8821", status: "启用", createdAt: "2024-03-08" },
+  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", role: "兽医", org: "1 号牧场 / 兽医部", farms: ["1 号牧场", "2 号牧场"], wecomId: "wm_liyuqing_3210", status: "启用", createdAt: "2024-06-21" },
+  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", role: "技术员", org: "1 号牧场 / 巡检 A 组", farms: ["1 号牧场"], wecomId: null, status: "启用", createdAt: "2025-09-12" },
+  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", role: "仓管员", org: "1 号牧场 / 仓储部", farms: ["1 号牧场", "2 号牧场", "3 号牧场"], wecomId: "wm_wangck_5601", status: "启用", createdAt: "2026-02-04" },
+  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", role: "仓管员", org: "2 号牧场 / 仓储部", farms: ["2 号牧场"], wecomId: null, status: "禁用", createdAt: "2026-04-30" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", role: "修蹄工", org: "外部合作 / 修蹄队", farms: ["1 号牧场", "3 号牧场", "金辉牧场"], wecomId: "wm_zhaoxt_9912", status: "启用", createdAt: "2025-11-18" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", role: "供应商联系人", org: "外部机构 / 兽药供应商", farms: ["2 号牧场"], wecomId: null, status: "启用", createdAt: "2026-05-09" },
 ];
 
 function AccountPage() {
