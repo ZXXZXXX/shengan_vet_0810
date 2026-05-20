@@ -56,18 +56,18 @@ export const Route = createFileRoute("/organization/account")({
 
 type Status = "启用" | "禁用";
 type UserType = "内部" | "外部";
+type FarmRole = { farm: string; role: string };
 type Account = {
   id: string;
   name: string;
   initial: string;
   phone: string;
   userType: UserType;
-  role: string;
   org: string;
-  farms: string[];
+  farmRoles: FarmRole[]; // 每个关联牧场对应一个角色
   wecomId: string | null;
   status: Status;
-  createdAt: string; // ISO 日期，用于排序
+  createdAt: string;
 };
 
 // 模拟较多牧场场景，验证搜索能力
@@ -92,14 +92,19 @@ const ORG_OPTIONS = [
 const DEFAULT_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管员", "修蹄工", "供应商联系人"];
 
 const initialAccounts: Account[] = [
-  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", role: "场长", org: "1 号牧场", farms: ["1 号牧场"], wecomId: "wm_zhanglei_8821", status: "启用", createdAt: "2024-03-08" },
-  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", role: "兽医", org: "1 号牧场 / 兽医部", farms: ["1 号牧场", "2 号牧场"], wecomId: "wm_liyuqing_3210", status: "启用", createdAt: "2024-06-21" },
-  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", role: "技术员", org: "1 号牧场 / 巡检 A 组", farms: ["1 号牧场"], wecomId: null, status: "启用", createdAt: "2025-09-12" },
-  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", role: "仓管员", org: "1 号牧场 / 仓储部", farms: ["1 号牧场", "2 号牧场", "3 号牧场"], wecomId: "wm_wangck_5601", status: "启用", createdAt: "2026-02-04" },
-  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", role: "仓管员", org: "2 号牧场 / 仓储部", farms: ["2 号牧场"], wecomId: null, status: "禁用", createdAt: "2026-04-30" },
-  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", role: "修蹄工", org: "外部合作 / 修蹄队", farms: ["1 号牧场", "3 号牧场", "金辉牧场"], wecomId: "wm_zhaoxt_9912", status: "启用", createdAt: "2025-11-18" },
-  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", role: "供应商联系人", org: "外部机构 / 兽药供应商", farms: ["2 号牧场"], wecomId: null, status: "启用", createdAt: "2026-05-09" },
+  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", role: "场长" }], wecomId: "wm_zhanglei_8821", status: "启用", createdAt: "2024-03-08" },
+  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", org: "1 号牧场 / 兽医部", farmRoles: [{ farm: "1 号牧场", role: "兽医" }, { farm: "2 号牧场", role: "兽医助理" }], wecomId: "wm_liyuqing_3210", status: "启用", createdAt: "2024-06-21" },
+  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", org: "1 号牧场 / 巡检 A 组", farmRoles: [{ farm: "1 号牧场", role: "技术员" }], wecomId: null, status: "启用", createdAt: "2025-09-12" },
+  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", org: "1 号牧场 / 仓储部", farmRoles: [{ farm: "1 号牧场", role: "仓管员" }, { farm: "2 号牧场", role: "仓管员" }, { farm: "3 号牧场", role: "技术员" }], wecomId: "wm_wangck_5601", status: "启用", createdAt: "2026-02-04" },
+  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", org: "2 号牧场 / 仓储部", farmRoles: [{ farm: "2 号牧场", role: "仓管员" }], wecomId: null, status: "禁用", createdAt: "2026-04-30" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", org: "外部合作 / 修蹄队", farmRoles: [{ farm: "1 号牧场", role: "修蹄工" }, { farm: "3 号牧场", role: "修蹄工" }, { farm: "金辉牧场", role: "修蹄工" }], wecomId: "wm_zhaoxt_9912", status: "启用", createdAt: "2025-11-18" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", org: "外部机构 / 兽药供应商", farmRoles: [{ farm: "2 号牧场", role: "供应商联系人" }], wecomId: null, status: "启用", createdAt: "2026-05-09" },
 ];
+
+// 辅助：从 farmRoles 派生
+const farmsOf = (a: Pick<Account, "farmRoles">) => a.farmRoles.map((x) => x.farm);
+const rolesOf = (a: Pick<Account, "farmRoles">) =>
+  Array.from(new Set(a.farmRoles.map((x) => x.role)));
 
 function AccountPage() {
   const navigate = useNavigate();
@@ -173,8 +178,8 @@ function AccountPage() {
     return accounts
       .filter((a) => {
         if (onlyInternal && a.userType !== "内部") return false;
-        if (filterRole !== "all" && a.role !== filterRole) return false;
-        if (filterFarm !== "all" && !a.farms.includes(filterFarm)) return false;
+        if (filterRole !== "all" && !rolesOf(a).includes(filterRole)) return false;
+        if (filterFarm !== "all" && !farmsOf(a).includes(filterFarm)) return false;
         if (filterStatus !== "all" && a.status !== filterStatus) return false;
         if (kw) {
           const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""}`.toLowerCase();
@@ -303,23 +308,43 @@ function AccountPage() {
               </div>
               <div><span className={`tag ${userTypeTagClass(a.userType)}`}>{a.userType}</span></div>
               <div className="text-body-sm text-text-secondary tabular-nums">{a.phone}</div>
-              <div className="text-body-sm text-text-secondary truncate">{a.role}</div>
               <div className="flex items-center gap-1 min-w-0 overflow-hidden">
-                {a.farms.length === 0 ? (
-                  <span className="tag tag-muted">未关联</span>
-                ) : a.farms.length === 1 ? (
-                  <span className="tag tag-muted whitespace-nowrap">{a.farms[0]}</span>
-                ) : (
-                  <>
-                    <span className="tag tag-muted whitespace-nowrap">{a.farms[0]}</span>
-                    <span
-                      className="tag tag-muted whitespace-nowrap"
-                      title={a.farms.slice(1).join("、")}
-                    >
-                      +{a.farms.length - 1}
-                    </span>
-                  </>
-                )}
+                {(() => {
+                  const rs = rolesOf(a);
+                  if (rs.length === 0) return <span className="tag tag-muted">未分配</span>;
+                  return (
+                    <>
+                      <span className="tag tag-brand whitespace-nowrap">{rs[0]}</span>
+                      {rs.length > 1 && (
+                        <span
+                          className="tag tag-brand whitespace-nowrap"
+                          title={rs.slice(1).join("、")}
+                        >
+                          +{rs.length - 1}
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+              <div className="flex items-center gap-1 min-w-0 overflow-hidden">
+                {(() => {
+                  const fs = farmsOf(a);
+                  if (fs.length === 0) return <span className="tag tag-muted">未关联</span>;
+                  return (
+                    <>
+                      <span className="tag tag-muted whitespace-nowrap">{fs[0]}</span>
+                      {fs.length > 1 && (
+                        <span
+                          className="tag tag-muted whitespace-nowrap"
+                          title={a.farmRoles.slice(1).map((x) => `${x.farm}（${x.role}）`).join("、")}
+                        >
+                          +{fs.length - 1}
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               <div className="text-body-sm tabular-nums truncate">
                 {a.wecomId ? (
@@ -380,17 +405,19 @@ function AccountPage() {
               <DetailRow label="姓名" value={viewing.name} />
               <DetailRow label="人员类型" value={<span className={`tag ${userTypeTagClass(viewing.userType)}`}>{viewing.userType}</span>} />
               <DetailRow label="手机号" value={<span className="tabular-nums">{viewing.phone}</span>} />
-              <DetailRow label="角色" value={<span className="tag tag-brand">{viewing.role}</span>} />
               <DetailRow label="所属组织" value={viewing.org} />
               <DetailRow
-                label="关联牧场"
+                label="关联牧场 / 角色"
                 value={
-                  <div className="flex flex-wrap justify-end gap-1">
-                    {viewing.farms.length === 0 ? (
+                  <div className="flex flex-col items-end gap-1">
+                    {viewing.farmRoles.length === 0 ? (
                       <span className="tag tag-muted">未关联</span>
                     ) : (
-                      viewing.farms.map((f) => (
-                        <span key={f} className="tag tag-muted">{f}</span>
+                      viewing.farmRoles.map((fr) => (
+                        <div key={fr.farm} className="flex items-center gap-1.5">
+                          <span className="tag tag-muted whitespace-nowrap">{fr.farm}</span>
+                          <span className="tag tag-brand whitespace-nowrap">{fr.role}</span>
+                        </div>
                       ))
                     )}
                   </div>
@@ -422,6 +449,7 @@ function AccountPage() {
           roles={roles}
           onClose={() => setEditing(null)}
           onSave={saveEdit}
+          onCreateRole={(r) => setRoles((rs) => (rs.includes(r) ? rs : [...rs, r]))}
         />
       )}
 
@@ -431,6 +459,7 @@ function AccountPage() {
           roles={roles}
           onClose={() => setCreating(false)}
           onCreate={handleCreate}
+          onCreateRole={(r) => setRoles((rs) => (rs.includes(r) ? rs : [...rs, r]))}
         />
       )}
     </>
@@ -446,20 +475,50 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   );
 }
 
-// 可搜索的牧场多选
-function FarmPicker({
-  selected,
-  onToggle,
+// 可搜索的「牧场—角色」多选：每个关联的牧场需选择对应角色
+function FarmRolePicker({
+  value,
+  onChange,
+  roles,
+  onCreateRole,
 }: {
-  selected: string[];
-  onToggle: (f: string) => void;
+  value: FarmRole[];
+  onChange: (next: FarmRole[]) => void;
+  roles: string[];
+  onCreateRole: (r: string) => void;
 }) {
   const [q, setQ] = useState("");
+  const [newRole, setNewRole] = useState("");
   const filtered = useMemo(() => {
     const kw = q.trim().toLowerCase();
     if (!kw) return FARM_OPTIONS;
     return FARM_OPTIONS.filter((f) => f.toLowerCase().includes(kw));
   }, [q]);
+
+  const selectedMap = useMemo(() => {
+    const m = new Map<string, string>();
+    value.forEach((v) => m.set(v.farm, v.role));
+    return m;
+  }, [value]);
+
+  const toggleFarm = (f: string) => {
+    if (selectedMap.has(f)) {
+      onChange(value.filter((v) => v.farm !== f));
+    } else {
+      onChange([...value, { farm: f, role: "" }]);
+    }
+  };
+
+  const setRoleFor = (f: string, r: string) => {
+    onChange(value.map((v) => (v.farm === f ? { ...v, role: r } : v)));
+  };
+
+  const addNewRole = () => {
+    const r = newRole.trim();
+    if (!r) return;
+    if (!roles.includes(r)) onCreateRole(r);
+    setNewRole("");
+  };
 
   return (
     <div className="rounded-md border border-border bg-surface-subtle">
@@ -472,7 +531,7 @@ function FarmPicker({
           className="h-8 pl-8 text-body-sm bg-card"
         />
       </div>
-      <div className="max-h-48 overflow-y-auto p-2 space-y-1">
+      <div className="max-h-40 overflow-y-auto p-2 space-y-1">
         {filtered.length === 0 ? (
           <div className="text-caption text-text-tertiary text-center py-3">无匹配牧场</div>
         ) : (
@@ -481,17 +540,69 @@ function FarmPicker({
               key={f}
               className="flex items-center gap-2 cursor-pointer text-body-sm px-1.5 py-1 rounded hover:bg-card"
             >
-              <Checkbox checked={selected.includes(f)} onCheckedChange={() => onToggle(f)} />
+              <Checkbox checked={selectedMap.has(f)} onCheckedChange={() => toggleFarm(f)} />
               <span className="text-foreground">{f}</span>
             </label>
           ))
         )}
       </div>
-      {selected.length > 0 && (
-        <div className="flex flex-wrap gap-1 p-2 border-t border-border">
-          {selected.map((f) => (
-            <span key={f} className="tag tag-muted whitespace-nowrap">{f}</span>
-          ))}
+
+      {value.length > 0 && (
+        <div className="border-t border-border p-2 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="text-caption text-text-tertiary">为每个关联牧场选择角色</div>
+            <div className="flex items-center gap-1">
+              <Input
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addNewRole();
+                  }
+                }}
+                placeholder="新增角色名"
+                className="h-7 w-28 text-caption bg-card"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={addNewRole}
+                disabled={!newRole.trim()}
+                className="h-7 px-2 text-caption text-primary hover:text-primary"
+              >
+                <Sparkles className="h-3 w-3 mr-0.5" /> 新建
+              </Button>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            {value.map((fr) => (
+              <div key={fr.farm} className="flex items-center gap-2">
+                <span className="tag tag-muted whitespace-nowrap shrink-0">{fr.farm}</span>
+                <Select value={fr.role} onValueChange={(v) => setRoleFor(fr.farm, v)}>
+                  <SelectTrigger className="h-8 text-body-sm bg-card flex-1">
+                    <SelectValue placeholder="选择角色" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles.map((r) => (
+                      <SelectItem key={r} value={r} className="text-body-sm">{r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => toggleFarm(fr.farm)}
+                  className="h-7 w-7 text-text-tertiary hover:text-destructive shrink-0"
+                  aria-label="移除"
+                >
+                  <Unlink className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -503,32 +614,36 @@ function EditDialog({
   roles,
   onClose,
   onSave,
+  onCreateRole,
 }: {
   account: Account;
   roles: string[];
   onClose: () => void;
   onSave: (a: Account) => void;
+  onCreateRole: (r: string) => void;
 }) {
   const [phone, setPhone] = useState(account.phone);
   const [userType, setUserType] = useState<UserType>(account.userType);
-  const [role, setRole] = useState(account.role);
   const [org, setOrg] = useState(account.org);
-  const [farms, setFarms] = useState<string[]>(account.farms);
+  const [farmRoles, setFarmRoles] = useState<FarmRole[]>(account.farmRoles);
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
 
   const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
-  const roleOptions = roles.includes(role) ? roles : [...roles, role];
+  const allRoles = useMemo(() => {
+    const set = new Set(roles);
+    farmRoles.forEach((fr) => fr.role && set.add(fr.role));
+    return Array.from(set);
+  }, [roles, farmRoles]);
 
-  const toggleFarm = (f: string) => {
-    setFarms((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]));
-  };
+  const incomplete = farmRoles.some((fr) => !fr.role);
+  const canSave = farmRoles.length > 0 && !incomplete;
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>编辑账号</DialogTitle>
-          <DialogDescription>修改用户的手机号、所属组织、关联牧场或解绑企微 ID</DialogDescription>
+          <DialogDescription>修改手机号、所属组织、关联牧场及对应角色或解绑企微 ID</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -544,18 +659,6 @@ function EditDialog({
               <SelectContent>
                 <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
                 <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">角色</Label>
-            <Select value={role} onValueChange={setRole}>
-              <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {roleOptions.map((r) => (
-                  <SelectItem key={r} value={r} className="text-body-sm">{r}</SelectItem>
-                ))}
               </SelectContent>
             </Select>
           </div>
@@ -579,12 +682,20 @@ function EditDialog({
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label className="text-body-sm text-text-secondary">关联牧场</Label>
+              <Label className="text-body-sm text-text-secondary">关联牧场 / 角色</Label>
               <span className="text-caption text-text-tertiary">
-                已选 {farms.length} 个{farms.length > 1 ? "（可在牧场间切换）" : farms.length === 1 ? "（仅访问该牧场数据）" : ""}
+                已选 {farmRoles.length} 个{farmRoles.length > 1 ? "（可在牧场间切换）" : ""}
               </span>
             </div>
-            <FarmPicker selected={farms} onToggle={toggleFarm} />
+            <FarmRolePicker
+              value={farmRoles}
+              onChange={setFarmRoles}
+              roles={allRoles}
+              onCreateRole={onCreateRole}
+            />
+            {incomplete && (
+              <p className="text-caption text-warning">请为每个关联牧场选择角色后再保存</p>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -610,7 +721,8 @@ function EditDialog({
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={onClose} className="h-9">取消</Button>
           <Button
-            onClick={() => onSave({ ...account, phone, userType, role, org, farms, wecomId })}
+            disabled={!canSave}
+            onClick={() => onSave({ ...account, phone, userType, org, farmRoles, wecomId })}
             className="h-9 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
@@ -625,52 +737,39 @@ function CreateDialog({
   roles,
   onClose,
   onCreate,
+  onCreateRole,
 }: {
   roles: string[];
   onClose: () => void;
   onCreate: (a: Omit<Account, "id" | "initial">, newRoleCreated: string | null) => void;
+  onCreateRole: (r: string) => void;
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [userType, setUserType] = useState<UserType>("外部");
-  const [roleQuery, setRoleQuery] = useState("");
-  const [role, setRole] = useState<string>("");
   const [org, setOrg] = useState(ORG_OPTIONS[0]);
-  const [farms, setFarms] = useState<string[]>([]);
+  const [farmRoles, setFarmRoles] = useState<FarmRole[]>([]);
 
-  const toggleFarm = (f: string) => {
-    setFarms((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]));
-  };
-
-  const filteredRoles = useMemo(() => {
-    const kw = roleQuery.trim().toLowerCase();
-    if (!kw) return roles;
-    return roles.filter((r) => r.toLowerCase().includes(kw));
-  }, [roleQuery, roles]);
-
-  const trimmedQuery = roleQuery.trim();
-  const isNewRole =
-    trimmedQuery.length > 0 && !roles.some((r) => r.toLowerCase() === trimmedQuery.toLowerCase());
-  const effectiveRole = role || (isNewRole ? trimmedQuery : "");
-
-  const canSubmit = name.trim() && phone.trim() && effectiveRole && farms.length > 0;
+  const incomplete = farmRoles.some((fr) => !fr.role);
+  const canSubmit = !!name.trim() && !!phone.trim() && farmRoles.length > 0 && !incomplete;
 
   const submit = () => {
     if (!canSubmit) return;
-    const newRoleCreated = !roles.includes(effectiveRole) ? effectiveRole : null;
+    // 找到第一个不在已有 roles 中的新角色，触发跳转配置 toast
+    const firstNewRole =
+      farmRoles.map((fr) => fr.role).find((r) => !roles.includes(r)) ?? null;
     onCreate(
       {
         name: name.trim(),
         phone: phone.trim(),
         userType,
-        role: effectiveRole,
         org,
-        farms,
+        farmRoles,
         wecomId: null,
         status: "启用",
         createdAt: new Date().toISOString().slice(0, 10),
       },
-      newRoleCreated,
+      firstNewRole,
     );
   };
 
@@ -679,7 +778,7 @@ function CreateDialog({
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>新建账号</DialogTitle>
-          <DialogDescription>维护内部或外部人员账号</DialogDescription>
+          <DialogDescription>维护内部或外部人员账号，并为每个关联牧场指定角色</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -717,71 +816,23 @@ function CreateDialog({
             </Select>
           </div>
 
-          {/* 可搜索 / 可新建 的角色选择 */}
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">
-              角色
-              {userType !== "内部" && (
-                <span className="ml-1 text-caption text-text-tertiary">（找不到合适角色可直接输入名称创建）</span>
-              )}
-            </Label>
-            <div className="rounded-md border border-border bg-surface-subtle">
-              <div className="relative p-2 border-b border-border">
-                <Search className="absolute left-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-                <Input
-                  value={roleQuery}
-                  onChange={(e) => {
-                    setRoleQuery(e.target.value);
-                    setRole("");
-                  }}
-                  placeholder="搜索或输入新角色名"
-                  className="h-8 pl-8 text-body-sm bg-card"
-                />
-              </div>
-              <div className="max-h-40 overflow-y-auto p-1.5">
-                {filteredRoles.map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => { setRole(r); setRoleQuery(r); }}
-                    className={`w-full text-left px-2 py-1.5 rounded text-body-sm hover:bg-card ${role === r ? "bg-brand-subtle text-primary" : "text-foreground"}`}
-                  >
-                    {r}
-                  </button>
-                ))}
-                {isNewRole && (
-                  <button
-                    type="button"
-                    onClick={() => setRole(trimmedQuery)}
-                    className={`w-full text-left px-2 py-1.5 rounded text-body-sm flex items-center gap-1.5 ${role === trimmedQuery ? "bg-brand-subtle text-primary" : "text-primary hover:bg-card"}`}
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    创建新角色「{trimmedQuery}」
-                  </button>
-                )}
-                {filteredRoles.length === 0 && !isNewRole && (
-                  <div className="text-caption text-text-tertiary text-center py-3">输入角色名以创建</div>
-                )}
-              </div>
-            </div>
-            {effectiveRole && !roles.includes(effectiveRole) && (
-              <p className="text-caption text-warning">
-                将创建新角色「{effectiveRole}」，该角色暂无任何权限，需在「角色权限」中完成配置。
-              </p>
-            )}
-          </div>
-
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label className="text-body-sm text-text-secondary">关联牧场</Label>
-              <span className="text-caption text-text-tertiary">已选 {farms.length} 个</span>
+              <Label className="text-body-sm text-text-secondary">关联牧场 / 角色</Label>
+              <span className="text-caption text-text-tertiary">已选 {farmRoles.length} 个</span>
             </div>
-            <FarmPicker selected={farms} onToggle={toggleFarm} />
+            <FarmRolePicker
+              value={farmRoles}
+              onChange={setFarmRoles}
+              roles={roles}
+              onCreateRole={onCreateRole}
+            />
             <p className="text-caption text-text-tertiary">
-              {userType === "内部"
-                ? "勾选一个或多个牧场，账号将按权限查看这些牧场的数据。"
-                : "外部人员仅服务一个牧场时只关联该牧场；服务多个牧场可勾选多个。"}
+              勾选牧场后请为每个牧场指定角色；找不到合适角色可在右上方输入新角色名后创建。
             </p>
+            {incomplete && (
+              <p className="text-caption text-warning">请为每个关联牧场选择角色后再创建</p>
+            )}
           </div>
         </div>
 
