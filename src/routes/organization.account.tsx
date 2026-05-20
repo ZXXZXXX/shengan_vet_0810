@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -45,25 +46,21 @@ export const Route = createFileRoute("/organization/account")({
 });
 
 type Status = "启用" | "禁用";
+type UserType = "内部人员" | "外部固定合作人员" | "外部机构联系人";
 type Account = {
   id: string;
   name: string;
   initial: string;
   phone: string;
+  userType: UserType;
   role: string;
   org: string;
+  farms: string[]; // 关联牧场
   wecomId: string | null;
-  lastLogin: string;
   status: Status;
 };
 
-const initialAccounts: Account[] = [
-  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", role: "场长", org: "1 号牧场", wecomId: "wm_zhanglei_8821", lastLogin: "2026-05-12 08:42", status: "启用" },
-  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", role: "兽医", org: "1 号牧场 / 兽医部", wecomId: "wm_liyuqing_3210", lastLogin: "2026-05-12 09:08", status: "启用" },
-  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", role: "技术员", org: "1 号牧场 / 巡检 A 组", wecomId: null, lastLogin: "2026-05-12 07:55", status: "启用" },
-  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", role: "仓管员", org: "1 号牧场 / 仓储部", wecomId: "wm_wangck_5601", lastLogin: "2026-05-11 17:30", status: "启用" },
-  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", role: "仓管员", org: "2 号牧场 / 仓储部", wecomId: null, lastLogin: "2026-05-10 14:20", status: "禁用" },
-];
+const FARM_OPTIONS = ["1 号牧场", "2 号牧场", "3 号牧场", "4 号牧场"];
 
 const ORG_OPTIONS = [
   "1 号牧场",
@@ -72,6 +69,18 @@ const ORG_OPTIONS = [
   "1 号牧场 / 仓储部",
   "2 号牧场",
   "2 号牧场 / 仓储部",
+  "外部合作 / 修蹄队",
+  "外部机构 / 兽药供应商",
+];
+
+const initialAccounts: Account[] = [
+  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部人员", role: "场长", org: "1 号牧场", farms: ["1 号牧场"], wecomId: "wm_zhanglei_8821", status: "启用" },
+  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部人员", role: "兽医", org: "1 号牧场 / 兽医部", farms: ["1 号牧场", "2 号牧场"], wecomId: "wm_liyuqing_3210", status: "启用" },
+  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部人员", role: "技术员", org: "1 号牧场 / 巡检 A 组", farms: ["1 号牧场"], wecomId: null, status: "启用" },
+  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部人员", role: "仓管员", org: "1 号牧场 / 仓储部", farms: ["1 号牧场", "2 号牧场", "3 号牧场"], wecomId: "wm_wangck_5601", status: "启用" },
+  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部人员", role: "仓管员", org: "2 号牧场 / 仓储部", farms: ["2 号牧场"], wecomId: null, status: "禁用" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部固定合作人员", role: "修蹄工", org: "外部合作 / 修蹄队", farms: ["1 号牧场", "3 号牧场"], wecomId: "wm_zhaoxt_9912", status: "启用" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部机构联系人", role: "供应商联系人", org: "外部机构 / 兽药供应商", farms: ["2 号牧场"], wecomId: null, status: "启用" },
 ];
 
 function AccountPage() {
@@ -92,6 +101,12 @@ function AccountPage() {
     setEditing(null);
   };
 
+  const userTypeTagClass = (t: UserType) =>
+    t === "内部人员" ? "tag-brand" : t === "外部固定合作人员" ? "tag-warning" : "tag-info";
+
+  // 列宽：用户 类型 手机号 角色 所属组织 关联牧场 企微ID 状态 管理
+  const cols = "1.8fr 1.1fr 1.3fr 0.8fr 1.7fr 1.7fr 1.5fr 0.8fr 0.5fr";
+
   return (
     <>
       <AppHeader title="账号管理" breadcrumb={["组织管理", "账号管理"]} />
@@ -103,6 +118,12 @@ function AccountPage() {
               <Input placeholder="搜索姓名 / 手机号 / 企微ID" className="h-9 w-72 pl-9 text-body-sm" />
             </div>
             <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
+              <Filter className="h-3.5 w-3.5" /> 人员类型
+            </Button>
+            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
+              <Filter className="h-3.5 w-3.5" /> 关联牧场
+            </Button>
+            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
               <Filter className="h-3.5 w-3.5" /> 角色
             </Button>
           </div>
@@ -113,18 +134,20 @@ function AccountPage() {
 
         <Card className="border-border bg-card overflow-hidden">
           <div className="grid gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle"
-            style={{ gridTemplateColumns: "2.4fr 1.6fr 0.9fr 2.2fr 1.8fr 1fr 0.6fr" }}>
+            style={{ gridTemplateColumns: cols }}>
             <div>用户</div>
+            <div>人员类型</div>
             <div>手机号</div>
             <div>角色</div>
             <div>所属组织</div>
+            <div>关联牧场</div>
             <div>企微 ID</div>
             <div>状态</div>
             <div className="text-right">管理</div>
           </div>
           {accounts.map((a) => (
             <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
-              style={{ gridTemplateColumns: "2.4fr 1.6fr 0.9fr 2.2fr 1.8fr 1fr 0.6fr" }}>
+              style={{ gridTemplateColumns: cols }}>
               <div className="flex items-center gap-2.5 min-w-0">
                 <Avatar className="h-8 w-8"><AvatarFallback className="bg-brand-subtle text-primary text-body-sm">{a.initial}</AvatarFallback></Avatar>
                 <div className="leading-tight min-w-0">
@@ -132,9 +155,26 @@ function AccountPage() {
                   <div className="text-caption text-text-tertiary font-mono">{a.id}</div>
                 </div>
               </div>
+              <div><span className={`tag ${userTypeTagClass(a.userType)}`}>{a.userType}</span></div>
               <div className="text-body-sm text-text-secondary tabular-nums">{a.phone}</div>
-              <div><span className="tag tag-brand">{a.role}</span></div>
+              <div className="text-body-sm text-text-secondary truncate">{a.role}</div>
               <div className="text-body-sm text-text-secondary truncate">{a.org}</div>
+              <div className="flex items-center gap-1 min-w-0 overflow-hidden">
+                {a.farms.length === 0 ? (
+                  <span className="tag tag-muted">未关联</span>
+                ) : a.farms.length <= 2 ? (
+                  a.farms.map((f) => (
+                    <span key={f} className="tag tag-muted whitespace-nowrap">{f}</span>
+                  ))
+                ) : (
+                  <>
+                    <span className="tag tag-muted whitespace-nowrap">{a.farms[0]}</span>
+                    <span className="tag tag-muted whitespace-nowrap" title={a.farms.slice(1).join("、")}>
+                      +{a.farms.length - 1}
+                    </span>
+                  </>
+                )}
+              </div>
               <div className="text-body-sm tabular-nums truncate">
                 {a.wecomId ? (
                   <span className="text-text-secondary font-mono">{a.wecomId}</span>
@@ -170,6 +210,10 @@ function AccountPage() {
             </div>
           ))}
         </Card>
+
+        <p className="text-caption text-text-tertiary">
+          说明：账号关联一个牧场时，仅能查看和操作该牧场的数据；关联多个牧场时，可在关联牧场之间切换并按权限查看数据。外部固定合作人员、外部机构联系人同样以个人账号配置关联牧场。
+        </p>
       </main>
 
       {/* 查看 */}
@@ -183,9 +227,24 @@ function AccountPage() {
             <div className="space-y-3 text-body-sm">
               <DetailRow label="用户编号" value={<span className="font-mono">{viewing.id}</span>} />
               <DetailRow label="姓名" value={viewing.name} />
+              <DetailRow label="人员类型" value={<span className={`tag ${userTypeTagClass(viewing.userType)}`}>{viewing.userType}</span>} />
               <DetailRow label="手机号" value={<span className="tabular-nums">{viewing.phone}</span>} />
               <DetailRow label="角色" value={<span className="tag tag-brand">{viewing.role}</span>} />
               <DetailRow label="所属组织" value={viewing.org} />
+              <DetailRow
+                label="关联牧场"
+                value={
+                  <div className="flex flex-wrap justify-end gap-1">
+                    {viewing.farms.length === 0 ? (
+                      <span className="tag tag-muted">未关联</span>
+                    ) : (
+                      viewing.farms.map((f) => (
+                        <span key={f} className="tag tag-muted">{f}</span>
+                      ))
+                    )}
+                  </div>
+                }
+              />
               <DetailRow
                 label="企微 ID"
                 value={
@@ -196,7 +255,6 @@ function AccountPage() {
                   )
                 }
               />
-              
               <DetailRow
                 label="状态"
                 value={<span className={`tag ${viewing.status === "启用" ? "tag-success" : "tag-muted"}`}>{viewing.status}</span>}
@@ -237,23 +295,43 @@ function EditDialog({
   onSave: (a: Account) => void;
 }) {
   const [phone, setPhone] = useState(account.phone);
+  const [userType, setUserType] = useState<UserType>(account.userType);
   const [org, setOrg] = useState(account.org);
+  const [farms, setFarms] = useState<string[]>(account.farms);
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
 
   const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
 
+  const toggleFarm = (f: string) => {
+    setFarms((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]));
+  };
+
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>编辑账号</DialogTitle>
-          <DialogDescription>修改用户的手机号、所属组织或解绑企微 ID</DialogDescription>
+          <DialogDescription>修改用户的手机号、所属组织、关联牧场或解绑企微 ID</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
             <Label className="text-body-sm text-text-secondary">姓名</Label>
             <Input value={account.name} disabled className="h-9" />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-body-sm text-text-secondary">人员类型</Label>
+            <Select value={userType} onValueChange={(v) => setUserType(v as UserType)}>
+              <SelectTrigger className="h-9 text-body-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="内部人员" className="text-body-sm">内部人员</SelectItem>
+                <SelectItem value="外部固定合作人员" className="text-body-sm">外部固定合作人员</SelectItem>
+                <SelectItem value="外部机构联系人" className="text-body-sm">外部机构联系人</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-1.5">
@@ -279,6 +357,31 @@ function EditDialog({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <Label className="text-body-sm text-text-secondary">关联牧场</Label>
+              <span className="text-caption text-text-tertiary">
+                已选 {farms.length} 个{farms.length > 1 ? "（可在牧场间切换）" : farms.length === 1 ? "（仅访问该牧场数据）" : ""}
+              </span>
+            </div>
+            <div className="rounded-md border border-border bg-surface-subtle p-3 space-y-2">
+              {FARM_OPTIONS.map((f) => (
+                <label key={f} className="flex items-center gap-2 cursor-pointer text-body-sm">
+                  <Checkbox
+                    checked={farms.includes(f)}
+                    onCheckedChange={() => toggleFarm(f)}
+                  />
+                  <span className="text-foreground">{f}</span>
+                </label>
+              ))}
+            </div>
+            <p className="text-caption text-text-tertiary">
+              {userType === "外部机构联系人" || userType === "外部固定合作人员"
+                ? "外部人员仅服务一个牧场时只关联该牧场；服务多个牧场可勾选多个。"
+                : "勾选一个或多个牧场，账号将按权限查看这些牧场的数据。"}
+            </p>
           </div>
 
           <div className="space-y-1.5">
@@ -310,7 +413,7 @@ function EditDialog({
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={onClose} className="h-9">取消</Button>
           <Button
-            onClick={() => onSave({ ...account, phone, org, wecomId })}
+            onClick={() => onSave({ ...account, phone, userType, org, farms, wecomId })}
             className="h-9 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
