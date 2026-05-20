@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { Home, Beef, Lock, ChevronRight, Activity, Pill } from "lucide-react";
+import { Home, Beef, ChevronRight, Activity, Pill } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel } from "@/lib/mobile-role";
 
