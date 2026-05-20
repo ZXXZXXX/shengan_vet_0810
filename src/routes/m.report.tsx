@@ -1,10 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Camera, ScanLine, X, Stethoscope, PackageMinus } from "lucide-react";
+import { Camera, ScanLine, X, Stethoscope, PackageMinus, Lock } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+
+type ReportSearch = { target?: string; barn?: string; lock?: number };
 
 export const Route = createFileRoute("/m/report")({
   head: () => ({ meta: [{ title: "现场上报 · 奇点智牧" }] }),
+  validateSearch: (s: Record<string, unknown>): ReportSearch => ({
+    target: typeof s.target === "string" ? s.target : undefined,
+    barn: typeof s.barn === "string" ? s.barn : undefined,
+    lock: s.lock ? 1 : undefined,
+  }),
   component: ReportPage,
 });
 
