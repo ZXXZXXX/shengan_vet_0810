@@ -6,7 +6,6 @@ import {
   ClipboardList,
   Beef,
   AlertTriangle,
-  Sparkles,
   ChevronRight,
   Activity,
   Droplets,
@@ -175,29 +174,6 @@ function MHomePage() {
         )}
       </section>
 
-      {/* AI 提醒 */}
-      <section className="px-4 mt-5">
-        <div className="rounded-xl p-4 border border-[var(--effect-ai-purple)]/20 bg-gradient-to-br from-[var(--effect-ai-purple)]/8 to-[var(--effect-ai-cyan)]/8">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="h-6 w-6 rounded-md bg-[var(--effect-ai-purple)]/15 flex items-center justify-center">
-              <Sparkles className="h-3.5 w-3.5 text-[var(--effect-ai-purple)]" />
-            </span>
-            <span className="text-body-sm font-medium text-foreground">AI 智能提醒</span>
-            <span className="ml-auto tag tag-muted">今日</span>
-          </div>
-          <p className="text-body-sm text-text-secondary leading-relaxed">
-            {isApprover
-              ? "#A2381 体温连续 2 小时偏高，已生成待审任务，建议优先处理。"
-              : "#A2381 体温连续 2 小时偏高，建议立即前往 3 号牛舍复检并上报健康事件。"}
-          </p>
-          <Link
-            to={isApprover ? "/m/health" : "/m/report"}
-            className="mt-2 inline-flex items-center text-body-sm text-primary"
-          >
-            {isApprover ? "前往审批" : "前往上报"} <ChevronRight className="h-3 w-3" />
-          </Link>
-        </div>
-      </section>
 
       {/* 异常预警 */}
       <section className="px-4 mt-5 mb-4">

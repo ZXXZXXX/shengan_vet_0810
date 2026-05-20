@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Sparkles, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/m/login")({
@@ -22,19 +22,15 @@ function MLoginPage() {
   return (
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col relative overflow-hidden">
-        {/* AI 视觉背景 */}
+        {/* 视觉背景 */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-32 -right-24 h-72 w-72 rounded-full bg-[var(--effect-ai-purple)]/15 blur-3xl" />
-          <div className="absolute top-40 -left-24 h-72 w-72 rounded-full bg-[var(--effect-ai-cyan)]/20 blur-3xl" />
+          <div className="absolute -top-32 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute top-40 -left-24 h-72 w-72 rounded-full bg-primary/8 blur-3xl" />
           <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
         </div>
 
         {/* 顶部品牌区 */}
         <div className="px-6 pt-24 pb-12">
-          <div className="inline-flex items-center gap-2 mb-4 px-2.5 py-1 rounded-full bg-card/70 backdrop-blur border border-border">
-            <Sparkles className="h-3 w-3 text-[var(--effect-ai-purple)]" />
-            <span className="text-caption text-text-secondary">AI 智能牧场助手</span>
-          </div>
           <h1 className="text-page-title text-foreground tracking-tight">奇点智牧</h1>
           <p className="text-body text-text-secondary mt-1">让每一头牛被精准照护</p>
         </div>
@@ -43,7 +39,7 @@ function MLoginPage() {
         <div className="flex-1 flex items-center justify-center px-8">
           <div className="relative w-full aspect-square max-w-[260px]">
             <div className="absolute inset-4 rounded-full border border-primary/20 animate-pulse" />
-            <div className="absolute inset-10 rounded-full border border-[var(--effect-ai-cyan)]/30" />
+            <div className="absolute inset-10 rounded-full border border-primary/15" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="h-24 w-24 rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-[0_20px_60px_-20px_var(--brand)] flex items-center justify-center">
                 <span className="text-[40px] leading-none text-primary-foreground font-medium">智</span>

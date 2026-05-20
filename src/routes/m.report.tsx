@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Camera, ScanLine, X, Sparkles, Stethoscope, PackageMinus } from "lucide-react";
+import { Camera, ScanLine, X, Stethoscope, PackageMinus } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
 export const Route = createFileRoute("/m/report")({
@@ -69,15 +69,6 @@ function ReportPage() {
           })}
         </div>
 
-        {/* AI 提示 */}
-        <div className="rounded-xl p-3 border border-[var(--effect-ai-purple)]/20 bg-gradient-to-br from-[var(--effect-ai-purple)]/8 to-[var(--effect-ai-cyan)]/8 flex items-start gap-2">
-          <Sparkles className="h-3.5 w-3.5 text-[var(--effect-ai-purple)] mt-0.5" />
-          <p className="text-caption text-text-secondary leading-relaxed">
-            {kind === "health"
-              ? "上传清晰的现场照片，AI 将自动识别可能的健康异常并预填表单。"
-              : "上传现场照片并填写损耗原因，AI 会自动归类并生成审核任务。"}
-          </p>
-        </div>
 
         {/* 处理对象 */}
         <Section title={kind === "health" ? "处理对象" : "损耗对象"} required>
