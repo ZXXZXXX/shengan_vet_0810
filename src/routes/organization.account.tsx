@@ -166,7 +166,7 @@ function AccountPage() {
     const initial = acc.name.slice(0, 2).toUpperCase();
     setAccounts((list) => [...list, { ...acc, id, initial }]);
     if (newRoleCreated) {
-      setRoles((rs) => (rs.includes(newRoleCreated) ? rs : [...rs, newRoleCreated]));
+      addRoleFor(acc.userType, newRoleCreated);
       toast.success(`已创建账号「${acc.name}」`, {
         description: `新角色「${newRoleCreated}」暂无权限，请尽快前往角色权限完成配置。`,
         action: {
