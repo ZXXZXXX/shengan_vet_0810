@@ -821,7 +821,7 @@ function CreateDialog({
 
           <div className="space-y-1.5">
             <Label className="text-body-sm text-text-secondary">人员类型</Label>
-            <Select value={userType} onValueChange={(v) => setUserType(v as UserType)}>
+            <Select value={userType} onValueChange={(v) => handleUserTypeChange(v as UserType)}>
               <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
