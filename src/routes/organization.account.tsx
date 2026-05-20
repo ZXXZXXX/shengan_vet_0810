@@ -850,11 +850,11 @@ function CreateDialog({
             <FarmRolePicker
               value={farmRoles}
               onChange={setFarmRoles}
-              roles={roles}
-              onCreateRole={onCreateRole}
+              roles={baseRoles}
+              onCreateRole={(r) => onCreateRole(userType, r)}
             />
             <p className="text-caption text-text-tertiary">
-              勾选牧场后请为每个牧场指定角色；找不到合适角色可在右上方输入新角色名后创建。
+              勾选牧场后请为每个牧场指定角色；当前为「{userType}」人员，可在右上方输入新角色名创建。
             </p>
             {incomplete && (
               <p className="text-caption text-warning">请为每个关联牧场选择角色后再创建</p>
