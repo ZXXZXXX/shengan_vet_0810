@@ -82,17 +82,40 @@ function ReportPage() {
 
         {/* 处理对象 */}
         <Section title={kind === "health" ? "处理对象" : "损耗对象"} required>
-          <div className="flex gap-2">
-            <input
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
-              placeholder="输入或扫描耳标 / 物资编号"
-              className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
-            />
-            <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
-              <ScanLine className="h-4 w-4" /> 扫码
-            </button>
-          </div>
+          {locked ? (
+            <div className="space-y-2">
+              <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
+                <span className="font-mono">#{target}</span>
+                <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+                  <Lock className="h-3 w-3" /> 已锁定
+                </span>
+              </div>
+              {barn && (
+                <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
+                  <span className="text-body-sm text-text-tertiary mr-2">牛舍</span>
+                  <span>{barn}</span>
+                  <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+                    <Lock className="h-3 w-3" /> 已锁定
+                  </span>
+                </div>
+              )}
+              <div className="text-caption text-text-tertiary">
+                通过牛只档案进入,基础信息已自动填写,不可编辑
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                value={target}
+                onChange={(e) => setTarget(e.target.value)}
+                placeholder="输入或扫描耳标 / 物资编号"
+                className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
+              />
+              <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
+                <ScanLine className="h-4 w-4" /> 扫码
+              </button>
+            </div>
+          )}
         </Section>
 
         {/* 事件类型 */}
