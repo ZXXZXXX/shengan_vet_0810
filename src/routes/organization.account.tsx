@@ -672,7 +672,16 @@ function EditDialog({
 
           <div className="space-y-1.5">
             <Label className="text-body-sm text-text-secondary">人员类型</Label>
-            <Select value={userType} onValueChange={(v) => setUserType(v as UserType)}>
+            <Select
+              value={userType}
+              onValueChange={(v) => {
+                const next = v as UserType;
+                if (next !== userType) {
+                  setUserType(next);
+                  setFarmRoles((cur) => cur.map((fr) => ({ ...fr, role: "" })));
+                }
+              }}
+            >
               <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
