@@ -4,7 +4,6 @@ import {
   PlayCircle,
   ClipboardPlus,
   ChevronRight,
-  Lock,
   Activity,
   Pill,
   Clock,
@@ -135,34 +134,26 @@ function AnimalDetailPage() {
             </span>
           </div>
 
-          {orders.length === 0 ? (
-            <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
-              <div className="text-body-sm text-text-tertiary">暂无执行中工单</div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {[...orders].sort((a, b) => (a.owner === me ? 0 : 1) - (b.owner === me ? 0 : 1)).map((o) => {
-                const mine = o.owner === me;
-                const card = (
-                  <div
-                    className={`rounded-xl border p-3 flex items-center gap-3 ${
-                      mine
-                        ? "bg-card border-border active:bg-surface-subtle"
-                        : "bg-surface-subtle border-border opacity-60"
-                    }`}
+          {(() => {
+            const mineOrders = orders.filter((o) => o.owner === me);
+            if (mineOrders.length === 0) {
+              return (
+                <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
+                  <div className="text-body-sm text-text-tertiary">暂无您负责的执行中工单</div>
+                </div>
+              );
+            }
+            return (
+              <div className="space-y-2">
+                {mineOrders.map((o) => (
+                  <Link
+                    key={o.id}
+                    to="/m/health/$id"
+                    params={{ id: o.id }}
+                    className="block rounded-xl border bg-card border-border p-3 flex items-center gap-3 active:bg-surface-subtle"
                   >
-                    <span
-                      className={`h-9 w-9 rounded-lg flex items-center justify-center ${
-                        mine
-                          ? "bg-brand-subtle text-primary"
-                          : "bg-border text-text-tertiary"
-                      }`}
-                    >
-                      {mine ? (
-                        <PlayCircle className="h-4 w-4" />
-                      ) : (
-                        <Lock className="h-4 w-4" />
-                      )}
+                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center">
+                      <PlayCircle className="h-4 w-4" />
                     </span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
@@ -176,35 +167,14 @@ function AnimalDetailPage() {
                       </div>
                       <div className="text-caption text-text-tertiary mt-0.5">
                         负责人：{o.owner}
-                        {!mine && (
-                          <span className="ml-1 text-[var(--state-warning)]">
-                            非本人负责，不可操作
-                          </span>
-                        )}
                       </div>
                     </div>
-                    {mine && (
-                      <ChevronRight className="h-4 w-4 text-text-tertiary" />
-                    )}
-                  </div>
-                );
-                return mine ? (
-                  <Link
-                    key={o.id}
-                    to="/m/health/$id"
-                    params={{ id: o.id }}
-                    className="block"
-                  >
-                    {card}
+                    <ChevronRight className="h-4 w-4 text-text-tertiary" />
                   </Link>
-                ) : (
-                  <div key={o.id} aria-disabled>
-                    {card}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                ))}
+              </div>
+            );
+          })()}
         </section>
       </div>
 

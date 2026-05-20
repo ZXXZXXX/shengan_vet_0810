@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { Home, Beef, Lock, ChevronRight, Activity, Pill } from "lucide-react";
+import { Home, Beef, ChevronRight, Activity, Pill } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel } from "@/lib/mobile-role";
 
@@ -51,11 +51,8 @@ function BarnDetailPage() {
   ];
 
   // 优先展示能负责的
-  const sorted = [...animals].sort((a, b) => {
-    const aMine = a.owner === me ? 0 : 1;
-    const bMine = b.owner === me ? 0 : 1;
-    return aMine - bMine;
-  });
+  // 仅返回当前账号可负责的牛只
+  const visible = animals.filter((a) => a.owner === me);
 
   return (
     <MobileShell title={`牛舍 · ${barn.name}`} back hideTabBar>
@@ -89,29 +86,25 @@ function BarnDetailPage() {
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-card-title text-foreground">需处理牛只</h3>
             <span className="text-caption text-text-tertiary">
-              {me}（{roleLabel[role]}）· 共 {animals.length} 头
+              {me}（{roleLabel[role]}）· 共 {visible.length} 头
             </span>
           </div>
 
-          <div className="space-y-2">
-            {sorted.map((a) => {
-              const mine = a.owner === me;
-              const card = (
-                <div
-                  className={`rounded-xl border p-3 flex items-center gap-3 ${
-                    mine
-                      ? "bg-card border-border active:bg-surface-subtle"
-                      : "bg-surface-subtle border-border opacity-60"
-                  }`}
+          {visible.length === 0 ? (
+            <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
+              <div className="text-body-sm text-text-tertiary">暂无您负责的待处理牛只</div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {visible.map((a) => (
+                <Link
+                  key={a.id}
+                  to="/m/animals/$id"
+                  params={{ id: a.id }}
+                  className="block rounded-xl border bg-card border-border p-3 flex items-center gap-3 active:bg-surface-subtle"
                 >
-                  <span
-                    className={`h-9 w-9 rounded-lg flex items-center justify-center ${
-                      mine
-                        ? "bg-brand-subtle text-primary"
-                        : "bg-border text-text-tertiary"
-                    }`}
-                  >
-                    {mine ? <Beef className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                  <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center">
+                    <Beef className="h-4 w-4" />
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
@@ -126,34 +119,13 @@ function BarnDetailPage() {
                     </div>
                     <div className="text-caption text-text-tertiary mt-1">
                       待处理：<span className="text-text-secondary">{a.workKind}</span>
-                      <span className="mx-1">·</span>
-                      负责人：{a.owner}
-                      {!mine && (
-                        <span className="ml-1 text-[var(--state-warning)]">
-                          非本人负责,不可查看
-                        </span>
-                      )}
                     </div>
                   </div>
-                  {mine && <ChevronRight className="h-4 w-4 text-text-tertiary" />}
-                </div>
-              );
-              return mine ? (
-                <Link
-                  key={a.id}
-                  to="/m/animals/$id"
-                  params={{ id: a.id }}
-                  className="block"
-                >
-                  {card}
+                  <ChevronRight className="h-4 w-4 text-text-tertiary" />
                 </Link>
-              ) : (
-                <div key={a.id} aria-disabled>
-                  {card}
-                </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </MobileShell>
