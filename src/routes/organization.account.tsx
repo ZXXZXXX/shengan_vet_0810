@@ -449,6 +449,7 @@ function AccountPage() {
           roles={roles}
           onClose={() => setEditing(null)}
           onSave={saveEdit}
+          onCreateRole={(r) => setRoles((rs) => (rs.includes(r) ? rs : [...rs, r]))}
         />
       )}
 
@@ -458,6 +459,7 @@ function AccountPage() {
           roles={roles}
           onClose={() => setCreating(false)}
           onCreate={handleCreate}
+          onCreateRole={(r) => setRoles((rs) => (rs.includes(r) ? rs : [...rs, r]))}
         />
       )}
     </>
