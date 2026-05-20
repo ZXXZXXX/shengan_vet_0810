@@ -355,6 +355,11 @@ function AccountPage() {
               </div>
             </div>
           ))}
+          {filteredAccounts.length === 0 && (
+            <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
+              暂无符合条件的账号
+            </div>
+          )}
         </Card>
 
         <p className="text-caption text-text-tertiary">
