@@ -196,20 +196,79 @@ function AccountPage() {
       <AppHeader title="账号管理" breadcrumb={["组织管理", "账号管理"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 flex-wrap">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-              <Input placeholder="搜索姓名 / 手机号 / 企微ID" className="h-9 w-72 pl-9 text-body-sm" />
+              <Input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="搜索姓名 / 手机号 / 企微ID"
+                className="h-9 w-72 pl-9 text-body-sm"
+              />
             </div>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-              <Filter className="h-3.5 w-3.5" /> 人员类型
-            </Button>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-              <Filter className="h-3.5 w-3.5" /> 关联牧场
-            </Button>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-              <Filter className="h-3.5 w-3.5" /> 角色
-            </Button>
+            <label className="flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card cursor-pointer select-none">
+              <Switch checked={onlyInternal} onCheckedChange={setOnlyInternal} />
+              <span className="text-body-sm text-text-secondary">仅查看内部</span>
+            </label>
+            <Popover open={advOpen} onOpenChange={setAdvOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
+                  <Filter className="h-3.5 w-3.5" /> 精细筛选
+                  {advCount > 0 && (
+                    <span className="ml-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-caption">
+                      {advCount}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-80 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-body-sm text-foreground font-medium">精细筛选</div>
+                  <button
+                    type="button"
+                    onClick={resetAdv}
+                    className="inline-flex items-center gap-1 text-caption text-text-tertiary hover:text-foreground"
+                  >
+                    <RotateCcw className="h-3 w-3" /> 重置
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="text-caption text-text-tertiary">角色</div>
+                  <Select value={filterRole} onValueChange={setFilterRole}>
+                    <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="text-body-sm">全部角色</SelectItem>
+                      {roles.map((r) => (
+                        <SelectItem key={r} value={r} className="text-body-sm">{r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="text-caption text-text-tertiary">关联牧场</div>
+                  <Select value={filterFarm} onValueChange={setFilterFarm}>
+                    <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent className="max-h-64">
+                      <SelectItem value="all" className="text-body-sm">全部牧场</SelectItem>
+                      {FARM_OPTIONS.map((f) => (
+                        <SelectItem key={f} value={f} className="text-body-sm">{f}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="text-caption text-text-tertiary">状态</div>
+                  <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as "all" | Status)}>
+                    <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="text-body-sm">全部状态</SelectItem>
+                      <SelectItem value="启用" className="text-body-sm">启用</SelectItem>
+                      <SelectItem value="禁用" className="text-body-sm">禁用</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
           <Button
             size="sm"
