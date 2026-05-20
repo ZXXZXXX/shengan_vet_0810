@@ -1,154 +1,232 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { Beef, Activity, Stethoscope, Syringe, ChevronRight } from "lucide-react";
+import {
+  Beef,
+  PlayCircle,
+  ClipboardPlus,
+  ChevronRight,
+  Lock,
+  Activity,
+  Pill,
+  Clock,
+} from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { useRole, roleLabel } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/animals/$id")({
   head: () => ({ meta: [{ title: "牛只详情 · 奇点智牧" }] }),
   component: AnimalDetailPage,
 });
 
+// 模拟当前扫码人姓名（根据角色）
+const roleToName: Record<string, string> = {
+  admin: "管理员",
+  vet: "李雨晴",
+  manager: "王场长",
+  vet_assistant: "周凯",
+  hoof_trimmer: "张师傅",
+};
+
 function AnimalDetailPage() {
   const { id } = useParams({ from: "/m/animals/$id" });
+  const role = useRole();
+  const me = roleToName[role] ?? "我";
 
-  // mock data
+  // mock 牛只摘要
   const a = {
     id,
-    breed: "荷斯坦",
-    age: "3 岁 4 月",
     barn: "3 号牛舍",
-    stage: "成母牛",
-    status: "观察中",
-    health: 3.6,
-    weight: "612 kg",
-    parity: "第 2 胎",
-    inDate: "2023-08-12",
-    sire: "HOL-2018-09",
-    dam: "#A1875",
+    breed: "荷斯坦",
+    sex: "母",
+    ageMonths: 40,
+    health: "观察中" as "健康" | "观察中" | "异常",
+    treating: true,
+    withdrawalDays: 3, // 0 表示无休药期
   };
+
+  // mock 执行中工单
+  const orders = [
+    {
+      id: "WO-2026-0518",
+      kind: "健康",
+      type: "疾病治疗",
+      event: "持续高烧 39.6℃",
+      owner: "李雨晴",
+    },
+    {
+      id: "WO-2026-0521",
+      kind: "修蹄",
+      type: "趾间皮炎处置",
+      event: "右后蹄清创修蹄",
+      owner: "张师傅",
+    },
+  ];
 
   return (
     <MobileShell title={`#${a.id}`} back hideTabBar>
-      <div className="pb-10">
-        {/* 头图 */}
+      <div className="pb-28">
+        {/* 头部：耳号 + 摘要 */}
         <div className="px-4 pt-4">
           <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary/70 p-5 text-primary-foreground relative overflow-hidden">
             <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
             <div className="relative flex items-center gap-3">
-              <div className="h-14 w-14 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
-                <Beef className="h-7 w-7" strokeWidth={1.75} />
+              <div className="h-12 w-12 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
+                <Beef className="h-6 w-6" strokeWidth={1.75} />
               </div>
-              <div>
-                <div className="text-section-title">#{a.id}</div>
-                <div className="text-caption opacity-85 mt-0.5">
-                  {a.breed} · {a.age} · {a.barn}
-                </div>
+              <div className="min-w-0">
+                <div className="text-caption opacity-85">耳号</div>
+                <div className="text-section-title font-mono">#{a.id}</div>
               </div>
-              <span className="ml-auto h-7 px-2.5 rounded-full bg-[var(--state-warning)]/30 backdrop-blur inline-flex items-center text-caption">
-                {a.status}
+              <span
+                className={`ml-auto h-7 px-2.5 rounded-full inline-flex items-center text-caption backdrop-blur ${
+                  a.health === "异常"
+                    ? "bg-[var(--state-danger)]/35"
+                    : a.health === "观察中"
+                    ? "bg-[var(--state-warning)]/35"
+                    : "bg-[var(--state-success)]/35"
+                }`}
+              >
+                <Activity className="h-3 w-3 mr-1" />
+                {a.health}
               </span>
             </div>
 
-            <div className="relative mt-5 grid grid-cols-3 gap-3 text-center">
-              <Brief label="健康指数" value={a.health.toFixed(1)} suffix="/5" />
-              <Brief label="体重" value={a.weight} />
-              <Brief label="胎次" value={a.parity.replace("第 ", "").replace(" 胎", "")} suffix="胎" />
+            <div className="relative mt-4 grid grid-cols-2 gap-2 text-caption">
+              <Brief label="牛舍" value={a.barn} />
+              <Brief
+                label="品种 / 性别 / 月龄"
+                value={`${a.breed} · ${a.sex} · ${a.ageMonths}月`}
+              />
             </div>
           </div>
         </div>
 
-        {/* 基本信息 */}
-        <section className="px-4 mt-4">
-          <h3 className="text-card-title text-foreground mb-2">基本信息</h3>
-          <div className="rounded-xl bg-card border border-border divide-y divide-border">
-            <Row label="阶段" value={a.stage} />
-            <Row label="入舍日期" value={a.inDate} />
-            <Row label="父系" value={a.sire} />
-            <Row label="母系" value={a.dam} />
-          </div>
+        {/* 状态标签 */}
+        <section className="px-4 mt-3 flex flex-wrap gap-2">
+          <span
+            className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption border ${
+              a.treating
+                ? "bg-[var(--state-warning)]/10 text-[var(--state-warning)] border-[var(--state-warning)]/30"
+                : "bg-surface-subtle text-text-tertiary border-border"
+            }`}
+          >
+            <Pill className="h-3 w-3" />
+            {a.treating ? "治疗中" : "未治疗"}
+          </span>
+          <span
+            className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption border ${
+              a.withdrawalDays > 0
+                ? "bg-[var(--state-danger)]/10 text-[var(--state-danger)] border-[var(--state-danger)]/30"
+                : "bg-surface-subtle text-text-tertiary border-border"
+            }`}
+          >
+            <Clock className="h-3 w-3" />
+            {a.withdrawalDays > 0
+              ? `休药期 · 剩 ${a.withdrawalDays} 天`
+              : "非休药期"}
+          </span>
         </section>
 
-        {/* 健康记录 */}
-        <section className="px-4 mt-4">
+        {/* 执行中工单 */}
+        <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">健康记录</h3>
-            <Link to="/m/health" className="text-caption text-text-tertiary inline-flex items-center">
-              全部 <ChevronRight className="h-3 w-3" />
-            </Link>
+            <h3 className="text-card-title text-foreground">执行中工单</h3>
+            <span className="text-caption text-text-tertiary">
+              当前扫码人：{me}（{roleLabel[role]}）
+            </span>
           </div>
-          <div className="space-y-2">
-            <Timeline icon={Activity} tone="warning" title="体温异常 39.6℃" sub="2026-05-12 09:08 · 陈晓东上报" />
-            <Timeline icon={Stethoscope} tone="info" title="例行体检" sub="2026-05-09 · 健康指数 4.0" />
-            <Timeline icon={Syringe} tone="brand" title="口蹄疫加强免疫" sub="2026-04-21 · 周凯执行" />
-          </div>
-        </section>
 
-        {/* 操作按钮 */}
-        <section className="px-4 mt-5 grid grid-cols-2 gap-2">
-          <Link
-            to="/m/report"
-            className="h-12 rounded-lg border border-border bg-card text-body text-text-secondary inline-flex items-center justify-center"
-          >
-            上报异常
-          </Link>
-          <Link
-            to="/m/health"
-            className="h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center"
-          >
-            查看工单
-          </Link>
+          {orders.length === 0 ? (
+            <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
+              <div className="text-body-sm text-text-tertiary">暂无执行中工单</div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {orders.map((o) => {
+                const mine = o.owner === me;
+                const card = (
+                  <div
+                    className={`rounded-xl border p-3 flex items-center gap-3 ${
+                      mine
+                        ? "bg-card border-border active:bg-surface-subtle"
+                        : "bg-surface-subtle border-border opacity-60"
+                    }`}
+                  >
+                    <span
+                      className={`h-9 w-9 rounded-lg flex items-center justify-center ${
+                        mine
+                          ? "bg-brand-subtle text-primary"
+                          : "bg-border text-text-tertiary"
+                      }`}
+                    >
+                      {mine ? (
+                        <PlayCircle className="h-4 w-4" />
+                      ) : (
+                        <Lock className="h-4 w-4" />
+                      )}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-body-sm text-foreground truncate">
+                          {o.id}
+                        </span>
+                        <span className="tag tag-muted">{o.kind}</span>
+                      </div>
+                      <div className="text-caption text-text-tertiary mt-0.5 truncate">
+                        {o.type} · {o.event}
+                      </div>
+                      <div className="text-caption text-text-tertiary mt-0.5">
+                        负责人：{o.owner}
+                        {!mine && (
+                          <span className="ml-1 text-[var(--state-warning)]">
+                            非本人负责，不可操作
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {mine && (
+                      <ChevronRight className="h-4 w-4 text-text-tertiary" />
+                    )}
+                  </div>
+                );
+                return mine ? (
+                  <Link
+                    key={o.id}
+                    to="/m/health/$id"
+                    params={{ id: o.id }}
+                    className="block"
+                  >
+                    {card}
+                  </Link>
+                ) : (
+                  <div key={o.id} aria-disabled>
+                    {card}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
+      </div>
+
+      {/* 底部固定：健康上报入口 */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        <Link
+          to="/m/report"
+          search={{ target: a.id, barn: a.barn, lock: 1 } as never}
+          className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+        >
+          <ClipboardPlus className="h-4 w-4" /> 健康上报
+        </Link>
       </div>
     </MobileShell>
   );
 }
 
-function Brief({ label, value, suffix }: { label: string; value: string; suffix?: string }) {
+function Brief({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-white/15 backdrop-blur border border-white/15 py-2">
-      <div className="text-section-title tabular-nums">
-        {value}
-        {suffix && <span className="text-caption ml-0.5 opacity-80">{suffix}</span>}
-      </div>
-      <div className="text-caption opacity-85 mt-0.5">{label}</div>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="px-4 h-12 flex items-center justify-between">
-      <span className="text-body-sm text-text-tertiary">{label}</span>
-      <span className="text-body text-foreground">{value}</span>
-    </div>
-  );
-}
-
-const toneClass: Record<string, string> = {
-  warning: "bg-[var(--state-warning)]/15 text-[var(--state-warning)]",
-  info: "bg-[var(--effect-ai-cyan)]/15 text-[var(--effect-ai-cyan)]",
-  brand: "bg-brand-subtle text-primary",
-};
-
-function Timeline({
-  icon: Icon,
-  tone,
-  title,
-  sub,
-}: {
-  icon: typeof Activity;
-  tone: keyof typeof toneClass;
-  title: string;
-  sub: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border">
-      <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${toneClass[tone]}`}>
-        <Icon className="h-4 w-4" strokeWidth={1.75} />
-      </span>
-      <div className="flex-1 min-w-0">
-        <div className="text-body text-foreground truncate">{title}</div>
-        <div className="text-caption text-text-tertiary mt-0.5">{sub}</div>
-      </div>
+    <div className="rounded-lg bg-white/15 backdrop-blur border border-white/15 px-3 py-2">
+      <div className="text-caption opacity-85">{label}</div>
+      <div className="text-body-sm mt-0.5 truncate">{value}</div>
     </div>
   );
 }

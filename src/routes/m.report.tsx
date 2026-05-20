@@ -1,10 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Camera, ScanLine, X, Stethoscope, PackageMinus } from "lucide-react";
+import { Camera, ScanLine, X, Stethoscope, PackageMinus, Lock } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+
+type ReportSearch = { target?: string; barn?: string; lock?: number };
 
 export const Route = createFileRoute("/m/report")({
   head: () => ({ meta: [{ title: "现场上报 · 奇点智牧" }] }),
+  validateSearch: (s: Record<string, unknown>): ReportSearch => ({
+    target: typeof s.target === "string" ? s.target : undefined,
+    barn: typeof s.barn === "string" ? s.barn : undefined,
+    lock: s.lock ? 1 : undefined,
+  }),
   component: ReportPage,
 });
 
@@ -16,8 +23,11 @@ const levels = ["低", "中", "高"];
 
 function ReportPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const locked = !!search.lock && !!search.target;
   const [kind, setKind] = useState<ReportKind>("health");
-  const [target, setTarget] = useState("");
+  const [target, setTarget] = useState(search.target ?? "");
+  const [barn] = useState(search.barn ?? "");
   const [type, setType] = useState<string>("体温异常");
   const [level, setLevel] = useState<string>("中");
   const [desc, setDesc] = useState("");
@@ -72,17 +82,40 @@ function ReportPage() {
 
         {/* 处理对象 */}
         <Section title={kind === "health" ? "处理对象" : "损耗对象"} required>
-          <div className="flex gap-2">
-            <input
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
-              placeholder="输入或扫描耳标 / 物资编号"
-              className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
-            />
-            <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
-              <ScanLine className="h-4 w-4" /> 扫码
-            </button>
-          </div>
+          {locked ? (
+            <div className="space-y-2">
+              <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
+                <span className="font-mono">#{target}</span>
+                <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+                  <Lock className="h-3 w-3" /> 已锁定
+                </span>
+              </div>
+              {barn && (
+                <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
+                  <span className="text-body-sm text-text-tertiary mr-2">牛舍</span>
+                  <span>{barn}</span>
+                  <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+                    <Lock className="h-3 w-3" /> 已锁定
+                  </span>
+                </div>
+              )}
+              <div className="text-caption text-text-tertiary">
+                通过牛只档案进入,基础信息已自动填写,不可编辑
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                value={target}
+                onChange={(e) => setTarget(e.target.value)}
+                placeholder="输入或扫描耳标 / 物资编号"
+                className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
+              />
+              <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
+                <ScanLine className="h-4 w-4" /> 扫码
+              </button>
+            </div>
+          )}
         </Section>
 
         {/* 事件类型 */}
