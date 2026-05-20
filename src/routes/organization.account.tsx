@@ -109,6 +109,25 @@ function AccountPage() {
   const [editing, setEditing] = useState<Account | null>(null);
   const [creating, setCreating] = useState(false);
 
+  // 筛选状态
+  const [keyword, setKeyword] = useState("");
+  const [onlyInternal, setOnlyInternal] = useState(false);
+  const [filterRole, setFilterRole] = useState<string>("all");
+  const [filterFarm, setFilterFarm] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | Status>("all");
+  const [advOpen, setAdvOpen] = useState(false);
+
+  const resetAdv = () => {
+    setFilterRole("all");
+    setFilterFarm("all");
+    setFilterStatus("all");
+  };
+
+  const advCount =
+    (filterRole !== "all" ? 1 : 0) +
+    (filterFarm !== "all" ? 1 : 0) +
+    (filterStatus !== "all" ? 1 : 0);
+
   const toggleStatus = (id: string) => {
     setAccounts((list) =>
       list.map((a) =>
@@ -147,6 +166,27 @@ function AccountPage() {
 
   const userTypeTagClass = (t: UserType) =>
     t === "内部" ? "tag-brand" : "tag-warning";
+
+  // 过滤 + 排序：启用优先；同状态内按创建时间倒序（越新越靠前）
+  const filteredAccounts = useMemo(() => {
+    const kw = keyword.trim().toLowerCase();
+    return accounts
+      .filter((a) => {
+        if (onlyInternal && a.userType !== "内部") return false;
+        if (filterRole !== "all" && a.role !== filterRole) return false;
+        if (filterFarm !== "all" && !a.farms.includes(filterFarm)) return false;
+        if (filterStatus !== "all" && a.status !== filterStatus) return false;
+        if (kw) {
+          const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""}`.toLowerCase();
+          if (!hay.includes(kw)) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.status !== b.status) return a.status === "启用" ? -1 : 1;
+        return b.createdAt.localeCompare(a.createdAt);
+      });
+  }, [accounts, keyword, onlyInternal, filterRole, filterFarm, filterStatus]);
 
   // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 状态 管理
   const cols = "1.8fr 1.1fr 1.3fr 0.9fr 1.7fr 1.5fr 0.8fr 0.5fr";
