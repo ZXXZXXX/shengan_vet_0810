@@ -4,7 +4,6 @@ import {
   PlayCircle,
   ClipboardPlus,
   ChevronRight,
-  Lock,
   Activity,
   Pill,
   Clock,
