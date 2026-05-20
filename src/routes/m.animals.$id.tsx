@@ -141,7 +141,7 @@ function AnimalDetailPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {orders.map((o) => {
+              {[...orders].sort((a, b) => (a.owner === me ? 0 : 1) - (b.owner === me ? 0 : 1)).map((o) => {
                 const mine = o.owner === me;
                 const card = (
                   <div
