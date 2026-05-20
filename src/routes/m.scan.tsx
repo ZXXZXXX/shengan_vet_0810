@@ -59,6 +59,33 @@ function ScanPage() {
         <style>{`@keyframes scan{0%{top:0}50%{top:calc(100% - 2px)}100%{top:0}}`}</style>
       </div>
 
+      {/* Demo 情景模拟（仅演示用） */}
+      {scanning && (
+        <div className="px-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
+          <div className="text-caption text-white/50 text-center mb-2">
+            演示 · 模拟识别成功场景
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() =>
+                navigate({ to: "/m/barns/$id", params: { id: "B003" } })
+              }
+              className="h-12 rounded-lg bg-white/10 hover:bg-white/15 text-white text-body-sm inline-flex items-center justify-center gap-1.5"
+            >
+              <Home className="h-4 w-4" /> 模拟扫到牛舍
+            </button>
+            <button
+              onClick={() =>
+                navigate({ to: "/m/animals/$id", params: { id: "A2381" } })
+              }
+              className="h-12 rounded-lg bg-white/10 hover:bg-white/15 text-white text-body-sm inline-flex items-center justify-center gap-1.5"
+            >
+              <Beef className="h-4 w-4" /> 模拟扫到耳标
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 扫码失败提醒 */}
       {!scanning && (
         <div className="absolute inset-0 z-10 bg-black/55 flex items-end sm:items-center justify-center">
