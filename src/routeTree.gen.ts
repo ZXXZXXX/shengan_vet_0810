@@ -55,6 +55,7 @@ import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
 import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
+import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
 import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
 
 const WorkspaceRoute = WorkspaceRouteImport.update({
@@ -287,6 +288,11 @@ const MHealthIdRoute = MHealthIdRouteImport.update({
   path: '/health/$id',
   getParentRoute: () => MRoute,
 } as any)
+const MBarnsIdRoute = MBarnsIdRouteImport.update({
+  id: '/barns/$id',
+  path: '/barns/$id',
+  getParentRoute: () => MRoute,
+} as any)
 const MAnimalsIdRoute = MAnimalsIdRouteImport.update({
   id: '/animals/$id',
   path: '/animals/$id',
@@ -338,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
@@ -382,6 +389,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsIndexRoute
   '/warehouse': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/animals': typeof MAnimalsIndexRoute
   '/m/health': typeof MHealthIndexRoute
@@ -432,6 +440,7 @@ export interface FileRoutesById {
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/animals/$id': typeof MAnimalsIdRoute
+  '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
@@ -483,6 +492,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/warehouse/'
     | '/m/animals/$id'
+    | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/animals/'
     | '/m/health/'
@@ -527,6 +537,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/warehouse'
     | '/m/animals/$id'
+    | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/animals'
     | '/m/health'
@@ -576,6 +587,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/warehouse/'
     | '/m/animals/$id'
+    | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/animals/'
     | '/m/health/'
@@ -919,6 +931,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MHealthIdRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/barns/$id': {
+      id: '/m/barns/$id'
+      path: '/barns/$id'
+      fullPath: '/m/barns/$id'
+      preLoaderRoute: typeof MBarnsIdRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/animals/$id': {
       id: '/m/animals/$id'
       path: '/animals/$id'
@@ -967,6 +986,7 @@ interface MRouteChildren {
   MWorkspaceRoute: typeof MWorkspaceRoute
   MIndexRoute: typeof MIndexRoute
   MAnimalsIdRoute: typeof MAnimalsIdRoute
+  MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
   MAnimalsIndexRoute: typeof MAnimalsIndexRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
@@ -979,6 +999,7 @@ const MRouteChildren: MRouteChildren = {
   MWorkspaceRoute: MWorkspaceRoute,
   MIndexRoute: MIndexRoute,
   MAnimalsIdRoute: MAnimalsIdRoute,
+  MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
   MAnimalsIndexRoute: MAnimalsIndexRoute,
   MHealthIndexRoute: MHealthIndexRoute,
