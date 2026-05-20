@@ -88,27 +88,29 @@ function ScanPage() {
 
       {/* 扫码失败提醒 */}
       {!scanning && (
-        <div className="absolute inset-0 z-10 bg-black/55 flex items-end sm:items-center justify-center">
-          <div className="w-full max-w-[420px] m-3 rounded-2xl bg-card text-foreground p-5 shadow-xl">
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="h-9 w-9 rounded-full bg-[var(--state-warning)]/15 text-[var(--state-warning)] inline-flex items-center justify-center">
-                <AlertCircle className="h-5 w-5" />
+        <div className="absolute inset-0 z-10 bg-black/55 flex items-end justify-center">
+          <div className="w-full max-w-[440px] rounded-t-2xl bg-card text-foreground shadow-xl pb-[calc(env(safe-area-inset-bottom)+16px)]">
+            <div className="px-6 pt-7 pb-2 flex flex-col items-center text-center">
+              <span className="h-12 w-12 rounded-full bg-[var(--state-warning)]/15 text-[var(--state-warning)] inline-flex items-center justify-center mb-3">
+                <AlertCircle className="h-6 w-6" />
               </span>
-              <div className="text-card-title">未识别到有效码</div>
+              <div className="text-section-title">未识别到有效码</div>
+              <p className="text-body-sm text-text-tertiary leading-relaxed mt-2">
+                请确认条码清晰且在框内,
+                <br />
+                或直接进入异常上报
+              </p>
             </div>
-            <p className="text-body-sm text-text-secondary leading-relaxed mb-4">
-              请确认条码清晰且在框内。是否直接进入异常上报?
-            </p>
-            <div className="flex gap-2">
+            <div className="px-4 pt-5 flex gap-3">
               <button
                 onClick={() => setScanning(true)}
-                className="flex-1 h-11 rounded-lg border border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+                className="flex-1 h-12 rounded-xl bg-surface-subtle text-body text-text-secondary inline-flex items-center justify-center gap-1.5"
               >
                 <RefreshCw className="h-4 w-4" /> 重新扫描
               </button>
               <button
                 onClick={() => navigate({ to: "/m/report" })}
-                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1.5"
+                className="flex-1 h-12 rounded-xl bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >
                 <ClipboardPlus className="h-4 w-4" /> 直接上报
               </button>
