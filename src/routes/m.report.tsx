@@ -24,7 +24,9 @@ const levels = ["低", "中", "高"];
 function ReportPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
-  const locked = !!search.lock && !!search.target;
+  const locked = !!search.lock && (!!search.target || !!search.barn);
+  const lockTarget = !!search.lock && !!search.target;
+  const lockBarn = !!search.lock && !!search.barn;
   const [kind, setKind] = useState<ReportKind>("health");
   const [target, setTarget] = useState(search.target ?? "");
   const [barn] = useState(search.barn ?? "");
