@@ -430,9 +430,8 @@ function EditDialog({
             <Select value={userType} onValueChange={(v) => setUserType(v as UserType)}>
               <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="内部人员" className="text-body-sm">内部人员</SelectItem>
-                <SelectItem value="外部固定合作人员" className="text-body-sm">外部固定合作人员</SelectItem>
-                <SelectItem value="外部机构联系人" className="text-body-sm">外部机构联系人</SelectItem>
+                <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
+                <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -587,9 +586,8 @@ function CreateDialog({
             <Select value={userType} onValueChange={(v) => setUserType(v as UserType)}>
               <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="内部人员" className="text-body-sm">内部人员</SelectItem>
-                <SelectItem value="外部固定合作人员" className="text-body-sm">外部固定合作人员</SelectItem>
-                <SelectItem value="外部机构联系人" className="text-body-sm">外部机构联系人</SelectItem>
+                <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
+                <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
               </SelectContent>
             </Select>
           </div>
