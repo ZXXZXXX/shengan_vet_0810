@@ -73,13 +73,11 @@ function TaskListPage() {
   const role = useRole();
   const isApprover = canApprove(role);
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
-  const [kindFilter, setKindFilter] = useState<Kind | "全部">("全部");
 
   // 修蹄工只看到自己的修蹄任务
   let list = tasks;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
-  if (kindFilter !== "全部") list = list.filter((o) => o.kind === kindFilter);
 
   return (
     <MobileShell
@@ -121,24 +119,6 @@ function TaskListPage() {
         ))}
       </div>
 
-      {/* 类型筛选（修蹄工固定 -> 隐藏） */}
-      {role !== "hoof_trimmer" && (
-        <div className="px-4 mt-2 flex gap-1.5 overflow-x-auto no-scrollbar">
-          {(["全部", "健康", "损耗", "修蹄"] as const).map((k) => (
-            <button
-              key={k}
-              onClick={() => setKindFilter(k)}
-              className={`shrink-0 h-7 px-2.5 rounded-full text-caption transition-colors ${
-                kindFilter === k
-                  ? "bg-brand-subtle text-primary border border-primary/30"
-                  : "bg-card border border-border text-text-tertiary"
-              }`}
-            >
-              {k}
-            </button>
-          ))}
-        </div>
-      )}
 
       {/* 列表 —— 按牛舍分组 */}
       <div className="px-4 mt-3 pb-4 space-y-4">
