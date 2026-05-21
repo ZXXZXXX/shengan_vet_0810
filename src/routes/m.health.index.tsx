@@ -73,11 +73,26 @@ function TaskListPage() {
   const role = useRole();
   const isApprover = canApprove(role);
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
+  const [q, setQ] = useState("");
 
   // 修蹄工只看到自己的修蹄任务
   let list = tasks;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
+  const kw = q.trim().toLowerCase();
+  if (kw) {
+    list = list.filter((o) => {
+      const group = o.kind === "损耗" ? "物资" : o.barn;
+      return (
+        o.id.toLowerCase().includes(kw) ||
+        o.target.toLowerCase().includes(kw) ||
+        o.event.toLowerCase().includes(kw) ||
+        o.kind.toLowerCase().includes(kw) ||
+        o.type.toLowerCase().includes(kw) ||
+        group.toLowerCase().includes(kw)
+      );
+    });
+  }
 
   return (
     <MobileShell
@@ -96,11 +111,14 @@ function TaskListPage() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
           <input
-            placeholder="按任务号 / 对象搜索"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="搜索任务号 / 对象 / 工单类型 / 牛舍 / 物资"
             className="h-10 w-full pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary"
           />
         </div>
       </div>
+
 
       {/* 状态 Tabs */}
       <div className="px-4 mt-3 flex gap-1.5 overflow-x-auto no-scrollbar">
