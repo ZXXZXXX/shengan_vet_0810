@@ -170,6 +170,14 @@ function MHomePage() {
             全部 <ChevronRight className="h-3 w-3" />
           </Link>
         </div>
+        {/* 跨牧场说明 —— 仅显示当前牧场，消息中心则全量接收 */}
+        <div className="mb-2 rounded-lg bg-surface-subtle border border-border px-3 py-2 text-caption text-text-tertiary inline-flex items-start gap-1.5 w-full">
+          <MapPin className="h-3 w-3 text-primary shrink-0 mt-0.5" />
+          <span>
+            仅显示 <span className="text-foreground">{farm.name}</span> 的工单；其它牧场的提醒可在
+            <Link to="/m/notifications" className="text-primary mx-1">消息中心</Link>查看。
+          </span>
+        </div>
         <div className="space-y-2">
           {pendingPickups.map((p) => (
             <Link
@@ -197,6 +205,7 @@ function MHomePage() {
             </Link>
           ))}
           {pendingItems
+            .filter((it) => it.farmId === farm.id)
             .filter((it) => isExternal || it.bucket !== "待响应")
             .map((it) => (
             <Link
@@ -220,8 +229,14 @@ function MHomePage() {
               <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
             </Link>
           ))}
+          {pendingItems.filter((it) => it.farmId === farm.id && (isExternal || it.bucket !== "待响应")).length === 0 && pendingPickups.length === 0 && (
+            <div className="py-8 text-center text-caption text-text-tertiary">
+              当前牧场暂无待处理事项
+            </div>
+          )}
         </div>
       </section>
+
 
       {/* ============ 风险提醒 ============ */}
       <section className="px-4 mt-5 mb-4">
@@ -262,11 +277,14 @@ const pendingItems: Array<{
   tagClass: string;
   icon: typeof Stethoscope;
   tone: keyof typeof colorMap;
+  farmId: string;
 }> = [
-  { id: "WO-2381", title: "持续高烧 2 小时 #A2381", barn: "3 号牛舍", time: "今日 09:08", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning" },
-  { id: "LS-1029", title: "产后子宫破裂损耗确认", barn: "2 号牛舍", time: "今日 08:20", bucket: "待响应", tagClass: "tag-warning", icon: PackageMinus, tone: "warning" },
-  { id: "WO-2401", title: "口蹄疫加强免疫", barn: "犊牛舍 A", time: "昨日 10:00", bucket: "待执行", tagClass: "tag-brand", icon: PlayCircle, tone: "brand" },
-  { id: "HF-0702", title: "右后蹄趾间皮炎修蹄", barn: "2 号牛舍", time: "已逾期 4h", bucket: "已逾期", tagClass: "tag-danger", icon: TimerReset, tone: "danger" },
+  { id: "WO-2381", title: "持续高烧 2 小时 #A2381", barn: "3 号牛舍", time: "今日 09:08", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning", farmId: "f1" },
+  { id: "LS-1029", title: "产后子宫破裂损耗确认", barn: "2 号牛舍", time: "今日 08:20", bucket: "待响应", tagClass: "tag-warning", icon: PackageMinus, tone: "warning", farmId: "f1" },
+  { id: "WO-2401", title: "口蹄疫加强免疫", barn: "犊牛舍 A", time: "昨日 10:00", bucket: "待执行", tagClass: "tag-brand", icon: PlayCircle, tone: "brand", farmId: "f1" },
+  { id: "HF-0702", title: "右后蹄趾间皮炎修蹄", barn: "2 号牛舍", time: "已逾期 4h", bucket: "已逾期", tagClass: "tag-danger", icon: TimerReset, tone: "danger", farmId: "f1" },
+  { id: "HF-0815", title: "蹄底溃疡修蹄", barn: "3 号牛舍", time: "今日 10:20", bucket: "待响应", tagClass: "tag-warning", icon: TimerReset, tone: "warning", farmId: "f2" },
+  { id: "WO-2502", title: "乳房炎复诊", barn: "1 号牛舍", time: "今日 11:00", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning", farmId: "f3" },
 ];
 
 const risks: Array<{
