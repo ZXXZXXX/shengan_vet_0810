@@ -55,6 +55,8 @@ function MHomePage() {
   // 内部非审批人（如兽医助理）没有"待响应/待审批"环节
   const showFirstBucket = isExternal || isApprover;
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
+  const claimed = useClaimed();
+  const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
 
   return (
     <MobileShell>
