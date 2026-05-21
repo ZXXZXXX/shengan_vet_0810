@@ -56,7 +56,6 @@ function MHomePage() {
 
   return (
     <MobileShell>
-      <FarmSwitcher />
 
       {/* 顶部欢迎 + 通知 + 现场上报快捷入口 */}
       <header className="px-4 pt-4 pb-5 bg-gradient-to-br from-primary via-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
@@ -211,6 +210,9 @@ function MHomePage() {
           ))}
         </div>
       </section>
+
+      {/* 角色切换（演示用） */}
+      <FarmSwitcher />
     </MobileShell>
   );
 }
@@ -345,12 +347,12 @@ function FarmSwitcher() {
   return (
     <div
       ref={ref}
-      className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border pt-9"
+      className="relative px-4 py-3 mt-4 border-t border-border"
     >
       <button
         type="button"
         onClick={() => !single && setOpen((v) => !v)}
-        className="w-full h-11 px-4 flex items-center gap-2 active:bg-surface-subtle"
+        className="w-full h-11 flex items-center gap-2 active:bg-surface-subtle"
       >
         <span className="h-6 w-6 rounded-md bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
           <MapPin className="h-3.5 w-3.5" />
@@ -369,7 +371,7 @@ function FarmSwitcher() {
       </button>
 
       {open && !single && (
-        <div className="absolute left-0 right-0 top-full bg-card border-b border-border shadow-lg max-h-[60vh] overflow-y-auto">
+        <div className="absolute left-0 right-0 bottom-full bg-card border border-border shadow-lg rounded-xl mb-1 max-h-[60vh] overflow-y-auto">
           <div className="px-4 py-2 text-caption text-text-tertiary border-b border-border">
             共 {FARMS.length} 个牧场 · 切换后全局数据将同步更新
           </div>
