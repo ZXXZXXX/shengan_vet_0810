@@ -143,9 +143,9 @@ function MHomePage() {
         </section>
       )}
 
-      {/* ============ 工作台：工单概况 ============ */}
+      {/* ============ 工作台：工作概况 ============ */}
       <section className="px-4 mt-5">
-        <SectionTitle title="工单概况" hint="与“我”相关" />
+        <SectionTitle title="工作概况" hint="与“我”相关" />
         <div className={`grid gap-2 ${showFirstBucket ? "grid-cols-3" : "grid-cols-2"}`}>
           {showFirstBucket && (
             <TaskOverviewCard
@@ -173,7 +173,7 @@ function MHomePage() {
         <div className="mb-2 rounded-lg bg-surface-subtle border border-border px-3 py-2 text-caption text-text-tertiary inline-flex items-start gap-1.5 w-full">
           <MapPin className="h-3 w-3 text-primary shrink-0 mt-0.5" />
           <span>
-            仅显示 <span className="text-foreground">{farm.name}</span> 的工单；其它牧场的提醒可在
+            仅显示 <span className="text-foreground">{farm.name}</span> 的工作；其它牧场的提醒可在
             <Link to="/m/notifications" className="text-primary mx-1">消息中心</Link>查看。
           </span>
         </div>
@@ -295,7 +295,7 @@ const risks: Array<{
 }> = [
   { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "紧急", tone: "danger", icon: PackageX },
   { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "提醒", tone: "warning", icon: Hourglass },
-  { title: "工单即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: TimerReset },
+  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: TimerReset },
   { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "关注", tone: "info", icon: Activity },
   { title: "复查临近：#A2150", detail: "明日复查 · 产后护理", level: "明日", tone: "purple", icon: CalendarClock },
 ];

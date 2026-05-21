@@ -92,7 +92,7 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
             <Input
-              placeholder="请输入工单编号"
+              placeholder="请输入工作编号"
               className="h-9 w-64 rounded-md border-border bg-card pl-9 text-body-sm placeholder:text-text-tertiary focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
             />
           </div>

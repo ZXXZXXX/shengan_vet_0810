@@ -22,7 +22,7 @@ const records: WarehouseEvent<DStatus>[] = [
   {
     id: "DP-3202",
     lines: [{ item: "乳房炎抗生素 5mg", qty: "3 支" }],
-    desc: "疾病治疗工单 WO-2392，#A2412 持续高烧待取药。",
+    desc: "疾病治疗工作 WO-2392，#A2412 持续高烧待取药。",
     status: "待取药",
     operator: "李雨晴",
     operatedAt: "-",
@@ -31,7 +31,7 @@ const records: WarehouseEvent<DStatus>[] = [
   {
     id: "DP-3201",
     lines: [{ item: "乳房炎抗生素 5mg", qty: "2 支" }],
-    desc: "疾病治疗工单 WO-2381，#A2381 用药。",
+    desc: "疾病治疗工作 WO-2381，#A2381 用药。",
     status: "已取药",
     operator: "李雨晴",
     operatedAt: "2026-05-12 09:42",

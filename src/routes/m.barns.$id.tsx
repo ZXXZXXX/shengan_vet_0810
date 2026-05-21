@@ -53,7 +53,7 @@ function BarnDetailPage() {
     stock: 186,
   };
 
-  // mock 该牛舍内全部待执行工单（不区分负责人）
+  // mock 该牛舍内全部待执行工作（不区分负责人）
   const all: WO[] = [
     { id: "WO-2381", target: "#A2381", kind: "健康", type: "疾病治疗", event: "持续高烧 39.6℃", owner: "李雨晴" },
     { id: "WO-2298", target: "#A2298", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", owner: "李雨晴" },
@@ -62,7 +62,7 @@ function BarnDetailPage() {
     { id: "WO-2401", target: "犊牛舍 A", kind: "免疫", type: "口蹄疫加强", event: "批次免疫", owner: "周凯" },
   ];
 
-  // 仅返回当前账号负责的工单
+  // 仅返回当前账号负责的工作
   const mine = all.filter((o) => o.owner === me);
 
   return (
@@ -92,10 +92,10 @@ function BarnDetailPage() {
           </div>
         </div>
 
-        {/* 我的待执行工单 */}
+        {/* 我的待执行工作 */}
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">我的待执行工单</h3>
+            <h3 className="text-card-title text-foreground">我的待执行工作</h3>
             <span className="text-caption text-text-tertiary">
               {me}（{roleLabel[role]}）· {mine.length} 项
             </span>
@@ -103,7 +103,7 @@ function BarnDetailPage() {
 
           {mine.length === 0 ? (
             <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
-              <div className="text-body-sm text-text-tertiary">本牛舍暂无您负责的待执行工单</div>
+              <div className="text-body-sm text-text-tertiary">本牛舍暂无您负责的待执行工作</div>
               <div className="text-caption text-text-tertiary mt-1">
                 可直接通过下方「健康上报」记录异常
               </div>

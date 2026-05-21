@@ -49,7 +49,7 @@ const itemLibrary = [
   "采精管",
 ];
 
-// 健康工单类型
+// 健康工作类型
 const healthWorkTypes = ["疾病治疗", "免疫", "普修", "复诊"] as const;
 type WorkType = (typeof healthWorkTypes)[number];
 
@@ -108,7 +108,7 @@ function ReportPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const role = useRole();
-  // 健康类工单：内部角色（兽医/场长/兽医助理/管理员）与外部专项执行人员（如修蹄工）均可上报
+  // 健康类工作：内部角色（兽医/场长/兽医助理/管理员）与外部专项执行人员（如修蹄工）均可上报
   const canReportHealth = true;
 
   const lockTarget = !!search.lock && !!search.target;
@@ -265,7 +265,7 @@ function ReportPage() {
 
         {!canReportHealth && (
           <div className="rounded-lg border border-border bg-surface-subtle px-3 py-2 text-caption text-text-secondary">
-            当前角色（{role === "hoof_trimmer" ? "修蹄工" : "外部人员"}）仅可执行工单与上报损耗类问题，无法上报健康类问题。
+            当前角色（{role === "hoof_trimmer" ? "修蹄工" : "外部人员"}）仅可执行工作与上报损耗类问题，无法上报健康类问题。
           </div>
         )}
 
@@ -322,8 +322,8 @@ function ReportPage() {
               )}
             </Section>
 
-            {/* 工单类型 */}
-            <Section title="工单类型" required>
+            {/* 工作类型 */}
+            <Section title="工作类型" required>
               <div className="grid grid-cols-4 gap-2">
                 {healthWorkTypes.map((t) => {
                   const active = workType === t;
@@ -681,7 +681,7 @@ function ReportPage() {
           onClick={submit}
           className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body disabled:opacity-50 transition-opacity"
         >
-          {submitted ? "已提交,工单已生成" : "提交上报"}
+          {submitted ? "已提交,工作已生成" : "提交上报"}
         </button>
       </div>
     </MobileShell>

@@ -42,7 +42,7 @@ const kpis = [
   { label: "存栏总数", value: "2,486", unit: "头", trend: "up", delta: "+1.2%", icon: Beef, anchor: "stock" as const },
   { label: "仓库物资", value: "186", unit: "类", trend: "down", delta: "-3 类临期", icon: Package, anchor: "warehouse" as const },
   { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope, anchor: "alerts" as const },
-  { label: "待办工单", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "todos" as const },
+  { label: "待办工作", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "todos" as const },
 ];
 
 type RequestType = "health" | "loss";
@@ -69,7 +69,7 @@ const pendingRequests: PendingRequest[] = [
   {
     id: "REQ-2379",
     type: "health",
-    title: "免疫工单延期申请",
+    title: "免疫工作延期申请",
     desc: "5 头待免疫牛只因发情期申请延后 3 天",
     applicant: "赵兽医",
     time: "1 小时前",
@@ -283,7 +283,7 @@ function HomePage() {
                 <span className="h-8 w-px bg-white/25" />
                 <HeroStat label="健康预警" value="12" unit="起" />
                 <span className="h-8 w-px bg-white/25" />
-                <HeroStat label="完成工单" value="86%" />
+                <HeroStat label="完成工作" value="86%" />
               </div>
             </div>
             <div className="flex items-center gap-2">

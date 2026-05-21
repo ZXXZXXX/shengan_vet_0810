@@ -37,7 +37,7 @@ const modules: Module[] = [
     stats: [
       { label: "在管牧场", value: "6" },
       { label: "在栏头数", value: "12,486" },
-      { label: "今日工单", value: "38" },
+      { label: "今日工作", value: "38" },
     ],
   },
   {

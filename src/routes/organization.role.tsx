@@ -64,8 +64,8 @@ type Role = {
 const initialRoles: Role[] = [
   { key: "admin", name: "超级管理员", count: 2, scope: "全平台", desc: "拥有系统全部权限，可管理租户、角色与所有业务数据。", enabled: true, icon: ShieldCheck },
   { key: "manager", name: "场长", count: 3, scope: "本牧场全部", desc: "负责牧场日常运营管理，拥有除组织权限外的所有业务功能。", enabled: true, icon: Briefcase },
-  { key: "vet", name: "兽医", count: 8, scope: "健康相关数据", desc: "负责诊疗与健康管理，可处理疾病、疫苗、工单等业务。", enabled: true, icon: Stethoscope },
-  { key: "assistant", name: "兽医助理", count: 6, scope: "健康执行 / 录入", desc: "协助兽医完成日常工单录入与执行，部分功能仅查看权限。", enabled: false, icon: HeartPulse },
+  { key: "vet", name: "兽医", count: 8, scope: "健康相关数据", desc: "负责诊疗与健康管理，可处理疾病、疫苗、工作等业务。", enabled: true, icon: Stethoscope },
+  { key: "assistant", name: "兽医助理", count: 6, scope: "健康执行 / 录入", desc: "协助兽医完成日常工作录入与执行，部分功能仅查看权限。", enabled: false, icon: HeartPulse },
 ];
 
 type Feature = { key: string; name: string };
@@ -82,10 +82,10 @@ const pcFeatures: FeatureGroup[] = [
     { key: "disease", name: "疾病治疗" },
     { key: "vaccine", name: "疫苗免疫" },
     { key: "postpartum", name: "产后护理" },
-    { key: "hoof", name: "修蹄工单" },
-    { key: "drying", name: "干奶工单" },
-    { key: "deworm", name: "驱虫工单" },
-    { key: "general", name: "普修工单" },
+    { key: "hoof", name: "修蹄工作" },
+    { key: "drying", name: "干奶工作" },
+    { key: "deworm", name: "驱虫工作" },
+    { key: "general", name: "普修工作" },
   ] },
   { group: "药品管理", items: [
     { key: "drug", name: "药品档案" },
@@ -109,7 +109,7 @@ const pcFeatures: FeatureGroup[] = [
 const miniFeatures: FeatureGroup[] = [
   { group: "工作台", items: [
     { key: "m-workspace", name: "工作台首页" },
-    { key: "m-todo", name: "待办工单" },
+    { key: "m-todo", name: "待办工作" },
   ] },
   { group: "牛只", items: [
     { key: "m-animals", name: "牛只列表" },

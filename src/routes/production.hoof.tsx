@@ -13,6 +13,6 @@ const orders = makeOrders("XT", [
 ]);
 
 export const Route = createFileRoute("/production/hoof")({
-  head: () => ({ meta: [{ title: "修蹄工单 — 奇点智牧" }] }),
-  component: () => <WorkOrderPage title="修蹄工单" orders={orders} />,
+  head: () => ({ meta: [{ title: "修蹄工作 — 奇点智牧" }] }),
+  component: () => <WorkOrderPage title="修蹄工作" orders={orders} />,
 });

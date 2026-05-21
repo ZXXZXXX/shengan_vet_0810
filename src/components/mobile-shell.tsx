@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 
 const leftTabs = [
   { to: "/m", label: "工作台", icon: Home, exact: true },
-  { to: "/m/health", label: "工单", icon: ClipboardList },
+  { to: "/m/health", label: "工作", icon: ClipboardList },
 ];
 const rightTabs = [
   { to: "/m/animals", label: "档案", icon: Beef },

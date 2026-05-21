@@ -56,8 +56,8 @@ const MSGS: Msg[] = [
   {
     id: "n2",
     cat: "task",
-    title: "工单催办：3 号牛舍体温复测",
-    desc: "工单 T-1042 已超期 20 分钟未开始执行，请尽快处理。",
+    title: "工作催办：3 号牛舍体温复测",
+    desc: "工作 T-1042 已超期 20 分钟未开始执行，请尽快处理。",
     time: "12 分钟前",
     ts: 12,
     link: "/m/workspace",
@@ -87,8 +87,8 @@ const MSGS: Msg[] = [
   {
     id: "n4",
     cat: "task",
-    title: "新工单：修蹄工单 T-1056",
-    desc: "为您指派 2 号舍 4 头牛只的修蹄工单，计划今日 15:00 前完成。",
+    title: "新工作：修蹄工作 T-1056",
+    desc: "为您指派 2 号舍 4 头牛只的修蹄工作，计划今日 15:00 前完成。",
     time: "2 小时前",
     ts: 120,
     link: "/m/workspace",
@@ -144,7 +144,7 @@ const META: Record<
   task: {
     icon: ClipboardList,
     tone: "bg-brand-subtle text-primary",
-    label: "工单",
+    label: "工作",
   },
   result: {
     icon: CheckCircle2,
