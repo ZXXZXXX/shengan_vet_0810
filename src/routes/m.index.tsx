@@ -161,7 +161,9 @@ function MHomePage() {
           </Link>
         </div>
         <div className="space-y-2">
-          {pendingItems.map((it) => (
+          {pendingItems
+            .filter((it) => isExternal || it.bucket !== "待响应")
+            .map((it) => (
             <Link
               key={it.id}
               to="/m/health/$id"
@@ -176,7 +178,7 @@ function MHomePage() {
                   <span className={`tag ${it.tagClass} text-[11px] px-1.5 py-0`}>{it.bucket}</span>
                   <span className="text-body text-foreground truncate">{it.title}</span>
                 </div>
-                <div className="text-caption text-text-tertiary mt-0.5 truncate">
+                <div className="text-caption text-text-tertiary mt-1 truncate">
                   {it.id} · {it.barn} · {it.time}
                 </div>
               </div>
