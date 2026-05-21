@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Stethoscope,
   PackageMinus,
+  Footprints,
   Home,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/m/health/")({
 });
 
 type Status = "待审批" | "进行中" | "已驳回" | "已完成";
-type Kind = "健康" | "损耗";
+type Kind = "健康" | "损耗" | "修蹄";
 
 type Task = {
   id: string;
@@ -43,6 +44,8 @@ const tasks: Task[] = [
   { id: "WO-2324", target: "#A2324", barn: "5 号牛舍", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", status: "已驳回", createdAt: "前日 18:42" },
   { id: "LS-1029", target: "#A2150", barn: "2 号牛舍", kind: "损耗", type: "疾病死亡", event: "产后子宫破裂", proposer: "孙明", who: "李雨晴", status: "待审批", createdAt: "今日 08:20" },
   { id: "LS-1011", target: "#A1988", barn: "5 号牛舍", kind: "损耗", type: "淘汰处置", event: "高龄无产能", proposer: "孙明", who: "孙明", status: "已完成", createdAt: "5 月 15 日" },
+  { id: "HF-0702", target: "#A2150", barn: "2 号牛舍", kind: "修蹄", type: "批次修蹄", event: "右后蹄趾间皮炎", proposer: "周凯", who: "外部·张师傅", status: "进行中", createdAt: "今日 07:30" },
+  { id: "HF-0688", target: "#A2270", barn: "3 号牛舍", kind: "修蹄", type: "批次修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", status: "已完成", createdAt: "5 月 12 日" },
 ];
 
 const tabs: { key: Status | "全部"; label: string }[] = [
@@ -63,6 +66,7 @@ const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: 
 const kindIcon: Record<Kind, typeof Stethoscope> = {
   健康: Stethoscope,
   损耗: PackageMinus,
+  修蹄: Footprints,
 };
 
 function TaskListPage() {
@@ -70,7 +74,9 @@ function TaskListPage() {
   const isApprover = canApprove(role);
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
 
+  // 修蹄工只看到自己的修蹄任务
   let list = tasks;
+  if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
 
   return (
