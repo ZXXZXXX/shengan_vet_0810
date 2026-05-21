@@ -398,6 +398,37 @@ function HomePage() {
             <div className="divide-y divide-border">
               {pendingRequests.map((r) => {
                 const meta = requestTypeMeta[r.type];
+                const tagCls =
+                  r.type === "transfer"
+                    ? "tag-brand"
+                    : r.type === "feedback"
+                    ? "tag-danger"
+                    : "tag-warning";
+                const content = (
+                  <>
+                    <span className={`tag ${tagCls}`}>{meta.label}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-body text-foreground truncate">{r.title}</p>
+                      <p className="text-caption text-text-tertiary truncate mt-0.5">
+                        提出者 · {r.applicant} · {r.desc}
+                      </p>
+                    </div>
+                    <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap">
+                      {r.time}
+                    </span>
+                  </>
+                );
+                if (r.link) {
+                  return (
+                    <Link
+                      key={r.id}
+                      to={r.link}
+                      className="w-full text-left px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors"
+                    >
+                      {content}
+                    </Link>
+                  );
+                }
                 return (
                   <button
                     key={r.id}
@@ -405,16 +436,7 @@ function HomePage() {
                     onClick={() => setActiveRequest(r)}
                     className="w-full text-left px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors"
                   >
-                    <span className={`tag ${r.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
-                      {meta.label}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-body text-foreground truncate">{r.title}</p>
-                      <p className="text-caption text-text-tertiary truncate mt-0.5">
-                        提出者 · {r.applicant} · {r.desc}
-                      </p>
-                    </div>
-                    <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap">{r.time}</span>
+                    {content}
                   </button>
                 );
               })}
