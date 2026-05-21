@@ -382,7 +382,7 @@ function HomePage() {
                     onClick={() => setActiveRequest(r)}
                     className="w-full text-left px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors"
                   >
-                    <span className={`tag ${r.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
+                    <span className={`tag ${r.type === "health" ? "tag-warning" : "tag-danger"}`}>
                       {meta.label}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -516,7 +516,7 @@ function HomePage() {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`tag ${activeRequest.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
+                  <span className={`tag ${activeRequest.type === "health" ? "tag-warning" : "tag-danger"}`}>
                     {requestTypeMeta[activeRequest.type].label}
                   </span>
                   <span className="text-caption text-text-tertiary tabular-nums">{activeRequest.id}</span>
