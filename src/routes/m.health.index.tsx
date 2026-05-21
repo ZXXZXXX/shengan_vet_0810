@@ -12,9 +12,12 @@ import {
   PackageMinus,
   Footprints,
   Home,
+  PackageCheck,
+  QrCode,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
+import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
 export const Route = createFileRoute("/m/health/")({
   head: () => ({ meta: [{ title: "任务列表 · 奇点智牧" }] }),
@@ -22,7 +25,7 @@ export const Route = createFileRoute("/m/health/")({
 });
 
 type Status = "待审批" | "进行中" | "已驳回" | "已完成";
-type Kind = "健康" | "损耗" | "修蹄";
+type Kind = "健康" | "损耗" | "修蹄" | "领取";
 
 type Task = {
   id: string;
