@@ -22,7 +22,7 @@ export const Route = createFileRoute("/m/health/")({
 });
 
 type Status = "待审批" | "进行中" | "已驳回" | "已完成";
-type Kind = "健康" | "损耗" | "修蹄";
+type Kind = "健康" | "损耗";
 
 type Task = {
   id: string;
