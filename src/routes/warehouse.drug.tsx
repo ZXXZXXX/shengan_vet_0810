@@ -54,7 +54,11 @@ function DrugArchivePage() {
               <div className="col-span-1"><span className="tag tag-muted">{d.cat}</span></div>
               <div className="col-span-2 text-body-sm text-text-secondary truncate">{d.maker}</div>
               <div className="col-span-1 text-body-sm text-text-secondary">{d.withdraw}</div>
-              <div className="col-span-1 flex justify-end"><Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button></div>
+              <div className="col-span-1 flex justify-end items-center gap-1">
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button>
+              </div>
+
             </div>
           ))}
         </Card>
