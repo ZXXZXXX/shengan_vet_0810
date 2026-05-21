@@ -18,7 +18,7 @@ const kpis = [
 function AnalyticsPage() {
   return (
     <>
-      <AppHeader title="统计分析" breadcrumb={["首页总览", "统计分析"]} />
+      <AppHeader title="统计分析" breadcrumb={["首页", "统计分析"]} />
       <main className="flex-1 px-6 py-6 space-y-5">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {kpis.map((k) => (
