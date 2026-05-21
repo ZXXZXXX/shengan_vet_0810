@@ -199,30 +199,34 @@ function TaskListPage() {
                   const s = statusTone[o.status];
                   const Icon = s.icon;
                   const KIcon = kindIcon[o.kind];
+                  const isPickup = o.kind === "领取";
                   const canApproveThis = isApprover && o.status === "待审批";
                   const canExecuteThis = !isApprover && o.status === "进行中";
-                  return (
-                    <Link
-                      key={o.id}
-                      to="/m/health/$id"
-                      params={{ id: o.id }}
-                      className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
-                    >
+                  const commonInner = (
+                    <>
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
                           <Icon className={`h-3.5 w-3.5 ${s.color}`} />
                           <span className="font-mono text-body-sm text-foreground">{o.id}</span>
-                          <span className="tag tag-muted inline-flex items-center gap-1">
+                          <span className={`tag inline-flex items-center gap-1 ${isPickup ? "tag-brand" : "tag-muted"}`}>
                             <KIcon className="h-3 w-3" /> {o.kind}
                           </span>
                         </div>
-                        <span className={s.tag}>{o.status}</span>
+                        <span className={s.tag}>{isPickup && o.status === "进行中" ? "待领取" : o.status}</span>
                       </div>
                       <div className="text-body text-foreground">
                         {o.kind === "损耗"
                           ? `${o.item ?? o.target} · ${o.qty ?? "—"}`
+                          : isPickup
+                          ? o.target
                           : `${o.target} · ${o.event}`}
                       </div>
+                      {isPickup && (
+                        <div className="mt-1.5 text-caption text-text-secondary inline-flex items-center gap-1">
+                          <QrCode className="h-3 w-3 text-primary" />
+                          {o.event}
+                        </div>
+                      )}
                       {o.kind === "健康" && o.symptoms && o.symptoms.length > 0 && (
                         <div className="mt-1.5 flex flex-wrap gap-1">
                           {o.symptoms.slice(0, 4).map((sym) => (
@@ -244,10 +248,28 @@ function TaskListPage() {
                           {canApproveThis ? "请前往 PC 审批" : ""}
                         </span>
                         <span className="shrink-0 ml-3 inline-flex items-center gap-1 text-primary font-medium">
-                          {canExecuteThis ? "执行" : "查看"}
+                          {isPickup
+                            ? o.status === "已完成"
+                              ? "查看清单"
+                              : "去领取"
+                            : canExecuteThis
+                            ? "执行"
+                            : "查看"}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
                       </div>
+                    </>
+                  );
+                  const cls = `block rounded-xl bg-card border p-4 active:bg-surface-subtle ${
+                    isPickup && o.status === "进行中" ? "border-primary/30" : "border-border"
+                  }`;
+                  return isPickup ? (
+                    <Link key={o.id} to="/m/pickup/$id" params={{ id: o.id }} className={cls}>
+                      {commonInner}
+                    </Link>
+                  ) : (
+                    <Link key={o.id} to="/m/health/$id" params={{ id: o.id }} className={cls}>
+                      {commonInner}
                     </Link>
                   );
                 })}
