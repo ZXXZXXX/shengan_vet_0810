@@ -10,7 +10,6 @@ import {
   ChevronRight,
   Stethoscope,
   PackageMinus,
-  Footprints,
   Home,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
