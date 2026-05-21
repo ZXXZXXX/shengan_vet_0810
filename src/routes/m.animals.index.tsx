@@ -102,6 +102,23 @@ function AnimalsPage() {
         ))}
       </div>
 
+      {/* 牛舍快速筛选 */}
+      <div className="px-4 pt-2 flex gap-1.5 overflow-x-auto no-scrollbar">
+        {barns.map((b) => (
+          <button
+            key={b}
+            onClick={() => setBarn(b)}
+            className={`shrink-0 h-7 px-3 rounded-full text-caption transition-colors ${
+              barn === b
+                ? "bg-brand-subtle text-primary border border-primary/30"
+                : "bg-card border border-border text-text-secondary"
+            }`}
+          >
+            {b}
+          </button>
+        ))}
+      </div>
+
       {/* 列表 */}
       <div className="px-4 mt-3 space-y-2.5">
         <div className="text-caption text-text-tertiary">
