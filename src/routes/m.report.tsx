@@ -18,7 +18,7 @@ import {
   Check,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, canApprove } from "@/lib/mobile-role";
+import { useRole } from "@/lib/mobile-role";
 
 type ReportSearch = { target?: string; barn?: string; lock?: number };
 
