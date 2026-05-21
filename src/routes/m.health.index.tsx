@@ -73,13 +73,11 @@ function TaskListPage() {
   const role = useRole();
   const isApprover = canApprove(role);
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
-  const [kindFilter, setKindFilter] = useState<Kind | "全部">("全部");
 
   // 修蹄工只看到自己的修蹄任务
   let list = tasks;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
-  if (kindFilter !== "全部") list = list.filter((o) => o.kind === kindFilter);
 
   return (
     <MobileShell
