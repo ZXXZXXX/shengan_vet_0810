@@ -38,6 +38,8 @@ const currentUser = {
 export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
   const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [farmOpen, setFarmOpen] = useState(false);
+  const currentFarm = useFarm();
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card">
       <div className="flex h-14 items-center gap-3 px-6">
@@ -53,6 +55,40 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
         )}
 
         <div className="ml-auto flex items-center gap-2">
+          <Popover open={farmOpen} onOpenChange={setFarmOpen}>
+            <PopoverTrigger asChild>
+              <button className="inline-flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card hover:bg-surface-subtle transition-colors">
+                <Building2 className="h-3.5 w-3.5 text-primary" />
+                <span className="text-body-sm text-foreground font-medium">{currentFarm.name}</span>
+                <span className="text-caption text-text-tertiary hidden lg:inline">· {currentFarm.region}</span>
+                <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-72 p-0 border-border">
+              <div className="px-3 py-2 border-b border-border">
+                <div className="text-caption text-text-tertiary">切换牧场视角</div>
+              </div>
+              <div className="p-1 max-h-80 overflow-auto">
+                {FARMS.map((f) => {
+                  const active = f.id === currentFarm.id;
+                  return (
+                    <button
+                      key={f.id}
+                      onClick={() => { setFarmId(f.id); setFarmOpen(false); }}
+                      className={`w-full flex items-start gap-2 px-2 py-2 rounded-md text-left hover:bg-surface-subtle transition-colors ${active ? "bg-brand-subtle" : ""}`}
+                    >
+                      <div className="flex-1 min-w-0 leading-tight">
+                        <div className={`text-body-sm ${active ? "text-primary font-medium" : "text-foreground"}`}>{f.name}</div>
+                        <div className="text-caption text-text-tertiary mt-0.5 truncate">{f.region} · {f.scale}</div>
+                      </div>
+                      {active && <Check className="h-3.5 w-3.5 text-primary mt-1 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
             <Input
@@ -60,6 +96,7 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
               className="h-9 w-64 rounded-md border-border bg-card pl-9 text-body-sm placeholder:text-text-tertiary focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
             />
           </div>
+
 
           <button className="relative h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors">
             <Bell className="h-4 w-4" />
