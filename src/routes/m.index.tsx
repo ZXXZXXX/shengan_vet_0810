@@ -83,9 +83,8 @@ function MHomePage() {
         <div className="relative px-4 pt-4 pb-7">
           <div className="flex items-start justify-between">
             <div className="min-w-0">
-              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--state-success)]" />
-                <span className="text-[11px] text-white/90">{roleLabel[role]} · 早上好</span>
+              <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
+                <span className="text-[11px] text-white/90">{roleLabel[role]}</span>
               </div>
               <div className="text-section-title mt-2 drop-shadow-sm">李师傅</div>
               <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
