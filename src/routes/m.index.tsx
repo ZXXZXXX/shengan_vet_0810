@@ -49,17 +49,6 @@ const colorMap: Record<string, string> = {
   muted: "bg-surface-subtle text-text-secondary",
 };
 
-// 强调色（装饰条/数值/光晕）
-const toneAccent: Record<string, string> = {
-  brand: "var(--brand)",
-  success: "var(--state-success)",
-  warning: "var(--state-warning)",
-  danger: "var(--state-danger)",
-  info: "var(--effect-ai-cyan)",
-  purple: "var(--effect-ai-purple)",
-  muted: "var(--text-tertiary)",
-};
-
 function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
@@ -134,7 +123,7 @@ function MHomePage() {
 
       {/* ============ 数据看板 ============ */}
       <section className="px-4 mt-5">
-        <SectionTitle title="农场概况" hint="数据实时同步" live />
+        <SectionTitle title="农场概况" hint="数据实时同步" />
         <div className="grid grid-cols-2 gap-2">
           <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月 +6" />
           <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周 +0.4%" />
@@ -312,28 +301,11 @@ const risks: Array<{
 ];
 
 // ---------------- 子组件 ----------------
-function SectionTitle({ title, hint, live }: { title: string; hint?: string; live?: boolean }) {
+function SectionTitle({ title, hint }: { title: string; hint?: string }) {
   return (
     <div className="flex items-center justify-between mb-2">
-      <h3 className="text-card-title text-foreground inline-flex items-center gap-2">
-        <span
-          aria-hidden
-          className="inline-block h-3.5 w-[3px] rounded-full bg-primary"
-          style={{ boxShadow: "0 0 8px color-mix(in srgb, var(--brand) 55%, transparent)" }}
-        />
-        {title}
-      </h3>
-      {hint && (
-        <span className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
-          {live && (
-            <span className="relative inline-flex h-1.5 w-1.5">
-              <span className="absolute inset-0 rounded-full bg-[var(--state-success)] opacity-70 animate-ping" />
-              <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-[var(--state-success)]" />
-            </span>
-          )}
-          {hint}
-        </span>
-      )}
+      <h3 className="text-card-title text-foreground">{title}</h3>
+      {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
     </div>
   );
 }
@@ -353,41 +325,16 @@ function DataCard({
   sub?: string;
   compact?: boolean;
 }) {
-  const accent = toneAccent[tone];
   return (
-    <div
-      className="relative rounded-xl bg-card border border-border p-3 overflow-hidden shadow-[0_1px_0_rgba(0,0,0,0.02),0_8px_24px_-16px_rgba(0,0,0,0.12)]"
-      style={{
-        backgroundImage: `radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, ${accent} 14%, transparent) 0%, transparent 55%)`,
-      }}
-    >
-      <span
-        aria-hidden
-        className="absolute left-0 top-3 bottom-3 w-[2px] rounded-r-full"
-        style={{ backgroundColor: accent, opacity: 0.55 }}
-      />
+    <div className="rounded-xl bg-card border border-border p-3">
       <div className="flex items-center gap-2">
         <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
           <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
         </span>
         <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums tracking-tight`}>
-        {value}
-      </div>
+      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
       {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
-      {/* 底部进度氛围线 */}
-      {!compact && (
-        <div className="mt-2 h-1 rounded-full bg-surface-subtle overflow-hidden">
-          <div
-            className="h-full rounded-full"
-            style={{
-              width: tone === "danger" ? "32%" : tone === "warning" ? "55%" : tone === "success" ? "92%" : "78%",
-              background: `linear-gradient(90deg, ${accent}, color-mix(in srgb, ${accent} 45%, transparent))`,
-            }}
-          />
-        </div>
-      )}
     </div>
   );
 }
@@ -405,14 +352,10 @@ function TaskOverviewCard({
   label: string;
   value: string;
 }) {
-  const accent = toneAccent[tone];
   return (
     <Link
       to={to}
-      className="relative rounded-xl bg-card border border-border p-3 flex flex-col gap-2 active:bg-surface-subtle overflow-hidden shadow-[0_8px_22px_-18px_rgba(0,0,0,0.25)]"
-      style={{
-        backgroundImage: `linear-gradient(135deg, color-mix(in srgb, ${accent} 10%, transparent), transparent 60%)`,
-      }}
+      className="rounded-xl bg-card border border-border p-3 flex flex-col gap-2 active:bg-surface-subtle"
     >
       <div className="flex items-center justify-between">
         <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
@@ -422,12 +365,7 @@ function TaskOverviewCard({
       </div>
       <div>
         <div className="text-caption text-text-secondary">{label}</div>
-        <div
-          className="text-section-title tabular-nums mt-0.5 tracking-tight"
-          style={{ color: accent }}
-        >
-          {value}
-        </div>
+        <div className="text-section-title text-foreground tabular-nums mt-0.5">{value}</div>
       </div>
     </Link>
   );
