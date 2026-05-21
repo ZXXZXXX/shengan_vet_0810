@@ -197,8 +197,22 @@ function TaskListPage() {
                         <span className={s.tag}>{o.status}</span>
                       </div>
                       <div className="text-body text-foreground">
-                        {o.target} · {o.event}
+                        {o.kind === "损耗"
+                          ? `${o.item ?? o.target} · 损耗 ${o.qty ?? "—"}`
+                          : `${o.target} · ${o.event}`}
                       </div>
+                      {o.kind === "健康" && o.symptoms && o.symptoms.length > 0 && (
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                          {o.symptoms.slice(0, 4).map((sym) => (
+                            <span key={sym} className="tag tag-muted">{sym}</span>
+                          ))}
+                        </div>
+                      )}
+                      {o.kind === "损耗" && o.reapply && (
+                        <div className="mt-1.5 text-caption text-text-secondary">
+                          需补申请：{o.reapply.name} × {o.reapply.qty}
+                        </div>
+                      )}
                       <div className="mt-2 flex items-start justify-between text-caption text-text-tertiary">
                         <span className="truncate">提出 {o.proposer} · 负责 {o.who}</span>
                         <div className="flex flex-col items-end gap-1 shrink-0 min-w-1 ml-3">
