@@ -128,7 +128,7 @@ const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; 
 ];
 
 const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
-  warning: { bg: "bg-[var(--state-warning)]/10", text: "text-[var(--state-warning)]", tag: "tag tg-warning tag-warning" },
+  warning: { bg: "bg-[var(--state-warning)]/10", text: "text-[var(--state-warning)]", tag: "tag tag-warning" },
   pending: { bg: "bg-surface-subtle", text: "text-text-secondary", tag: "tag tag-muted" },
   info: { bg: "bg-brand-subtle", text: "text-primary", tag: "tag tag-brand" },
   danger: { bg: "bg-[var(--state-danger)]/10", text: "text-[var(--state-danger)]", tag: "tag tag-danger" },
