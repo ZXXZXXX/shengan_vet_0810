@@ -373,20 +373,13 @@ function TaskOverviewCard({
 }
 
 // ---------------- 牧场切换 ----------------
-const FARMS = [
-  { id: "f1", name: "1 号牧场", region: "黑龙江·齐齐哈尔", scale: "存栏 1,284" },
-  { id: "f2", name: "2 号牧场", region: "黑龙江·大庆", scale: "存栏 968" },
-  { id: "f3", name: "3 号牧场", region: "内蒙古·呼伦贝尔", scale: "存栏 2,150" },
-  { id: "f4", name: "4 号牧场", region: "山东·济宁", scale: "存栏 720" },
-  { id: "f5", name: "5 号牧场", region: "宁夏·吴忠", scale: "存栏 1,032" },
-];
-
 function FarmSwitcher() {
   const [open, setOpen] = useState(false);
-  const [currentId, setCurrentId] = useState(FARMS[0].id);
+  const currentId = useFarmId();
   const ref = useRef<HTMLDivElement>(null);
-  const current = FARMS.find((f) => f.id === currentId)!;
+  const current = FARMS.find((f) => f.id === currentId) ?? FARMS[0];
   const single = FARMS.length === 1;
+
 
   useEffect(() => {
     if (!open) return;
@@ -435,7 +428,7 @@ function FarmSwitcher() {
               <button
                 key={f.id}
                 onClick={() => {
-                  setCurrentId(f.id);
+                  setFarmId(f.id);
                   setOpen(false);
                 }}
                 className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
