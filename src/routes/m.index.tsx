@@ -12,7 +12,6 @@ import {
   Stethoscope,
   PackageMinus,
   Warehouse,
-  Sun,
   CloudSun,
   Wind,
   Thermometer,
@@ -30,7 +29,10 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
+import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { PackageCheck, QrCode } from "lucide-react";
+import grasslandHero from "@/assets/grassland-hero.jpg";
+
 
 export const Route = createFileRoute("/m/")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
@@ -57,67 +59,68 @@ function MHomePage() {
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
   const claimed = useClaimed();
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
+  const farm = useFarm();
 
   return (
     <MobileShell>
       {/* 牧场切换（全局数据） */}
       <FarmSwitcher />
 
-
-
-      {/* 顶部欢迎 + 通知 + 现场上报快捷入口 */}
-      <header className="px-4 pt-4 pb-5 bg-gradient-to-br from-primary via-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.18] pointer-events-none"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 30%, white 1px, transparent 1.5px), radial-gradient(circle at 70% 60%, white 1px, transparent 1.5px), radial-gradient(circle at 40% 80%, white 1px, transparent 1.5px)",
-            backgroundSize: "120px 120px, 160px 160px, 140px 140px",
-          }}
+      {/* 顶部欢迎 —— 草原图文样式 */}
+      <header className="relative overflow-hidden text-white">
+        <img
+          src={grasslandHero}
+          alt="牧场草原清晨景色"
+          width={1920}
+          height={1080}
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute -top-10 -right-10 h-44 w-44 rounded-full bg-white/15 blur-2xl" />
-        <div className="absolute top-20 -left-12 h-32 w-32 rounded-full bg-[var(--effect-ai-cyan)]/25 blur-2xl" />
-        <svg
-          className="absolute bottom-0 left-0 right-0 w-full h-10 opacity-25"
-          viewBox="0 0 400 60"
-          preserveAspectRatio="none"
-          fill="white"
-        >
-          <path d="M0,60 L0,40 L60,15 L120,35 L180,10 L240,30 L300,8 L360,28 L400,18 L400,60 Z" />
-        </svg>
+        {/* 渐变蒙层：上轻下重，保证文字可读 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/35 to-black/70" />
+        {/* 底部柔和过渡到页面背景 */}
+        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
 
-        <div className="relative flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-1.5">
-              <Sun className="h-3.5 w-3.5 opacity-90" />
-              <span className="text-caption opacity-90">{roleLabel[role]} · 早上好</span>
+        <div className="relative px-4 pt-4 pb-7">
+          <div className="flex items-start justify-between">
+            <div className="min-w-0">
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--state-success)]" />
+                <span className="text-[11px] text-white/90">{roleLabel[role]} · 早上好</span>
+              </div>
+              <div className="text-section-title mt-2 drop-shadow-sm">李师傅</div>
+              <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                {farm.name} · {farm.region}
+              </div>
             </div>
-            <div className="text-section-title mt-1.5">李师傅</div>
-            <div className="text-caption opacity-80 mt-0.5">工号 W-1024</div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to="/m/report"
+                className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.35)] active:scale-[.97] transition-transform"
+              >
+                <Camera className="h-4 w-4" />
+                现场上报
+              </Link>
+              <Link
+                to="/m/notifications"
+                className="relative h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/20"
+              >
+                <Bell className="h-4 w-4" />
+                <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[var(--state-danger)]" />
+              </Link>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              to="/m/report"
-              className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] active:scale-[.97] transition-transform"
-            >
-              <Camera className="h-4 w-4" />
-              现场上报
-            </Link>
-            <Link
-              to="/m/notifications"
-              className="relative h-9 w-9 rounded-full bg-white/15 backdrop-blur flex items-center justify-center"
-            >
-              <Bell className="h-4 w-4" />
-              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[var(--state-danger)]" />
-            </Link>
-          </div>
-        </div>
 
-        <div className="relative mt-3 flex items-center gap-3 text-caption opacity-90">
-          <span className="inline-flex items-center gap-1"><CloudSun className="h-3.5 w-3.5" />晴转多云</span>
-          <span className="inline-flex items-center gap-1"><Thermometer className="h-3.5 w-3.5" />18 ~ 26℃</span>
-          <span className="inline-flex items-center gap-1"><Wind className="h-3.5 w-3.5" />东南风 2 级</span>
+          <div className="mt-5 flex items-center gap-3 text-caption text-white/90">
+            <span className="inline-flex items-center gap-1"><CloudSun className="h-3.5 w-3.5" />晴转多云</span>
+            <span className="h-3 w-px bg-white/30" />
+            <span className="inline-flex items-center gap-1"><Thermometer className="h-3.5 w-3.5" />18 ~ 26℃</span>
+            <span className="h-3 w-px bg-white/30" />
+            <span className="inline-flex items-center gap-1"><Wind className="h-3.5 w-3.5" />东南风 2 级</span>
+          </div>
         </div>
       </header>
+
 
       {/* ============ 数据看板 ============ */}
       <section className="px-4 mt-5">
@@ -167,6 +170,14 @@ function MHomePage() {
             全部 <ChevronRight className="h-3 w-3" />
           </Link>
         </div>
+        {/* 跨牧场说明 —— 仅显示当前牧场，消息中心则全量接收 */}
+        <div className="mb-2 rounded-lg bg-surface-subtle border border-border px-3 py-2 text-caption text-text-tertiary inline-flex items-start gap-1.5 w-full">
+          <MapPin className="h-3 w-3 text-primary shrink-0 mt-0.5" />
+          <span>
+            仅显示 <span className="text-foreground">{farm.name}</span> 的工单；其它牧场的提醒可在
+            <Link to="/m/notifications" className="text-primary mx-1">消息中心</Link>查看。
+          </span>
+        </div>
         <div className="space-y-2">
           {pendingPickups.map((p) => (
             <Link
@@ -194,6 +205,7 @@ function MHomePage() {
             </Link>
           ))}
           {pendingItems
+            .filter((it) => it.farmId === farm.id)
             .filter((it) => isExternal || it.bucket !== "待响应")
             .map((it) => (
             <Link
@@ -217,8 +229,14 @@ function MHomePage() {
               <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
             </Link>
           ))}
+          {pendingItems.filter((it) => it.farmId === farm.id && (isExternal || it.bucket !== "待响应")).length === 0 && pendingPickups.length === 0 && (
+            <div className="py-8 text-center text-caption text-text-tertiary">
+              当前牧场暂无待处理事项
+            </div>
+          )}
         </div>
       </section>
+
 
       {/* ============ 风险提醒 ============ */}
       <section className="px-4 mt-5 mb-4">
@@ -259,11 +277,14 @@ const pendingItems: Array<{
   tagClass: string;
   icon: typeof Stethoscope;
   tone: keyof typeof colorMap;
+  farmId: string;
 }> = [
-  { id: "WO-2381", title: "持续高烧 2 小时 #A2381", barn: "3 号牛舍", time: "今日 09:08", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning" },
-  { id: "LS-1029", title: "产后子宫破裂损耗确认", barn: "2 号牛舍", time: "今日 08:20", bucket: "待响应", tagClass: "tag-warning", icon: PackageMinus, tone: "warning" },
-  { id: "WO-2401", title: "口蹄疫加强免疫", barn: "犊牛舍 A", time: "昨日 10:00", bucket: "待执行", tagClass: "tag-brand", icon: PlayCircle, tone: "brand" },
-  { id: "HF-0702", title: "右后蹄趾间皮炎修蹄", barn: "2 号牛舍", time: "已逾期 4h", bucket: "已逾期", tagClass: "tag-danger", icon: TimerReset, tone: "danger" },
+  { id: "WO-2381", title: "持续高烧 2 小时 #A2381", barn: "3 号牛舍", time: "今日 09:08", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning", farmId: "f1" },
+  { id: "LS-1029", title: "产后子宫破裂损耗确认", barn: "2 号牛舍", time: "今日 08:20", bucket: "待响应", tagClass: "tag-warning", icon: PackageMinus, tone: "warning", farmId: "f1" },
+  { id: "WO-2401", title: "口蹄疫加强免疫", barn: "犊牛舍 A", time: "昨日 10:00", bucket: "待执行", tagClass: "tag-brand", icon: PlayCircle, tone: "brand", farmId: "f1" },
+  { id: "HF-0702", title: "右后蹄趾间皮炎修蹄", barn: "2 号牛舍", time: "已逾期 4h", bucket: "已逾期", tagClass: "tag-danger", icon: TimerReset, tone: "danger", farmId: "f1" },
+  { id: "HF-0815", title: "蹄底溃疡修蹄", barn: "3 号牛舍", time: "今日 10:20", bucket: "待响应", tagClass: "tag-warning", icon: TimerReset, tone: "warning", farmId: "f2" },
+  { id: "WO-2502", title: "乳房炎复诊", barn: "1 号牛舍", time: "今日 11:00", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning", farmId: "f3" },
 ];
 
 const risks: Array<{
@@ -352,20 +373,13 @@ function TaskOverviewCard({
 }
 
 // ---------------- 牧场切换 ----------------
-const FARMS = [
-  { id: "f1", name: "1 号牧场", region: "黑龙江·齐齐哈尔", scale: "存栏 1,284" },
-  { id: "f2", name: "2 号牧场", region: "黑龙江·大庆", scale: "存栏 968" },
-  { id: "f3", name: "3 号牧场", region: "内蒙古·呼伦贝尔", scale: "存栏 2,150" },
-  { id: "f4", name: "4 号牧场", region: "山东·济宁", scale: "存栏 720" },
-  { id: "f5", name: "5 号牧场", region: "宁夏·吴忠", scale: "存栏 1,032" },
-];
-
 function FarmSwitcher() {
   const [open, setOpen] = useState(false);
-  const [currentId, setCurrentId] = useState(FARMS[0].id);
+  const currentId = useFarmId();
   const ref = useRef<HTMLDivElement>(null);
-  const current = FARMS.find((f) => f.id === currentId)!;
+  const current = FARMS.find((f) => f.id === currentId) ?? FARMS[0];
   const single = FARMS.length === 1;
+
 
   useEffect(() => {
     if (!open) return;
@@ -414,7 +428,7 @@ function FarmSwitcher() {
               <button
                 key={f.id}
                 onClick={() => {
-                  setCurrentId(f.id);
+                  setFarmId(f.id);
                   setOpen(false);
                 }}
                 className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
