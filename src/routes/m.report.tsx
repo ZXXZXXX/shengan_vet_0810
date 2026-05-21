@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Camera,
   ScanLine,
@@ -12,8 +12,13 @@ import {
   Search,
   Minus,
   Plus,
+  UserCheck,
+  Sparkles,
+  FileText,
+  Check,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { useRole, canApprove } from "@/lib/mobile-role";
 
 type ReportSearch = { target?: string; barn?: string; lock?: number };
 
@@ -44,8 +49,12 @@ const itemLibrary = [
   "采精管",
 ];
 
+// 健康工单类型
+const healthWorkTypes = ["疾病治疗", "免疫", "普修", "复诊"] as const;
+type WorkType = (typeof healthWorkTypes)[number];
+
 // 健康常见症状标签
-const symptomTags = [
+const defaultSymptomTags = [
   "体温升高",
   "采食下降",
   "反刍减少",
@@ -58,12 +67,57 @@ const symptomTags = [
   "卧地不起",
 ];
 
+// 具备处方权的处理人（admin / 兽医 / 场长）
+const prescriptionHandlers = [
+  { id: "u-li", name: "李雨晴", role: "兽医" },
+  { id: "u-chen", name: "陈晓东", role: "兽医" },
+  { id: "u-wang", name: "王建国", role: "场长" },
+  { id: "u-zhao", name: "赵兽医", role: "兽医" },
+];
+
+// 疾病知识库 + 自动治疗方案
+const diseaseKB: { name: string; symptoms: string[]; plan: { rx: string; drugs: string[]; duration: string } }[] = [
+  {
+    name: "乳房炎",
+    symptoms: ["乳房红肿", "体温升高", "产奶量骤降"],
+    plan: { rx: "RX-001 乳房炎标准处方 A", drugs: ["乳房炎抗生素 5mg ×2", "消炎药 ×1"], duration: "5 天" },
+  },
+  {
+    name: "口蹄疫",
+    symptoms: ["体温升高", "口腔水疱", "跛行"],
+    plan: { rx: "RX-002 口蹄疫紧急处方", drugs: ["口蹄疫疫苗 A 型 ×1", "消毒液 ×5L"], duration: "立即" },
+  },
+  {
+    name: "蹄叶炎",
+    symptoms: ["跛行", "卧地不起"],
+    plan: { rx: "RX-003 蹄叶炎康复处方", drugs: ["消炎止痛剂 ×1", "蹄部护理液 ×1"], duration: "7 天" },
+  },
+  {
+    name: "酮病",
+    symptoms: ["采食下降", "产奶量骤降", "体温偏低"],
+    plan: { rx: "RX-004 酮病调理处方", drugs: ["丙二醇 500ml ×1", "葡萄糖注射液"], duration: "3 天" },
+  },
+  {
+    name: "瘤胃酸中毒",
+    symptoms: ["采食下降", "腹泻", "精神沉郁"],
+    plan: { rx: "RX-005 瘤胃调理处方", drugs: ["碳酸氢钠", "瘤胃缓冲剂"], duration: "3 天" },
+  },
+];
+
 function ReportPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
+  const role = useRole();
+  // 仅具备处方权的角色（admin/兽医/场长）以及兽医助理可上报健康问题；修蹄工等仅可上报损耗
+  const canReportHealth = canApprove(role) || role === "vet_assistant";
+
   const lockTarget = !!search.lock && !!search.target;
   const lockBarn = !!search.lock && !!search.barn;
-  const [kind, setKind] = useState<ReportKind>("health");
+  const [kind, setKind] = useState<ReportKind>(canReportHealth ? "health" : "loss");
+  useEffect(() => {
+    if (!canReportHealth && kind === "health") setKind("loss");
+  }, [canReportHealth, kind]);
+
   const [target, setTarget] = useState(search.target ?? "");
   const [barn] = useState(search.barn ?? "");
   const [desc, setDesc] = useState("");
@@ -74,7 +128,15 @@ function ReportPage() {
   const [submitted, setSubmitted] = useState(false);
 
   // 健康
+  const [workType, setWorkType] = useState<WorkType | "">("");
+  const [symptomTags, setSymptomTags] = useState<string[]>([...defaultSymptomTags, "其他"]);
   const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [customSymptom, setCustomSymptom] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [handlerId, setHandlerId] = useState<string>("");
+  const [diseaseQ, setDiseaseQ] = useState("");
+  const [diseaseFocused, setDiseaseFocused] = useState(false);
+  const [suspectedDisease, setSuspectedDisease] = useState<string>("");
 
   // 损耗
   const [itemName, setItemName] = useState("");
@@ -90,8 +152,51 @@ function ReportPage() {
     return itemLibrary.filter((i) => i.toLowerCase().includes(kw)).slice(0, 8);
   }, [itemName]);
 
+  // 是否完成"线索上传"——之后才显示疑似疾病
+  const evidenceReady =
+    desc.trim().length > 0 || photos.length > 0 || videos.length > 0 || voiceSecs !== null;
+
+  const diseaseMatches = useMemo(() => {
+    const kw = diseaseQ.trim().toLowerCase();
+    const base = kw
+      ? diseaseKB.filter((d) => d.name.toLowerCase().includes(kw))
+      : // 没有关键词时，按症状重合度排序
+        [...diseaseKB].sort((a, b) => {
+          const ai = a.symptoms.filter((s) => symptoms.includes(s)).length;
+          const bi = b.symptoms.filter((s) => symptoms.includes(s)).length;
+          return bi - ai;
+        });
+    return base.slice(0, 6);
+  }, [diseaseQ, symptoms]);
+
+  const selectedDisease = useMemo(
+    () => diseaseKB.find((d) => d.name === suspectedDisease) ?? null,
+    [suspectedDisease]
+  );
+
   const toggleSymptom = (s: string) => {
+    if (s === "其他") {
+      setShowCustomInput(true);
+      return;
+    }
     setSymptoms((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
+  };
+
+  const addCustomSymptom = () => {
+    const v = customSymptom.trim();
+    if (!v) return;
+    if (!symptomTags.includes(v)) {
+      // 插入到"其他"之前
+      setSymptomTags((prev) => {
+        const idx = prev.indexOf("其他");
+        const copy = [...prev];
+        copy.splice(idx, 0, v);
+        return copy;
+      });
+    }
+    if (!symptoms.includes(v)) setSymptoms((prev) => [...prev, v]);
+    setCustomSymptom("");
+    setShowCustomInput(false);
   };
 
   const pickItem = (name: string) => {
@@ -103,7 +208,7 @@ function ReportPage() {
   const startVoice = () => {
     if (recording) {
       setRecording(false);
-      setVoiceSecs(12); // mock duration
+      setVoiceSecs(12);
       return;
     }
     setRecording(true);
@@ -112,7 +217,10 @@ function ReportPage() {
   const canSubmit =
     kind === "health"
       ? target.trim().length > 0 &&
-        (symptoms.length > 0 || desc.trim().length > 0 || photos.length > 0 || videos.length > 0 || voiceSecs !== null)
+        workType !== "" &&
+        symptoms.length > 0 &&
+        handlerId !== "" &&
+        evidenceReady
       : itemName.trim().length > 0 && Number(lossQty) > 0;
 
   const submit = () => {
@@ -134,21 +242,32 @@ function ReportPage() {
           ).map((t) => {
             const Icon = t.icon;
             const active = kind === t.k;
+            const disabled = t.k === "health" && !canReportHealth;
             return (
               <button
                 key={t.k}
-                onClick={() => setKind(t.k)}
+                disabled={disabled}
+                onClick={() => !disabled && setKind(t.k)}
                 className={`h-10 rounded-lg text-body-sm inline-flex items-center justify-center gap-1.5 transition-colors ${
                   active
                     ? "bg-card text-primary shadow-sm border border-primary/20"
+                    : disabled
+                    ? "text-text-tertiary opacity-60"
                     : "text-text-secondary"
                 }`}
               >
                 <Icon className="h-4 w-4" /> {t.label}
+                {disabled && <Lock className="h-3 w-3 ml-0.5" />}
               </button>
             );
           })}
         </div>
+
+        {!canReportHealth && (
+          <div className="rounded-lg border border-border bg-surface-subtle px-3 py-2 text-caption text-text-secondary">
+            当前角色（{role === "hoof_trimmer" ? "修蹄工" : "外部人员"}）仅可执行工单与上报损耗类问题，无法上报健康类问题。
+          </div>
+        )}
 
         {kind === "health" ? (
           <>
@@ -203,19 +322,19 @@ function ReportPage() {
               )}
             </Section>
 
-            {/* 症状说明 */}
-            <Section title="症状说明" hint="可多选；也可不选，直接用证据材料描述">
-              <div className="flex flex-wrap gap-2">
-                {symptomTags.map((t) => {
-                  const active = symptoms.includes(t);
+            {/* 工单类型 */}
+            <Section title="工单类型" required>
+              <div className="grid grid-cols-4 gap-2">
+                {healthWorkTypes.map((t) => {
+                  const active = workType === t;
                   return (
                     <button
                       key={t}
-                      onClick={() => toggleSymptom(t)}
-                      className={`h-8 px-3 rounded-full text-body-sm transition-colors ${
+                      onClick={() => setWorkType(t)}
+                      className={`h-10 rounded-lg border text-body-sm transition-colors ${
                         active
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-card border border-border text-text-secondary"
+                          ? "bg-brand-subtle border-primary/30 text-primary"
+                          : "bg-card border-border text-text-secondary"
                       }`}
                     >
                       {t}
@@ -225,19 +344,199 @@ function ReportPage() {
               </div>
             </Section>
 
-            {/* 证据材料 */}
-            <EvidenceSection
-              desc={desc}
-              setDesc={setDesc}
-              photos={photos}
-              setPhotos={setPhotos}
-              videos={videos}
-              setVideos={setVideos}
-              voiceSecs={voiceSecs}
-              setVoiceSecs={setVoiceSecs}
-              recording={recording}
-              onVoiceToggle={startVoice}
-            />
+            {workType !== "" && (
+              <>
+                {/* 症状标签 */}
+                <Section title="症状标签" required hint={`可多选；可通过"其他"自行添加`}>
+                  <div className="flex flex-wrap gap-2">
+                    {symptomTags.map((t) => {
+                      const active = symptoms.includes(t);
+                      const isOther = t === "其他";
+                      return (
+                        <button
+                          key={t}
+                          onClick={() => toggleSymptom(t)}
+                          className={`h-8 px-3 rounded-full text-body-sm transition-colors inline-flex items-center gap-1 ${
+                            active
+                              ? "bg-primary text-primary-foreground"
+                              : isOther
+                              ? "bg-card border border-dashed border-border text-text-secondary"
+                              : "bg-card border border-border text-text-secondary"
+                          }`}
+                        >
+                          {isOther && <Plus className="h-3 w-3" />}
+                          {t}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {showCustomInput && (
+                    <div className="mt-2 flex gap-2">
+                      <input
+                        autoFocus
+                        value={customSymptom}
+                        onChange={(e) => setCustomSymptom(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && addCustomSymptom()}
+                        placeholder="输入自定义症状标签"
+                        className="flex-1 h-10 px-3 rounded-lg bg-card border border-border text-body-sm"
+                      />
+                      <button
+                        onClick={addCustomSymptom}
+                        className="h-10 px-3 rounded-lg bg-primary text-primary-foreground text-body-sm"
+                      >
+                        添加
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowCustomInput(false);
+                          setCustomSymptom("");
+                        }}
+                        className="h-10 px-3 rounded-lg bg-card border border-border text-text-secondary text-body-sm"
+                      >
+                        取消
+                      </button>
+                    </div>
+                  )}
+                </Section>
+
+                {/* 处理人 */}
+                <Section title="处理人" required hint="仅可选择具备处方权的角色">
+                  <div className="grid grid-cols-2 gap-2">
+                    {prescriptionHandlers.map((h) => {
+                      const active = handlerId === h.id;
+                      return (
+                        <button
+                          key={h.id}
+                          onClick={() => setHandlerId(h.id)}
+                          className={`h-12 px-3 rounded-lg border text-left transition-colors ${
+                            active
+                              ? "bg-brand-subtle border-primary/30"
+                              : "bg-card border-border"
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <UserCheck
+                              className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-text-tertiary"}`}
+                            />
+                            <span className={`text-body-sm ${active ? "text-primary" : "text-foreground"}`}>
+                              {h.name}
+                            </span>
+                          </div>
+                          <div className="text-caption text-text-tertiary mt-0.5">{h.role}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Section>
+
+                {/* 证据材料 / 线索 */}
+                <EvidenceSection
+                  desc={desc}
+                  setDesc={setDesc}
+                  photos={photos}
+                  setPhotos={setPhotos}
+                  videos={videos}
+                  setVideos={setVideos}
+                  voiceSecs={voiceSecs}
+                  setVoiceSecs={setVoiceSecs}
+                  recording={recording}
+                  onVoiceToggle={startVoice}
+                />
+
+                {/* 疑似疾病 —— 仅在线索上传后显示 */}
+                {evidenceReady && (
+                  <Section
+                    title="疑似疾病"
+                    hint="可选；选择后将从诊疗知识库自动拉取治疗方案"
+                  >
+                    {!suspectedDisease ? (
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                        <input
+                          value={diseaseQ}
+                          onChange={(e) => {
+                            setDiseaseQ(e.target.value);
+                            setDiseaseFocused(true);
+                          }}
+                          onFocus={() => setDiseaseFocused(true)}
+                          onBlur={() => setTimeout(() => setDiseaseFocused(false), 150)}
+                          placeholder="搜索疾病名称，或根据症状自动推荐"
+                          className="w-full h-12 pl-9 pr-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
+                        />
+                        {diseaseFocused && diseaseMatches.length > 0 && (
+                          <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-72 overflow-auto">
+                            {diseaseMatches.map((d) => {
+                              const overlap = d.symptoms.filter((s) => symptoms.includes(s));
+                              return (
+                                <button
+                                  key={d.name}
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  onClick={() => {
+                                    setSuspectedDisease(d.name);
+                                    setDiseaseFocused(false);
+                                  }}
+                                  className="w-full text-left px-3 py-2.5 hover:bg-surface-subtle border-b border-border last:border-b-0"
+                                >
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-body-sm text-foreground">{d.name}</span>
+                                    {overlap.length > 0 && (
+                                      <span className="tag tag-brand">
+                                        匹配 {overlap.length} 项症状
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-caption text-text-tertiary mt-0.5 truncate">
+                                    典型症状：{d.symptoms.join("、")}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="rounded-lg border border-primary/20 bg-brand-subtle p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <Check className="h-3.5 w-3.5 text-primary" />
+                            <span className="text-body-sm text-primary font-medium">
+                              {suspectedDisease}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setSuspectedDisease("");
+                              setDiseaseQ("");
+                            }}
+                            className="text-caption text-text-tertiary"
+                          >
+                            重选
+                          </button>
+                        </div>
+                        {selectedDisease && (
+                          <div className="rounded-md bg-card border border-border p-2.5 space-y-1.5">
+                            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+                              <Sparkles className="h-3 w-3 text-primary" />
+                              已自动匹配治疗方案
+                            </div>
+                            <div className="flex items-center gap-1.5 text-body-sm text-foreground">
+                              <FileText className="h-3.5 w-3.5 text-primary" />
+                              {selectedDisease.plan.rx}
+                            </div>
+                            <div className="text-caption text-text-secondary">
+                              用药：{selectedDisease.plan.drugs.join("、")}
+                            </div>
+                            <div className="text-caption text-text-secondary">
+                              疗程：{selectedDisease.plan.duration}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </Section>
+                )}
+              </>
+            )}
           </>
         ) : (
           <>
