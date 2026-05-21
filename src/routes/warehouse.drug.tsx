@@ -42,9 +42,10 @@ function DrugArchivePage() {
             <div className="col-span-3">药品名称</div>
             <div className="col-span-2">规格</div>
             <div className="col-span-1">分类</div>
-            <div className="col-span-2">生产厂家</div>
+            <div className="col-span-1">生产厂家</div>
             <div className="col-span-1">休药期</div>
-            <div className="col-span-1 text-right">操作</div>
+            <div className="col-span-2 text-right">操作</div>
+
           </div>
           {drugs.map((d) => (
             <div key={d.id} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
