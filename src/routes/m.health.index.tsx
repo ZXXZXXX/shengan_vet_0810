@@ -198,7 +198,7 @@ function TaskListPage() {
                       </div>
                       <div className="text-body text-foreground">
                         {o.kind === "损耗"
-                          ? `${o.item ?? o.target} · 损耗 ${o.qty ?? "—"}`
+                          ? `${o.item ?? o.target} · ${o.qty ?? "—"}`
                           : `${o.target} · ${o.event}`}
                       </div>
                       {o.kind === "健康" && o.symptoms && o.symptoms.length > 0 && (
