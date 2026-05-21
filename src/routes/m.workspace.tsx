@@ -8,7 +8,7 @@ import parkImg from "@/assets/module-park.jpg";
 import { ModuleTransition, type TransitionState } from "@/components/module-transition";
 
 export const Route = createFileRoute("/m/workspace")({
-  head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "首页 · 奇点智牧" }] }),
   component: MWorkspacePage,
 });
 

@@ -3,7 +3,7 @@ import { Home, ClipboardList, Beef, User, ScanLine } from "lucide-react";
 import { ReactNode } from "react";
 
 const leftTabs = [
-  { to: "/m", label: "工作台", icon: Home, exact: true },
+  { to: "/m", label: "首页", icon: Home, exact: true },
   { to: "/m/health", label: "工作", icon: ClipboardList },
 ];
 const rightTabs = [

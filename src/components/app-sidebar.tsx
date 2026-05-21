@@ -36,7 +36,7 @@ type NavGroup = {
 
 const groups: NavGroup[] = [
   {
-    title: "首页总览",
+    title: "首页",
     icon: LayoutDashboard,
     children: [
       { title: "运营看板", url: "/" },

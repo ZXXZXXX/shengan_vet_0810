@@ -35,7 +35,7 @@ import grasslandHero from "@/assets/grassland-hero.jpg";
 
 
 export const Route = createFileRoute("/m/")({
-  head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "首页 · 奇点智牧" }] }),
   component: MHomePage,
 });
 
