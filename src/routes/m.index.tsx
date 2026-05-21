@@ -136,7 +136,7 @@ function MHomePage() {
 
       {/* ============ 工作台：任务概况 ============ */}
       <section className="px-4 mt-5">
-        <SectionTitle title="任务概况" hint="我相关" />
+        <SectionTitle title="任务概况" hint="与“我”相关" />
         <div className={`grid gap-2 ${showFirstBucket ? "grid-cols-3" : "grid-cols-2"}`}>
           {showFirstBucket && (
             <TaskOverviewCard
