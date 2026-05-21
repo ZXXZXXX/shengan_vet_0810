@@ -171,24 +171,27 @@ function TaskListPage() {
                         {o.target} · {o.event}
                       </div>
                       <div className="mt-2 flex items-center justify-between text-caption text-text-tertiary">
-                        <span>提出 {o.proposer} · 负责 {o.who}</span>
-                        <span className="inline-flex items-center gap-2">
-                          {(canApproveThis || canExecuteThis) && (
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-caption ${
-                                canApproveThis
-                                  ? "bg-[var(--state-warning)]/10 text-[var(--state-warning)]"
-                                  : "bg-primary/10 text-primary"
-                              }`}
-                            >
-                              {canApproveThis ? "去审批" : "去执行/反馈"}
-                            </span>
-                          )}
+                        <span className="truncate">提出 {o.proposer} · 负责 {o.who}</span>
+                        <span className="inline-flex items-center gap-2 shrink-0">
                           <span className="inline-flex items-center">
                             {o.createdAt} <ChevronRight className="h-3 w-3 ml-0.5" />
                           </span>
                         </span>
                       </div>
+                      {(canApproveThis || canExecuteThis) && (
+                        <div className="mt-2.5 pt-2.5 border-t border-border flex justify-end">
+                          <span
+                            className={`h-8 px-3 rounded-lg inline-flex items-center gap-1 text-body-sm font-medium shadow-sm ${
+                              canApproveThis
+                                ? "bg-[var(--state-warning)] text-white"
+                                : "bg-primary text-primary-foreground"
+                            }`}
+                          >
+                            {canApproveThis ? "去审批" : "去执行 / 反馈"}
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          </span>
+                        </div>
+                      )}
                     </Link>
                   );
                 })}

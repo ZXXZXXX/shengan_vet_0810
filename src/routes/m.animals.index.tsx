@@ -39,17 +39,24 @@ const statusTag: Record<Status, string> = {
 function AnimalsPage() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("全部");
+  const [barn, setBarn] = useState<string>("全部牛舍");
+
+  const barns = useMemo(
+    () => ["全部牛舍", ...Array.from(new Set(animals.map((a) => a.barn)))],
+    []
+  );
 
   const list = useMemo(
     () =>
       animals.filter((a) => {
         if (filter !== "全部" && a.status !== filter) return false;
+        if (barn !== "全部牛舍" && a.barn !== barn) return false;
         if (q && !`${a.id} ${a.breed} ${a.barn}`.toLowerCase().includes(q.toLowerCase())) {
           return false;
         }
         return true;
       }),
-    [q, filter]
+    [q, filter, barn]
   );
 
   return (
@@ -91,6 +98,23 @@ function AnimalsPage() {
             }`}
           >
             {f}
+          </button>
+        ))}
+      </div>
+
+      {/* 牛舍快速筛选 */}
+      <div className="px-4 pt-2 flex gap-1.5 overflow-x-auto no-scrollbar">
+        {barns.map((b) => (
+          <button
+            key={b}
+            onClick={() => setBarn(b)}
+            className={`shrink-0 h-7 px-3 rounded-full text-caption transition-colors ${
+              barn === b
+                ? "bg-brand-subtle text-primary border border-primary/30"
+                : "bg-card border border-border text-text-secondary"
+            }`}
+          >
+            {b}
           </button>
         ))}
       </div>
