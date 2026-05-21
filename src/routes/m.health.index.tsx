@@ -121,28 +121,13 @@ function TaskListPage() {
   const list = useMemo(() => {
     let l = tasks;
     if (role === "hoof_trimmer") l = l.filter((t) => t.kind === "修蹄");
-    // 仅展示与本人有关系的任务（mock：按 proposer/who 命中或既定 relation）
-    l = l.filter((t) =>
-      t.relation.some((r) => {
-        if (r === "我建单") return t.proposer === me;
-        if (r === "我执行") return t.who === me;
-        if (r === "我审批") return isApprover;
-        return false;
-      }),
-    );
-    if (rel !== "全部") {
-      l = l.filter((t) =>
-        t.relation.includes(rel) &&
-        (rel === "我审批"
-          ? isApprover
-          : rel === "我建单"
-          ? t.proposer === me
-          : t.who === me),
-      );
+    // 仅展示与本人有关系的任务（审批者可见需审批任务）
+    if (rel === "我审批") {
+      l = l.filter((t) => t.relation.includes("我审批") && isApprover);
     }
     if (tab !== "全部") l = l.filter((o) => o.status === tab);
     return l;
-  }, [role, isApprover, me, rel, tab]);
+  }, [role, isApprover, rel, tab]);
 
   return (
     <MobileShell
