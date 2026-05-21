@@ -56,6 +56,7 @@ import { Route as ArchiveCattleRouteImport } from './routes/archive.cattle'
 import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
 import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
+import { Route as MPickupIdRouteImport } from './routes/m.pickup.$id'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
 import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
@@ -295,6 +296,11 @@ const MAnimalsIndexRoute = MAnimalsIndexRouteImport.update({
   path: '/animals/',
   getParentRoute: () => MRoute,
 } as any)
+const MPickupIdRoute = MPickupIdRouteImport.update({
+  id: '/pickup/$id',
+  path: '/pickup/$id',
+  getParentRoute: () => MRoute,
+} as any)
 const MHealthIdRoute = MHealthIdRouteImport.update({
   id: '/health/$id',
   path: '/health/$id',
@@ -360,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
+  '/m/pickup/$id': typeof MPickupIdRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
 }
@@ -407,6 +414,7 @@ export interface FileRoutesByTo {
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
+  '/m/pickup/$id': typeof MPickupIdRoute
   '/m/animals': typeof MAnimalsIndexRoute
   '/m/health': typeof MHealthIndexRoute
 }
@@ -460,6 +468,7 @@ export interface FileRoutesById {
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
+  '/m/pickup/$id': typeof MPickupIdRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
 }
@@ -514,6 +523,7 @@ export interface FileRouteTypes {
     | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
+    | '/m/pickup/$id'
     | '/m/animals/'
     | '/m/health/'
   fileRoutesByTo: FileRoutesByTo
@@ -561,6 +571,7 @@ export interface FileRouteTypes {
     | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
+    | '/m/pickup/$id'
     | '/m/animals'
     | '/m/health'
   id:
@@ -613,6 +624,7 @@ export interface FileRouteTypes {
     | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
+    | '/m/pickup/$id'
     | '/m/animals/'
     | '/m/health/'
   fileRoutesById: FileRoutesById
@@ -962,6 +974,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MAnimalsIndexRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/pickup/$id': {
+      id: '/m/pickup/$id'
+      path: '/pickup/$id'
+      fullPath: '/m/pickup/$id'
+      preLoaderRoute: typeof MPickupIdRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/health/$id': {
       id: '/m/health/$id'
       path: '/health/$id'
@@ -1028,6 +1047,7 @@ interface MRouteChildren {
   MAnimalsIdRoute: typeof MAnimalsIdRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
+  MPickupIdRoute: typeof MPickupIdRoute
   MAnimalsIndexRoute: typeof MAnimalsIndexRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
 }
@@ -1043,6 +1063,7 @@ const MRouteChildren: MRouteChildren = {
   MAnimalsIdRoute: MAnimalsIdRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
+  MPickupIdRoute: MPickupIdRoute,
   MAnimalsIndexRoute: MAnimalsIndexRoute,
   MHealthIndexRoute: MHealthIndexRoute,
 }

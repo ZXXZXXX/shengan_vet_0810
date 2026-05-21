@@ -29,6 +29,8 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
+import { PICKUPS, useClaimed } from "@/lib/pickup-store";
+import { PackageCheck, QrCode } from "lucide-react";
 
 export const Route = createFileRoute("/m/")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
@@ -53,6 +55,8 @@ function MHomePage() {
   // 内部非审批人（如兽医助理）没有"待响应/待审批"环节
   const showFirstBucket = isExternal || isApprover;
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
+  const claimed = useClaimed();
+  const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
 
   return (
     <MobileShell>
@@ -164,6 +168,31 @@ function MHomePage() {
           </Link>
         </div>
         <div className="space-y-2">
+          {pendingPickups.map((p) => (
+            <Link
+              key={p.id}
+              to="/m/pickup/$id"
+              params={{ id: p.id }}
+              className="flex items-center gap-3 p-3 rounded-xl bg-card border border-primary/30 active:bg-surface-subtle relative overflow-hidden"
+            >
+              <span className="absolute right-3 top-3 opacity-15 text-primary">
+                <QrCode className="h-10 w-10" strokeWidth={1.25} />
+              </span>
+              <span className="h-9 w-9 rounded-lg flex items-center justify-center bg-brand-subtle text-primary shrink-0">
+                <PackageCheck className="h-4 w-4" strokeWidth={1.75} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="tag tag-brand text-[11px] px-1.5 py-0">待领取</span>
+                  <span className="text-body text-foreground truncate">{p.title}</span>
+                </div>
+                <div className="text-caption text-text-tertiary mt-1 truncate">
+                  {p.id} · {p.warehouse} · 共 {p.items.length} 项
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
+            </Link>
+          ))}
           {pendingItems
             .filter((it) => isExternal || it.bucket !== "待响应")
             .map((it) => (

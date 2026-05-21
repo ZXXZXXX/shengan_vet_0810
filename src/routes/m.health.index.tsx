@@ -12,9 +12,12 @@ import {
   PackageMinus,
   Footprints,
   Home,
+  PackageCheck,
+  QrCode,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
+import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
 export const Route = createFileRoute("/m/health/")({
   head: () => ({ meta: [{ title: "任务列表 · 奇点智牧" }] }),
@@ -22,7 +25,7 @@ export const Route = createFileRoute("/m/health/")({
 });
 
 type Status = "待审批" | "进行中" | "已驳回" | "已完成";
-type Kind = "健康" | "损耗" | "修蹄";
+type Kind = "健康" | "损耗" | "修蹄" | "领取";
 
 type Task = {
   id: string;
@@ -73,16 +76,35 @@ const kindIcon: Record<Kind, typeof Stethoscope> = {
   健康: Stethoscope,
   损耗: PackageMinus,
   修蹄: Footprints,
+  领取: PackageCheck,
 };
 
 function TaskListPage() {
   const role = useRole();
   const isApprover = canApprove(role);
+  const claimed = useClaimed();
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
   const [q, setQ] = useState("");
 
+  // 注入"领取"任务（来自审批通过的处方/补领申请）
+  const pickupTasks: Task[] = PICKUPS.map((p) => {
+    const done = claimed.includes(p.id);
+    return {
+      id: p.id,
+      target: p.title,
+      barn: p.barn,
+      kind: "领取",
+      type: "药品/器材领取",
+      event: `${p.warehouse} · ${p.items.length} 项`,
+      proposer: p.approver.split("（")[0],
+      who: "李雨晴",
+      status: done ? "已完成" : "进行中",
+      createdAt: p.approvedAt,
+    };
+  });
+
   // 修蹄工只看到自己的修蹄任务
-  let list = tasks;
+  let list: Task[] = [...pickupTasks, ...tasks];
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
   const kw = q.trim().toLowerCase();
@@ -177,30 +199,34 @@ function TaskListPage() {
                   const s = statusTone[o.status];
                   const Icon = s.icon;
                   const KIcon = kindIcon[o.kind];
+                  const isPickup = o.kind === "领取";
                   const canApproveThis = isApprover && o.status === "待审批";
                   const canExecuteThis = !isApprover && o.status === "进行中";
-                  return (
-                    <Link
-                      key={o.id}
-                      to="/m/health/$id"
-                      params={{ id: o.id }}
-                      className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
-                    >
+                  const commonInner = (
+                    <>
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
                           <Icon className={`h-3.5 w-3.5 ${s.color}`} />
                           <span className="font-mono text-body-sm text-foreground">{o.id}</span>
-                          <span className="tag tag-muted inline-flex items-center gap-1">
+                          <span className={`tag inline-flex items-center gap-1 ${isPickup ? "tag-brand" : "tag-muted"}`}>
                             <KIcon className="h-3 w-3" /> {o.kind}
                           </span>
                         </div>
-                        <span className={s.tag}>{o.status}</span>
+                        <span className={s.tag}>{isPickup && o.status === "进行中" ? "待领取" : o.status}</span>
                       </div>
                       <div className="text-body text-foreground">
                         {o.kind === "损耗"
                           ? `${o.item ?? o.target} · ${o.qty ?? "—"}`
+                          : isPickup
+                          ? o.target
                           : `${o.target} · ${o.event}`}
                       </div>
+                      {isPickup && (
+                        <div className="mt-1.5 text-caption text-text-secondary inline-flex items-center gap-1">
+                          <QrCode className="h-3 w-3 text-primary" />
+                          {o.event}
+                        </div>
+                      )}
                       {o.kind === "健康" && o.symptoms && o.symptoms.length > 0 && (
                         <div className="mt-1.5 flex flex-wrap gap-1">
                           {o.symptoms.slice(0, 4).map((sym) => (
@@ -222,10 +248,28 @@ function TaskListPage() {
                           {canApproveThis ? "请前往 PC 审批" : ""}
                         </span>
                         <span className="shrink-0 ml-3 inline-flex items-center gap-1 text-primary font-medium">
-                          {canExecuteThis ? "执行" : "查看"}
+                          {isPickup
+                            ? o.status === "已完成"
+                              ? "查看清单"
+                              : "去领取"
+                            : canExecuteThis
+                            ? "执行"
+                            : "查看"}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
                       </div>
+                    </>
+                  );
+                  const cls = `block rounded-xl bg-card border p-4 active:bg-surface-subtle ${
+                    isPickup && o.status === "进行中" ? "border-primary/30" : "border-border"
+                  }`;
+                  return isPickup ? (
+                    <Link key={o.id} to="/m/pickup/$id" params={{ id: o.id }} className={cls}>
+                      {commonInner}
+                    </Link>
+                  ) : (
+                    <Link key={o.id} to="/m/health/$id" params={{ id: o.id }} className={cls}>
+                      {commonInner}
                     </Link>
                   );
                 })}
