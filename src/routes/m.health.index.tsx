@@ -170,28 +170,24 @@ function TaskListPage() {
                       <div className="text-body text-foreground">
                         {o.target} · {o.event}
                       </div>
-                      <div className="mt-2 flex items-center justify-between text-caption text-text-tertiary">
+                      <div className="mt-2 flex items-start justify-between text-caption text-text-tertiary">
                         <span className="truncate">提出 {o.proposer} · 负责 {o.who}</span>
-                        <span className="inline-flex items-center gap-2 shrink-0">
+                        <div className="flex flex-col items-end gap-1 shrink-0 min-w-1 ml-3">
                           <span className="inline-flex items-center">
                             {o.createdAt} <ChevronRight className="h-3 w-3 ml-0.5" />
                           </span>
-                        </span>
-                      </div>
-                      {(canApproveThis || canExecuteThis) && (
-                        <div className="mt-2.5 pt-2.5 border-t border-border flex justify-end">
-                          <span
-                            className={`h-8 px-3 rounded-lg inline-flex items-center gap-1 text-body-sm font-medium shadow-sm ${
-                              canApproveThis
-                                ? "bg-[var(--state-warning)] text-white"
-                                : "bg-primary text-primary-foreground"
-                            }`}
-                          >
-                            {canApproveThis ? "去审批" : "去执行 / 反馈"}
-                            <ChevronRight className="h-3.5 w-3.5" />
-                          </span>
+                          {(canApproveThis || canExecuteThis) && (
+                            <span
+                              className={`inline-flex items-center gap-0.5 ${
+                                canApproveThis ? "text-[var(--state-warning)]" : "text-primary"
+                              }`}
+                            >
+                              {canApproveThis ? "去审批" : "去执行 / 反馈"}
+                              <ChevronRight className="h-3 w-3" />
+                            </span>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </Link>
                   );
                 })}
