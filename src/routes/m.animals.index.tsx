@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
-import { Search, ScanLine, Beef, Filter, ChevronRight } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { Search, ScanLine, Beef, ChevronRight, ChevronDown } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
 export const Route = createFileRoute("/m/animals/")({
@@ -40,11 +40,23 @@ function AnimalsPage() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("全部");
   const [barn, setBarn] = useState<string>("全部牛舍");
+  const [barnOpen, setBarnOpen] = useState(false);
+  const barnRef = useRef<HTMLDivElement>(null);
 
   const barns = useMemo(
     () => ["全部牛舍", ...Array.from(new Set(animals.map((a) => a.barn)))],
     []
   );
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (barnRef.current && !barnRef.current.contains(e.target as Node)) {
+        setBarnOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   const list = useMemo(
     () =>
@@ -65,9 +77,40 @@ function AnimalsPage() {
       <header className="px-4 pt-12 pb-3 bg-card border-b border-border sticky top-0 z-20">
         <div className="flex items-center gap-2 mb-3">
           <h1 className="text-section-title text-foreground flex-1">基础档案</h1>
-          <button className="h-8 w-8 rounded-full bg-surface-subtle text-text-secondary inline-flex items-center justify-center">
-            <Filter className="h-4 w-4" />
-          </button>
+          {/* 牛舍下拉选择 */}
+          <div ref={barnRef} className="relative">
+            <button
+              onClick={() => setBarnOpen((v) => !v)}
+              className={`h-8 pl-3 pr-2 rounded-full inline-flex items-center gap-0.5 text-body-sm transition-colors ${
+                barn === "全部牛舍"
+                  ? "bg-surface-subtle text-text-secondary"
+                  : "bg-brand-subtle text-primary border border-primary/30"
+              }`}
+            >
+              <span className="max-w-[80px] truncate">{barn}</span>
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${barnOpen ? "rotate-180" : ""}`} />
+            </button>
+            {barnOpen && (
+              <div className="absolute right-0 top-10 w-40 bg-card rounded-xl border border-border shadow-lg max-h-60 overflow-y-auto no-scrollbar z-30 py-1">
+                {barns.map((b) => (
+                  <button
+                    key={b}
+                    onClick={() => {
+                      setBarn(b);
+                      setBarnOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-body-sm transition-colors ${
+                      barn === b
+                        ? "text-primary bg-brand-subtle"
+                        : "text-foreground hover:bg-surface-subtle"
+                    }`}
+                  >
+                    {b}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -102,23 +145,6 @@ function AnimalsPage() {
         ))}
       </div>
 
-      {/* 牛舍快速筛选 */}
-      <div className="px-4 pt-2 flex gap-1.5 overflow-x-auto no-scrollbar">
-        {barns.map((b) => (
-          <button
-            key={b}
-            onClick={() => setBarn(b)}
-            className={`shrink-0 h-7 px-3 rounded-full text-caption transition-colors ${
-              barn === b
-                ? "bg-brand-subtle text-primary border border-primary/30"
-                : "bg-card border border-border text-text-secondary"
-            }`}
-          >
-            {b}
-          </button>
-        ))}
-      </div>
-
       {/* 列表 */}
       <div className="px-4 mt-3 space-y-2.5">
         <div className="text-caption text-text-tertiary">
@@ -139,7 +165,7 @@ function AnimalsPage() {
                 <span className="font-mono text-body text-foreground">#{a.id}</span>
                 <span className={statusTag[a.status]}>{a.status}</span>
               </div>
-              <div className="text-caption text-text-tertiary mt-0.5 truncate">
+              <div className="text-caption text-text-tertiary mt-1.5 truncate">
                 {a.breed} · {a.age} · {a.barn}
               </div>
               <HealthBars score={a.health} />
