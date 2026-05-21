@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
   ChevronLeft,
   CheckCheck,
@@ -8,25 +8,34 @@ import {
   AlertTriangle,
   UserCog,
   CheckCircle2,
-  XCircle,
   Clock,
-  ChevronRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/m/notifications")({
   head: () => ({ meta: [{ title: "消息通知 · 奇点智牧" }] }),
   component: NotificationsPage,
 });
 
-type Cat = "all" | "approval" | "task" | "result" | "permission";
+type Cat = "approval" | "task" | "result" | "permission";
 
 type Msg = {
   id: string;
-  cat: Exclude<Cat, "all">;
+  cat: Cat;
   title: string;
   desc: string;
   time: string;
+  /** minutes ago, used for sorting */
+  ts: number;
   link?: string;
   unread?: boolean;
   urgent?: boolean;
@@ -39,6 +48,7 @@ const MSGS: Msg[] = [
     title: "待您审批：处方申请 RX-2381",
     desc: "兽医助理 王芳 提交了 #A2381 的退烧处方申请，已等待 35 分钟。",
     time: "5 分钟前",
+    ts: 5,
     link: "/m/health/A2381",
     unread: true,
     urgent: true,
@@ -49,6 +59,7 @@ const MSGS: Msg[] = [
     title: "工单催办：3 号牛舍体温复测",
     desc: "工单 T-1042 已超期 20 分钟未开始执行，请尽快处理。",
     time: "12 分钟前",
+    ts: 12,
     link: "/m/workspace",
     unread: true,
     urgent: true,
@@ -59,6 +70,7 @@ const MSGS: Msg[] = [
     title: "审批通过：损耗申请 LS-0908",
     desc: "您提交的 #A2188 损耗申请已被场长 张磊 通过。",
     time: "1 小时前",
+    ts: 60,
     link: "/m/workspace",
     unread: true,
   },
@@ -68,6 +80,7 @@ const MSGS: Msg[] = [
     title: "新工单：修蹄任务 T-1056",
     desc: "为您指派 2 号舍 4 头牛只的修蹄任务，计划今日 15:00 前完成。",
     time: "2 小时前",
+    ts: 120,
     link: "/m/workspace",
     unread: true,
   },
@@ -77,6 +90,7 @@ const MSGS: Msg[] = [
     title: "审批驳回：药品领用 DS-0421",
     desc: "您的领药申请被驳回，原因：库存紧张，请改用替代药品。",
     time: "3 小时前",
+    ts: 180,
     link: "/m/workspace",
   },
   {
@@ -85,6 +99,7 @@ const MSGS: Msg[] = [
     title: "角色权限变更",
     desc: "您的角色已由「兽医助理」调整为「兽医」，新权限即时生效。",
     time: "昨天 18:20",
+    ts: 60 * 20,
     link: "/m/me",
   },
   {
@@ -93,6 +108,7 @@ const MSGS: Msg[] = [
     title: "待您审批：免疫计划调整",
     desc: "兽医 刘洋 提交了 3 号舍口蹄疫加强免疫计划，等待您批准。",
     time: "昨天 16:05",
+    ts: 60 * 22,
     link: "/m/workspace",
   },
   {
@@ -101,20 +117,13 @@ const MSGS: Msg[] = [
     title: "牧场关联变更",
     desc: "您已被加入「2 号牧场（生产域）」，可在切换牧场中查看。",
     time: "2 天前",
+    ts: 60 * 48,
     link: "/m/me",
   },
 ];
 
-const TABS: { key: Cat; label: string }[] = [
-  { key: "all", label: "全部" },
-  { key: "approval", label: "待审批" },
-  { key: "task", label: "工单" },
-  { key: "result", label: "审批结果" },
-  { key: "permission", label: "权限" },
-];
-
 const META: Record<
-  Msg["cat"],
+  Cat,
   { icon: typeof ClipboardList; tone: string; label: string }
 > = {
   approval: {
@@ -141,15 +150,29 @@ const META: Record<
 
 function NotificationsPage() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Cat>("all");
   const [msgs, setMsgs] = useState<Msg[]>(MSGS);
+  const [openId, setOpenId] = useState<string | null>(null);
 
-  const filtered = tab === "all" ? msgs : msgs.filter((m) => m.cat === tab);
+  const sorted = useMemo(() => [...msgs].sort((a, b) => a.ts - b.ts), [msgs]);
   const unreadCount = msgs.filter((m) => m.unread).length;
+  const current = openId ? msgs.find((m) => m.id === openId) ?? null : null;
 
   const markAllRead = () => setMsgs(msgs.map((m) => ({ ...m, unread: false })));
   const markRead = (id: string) =>
-    setMsgs(msgs.map((m) => (m.id === id ? { ...m, unread: false } : m)));
+    setMsgs((prev) => prev.map((m) => (m.id === id ? { ...m, unread: false } : m)));
+
+  const openMsg = (id: string) => {
+    markRead(id);
+    setOpenId(id);
+  };
+
+  const goDetail = () => {
+    if (current?.link) {
+      const link = current.link;
+      setOpenId(null);
+      navigate({ to: link });
+    }
+  };
 
   return (
     <MobileShell hideTabBar>
@@ -180,129 +203,135 @@ function NotificationsPage() {
             全部已读
           </button>
         </div>
-
-        {/* 分类 tab */}
-        <div className="px-3 pb-2 overflow-x-auto no-scrollbar">
-          <div className="flex gap-1.5">
-            {TABS.map((t) => {
-              const active = tab === t.key;
-              const cnt =
-                t.key === "all"
-                  ? msgs.filter((m) => m.unread).length
-                  : msgs.filter((m) => m.cat === t.key && m.unread).length;
-              return (
-                <button
-                  key={t.key}
-                  onClick={() => setTab(t.key)}
-                  className={`h-7 px-3 rounded-full text-caption whitespace-nowrap transition-colors ${
-                    active
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-surface-subtle text-text-secondary"
-                  }`}
-                >
-                  {t.label}
-                  {cnt > 0 && (
-                    <span
-                      className={`ml-1 ${
-                        active ? "opacity-90" : "text-[var(--state-danger)]"
-                      }`}
-                    >
-                      {cnt}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
       </header>
 
       {/* 消息列表 */}
       <section className="px-3 py-3 space-y-2">
-        {filtered.length === 0 && (
+        {sorted.length === 0 && (
           <div className="text-center py-16 text-caption text-text-tertiary">
             暂无消息
           </div>
         )}
 
-        {filtered.map((m) => {
+        {sorted.map((m) => {
           const Meta = META[m.cat];
           const Icon = Meta.icon;
-          const card = (
-            <div
-              className={`relative flex gap-3 p-3 rounded-xl border transition-colors ${
-                m.unread
-                  ? "bg-card border-border"
-                  : "bg-surface-subtle/40 border-border/60"
-              } active:bg-surface-subtle`}
+          return (
+            <button
+              key={m.id}
+              onClick={() => openMsg(m.id)}
+              className="block w-full text-left"
             >
-              <span
-                className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${Meta.tone}`}
+              <div
+                className={`relative flex gap-3 p-3 rounded-xl border transition-colors ${
+                  m.unread
+                    ? "bg-card border-border"
+                    : "bg-surface-subtle/40 border-border/60"
+                } active:bg-surface-subtle`}
               >
-                <Icon className="h-4 w-4" strokeWidth={1.75} />
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start gap-2">
-                  <div
-                    className={`flex-1 text-body leading-snug ${
-                      m.unread
-                        ? "text-foreground font-medium"
-                        : "text-text-secondary"
-                    }`}
-                  >
-                    {m.title}
+                <span
+                  className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${Meta.tone}`}
+                >
+                  <Icon className="h-4 w-4" strokeWidth={1.75} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start gap-2">
+                    <div
+                      className={`flex-1 text-body leading-snug ${
+                        m.unread
+                          ? "text-foreground font-medium"
+                          : "text-text-secondary"
+                      }`}
+                    >
+                      {m.title}
+                    </div>
+                    {m.unread && (
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[var(--state-danger)] shrink-0" />
+                    )}
                   </div>
-                  {m.unread && (
-                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[var(--state-danger)] shrink-0" />
-                  )}
+                  <div className="mt-1 text-caption text-text-tertiary leading-relaxed line-clamp-2">
+                    {m.desc}
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                      <Clock className="h-3 w-3" />
+                      {m.time}
+                    </span>
+                    {m.urgent && (
+                      <span className="inline-flex items-center gap-1 text-caption text-[var(--state-danger)]">
+                        <AlertTriangle className="h-3 w-3" />
+                        催办
+                      </span>
+                    )}
+                    <span
+                      className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
+                    >
+                      {Meta.label}
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-1 text-caption text-text-tertiary leading-relaxed line-clamp-2">
-                  {m.desc}
-                </div>
-                <div className="mt-1.5 flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
-                    <Clock className="h-3 w-3" />
-                    {m.time}
+              </div>
+            </button>
+          );
+        })}
+      </section>
+
+      {/* 详情弹窗 */}
+      <Dialog open={!!current} onOpenChange={(o) => !o && setOpenId(null)}>
+        <DialogContent className="max-w-[360px] rounded-2xl">
+          {current && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${META[current.cat].tone}`}
+                  >
+                    {(() => {
+                      const I = META[current.cat].icon;
+                      return <I className="h-4 w-4" strokeWidth={1.75} />;
+                    })()}
                   </span>
-                  {m.urgent && (
+                  <span
+                    className={`text-caption ${META[current.cat].tone.split(" ")[1]}`}
+                  >
+                    {META[current.cat].label}
+                  </span>
+                  {current.urgent && (
                     <span className="inline-flex items-center gap-1 text-caption text-[var(--state-danger)]">
                       <AlertTriangle className="h-3 w-3" />
                       催办
                     </span>
                   )}
-                  <span
-                    className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
-                  >
-                    {Meta.label}
-                  </span>
                 </div>
+                <DialogTitle className="text-left text-base mt-2">
+                  {current.title}
+                </DialogTitle>
+                <DialogDescription className="text-left text-body text-text-secondary leading-relaxed">
+                  {current.desc}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {current.time}
               </div>
-            </div>
-          );
-
-          if (m.link) {
-            return (
-              <Link
-                key={m.id}
-                to={m.link}
-                onClick={() => markRead(m.id)}
-                className="block"
-              >
-                {card}
-              </Link>
-            );
-          }
-          return (
-            <button
-              key={m.id}
-              onClick={() => markRead(m.id)}
-              className="block w-full text-left"
-            >
-              {card}
-            </button>
-          );
-        })}
-      </section>
+              <DialogFooter className="flex-row gap-2 sm:justify-end">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setOpenId(null)}
+                >
+                  确认
+                </Button>
+                {current.link && (
+                  <Button className="flex-1" onClick={goDetail}>
+                    查看详情
+                  </Button>
+                )}
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </MobileShell>
   );
 }
