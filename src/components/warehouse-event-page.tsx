@@ -281,7 +281,7 @@ export function WarehouseEventPage<S extends string>({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+              className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
               onClick={() => setDetail(o)}
             >
               查看
