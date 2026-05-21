@@ -33,8 +33,6 @@ type Status =
   | "已驳回"
   | "已终止";
 type Kind = "健康" | "损耗" | "修蹄" | "免疫" | "干奶" | "产后" | "驱虫" | "普修" | "复查";
-type Relation = "我建单" | "我审批" | "我执行";
-
 type Task = {
   id: string;
   target: string;
@@ -46,7 +44,7 @@ type Task = {
   who: string;
   status: Status;
   createdAt: string;
-  relation: Relation[];
+  relation: ("我建单" | "我审批" | "我执行")[];
   hasFeedback?: boolean;
   needSupply?: boolean;
   linkedTaskId?: string;
@@ -82,13 +80,6 @@ const tabs: { key: Status | "全部"; label: string }[] = [
   { key: "已完成", label: "已完成" },
   { key: "已驳回", label: "已驳回" },
   { key: "已终止", label: "已终止" },
-];
-
-const relationTabs: { key: "全部" | Relation; label: string }[] = [
-  { key: "全部", label: "全部" },
-  { key: "我执行", label: "我执行" },
-  { key: "我审批", label: "我审批" },
-  { key: "我建单", label: "我建单" },
 ];
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
