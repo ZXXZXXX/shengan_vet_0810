@@ -9,21 +9,26 @@ import {
   ChevronRight,
   ChevronDown,
   Check,
-  Droplets,
   Stethoscope,
-  Footprints,
   PackageMinus,
-  TrendingUp,
-  Users,
   Warehouse,
   Sun,
   CloudSun,
   Wind,
   Thermometer,
   MapPin,
+  Activity,
+  HeartPulse,
+  Eye,
+  Inbox,
+  PlayCircle,
+  TimerReset,
+  PackageX,
+  CalendarClock,
+  Hourglass,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel, canApprove, canViewOperations } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
@@ -36,20 +41,20 @@ const colorMap: Record<string, string> = {
   danger: "bg-[var(--state-danger)]/12 text-[var(--state-danger)]",
   info: "bg-[var(--effect-ai-cyan)]/15 text-[var(--effect-ai-cyan)]",
   purple: "bg-[var(--effect-ai-purple)]/15 text-[var(--effect-ai-purple)]",
+  success: "bg-[var(--state-success)]/15 text-[var(--state-success)]",
   muted: "bg-surface-subtle text-text-secondary",
 };
 
 function MHomePage() {
   const role = useRole();
-  const isApprover = canApprove(role);
-  const isOps = canViewOperations(role);
+  const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
 
   return (
     <MobileShell>
       <FarmSwitcher />
+
       {/* 顶部欢迎 + 通知 + 现场上报快捷入口 */}
-      <header className="px-4 pt-4 pb-6 bg-gradient-to-br from-primary via-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
-        {/* 视觉装饰层 */}
+      <header className="px-4 pt-4 pb-5 bg-gradient-to-br from-primary via-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.18] pointer-events-none"
           style={{
             backgroundImage:
@@ -59,10 +64,8 @@ function MHomePage() {
         />
         <div className="absolute -top-10 -right-10 h-44 w-44 rounded-full bg-white/15 blur-2xl" />
         <div className="absolute top-20 -left-12 h-32 w-32 rounded-full bg-[var(--effect-ai-cyan)]/25 blur-2xl" />
-        <div className="absolute bottom-0 right-1/3 h-24 w-24 rounded-full bg-white/10 blur-xl" />
-        {/* 山形剪影 */}
         <svg
-          className="absolute bottom-0 left-0 right-0 w-full h-12 opacity-25"
+          className="absolute bottom-0 left-0 right-0 w-full h-10 opacity-25"
           viewBox="0 0 400 60"
           preserveAspectRatio="none"
           fill="white"
@@ -77,7 +80,7 @@ function MHomePage() {
               <span className="text-caption opacity-90">{roleLabel[role]} · 早上好</span>
             </div>
             <div className="text-section-title mt-1.5">李师傅</div>
-            <div className="text-caption opacity-80 mt-0.5">1 号牧场 · 工号 W-1024</div>
+            <div className="text-caption opacity-80 mt-0.5">工号 W-1024</div>
           </div>
           <div className="flex items-center gap-2">
             <Link
@@ -94,132 +97,146 @@ function MHomePage() {
               <Bell className="h-4 w-4" />
               <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[var(--state-danger)]" />
             </Link>
-
           </div>
         </div>
 
-        {/* 天气 / 环境带 */}
-        <div className="relative mt-4 flex items-center gap-3 text-caption opacity-90">
+        <div className="relative mt-3 flex items-center gap-3 text-caption opacity-90">
           <span className="inline-flex items-center gap-1"><CloudSun className="h-3.5 w-3.5" />晴转多云</span>
           <span className="inline-flex items-center gap-1"><Thermometer className="h-3.5 w-3.5" />18 ~ 26℃</span>
           <span className="inline-flex items-center gap-1"><Wind className="h-3.5 w-3.5" />东南风 2 级</span>
         </div>
-
-        {/* 今日概览 */}
-        <div className="relative mt-4 grid grid-cols-3 gap-3 rounded-xl bg-white/12 backdrop-blur border border-white/20 p-3 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.3)]">
-          {isApprover ? (
-            <>
-              <Stat label="待审任务" value="6" hi />
-              <Stat label="进行中" value="12" />
-              <Stat label="今日异常" value="2" hi />
-            </>
-          ) : (
-            <>
-              <Stat label="我的任务" value="4" />
-              <Stat label="待执行" value="2" hi />
-              <Stat label="今日完成" value="3" />
-            </>
-          )}
-        </div>
       </header>
 
-
-
-      {/* 牧场数据快览（差异化展示） */}
+      {/* ============ 数据看板 ============ */}
       <section className="px-4 mt-5">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-card-title text-foreground">牧场数据快览</h3>
-          <span className="text-caption text-text-tertiary">今日</span>
+        <SectionTitle title="农场概况" hint="实时" />
+        <div className="grid grid-cols-2 gap-2">
+          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="较昨日 +6" />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="周环比 +0.4%" />
+          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="新增 3" />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日复诊 5" />
         </div>
-
-        {isOps && (
-          // 管理员 / 场长：经营级数据
-          <div className="grid grid-cols-2 gap-2">
-            <DataCard icon={Beef} tone="brand" label="存栏总数" value="1,284" sub="较昨日 +6" />
-            <DataCard icon={Droplets} tone="info" label="今日产奶" value="32.6t" sub="均产 28.5kg" />
-            <DataCard icon={TrendingUp} tone="purple" label="发情检出" value="14" sub="待配种 9" />
-            <DataCard icon={AlertTriangle} tone="danger" label="健康预警" value="3" sub="高优先 1" />
-            <DataCard icon={Warehouse} tone="warning" label="库存预警" value="2" sub="药品 1 · 饲料 1" />
-            <DataCard icon={Users} tone="muted" label="在岗人员" value="18 / 22" sub="出勤 82%" />
-          </div>
-        )}
-
-        {role === "vet" && (
-          <div className="grid grid-cols-2 gap-2">
-            <DataCard icon={ClipboardList} tone="warning" label="待审任务" value="6" sub="健康 4 · 损耗 2" />
-            <DataCard icon={Stethoscope} tone="brand" label="治疗中" value="12" sub="今日复诊 5" />
-            <DataCard icon={AlertTriangle} tone="danger" label="健康预警" value="3" sub="高优先 1" />
-            <DataCard icon={Droplets} tone="info" label="休药期" value="8" sub="今日解禁 2" />
-          </div>
-        )}
-
-        {role === "vet_assistant" && (
-          <div className="grid grid-cols-2 gap-2">
-            <DataCard icon={ClipboardList} tone="warning" label="今日任务" value="5" sub="待执行 2" />
-            <DataCard icon={Stethoscope} tone="brand" label="本周完成" value="23" sub="按时率 96%" />
-            <DataCard icon={PackageMinus} tone="purple" label="待领药" value="3" sub="去仓库领取" />
-            <DataCard icon={Camera} tone="info" label="待反馈" value="1" sub="附照片 / 视频" />
-          </div>
-        )}
-
-        {role === "hoof_trimmer" && (
-          <div className="grid grid-cols-2 gap-2">
-            <DataCard icon={Footprints} tone="warning" label="今日修蹄" value="8" sub="已完成 3" />
-            <DataCard icon={Beef} tone="brand" label="待处理牛只" value="12" sub="2 / 3 / 4 号舍" />
-            <DataCard icon={ClipboardList} tone="info" label="本周任务" value="34" sub="按时率 100%" />
-            <DataCard icon={Camera} tone="muted" label="待反馈" value="2" sub="提交执行记录" />
-          </div>
-        )}
       </section>
 
+      {canInventory && (
+        <section className="px-4 mt-4">
+          <SectionTitle title="库存概况" hint="今日" />
+          <div className="grid grid-cols-3 gap-2">
+            <DataCard icon={Warehouse} tone="info" label="物资品类" value="86" sub="" compact />
+            <DataCard icon={PackageMinus} tone="brand" label="今日入库" value="12" sub="批次" compact />
+            <DataCard icon={PackageX} tone="purple" label="今日出库" value="9" sub="批次" compact />
+          </div>
+        </section>
+      )}
 
-      {/* 异常预警 */}
-      <section className="px-4 mt-5 mb-4">
+      {/* ============ 工作台：任务概况 ============ */}
+      <section className="px-4 mt-5">
+        <SectionTitle title="任务概况" hint="我相关" />
+        <div className="grid grid-cols-3 gap-2">
+          <TaskOverviewCard to="/m/health" icon={Inbox} tone="warning" label="待响应" value="6" />
+          <TaskOverviewCard to="/m/health" icon={PlayCircle} tone="brand" label="待执行" value="4" />
+          <TaskOverviewCard to="/m/health" icon={TimerReset} tone="danger" label="已逾期" value="2" />
+        </div>
+      </section>
+
+      {/* ============ 工作台：待处理事项 ============ */}
+      <section className="px-4 mt-5">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-card-title text-foreground">异常预警</h3>
+          <h3 className="text-card-title text-foreground">待处理事项</h3>
           <Link to="/m/health" className="text-caption text-text-tertiary inline-flex items-center">
             全部 <ChevronRight className="h-3 w-3" />
           </Link>
         </div>
         <div className="space-y-2">
-          {[
-            { id: "A2381", desc: "体温异常 39.6℃", barn: "3 号牛舍", icon: AlertTriangle, tone: "danger" },
-            { id: "A2324", desc: "采食量下降 18%", barn: "2 号牛舍", icon: AlertTriangle, tone: "warning" },
-            { id: "库-中央", desc: "广谱驱虫药余量紧张", barn: "中央库", icon: PackageMinus, tone: "info" },
-          ].map((it) => {
-            const Icon = it.icon;
-            return (
-              <Link
-                key={it.id + it.desc}
-                to="/m/health"
-                className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
-              >
-                <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[it.tone]}`}>
-                  <Icon className="h-4 w-4" strokeWidth={1.75} />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-body text-foreground truncate">
-                    #{it.id} · {it.desc}
-                  </div>
-                  <div className="text-caption text-text-tertiary mt-0.5">{it.barn}</div>
+          {pendingItems.map((it) => (
+            <Link
+              key={it.id}
+              to="/m/health/$id"
+              params={{ id: it.id }}
+              className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
+            >
+              <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[it.tone]}`}>
+                <it.icon className="h-4 w-4" strokeWidth={1.75} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className={`tag ${it.tagClass} text-[11px] px-1.5 py-0`}>{it.bucket}</span>
+                  <span className="text-body text-foreground truncate">{it.title}</span>
                 </div>
-                <ChevronRight className="h-4 w-4 text-text-tertiary" />
-              </Link>
-            );
-          })}
+                <div className="text-caption text-text-tertiary mt-0.5 truncate">
+                  {it.id} · {it.barn} · {it.time}
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ============ 风险提醒 ============ */}
+      <section className="px-4 mt-5 mb-4">
+        <SectionTitle title="风险提醒" hint={`共 ${risks.length} 项`} />
+        <div className="space-y-2">
+          {risks.map((r) => (
+            <div
+              key={r.title + r.detail}
+              className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border"
+            >
+              <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[r.tone]}`}>
+                <r.icon className="h-4 w-4" strokeWidth={1.75} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="text-body text-foreground truncate">{r.title}</div>
+                <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
+              </div>
+              <span className={`text-caption ${r.tone === "danger" ? "text-[var(--state-danger)]" : r.tone === "warning" ? "text-[var(--state-warning)]" : "text-text-tertiary"}`}>
+                {r.level}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
     </MobileShell>
   );
 }
 
-function Stat({ label, value, hi }: { label: string; value: string; hi?: boolean }) {
+// ---------------- 数据 ----------------
+const pendingItems: Array<{
+  id: string;
+  title: string;
+  barn: string;
+  time: string;
+  bucket: "待响应" | "待执行" | "已逾期";
+  tagClass: string;
+  icon: typeof Stethoscope;
+  tone: keyof typeof colorMap;
+}> = [
+  { id: "WO-2381", title: "持续高烧 2 小时 #A2381", barn: "3 号牛舍", time: "今日 09:08", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning" },
+  { id: "LS-1029", title: "产后子宫破裂损耗确认", barn: "2 号牛舍", time: "今日 08:20", bucket: "待响应", tagClass: "tag-warning", icon: PackageMinus, tone: "warning" },
+  { id: "WO-2401", title: "口蹄疫加强免疫", barn: "犊牛舍 A", time: "昨日 10:00", bucket: "待执行", tagClass: "tag-brand", icon: PlayCircle, tone: "brand" },
+  { id: "HF-0702", title: "右后蹄趾间皮炎修蹄", barn: "2 号牛舍", time: "已逾期 4h", bucket: "已逾期", tagClass: "tag-danger", icon: TimerReset, tone: "danger" },
+];
+
+const risks: Array<{
+  title: string;
+  detail: string;
+  level: string;
+  tone: keyof typeof colorMap;
+  icon: typeof AlertTriangle;
+}> = [
+  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "紧急", tone: "danger", icon: PackageX },
+  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "提醒", tone: "warning", icon: Hourglass },
+  { title: "任务即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: TimerReset },
+  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "关注", tone: "info", icon: Activity },
+  { title: "复查临近：#A2150", detail: "明日复查 · 产后护理", level: "明日", tone: "purple", icon: CalendarClock },
+];
+
+// ---------------- 子组件 ----------------
+function SectionTitle({ title, hint }: { title: string; hint?: string }) {
   return (
-    <div>
-      <div className="text-caption opacity-80">{label}</div>
-      <div className={`mt-0.5 text-section-title tabular-nums ${hi ? "text-white" : "text-white/95"}`}>
-        {value}
-      </div>
+    <div className="flex items-center justify-between mb-2">
+      <h3 className="text-card-title text-foreground">{title}</h3>
+      {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
     </div>
   );
 }
@@ -230,12 +247,14 @@ function DataCard({
   label,
   value,
   sub,
+  compact,
 }: {
   icon: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
   value: string;
   sub?: string;
+  compact?: boolean;
 }) {
   return (
     <div className="rounded-xl bg-card border border-border p-3">
@@ -243,14 +262,47 @@ function DataCard({
         <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
           <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
         </span>
-        <span className="text-caption text-text-secondary">{label}</span>
+        <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      <div className="mt-2 text-section-title text-foreground tabular-nums">{value}</div>
-      {sub && <div className="text-caption text-text-tertiary mt-0.5">{sub}</div>}
+      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
+      {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
     </div>
   );
 }
 
+function TaskOverviewCard({
+  to,
+  icon: Icon,
+  tone,
+  label,
+  value,
+}: {
+  to: string;
+  icon: typeof Inbox;
+  tone: keyof typeof colorMap;
+  label: string;
+  value: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="rounded-xl bg-card border border-border p-3 flex flex-col gap-2 active:bg-surface-subtle"
+    >
+      <div className="flex items-center justify-between">
+        <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
+          <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+        </span>
+        <ChevronRight className="h-3.5 w-3.5 text-text-tertiary" />
+      </div>
+      <div>
+        <div className="text-caption text-text-secondary">{label}</div>
+        <div className="text-section-title text-foreground tabular-nums mt-0.5">{value}</div>
+      </div>
+    </Link>
+  );
+}
+
+// ---------------- 牧场切换 ----------------
 const FARMS = [
   { id: "f1", name: "1 号牧场", region: "黑龙江·齐齐哈尔", scale: "存栏 1,284" },
   { id: "f2", name: "2 号牧场", region: "黑龙江·大庆", scale: "存栏 968" },
@@ -341,3 +393,6 @@ function FarmSwitcher() {
     </div>
   );
 }
+
+// Suppress unused imports kept for readability
+void ClipboardList;
