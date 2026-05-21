@@ -226,41 +226,20 @@ function TaskDetailPage() {
         )}
       </div>
 
-      {/* 底部操作栏 */}
-      {showApproval ? (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 flex gap-2 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+      {/* 底部操作栏 —— 小程序仅查看，审批 / 执行需前往 PC */}
+      {(showApproval || showExecBtn) ? (
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] space-y-2">
+          <div className="rounded-lg bg-surface-subtle px-3 py-2 text-caption text-text-secondary inline-flex items-start gap-1.5 w-full">
+            <AlertTriangle className="h-3.5 w-3.5 text-[var(--state-warning)] shrink-0 mt-0.5" />
+            <span>
+              小程序暂不支持{showApproval ? "审批操作" : "执行 / 反馈操作"}，请前往 PC 端处理。
+            </span>
+          </div>
           <button
-            onClick={() => setConfirm("reject")}
-            className="flex-1 h-12 rounded-lg border border-border text-body text-text-secondary inline-flex items-center justify-center gap-1.5"
+            onClick={() => navigate({ to: "/m/health" })}
+            className="w-full h-11 rounded-lg border border-border text-body text-text-secondary"
           >
-            <X className="h-4 w-4" /> 驳回
-          </button>
-          <button
-            onClick={() => setConfirm("approve")}
-            className="flex-1 h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-          >
-            <Check className="h-4 w-4" /> 通过
-          </button>
-        </div>
-      ) : showExecBtn ? (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 flex gap-2 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-          <button
-            onClick={() => {
-              setShowIssue((v) => !v);
-              if (!showIssue) setShowExec(false);
-            }}
-            className="flex-1 h-12 rounded-lg border border-[var(--state-danger)]/40 text-[var(--state-danger)] text-body inline-flex items-center justify-center gap-1.5"
-          >
-            <AlertTriangle className="h-4 w-4" /> 异常反馈
-          </button>
-          <button
-            onClick={() => {
-              setShowExec((v) => !v);
-              if (!showExec) setShowIssue(false);
-            }}
-            className="flex-1 h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-          >
-            <PlayCircle className="h-4 w-4" /> {showExec ? "收起执行" : "执行记录"}
+            返回任务列表
           </button>
         </div>
       ) : (
