@@ -17,7 +17,7 @@ import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/health/")({
-  head: () => ({ meta: [{ title: "任务 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "任务列表 · 奇点智牧" }] }),
   component: TaskListPage,
 });
 
@@ -81,7 +81,7 @@ function TaskListPage() {
 
   return (
     <MobileShell
-      title={isApprover ? "任务审批" : "我的任务"}
+      title="任务列表"
       right={
         <Link
           to="/m/report"
