@@ -61,23 +61,10 @@ function MHomePage() {
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
   const farm = useFarm();
 
-  // 牧场切换
-  const [farmOpen, setFarmOpen] = useState(false);
-  const farmRef = useRef<HTMLDivElement>(null);
-  const currentFarmId = useFarmId();
-  const singleFarm = FARMS.length === 1;
-
-  useEffect(() => {
-    if (!farmOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (farmRef.current && !farmRef.current.contains(e.target as Node)) setFarmOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [farmOpen]);
-
   return (
     <MobileShell>
+      {/* 牧场切换（全局数据） */}
+      <FarmSwitcher />
 
       {/* 顶部欢迎 —— 草原图文样式 */}
       <header className="relative overflow-hidden text-white">
@@ -101,56 +88,9 @@ function MHomePage() {
                 <span className="text-[11px] text-white/90">{roleLabel[role]} · 早上好</span>
               </div>
               <div className="text-section-title mt-2 drop-shadow-sm">李师傅</div>
-              <div className="mt-0.5" ref={farmRef}>
-                <button
-                  type="button"
-                  onClick={() => !singleFarm && setFarmOpen((v) => !v)}
-                  className="inline-flex items-center gap-1 text-caption text-white/85 active:opacity-70 transition-opacity"
-                >
-                  <MapPin className="h-3 w-3" />
-                  <span>{farm.name} · {farm.region}</span>
-                  {!singleFarm && (
-                    <ChevronDown className={`h-3 w-3 transition-transform ${farmOpen ? "rotate-180" : ""}`} />
-                  )}
-                </button>
-                {/* 牧场下拉菜单 */}
-                {farmOpen && !singleFarm && (
-                  <div className="absolute left-4 right-4 top-full mt-2 bg-white/95 backdrop-blur rounded-xl shadow-[0_8px_30px_-4px_rgba(0,0,0,0.25)] border border-white/30 overflow-hidden z-50 max-h-[60vh] overflow-y-auto">
-                    <div className="px-4 py-2 text-caption text-text-tertiary border-b border-border bg-white/80">
-                      共 {FARMS.length} 个牧场 · 切换后全局数据将同步更新
-                    </div>
-                    {FARMS.map((f) => {
-                      const active = f.id === currentFarmId;
-                      return (
-                        <button
-                          key={f.id}
-                          onClick={() => {
-                            setFarmId(f.id);
-                            setFarmOpen(false);
-                          }}
-                          className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
-                            active ? "bg-brand-subtle/40" : ""
-                          }`}
-                        >
-                          <span
-                            className={`h-8 w-8 rounded-lg inline-flex items-center justify-center shrink-0 ${
-                              active ? "bg-primary text-primary-foreground" : "bg-surface-subtle text-text-secondary"
-                            }`}
-                          >
-                            <MapPin className="h-4 w-4" />
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-body text-foreground">{f.name}</div>
-                            <div className="text-caption text-text-tertiary truncate">
-                              {f.region} · {f.scale}
-                            </div>
-                          </div>
-                          {active && <Check className="h-4 w-4 text-primary shrink-0" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+              <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                {farm.name} · {farm.region}
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -432,7 +372,91 @@ function TaskOverviewCard({
   );
 }
 
-// ---------------- 牧场切换（已内联到 Header）
+// ---------------- 牧场切换 ----------------
+function FarmSwitcher() {
+  const [open, setOpen] = useState(false);
+  const currentId = useFarmId();
+  const ref = useRef<HTMLDivElement>(null);
+  const current = FARMS.find((f) => f.id === currentId) ?? FARMS[0];
+  const single = FARMS.length === 1;
+
+
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  return (
+    <div
+      ref={ref}
+      className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border px-4 py-2"
+    >
+
+      <button
+        type="button"
+        onClick={() => !single && setOpen((v) => !v)}
+        className="w-full h-11 flex items-center gap-2 active:bg-surface-subtle"
+      >
+        <span className="h-6 w-6 rounded-md bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
+          <MapPin className="h-3.5 w-3.5" />
+        </span>
+        <span className="text-body font-medium text-foreground truncate">{current.name}</span>
+        <span className="text-caption text-text-tertiary truncate">· {current.region}</span>
+        <span className="flex-1" />
+        {single ? (
+          <span className="text-caption text-text-tertiary">仅 1 个牧场</span>
+        ) : (
+          <span className="inline-flex items-center gap-1 text-caption text-primary">
+            切换
+            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+          </span>
+        )}
+      </button>
+
+      {open && !single && (
+        <div className="absolute left-0 right-0 top-full bg-card border border-border shadow-lg rounded-xl mt-1 max-h-[60vh] overflow-y-auto">
+          <div className="px-4 py-2 text-caption text-text-tertiary border-b border-border">
+            共 {FARMS.length} 个牧场 · 切换后全局数据将同步更新
+          </div>
+          {FARMS.map((f) => {
+            const active = f.id === currentId;
+            return (
+              <button
+                key={f.id}
+                onClick={() => {
+                  setFarmId(f.id);
+                  setOpen(false);
+                }}
+                className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
+                  active ? "bg-brand-subtle/40" : ""
+                }`}
+              >
+                <span
+                  className={`h-8 w-8 rounded-lg inline-flex items-center justify-center shrink-0 ${
+                    active ? "bg-primary text-primary-foreground" : "bg-surface-subtle text-text-secondary"
+                  }`}
+                >
+                  <MapPin className="h-4 w-4" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-body text-foreground">{f.name}</div>
+                  <div className="text-caption text-text-tertiary truncate">
+                    {f.region} · {f.scale}
+                  </div>
+                </div>
+                {active && <Check className="h-4 w-4 text-primary shrink-0" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Suppress unused imports kept for readability
 void ClipboardList;
