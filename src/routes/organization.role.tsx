@@ -72,7 +72,7 @@ type Feature = { key: string; name: string };
 type FeatureGroup = { group: string; items: Feature[] };
 
 const pcFeatures: FeatureGroup[] = [
-  { group: "首页总览", items: [{ key: "dashboard", name: "运营看板" }] },
+  { group: "首页", items: [{ key: "dashboard", name: "运营看板" }] },
   { group: "基础档案", items: [
     { key: "farm", name: "牛场信息" },
     { key: "barn", name: "牛舍信息" },
