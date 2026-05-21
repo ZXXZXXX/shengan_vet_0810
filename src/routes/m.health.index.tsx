@@ -173,9 +173,7 @@ function TaskListPage() {
                       <div className="mt-2 flex items-start justify-between text-caption text-text-tertiary">
                         <span className="truncate">提出 {o.proposer} · 负责 {o.who}</span>
                         <div className="flex flex-col items-end gap-1 shrink-0 min-w-1 ml-3">
-                          <span className="inline-flex items-center">
-                            {o.createdAt} <ChevronRight className="h-3 w-3 ml-0.5" />
-                          </span>
+                          <span>{o.createdAt}</span>
                           {(canApproveThis || canExecuteThis) && (
                             <span
                               className={`inline-flex items-center gap-0.5 ${
