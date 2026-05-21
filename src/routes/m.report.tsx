@@ -347,7 +347,7 @@ function ReportPage() {
             {workType !== "" && (
               <>
                 {/* 症状标签 */}
-                <Section title="症状标签" required hint="可多选；可通过"其他"自行添加">
+                <Section title="症状标签" required hint={`可多选；可通过"其他"自行添加`}>
                   <div className="flex flex-wrap gap-2">
                     {symptomTags.map((t) => {
                       const active = symptoms.includes(t);
