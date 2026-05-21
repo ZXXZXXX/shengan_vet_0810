@@ -25,6 +25,9 @@ import {
   PackageX,
   CalendarClock,
   Hourglass,
+  Pill,
+  Syringe,
+  Footprints,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
