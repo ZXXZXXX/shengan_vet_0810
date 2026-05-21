@@ -61,10 +61,23 @@ function MHomePage() {
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
   const farm = useFarm();
 
+  // 牧场切换
+  const [farmOpen, setFarmOpen] = useState(false);
+  const farmRef = useRef<HTMLDivElement>(null);
+  const currentFarmId = useFarmId();
+  const singleFarm = FARMS.length === 1;
+
+  useEffect(() => {
+    if (!farmOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (farmRef.current && !farmRef.current.contains(e.target as Node)) setFarmOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [farmOpen]);
+
   return (
     <MobileShell>
-      {/* 牧场切换（全局数据） */}
-      <FarmSwitcher />
 
       {/* 顶部欢迎 —— 草原图文样式 */}
       <header className="relative overflow-hidden text-white">
