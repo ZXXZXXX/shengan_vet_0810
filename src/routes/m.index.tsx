@@ -137,8 +137,16 @@ function MHomePage() {
       {/* ============ 工作台：任务概况 ============ */}
       <section className="px-4 mt-5">
         <SectionTitle title="任务概况" hint="我相关" />
-        <div className="grid grid-cols-3 gap-2">
-          <TaskOverviewCard to="/m/health" icon={Inbox} tone="warning" label="待响应" value="6" />
+        <div className={`grid gap-2 ${showFirstBucket ? "grid-cols-3" : "grid-cols-2"}`}>
+          {showFirstBucket && (
+            <TaskOverviewCard
+              to="/m/health"
+              icon={isApprover ? ClipboardList : Inbox}
+              tone="warning"
+              label={firstBucketLabel}
+              value="6"
+            />
+          )}
           <TaskOverviewCard to="/m/health" icon={PlayCircle} tone="brand" label="待执行" value="4" />
           <TaskOverviewCard to="/m/health" icon={TimerReset} tone="danger" label="已逾期" value="2" />
         </div>
