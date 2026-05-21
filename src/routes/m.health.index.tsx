@@ -84,11 +84,9 @@ const tabs: { key: Status | "全部"; label: string }[] = [
   { key: "已终止", label: "已终止" },
 ];
 
-const relationTabs: { key: "全部" | Relation; label: string }[] = [
+const relationTabs: { key: "全部" | "我审批"; label: string }[] = [
   { key: "全部", label: "全部" },
-  { key: "我执行", label: "我执行" },
   { key: "我审批", label: "我审批" },
-  { key: "我建单", label: "我建单" },
 ];
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
