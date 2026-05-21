@@ -250,3 +250,94 @@ function DataCard({
     </div>
   );
 }
+
+const FARMS = [
+  { id: "f1", name: "1 号牧场", region: "黑龙江·齐齐哈尔", scale: "存栏 1,284" },
+  { id: "f2", name: "2 号牧场", region: "黑龙江·大庆", scale: "存栏 968" },
+  { id: "f3", name: "3 号牧场", region: "内蒙古·呼伦贝尔", scale: "存栏 2,150" },
+  { id: "f4", name: "4 号牧场", region: "山东·济宁", scale: "存栏 720" },
+  { id: "f5", name: "5 号牧场", region: "宁夏·吴忠", scale: "存栏 1,032" },
+];
+
+function FarmSwitcher() {
+  const [open, setOpen] = useState(false);
+  const [currentId, setCurrentId] = useState(FARMS[0].id);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = FARMS.find((f) => f.id === currentId)!;
+  const single = FARMS.length === 1;
+
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  return (
+    <div
+      ref={ref}
+      className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border pt-9"
+    >
+      <button
+        type="button"
+        onClick={() => !single && setOpen((v) => !v)}
+        className="w-full h-11 px-4 flex items-center gap-2 active:bg-surface-subtle"
+      >
+        <span className="h-6 w-6 rounded-md bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
+          <MapPin className="h-3.5 w-3.5" />
+        </span>
+        <span className="text-body font-medium text-foreground truncate">{current.name}</span>
+        <span className="text-caption text-text-tertiary truncate">· {current.region}</span>
+        <span className="flex-1" />
+        {single ? (
+          <span className="text-caption text-text-tertiary">仅 1 个牧场</span>
+        ) : (
+          <span className="inline-flex items-center gap-1 text-caption text-primary">
+            切换
+            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+          </span>
+        )}
+      </button>
+
+      {open && !single && (
+        <div className="absolute left-0 right-0 top-full bg-card border-b border-border shadow-lg max-h-[60vh] overflow-y-auto">
+          <div className="px-4 py-2 text-caption text-text-tertiary border-b border-border">
+            共 {FARMS.length} 个牧场 · 切换后全局数据将同步更新
+          </div>
+          {FARMS.map((f) => {
+            const active = f.id === currentId;
+            return (
+              <button
+                key={f.id}
+                onClick={() => {
+                  setCurrentId(f.id);
+                  setOpen(false);
+                }}
+                className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
+                  active ? "bg-brand-subtle/40" : ""
+                }`}
+              >
+                <span
+                  className={`h-8 w-8 rounded-lg inline-flex items-center justify-center shrink-0 ${
+                    active ? "bg-primary text-primary-foreground" : "bg-surface-subtle text-text-secondary"
+                  }`}
+                >
+                  <MapPin className="h-4 w-4" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-body text-foreground">{f.name}</div>
+                  <div className="text-caption text-text-tertiary truncate">
+                    {f.region} · {f.scale}
+                  </div>
+                </div>
+                {active && <Check className="h-4 w-4 text-primary shrink-0" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
