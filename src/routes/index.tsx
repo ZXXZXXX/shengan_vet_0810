@@ -45,7 +45,7 @@ const kpis = [
   { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "todos" as const },
 ];
 
-type RequestType = "transfer" | "health";
+type RequestType = "transfer" | "health" | "feedback";
 type PendingRequest = {
   id: string;
   type: RequestType;
@@ -54,9 +54,20 @@ type PendingRequest = {
   applicant: string;
   time: string;
   detail: string;
+  link?: string;
 };
 
 const pendingRequests: PendingRequest[] = [
+  {
+    id: "FB-2065",
+    type: "feedback",
+    title: "WO-2298 · 乳房炎复诊反馈待处理",
+    desc: "执行者李雨晴反馈牛只体温复升，建议追加抗生素",
+    applicant: "李雨晴",
+    time: "5 分钟前",
+    detail: "复诊时牛体温再次升至 39.8℃，建议追加抗生素治疗并安排隔离观察。",
+    link: "/production/feedback",
+  },
   {
     id: "REQ-2381",
     type: "health",
@@ -65,6 +76,16 @@ const pendingRequests: PendingRequest[] = [
     applicant: "李兽医",
     time: "8 分钟前",
     detail: "牛只 #A2381 持续 2 小时体温高于 40℃，建议转入隔离区并安排血常规检测，预计耗材：抗生素 1 支、采血管 2 支。",
+  },
+  {
+    id: "FB-2064",
+    type: "feedback",
+    title: "HF-0702 · 修蹄现场反馈待处理",
+    desc: "外部修蹄工反馈牛只剧烈反抗，需追加保定栏",
+    applicant: "外部·张师傅",
+    time: "26 分钟前",
+    detail: "现场牛只剧烈反抗，需要追加保定栏与一名助手才能完成修蹄。",
+    link: "/production/feedback",
   },
   {
     id: "REQ-2380",
@@ -84,21 +105,14 @@ const pendingRequests: PendingRequest[] = [
     time: "1 小时前",
     detail: "5 头待免疫牛只目前处于发情期，按规程不宜立即免疫。申请将本批免疫计划由 5/12 顺延至 5/15 执行。",
   },
-  {
-    id: "REQ-2378",
-    type: "transfer",
-    title: "兽药领用调拨申请",
-    desc: "总仓向 5 号牛舍调拨 3 类兽药",
-    applicant: "孙库管",
-    time: "今日 09:12",
-    detail: "5 号牛舍周保养所需消毒液 5 L、驱虫剂 2 盒、营养补充剂 1 箱，请审批后由总仓出库配送。",
-  },
 ];
 
 const requestTypeMeta: Record<RequestType, { label: string; tone: string }> = {
   transfer: { label: "调拨申请", tone: "info" },
   health: { label: "健康防护", tone: "warning" },
+  feedback: { label: "反馈处理", tone: "danger" },
 };
+
 
 const todos = [
   { title: "复查疑似乳房炎处理结果", owner: "李兽医", due: "今天 18:00" },

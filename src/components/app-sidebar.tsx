@@ -62,8 +62,6 @@ const groups: NavGroup[] = [
       { title: "干奶工单", url: "/production/drying" },
       { title: "驱虫工单", url: "/production/deworm" },
       { title: "普修工单", url: "/production/general" },
-      { title: "计划性事项", url: "/production/plans" },
-      { title: "反馈处理", url: "/production/feedback" },
     ],
   },
   {
