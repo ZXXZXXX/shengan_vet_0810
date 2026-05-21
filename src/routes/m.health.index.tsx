@@ -82,11 +82,29 @@ const kindIcon: Record<Kind, typeof Stethoscope> = {
 function TaskListPage() {
   const role = useRole();
   const isApprover = canApprove(role);
+  const claimed = useClaimed();
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
   const [q, setQ] = useState("");
 
+  // 注入"领取"任务（来自审批通过的处方/补领申请）
+  const pickupTasks: Task[] = PICKUPS.map((p) => {
+    const done = claimed.includes(p.id);
+    return {
+      id: p.id,
+      target: p.title,
+      barn: p.barn,
+      kind: "领取",
+      type: "药品/器材领取",
+      event: `${p.warehouse} · ${p.items.length} 项`,
+      proposer: p.approver.split("（")[0],
+      who: "李雨晴",
+      status: done ? "已完成" : "进行中",
+      createdAt: p.approvedAt,
+    };
+  });
+
   // 修蹄工只看到自己的修蹄任务
-  let list = tasks;
+  let list: Task[] = [...pickupTasks, ...tasks];
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
   const kw = q.trim().toLowerCase();
