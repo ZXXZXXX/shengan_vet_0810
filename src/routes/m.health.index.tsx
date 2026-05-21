@@ -35,15 +35,21 @@ type Task = {
   who: string;
   status: Status;
   createdAt: string;
+  // 损耗专属
+  item?: string;
+  qty?: string;
+  reapply?: { name: string; qty: string };
+  // 健康专属
+  symptoms?: string[];
 };
 
 const tasks: Task[] = [
-  { id: "WO-2381", target: "#A2381", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "持续高烧 2 小时", proposer: "陈晓东", who: "李雨晴", status: "待审批", createdAt: "今日 09:08" },
-  { id: "WO-2298", target: "#A2298", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", status: "进行中", createdAt: "昨日 14:20" },
-  { id: "WO-2401", target: "犊牛舍 A", barn: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", status: "进行中", createdAt: "昨日 10:00" },
-  { id: "WO-2324", target: "#A2324", barn: "5 号牛舍", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", status: "已驳回", createdAt: "前日 18:42" },
-  { id: "LS-1029", target: "#A2150", barn: "2 号牛舍", kind: "损耗", type: "疾病死亡", event: "产后子宫破裂", proposer: "孙明", who: "李雨晴", status: "待审批", createdAt: "今日 08:20" },
-  { id: "LS-1011", target: "#A1988", barn: "5 号牛舍", kind: "损耗", type: "淘汰处置", event: "高龄无产能", proposer: "孙明", who: "孙明", status: "已完成", createdAt: "5 月 15 日" },
+  { id: "WO-2381", target: "#A2381", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "持续高烧 2 小时", proposer: "陈晓东", who: "李雨晴", status: "待审批", createdAt: "今日 09:08", symptoms: ["体温升高", "采食下降", "反刍减少"] },
+  { id: "WO-2298", target: "#A2298", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", status: "进行中", createdAt: "昨日 14:20", symptoms: ["乳房红肿"] },
+  { id: "WO-2401", target: "犊牛舍 A", barn: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", status: "进行中", createdAt: "昨日 10:00", symptoms: [] },
+  { id: "WO-2324", target: "#A2324", barn: "5 号牛舍", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", status: "已驳回", createdAt: "前日 18:42", symptoms: ["采食下降", "精神沉郁"] },
+  { id: "LS-1029", target: "口蹄疫疫苗 A 型", barn: "2 号牛舍", kind: "损耗", type: "物资损耗", event: "冷链断电导致失效", proposer: "孙明", who: "李雨晴", status: "待审批", createdAt: "今日 08:20", item: "口蹄疫疫苗 A 型", qty: "8 支", reapply: { name: "口蹄疫疫苗 A 型", qty: "8 支" } },
+  { id: "LS-1011", target: "营养补充剂", barn: "5 号牛舍", kind: "损耗", type: "物资损耗", event: "外箱破损渗漏", proposer: "孙明", who: "孙明", status: "已完成", createdAt: "5 月 15 日", item: "营养补充剂", qty: "2 罐" },
   { id: "HF-0702", target: "#A2150", barn: "2 号牛舍", kind: "修蹄", type: "批次修蹄", event: "右后蹄趾间皮炎", proposer: "周凯", who: "外部·张师傅", status: "进行中", createdAt: "今日 07:30" },
   { id: "HF-0688", target: "#A2270", barn: "3 号牛舍", kind: "修蹄", type: "批次修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", status: "已完成", createdAt: "5 月 12 日" },
 ];
@@ -191,8 +197,22 @@ function TaskListPage() {
                         <span className={s.tag}>{o.status}</span>
                       </div>
                       <div className="text-body text-foreground">
-                        {o.target} · {o.event}
+                        {o.kind === "损耗"
+                          ? `${o.item ?? o.target} · 损耗 ${o.qty ?? "—"}`
+                          : `${o.target} · ${o.event}`}
                       </div>
+                      {o.kind === "健康" && o.symptoms && o.symptoms.length > 0 && (
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                          {o.symptoms.slice(0, 4).map((sym) => (
+                            <span key={sym} className="tag tag-muted">{sym}</span>
+                          ))}
+                        </div>
+                      )}
+                      {o.kind === "损耗" && o.reapply && (
+                        <div className="mt-1.5 text-caption text-text-secondary">
+                          需补申请：{o.reapply.name} × {o.reapply.qty}
+                        </div>
+                      )}
                       <div className="mt-2 flex items-start justify-between text-caption text-text-tertiary">
                         <span className="truncate">提出 {o.proposer} · 负责 {o.who}</span>
                         <div className="flex flex-col items-end gap-1 shrink-0 min-w-1 ml-3">

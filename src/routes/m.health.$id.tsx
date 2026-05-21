@@ -1,8 +1,6 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Check,
-  X,
   ClipboardList,
   AlertTriangle,
   CheckCircle2,
@@ -11,6 +9,10 @@ import {
   MessageSquare,
   Camera,
   Send,
+  Mic,
+  Video,
+  FileText,
+  PackagePlus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove, canExecute } from "@/lib/mobile-role";
@@ -48,27 +50,41 @@ function TaskDetailPage() {
   const [showIssue, setShowIssue] = useState(false);
 
   // mock —— 修蹄工默认看到的是修蹄类，否则健康类
-  const isHoof = role === "hoof_trimmer";
+  const isLoss = id.startsWith("LS");
+  const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
+  const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
   const o = {
     id,
-    target: "#A2381",
-    barn: "3 号牛舍",
-    kind: isHoof ? "修蹄" : "健康",
-    type: isHoof ? "批次修蹄" : "疾病治疗",
-    event: isHoof ? "右后蹄趾间皮炎" : "持续高烧 2 小时",
-    proposer: "陈晓东",
+    target: isLoss ? "口蹄疫疫苗 A 型" : "#A2381",
+    barn: isLoss ? "2 号牛舍" : "3 号牛舍",
+    kind,
+    type: isLoss ? "物资损耗" : isHoof ? "批次修蹄" : "疾病治疗",
+    event: isLoss
+      ? "冷链断电导致失效"
+      : isHoof
+      ? "右后蹄趾间皮炎"
+      : "持续高烧 2 小时",
+    proposer: isLoss ? "孙明" : "陈晓东",
     proposerPhone: "138 0000 0001",
-    who: isHoof ? "外部·张师傅" : "李雨晴",
+    who: isLoss ? "李雨晴" : isHoof ? "外部·张师傅" : "李雨晴",
     status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待审批") as
       | "待审批"
       | "进行中"
       | "已完成"
       | "已驳回",
     createdAt: "2026-05-20 09:08",
-    desc: isHoof
-      ? "巡检发现 #A2381 右后蹄趾间皮炎，需进行清创修蹄并涂抹药剂，建议进入隔离观察 3 天。"
+    desc: isLoss
+      ? "冷链监测发现 #2 冷柜断电 4 小时,该批疫苗已失效,需作损耗登记并补充申请。"
+      : isHoof
+      ? "巡检发现 #A2381 右后蹄趾间皮炎,需进行清创修蹄并涂抹药剂,建议进入隔离观察 3 天。"
       : "饲养员巡检发现该牛持续高烧 2 小时(39.6℃),同时表现出食欲下降、反刍减少。建议立即抗生素治疗并进入隔离观察。",
     photos: 2,
+    videos: isLoss ? 1 : 0,
+    voiceSecs: isLoss ? 42 : 28,
+    item: "口蹄疫疫苗 A 型",
+    qty: "8 支",
+    reapply: { name: "口蹄疫疫苗 A 型", qty: "8 支" } as { name: string; qty: string } | null,
+    symptoms: ["体温升高", "采食下降", "反刍减少"],
   };
   const s = statusMap[o.status];
   const Icon = s.icon;
@@ -90,18 +106,28 @@ function TaskDetailPage() {
             <span className={s.tag}>{o.status}</span>
           </div>
           <div className="mt-2 text-section-title text-foreground">
-            {o.target} · {o.event}
+            {isLoss ? `${o.item} · 损耗 ${o.qty}` : `${o.target} · ${o.event}`}
           </div>
           <div className="text-caption text-text-tertiary mt-1">
-            {o.barn} · 创建于 {o.createdAt}
+            {isLoss ? "物资" : o.barn} · 创建于 {o.createdAt}
           </div>
         </div>
 
         {/* 字段网格 */}
         <div className="rounded-xl bg-card border border-border divide-y divide-border">
           <Row label="任务类型" value={<span className="tag tag-muted">{o.type}</span>} />
-          <Row label="处理对象" value={<span className="text-body text-foreground">{o.target}</span>} />
-          <Row label="提出事件" value={<span className="text-body text-foreground">{o.event}</span>} />
+          {isLoss ? (
+            <>
+              <Row label="物品名称" value={<span className="text-body text-foreground">{o.item}</span>} />
+              <Row label="损耗量" value={<span className="text-body text-foreground">{o.qty}</span>} />
+              <Row label="关联牛舍" value={<span className="text-body text-foreground">{o.barn}</span>} />
+            </>
+          ) : (
+            <>
+              <Row label="处理对象" value={<span className="text-body text-foreground">{o.target}</span>} />
+              <Row label="提出事件" value={<span className="text-body text-foreground">{o.event}</span>} />
+            </>
+          )}
           <Row
             label="提出者"
             value={
@@ -122,23 +148,94 @@ function TaskDetailPage() {
           <Row label="负责人" value={<span className="text-body text-foreground">{o.who}</span>} />
         </div>
 
-        {/* 任务说明 */}
+        {/* 健康：症状标签 */}
+        {kind === "健康" && o.symptoms.length > 0 && (
+          <div className="rounded-xl bg-card border border-border p-4">
+            <div className="text-caption text-text-tertiary mb-2">症状说明</div>
+            <div className="flex flex-wrap gap-1.5">
+              {o.symptoms.map((sym) => (
+                <span key={sym} className="tag tag-brand">{sym}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 损耗：补申请 */}
+        {isLoss && (
+          <div className="rounded-xl bg-card border border-border p-4">
+            <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1.5">
+              <PackagePlus className="h-3.5 w-3.5 text-primary" /> 补申请物资
+            </div>
+            {o.reapply ? (
+              <div className="flex items-center justify-between text-body text-foreground">
+                <span>{o.reapply.name}</span>
+                <span className="font-mono text-text-secondary">× {o.reapply.qty}</span>
+              </div>
+            ) : (
+              <div className="text-body-sm text-text-tertiary">无需补申请</div>
+            )}
+          </div>
+        )}
+
+        {/* 任务说明 / 文字备注 */}
         <div className="rounded-xl bg-card border border-border p-4">
-          <div className="text-caption text-text-tertiary mb-1.5">任务说明</div>
+          <div className="text-caption text-text-tertiary mb-1.5">
+            {isLoss ? "文字备注" : "任务说明"}
+          </div>
           <p className="text-body-sm text-text-secondary leading-relaxed">{o.desc}</p>
         </div>
 
-        {/* 现场照片 */}
-        <div className="rounded-xl bg-card border border-border p-4">
-          <div className="text-caption text-text-tertiary mb-2">现场照片 · {o.photos} 张</div>
-          <div className="grid grid-cols-3 gap-2">
-            {Array.from({ length: o.photos }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border"
-              />
-            ))}
-          </div>
+        {/* 证据材料 */}
+        <div className="rounded-xl bg-card border border-border p-4 space-y-3">
+          <div className="text-caption text-text-tertiary">证据材料</div>
+          {o.photos > 0 && (
+            <div>
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Camera className="h-3 w-3" /> 照片 · {o.photos} 张
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {Array.from({ length: o.photos }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          {o.videos > 0 && (
+            <div>
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Video className="h-3 w-3" /> 视频 · {o.videos} 段
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {Array.from({ length: o.videos }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center"
+                  >
+                    <PlayCircle className="h-6 w-6 text-text-tertiary" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {o.voiceSecs > 0 && (
+            <div className="flex items-center gap-2 px-3 h-10 rounded-lg bg-surface-subtle border border-border">
+              <Mic className="h-4 w-4 text-primary" />
+              <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
+                <div className="h-full w-2/3 bg-primary/60" />
+              </div>
+              <span className="font-mono text-caption text-text-secondary">
+                00:{String(o.voiceSecs).padStart(2, "0")}
+              </span>
+            </div>
+          )}
+          {o.photos === 0 && o.videos === 0 && o.voiceSecs === 0 && (
+            <div className="text-body-sm text-text-tertiary inline-flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5" /> 仅文字描述,无附件
+            </div>
+          )}
         </div>
 
         {/* 执行记录面板（流程性） */}
