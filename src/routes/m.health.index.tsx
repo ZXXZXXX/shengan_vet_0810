@@ -213,16 +213,18 @@ function TaskListPage() {
                           需补申请：{o.reapply.name} × {o.reapply.qty}
                         </div>
                       )}
-                      <div className="mt-2 flex items-start justify-between text-caption text-text-tertiary">
+                      <div className="mt-2 flex items-center justify-between text-caption text-text-tertiary">
                         <span className="truncate">提出 {o.proposer} · 负责 {o.who}</span>
-                        <div className="flex flex-col items-end gap-1 shrink-0 min-w-1 ml-3">
-                          <span>{o.createdAt}</span>
-                          {(canApproveThis || canExecuteThis) && (
-                            <span className="text-text-tertiary">
-                              {canApproveThis ? "请前往 PC 审批" : "请前往 PC 处理"}
-                            </span>
-                          )}
-                        </div>
+                        <span className="shrink-0 ml-3">{o.createdAt}</span>
+                      </div>
+                      <div className="mt-1.5 flex items-center justify-between text-caption">
+                        <span className="text-text-tertiary truncate">
+                          {canApproveThis ? "请前往 PC 审批" : canExecuteThis ? "请前往 PC 处理" : ""}
+                        </span>
+                        <span className="shrink-0 ml-3 inline-flex items-center gap-0.5 text-primary font-medium">
+                          {canExecuteThis ? "执行" : "查看"}
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </span>
                       </div>
                     </Link>
                   );
