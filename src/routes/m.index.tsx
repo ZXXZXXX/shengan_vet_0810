@@ -210,6 +210,9 @@ function MHomePage() {
           ))}
         </div>
       </section>
+
+      {/* 角色切换（演示用） */}
+      <FarmSwitcher />
     </MobileShell>
   );
 }
