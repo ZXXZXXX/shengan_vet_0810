@@ -12,6 +12,8 @@ import {
   PackageMinus,
   Footprints,
   Home,
+  Sparkles,
+  Package,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
