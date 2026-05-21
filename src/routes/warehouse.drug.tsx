@@ -42,9 +42,10 @@ function DrugArchivePage() {
             <div className="col-span-3">药品名称</div>
             <div className="col-span-2">规格</div>
             <div className="col-span-1">分类</div>
-            <div className="col-span-2">生产厂家</div>
+            <div className="col-span-1">生产厂家</div>
             <div className="col-span-1">休药期</div>
-            <div className="col-span-1 text-right">操作</div>
+            <div className="col-span-2 text-right">操作</div>
+
           </div>
           {drugs.map((d) => (
             <div key={d.id} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
@@ -52,9 +53,14 @@ function DrugArchivePage() {
               <div className="col-span-3 flex items-center gap-1.5 text-body text-foreground"><Pill className="h-3.5 w-3.5 text-primary" />{d.name}</div>
               <div className="col-span-2 text-body-sm text-text-secondary">{d.spec}</div>
               <div className="col-span-1"><span className="tag tag-muted">{d.cat}</span></div>
-              <div className="col-span-2 text-body-sm text-text-secondary truncate">{d.maker}</div>
+              <div className="col-span-1 text-body-sm text-text-secondary truncate">{d.maker}</div>
               <div className="col-span-1 text-body-sm text-text-secondary">{d.withdraw}</div>
-              <div className="col-span-1 flex justify-end"><Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button></div>
+              <div className="col-span-2 flex justify-end items-center gap-1">
+
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button>
+              </div>
+
             </div>
           ))}
         </Card>

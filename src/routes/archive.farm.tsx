@@ -60,7 +60,11 @@ function FarmPage() {
                   <div className="flex items-baseline gap-1 mt-0.5"><span className="tabular-nums text-section-title text-foreground">{f.barns}</span><span className="text-caption text-text-tertiary">个</span></div>
                 </div>
               </div>
+              <div className="mt-4 pt-3 border-t border-border flex justify-end">
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+              </div>
             </Card>
+
           ))}
         </div>
       </main>

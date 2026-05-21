@@ -53,9 +53,10 @@ function CattlePage() {
             <div className="col-span-2">品种</div>
             <div className="col-span-1">性别</div>
             <div className="col-span-2">出生日期</div>
-            <div className="col-span-2">所在牛舍</div>
+            <div className="col-span-1">所在牛舍</div>
             <div className="col-span-1">阶段</div>
-            <div className="col-span-1 text-right">健康</div>
+            <div className="col-span-1">健康</div>
+            <div className="col-span-1 text-right">操作</div>
           </div>
           {cattle.map((c) => (
             <div key={c.id} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
@@ -64,11 +65,15 @@ function CattlePage() {
               <div className="col-span-2 text-body-sm text-text-secondary">{c.breed}</div>
               <div className="col-span-1 text-body-sm text-text-secondary">{c.sex}</div>
               <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{c.birth}</div>
-              <div className="col-span-2 text-body-sm text-text-secondary">{c.barn}</div>
+              <div className="col-span-1 text-body-sm text-text-secondary truncate">{c.barn}</div>
               <div className="col-span-1"><span className={stageTag(c.stage)}>{c.stage}</span></div>
-              <div className="col-span-1 flex justify-end"><span className={healthTag(c.health)}>{c.health}</span></div>
+              <div className="col-span-1"><span className={healthTag(c.health)}>{c.health}</span></div>
+              <div className="col-span-1 flex justify-end">
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+              </div>
             </div>
           ))}
+
         </Card>
       </main>
     </>

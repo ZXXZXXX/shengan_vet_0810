@@ -475,11 +475,12 @@ function ObjectListPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary gap-0.5"
+                      className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground gap-0.5"
                     >
-                      详情 <ChevronRight className="h-3.5 w-3.5" />
+                      查看 <ChevronRight className="h-3.5 w-3.5" />
                     </Button>
                   </div>
+
                 </div>
               ))}
             </Card>
