@@ -133,7 +133,7 @@ function MHomePage() {
       <section className="px-4 mt-5">
         <SectionTitle title="任务概况" hint="我相关" />
         <div className="grid grid-cols-3 gap-2">
-          <TaskOverviewCard to="/m/health" icon={Inbox} tone="warning" label="待响应" value="6" />
+          <TaskOverviewCard to="/m/health" icon={Inbox} tone="warning" label={canApprove(role) ? "待审批" : "待响应"} value="6" />
           <TaskOverviewCard to="/m/health" icon={PlayCircle} tone="brand" label="待执行" value="4" />
           <TaskOverviewCard to="/m/health" icon={TimerReset} tone="danger" label="已逾期" value="2" />
         </div>
