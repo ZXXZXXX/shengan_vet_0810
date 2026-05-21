@@ -49,6 +49,17 @@ const colorMap: Record<string, string> = {
   muted: "bg-surface-subtle text-text-secondary",
 };
 
+// 二维码暗纹色（与卡片同色系）
+const watermarkTextMap: Record<string, string> = {
+  brand: "text-primary",
+  warning: "text-[var(--state-warning)]",
+  danger: "text-[var(--state-danger)]",
+  info: "text-[var(--effect-ai-cyan)]",
+  purple: "text-[var(--effect-ai-purple)]",
+  success: "text-[var(--state-success)]",
+  muted: "text-text-secondary",
+};
+
 function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
