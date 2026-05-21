@@ -7,6 +7,8 @@ import {
   Beef,
   AlertTriangle,
   ChevronRight,
+  ChevronDown,
+  Check,
   Droplets,
   Stethoscope,
   Footprints,
@@ -18,6 +20,7 @@ import {
   CloudSun,
   Wind,
   Thermometer,
+  MapPin,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canApprove, canViewOperations } from "@/lib/mobile-role";
