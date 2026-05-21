@@ -33,10 +33,8 @@ import { Route as SettingsRulesRouteImport } from './routes/settings.rules'
 import { Route as SettingsKnowledgeRouteImport } from './routes/settings.knowledge'
 import { Route as ProductionVaccineRouteImport } from './routes/production.vaccine'
 import { Route as ProductionPostpartumRouteImport } from './routes/production.postpartum'
-import { Route as ProductionPlansRouteImport } from './routes/production.plans'
 import { Route as ProductionHoofRouteImport } from './routes/production.hoof'
 import { Route as ProductionGeneralRouteImport } from './routes/production.general'
-import { Route as ProductionFeedbackRouteImport } from './routes/production.feedback'
 import { Route as ProductionDryingRouteImport } from './routes/production.drying'
 import { Route as ProductionDiseaseRouteImport } from './routes/production.disease'
 import { Route as ProductionDewormRouteImport } from './routes/production.deworm'
@@ -182,11 +180,6 @@ const ProductionPostpartumRoute = ProductionPostpartumRouteImport.update({
   path: '/postpartum',
   getParentRoute: () => ProductionRoute,
 } as any)
-const ProductionPlansRoute = ProductionPlansRouteImport.update({
-  id: '/plans',
-  path: '/plans',
-  getParentRoute: () => ProductionRoute,
-} as any)
 const ProductionHoofRoute = ProductionHoofRouteImport.update({
   id: '/hoof',
   path: '/hoof',
@@ -195,11 +188,6 @@ const ProductionHoofRoute = ProductionHoofRouteImport.update({
 const ProductionGeneralRoute = ProductionGeneralRouteImport.update({
   id: '/general',
   path: '/general',
-  getParentRoute: () => ProductionRoute,
-} as any)
-const ProductionFeedbackRoute = ProductionFeedbackRouteImport.update({
-  id: '/feedback',
-  path: '/feedback',
   getParentRoute: () => ProductionRoute,
 } as any)
 const ProductionDryingRoute = ProductionDryingRouteImport.update({
@@ -354,10 +342,8 @@ export interface FileRoutesByFullPath {
   '/production/deworm': typeof ProductionDewormRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/drying': typeof ProductionDryingRoute
-  '/production/feedback': typeof ProductionFeedbackRoute
   '/production/general': typeof ProductionGeneralRoute
   '/production/hoof': typeof ProductionHoofRoute
-  '/production/plans': typeof ProductionPlansRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -403,10 +389,8 @@ export interface FileRoutesByTo {
   '/production/deworm': typeof ProductionDewormRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/drying': typeof ProductionDryingRoute
-  '/production/feedback': typeof ProductionFeedbackRoute
   '/production/general': typeof ProductionGeneralRoute
   '/production/hoof': typeof ProductionHoofRoute
-  '/production/plans': typeof ProductionPlansRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -458,10 +442,8 @@ export interface FileRoutesById {
   '/production/deworm': typeof ProductionDewormRoute
   '/production/disease': typeof ProductionDiseaseRoute
   '/production/drying': typeof ProductionDryingRoute
-  '/production/feedback': typeof ProductionFeedbackRoute
   '/production/general': typeof ProductionGeneralRoute
   '/production/hoof': typeof ProductionHoofRoute
-  '/production/plans': typeof ProductionPlansRoute
   '/production/postpartum': typeof ProductionPostpartumRoute
   '/production/vaccine': typeof ProductionVaccineRoute
   '/settings/knowledge': typeof SettingsKnowledgeRoute
@@ -514,10 +496,8 @@ export interface FileRouteTypes {
     | '/production/deworm'
     | '/production/disease'
     | '/production/drying'
-    | '/production/feedback'
     | '/production/general'
     | '/production/hoof'
-    | '/production/plans'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -563,10 +543,8 @@ export interface FileRouteTypes {
     | '/production/deworm'
     | '/production/disease'
     | '/production/drying'
-    | '/production/feedback'
     | '/production/general'
     | '/production/hoof'
-    | '/production/plans'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -617,10 +595,8 @@ export interface FileRouteTypes {
     | '/production/deworm'
     | '/production/disease'
     | '/production/drying'
-    | '/production/feedback'
     | '/production/general'
     | '/production/hoof'
-    | '/production/plans'
     | '/production/postpartum'
     | '/production/vaccine'
     | '/settings/knowledge'
@@ -825,13 +801,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionPostpartumRouteImport
       parentRoute: typeof ProductionRoute
     }
-    '/production/plans': {
-      id: '/production/plans'
-      path: '/plans'
-      fullPath: '/production/plans'
-      preLoaderRoute: typeof ProductionPlansRouteImport
-      parentRoute: typeof ProductionRoute
-    }
     '/production/hoof': {
       id: '/production/hoof'
       path: '/hoof'
@@ -844,13 +813,6 @@ declare module '@tanstack/react-router' {
       path: '/general'
       fullPath: '/production/general'
       preLoaderRoute: typeof ProductionGeneralRouteImport
-      parentRoute: typeof ProductionRoute
-    }
-    '/production/feedback': {
-      id: '/production/feedback'
-      path: '/feedback'
-      fullPath: '/production/feedback'
-      preLoaderRoute: typeof ProductionFeedbackRouteImport
       parentRoute: typeof ProductionRoute
     }
     '/production/drying': {
@@ -1111,10 +1073,8 @@ interface ProductionRouteChildren {
   ProductionDewormRoute: typeof ProductionDewormRoute
   ProductionDiseaseRoute: typeof ProductionDiseaseRoute
   ProductionDryingRoute: typeof ProductionDryingRoute
-  ProductionFeedbackRoute: typeof ProductionFeedbackRoute
   ProductionGeneralRoute: typeof ProductionGeneralRoute
   ProductionHoofRoute: typeof ProductionHoofRoute
-  ProductionPlansRoute: typeof ProductionPlansRoute
   ProductionPostpartumRoute: typeof ProductionPostpartumRoute
   ProductionVaccineRoute: typeof ProductionVaccineRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
@@ -1124,10 +1084,8 @@ const ProductionRouteChildren: ProductionRouteChildren = {
   ProductionDewormRoute: ProductionDewormRoute,
   ProductionDiseaseRoute: ProductionDiseaseRoute,
   ProductionDryingRoute: ProductionDryingRoute,
-  ProductionFeedbackRoute: ProductionFeedbackRoute,
   ProductionGeneralRoute: ProductionGeneralRoute,
   ProductionHoofRoute: ProductionHoofRoute,
-  ProductionPlansRoute: ProductionPlansRoute,
   ProductionPostpartumRoute: ProductionPostpartumRoute,
   ProductionVaccineRoute: ProductionVaccineRoute,
   ProductionIndexRoute: ProductionIndexRoute,

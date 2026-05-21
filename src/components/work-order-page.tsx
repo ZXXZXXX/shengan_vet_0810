@@ -735,40 +735,8 @@ export function WorkOrderPage({
                   </div>
                 </div>
               )}
-
-              {/* 方案编辑（审批通过前可选） */}
-              <div className="rounded-md border border-border p-4 bg-card">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-caption text-text-tertiary">方案编辑 · 派单形式</div>
-                  <span className="text-caption text-text-tertiary">审批通过后生效</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <label className="flex items-start gap-2 p-2.5 rounded-md border border-primary/40 bg-brand-subtle cursor-pointer">
-                    <input type="radio" name="plan-mode" defaultChecked className="mt-0.5 accent-[var(--brand)]" />
-                    <div className="min-w-0">
-                      <div className="text-body-sm text-foreground">单次工单</div>
-                      <div className="text-caption text-text-tertiary mt-0.5 leading-tight">
-                        按本次审批结果直接派单执行
-                      </div>
-                    </div>
-                  </label>
-                  <label className="flex items-start gap-2 p-2.5 rounded-md border border-border bg-surface-subtle cursor-pointer">
-                    <input type="radio" name="plan-mode" className="mt-0.5 accent-[var(--brand)]" />
-                    <div className="min-w-0">
-                      <div className="text-body-sm text-foreground inline-flex items-center gap-1">
-                        作为周期 / 批次计划
-                      </div>
-                      <div className="text-caption text-text-tertiary mt-0.5 leading-tight">
-                        生成可重复触发的计划性事项
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </div>
             </div>
           )}
-
-
 
           <DialogFooter className="gap-2">
             <Button variant="outline" className="gap-1.5" onClick={() => setConfirm("reject")}>
