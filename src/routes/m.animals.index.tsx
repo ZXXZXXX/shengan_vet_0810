@@ -39,17 +39,24 @@ const statusTag: Record<Status, string> = {
 function AnimalsPage() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("全部");
+  const [barn, setBarn] = useState<string>("全部牛舍");
+
+  const barns = useMemo(
+    () => ["全部牛舍", ...Array.from(new Set(animals.map((a) => a.barn)))],
+    []
+  );
 
   const list = useMemo(
     () =>
       animals.filter((a) => {
         if (filter !== "全部" && a.status !== filter) return false;
+        if (barn !== "全部牛舍" && a.barn !== barn) return false;
         if (q && !`${a.id} ${a.breed} ${a.barn}`.toLowerCase().includes(q.toLowerCase())) {
           return false;
         }
         return true;
       }),
-    [q, filter]
+    [q, filter, barn]
   );
 
   return (
