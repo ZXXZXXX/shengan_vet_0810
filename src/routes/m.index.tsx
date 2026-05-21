@@ -114,10 +114,10 @@ function MHomePage() {
 
       {/* ============ 数据看板 ============ */}
       <section className="px-4 mt-5">
-        <SectionTitle title="农场概况" hint="实时" />
+        <SectionTitle title="农场概况" hint="数据实时同步" />
         <div className="grid grid-cols-2 gap-2">
-          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="较昨日 +6" />
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="周环比 +0.4%" />
+          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月 +6" />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周 +0.4%" />
           <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日 +3" />
           <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日 +2" />
         </div>
