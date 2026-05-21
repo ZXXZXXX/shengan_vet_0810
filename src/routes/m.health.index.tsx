@@ -12,6 +12,8 @@ import {
   PackageMinus,
   Footprints,
   Home,
+  Sparkles,
+  Package,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
@@ -73,6 +75,7 @@ function TaskListPage() {
   const role = useRole();
   const isApprover = canApprove(role);
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
+  const [smartGroup, setSmartGroup] = useState(false);
 
   // 修蹄工只看到自己的修蹄任务
   let list = tasks;
