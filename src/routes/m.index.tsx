@@ -229,7 +229,7 @@ function MHomePage() {
             >
               {/* 同色系相关 icon 暗纹 —— 右上角溢出 */}
               <span className={`pointer-events-none absolute -right-4 -top-4 ${toneTextMap[it.tone]} opacity-[0.12]`}>
-                <it.icon className="h-24 w-24" strokeWidth={1} />
+                <it.watermark className="h-24 w-24" strokeWidth={1} />
               </span>
               <span className={`relative h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[it.tone]}`}>
                 <it.icon className="h-4 w-4" strokeWidth={1.75} />
