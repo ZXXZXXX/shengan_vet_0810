@@ -59,7 +59,7 @@ import {
   FileText,
 } from "lucide-react";
 
-type WorkStatus = "待审核" | "执行中" | "已驳回" | "已完成";
+type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
 
 export type WorkOrderAttachment = {
   type: "audio" | "video" | "text";
@@ -114,13 +114,14 @@ const ALL_COLS: ColDef[] = [
   { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
   { key: "reviewer", label: "审核人", width: 100 },
   { key: "reviewedAt", label: "审核时间", width: 160, isTime: true },
-  { key: "executor", label: "执行人", width: 100 },
-  { key: "executedAt", label: "执行时间", width: 160, isTime: true },
+  { key: "executor", label: "响应人", width: 100 },
+  { key: "executedAt", label: "响应时间", width: 160, isTime: true },
   { key: "action", label: "功能", width: 140, locked: true },
 ];
 
 const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
   { key: "待审核", label: "待审核", icon: ClipboardList, tone: "warning" },
+  { key: "待响应", label: "待响应", icon: PlayCircle, tone: "pending" },
   { key: "执行中", label: "执行中", icon: PlayCircle, tone: "info" },
   { key: "已驳回", label: "已驳回", icon: AlertTriangle, tone: "danger" },
   { key: "已完成", label: "已完成", icon: CheckCircle2, tone: "success" },
@@ -128,6 +129,7 @@ const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; 
 
 const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
   warning: { bg: "bg-[var(--state-warning)]/10", text: "text-[var(--state-warning)]", tag: "tag tag-warning" },
+  pending: { bg: "bg-surface-subtle", text: "text-text-secondary", tag: "tag tag-muted" },
   info: { bg: "bg-brand-subtle", text: "text-primary", tag: "tag tag-brand" },
   danger: { bg: "bg-[var(--state-danger)]/10", text: "text-[var(--state-danger)]", tag: "tag tag-danger" },
   success: { bg: "bg-[var(--state-success)]/10", text: "text-[var(--state-success)]", tag: "tag tag-success" },
@@ -402,7 +404,7 @@ export function WorkOrderPage({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {statusList.map((s) => {
             const tone = toneStyles[s.tone];
             const isActive = active === s.key;
@@ -542,7 +544,7 @@ export function WorkOrderPage({
                 </Select>
               </div>
               <div>
-                <div className="text-caption text-text-tertiary mb-1.5">执行人</div>
+                <div className="text-caption text-text-tertiary mb-1.5">响应人</div>
                 <Select value={advExecutor} onValueChange={setAdvExecutor}>
                   <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -698,8 +700,8 @@ export function WorkOrderPage({
                 <Field label="提出时间" value={detail.createdAt} />
                 <Field label="审核人" value={detail.reviewer ?? "—"} />
                 <Field label="审核时间" value={detail.reviewedAt ?? "—"} />
-                <Field label="执行人" value={detail.executor ?? detail.who ?? "—"} />
-                <Field label="执行时间" value={detail.executedAt ?? "—"} />
+                <Field label="响应人" value={detail.executor ?? detail.who ?? "—"} />
+                <Field label="响应时间" value={detail.executedAt ?? "—"} />
               </div>
 
               <div className="rounded-md border border-border p-4">
@@ -746,7 +748,7 @@ export function WorkOrderPage({
               className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
               onClick={() => setConfirm("approve")}
             >
-              <Check className="h-3.5 w-3.5" /> 通过
+              <Check className="h-3.5 w-3.5" /> 通过并入待响应池
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -756,11 +758,13 @@ export function WorkOrderPage({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              确认{confirm === "approve" ? "通过" : "驳回"}该工单？
+              {confirm === "approve" ? "确认通过并入待响应池？" : "确认驳回该工单？"}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {detail ? `工单 ${detail.id} · ${detail.target}` : ""}
-              ，操作后状态将更新,无法撤销。
+              {confirm === "approve"
+                ? "。审批通过仅完成诊疗确认与执行计划配置，不指定执行人；工单将进入对应处理权限账号的待响应池，由首位响应者承接执行，并从其他人的待响应池中流出。"
+                : "，操作后状态将更新,无法撤销。"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -815,7 +819,7 @@ export function makeOrders(
   prefix: string,
   events: { target: string; event: string; desc: string }[],
 ): WorkOrder[] {
-  const statuses: WorkStatus[] = ["待审核", "执行中", "已完成", "已驳回"];
+  const statuses: WorkStatus[] = ["待审核", "待响应", "执行中", "已完成", "已驳回"];
   const now = new Date();
   // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
   const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
