@@ -114,8 +114,8 @@ const ALL_COLS: ColDef[] = [
   { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
   { key: "reviewer", label: "审核人", width: 100 },
   { key: "reviewedAt", label: "审核时间", width: 160, isTime: true },
-  { key: "executor", label: "执行人", width: 100 },
-  { key: "executedAt", label: "执行时间", width: 160, isTime: true },
+  { key: "executor", label: "响应人", width: 100 },
+  { key: "executedAt", label: "响应时间", width: 160, isTime: true },
   { key: "action", label: "功能", width: 140, locked: true },
 ];
 
