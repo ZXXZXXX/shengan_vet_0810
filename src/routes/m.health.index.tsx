@@ -33,8 +33,6 @@ type Status =
   | "已驳回"
   | "已终止";
 type Kind = "健康" | "损耗" | "修蹄" | "免疫" | "干奶" | "产后" | "驱虫" | "普修" | "复查";
-type Relation = "我建单" | "我审批" | "我执行";
-
 type Task = {
   id: string;
   target: string;
@@ -46,7 +44,7 @@ type Task = {
   who: string;
   status: Status;
   createdAt: string;
-  relation: Relation[];
+  relation: ("我建单" | "我审批" | "我执行")[];
   hasFeedback?: boolean;
   needSupply?: boolean;
   linkedTaskId?: string;
@@ -84,13 +82,6 @@ const tabs: { key: Status | "全部"; label: string }[] = [
   { key: "已终止", label: "已终止" },
 ];
 
-const relationTabs: { key: "全部" | Relation; label: string }[] = [
-  { key: "全部", label: "全部" },
-  { key: "我执行", label: "我执行" },
-  { key: "我审批", label: "我审批" },
-  { key: "我建单", label: "我建单" },
-];
-
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
   待审批: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[var(--state-warning)]" },
   待响应: { tag: "tag tag-warning", icon: Inbox, color: "text-[var(--state-warning)]" },
@@ -117,7 +108,6 @@ function TaskListPage() {
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(
     isApprover ? "待审批" : "全部",
   );
-  const [rel, setRel] = useState<(typeof relationTabs)[number]["key"]>("全部");
 
   // 修蹄工只看到自己的修蹄任务
   const list = useMemo(() => {
@@ -132,19 +122,9 @@ function TaskListPage() {
         return false;
       }),
     );
-    if (rel !== "全部") {
-      l = l.filter((t) =>
-        t.relation.includes(rel) &&
-        (rel === "我审批"
-          ? isApprover
-          : rel === "我建单"
-          ? t.proposer === me
-          : t.who === me),
-      );
-    }
     if (tab !== "全部") l = l.filter((o) => o.status === tab);
     return l;
-  }, [role, isApprover, me, rel, tab]);
+  }, [role, isApprover, me, tab]);
 
   return (
     <MobileShell
@@ -167,27 +147,6 @@ function TaskListPage() {
             className="h-10 w-full pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary"
           />
         </div>
-      </div>
-
-      {/* 角色关系筛选 */}
-      <div className="px-4 mt-3 flex gap-1.5 overflow-x-auto no-scrollbar">
-        {relationTabs.map((t) => {
-          // 非审批者隐藏“我审批”
-          if (t.key === "我审批" && !isApprover) return null;
-          return (
-            <button
-              key={t.key}
-              onClick={() => setRel(t.key)}
-              className={`shrink-0 h-7 px-3 rounded-full text-caption transition-colors ${
-                rel === t.key
-                  ? "bg-brand-subtle text-primary border border-primary/30"
-                  : "bg-card border border-border text-text-secondary"
-              }`}
-            >
-              {t.label}
-            </button>
-          );
-        })}
       </div>
 
       {/* 状态 Tabs */}
