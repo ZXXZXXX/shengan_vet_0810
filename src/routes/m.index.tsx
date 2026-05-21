@@ -352,7 +352,7 @@ function FarmSwitcher() {
       <button
         type="button"
         onClick={() => !single && setOpen((v) => !v)}
-        className="w-full h-11 px-4 flex items-center gap-2 active:bg-surface-subtle"
+        className="w-full h-11 flex items-center gap-2 active:bg-surface-subtle"
       >
         <span className="h-6 w-6 rounded-md bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
           <MapPin className="h-3.5 w-3.5" />
