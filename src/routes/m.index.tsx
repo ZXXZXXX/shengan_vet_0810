@@ -28,7 +28,7 @@ import {
   Hourglass,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel, canViewOperations } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
@@ -130,14 +130,25 @@ function MHomePage() {
       )}
 
       {/* ============ 工作台：任务概况 ============ */}
-      <section className="px-4 mt-5">
-        <SectionTitle title="任务概况" hint="我相关" />
-        <div className="grid grid-cols-3 gap-2">
-          <TaskOverviewCard to="/m/health" icon={Inbox} tone="warning" label="待响应" value="6" />
-          <TaskOverviewCard to="/m/health" icon={PlayCircle} tone="brand" label="待执行" value="4" />
-          <TaskOverviewCard to="/m/health" icon={TimerReset} tone="danger" label="已逾期" value="2" />
-        </div>
-      </section>
+      {(() => {
+        const isApprover = canApprove(role);
+        const isExternal = roleGroup[role] === "external";
+        // 内部执行者（如兽医助理）没有"待响应"，仅展示 待执行 + 已逾期
+        const showFirst = isApprover || isExternal;
+        const firstLabel = isApprover ? "待审批" : "待响应";
+        return (
+          <section className="px-4 mt-5">
+            <SectionTitle title="任务概况" hint="我相关" />
+            <div className={`grid gap-2 ${showFirst ? "grid-cols-3" : "grid-cols-2"}`}>
+              {showFirst && (
+                <TaskOverviewCard to="/m/health" icon={Inbox} tone="warning" label={firstLabel} value="6" />
+              )}
+              <TaskOverviewCard to="/m/health" icon={PlayCircle} tone="brand" label="待执行" value="4" />
+              <TaskOverviewCard to="/m/health" icon={TimerReset} tone="danger" label="已逾期" value="2" />
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ============ 工作台：待处理事项 ============ */}
       <section className="px-4 mt-5">
