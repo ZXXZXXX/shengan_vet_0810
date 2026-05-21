@@ -350,8 +350,9 @@ function FarmSwitcher() {
   return (
     <div
       ref={ref}
-      className="relative px-4 py-3 mt-4 border-t border-border"
+      className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border px-4 py-2"
     >
+
       <button
         type="button"
         onClick={() => !single && setOpen((v) => !v)}
