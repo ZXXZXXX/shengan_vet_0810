@@ -293,15 +293,16 @@ const pendingItems: Array<{
   bucket: "待响应" | "待执行" | "已逾期";
   tagClass: string;
   icon: typeof Stethoscope;
+  watermark: typeof Stethoscope;
   tone: keyof typeof colorMap;
   farmId: string;
 }> = [
-  { id: "WO-2381", title: "持续高烧 2 小时 #A2381", barn: "3 号牛舍", time: "今日 09:08", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning", farmId: "f1" },
-  { id: "LS-1029", title: "产后子宫破裂损耗确认", barn: "2 号牛舍", time: "今日 08:20", bucket: "待响应", tagClass: "tag-warning", icon: PackageMinus, tone: "warning", farmId: "f1" },
-  { id: "WO-2401", title: "口蹄疫加强免疫", barn: "犊牛舍 A", time: "昨日 10:00", bucket: "待执行", tagClass: "tag-brand", icon: PlayCircle, tone: "brand", farmId: "f1" },
-  { id: "HF-0702", title: "右后蹄趾间皮炎修蹄", barn: "2 号牛舍", time: "已逾期 4h", bucket: "已逾期", tagClass: "tag-danger", icon: TimerReset, tone: "danger", farmId: "f1" },
-  { id: "HF-0815", title: "蹄底溃疡修蹄", barn: "3 号牛舍", time: "今日 10:20", bucket: "待响应", tagClass: "tag-warning", icon: TimerReset, tone: "warning", farmId: "f2" },
-  { id: "WO-2502", title: "乳房炎复诊", barn: "1 号牛舍", time: "今日 11:00", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, tone: "warning", farmId: "f3" },
+  { id: "WO-2381", title: "持续高烧 2 小时 #A2381", barn: "3 号牛舍", time: "今日 09:08", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, watermark: Pill, tone: "warning", farmId: "f1" },
+  { id: "LS-1029", title: "产后子宫破裂损耗确认", barn: "2 号牛舍", time: "今日 08:20", bucket: "待响应", tagClass: "tag-warning", icon: PackageMinus, watermark: PackageMinus, tone: "warning", farmId: "f1" },
+  { id: "WO-2401", title: "口蹄疫加强免疫", barn: "犊牛舍 A", time: "昨日 10:00", bucket: "待执行", tagClass: "tag-brand", icon: PlayCircle, watermark: Syringe, tone: "brand", farmId: "f1" },
+  { id: "HF-0702", title: "右后蹄趾间皮炎修蹄", barn: "2 号牛舍", time: "已逾期 4h", bucket: "已逾期", tagClass: "tag-danger", icon: TimerReset, watermark: Footprints, tone: "danger", farmId: "f1" },
+  { id: "HF-0815", title: "蹄底溃疡修蹄", barn: "3 号牛舍", time: "今日 10:20", bucket: "待响应", tagClass: "tag-warning", icon: TimerReset, watermark: Footprints, tone: "warning", farmId: "f2" },
+  { id: "WO-2502", title: "乳房炎复诊", barn: "1 号牛舍", time: "今日 11:00", bucket: "待响应", tagClass: "tag-warning", icon: Stethoscope, watermark: Pill, tone: "warning", farmId: "f3" },
 ];
 
 const risks: Array<{
