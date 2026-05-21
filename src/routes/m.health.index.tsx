@@ -251,7 +251,7 @@ function TaskListPage() {
                           {isPickup
                             ? o.status === "已完成"
                               ? "查看清单"
-                              : "去领取"
+                              : "领取"
                             : canExecuteThis
                             ? "执行"
                             : "查看"}
