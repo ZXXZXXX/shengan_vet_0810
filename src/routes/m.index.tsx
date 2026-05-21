@@ -28,7 +28,7 @@ import {
   Hourglass,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel, canViewOperations } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
