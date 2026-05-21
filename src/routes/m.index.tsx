@@ -56,7 +56,6 @@ function MHomePage() {
 
   return (
     <MobileShell>
-      <FarmSwitcher />
 
       {/* 顶部欢迎 + 通知 + 现场上报快捷入口 */}
       <header className="px-4 pt-4 pb-5 bg-gradient-to-br from-primary via-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
