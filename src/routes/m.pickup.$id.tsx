@@ -209,7 +209,7 @@ function PickupDetailPage() {
             <div className="mt-3 rounded-lg bg-brand-subtle px-3 py-2 text-caption text-text-secondary inline-flex items-start gap-1.5 w-full">
               <AlertTriangle className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
               <span>
-                到达 {pickup.warehouse} 后，向库管出示此二维码完成核销，核销后任务自动转为「已完成」。
+                到达 {pickup.warehouse} 后，向库管出示此二维码完成核销，核销后工单自动转为「已完成」。
               </span>
             </div>
           )}
@@ -226,7 +226,7 @@ function PickupDetailPage() {
           params={{ id: pickup.source }}
           className="block text-center text-caption text-primary"
         >
-          查看关联任务 {pickup.source} →
+          查看关联工单 {pickup.source} →
         </Link>
       </div>
 
