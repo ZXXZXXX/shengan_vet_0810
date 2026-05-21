@@ -64,7 +64,6 @@ const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: 
 const kindIcon: Record<Kind, typeof Stethoscope> = {
   健康: Stethoscope,
   损耗: PackageMinus,
-  修蹄: Footprints,
 };
 
 function TaskListPage() {
