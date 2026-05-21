@@ -29,6 +29,8 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
+import { PICKUPS, useClaimed } from "@/lib/pickup-store";
+import { PackageCheck, QrCode } from "lucide-react";
 
 export const Route = createFileRoute("/m/")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
