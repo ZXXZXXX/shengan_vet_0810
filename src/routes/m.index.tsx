@@ -134,7 +134,7 @@ function MHomePage() {
 
       {/* ============ 数据看板 ============ */}
       <section className="px-4 mt-5">
-        <SectionTitle title="农场概况" hint="数据实时同步" />
+        <SectionTitle title="农场概况" hint="数据实时同步" live />
         <div className="grid grid-cols-2 gap-2">
           <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月 +6" />
           <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周 +0.4%" />
