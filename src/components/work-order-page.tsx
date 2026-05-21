@@ -748,7 +748,7 @@ export function WorkOrderPage({
               className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
               onClick={() => setConfirm("approve")}
             >
-              <Check className="h-3.5 w-3.5" /> 通过
+              <Check className="h-3.5 w-3.5" /> 通过并入待响应池
             </Button>
           </DialogFooter>
         </DialogContent>
