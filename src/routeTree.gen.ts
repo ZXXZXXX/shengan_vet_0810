@@ -45,6 +45,7 @@ import { Route as OrganizationAccountRouteImport } from './routes/organization.a
 import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
 import { Route as MScanRouteImport } from './routes/m.scan'
 import { Route as MReportRouteImport } from './routes/m.report'
+import { Route as MNotificationsRouteImport } from './routes/m.notifications'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLoginRouteImport } from './routes/m.login'
 import { Route as KnowledgeSymptomRouteImport } from './routes/knowledge.symptom'
@@ -239,6 +240,11 @@ const MReportRoute = MReportRouteImport.update({
   path: '/report',
   getParentRoute: () => MRoute,
 } as any)
+const MNotificationsRoute = MNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => MRoute,
+} as any)
 const MMeRoute = MMeRouteImport.update({
   id: '/me',
   path: '/me',
@@ -325,6 +331,7 @@ export interface FileRoutesByFullPath {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
@@ -371,6 +378,7 @@ export interface FileRoutesByTo {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
@@ -423,6 +431,7 @@ export interface FileRoutesById {
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
+  '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
@@ -476,6 +485,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/notifications'
     | '/m/report'
     | '/m/scan'
     | '/m/workspace'
@@ -522,6 +532,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/notifications'
     | '/m/report'
     | '/m/scan'
     | '/m/workspace'
@@ -573,6 +584,7 @@ export interface FileRouteTypes {
     | '/knowledge/symptom'
     | '/m/login'
     | '/m/me'
+    | '/m/notifications'
     | '/m/report'
     | '/m/scan'
     | '/m/workspace'
@@ -873,6 +885,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MReportRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/notifications': {
+      id: '/m/notifications'
+      path: '/notifications'
+      fullPath: '/m/notifications'
+      preLoaderRoute: typeof MNotificationsRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/me': {
       id: '/m/me'
       path: '/me'
@@ -1001,6 +1020,7 @@ const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
 interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MMeRoute: typeof MMeRoute
+  MNotificationsRoute: typeof MNotificationsRoute
   MReportRoute: typeof MReportRoute
   MScanRoute: typeof MScanRoute
   MWorkspaceRoute: typeof MWorkspaceRoute
@@ -1015,6 +1035,7 @@ interface MRouteChildren {
 const MRouteChildren: MRouteChildren = {
   MLoginRoute: MLoginRoute,
   MMeRoute: MMeRoute,
+  MNotificationsRoute: MNotificationsRoute,
   MReportRoute: MReportRoute,
   MScanRoute: MScanRoute,
   MWorkspaceRoute: MWorkspaceRoute,
@@ -1126,13 +1147,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
