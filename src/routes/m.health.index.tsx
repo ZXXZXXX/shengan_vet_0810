@@ -175,13 +175,8 @@ function TaskListPage() {
                         <div className="flex flex-col items-end gap-1 shrink-0 min-w-1 ml-3">
                           <span>{o.createdAt}</span>
                           {(canApproveThis || canExecuteThis) && (
-                            <span
-                              className={`inline-flex items-center gap-0.5 ${
-                                canApproveThis ? "text-[var(--state-warning)]" : "text-primary"
-                              }`}
-                            >
-                              {canApproveThis ? "去审批" : "去执行 / 反馈"}
-                              <ChevronRight className="h-3 w-3" />
+                            <span className="text-text-tertiary">
+                              {canApproveThis ? "请前往 PC 审批" : "请前往 PC 处理"}
                             </span>
                           )}
                         </div>
