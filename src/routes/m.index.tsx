@@ -49,6 +49,16 @@ const colorMap: Record<string, string> = {
   muted: "bg-surface-subtle text-text-secondary",
 };
 
+const toneTextMap: Record<string, string> = {
+  brand: "text-primary",
+  warning: "text-[var(--state-warning)]",
+  danger: "text-[var(--state-danger)]",
+  info: "text-[var(--effect-ai-cyan)]",
+  purple: "text-[var(--effect-ai-purple)]",
+  success: "text-[var(--state-success)]",
+  muted: "text-text-secondary",
+};
+
 function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
@@ -185,13 +195,14 @@ function MHomePage() {
               params={{ id: p.id }}
               className="flex items-center gap-3 p-3 rounded-xl bg-card border border-primary/30 active:bg-surface-subtle relative overflow-hidden"
             >
-              <span className="absolute right-3 top-3 opacity-15 text-primary">
-                <QrCode className="h-10 w-10" strokeWidth={1.25} />
+              {/* 放大版二维码暗纹 —— 同色系，右上角溢出 */}
+              <span className="pointer-events-none absolute -right-4 -top-4 text-primary opacity-[0.12]">
+                <QrCode className="h-24 w-24" strokeWidth={1} />
               </span>
-              <span className="h-9 w-9 rounded-lg flex items-center justify-center bg-brand-subtle text-primary shrink-0">
+              <span className="relative h-9 w-9 rounded-lg flex items-center justify-center bg-brand-subtle text-primary shrink-0">
                 <PackageCheck className="h-4 w-4" strokeWidth={1.75} />
               </span>
-              <div className="flex-1 min-w-0">
+              <div className="relative flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span className="tag tag-brand text-[11px] px-1.5 py-0">待领取</span>
                   <span className="text-body text-foreground truncate">{p.title}</span>
@@ -200,7 +211,7 @@ function MHomePage() {
                   {p.id} · {p.warehouse} · 共 {p.items.length} 项
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
+              <ChevronRight className="relative h-4 w-4 text-text-tertiary shrink-0" />
             </Link>
           ))}
           {pendingItems
@@ -211,12 +222,16 @@ function MHomePage() {
               key={it.id}
               to="/m/health/$id"
               params={{ id: it.id }}
-              className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
+              className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle relative overflow-hidden"
             >
-              <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[it.tone]}`}>
+              {/* 同色系相关 icon 暗纹 —— 右上角溢出 */}
+              <span className={`pointer-events-none absolute -right-4 -top-4 ${toneTextMap[it.tone]} opacity-[0.12]`}>
+                <it.icon className="h-24 w-24" strokeWidth={1} />
+              </span>
+              <span className={`relative h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[it.tone]}`}>
                 <it.icon className="h-4 w-4" strokeWidth={1.75} />
               </span>
-              <div className="flex-1 min-w-0">
+              <div className="relative flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span className={`tag ${it.tagClass} text-[11px] px-1.5 py-0`}>{it.bucket}</span>
                   <span className="text-body text-foreground truncate">{it.title}</span>
@@ -225,7 +240,7 @@ function MHomePage() {
                   {it.id} · {it.barn} · {it.time}
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
+              <ChevronRight className="relative h-4 w-4 text-text-tertiary shrink-0" />
             </Link>
           ))}
           {pendingItems.filter((it) => it.farmId === farm.id && (isExternal || it.bucket !== "待响应")).length === 0 && pendingPickups.length === 0 && (
