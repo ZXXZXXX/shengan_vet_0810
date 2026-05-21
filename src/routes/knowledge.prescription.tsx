@@ -51,7 +51,7 @@ function PrescriptionPage() {
               <div className="col-span-2"><span className="tag tag-brand">{r.disease}</span></div>
               <div className="col-span-3 text-body-sm text-text-secondary">{r.drugs.join("、")}</div>
               <div className="col-span-1 text-body-sm text-text-secondary">{r.duration}</div>
-              <div className="col-span-1 flex justify-end"><Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">查看</Button></div>
+              <div className="col-span-1 flex justify-end"><Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button></div>
             </div>
           ))}
         </Card>
