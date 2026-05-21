@@ -172,15 +172,23 @@ function TaskListPage() {
                       </div>
                       <div className="mt-2 flex items-center justify-between text-caption text-text-tertiary">
                         <span>提出 {o.proposer} · 负责 {o.who}</span>
-                        <span className="inline-flex items-center">
-                          {o.createdAt} <ChevronRight className="h-3 w-3 ml-0.5" />
+                        <span className="inline-flex items-center gap-2">
+                          {(canApproveThis || canExecuteThis) && (
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-caption ${
+                                canApproveThis
+                                  ? "bg-[var(--state-warning)]/10 text-[var(--state-warning)]"
+                                  : "bg-primary/10 text-primary"
+                              }`}
+                            >
+                              {canApproveThis ? "去审批" : "去执行/反馈"}
+                            </span>
+                          )}
+                          <span className="inline-flex items-center">
+                            {o.createdAt} <ChevronRight className="h-3 w-3 ml-0.5" />
+                          </span>
                         </span>
                       </div>
-                      {(canApproveThis || canExecuteThis) && (
-                        <div className="mt-2.5 pt-2.5 border-t border-border text-caption text-primary">
-                          {canApproveThis ? "前往审批 →" : "前往执行 / 反馈 →"}
-                        </div>
-                      )}
                     </Link>
                   );
                 })}
