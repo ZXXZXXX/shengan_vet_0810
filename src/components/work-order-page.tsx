@@ -59,7 +59,7 @@ import {
   FileText,
 } from "lucide-react";
 
-type WorkStatus = "待审核" | "执行中" | "已驳回" | "已完成";
+type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
 
 export type WorkOrderAttachment = {
   type: "audio" | "video" | "text";
