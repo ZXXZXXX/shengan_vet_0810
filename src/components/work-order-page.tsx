@@ -700,8 +700,8 @@ export function WorkOrderPage({
                 <Field label="提出时间" value={detail.createdAt} />
                 <Field label="审核人" value={detail.reviewer ?? "—"} />
                 <Field label="审核时间" value={detail.reviewedAt ?? "—"} />
-                <Field label="执行人" value={detail.executor ?? detail.who ?? "—"} />
-                <Field label="执行时间" value={detail.executedAt ?? "—"} />
+                <Field label="响应人" value={detail.executor ?? detail.who ?? "—"} />
+                <Field label="响应时间" value={detail.executedAt ?? "—"} />
               </div>
 
               <div className="rounded-md border border-border p-4">
