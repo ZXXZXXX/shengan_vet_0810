@@ -404,7 +404,7 @@ export function WorkOrderPage({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {statusList.map((s) => {
             const tone = toneStyles[s.tone];
             const isActive = active === s.key;
