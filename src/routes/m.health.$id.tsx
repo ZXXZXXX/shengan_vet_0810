@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/m/health/$id")({
-  head: () => ({ meta: [{ title: "工单详情 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "工作详情 · 奇点智牧" }] }),
   component: TaskDetailPage,
 });
 
@@ -93,7 +93,7 @@ function TaskDetailPage() {
   const showExecBtn = canExecute(role) && o.status === "进行中";
 
   return (
-    <MobileShell title="工单详情" back hideTabBar>
+    <MobileShell title="工作详情" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-3">
         {/* 状态卡 */}
         <div className="rounded-xl bg-card border border-border p-4">
@@ -115,7 +115,7 @@ function TaskDetailPage() {
 
         {/* 字段网格 */}
         <div className="rounded-xl bg-card border border-border divide-y divide-border">
-          <Row label="工单类型" value={<span className="tag tag-muted">{o.type}</span>} />
+          <Row label="工作类型" value={<span className="tag tag-muted">{o.type}</span>} />
           {isLoss ? (
             <>
               <Row label="物品名称" value={<span className="text-body text-foreground">{o.item}</span>} />
@@ -177,10 +177,10 @@ function TaskDetailPage() {
           </div>
         )}
 
-        {/* 工单说明 / 文字备注 */}
+        {/* 工作说明 / 文字备注 */}
         <div className="rounded-xl bg-card border border-border p-4">
           <div className="text-caption text-text-tertiary mb-1.5">
-            {isLoss ? "文字备注" : "工单说明"}
+            {isLoss ? "文字备注" : "工作说明"}
           </div>
           <p className="text-body-sm text-text-secondary leading-relaxed">{o.desc}</p>
         </div>
@@ -336,7 +336,7 @@ function TaskDetailPage() {
             onClick={() => navigate({ to: "/m/health" })}
             className="w-full h-11 rounded-lg border border-border text-body text-text-secondary"
           >
-            返回工单列表
+            返回工作列表
           </button>
         </div>
       ) : (
@@ -345,7 +345,7 @@ function TaskDetailPage() {
             onClick={() => navigate({ to: "/m/health" })}
             className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body"
           >
-            返回工单列表
+            返回工作列表
           </button>
         </div>
       )}
@@ -356,15 +356,15 @@ function TaskDetailPage() {
           <AlertDialogHeader className="px-6 pt-7 pb-2 sm:text-center">
             <AlertDialogTitle className="text-section-title">
               {confirm === "approve"
-                ? "确认通过该工单?"
+                ? "确认通过该工作?"
                 : confirm === "reject"
-                ? "确认驳回该工单?"
+                ? "确认驳回该工作?"
                 : confirm === "issue"
                 ? "提交异常反馈?"
                 : "确认提交完成?"}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-body-sm text-text-tertiary mt-1">
-              工单 {o.id} · {o.target}
+              工作 {o.id} · {o.target}
               <br />
               {o.event},操作后状态将更新
             </AlertDialogDescription>

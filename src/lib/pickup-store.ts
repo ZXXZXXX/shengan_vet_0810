@@ -9,7 +9,7 @@ export type PickupItem = {
 export type Pickup = {
   id: string;
   title: string;
-  source: string; // 关联工单/损耗单
+  source: string; // 关联工作/损耗单
   barn: string;
   approvedAt: string;
   approver: string;

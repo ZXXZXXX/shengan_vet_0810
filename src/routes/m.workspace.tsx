@@ -35,7 +35,7 @@ const modules: Module[] = [
   {
     key: "cattle",
     title: "牛 · 牧场管理",
-    desc: "工单 · 健康 · 档案，一线全流程作业",
+    desc: "工作 · 健康 · 档案，一线全流程作业",
     image: cattleImg,
     to: "/m/",
     enabled: true,

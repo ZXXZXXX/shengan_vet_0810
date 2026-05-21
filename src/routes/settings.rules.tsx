@@ -13,8 +13,8 @@ export const Route = createFileRoute("/settings/rules")({
 const rules = [
   { name: "高级告警 5 分钟未接", action: "自动升级至场长", count: "近 30 日触发 12 次" },
   { name: "库存低于安全线", action: "通知采购员 + 创建采购建议", count: "近 30 日触发 8 次" },
-  { name: "免疫工单逾期", action: "推送至现场端首页", count: "近 30 日触发 5 次" },
-  { name: "兽医处理结果未复查", action: "T+2 自动派复查工单", count: "近 30 日触发 18 次" },
+  { name: "免疫工作逾期", action: "推送至现场端首页", count: "近 30 日触发 5 次" },
+  { name: "兽医处理结果未复查", action: "T+2 自动派复查工作", count: "近 30 日触发 18 次" },
 ];
 
 function RulesPage() {

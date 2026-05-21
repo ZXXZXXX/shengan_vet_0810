@@ -17,13 +17,13 @@ import {
 import { ClipboardList, ChevronRight, Plus, Layers } from "lucide-react";
 
 export const Route = createFileRoute("/settings/")({
-  head: () => ({ meta: [{ title: "工单配置 — 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "工作配置 — 奇点智牧" }] }),
   component: WorkOrderPage,
 });
 
 const initialTypes = [
-  "疾病疑似工单", "免疫接种工单", "防疫消杀工单", "治疗执行工单",
-  "复查确认工单", "饲料配送工单", "设备保养工单", "盘点工单",
+  "疾病疑似工作", "免疫接种工作", "防疫消杀工作", "治疗执行工作",
+  "复查确认工作", "饲料配送工作", "设备保养工作", "盘点工作",
 ];
 
 function WorkOrderPage() {
@@ -45,12 +45,12 @@ function WorkOrderPage() {
 
   return (
     <>
-      <AppHeader title="工单配置" breadcrumb={["配置中心", "工单配置"]} />
+      <AppHeader title="工作配置" breadcrumb={["配置中心", "工作配置"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <Layers className="h-4 w-4 text-primary" strokeWidth={1.75} />
-            <h2 className="text-section-title text-foreground">工单类型</h2>
+            <h2 className="text-section-title text-foreground">工作类型</h2>
             <span className="text-body-sm text-text-tertiary">共 {types.length} 个</span>
           </div>
           <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
@@ -90,12 +90,12 @@ function WorkOrderPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              确认{pending?.next ? "启用" : "停用"}该工单类型？
+              确认{pending?.next ? "启用" : "停用"}该工作类型？
             </AlertDialogTitle>
             <AlertDialogDescription>
               {pending?.next
                 ? `启用后，"${pending?.name}" 将可在生产端被创建与下发。`
-                : `停用后，"${pending?.name}" 将不再出现在新建工单选项中，已存在的工单不受影响。`}
+                : `停用后，"${pending?.name}" 将不再出现在新建工作选项中，已存在的工作不受影响。`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

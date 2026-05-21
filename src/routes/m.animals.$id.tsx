@@ -42,7 +42,7 @@ function AnimalDetailPage() {
     withdrawalDays: 3, // 0 表示无休药期
   };
 
-  // mock 执行中工单
+  // mock 执行中工作
   const orders = [
     {
       id: "WO-2026-0518",
@@ -125,10 +125,10 @@ function AnimalDetailPage() {
           </span>
         </section>
 
-        {/* 执行中工单 */}
+        {/* 执行中工作 */}
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">执行中工单</h3>
+            <h3 className="text-card-title text-foreground">执行中工作</h3>
             <span className="text-caption text-text-tertiary">
               当前扫码人：{me}（{roleLabel[role]}）
             </span>
@@ -139,7 +139,7 @@ function AnimalDetailPage() {
             if (mineOrders.length === 0) {
               return (
                 <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
-                  <div className="text-body-sm text-text-tertiary">暂无您负责的执行中工单</div>
+                  <div className="text-body-sm text-text-tertiary">暂无您负责的执行中工作</div>
                 </div>
               );
             }

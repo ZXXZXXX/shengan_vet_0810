@@ -20,7 +20,7 @@ import { useRole, canApprove } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
 export const Route = createFileRoute("/m/health/")({
-  head: () => ({ meta: [{ title: "工单列表 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "工作列表 · 奇点智牧" }] }),
   component: TaskListPage,
 });
 
@@ -86,7 +86,7 @@ function TaskListPage() {
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
   const [q, setQ] = useState("");
 
-  // 注入"领取"工单（来自审批通过的处方/补领申请）
+  // 注入"领取"工作（来自审批通过的处方/补领申请）
   const pickupTasks: Task[] = PICKUPS.map((p) => {
     const done = claimed.includes(p.id);
     return {
@@ -103,7 +103,7 @@ function TaskListPage() {
     };
   });
 
-  // 修蹄工只看到自己的修蹄工单
+  // 修蹄工只看到自己的修蹄工作
   let list: Task[] = [...pickupTasks, ...tasks];
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
@@ -124,7 +124,7 @@ function TaskListPage() {
 
   return (
     <MobileShell
-      title="工单列表"
+      title="工作列表"
       right={
         <Link
           to="/m/report"
@@ -141,7 +141,7 @@ function TaskListPage() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="搜索工单号 / 对象 / 工单类型 / 牛舍 / 物资"
+            placeholder="搜索工作号 / 对象 / 工作类型 / 牛舍 / 物资"
             className="h-10 w-full pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary"
           />
         </div>
@@ -170,7 +170,7 @@ function TaskListPage() {
       <div className="px-4 mt-3 pb-4 space-y-4">
         {list.length === 0 && (
           <div className="py-16 text-center text-body-sm text-text-tertiary">
-            暂无{tab === "全部" ? "" : tab}工单
+            暂无{tab === "全部" ? "" : tab}工作
           </div>
         )}
         {Object.entries(
