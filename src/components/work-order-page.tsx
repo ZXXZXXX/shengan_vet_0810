@@ -819,7 +819,7 @@ export function makeOrders(
   prefix: string,
   events: { target: string; event: string; desc: string }[],
 ): WorkOrder[] {
-  const statuses: WorkStatus[] = ["待审核", "执行中", "已完成", "已驳回"];
+  const statuses: WorkStatus[] = ["待审核", "待响应", "执行中", "已完成", "已驳回"];
   const now = new Date();
   // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
   const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
