@@ -1,8 +1,6 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Check,
-  X,
   ClipboardList,
   AlertTriangle,
   CheckCircle2,
@@ -11,6 +9,10 @@ import {
   MessageSquare,
   Camera,
   Send,
+  Mic,
+  Video,
+  FileText,
+  PackagePlus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove, canExecute } from "@/lib/mobile-role";
