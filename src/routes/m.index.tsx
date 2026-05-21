@@ -119,7 +119,7 @@ function MHomePage() {
           <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="较昨日 +6" />
           <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="周环比 +0.4%" />
           <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="新增 +3" />
-          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="​" />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日 +2" />
         </div>
       </section>
 
