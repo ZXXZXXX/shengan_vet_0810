@@ -681,7 +681,7 @@ function ReportPage() {
           onClick={submit}
           className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body disabled:opacity-50 transition-opacity"
         >
-          {submitted ? "已提交,任务已生成" : "提交上报"}
+          {submitted ? "已提交,工单已生成" : "提交上报"}
         </button>
       </div>
     </MobileShell>
