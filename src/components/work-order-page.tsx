@@ -758,11 +758,13 @@ export function WorkOrderPage({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              确认{confirm === "approve" ? "通过" : "驳回"}该工单？
+              {confirm === "approve" ? "确认通过并入待响应池？" : "确认驳回该工单？"}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {detail ? `工单 ${detail.id} · ${detail.target}` : ""}
-              ，操作后状态将更新,无法撤销。
+              {confirm === "approve"
+                ? "。审批通过仅完成诊疗确认与执行计划配置，不指定执行人；工单将进入对应处理权限账号的待响应池，由首位响应者承接执行，并从其他人的待响应池中流出。"
+                : "，操作后状态将更新,无法撤销。"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
