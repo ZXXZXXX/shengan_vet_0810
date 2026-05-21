@@ -45,7 +45,7 @@ const kpis = [
   { label: "待办任务", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "todos" as const },
 ];
 
-type RequestType = "transfer" | "health";
+type RequestType = "health" | "loss";
 type PendingRequest = {
   id: string;
   type: RequestType;
@@ -67,15 +67,6 @@ const pendingRequests: PendingRequest[] = [
     detail: "牛只 #A2381 持续 2 小时体温高于 40℃，建议转入隔离区并安排血常规检测，预计耗材：抗生素 1 支、采血管 2 支。",
   },
   {
-    id: "REQ-2380",
-    type: "transfer",
-    title: "精饲料跨场调拨申请",
-    desc: "由 2 号牧场调拨精饲料 3 吨至 1 号牧场",
-    applicant: "王仓管",
-    time: "32 分钟前",
-    detail: "1 号牧场精饲料库余量 12%，预计 24 小时内告罄。申请由 2 号牧场库存中调拨 3 吨,由调度车次 LK-07 承运。",
-  },
-  {
     id: "REQ-2379",
     type: "health",
     title: "免疫工单延期申请",
@@ -85,19 +76,19 @@ const pendingRequests: PendingRequest[] = [
     detail: "5 头待免疫牛只目前处于发情期，按规程不宜立即免疫。申请将本批免疫计划由 5/12 顺延至 5/15 执行。",
   },
   {
-    id: "REQ-2378",
-    type: "transfer",
-    title: "兽药领用调拨申请",
-    desc: "总仓向 5 号牛舍调拨 3 类兽药",
+    id: "REQ-2377",
+    type: "loss",
+    title: "药品损耗确认申请",
+    desc: "5 号牛舍驱虫剂破损 3 盒，申请确认为正常损耗",
     applicant: "孙库管",
     time: "今日 09:12",
-    detail: "5 号牛舍周保养所需消毒液 5 L、驱虫剂 2 盒、营养补充剂 1 箱，请审批后由总仓出库配送。",
+    detail: "5 号牛舍在搬运过程中发现驱虫剂包装破损 3 盒，已拍照留档。申请确认为正常损耗并核销库存。",
   },
 ];
 
 const requestTypeMeta: Record<RequestType, { label: string; tone: string }> = {
-  transfer: { label: "调拨申请", tone: "info" },
   health: { label: "健康防护", tone: "warning" },
+  loss: { label: "药品损耗", tone: "danger" },
 };
 
 const todos = [
@@ -391,7 +382,7 @@ function HomePage() {
                     onClick={() => setActiveRequest(r)}
                     className="w-full text-left px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors"
                   >
-                    <span className={`tag ${r.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
+                    <span className={`tag ${r.type === "health" ? "tag-warning" : "tag-danger"}`}>
                       {meta.label}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -525,7 +516,7 @@ function HomePage() {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`tag ${activeRequest.type === "transfer" ? "tag-brand" : "tag-warning"}`}>
+                  <span className={`tag ${activeRequest.type === "health" ? "tag-warning" : "tag-danger"}`}>
                     {requestTypeMeta[activeRequest.type].label}
                   </span>
                   <span className="text-caption text-text-tertiary tabular-nums">{activeRequest.id}</span>
