@@ -49,6 +49,17 @@ const colorMap: Record<string, string> = {
   muted: "bg-surface-subtle text-text-secondary",
 };
 
+// 强调色（装饰条/数值/光晕）
+const toneAccent: Record<string, string> = {
+  brand: "var(--brand)",
+  success: "var(--state-success)",
+  warning: "var(--state-warning)",
+  danger: "var(--state-danger)",
+  info: "var(--effect-ai-cyan)",
+  purple: "var(--effect-ai-purple)",
+  muted: "var(--text-tertiary)",
+};
+
 function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
