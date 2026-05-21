@@ -76,6 +76,7 @@ const kindIcon: Record<Kind, typeof Stethoscope> = {
   健康: Stethoscope,
   损耗: PackageMinus,
   修蹄: Footprints,
+  领取: PackageCheck,
 };
 
 function TaskListPage() {
