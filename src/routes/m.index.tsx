@@ -371,7 +371,7 @@ function FarmSwitcher() {
       </button>
 
       {open && !single && (
-        <div className="absolute left-0 right-0 top-full bg-card border-b border-border shadow-lg max-h-[60vh] overflow-y-auto">
+        <div className="absolute left-0 right-0 bottom-full bg-card border border-border shadow-lg rounded-xl mb-1 max-h-[60vh] overflow-y-auto">
           <div className="px-4 py-2 text-caption text-text-tertiary border-b border-border">
             共 {FARMS.length} 个牧场 · 切换后全局数据将同步更新
           </div>
