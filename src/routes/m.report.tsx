@@ -108,8 +108,8 @@ function ReportPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const role = useRole();
-  // 仅具备处方权的角色（admin/兽医/场长）以及兽医助理可上报健康问题；修蹄工等仅可上报损耗
-  const canReportHealth = canApprove(role) || role === "vet_assistant";
+  // 健康类工单：内部角色（兽医/场长/兽医助理/管理员）与外部专项执行人员（如修蹄工）均可上报
+  const canReportHealth = true;
 
   const lockTarget = !!search.lock && !!search.target;
   const lockBarn = !!search.lock && !!search.barn;
