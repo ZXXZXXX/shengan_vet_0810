@@ -347,7 +347,7 @@ function FarmSwitcher() {
   return (
     <div
       ref={ref}
-      className="px-4 py-3 mt-4 border-t border-border"
+      className="relative px-4 py-3 mt-4 border-t border-border"
     >
       <button
         type="button"
