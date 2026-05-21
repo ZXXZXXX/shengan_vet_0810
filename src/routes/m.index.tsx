@@ -46,8 +46,9 @@ function MHomePage() {
 
   return (
     <MobileShell>
+      <FarmSwitcher />
       {/* 顶部欢迎 + 通知 + 现场上报快捷入口 */}
-      <header className="px-4 pt-12 pb-6 bg-gradient-to-br from-primary via-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
+      <header className="px-4 pt-4 pb-6 bg-gradient-to-br from-primary via-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
         {/* 视觉装饰层 */}
         <div className="absolute inset-0 opacity-[0.18] pointer-events-none"
           style={{
