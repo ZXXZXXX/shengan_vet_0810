@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
-import { Search, ScanLine, Beef, Filter, ChevronRight } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { Search, ScanLine, Beef, ChevronRight, ChevronDown } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
 export const Route = createFileRoute("/m/animals/")({
