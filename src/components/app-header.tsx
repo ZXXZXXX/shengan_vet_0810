@@ -37,7 +37,6 @@ const currentUser = {
   name: "张磊",
   initial: "ZL",
   role: "场长",
-  org: "奇点牧业集团 / 1 号牧场（生产域）",
   team: "兽医部 · 巡检 A 组",
 };
 
