@@ -732,11 +732,11 @@ function EditDialog({
   // 切换人员类型时，已选 farmRoles 中不属于当前类型角色的清空，避免脏数据
   const availableRoles = useMemo(() => {
     const set = new Set(baseRoles);
-    farmRoles.forEach((fr) => fr.role && baseRoles.includes(fr.role) && set.add(fr.role));
+    farmRoles.forEach((fr) => fr.roles.forEach((r) => baseRoles.includes(r) && set.add(r)));
     return Array.from(set);
   }, [baseRoles, farmRoles]);
 
-  const incomplete = farmRoles.some((fr) => !fr.role);
+  const incomplete = farmRoles.some((fr) => fr.roles.length === 0);
   const canSave = farmRoles.length > 0 && !incomplete;
 
   return (
