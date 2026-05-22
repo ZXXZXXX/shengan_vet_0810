@@ -149,14 +149,33 @@ function ReportPage() {
 
   // 健康
   const [workType, setWorkType] = useState<WorkType | "">("");
-  const [symptomTags, setSymptomTags] = useState<string[]>([...defaultSymptomTags, "其他"]);
+  const cfg = workType ? workTypeConfig[workType] : null;
+  const [symptomTags, setSymptomTags] = useState<string[]>([]);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [customSymptom, setCustomSymptom] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [note, setNote] = useState("");
   const [handlerId, setHandlerId] = useState<string>("");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>("");
+
+  // 切换工作类型时重置标签集
+  useEffect(() => {
+    if (cfg?.tags) {
+      setSymptomTags([...cfg.tags.presets, "其他"]);
+    } else {
+      setSymptomTags([]);
+    }
+    setSymptoms([]);
+    setShowCustomInput(false);
+    setCustomSymptom("");
+    setNote("");
+    if (!cfg?.allowDisease) {
+      setSuspectedDisease("");
+      setDiseaseQ("");
+    }
+  }, [workType]);
 
 
   // 是否完成"线索上传"——之后才显示疑似疾病
