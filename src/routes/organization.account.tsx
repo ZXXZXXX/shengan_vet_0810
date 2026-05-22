@@ -213,6 +213,8 @@ function AccountPage() {
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [drawerMode, setDrawerMode] = useState<"detail" | "edit">("detail");
   const [creating, setCreating] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [batchOpen, setBatchOpen] = useState(false);
   const drawerAccount = useMemo(
     () => (drawerId ? accounts.find((a) => a.id === drawerId) ?? null : null),
     [drawerId, accounts],
@@ -226,6 +228,49 @@ function AccountPage() {
     setDrawerMode("edit");
   };
   const closeDrawer = () => setDrawerId(null);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const clearSelection = () => setSelectedIds(new Set());
+
+  const applyBatch = (
+    targetFarmRoles: FarmRole[],
+    mode: "replace" | "merge",
+  ) => {
+    const ids = selectedIds;
+    setAccounts((list) =>
+      list.map((a) => {
+        if (!ids.has(a.id)) return a;
+        if (mode === "replace") {
+          return { ...a, farmRoles: targetFarmRoles };
+        }
+        // merge：按牧场合并角色（并集）
+        const map = new Map<string, Set<string>>();
+        a.farmRoles.forEach((fr) => map.set(fr.farm, new Set(fr.roles)));
+        targetFarmRoles.forEach((fr) => {
+          const cur = map.get(fr.farm) ?? new Set<string>();
+          fr.roles.forEach((r) => cur.add(r));
+          map.set(fr.farm, cur);
+        });
+        const merged: FarmRole[] = Array.from(map.entries()).map(([farm, rs]) => ({
+          farm,
+          roles: Array.from(rs),
+        }));
+        return { ...a, farmRoles: merged };
+      }),
+    );
+    toast.success(
+      `已${mode === "replace" ? "覆盖" : "合并"}更新 ${ids.size} 个账号的牧场与角色`,
+    );
+    clearSelection();
+    setBatchOpen(false);
+  };
 
   // 筛选状态
   const [keyword, setKeyword] = useState("");
@@ -307,8 +352,20 @@ function AccountPage() {
       });
   }, [accounts, keyword, onlyInternal, filterRole, filterFarms, filterStatus]);
 
-  // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
-  const cols = "1.5fr 0.8fr 1.1fr 1.3fr 1.8fr 140px 140px 0.7fr 0.5fr";
+  // 列宽：勾选 用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
+  const cols = "40px 1.5fr 0.8fr 1.1fr 1.3fr 1.8fr 140px 140px 0.7fr 0.5fr";
+
+  const visibleIds = filteredAccounts.map((a) => a.id);
+  const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id));
+  const someSelected = visibleIds.some((id) => selectedIds.has(id));
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) visibleIds.forEach((id) => next.delete(id));
+      else visibleIds.forEach((id) => next.add(id));
+      return next;
+    });
+  };
 
 
   return (
@@ -448,9 +505,41 @@ function AccountPage() {
           </Button>
         </div>
 
+        {selectedIds.size > 0 && (
+          <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-md border border-primary/30 bg-brand-subtle">
+            <div className="text-body-sm text-foreground">
+              已选 <span className="font-medium text-primary">{selectedIds.size}</span> 个账号
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => setBatchOpen(true)}
+                className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              >
+                批量关联牧场 / 分配角色
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={clearSelection}
+                className="h-8 text-body-sm font-normal text-text-secondary"
+              >
+                取消选择
+              </Button>
+            </div>
+          </div>
+        )}
+
         <Card className="border-border bg-card overflow-hidden">
           <div className="grid gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle"
             style={{ gridTemplateColumns: cols }}>
+            <div className="flex items-center">
+              <Checkbox
+                checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                onCheckedChange={toggleSelectAll}
+                aria-label="全选"
+              />
+            </div>
             <div>用户</div>
             <div>人员类型</div>
             <div>手机号</div>
@@ -463,8 +552,15 @@ function AccountPage() {
 
           </div>
           {filteredAccounts.map((a) => (
-            <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
+            <div key={a.id} className={`grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle ${selectedIds.has(a.id) ? "bg-brand-subtle/40" : ""}`}
               style={{ gridTemplateColumns: cols }}>
+              <div className="flex items-center">
+                <Checkbox
+                  checked={selectedIds.has(a.id)}
+                  onCheckedChange={() => toggleSelect(a.id)}
+                  aria-label={`选择 ${a.name}`}
+                />
+              </div>
               <div className="leading-tight min-w-0">
                 <div className="text-body text-foreground truncate">{a.name}</div>
                 <div className="text-caption text-text-tertiary font-mono">{a.id}</div>
@@ -586,6 +682,19 @@ function AccountPage() {
           onClose={() => setCreating(false)}
           onCreate={handleCreate}
           onCreateRole={addRoleFor}
+        />
+      )}
+
+      {/* 批量分配 */}
+      {batchOpen && (
+        <BatchAssignDialog
+          count={selectedIds.size}
+          selectedAccounts={accounts.filter((a) => selectedIds.has(a.id))}
+          roles={roles}
+          internalRoles={internalRoles}
+          onCreateRole={(r) => addRoleFor("内部", r)}
+          onClose={() => setBatchOpen(false)}
+          onApply={applyBatch}
         />
       )}
     </>
@@ -1367,5 +1476,150 @@ function CreateDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function BatchAssignDialog({
+  count,
+  selectedAccounts,
+  roles,
+  internalRoles,
+  onCreateRole,
+  onClose,
+  onApply,
+}: {
+  count: number;
+  selectedAccounts: Account[];
+  roles: string[];
+  internalRoles: string[];
+  onCreateRole: (r: string) => void;
+  onClose: () => void;
+  onApply: (farmRoles: FarmRole[], mode: "replace" | "merge") => void;
+}) {
+  const [mode, setMode] = useState<"merge" | "replace">("merge");
+  const [farmRoles, setFarmRoles] = useState<FarmRole[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const effective = useMemo(
+    () => farmRoles.filter((fr) => fr.roles.length > 0),
+    [farmRoles],
+  );
+  const canSubmit = effective.length > 0;
+
+  // 混合人员类型时给出提示
+  const hasInternal = selectedAccounts.some((a) => a.userType === "内部");
+  const hasExternal = selectedAccounts.some((a) => a.userType === "外部");
+  const mixed = hasInternal && hasExternal;
+
+  // 仅展示与所选账号类型相容的角色（混合则全部）
+  const visibleRoles = useMemo(() => {
+    if (mixed) return roles;
+    if (hasInternal) return roles.filter((r) => internalRoles.includes(r));
+    return roles.filter((r) => !internalRoles.includes(r));
+  }, [roles, internalRoles, mixed, hasInternal]);
+
+  return (
+    <>
+      <Dialog open onOpenChange={(o) => !o && onClose()}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>批量关联牧场 / 分配角色</DialogTitle>
+            <DialogDescription>
+              将对所选 {count} 个账号统一应用以下牧场与角色配置。
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* 模式 */}
+            <div className="rounded-md border border-border bg-surface-subtle p-3 space-y-2">
+              <div className="text-body-sm font-medium text-foreground">应用方式</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label className={`flex items-start gap-2 p-3 rounded-md border cursor-pointer ${mode === "merge" ? "border-primary bg-card" : "border-border bg-card hover:border-primary/40"}`}>
+                  <input
+                    type="radio"
+                    checked={mode === "merge"}
+                    onChange={() => setMode("merge")}
+                    className="mt-0.5 accent-primary"
+                  />
+                  <div className="min-w-0">
+                    <div className="text-body-sm text-foreground">追加合并</div>
+                    <div className="text-caption text-text-tertiary mt-0.5">
+                      在账号原有牧场 / 角色基础上合并新配置（同牧场角色取并集）。
+                    </div>
+                  </div>
+                </label>
+                <label className={`flex items-start gap-2 p-3 rounded-md border cursor-pointer ${mode === "replace" ? "border-primary bg-card" : "border-border bg-card hover:border-primary/40"}`}>
+                  <input
+                    type="radio"
+                    checked={mode === "replace"}
+                    onChange={() => setMode("replace")}
+                    className="mt-0.5 accent-primary"
+                  />
+                  <div className="min-w-0">
+                    <div className="text-body-sm text-foreground">覆盖替换</div>
+                    <div className="text-caption text-text-tertiary mt-0.5">
+                      清空账号原有牧场 / 角色，统一替换为以下配置。
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {mixed && (
+              <div className="rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-caption text-text-secondary">
+                所选账号同时包含内部与外部人员，请确认分配的角色对两类人员都适用。
+              </div>
+            )}
+
+            <FarmRolePicker
+              value={farmRoles}
+              onChange={setFarmRoles}
+              roles={visibleRoles}
+              onCreateRole={onCreateRole}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">
+              取消
+            </Button>
+            <Button
+              disabled={!canSubmit}
+              onClick={() => setConfirmOpen(true)}
+              className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            >
+              应用到 {count} 个账号
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              确认{mode === "replace" ? "覆盖替换" : "追加合并"}？
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              将对所选 {count} 个账号应用 {effective.length} 个牧场配置。
+              {mode === "replace" && "账号原有的牧场与角色将被清空并替换。"}
+              此操作会立即生效。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirmOpen(false);
+                onApply(effective, mode);
+              }}
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            >
+              确认应用
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
