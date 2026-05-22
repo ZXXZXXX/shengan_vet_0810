@@ -486,14 +486,7 @@ function AccountPage() {
   );
 }
 
-function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start justify-between gap-4 py-1.5 border-b border-border last:border-0">
-      <span className="text-text-tertiary shrink-0">{label}</span>
-      <span className="text-foreground text-right">{value}</span>
-    </div>
-  );
-}
+
 
 // 可搜索的「牧场—角色」多选：每个关联的牧场需选择对应角色
 function FarmRolePicker({
