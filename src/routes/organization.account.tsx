@@ -551,8 +551,8 @@ function FarmRolePicker({
   }, [q]);
 
   const selectedMap = useMemo(() => {
-    const m = new Map<string, string>();
-    value.forEach((v) => m.set(v.farm, v.role));
+    const m = new Map<string, string[]>();
+    value.forEach((v) => m.set(v.farm, v.roles));
     return m;
   }, [value]);
 
@@ -560,12 +560,18 @@ function FarmRolePicker({
     if (selectedMap.has(f)) {
       onChange(value.filter((v) => v.farm !== f));
     } else {
-      onChange([...value, { farm: f, role: "" }]);
+      onChange([...value, { farm: f, roles: [] }]);
     }
   };
 
-  const setRoleFor = (f: string, r: string) => {
-    onChange(value.map((v) => (v.farm === f ? { ...v, role: r } : v)));
+  const toggleRoleFor = (f: string, r: string) => {
+    onChange(
+      value.map((v) =>
+        v.farm === f
+          ? { ...v, roles: v.roles.includes(r) ? v.roles.filter((x) => x !== r) : [...v.roles, r] }
+          : v,
+      ),
+    );
   };
 
   const addNewRole = () => {
