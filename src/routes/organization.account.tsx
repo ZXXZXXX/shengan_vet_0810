@@ -154,9 +154,22 @@ function AccountPage() {
       setExternalRoles((rs) => (rs.includes(r) ? rs : [...rs, r]));
     }
   };
-  const [viewing, setViewing] = useState<Account | null>(null);
-  const [editing, setEditing] = useState<Account | null>(null);
+  const [drawerId, setDrawerId] = useState<string | null>(null);
+  const [drawerMode, setDrawerMode] = useState<"detail" | "edit">("detail");
   const [creating, setCreating] = useState(false);
+  const drawerAccount = useMemo(
+    () => (drawerId ? accounts.find((a) => a.id === drawerId) ?? null : null),
+    [drawerId, accounts],
+  );
+  const openDetail = (a: Account) => {
+    setDrawerId(a.id);
+    setDrawerMode("detail");
+  };
+  const openEdit = (a: Account) => {
+    setDrawerId(a.id);
+    setDrawerMode("edit");
+  };
+  const closeDrawer = () => setDrawerId(null);
 
   // 筛选状态
   const [keyword, setKeyword] = useState("");
