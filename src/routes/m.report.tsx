@@ -177,13 +177,11 @@ function ReportPage() {
   };
 
   const canSubmit =
-    kind === "health"
-      ? target.trim().length > 0 &&
-        workType !== "" &&
-        symptoms.length > 0 &&
-        handlerId !== "" &&
-        evidenceReady
-      : itemName.trim().length > 0 && Number(lossQty) > 0;
+    target.trim().length > 0 &&
+    workType !== "" &&
+    symptoms.length > 0 &&
+    handlerId !== "" &&
+    evidenceReady;
 
   const submit = () => {
     if (!canSubmit) return;
@@ -194,45 +192,9 @@ function ReportPage() {
   return (
     <MobileShell title="现场上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-3">
-        {/* 类别 Tabs */}
-        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-surface-subtle border border-border">
-          {(
-            [
-              { k: "health" as ReportKind, label: "牛只健康", icon: Stethoscope },
-              { k: "loss" as ReportKind, label: "损耗问题", icon: PackageMinus },
-            ]
-          ).map((t) => {
-            const Icon = t.icon;
-            const active = kind === t.k;
-            const disabled = t.k === "health" && !canReportHealth;
-            return (
-              <button
-                key={t.k}
-                disabled={disabled}
-                onClick={() => !disabled && setKind(t.k)}
-                className={`h-10 rounded-lg text-body-sm inline-flex items-center justify-center gap-1.5 transition-colors ${
-                  active
-                    ? "bg-card text-primary shadow-sm border border-primary/20"
-                    : disabled
-                    ? "text-text-tertiary opacity-60"
-                    : "text-text-secondary"
-                }`}
-              >
-                <Icon className="h-4 w-4" /> {t.label}
-                {disabled && <Lock className="h-3 w-3 ml-0.5" />}
-              </button>
-            );
-          })}
-        </div>
-
-        {!canReportHealth && (
-          <div className="rounded-lg border border-border bg-surface-subtle px-3 py-2 text-caption text-text-secondary">
-            当前角色（{role === "hoof_trimmer" ? "修蹄工" : "外部人员"}）仅可执行工作与上报损耗类问题，无法上报健康类问题。
-          </div>
-        )}
-
         {kind === "health" ? (
           <>
+
             {/* 处理对象 */}
             <Section title="处理对象" required>
               {lockTarget ? (
