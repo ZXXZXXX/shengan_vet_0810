@@ -330,8 +330,13 @@ function ReportPage() {
 
             {workType !== "" && (
               <>
-                {/* 症状标签 */}
-                <Section title="症状标签" required hint={`可多选；可通过"其他"自行添加`}>
+                {/* 标签字段（按工作类型显示） */}
+                {cfg?.tags && (
+                  <Section
+                    title={cfg.tags.label}
+                    required={cfg.tags.required}
+                    hint={`可多选；可通过"其他"自行添加`}
+                  >
                   <div className="flex flex-wrap gap-2">
                     {symptomTags.map((t) => {
                       const active = symptoms.includes(t);
@@ -361,7 +366,7 @@ function ReportPage() {
                         value={customSymptom}
                         onChange={(e) => setCustomSymptom(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && addCustomSymptom()}
-                        placeholder="输入自定义症状标签"
+                        placeholder="输入自定义标签"
                         className="flex-1 h-10 px-3 rounded-lg bg-card border border-border text-body-sm"
                       />
                       <button
@@ -381,7 +386,22 @@ function ReportPage() {
                       </button>
                     </div>
                   )}
-                </Section>
+                  </Section>
+                )}
+
+                {/* 事项说明（干奶 / 疫苗 / 驱虫） */}
+                {cfg?.note && (
+                  <Section title={cfg.note.label} required>
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder={cfg.note.placeholder}
+                      rows={3}
+                      className="w-full p-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary resize-none"
+                    />
+                    <div className="text-right text-caption text-text-tertiary mt-1">{note.length} / 200</div>
+                  </Section>
+                )}
 
                 {/* 处理人 */}
                 <Section title="处理人" required hint="仅可选择具备处方权的角色">
