@@ -33,22 +33,62 @@ type ReportKind = "health";
 
 
 // 健康工作类型
-const healthWorkTypes = ["疾病治疗", "免疫", "普修", "复诊"] as const;
+const healthWorkTypes = ["疾病治疗", "修蹄", "产后护理", "干奶", "疫苗", "驱虫", "普修"] as const;
 type WorkType = (typeof healthWorkTypes)[number];
 
-// 健康常见症状标签
-const defaultSymptomTags = [
-  "体温升高",
-  "采食下降",
-  "反刍减少",
-  "精神沉郁",
-  "乳房红肿",
-  "跛行",
-  "腹泻",
-  "鼻液增多",
-  "外伤出血",
-  "卧地不起",
-];
+// 每种工作类型的字段配置
+type WorkTypeConfig = {
+  tags?: { label: string; required: boolean; presets: string[] };
+  note?: { label: string; placeholder: string };
+  allowDisease: boolean;
+};
+
+const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
+  疾病治疗: {
+    tags: {
+      label: "症状标签",
+      required: true,
+      presets: ["体温升高", "采食下降", "反刍减少", "精神沉郁", "乳房红肿", "跛行", "腹泻", "鼻液增多", "外伤出血", "卧地不起"],
+    },
+    allowDisease: true,
+  },
+  修蹄: {
+    tags: {
+      label: "问题 / 症状标签",
+      required: true,
+      presets: ["跛行", "蹄底溃疡", "趾间皮炎", "蹄叶炎", "蹄壁裂", "白线病", "蹄过长", "腐蹄"],
+    },
+    allowDisease: false,
+  },
+  产后护理: {
+    tags: {
+      label: "护理 / 异常标签",
+      required: true,
+      presets: ["胎衣不下", "产道损伤", "子宫复旧异常", "低血钙", "酮病风险", "产后发热", "BCS 偏低", "恶露异常"],
+    },
+    allowDisease: true,
+  },
+  干奶: {
+    note: { label: "事项说明", placeholder: "请描述干奶批次、用药及注意事项" },
+    allowDisease: false,
+  },
+  疫苗: {
+    note: { label: "事项说明", placeholder: "请描述疫苗品种、批次、覆盖范围等" },
+    allowDisease: false,
+  },
+  驱虫: {
+    note: { label: "事项说明", placeholder: "请描述驱虫药品、覆盖范围、给药方式" },
+    allowDisease: false,
+  },
+  普修: {
+    tags: {
+      label: "问题标签",
+      required: true,
+      presets: ["采食下降", "精神沉郁", "外伤", "卧地不起", "体况下降", "行为异常", "其他异常"],
+    },
+    allowDisease: false,
+  },
+};
 
 // 具备处方权的处理人（admin / 兽医 / 场长）
 const prescriptionHandlers = [
@@ -109,14 +149,33 @@ function ReportPage() {
 
   // 健康
   const [workType, setWorkType] = useState<WorkType | "">("");
-  const [symptomTags, setSymptomTags] = useState<string[]>([...defaultSymptomTags, "其他"]);
+  const cfg = workType ? workTypeConfig[workType] : null;
+  const [symptomTags, setSymptomTags] = useState<string[]>([]);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [customSymptom, setCustomSymptom] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [note, setNote] = useState("");
   const [handlerId, setHandlerId] = useState<string>("");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>("");
+
+  // 切换工作类型时重置标签集
+  useEffect(() => {
+    if (cfg?.tags) {
+      setSymptomTags([...cfg.tags.presets, "其他"]);
+    } else {
+      setSymptomTags([]);
+    }
+    setSymptoms([]);
+    setShowCustomInput(false);
+    setCustomSymptom("");
+    setNote("");
+    if (!cfg?.allowDisease) {
+      setSuspectedDisease("");
+      setDiseaseQ("");
+    }
+  }, [workType]);
 
 
   // 是否完成"线索上传"——之后才显示疑似疾病
@@ -179,7 +238,8 @@ function ReportPage() {
   const canSubmit =
     target.trim().length > 0 &&
     workType !== "" &&
-    symptoms.length > 0 &&
+    (!cfg?.tags?.required || symptoms.length > 0) &&
+    (!cfg?.note || note.trim().length > 0) &&
     handlerId !== "" &&
     evidenceReady;
 
@@ -270,8 +330,13 @@ function ReportPage() {
 
             {workType !== "" && (
               <>
-                {/* 症状标签 */}
-                <Section title="症状标签" required hint={`可多选；可通过"其他"自行添加`}>
+                {/* 标签字段（按工作类型显示） */}
+                {cfg?.tags && (
+                  <Section
+                    title={cfg.tags.label}
+                    required={cfg.tags.required}
+                    hint={`可多选；可通过"其他"自行添加`}
+                  >
                   <div className="flex flex-wrap gap-2">
                     {symptomTags.map((t) => {
                       const active = symptoms.includes(t);
@@ -301,7 +366,7 @@ function ReportPage() {
                         value={customSymptom}
                         onChange={(e) => setCustomSymptom(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && addCustomSymptom()}
-                        placeholder="输入自定义症状标签"
+                        placeholder="输入自定义标签"
                         className="flex-1 h-10 px-3 rounded-lg bg-card border border-border text-body-sm"
                       />
                       <button
@@ -321,7 +386,22 @@ function ReportPage() {
                       </button>
                     </div>
                   )}
-                </Section>
+                  </Section>
+                )}
+
+                {/* 事项说明（干奶 / 疫苗 / 驱虫） */}
+                {cfg?.note && (
+                  <Section title={cfg.note.label} required>
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder={cfg.note.placeholder}
+                      rows={3}
+                      className="w-full p-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary resize-none"
+                    />
+                    <div className="text-right text-caption text-text-tertiary mt-1">{note.length} / 200</div>
+                  </Section>
+                )}
 
                 {/* 处理人 */}
                 <Section title="处理人" required hint="仅可选择具备处方权的角色">
@@ -368,7 +448,7 @@ function ReportPage() {
                 />
 
                 {/* 疑似疾病 —— 仅在线索上传后显示 */}
-                {evidenceReady && (
+                {cfg?.allowDisease && evidenceReady && (
                   <Section
                     title="疑似疾病"
                     hint="可选；选择后将从诊疗知识库自动拉取治疗方案"
