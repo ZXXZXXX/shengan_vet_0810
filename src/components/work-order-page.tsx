@@ -1123,10 +1123,13 @@ export function WorkOrderPage({
                   <Button
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                     onClick={() => {
-                      if (!diagnosis.trim() || !treatment.trim()) {
+                      if (!planComplete) {
                         toast.error("执行方案不完整，请先编辑执行方案");
-                        setDraftDiagnosis(diagnosis);
-                        setDraftTreatment(treatment);
+                        setDraftConclusion(conclusion);
+                        setDraftItems(planItems.length ? planItems : [{ id: `n${Date.now()}`, name: "", dose: "", freq: "", course: "" }]);
+                        setDraftSteps(steps);
+                        setDraftFollowup(followup);
+                        setDraftNote(planNote);
                         setEditingPlan(true);
                         return;
                       }
