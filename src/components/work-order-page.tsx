@@ -703,39 +703,139 @@ export function WorkOrderPage({
       </main>
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl max-h-[88vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-section-title">工作详情</DialogTitle>
           </DialogHeader>
-          {detail && (
+          {detail && (() => {
+            const isLoss = detail.id.startsWith("LS");
+            const symptoms = isLoss ? [] : ["体温升高", "采食下降", "反刍减少"];
+            const photos = 2;
+            const videos = isLoss ? 1 : 0;
+            const voiceSecs = isLoss ? 42 : 28;
+            const proposerPhone = "138 0000 0001";
+            return (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-body-sm text-foreground">{detail.id}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-body-sm text-foreground">{detail.id}</span>
+                  <span className="tag tag-muted">{isLoss ? "损耗" : "健康"}</span>
+                </div>
                 <span className={toneStyles[statusList.find((s) => s.key === detail.status)!.tone].tag}>
                   {detail.status}
                 </span>
               </div>
 
+              {/* 字段网格 —— 与小程序保持一致 */}
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
                 <Field label="工作类型" value={title} />
-                <Field label="牛只耳号" value={detail.target} />
-                <Field label="提出人" value={detail.proposer} />
+                <Field label={isLoss ? "关联牛舍" : "处理对象"} value={detail.target} />
+                <Field label="提出事件" value={detail.event ?? "—"} />
+                <FieldNode
+                  label="提出人"
+                  node={
+                    <div className="flex items-center gap-2">
+                      <span className="text-body-sm text-foreground">{detail.proposer}</span>
+                      <a
+                        href={`tel:${proposerPhone.replace(/\s/g, "")}`}
+                        className="h-5 w-5 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center"
+                      >
+                        <Phone className="h-3 w-3" />
+                      </a>
+                      <button className="h-5 w-5 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center">
+                        <MessageSquare className="h-3 w-3" />
+                      </button>
+                    </div>
+                  }
+                />
                 <Field label="提出时间" value={detail.createdAt} />
+                <Field label="负责人" value={detail.executor ?? detail.who ?? "—"} />
                 <Field label="审核人" value={detail.reviewer ?? "—"} />
                 <Field label="审核时间" value={detail.reviewedAt ?? "—"} />
-                <Field label="响应人" value={detail.executor ?? detail.who ?? "—"} />
                 <Field label="响应时间" value={detail.executedAt ?? "—"} />
               </div>
 
+              {/* 症状说明 */}
+              {symptoms.length > 0 && (
+                <div className="rounded-md border border-border p-4">
+                  <div className="text-caption text-text-tertiary mb-2">症状说明（小程序提报）</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {symptoms.map((sym) => (
+                      <span key={sym} className="tag tag-brand">{sym}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 损耗补申请 */}
+              {isLoss && (
+                <div className="rounded-md border border-border p-4">
+                  <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1.5">
+                    <PackagePlus className="h-3.5 w-3.5 text-primary" /> 补申请物资
+                  </div>
+                  <div className="flex items-center justify-between text-body-sm text-foreground">
+                    <span>口蹄疫疫苗 A 型</span>
+                    <span className="font-mono text-text-secondary">× 8 支</span>
+                  </div>
+                </div>
+              )}
+
+              {/* 工作说明 */}
               <div className="rounded-md border border-border p-4">
-                <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
+                <div className="text-caption text-text-tertiary mb-1.5">
+                  {isLoss ? "文字备注" : "工作说明"}
+                </div>
                 <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc}</p>
               </div>
 
-              {detail.attachments && detail.attachments.length > 0 && (
-                <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-2">媒体附件</div>
-                  <div className="space-y-1.5">
+              {/* 证据材料 */}
+              <div className="rounded-md border border-border p-4 space-y-3">
+                <div className="text-caption text-text-tertiary">证据材料</div>
+                {photos > 0 && (
+                  <div>
+                    <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                      <Camera className="h-3 w-3" /> 照片 · {photos} 张
+                    </div>
+                    <div className="grid grid-cols-6 gap-2">
+                      {Array.from({ length: photos }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="aspect-square rounded-md bg-gradient-to-br from-surface-subtle to-border border border-border"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {videos > 0 && (
+                  <div>
+                    <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                      <Video className="h-3 w-3" /> 视频 · {videos} 段
+                    </div>
+                    <div className="grid grid-cols-6 gap-2">
+                      {Array.from({ length: videos }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="aspect-square rounded-md bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center"
+                        >
+                          <PlayCircle className="h-5 w-5 text-text-tertiary" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {voiceSecs > 0 && (
+                  <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-surface-subtle border border-border">
+                    <Mic className="h-4 w-4 text-primary" />
+                    <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
+                      <div className="h-full w-2/3 bg-primary/60" />
+                    </div>
+                    <span className="font-mono text-caption text-text-secondary">
+                      00:{String(voiceSecs).padStart(2, "0")}
+                    </span>
+                  </div>
+                )}
+                {detail.attachments && detail.attachments.length > 0 && (
+                  <div className="pt-2 border-t border-border space-y-1.5">
                     {detail.attachments.map((a, i) => {
                       const Icon = a.type === "audio" ? Mic : a.type === "video" ? Video : FileText;
                       const tone =
@@ -758,10 +858,43 @@ export function WorkOrderPage({
                       );
                     })}
                   </div>
+                )}
+              </div>
+
+              {/* 兽医诊断与治疗方案 —— PC 端可编辑 */}
+              {!isLoss && (
+                <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
+                      <Stethoscope className="h-4 w-4 text-primary" /> 兽医诊断与治疗方案
+                    </div>
+                    <span className="text-caption text-text-tertiary">默认填充小程序提报内容，可编辑覆盖</span>
+                  </div>
+                  <div>
+                    <div className="text-caption text-text-tertiary mb-1.5">诊断结论</div>
+                    <Textarea
+                      value={diagnosis}
+                      onChange={(e) => setDiagnosis(e.target.value)}
+                      rows={3}
+                      placeholder="请输入兽医诊断结论"
+                      className="text-body-sm bg-card resize-none"
+                    />
+                  </div>
+                  <div>
+                    <div className="text-caption text-text-tertiary mb-1.5">治疗方案</div>
+                    <Textarea
+                      value={treatment}
+                      onChange={(e) => setTreatment(e.target.value)}
+                      rows={4}
+                      placeholder="请输入用药、处置、观察要点等"
+                      className="text-body-sm bg-card resize-none"
+                    />
+                  </div>
                 </div>
               )}
             </div>
-          )}
+            );
+          })()}
 
           <DialogFooter className="gap-2">
             <Button variant="outline" className="gap-1.5" onClick={() => setConfirm("reject")}>
