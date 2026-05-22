@@ -741,8 +741,9 @@ function RolePage() {
                           <TableBody>
                             {miniEvents.map((e) => {
                               const p = cur.mini[e.key];
-                              const rowAll = p.report && p.pickup && p.record;
-                              const rowAny = p.report || p.pickup || p.record;
+                              const evActions = actions.filter((a) => hasAction(e, a));
+                              const rowAll = evActions.every((a) => p[a]);
+                              const rowAny = evActions.some((a) => p[a]);
                               const rowIndeterminate = rowAny && !rowAll;
                               return (
                                 <TableRow key={e.key} className="hover:bg-surface-subtle">
