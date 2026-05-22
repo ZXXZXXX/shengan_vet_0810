@@ -142,13 +142,53 @@ function MHomePage() {
       {/* ============ 数据看板 ============ */}
       <section className="px-4 mt-5">
         <SectionTitle title="农场概况" hint="数据实时同步" />
+        {/* 头部大卡：牛只总数 + 结构占比 + 7日趋势 */}
+        <div className="rounded-xl bg-card border border-border p-3 mb-2">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap.brand}`}>
+                  <Beef className="h-3.5 w-3.5" strokeWidth={1.75} />
+                </span>
+                <span className="text-caption text-text-secondary">存栏总数</span>
+              </div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-[28px] leading-none font-semibold text-foreground tabular-nums">1,284</span>
+                <span className="text-caption text-text-tertiary">头</span>
+                <span className="ml-1 inline-flex items-center gap-0.5 text-caption text-[var(--state-success)]">
+                  <TrendingUp className="h-3 w-3" />本月 +6
+                </span>
+              </div>
+            </div>
+            <Sparkline points={[18, 22, 19, 25, 24, 28, 30]} className="text-primary shrink-0" />
+          </div>
+          {/* 结构占比条 */}
+          <div className="mt-3">
+            <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-surface-subtle">
+              <span className="bg-[var(--state-success)]" style={{ width: "62%" }} />
+              <span className="bg-primary/70" style={{ width: "22%" }} />
+              <span className="bg-[var(--effect-ai-purple)]/70" style={{ width: "10%" }} />
+              <span className="bg-[var(--state-warning)]" style={{ width: "6%" }} />
+            </div>
+            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-text-tertiary">
+              <LegendDot color="var(--state-success)" label="泌乳 796" />
+              <LegendDot color="oklch(from var(--color-primary) l c h / 0.7)" label="干奶 282" />
+              <LegendDot color="oklch(from var(--effect-ai-purple) l c h / 0.7)" label="后备 128" />
+              <LegendDot color="var(--state-warning)" label="犊牛 78" />
+            </div>
+          </div>
+        </div>
+        {/* 关键指标 2x2 */}
         <div className="grid grid-cols-2 gap-2">
-          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月 +6" />
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周 +0.4%" />
-          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日 +3" />
-          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日 +2" />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" delta="+0.4%" deltaTone="up" bar={96.8} />
+          <DataCard icon={Droplets} tone="info" label="日均产奶" value="32.4" unit="kg/头" delta="+0.6" deltaTone="up" />
+          <DataCard icon={Eye} tone="warning" label="观察中" value="18" delta="今日 +3" deltaTone="up" />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" delta="今日 +2" deltaTone="up" />
+          <DataCard icon={Baby} tone="purple" label="本月新生" value="24" delta="计划 30" deltaTone="flat" bar={80} />
+          <DataCard icon={Activity} tone="brand" label="采食量达标" value="92%" delta="-1.2%" deltaTone="down" bar={92} />
         </div>
       </section>
+
 
       {canInventory && (
         <section className="px-4 mt-4">
