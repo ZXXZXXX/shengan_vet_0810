@@ -505,9 +505,41 @@ function AccountPage() {
           </Button>
         </div>
 
+        {selectedIds.size > 0 && (
+          <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-md border border-primary/30 bg-brand-subtle">
+            <div className="text-body-sm text-foreground">
+              已选 <span className="font-medium text-primary">{selectedIds.size}</span> 个账号
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => setBatchOpen(true)}
+                className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              >
+                批量关联牧场 / 分配角色
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={clearSelection}
+                className="h-8 text-body-sm font-normal text-text-secondary"
+              >
+                取消选择
+              </Button>
+            </div>
+          </div>
+        )}
+
         <Card className="border-border bg-card overflow-hidden">
           <div className="grid gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle"
             style={{ gridTemplateColumns: cols }}>
+            <div className="flex items-center">
+              <Checkbox
+                checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                onCheckedChange={toggleSelectAll}
+                aria-label="全选"
+              />
+            </div>
             <div>用户</div>
             <div>人员类型</div>
             <div>手机号</div>
