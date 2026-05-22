@@ -276,9 +276,10 @@ function MHomePage() {
                 <div className="text-body text-foreground truncate">{r.title}</div>
                 <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
               </div>
-              <span className={`text-caption ${r.tone === "danger" ? "text-[var(--state-danger)]" : r.tone === "warning" ? "text-[var(--state-warning)]" : "text-text-tertiary"}`}>
+              <span className={`text-caption ${toneTextMap[r.tone] ?? "text-text-tertiary"}`}>
                 {r.level}
               </span>
+
             </div>
           ))}
         </div>
