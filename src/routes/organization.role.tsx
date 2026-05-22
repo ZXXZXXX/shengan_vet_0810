@@ -100,7 +100,8 @@ type MiniEventKey =
   | "vaccine"
   | "postpartum"
   | "deworm"
-  | "general";
+  | "general"
+  | "loss";
 
 type MiniActionKey = "report" | "pickup" | "record";
 
@@ -116,8 +117,8 @@ const miniEvents: {
   { key: "postpartum", name: "产后护理", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
   { key: "deworm", name: "驱虫", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
   { key: "general", name: "普修", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
+  { key: "loss", name: "损耗 / 领用", actions: { report: "可上报损耗", pickup: "可处理损耗", record: "可领用核销" } },
 ];
-
 
 type PcPerms = { allowLogin: boolean; modules: Record<PcModuleKey, boolean> };
 type MiniPerms = Record<MiniEventKey, Record<MiniActionKey, boolean>>;
@@ -170,6 +171,7 @@ const defaultPerms: RolePerms = {
       postpartum: { report: true, pickup: true, record: true },
       deworm: { report: true, pickup: true, record: true },
       general: { report: true, pickup: true, record: true },
+      loss: { report: true, pickup: true, record: true },
     }),
   },
   assistant: {
@@ -181,12 +183,10 @@ const defaultPerms: RolePerms = {
       drying: { pickup: true, record: true },
       deworm: { pickup: true, record: true },
       general: { pickup: true, record: true },
-
+      loss: { report: true },
     }),
   },
 };
-
-
 
 type ViewMode = "detail" | "edit";
 
