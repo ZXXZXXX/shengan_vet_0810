@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
@@ -6,8 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,12 +40,12 @@ import {
   Briefcase,
   Stethoscope,
   HeartPulse,
-  Search,
   Monitor,
   Smartphone,
   MoreVertical,
   Users,
   Power,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,7 +54,6 @@ export const Route = createFileRoute("/organization/role")({
   component: RolePage,
 });
 
-type Platform = "pc" | "mini";
 type RoleKey = "admin" | "manager" | "vet" | "assistant";
 
 type Role = {
@@ -68,111 +73,108 @@ const initialRoles: Role[] = [
   { key: "assistant", name: "兽医助理", count: 6, scope: "健康执行 / 录入", desc: "协助兽医完成日常工作录入与执行，部分功能仅查看权限。", enabled: false, icon: HeartPulse },
 ];
 
-type Feature = { key: string; name: string };
-type FeatureGroup = { group: string; items: Feature[] };
+type PcModuleKey = "health" | "drug" | "archive" | "organization" | "knowledge";
 
-const pcFeatures: FeatureGroup[] = [
-  { group: "首页", items: [{ key: "dashboard", name: "运营看板" }] },
-  { group: "基础档案", items: [
-    { key: "farm", name: "牛场信息" },
-    { key: "barn", name: "牛舍信息" },
-    { key: "cattle", name: "牛只信息" },
-  ] },
-  { group: "健康管理", items: [
-    { key: "disease", name: "疾病治疗" },
-    { key: "vaccine", name: "疫苗免疫" },
-    { key: "postpartum", name: "产后护理" },
-    { key: "hoof", name: "修蹄工作" },
-    { key: "drying", name: "干奶工作" },
-    { key: "deworm", name: "驱虫工作" },
-    { key: "general", name: "普修工作" },
-  ] },
-  { group: "药品管理", items: [
-    { key: "drug", name: "药品档案" },
-    { key: "stock", name: "药品库存" },
-    { key: "transfer", name: "调拨转库" },
-    { key: "dispense", name: "取药记录" },
-    { key: "loss", name: "损耗管理" },
-  ] },
-  { group: "诊疗知识库", items: [
-    { key: "k-disease", name: "疾病知识库" },
-    { key: "k-symptom", name: "症状知识库" },
-    { key: "k-prescription", name: "处方管理" },
-  ] },
-  { group: "组织管理", items: [
-    { key: "account", name: "账号管理" },
-    { key: "role", name: "角色管理" },
-    { key: "tenant", name: "租户管理" },
-  ] },
+const pcModules: { key: PcModuleKey; name: string; desc: string }[] = [
+  { key: "health", name: "健康管理", desc: "疾病、疫苗、修蹄等健康事项的方案确认、审批与执行计划" },
+  { key: "drug", name: "药品管理", desc: "药品档案、库存、调拨、取药与损耗管理" },
+  { key: "archive", name: "基础档案", desc: "牛场、牛舍、牛只档案的维护" },
+  { key: "organization", name: "组织管理", desc: "账号、角色、租户与团队管理" },
+  { key: "knowledge", name: "知识库管理", desc: "疾病、症状、处方等诊疗知识维护" },
 ];
 
-const miniFeatures: FeatureGroup[] = [
-  { group: "工作台", items: [
-    { key: "m-workspace", name: "工作台首页" },
-    { key: "m-todo", name: "待办工作" },
-  ] },
-  { group: "牛只", items: [
-    { key: "m-animals", name: "牛只列表" },
-    { key: "m-animal-detail", name: "牛只档案" },
-  ] },
-  { group: "健康", items: [
-    { key: "m-health", name: "健康事件列表" },
-    { key: "m-health-detail", name: "事件详情" },
-    { key: "m-report", name: "上报事件" },
-  ] },
-  { group: "我的", items: [{ key: "m-me", name: "个人中心" }] },
+type MiniEventKey =
+  | "disease"
+  | "hoof"
+  | "drying"
+  | "vaccine"
+  | "postpartum"
+  | "deworm"
+  | "general"
+  | "loss";
+
+type MiniActionKey = "report" | "pickup" | "record";
+
+const miniEvents: {
+  key: MiniEventKey;
+  name: string;
+  actions: Record<MiniActionKey, string>;
+}[] = [
+  { key: "disease", name: "疾病治疗", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
+  { key: "hoof", name: "修蹄", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
+  { key: "drying", name: "干奶", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
+  { key: "vaccine", name: "疫苗", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
+  { key: "postpartum", name: "产后护理", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
+  { key: "deworm", name: "驱虫", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
+  { key: "general", name: "普修", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
+  { key: "loss", name: "损耗 / 领用", actions: { report: "可上报损耗", pickup: "可处理损耗", record: "可领用核销" } },
 ];
 
-type PermMap = Record<string, { view: boolean; edit: boolean }>;
-type RolePerms = Record<RoleKey, { pc: PermMap; mini: PermMap }>;
+type PcPerms = { allowLogin: boolean; modules: Record<PcModuleKey, boolean> };
+type MiniPerms = Record<MiniEventKey, Record<MiniActionKey, boolean>>;
+type RolePerms = Record<RoleKey, { pc: PcPerms; mini: MiniPerms }>;
 
-function allKeys() {
-  return [
-    ...pcFeatures.flatMap((g) => g.items.map((i) => i.key)),
-    ...miniFeatures.flatMap((g) => g.items.map((i) => i.key)),
-  ];
+function fullPc(allow = true, modules = true): PcPerms {
+  return {
+    allowLogin: allow,
+    modules: pcModules.reduce(
+      (acc, m) => ({ ...acc, [m.key]: modules }),
+      {} as Record<PcModuleKey, boolean>,
+    ),
+  };
 }
-
-function seed(view: boolean, edit: boolean, excludeEdit: string[] = []) {
-  const pc: PermMap = {};
-  const mini: PermMap = {};
-  pcFeatures.forEach((g) => g.items.forEach((i) => {
-    pc[i.key] = { view, edit: edit && !excludeEdit.includes(i.key) };
-  }));
-  miniFeatures.forEach((g) => g.items.forEach((i) => {
-    mini[i.key] = { view, edit: edit && !excludeEdit.includes(i.key) };
-  }));
-  return { pc, mini };
+function fullMini(v = true): MiniPerms {
+  return miniEvents.reduce(
+    (acc, e) => ({ ...acc, [e.key]: { report: v, pickup: v, record: v } }),
+    {} as MiniPerms,
+  );
 }
-
-function seedSelective(viewKeys: string[], viewOnlyKeys: string[] = []) {
-  const pc: PermMap = {};
-  const mini: PermMap = {};
-  allKeys().forEach((k) => {
-    const hasView = viewKeys.includes(k);
-    const canEdit = hasView && !viewOnlyKeys.includes(k);
-    const target = pcFeatures.flatMap((g) => g.items).some((i) => i.key === k) ? pc : mini;
-    target[k] = { view: hasView, edit: canEdit };
-  });
-  return { pc, mini };
+function partialPc(keys: PcModuleKey[]): PcPerms {
+  return {
+    allowLogin: true,
+    modules: pcModules.reduce(
+      (acc, m) => ({ ...acc, [m.key]: keys.includes(m.key) }),
+      {} as Record<PcModuleKey, boolean>,
+    ),
+  };
+}
+function partialMini(map: Partial<Record<MiniEventKey, Partial<Record<MiniActionKey, boolean>>>>): MiniPerms {
+  return miniEvents.reduce((acc, e) => {
+    const m = map[e.key] ?? {};
+    acc[e.key] = { report: !!m.report, pickup: !!m.pickup, record: !!m.record };
+    return acc;
+  }, {} as MiniPerms);
 }
 
 const defaultPerms: RolePerms = {
-  admin: seed(true, true),
-  manager: seed(true, true, ["account", "role", "tenant"]),
-  vet: seedSelective([
-    "dashboard", "cattle", "disease", "vaccine", "postpartum", "hoof", "drying", "deworm", "general",
-    "drug", "stock", "dispense", "k-disease", "k-symptom", "k-prescription",
-    "m-workspace", "m-todo", "m-animals", "m-animal-detail", "m-health", "m-health-detail", "m-report",
-  ]),
-  assistant: seedSelective(
-    [
-      "dashboard", "cattle", "disease", "vaccine", "hoof", "drying", "deworm", "general",
-      "dispense", "k-disease", "k-symptom",
-      "m-workspace", "m-todo", "m-animals", "m-animal-detail", "m-health", "m-health-detail", "m-report",
-    ],
-    ["cattle", "k-disease", "k-symptom", "m-animal-detail"],
-  ),
+  admin: { pc: fullPc(true, true), mini: fullMini(true) },
+  manager: {
+    pc: partialPc(["health", "drug", "archive", "knowledge"]),
+    mini: fullMini(true),
+  },
+  vet: {
+    pc: partialPc(["health", "drug", "knowledge"]),
+    mini: partialMini({
+      disease: { report: true, pickup: true, record: true },
+      vaccine: { report: true, pickup: true, record: true },
+      postpartum: { report: true, pickup: true, record: true },
+      deworm: { report: true, pickup: true, record: true },
+      general: { report: true, pickup: true, record: true },
+      loss: { report: true, pickup: true, record: true },
+    }),
+  },
+  assistant: {
+    pc: { allowLogin: false, modules: pcModules.reduce((a, m) => ({ ...a, [m.key]: false }), {} as Record<PcModuleKey, boolean>) },
+    mini: partialMini({
+      disease: { pickup: true, record: true },
+      vaccine: { pickup: true, record: true },
+      hoof: { pickup: true, record: true },
+      drying: { pickup: true, record: true },
+      deworm: { pickup: true, record: true },
+      general: { pickup: true, record: true },
+      loss: { report: true },
+    }),
+  },
 };
 
 type ViewMode = "detail" | "edit";
@@ -183,8 +185,6 @@ function RolePage() {
 
   const [drawerRole, setDrawerRole] = useState<RoleKey | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("detail");
-  const [platform, setPlatform] = useState<Platform>("pc");
-  const [query, setQuery] = useState("");
 
   const [confirmAction, setConfirmAction] = useState<
     | { kind: "toggle"; role: Role }
@@ -195,74 +195,61 @@ function RolePage() {
   const openDetail = (key: RoleKey) => {
     setDrawerRole(key);
     setViewMode("detail");
-    setPlatform("pc");
-    setQuery("");
   };
   const openEdit = (key: RoleKey) => {
     setDrawerRole(key);
     setViewMode("edit");
-    setPlatform("pc");
-    setQuery("");
   };
 
   const activeRole = drawerRole ? roles.find((r) => r.key === drawerRole)! : null;
-  const features = platform === "pc" ? pcFeatures : miniFeatures;
-  const current = drawerRole ? perms[drawerRole][platform] : {};
-
-  const filtered = useMemo(() => {
-    if (!query.trim()) return features;
-    return features
-      .map((g) => ({ ...g, items: g.items.filter((i) => i.name.includes(query)) }))
-      .filter((g) => g.items.length > 0);
-  }, [features, query]);
-
-  const totals = useMemo(() => {
-    const all = Object.values(current);
-    return {
-      view: all.filter((p) => p.view).length,
-      edit: all.filter((p) => p.edit).length,
-      total: all.length,
-    };
-  }, [current]);
-
   const editable = viewMode === "edit";
+  const cur = drawerRole ? perms[drawerRole] : null;
 
-  const toggle = (key: string, field: "view" | "edit", value: boolean) => {
+  const setPcAllow = (v: boolean) => {
     if (!drawerRole || !editable) return;
-    setPerms((prev) => {
-      const next = { ...prev };
-      const slot = { ...next[drawerRole][platform][key], [field]: value };
-      if (field === "edit" && value) slot.view = true;
-      if (field === "view" && !value) slot.edit = false;
-      next[drawerRole] = {
-        ...next[drawerRole],
-        [platform]: { ...next[drawerRole][platform], [key]: slot },
-      };
-      return next;
-    });
+    setPerms((prev) => ({
+      ...prev,
+      [drawerRole]: { ...prev[drawerRole], pc: { ...prev[drawerRole].pc, allowLogin: v } },
+    }));
   };
-
-  const toggleGroup = (group: FeatureGroup, field: "view" | "edit", value: boolean) => {
+  const setPcModule = (k: PcModuleKey, v: boolean) => {
     if (!drawerRole || !editable) return;
-    setPerms((prev) => {
-      const next = { ...prev };
-      const slot = { ...next[drawerRole][platform] };
-      group.items.forEach((i) => {
-        const cur = { ...slot[i.key], [field]: value };
-        if (field === "edit" && value) cur.view = true;
-        if (field === "view" && !value) cur.edit = false;
-        slot[i.key] = cur;
-      });
-      next[drawerRole] = { ...next[drawerRole], [platform]: slot };
-      return next;
-    });
+    setPerms((prev) => ({
+      ...prev,
+      [drawerRole]: {
+        ...prev[drawerRole],
+        pc: {
+          ...prev[drawerRole].pc,
+          modules: { ...prev[drawerRole].pc.modules, [k]: v },
+        },
+      },
+    }));
   };
-
-  const groupState = (group: FeatureGroup, field: "view" | "edit") => {
-    const flags = group.items.map((i) => current[i.key]?.[field]);
-    if (flags.every(Boolean)) return true;
-    if (flags.every((f) => !f)) return false;
-    return "indeterminate" as const;
+  const setMini = (e: MiniEventKey, a: MiniActionKey, v: boolean) => {
+    if (!drawerRole || !editable) return;
+    setPerms((prev) => ({
+      ...prev,
+      [drawerRole]: {
+        ...prev[drawerRole],
+        mini: {
+          ...prev[drawerRole].mini,
+          [e]: { ...prev[drawerRole].mini[e], [a]: v },
+        },
+      },
+    }));
+  };
+  const setMiniRow = (e: MiniEventKey, v: boolean) => {
+    if (!drawerRole || !editable) return;
+    setPerms((prev) => ({
+      ...prev,
+      [drawerRole]: {
+        ...prev[drawerRole],
+        mini: {
+          ...prev[drawerRole].mini,
+          [e]: { report: v, pickup: v, record: v },
+        },
+      },
+    }));
   };
 
   const handleConfirmToggle = () => {
@@ -339,9 +326,7 @@ function RolePage() {
                       className="w-32"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <DropdownMenuItem onClick={() => openEdit(r.key)}>
-                        编辑
-                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openEdit(r.key)}>编辑</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setConfirmAction({ kind: "toggle", role: r })}>
                         {r.enabled ? "停用" : "启用"}
                       </DropdownMenuItem>
@@ -407,10 +392,14 @@ function RolePage() {
           </SheetHeader>
 
           <div className="flex-1 overflow-y-auto">
-            {activeRole && (
+            {activeRole && cur && (
               <>
-                {/* Basic info */}
-                <div className="px-6 py-5 border-b border-border space-y-4">
+                {/* 1. Basic info */}
+                <section className="px-6 py-5 border-b border-border space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="h-5 w-1 rounded-full bg-primary" />
+                    <h4 className="text-body font-medium text-foreground">基础信息</h4>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label className="text-caption text-text-tertiary">角色名称</Label>
@@ -424,7 +413,7 @@ function RolePage() {
                       )}
                     </div>
                     <div>
-                      <Label className="text-caption text-text-tertiary">当前状态</Label>
+                      <Label className="text-caption text-text-tertiary">是否启用</Label>
                       {editable ? (
                         <div className="mt-1.5 flex items-center gap-2">
                           <Switch
@@ -454,7 +443,7 @@ function RolePage() {
                     </div>
                   </div>
                   <div>
-                    <Label className="text-caption text-text-tertiary">角色描述</Label>
+                    <Label className="text-caption text-text-tertiary">角色说明</Label>
                     {editable ? (
                       <Textarea
                         defaultValue={activeRole.desc}
@@ -465,113 +454,130 @@ function RolePage() {
                       <p className="mt-1.5 text-body-sm text-text-secondary">{activeRole.desc}</p>
                     )}
                   </div>
-                </div>
+                </section>
 
-                {/* Permissions */}
-                <div className="px-6 py-4">
-                  <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
-                    <div>
-                      <h4 className="text-card-title text-foreground">权限配置</h4>
-                      <p className="text-caption text-text-tertiary mt-0.5">
-                        共 {totals.total} 项 · 查看 {totals.view} · 编辑 {totals.edit}
-                      </p>
+                {/* 2. PC 管理与审批权限 */}
+                <section className="px-6 py-5 border-b border-border space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="h-5 w-1 rounded-full bg-primary" />
+                      <h4 className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                        <Monitor className="h-3.5 w-3.5 text-text-secondary" />
+                        PC 端 · 管理与审批权限
+                      </h4>
                     </div>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-                      <Input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="搜索功能"
-                        className="h-9 w-56 pl-9 text-body-sm bg-card border-border"
+                    <div className="flex items-center gap-2">
+                      <span className="text-body-sm text-text-secondary">允许登录 PC 端</span>
+                      <Switch
+                        checked={cur.pc.allowLogin}
+                        disabled={!editable}
+                        onCheckedChange={setPcAllow}
                       />
                     </div>
                   </div>
 
-                  <Tabs value={platform} onValueChange={(v) => setPlatform(v as Platform)}>
-                    <TabsList className="bg-surface-subtle">
-                      <TabsTrigger value="pc" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:text-primary">
-                        <Monitor className="h-3.5 w-3.5" /> PC 端
-                      </TabsTrigger>
-                      <TabsTrigger value="mini" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:text-primary">
-                        <Smartphone className="h-3.5 w-3.5" /> 小程序端
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value={platform} className="m-0 mt-3 border border-border rounded-md overflow-hidden">
-                      <div className="grid grid-cols-12 gap-3 px-4 h-10 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
-                        <div className="col-span-7">功能</div>
-                        <div className="col-span-2 text-center">查看权</div>
-                        <div className="col-span-2 text-center">管理权</div>
-                        <div className="col-span-1" />
-                      </div>
-
-                      {filtered.length === 0 ? (
-                        <div className="px-4 py-10 text-center text-body-sm text-text-tertiary">
-                          没有匹配的功能
-                        </div>
-                      ) : (
-                        filtered.map((g) => {
-                          const viewState = groupState(g, "view");
-                          const editState = groupState(g, "edit");
+                  {cur.pc.allowLogin ? (
+                    <>
+                      <div className="rounded-md border border-border overflow-hidden">
+                        {pcModules.map((m, idx) => {
+                          const checked = cur.pc.modules[m.key];
                           return (
-                            <div key={g.group}>
-                              <div className="grid grid-cols-12 gap-3 px-4 h-10 items-center bg-[#FAFEFB] border-b border-border">
-                                <div className="col-span-7 text-body-sm font-medium text-foreground">
-                                  {g.group}
-                                </div>
-                                <div className="col-span-2 flex justify-center">
-                                  <Checkbox
-                                    checked={viewState}
-                                    disabled={!editable}
-                                    onCheckedChange={(v) => toggleGroup(g, "view", !!v)}
-                                  />
-                                </div>
-                                <div className="col-span-2 flex justify-center">
-                                  <Checkbox
-                                    checked={editState}
-                                    disabled={!editable}
-                                    onCheckedChange={(v) => toggleGroup(g, "edit", !!v)}
-                                  />
-                                </div>
-                                <div className="col-span-1 text-caption text-text-tertiary text-right">
-                                  {g.items.length}
-                                </div>
+                            <label
+                              key={m.key}
+                              className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-surface-subtle ${
+                                idx > 0 ? "border-t border-border" : ""
+                              } ${!editable ? "cursor-default" : ""}`}
+                            >
+                              <Checkbox
+                                checked={checked}
+                                disabled={!editable}
+                                onCheckedChange={(v) => setPcModule(m.key, !!v)}
+                                className="mt-0.5"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <div className="text-body-sm font-medium text-foreground">{m.name}</div>
+                                <div className="text-caption text-text-tertiary mt-0.5">{m.desc}</div>
                               </div>
-                              {g.items.map((i) => {
-                                const p = current[i.key] ?? { view: false, edit: false };
-                                return (
-                                  <div
-                                    key={i.key}
-                                    className="grid grid-cols-12 gap-3 px-4 h-11 items-center border-b border-border last:border-0 hover:bg-surface-subtle"
-                                  >
-                                    <div className="col-span-7 text-body text-foreground pl-4">
-                                      {i.name}
-                                    </div>
-                                    <div className="col-span-2 flex justify-center">
-                                      <Checkbox
-                                        checked={p.view}
-                                        disabled={!editable}
-                                        onCheckedChange={(v) => toggle(i.key, "view", !!v)}
-                                      />
-                                    </div>
-                                    <div className="col-span-2 flex justify-center">
-                                      <Checkbox
-                                        checked={p.edit}
-                                        disabled={!editable}
-                                        onCheckedChange={(v) => toggle(i.key, "edit", !!v)}
-                                      />
-                                    </div>
-                                    <div className="col-span-1" />
-                                  </div>
-                                );
-                              })}
-                            </div>
+                            </label>
                           );
-                        })
-                      )}
-                    </TabsContent>
-                  </Tabs>
-                </div>
+                        })}
+                      </div>
+                      <p className="text-caption text-text-tertiary flex items-start gap-1.5">
+                        <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                        PC 模块权限不拆分“只读 / 操作”，可进入即视为可管理。健康事项审批、确认方案、执行计划配置、工单终止，由「允许登录 PC 端 + 健康管理」共同决定。
+                      </p>
+                    </>
+                  ) : (
+                    <div className="rounded-md border border-dashed border-border bg-surface-subtle px-4 py-6 text-center text-body-sm text-text-tertiary">
+                      已关闭 PC 端登录权限
+                    </div>
+                  )}
+                </section>
+
+                {/* 3. 小程序现场能力 */}
+                <section className="px-6 py-5 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="h-5 w-1 rounded-full bg-primary" />
+                    <h4 className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                      <Smartphone className="h-3.5 w-3.5 text-text-secondary" />
+                      小程序 · 现场能力
+                    </h4>
+                  </div>
+                  <p className="text-caption text-text-tertiary flex items-start gap-1.5 -mt-1">
+                    <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                    所有账号均可自由登录小程序，请在此配置不同角色的事项权限范围。
+                  </p>
+
+                  <div className="rounded-md border border-border overflow-hidden">
+                    <div className="grid grid-cols-12 gap-3 px-4 h-10 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
+                      <div className="col-span-3">事项类型</div>
+                      <div className="col-span-3 text-center">上报</div>
+                      <div className="col-span-3 text-center">响应 / 处理</div>
+                      <div className="col-span-3 text-center">执行 / 核销</div>
+                    </div>
+                    {miniEvents.map((e) => {
+                      const p = cur.mini[e.key];
+                      const all = p.report && p.pickup && p.record;
+                      return (
+                        <div
+                          key={e.key}
+                          className="grid grid-cols-12 gap-3 px-4 py-3 items-center border-b border-border last:border-0 hover:bg-surface-subtle"
+                        >
+                          <div className="col-span-3 min-w-0">
+                            <div className="text-body-sm font-medium text-foreground truncate">
+                              {e.name}
+                            </div>
+                            {editable && (
+                              <button
+                                className={`text-caption mt-0.5 ${
+                                  all ? "text-text-tertiary" : "text-primary hover:underline"
+                                }`}
+                                onClick={() => setMiniRow(e.key, !all)}
+                              >
+                                {all ? "全部已开启" : "全部开启"}
+                              </button>
+                            )}
+                          </div>
+                          {(["report", "pickup", "record"] as MiniActionKey[]).map((a) => (
+                            <label
+                              key={a}
+                              className={`col-span-3 flex items-center justify-center gap-2 ${
+                                editable ? "cursor-pointer" : ""
+                              }`}
+                            >
+                              <Checkbox
+                                checked={p[a]}
+                                disabled={!editable}
+                                onCheckedChange={(v) => setMini(e.key, a, !!v)}
+                              />
+                              <span className="text-body-sm text-text-secondary">{e.actions[a]}</span>
+                            </label>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
               </>
             )}
           </div>
