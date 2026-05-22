@@ -8,6 +8,7 @@ import {
   Mic,
   Video,
   Search,
+  Plus,
   UserCheck,
   Sparkles,
   FileText,
