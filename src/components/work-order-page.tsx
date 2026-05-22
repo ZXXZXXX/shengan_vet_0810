@@ -40,6 +40,7 @@ import {
 
 
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import {
   ClipboardList,
   PlayCircle,
@@ -185,6 +186,7 @@ export function WorkOrderPage({
   useEffect(() => setMounted(true), []);
   const [active, setActive] = useState<WorkStatus>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
+  const [mode, setMode] = useState<"view" | "process">("view");
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
   const [diagnosis, setDiagnosis] = useState("");
   const [treatment, setTreatment] = useState("");
@@ -390,7 +392,7 @@ export function WorkOrderPage({
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-                onClick={() => setDetail(o)}
+                onClick={() => { setMode("view"); setDetail(o); }}
               >
                 查看
               </Button>
@@ -398,17 +400,9 @@ export function WorkOrderPage({
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-                onClick={() => openApprove(o)}
+                onClick={() => { setMode("process"); setDetail(o); }}
               >
-                通过
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 hover:text-[var(--state-danger)]"
-                onClick={() => openReject(o)}
-              >
-                驳回
+                处理
               </Button>
             </div>
           );
@@ -418,7 +412,7 @@ export function WorkOrderPage({
             variant="ghost"
             size="sm"
             className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-            onClick={() => setDetail(o)}
+            onClick={() => { setMode("view"); setDetail(o); }}
           >
             查看
           </Button>
@@ -894,7 +888,7 @@ export function WorkOrderPage({
                     <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
                       <Stethoscope className="h-4 w-4 text-primary" /> 兽医诊断与治疗方案
                     </div>
-                    {canReview(role) && detail.status === "待审核" && !editingPlan && (
+                    {canReview(role) && detail.status === "待审核" && mode === "process" && !editingPlan && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -974,15 +968,36 @@ export function WorkOrderPage({
 
           {detail && canReview(role) && detail.status === "待审核" && !editingPlan && (
             <SheetFooter className="px-6 py-3 border-t border-border bg-card gap-2">
-              <Button variant="outline" className="gap-1.5" onClick={() => { setRejectReason(""); setConfirm("reject"); }}>
-                <X className="h-3.5 w-3.5" /> 驳回
-              </Button>
-              <Button
-                className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                onClick={() => { setAssignExecutor("__none__"); setConfirm("approve"); }}
-              >
-                <Check className="h-3.5 w-3.5" /> 通过
-              </Button>
+              {mode === "view" ? (
+                <Button
+                  className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                  onClick={() => setMode("process")}
+                >
+                  <Check className="h-3.5 w-3.5" /> 处理
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" className="gap-1.5" onClick={() => { setRejectReason(""); setConfirm("reject"); }}>
+                    <X className="h-3.5 w-3.5" /> 驳回
+                  </Button>
+                  <Button
+                    className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                    onClick={() => {
+                      if (!diagnosis.trim() || !treatment.trim()) {
+                        toast.error("执行方案不完整，请先编辑执行方案");
+                        setDraftDiagnosis(diagnosis);
+                        setDraftTreatment(treatment);
+                        setEditingPlan(true);
+                        return;
+                      }
+                      setAssignExecutor("__none__");
+                      setConfirm("approve");
+                    }}
+                  >
+                    <Check className="h-3.5 w-3.5" /> 确认提交
+                  </Button>
+                </>
+              )}
             </SheetFooter>
           )}
         </SheetContent>
