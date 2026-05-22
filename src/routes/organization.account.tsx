@@ -911,7 +911,11 @@ function AccountDrawerInner({
   }, [baseRoles, farmRoles]);
 
   const incomplete = farmRoles.some((fr) => fr.roles.length === 0);
-  const canSave = farmRoles.length > 0 && !incomplete;
+  const effectiveFarmRoles = useMemo(
+    () => farmRoles.filter((fr) => fr.roles.length > 0),
+    [farmRoles],
+  );
+  const canSave = effectiveFarmRoles.length > 0;
 
   return (
     <>
