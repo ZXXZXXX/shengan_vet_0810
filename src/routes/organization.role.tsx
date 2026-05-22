@@ -117,7 +117,7 @@ const miniEvents: {
   { key: "postpartum", name: "产后护理", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
   { key: "deworm", name: "驱虫", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
   { key: "general", name: "普修", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "loss", name: "损耗 / 领用", actions: { report: "可上报损耗", pickup: "可处理损耗", record: "可领用核销" } },
+  { key: "loss", name: "损耗 / 领用", actions: { report: "可上报损耗", pickup: "", record: "可领用核销" } },
 ];
 
 type PcPerms = { allowLogin: boolean; modules: Record<PcModuleKey, boolean> };
@@ -133,9 +133,20 @@ function fullPc(allow = true, modules = true): PcPerms {
     ),
   };
 }
+type MiniEventDef = (typeof miniEvents)[number];
+const hasAction = (e: MiniEventDef, a: MiniActionKey) => !!e.actions[a];
+const findEvent = (k: MiniEventKey) => miniEvents.find((x) => x.key === k)!;
+
 function fullMini(v = true): MiniPerms {
   return miniEvents.reduce(
-    (acc, e) => ({ ...acc, [e.key]: { report: v, pickup: v, record: v } }),
+    (acc, e) => ({
+      ...acc,
+      [e.key]: {
+        report: hasAction(e, "report") ? v : false,
+        pickup: hasAction(e, "pickup") ? v : false,
+        record: hasAction(e, "record") ? v : false,
+      },
+    }),
     {} as MiniPerms,
   );
 }
@@ -152,7 +163,11 @@ function partialPc(keys: PcModuleKey[]): PcPerms {
 function partialMini(map: Partial<Record<MiniEventKey, Partial<Record<MiniActionKey, boolean>>>>): MiniPerms {
   return miniEvents.reduce((acc, e) => {
     const m = map[e.key] ?? {};
-    acc[e.key] = { report: !!m.report, pickup: !!m.pickup, record: !!m.record };
+    acc[e.key] = {
+      report: hasAction(e, "report") && !!m.report,
+      pickup: hasAction(e, "pickup") && !!m.pickup,
+      record: hasAction(e, "record") && !!m.record,
+    };
     return acc;
   }, {} as MiniPerms);
 }
@@ -310,13 +325,18 @@ function RolePage() {
   };
   const setMiniRow = (e: MiniEventKey, v: boolean) => {
     if (!drawerRole || !editable) return;
+    const ev = findEvent(e);
     setPerms((prev) => ({
       ...prev,
       [drawerRole]: {
         ...prev[drawerRole],
         mini: {
           ...prev[drawerRole].mini,
-          [e]: { report: v, pickup: v, record: v },
+          [e]: {
+            report: hasAction(ev, "report") ? v : false,
+            pickup: hasAction(ev, "pickup") ? v : false,
+            record: hasAction(ev, "record") ? v : false,
+          },
         },
       },
     }));
@@ -328,7 +348,10 @@ function RolePage() {
       [drawerRole]: {
         ...prev[drawerRole],
         mini: miniEvents.reduce((acc, e) => {
-          acc[e.key] = { ...prev[drawerRole].mini[e.key], [a]: v };
+          acc[e.key] = {
+            ...prev[drawerRole].mini[e.key],
+            [a]: hasAction(e, a) ? v : false,
+          };
           return acc;
         }, {} as MiniPerms),
       },
@@ -658,16 +681,18 @@ function RolePage() {
                   <div className="rounded-md border border-border overflow-hidden">
                     {(() => {
                       const actions: MiniActionKey[] = ["report", "pickup", "record"];
-                      const actionLabels = ["上报", "响应 / 处理", "执行 / 核销"];
+                      const actionLabels = ["上报", "响应", "执行 / 核销"];
+                      const evsFor = (a: MiniActionKey) =>
+                        miniEvents.filter((e) => hasAction(e, a));
                       const colChecked = (a: MiniActionKey) =>
-                        miniEvents.every((e) => cur.mini[e.key][a]);
+                        evsFor(a).every((e) => cur.mini[e.key][a]);
                       const colIndeterminate = (a: MiniActionKey) =>
-                        !colChecked(a) && miniEvents.some((e) => cur.mini[e.key][a]);
+                        !colChecked(a) && evsFor(a).some((e) => cur.mini[e.key][a]);
                       const allChecked = miniEvents.every((e) =>
-                        actions.every((a) => cur.mini[e.key][a]),
+                        actions.filter((a) => hasAction(e, a)).every((a) => cur.mini[e.key][a]),
                       );
                       const anyChecked = miniEvents.some((e) =>
-                        actions.some((a) => cur.mini[e.key][a]),
+                        actions.filter((a) => hasAction(e, a)).some((a) => cur.mini[e.key][a]),
                       );
                       const allIndeterminate = anyChecked && !allChecked;
                       return (
@@ -716,8 +741,9 @@ function RolePage() {
                           <TableBody>
                             {miniEvents.map((e) => {
                               const p = cur.mini[e.key];
-                              const rowAll = p.report && p.pickup && p.record;
-                              const rowAny = p.report || p.pickup || p.record;
+                              const evActions = actions.filter((a) => hasAction(e, a));
+                              const rowAll = evActions.every((a) => p[a]);
+                              const rowAny = evActions.some((a) => p[a]);
                               const rowIndeterminate = rowAny && !rowAll;
                               return (
                                 <TableRow key={e.key} className="hover:bg-surface-subtle">
@@ -740,21 +766,25 @@ function RolePage() {
 
                                   {actions.map((a) => (
                                     <TableCell key={a} className="text-center">
-                                      <label
-                                        className={`inline-flex items-center justify-center gap-2 ${
-                                          editable ? "cursor-pointer" : ""
-                                        }`}
-                                      >
-                                        <Checkbox
-                                          checked={p[a]}
-                                          disabled={!editable}
-                                          onCheckedChange={(v) => setMini(e.key, a, !!v)}
-                                          className="h-[18px] w-[18px] rounded-full border data-[state=unchecked]:border-[var(--border-strong)] data-[state=checked]:border-primary data-[state=checked]:border-2 data-[state=checked]:bg-primary data-[state=checked]:text-white"
-                                        />
-                                        <span className="text-body-sm text-text-secondary">
-                                          {e.actions[a]}
-                                        </span>
-                                      </label>
+                                      {hasAction(e, a) ? (
+                                        <label
+                                          className={`inline-flex items-center justify-center gap-2 ${
+                                            editable ? "cursor-pointer" : ""
+                                          }`}
+                                        >
+                                          <Checkbox
+                                            checked={p[a]}
+                                            disabled={!editable}
+                                            onCheckedChange={(v) => setMini(e.key, a, !!v)}
+                                            className="h-[18px] w-[18px] rounded-full border data-[state=unchecked]:border-[var(--border-strong)] data-[state=checked]:border-primary data-[state=checked]:border-2 data-[state=checked]:bg-primary data-[state=checked]:text-white"
+                                          />
+                                          <span className="text-body-sm text-text-secondary">
+                                            {e.actions[a]}
+                                          </span>
+                                        </label>
+                                      ) : (
+                                        <span className="text-body-sm text-text-tertiary">—</span>
+                                      )}
                                     </TableCell>
                                   ))}
                                 </TableRow>
