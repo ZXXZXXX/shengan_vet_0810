@@ -1205,6 +1205,7 @@ function BindRow({
   onUnbind: () => void;
   hint: string | null;
 }) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   return (
     <div>
       <Label className="text-caption text-text-tertiary">{label}</Label>
@@ -1213,7 +1214,7 @@ function BindRow({
           <>
             <span className="text-body-sm font-mono text-text-secondary truncate" title="已脱敏显示">{maskId(value)}</span>
             {editable && (
-              <Button type="button" variant="ghost" size="sm" onClick={onUnbind} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
+              <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmOpen(true)} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
                 <Unlink className="h-3 w-3" /> 解绑
               </Button>
             )}
@@ -1223,6 +1224,29 @@ function BindRow({
         )}
       </div>
       {hint && <p className="mt-1 text-caption text-text-tertiary">{hint}</p>}
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认解绑该{label}？</AlertDialogTitle>
+            <AlertDialogDescription>
+              解绑后该用户需重新通过扫码完成绑定，期间相关通知与登录可能受影响。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onUnbind();
+                setConfirmOpen(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              确认解绑
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
