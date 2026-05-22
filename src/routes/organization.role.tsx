@@ -143,11 +143,12 @@ function partialPc(keys: PcModuleKey[]): PcPerms {
   return {
     allowLogin: true,
     modules: pcModules.reduce(
-      (acc, m) => ({ ...acc, [m.key]: keys.includes(m.key) }),
+      (acc, m) => ({ ...acc, [m.key]: m.required || keys.includes(m.key) }),
       {} as Record<PcModuleKey, boolean>,
     ),
   };
 }
+
 function partialMini(map: Partial<Record<MiniEventKey, Partial<Record<MiniActionKey, boolean>>>>): MiniPerms {
   return miniEvents.reduce((acc, e) => {
     const m = map[e.key] ?? {};
