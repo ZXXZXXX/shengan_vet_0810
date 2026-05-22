@@ -225,9 +225,16 @@ function TaskListPage() {
                           : `${o.target} · ${o.event}`}
                       </div>
                       {isPickup && (
-                        <div className="mt-1.5 text-caption text-text-secondary inline-flex items-center gap-1">
-                          <QrCode className="h-3 w-3 text-primary" />
-                          {o.event}
+                        <div className="mt-1.5 space-y-0.5">
+                          <div className="text-caption text-text-secondary inline-flex items-center gap-1">
+                            <QrCode className="h-3 w-3 text-primary" />
+                            {o.event}
+                          </div>
+                          {o.source && (
+                            <div className="text-caption text-text-tertiary">
+                              由 <span className="font-mono">{o.source}</span> 响应后自动生成
+                            </div>
+                          )}
                         </div>
                       )}
                       {o.kind === "健康" && o.symptoms && o.symptoms.length > 0 && (
