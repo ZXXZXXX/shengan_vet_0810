@@ -81,15 +81,17 @@ const initialRoles: Role[] = [
   { key: "assistant", name: "兽医助理", count: 6, scope: "健康执行 / 录入", desc: "协助兽医完成日常工作录入与执行，部分功能仅查看权限。", enabled: false, icon: HeartPulse },
 ];
 
-type PcModuleKey = "health" | "drug" | "archive" | "organization" | "knowledge";
+type PcModuleKey = "workbench" | "archive" | "health" | "drug" | "organization" | "knowledge";
 
-const pcModules: { key: PcModuleKey; name: string; desc: string }[] = [
+const pcModules: { key: PcModuleKey; name: string; desc: string; required?: boolean }[] = [
+  { key: "workbench", name: "工作台", desc: "首页数据看板与待办，仅展示当前角色已开通模块的相关数据", required: true },
+  { key: "archive", name: "牛只基础档案", desc: "牛场、牛舍、牛只档案的维护（必选）", required: true },
   { key: "health", name: "健康管理", desc: "疾病、疫苗、修蹄等健康事项的方案确认、审批与执行计划" },
   { key: "drug", name: "药品管理", desc: "药品档案、库存、调拨、取药与损耗管理" },
-  { key: "archive", name: "基础档案", desc: "牛场、牛舍、牛只档案的维护" },
   { key: "organization", name: "组织管理", desc: "账号、角色、租户与团队管理" },
   { key: "knowledge", name: "知识库管理", desc: "疾病、症状、处方等诊疗知识维护" },
 ];
+
 
 type MiniEventKey =
   | "disease"
