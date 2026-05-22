@@ -1274,6 +1274,69 @@ export function WorkOrderPage({
   );
 }
 
+function PlanReadRow({ label, text }: { label: string; text: string }) {
+  return (
+    <div>
+      <div className="text-caption text-text-tertiary mb-1.5">{label}</div>
+      <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{text || "—"}</p>
+    </div>
+  );
+}
+
+function DrugCombo({
+  value,
+  presets,
+  onChange,
+}: {
+  value: string;
+  presets: string[];
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const matches = value
+    ? presets.filter((p) => p.toLowerCase().includes(value.toLowerCase()) && p !== value)
+    : presets;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Input
+          value={value}
+          placeholder="搜索 / 选择药品 · 材料"
+          onChange={(e) => {
+            onChange(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          className="h-9 text-body-sm bg-card"
+        />
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="p-1 w-[var(--radix-popover-trigger-width)] max-h-56 overflow-y-auto"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        {matches.length === 0 ? (
+          <div className="px-2 py-1.5 text-caption text-text-tertiary">无匹配，可直接输入</div>
+        ) : (
+          matches.map((p) => (
+            <button
+              key={p}
+              type="button"
+              className="w-full text-left px-2 py-1.5 rounded text-body-sm hover:bg-surface-subtle"
+              onClick={() => {
+                onChange(p);
+                setOpen(false);
+              }}
+            >
+              {p}
+            </button>
+          ))
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function FieldNode({ label, node }: { label: string; node: React.ReactNode }) {
   return (
     <div className="leading-tight">
