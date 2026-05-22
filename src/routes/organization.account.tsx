@@ -886,16 +886,16 @@ function CreateDialog({
   // 切换人员类型时，清空已选角色（保留牧场选择）
   const handleUserTypeChange = (v: UserType) => {
     setUserType(v);
-    setFarmRoles((cur) => cur.map((fr) => ({ ...fr, role: "" })));
+    setFarmRoles((cur) => cur.map((fr) => ({ ...fr, roles: [] })));
   };
 
-  const incomplete = farmRoles.some((fr) => !fr.role);
+  const incomplete = farmRoles.some((fr) => fr.roles.length === 0);
   const canSubmit = !!name.trim() && !!phone.trim() && farmRoles.length > 0 && !incomplete;
 
   const submit = () => {
     if (!canSubmit) return;
     const firstNewRole =
-      farmRoles.map((fr) => fr.role).find((r) => !baseRoles.includes(r)) ?? null;
+      farmRoles.flatMap((fr) => fr.roles).find((r) => !baseRoles.includes(r)) ?? null;
     onCreate(
       {
         name: name.trim(),
