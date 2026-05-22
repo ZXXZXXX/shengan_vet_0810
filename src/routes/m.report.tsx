@@ -448,7 +448,7 @@ function ReportPage() {
                 />
 
                 {/* 疑似疾病 —— 仅在线索上传后显示 */}
-                {evidenceReady && (
+                {cfg?.allowDisease && evidenceReady && (
                   <Section
                     title="疑似疾病"
                     hint="可选；选择后将从诊疗知识库自动拉取治疗方案"
