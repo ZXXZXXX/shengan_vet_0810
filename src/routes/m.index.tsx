@@ -71,7 +71,7 @@ function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
   const isApprover = canApprove(role);
-  const isExternal = roleGroup[role] === "external";
+  
   // 审批人看“待审批”；执行人（兽医助理、修蹄工等）看“待响应”
   const showFirstBucket = true;
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
