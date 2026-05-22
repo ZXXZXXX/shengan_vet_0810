@@ -232,7 +232,7 @@ function AccountPage() {
               <Input
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="搜索姓名 / 手机号 / 企微ID"
+                placeholder="搜索姓名 / 手机号 / 企微 / 微信 ID"
                 className="h-9 w-72 pl-9 text-body-sm"
               />
             </div>
