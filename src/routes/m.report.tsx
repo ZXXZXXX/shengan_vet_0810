@@ -29,22 +29,8 @@ export const Route = createFileRoute("/m/report")({
   component: ReportPage,
 });
 
-type ReportKind = "health" | "loss";
+type ReportKind = "health";
 
-// 物资库（用于损耗上报快速匹配）
-const itemLibrary = [
-  "口蹄疫疫苗 A 型",
-  "口蹄疫疫苗 O 型",
-  "牛瘟疫苗",
-  "乳房炎抗生素",
-  "头孢噻呋钠注射液",
-  "营养补充剂（围产期）",
-  "戊二醛消毒液",
-  "高锰酸钾",
-  "蹄部消毒喷雾",
-  "一次性手套",
-  "采精管",
-];
 
 // 健康工作类型
 const healthWorkTypes = ["疾病治疗", "免疫", "普修", "复诊"] as const;
