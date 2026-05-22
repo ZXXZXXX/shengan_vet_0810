@@ -222,7 +222,7 @@ function MHomePage() {
           ))}
           {pendingItems
             .filter((it) => it.farmId === farm.id)
-            .filter((it) => isExternal || it.bucket !== "待响应")
+            .filter((it) => canRespond || isApprover || it.bucket !== "待响应")
             .map((it) => (
             <Link
               key={it.id}
