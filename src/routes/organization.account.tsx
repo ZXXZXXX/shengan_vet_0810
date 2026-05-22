@@ -206,7 +206,7 @@ function AccountPage() {
         if (filterFarm !== "all" && !farmsOf(a).includes(filterFarm)) return false;
         if (filterStatus !== "all" && a.status !== filterStatus) return false;
         if (kw) {
-          const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""}`.toLowerCase();
+          const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""} ${a.wechatId ?? ""}`.toLowerCase();
           if (!hay.includes(kw)) return false;
         }
         return true;
@@ -217,8 +217,9 @@ function AccountPage() {
       });
   }, [accounts, keyword, onlyInternal, filterRole, filterFarm, filterStatus]);
 
-  // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 状态 管理
-  const cols = "1.8fr 1.1fr 1.3fr 0.9fr 1.7fr 1.5fr 0.8fr 0.5fr";
+  // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
+  const cols = "1.6fr 0.9fr 1.2fr 0.9fr 1.5fr 1.3fr 1.3fr 0.7fr 0.5fr";
+
 
   return (
     <>
