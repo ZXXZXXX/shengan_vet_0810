@@ -200,7 +200,7 @@ function AccountPage() {
 
   const saveEdit = (updated: Account) => {
     setAccounts((list) => list.map((a) => (a.id === updated.id ? updated : a)));
-    setEditing(null);
+    closeDrawer();
   };
 
   const handleCreate = (
