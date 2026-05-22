@@ -33,22 +33,62 @@ type ReportKind = "health";
 
 
 // 健康工作类型
-const healthWorkTypes = ["疾病治疗", "免疫", "普修", "复诊"] as const;
+const healthWorkTypes = ["疾病治疗", "修蹄", "产后护理", "干奶", "疫苗", "驱虫", "普修"] as const;
 type WorkType = (typeof healthWorkTypes)[number];
 
-// 健康常见症状标签
-const defaultSymptomTags = [
-  "体温升高",
-  "采食下降",
-  "反刍减少",
-  "精神沉郁",
-  "乳房红肿",
-  "跛行",
-  "腹泻",
-  "鼻液增多",
-  "外伤出血",
-  "卧地不起",
-];
+// 每种工作类型的字段配置
+type WorkTypeConfig = {
+  tags?: { label: string; required: boolean; presets: string[] };
+  note?: { label: string; placeholder: string };
+  allowDisease: boolean;
+};
+
+const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
+  疾病治疗: {
+    tags: {
+      label: "症状标签",
+      required: true,
+      presets: ["体温升高", "采食下降", "反刍减少", "精神沉郁", "乳房红肿", "跛行", "腹泻", "鼻液增多", "外伤出血", "卧地不起"],
+    },
+    allowDisease: true,
+  },
+  修蹄: {
+    tags: {
+      label: "问题 / 症状标签",
+      required: true,
+      presets: ["跛行", "蹄底溃疡", "趾间皮炎", "蹄叶炎", "蹄壁裂", "白线病", "蹄过长", "腐蹄"],
+    },
+    allowDisease: false,
+  },
+  产后护理: {
+    tags: {
+      label: "护理 / 异常标签",
+      required: true,
+      presets: ["胎衣不下", "产道损伤", "子宫复旧异常", "低血钙", "酮病风险", "产后发热", "BCS 偏低", "恶露异常"],
+    },
+    allowDisease: true,
+  },
+  干奶: {
+    note: { label: "事项说明", placeholder: "请描述干奶批次、用药及注意事项" },
+    allowDisease: false,
+  },
+  疫苗: {
+    note: { label: "事项说明", placeholder: "请描述疫苗品种、批次、覆盖范围等" },
+    allowDisease: false,
+  },
+  驱虫: {
+    note: { label: "事项说明", placeholder: "请描述驱虫药品、覆盖范围、给药方式" },
+    allowDisease: false,
+  },
+  普修: {
+    tags: {
+      label: "问题标签",
+      required: true,
+      presets: ["采食下降", "精神沉郁", "外伤", "卧地不起", "体况下降", "行为异常", "其他异常"],
+    },
+    allowDisease: false,
+  },
+};
 
 // 具备处方权的处理人（admin / 兽医 / 场长）
 const prescriptionHandlers = [
