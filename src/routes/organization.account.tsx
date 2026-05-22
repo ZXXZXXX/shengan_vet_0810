@@ -674,6 +674,8 @@ function EditDialog({
   const [org, setOrg] = useState(account.org);
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>(account.farmRoles);
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
+  const [wechatId, setWechatId] = useState<string | null>(account.wechatId);
+
 
   const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
   const baseRoles = userType === "内部" ? internalRoles : externalRoles;
