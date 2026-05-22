@@ -615,6 +615,7 @@ function FarmRolePicker({
                   }
                 }}
                 placeholder="新增角色名"
+                maxLength={6}
                 className="h-7 w-28 text-caption bg-card"
               />
               <Button
