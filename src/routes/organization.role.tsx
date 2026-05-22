@@ -183,7 +183,9 @@ const defaultPerms: RolePerms = {
       general: { pickup: true, record: true },
 
     }),
+  },
 };
+
 
 
 type ViewMode = "detail" | "edit";
