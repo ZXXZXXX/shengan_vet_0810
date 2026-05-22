@@ -565,6 +565,10 @@ function FarmRolePicker({
   const addNewRole = () => {
     const r = newRole.trim();
     if (!r) return;
+    if (r.length > 6) {
+      toast.error("角色名称不超过 6 个字");
+      return;
+    }
     if (!roles.includes(r)) onCreateRole(r);
     setNewRole("");
   };
