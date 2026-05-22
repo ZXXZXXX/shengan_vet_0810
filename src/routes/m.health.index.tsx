@@ -44,6 +44,8 @@ type Task = {
   reapply?: { name: string; qty: string };
   // 健康专属
   symptoms?: string[];
+  // 领取专属：来源工单号
+  source?: string;
 };
 
 const tasks: Task[] = [
