@@ -251,6 +251,27 @@ function RolePage() {
       },
     }));
   };
+  const setMiniColumn = (a: MiniActionKey, v: boolean) => {
+    if (!drawerRole || !editable) return;
+    setPerms((prev) => ({
+      ...prev,
+      [drawerRole]: {
+        ...prev[drawerRole],
+        mini: miniEvents.reduce((acc, e) => {
+          acc[e.key] = { ...prev[drawerRole].mini[e.key], [a]: v };
+          return acc;
+        }, {} as MiniPerms),
+      },
+    }));
+  };
+  const setMiniAll = (v: boolean) => {
+    if (!drawerRole || !editable) return;
+    setPerms((prev) => ({
+      ...prev,
+      [drawerRole]: { ...prev[drawerRole], mini: fullMini(v) },
+    }));
+  };
+
 
   const handleConfirmToggle = () => {
     if (confirmAction?.kind !== "toggle") return;
@@ -528,54 +549,131 @@ function RolePage() {
                   </p>
 
                   <div className="rounded-md border border-border overflow-hidden">
-                    <div className="grid grid-cols-12 gap-3 px-4 h-10 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
-                      <div className="col-span-3">事项类型</div>
-                      <div className="col-span-3 text-center">上报</div>
-                      <div className="col-span-3 text-center">响应 / 处理</div>
-                      <div className="col-span-3 text-center">执行 / 核销</div>
-                    </div>
-                    {miniEvents.map((e) => {
-                      const p = cur.mini[e.key];
-                      const all = p.report && p.pickup && p.record;
-                      return (
-                        <div
-                          key={e.key}
-                          className="grid grid-cols-12 gap-3 px-4 py-3 items-center border-b border-border last:border-0 hover:bg-surface-subtle"
-                        >
-                          <div className="col-span-3 min-w-0">
-                            <div className="text-body-sm font-medium text-foreground truncate">
-                              {e.name}
-                            </div>
-                            {editable && (
-                              <button
-                                className={`text-caption mt-0.5 ${
-                                  all ? "text-text-tertiary" : "text-primary hover:underline"
-                                }`}
-                                onClick={() => setMiniRow(e.key, !all)}
-                              >
-                                {all ? "全部已开启" : "全部开启"}
-                              </button>
-                            )}
-                          </div>
-                          {(["report", "pickup", "record"] as MiniActionKey[]).map((a) => (
-                            <label
-                              key={a}
-                              className={`col-span-3 flex items-center justify-center gap-2 ${
-                                editable ? "cursor-pointer" : ""
-                              }`}
-                            >
-                              <Checkbox
-                                checked={p[a]}
-                                disabled={!editable}
-                                onCheckedChange={(v) => setMini(e.key, a, !!v)}
-                              />
-                              <span className="text-body-sm text-text-secondary">{e.actions[a]}</span>
-                            </label>
-                          ))}
-                        </div>
+                    {(() => {
+                      const actions: MiniActionKey[] = ["report", "pickup", "record"];
+                      const colChecked = (a: MiniActionKey) =>
+                        miniEvents.every((e) => cur.mini[e.key][a]);
+                      const colIndeterminate = (a: MiniActionKey) =>
+                        !colChecked(a) && miniEvents.some((e) => cur.mini[e.key][a]);
+                      const allChecked = miniEvents.every((e) =>
+                        actions.every((a) => cur.mini[e.key][a]),
                       );
-                    })}
+                      const anyChecked = miniEvents.some((e) =>
+                        actions.some((a) => cur.mini[e.key][a]),
+                      );
+                      return (
+                        <>
+                          {editable && (
+                            <div className="flex items-center justify-between px-4 py-2 bg-surface-subtle border-b border-border">
+                              <span className="text-caption text-text-tertiary">
+                                提示：点击表头可整列勾选；点击事项名称下方按钮可整行勾选
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 px-2 text-caption text-text-secondary hover:text-foreground"
+                                  onClick={() => setMiniAll(true)}
+                                  disabled={allChecked}
+                                >
+                                  全选
+                                </Button>
+                                <span className="h-3 w-px bg-border" />
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 px-2 text-caption text-text-secondary hover:text-foreground"
+                                  onClick={() => setMiniAll(false)}
+                                  disabled={!anyChecked}
+                                >
+                                  全部清空
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                          <div className="grid grid-cols-12 gap-3 px-4 h-10 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
+                            <div className="col-span-3">事项类型</div>
+                            {actions.map((a, i) => (
+                              <div key={a} className="col-span-3 flex items-center justify-center gap-2">
+                                {editable ? (
+                                  <Checkbox
+                                    checked={
+                                      colIndeterminate(a)
+                                        ? "indeterminate"
+                                        : colChecked(a)
+                                    }
+                                    onCheckedChange={(v) => setMiniColumn(a, !!v)}
+                                    aria-label={["上报", "响应 / 处理", "执行 / 核销"][i]}
+                                  />
+                                ) : null}
+                                <span>{["上报", "响应 / 处理", "执行 / 核销"][i]}</span>
+                              </div>
+                            ))}
+                          </div>
+                          {miniEvents.map((e) => {
+                            const p = cur.mini[e.key];
+                            const all = p.report && p.pickup && p.record;
+                            const none = !p.report && !p.pickup && !p.record;
+                            return (
+                              <div
+                                key={e.key}
+                                className="grid grid-cols-12 gap-3 px-4 py-3 items-center border-b border-border last:border-0 hover:bg-surface-subtle"
+                              >
+                                <div className="col-span-3 min-w-0">
+                                  <div className="text-body-sm font-medium text-foreground truncate">
+                                    {e.name}
+                                  </div>
+                                  {editable && (
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <button
+                                        className={`text-caption ${
+                                          all
+                                            ? "text-text-tertiary cursor-default"
+                                            : "text-primary hover:underline"
+                                        }`}
+                                        onClick={() => setMiniRow(e.key, true)}
+                                        disabled={all}
+                                      >
+                                        整行选中
+                                      </button>
+                                      <span className="text-text-tertiary">·</span>
+                                      <button
+                                        className={`text-caption ${
+                                          none
+                                            ? "text-text-tertiary cursor-default"
+                                            : "text-text-secondary hover:text-foreground hover:underline"
+                                        }`}
+                                        onClick={() => setMiniRow(e.key, false)}
+                                        disabled={none}
+                                      >
+                                        清空
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                                {actions.map((a) => (
+                                  <label
+                                    key={a}
+                                    className={`col-span-3 flex items-center justify-center gap-2 ${
+                                      editable ? "cursor-pointer" : ""
+                                    }`}
+                                  >
+                                    <Checkbox
+                                      checked={p[a]}
+                                      disabled={!editable}
+                                      onCheckedChange={(v) => setMini(e.key, a, !!v)}
+                                    />
+                                    <span className="text-body-sm text-text-secondary">{e.actions[a]}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            );
+                          })}
+                        </>
+                      );
+                    })()}
                   </div>
+
                 </section>
               </>
             )}
