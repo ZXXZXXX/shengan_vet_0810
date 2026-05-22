@@ -163,8 +163,7 @@ function partialMini(map: Partial<Record<MiniEventKey, Partial<Record<MiniAction
     const m = map[e.key] ?? {};
     acc[e.key] = {
       report: hasAction(e, "report") && !!m.report,
-      pickup: hasAction(e, "pickup") && !!m.pickup,
-      record: hasAction(e, "record") && !!m.record,
+      execute: hasAction(e, "execute") && !!m.execute,
     };
     return acc;
   }, {} as MiniPerms);
@@ -179,24 +178,22 @@ const defaultPerms: RolePerms = {
   vet: {
     pc: partialPc(["health", "drug", "knowledge"]),
     mini: partialMini({
-      disease: { report: true, pickup: true, record: true },
-      vaccine: { report: true, pickup: true, record: true },
-      postpartum: { report: true, pickup: true, record: true },
-      deworm: { report: true, pickup: true, record: true },
-      general: { report: true, pickup: true, record: true },
-      loss: { report: true, pickup: true, record: true },
+      disease: { report: true, execute: true },
+      vaccine: { report: true, execute: true },
+      postpartum: { report: true, execute: true },
+      deworm: { report: true, execute: true },
+      general: { report: true, execute: true },
     }),
   },
   assistant: {
     pc: { allowLogin: false, modules: pcModules.reduce((a, m) => ({ ...a, [m.key]: false }), {} as Record<PcModuleKey, boolean>) },
     mini: partialMini({
-      disease: { pickup: true, record: true },
-      vaccine: { pickup: true, record: true },
-      hoof: { pickup: true, record: true },
-      drying: { pickup: true, record: true },
-      deworm: { pickup: true, record: true },
-      general: { pickup: true, record: true },
-      loss: { report: true },
+      disease: { execute: true },
+      vaccine: { execute: true },
+      hoof: { execute: true },
+      drying: { execute: true },
+      deworm: { execute: true },
+      general: { execute: true },
     }),
   },
 };
