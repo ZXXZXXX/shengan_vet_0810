@@ -364,7 +364,7 @@ function AccountPage() {
                       {fs.length > 1 && (
                         <span
                           className="tag tag-muted whitespace-nowrap"
-                          title={a.farmRoles.slice(1).map((x) => `${x.farm}（${x.role}）`).join("、")}
+                          title={a.farmRoles.slice(1).map((x) => `${x.farm}（${x.roles.join("、") || "未分配"}）`).join("\n")}
                         >
                           +{fs.length - 1}
                         </span>
