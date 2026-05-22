@@ -660,19 +660,20 @@ function RolePage() {
                                 <TableRow key={e.key} className="hover:bg-surface-subtle">
                                   <TableCell className="w-[220px]">
                                     <div className="flex items-center gap-2">
-                                      <span className="text-body-sm font-medium text-foreground">
-                                        {e.name}
-                                      </span>
                                       {editable ? (
                                         <Checkbox
                                           checked={rowIndeterminate ? "indeterminate" : rowAll}
                                           onCheckedChange={(v) => setMiniRow(e.key, !!v)}
-                                          className="ml-auto"
+                                          className="h-[18px] w-[18px] border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:border-primary"
                                           aria-label={`整行：${e.name}`}
                                         />
                                       ) : null}
+                                      <span className="text-body-sm font-medium text-foreground">
+                                        {e.name}
+                                      </span>
                                     </div>
                                   </TableCell>
+
 
                                   {actions.map((a) => (
                                     <TableCell key={a} className="text-center">
