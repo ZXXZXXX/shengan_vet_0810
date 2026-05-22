@@ -401,15 +401,19 @@ function RolePage() {
               {roles.length >= 12 && (
                 <span className="ml-2 text-destructive">已达上限，如需更多请联系客服开放</span>
               )}
+              {!canManage && (
+                <span className="ml-2 text-text-tertiary">当前账号无角色管理权限，仅可查看</span>
+              )}
             </p>
           </div>
           <Button
             size="sm"
             onClick={startCreate}
-            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            disabled={!canManage}
+            title={!canManage ? "仅超级管理员可新建角色" : undefined}
+            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Plus className="h-3.5 w-3.5" /> 新建角色
-          </Button>
+
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
