@@ -6,6 +6,7 @@ import {
   ClipboardList,
   Beef,
   AlertTriangle,
+  AlertCircle,
   ChevronRight,
   ChevronDown,
   Check,
@@ -29,6 +30,7 @@ import {
   Syringe,
   Footprints,
 } from "lucide-react";
+
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
