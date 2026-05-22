@@ -203,9 +203,64 @@ function RolePage() {
     | null
   >(null);
 
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newRoleName, setNewRoleName] = useState("");
-  const [newRoleDesc, setNewRoleDesc] = useState("");
+  const [draftRoleKey, setDraftRoleKey] = useState<string | null>(null);
+
+  const startCreate = () => {
+    if (roles.length >= 12) {
+      toast.error("角色数量已达上限 12 个，如需更多请联系客服开放");
+      return;
+    }
+    const key = `role_${Date.now()}`;
+    setRoles((prev) => [
+      ...prev,
+      {
+        key,
+        name: "",
+        count: 0,
+        scope: "自定义",
+        desc: "",
+        enabled: true,
+        icon: ShieldCheck,
+      },
+    ]);
+    setPerms((prev) => ({
+      ...prev,
+      [key]: {
+        pc: {
+          allowLogin: true,
+          modules: pcModules.reduce(
+            (a, m) => ({ ...a, [m.key]: !!m.required }),
+            {} as Record<PcModuleKey, boolean>,
+          ),
+        },
+        mini: miniEvents.reduce(
+          (a, e) => ({ ...a, [e.key]: { report: false, pickup: false, record: false } }),
+          {} as MiniPerms,
+        ),
+      },
+    }));
+    setDraftRoleKey(key);
+    setDrawerRole(key);
+    setViewMode("edit");
+  };
+
+  const closeDrawer = () => {
+    if (draftRoleKey) {
+      const dk = draftRoleKey;
+      setRoles((prev) => prev.filter((r) => r.key !== dk));
+      setPerms((prev) => {
+        const { [dk]: _, ...rest } = prev;
+        return rest;
+      });
+      setDraftRoleKey(null);
+    }
+    setDrawerRole(null);
+  };
+
+  const updateActiveRole = (patch: Partial<Role>) => {
+    if (!drawerRole) return;
+    setRoles((prev) => prev.map((r) => (r.key === drawerRole ? { ...r, ...patch } : r)));
+  };
 
   const openDetail = (key: RoleKey) => {
     setDrawerRole(key);
