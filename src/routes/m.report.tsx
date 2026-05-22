@@ -96,10 +96,7 @@ function ReportPage() {
 
   const lockTarget = !!search.lock && !!search.target;
   const lockBarn = !!search.lock && !!search.barn;
-  const [kind, setKind] = useState<ReportKind>(canReportHealth ? "health" : "loss");
-  useEffect(() => {
-    if (!canReportHealth && kind === "health") setKind("loss");
-  }, [canReportHealth, kind]);
+  const [kind] = useState<ReportKind>("health");
 
   const [target, setTarget] = useState(search.target ?? "");
   const [barn] = useState(search.barn ?? "");
@@ -121,19 +118,6 @@ function ReportPage() {
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>("");
 
-  // 损耗
-  const [itemName, setItemName] = useState("");
-  const [itemFocused, setItemFocused] = useState(false);
-  const [lossQty, setLossQty] = useState("1");
-  const [needReapply, setNeedReapply] = useState<"yes" | "no">("no");
-  const [applyName, setApplyName] = useState("");
-  const [applyQty, setApplyQty] = useState(1);
-
-  const itemMatches = useMemo(() => {
-    const kw = itemName.trim().toLowerCase();
-    if (!kw) return itemLibrary.slice(0, 6);
-    return itemLibrary.filter((i) => i.toLowerCase().includes(kw)).slice(0, 8);
-  }, [itemName]);
 
   // 是否完成"线索上传"——之后才显示疑似疾病
   const evidenceReady =
