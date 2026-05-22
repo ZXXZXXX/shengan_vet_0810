@@ -126,6 +126,63 @@ const INTERNAL_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管
 const EXTERNAL_ROLES = ["修蹄工", "普修工", "干奶工", "驱虫工"];
 const DEFAULT_ROLES = [...INTERNAL_ROLES, ...EXTERNAL_ROLES];
 
+// 角色权限预览（用于账号详情中聚合展示，最终以「角色权限」配置为准）
+type RolePermPreview = { pc: string[]; mini: string[] };
+const ROLE_PERMISSIONS: Record<string, RolePermPreview> = {
+  场长: {
+    pc: ["工作台", "牛只基础档案", "健康管理", "药品管理", "知识库管理"],
+    mini: ["疾病治疗（上报/领取/回填）", "修蹄、干奶、疫苗、产后护理、驱虫、普修（全部）", "损耗/领用（全部）"],
+  },
+  兽医: {
+    pc: ["工作台", "牛只基础档案", "健康管理", "药品管理", "知识库管理"],
+    mini: ["疾病、疫苗、产后护理、驱虫、普修（上报/领取/回填）", "损耗/领用（全部）"],
+  },
+  兽医助理: {
+    pc: [],
+    mini: ["疾病、疫苗、修蹄、干奶、驱虫、普修（领取/回填）", "损耗（上报）"],
+  },
+  技术员: {
+    pc: ["工作台", "牛只基础档案"],
+    mini: ["疾病、疫苗（上报）"],
+  },
+  仓管员: {
+    pc: ["工作台", "牛只基础档案", "药品管理"],
+    mini: ["损耗/领用（全部）"],
+  },
+  修蹄工: {
+    pc: [],
+    mini: ["修蹄（领取/回填）"],
+  },
+  普修工: {
+    pc: [],
+    mini: ["普修（领取/回填）"],
+  },
+  干奶工: {
+    pc: [],
+    mini: ["干奶（领取/回填）"],
+  },
+  驱虫工: {
+    pc: [],
+    mini: ["驱虫（领取/回填）"],
+  },
+  超级管理员: {
+    pc: ["工作台", "牛只基础档案", "健康管理", "药品管理", "组织管理", "知识库管理"],
+    mini: ["全部小程序权限"],
+  },
+};
+
+function unionPermsForRoles(rs: string[]): RolePermPreview {
+  const pc = new Set<string>();
+  const mini = new Set<string>();
+  rs.forEach((r) => {
+    const p = ROLE_PERMISSIONS[r];
+    if (!p) return;
+    p.pc.forEach((x) => pc.add(x));
+    p.mini.forEach((x) => mini.add(x));
+  });
+  return { pc: [...pc], mini: [...mini] };
+}
+
 const initialAccounts: Account[] = [
   { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", roles: ["场长"] }], wecomId: "wm_zhanglei_8821", wechatId: "wx_zhanglei_6688", status: "启用", createdAt: "2024-03-08" },
   { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", org: "1 号牧场 / 兽医部", farmRoles: [{ farm: "1 号牧场", roles: ["兽医", "技术员"] }, { farm: "2 号牧场", roles: ["兽医助理"] }], wecomId: "wm_liyuqing_3210", wechatId: "wx_liyuqing_4521", status: "启用", createdAt: "2024-06-21" },
