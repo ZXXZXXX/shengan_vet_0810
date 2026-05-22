@@ -341,7 +341,7 @@ function AccountPage() {
                   if (rs.length === 0) return <span className="tag tag-muted">未分配</span>;
                   return (
                     <>
-                      <span className="tag tag-brand whitespace-nowrap">{rs[0]}</span>
+                      <span className="tag tag-brand whitespace-nowrap" title={rs[0]}>{ellipsize(rs[0], 3)}</span>
                       {rs.length > 1 && (
                         <span
                           className="tag tag-brand whitespace-nowrap"
@@ -360,7 +360,7 @@ function AccountPage() {
                   if (fs.length === 0) return <span className="tag tag-muted">未关联</span>;
                   return (
                     <>
-                      <span className="tag tag-muted whitespace-nowrap">{fs[0]}</span>
+                      <span className="tag tag-muted whitespace-nowrap" title={fs[0]}>{ellipsize(fs[0], 4)}</span>
                       {fs.length > 1 && (
                         <span
                           className="tag tag-muted whitespace-nowrap"
@@ -373,20 +373,21 @@ function AccountPage() {
                   );
                 })()}
               </div>
-              <div className="text-body-sm tabular-nums truncate">
+              <div className="text-body-sm tabular-nums min-w-0 overflow-hidden">
                 {a.wecomId ? (
-                  <span className="text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wecomId)}</span>
+                  <span className="block truncate text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wecomId)}</span>
                 ) : (
                   <span className="tag tag-muted">未绑定</span>
                 )}
               </div>
-              <div className="text-body-sm tabular-nums truncate">
+              <div className="text-body-sm tabular-nums min-w-0 overflow-hidden">
                 {a.wechatId ? (
-                  <span className="text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wechatId)}</span>
+                  <span className="block truncate text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wechatId)}</span>
                 ) : (
                   <span className="tag tag-muted">未绑定</span>
                 )}
               </div>
+
 
               <div><span className={`tag ${a.status === "启用" ? "tag-success" : "tag-muted"}`}>{a.status}</span></div>
               <div className="flex justify-end">
