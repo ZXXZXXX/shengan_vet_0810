@@ -142,8 +142,7 @@ function fullMini(v = true): MiniPerms {
       ...acc,
       [e.key]: {
         report: hasAction(e, "report") ? v : false,
-        pickup: hasAction(e, "pickup") ? v : false,
-        record: hasAction(e, "record") ? v : false,
+        execute: hasAction(e, "execute") ? v : false,
       },
     }),
     {} as MiniPerms,
