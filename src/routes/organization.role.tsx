@@ -663,8 +663,7 @@ function RolePage() {
                                       </span>
                                       {editable ? (
                                         <Checkbox
-                                          checked={rowAll}
-                                          data-state={rowIndeterminate ? "indeterminate" : rowAll ? "checked" : "unchecked"}
+                                          checked={rowIndeterminate ? "indeterminate" : rowAll}
                                           onCheckedChange={(v) => setMiniRow(e.key, !!v)}
                                           className="ml-auto"
                                           aria-label={`整行：${e.name}`}
