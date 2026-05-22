@@ -786,14 +786,26 @@ function RolePage() {
               <Button
                 variant="outline"
                 className="h-9 text-body-sm font-normal"
-                onClick={() => setDrawerRole(null)}
+                onClick={closeDrawer}
               >
                 取消
               </Button>
               <Button
                 className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                 onClick={() => {
-                  toast.success("已保存变更");
+                  if (activeRole && !activeRole.name.trim()) {
+                    toast.error("请输入角色名称");
+                    return;
+                  }
+                  if (draftRoleKey === drawerRole) {
+                    if (activeRole && !activeRole.desc.trim()) {
+                      updateActiveRole({ desc: "自定义角色" });
+                    }
+                    setDraftRoleKey(null);
+                    toast.success("角色创建成功");
+                  } else {
+                    toast.success("已保存变更");
+                  }
                   setDrawerRole(null);
                 }}
               >
