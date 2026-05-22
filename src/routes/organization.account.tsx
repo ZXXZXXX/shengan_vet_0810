@@ -450,9 +450,15 @@ function AccountPage() {
                       <span className="tag tag-muted">未关联</span>
                     ) : (
                       viewing.farmRoles.map((fr) => (
-                        <div key={fr.farm} className="flex items-center gap-1.5">
+                        <div key={fr.farm} className="flex items-center gap-1.5 flex-wrap justify-end">
                           <span className="tag tag-muted whitespace-nowrap">{fr.farm}</span>
-                          <span className="tag tag-brand whitespace-nowrap">{fr.role}</span>
+                          {fr.roles.length === 0 ? (
+                            <span className="tag tag-muted">未分配</span>
+                          ) : (
+                            fr.roles.map((r) => (
+                              <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
+                            ))
+                          )}
                         </div>
                       ))
                     )}
