@@ -447,6 +447,7 @@ function RolePage() {
                       {editable ? (
                         <Input
                           defaultValue={activeRole.name}
+                          maxLength={6}
                           className="h-9 mt-1.5 bg-card border-border text-body-sm"
                         />
                       ) : (

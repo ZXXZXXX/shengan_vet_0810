@@ -80,6 +80,9 @@ const maskId = (id: string) => {
   return `${id.slice(0, 4)}****${id.slice(-3)}`;
 };
 
+// 文本省略
+const ellipsize = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)}…` : s);
+
 
 // 模拟较多牧场场景，验证搜索能力
 const FARM_OPTIONS = [
@@ -218,7 +221,7 @@ function AccountPage() {
   }, [accounts, keyword, onlyInternal, filterRole, filterFarm, filterStatus]);
 
   // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
-  const cols = "1.6fr 0.9fr 1.2fr 0.9fr 1.5fr 1.3fr 1.3fr 0.7fr 0.5fr";
+  const cols = "1.5fr 0.8fr 1.1fr 1.3fr 1.8fr 140px 140px 0.7fr 0.5fr";
 
 
   return (
@@ -338,7 +341,7 @@ function AccountPage() {
                   if (rs.length === 0) return <span className="tag tag-muted">未分配</span>;
                   return (
                     <>
-                      <span className="tag tag-brand whitespace-nowrap">{rs[0]}</span>
+                      <span className="tag tag-brand whitespace-nowrap" title={rs[0]}>{ellipsize(rs[0], 3)}</span>
                       {rs.length > 1 && (
                         <span
                           className="tag tag-brand whitespace-nowrap"
@@ -357,7 +360,7 @@ function AccountPage() {
                   if (fs.length === 0) return <span className="tag tag-muted">未关联</span>;
                   return (
                     <>
-                      <span className="tag tag-muted whitespace-nowrap">{fs[0]}</span>
+                      <span className="tag tag-muted whitespace-nowrap" title={fs[0]}>{ellipsize(fs[0], 4)}</span>
                       {fs.length > 1 && (
                         <span
                           className="tag tag-muted whitespace-nowrap"
@@ -370,20 +373,21 @@ function AccountPage() {
                   );
                 })()}
               </div>
-              <div className="text-body-sm tabular-nums truncate">
+              <div className="text-body-sm tabular-nums min-w-0 overflow-hidden">
                 {a.wecomId ? (
-                  <span className="text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wecomId)}</span>
+                  <span className="block truncate text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wecomId)}</span>
                 ) : (
                   <span className="tag tag-muted">未绑定</span>
                 )}
               </div>
-              <div className="text-body-sm tabular-nums truncate">
+              <div className="text-body-sm tabular-nums min-w-0 overflow-hidden">
                 {a.wechatId ? (
-                  <span className="text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wechatId)}</span>
+                  <span className="block truncate text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wechatId)}</span>
                 ) : (
                   <span className="tag tag-muted">未绑定</span>
                 )}
               </div>
+
 
               <div><span className={`tag ${a.status === "启用" ? "tag-success" : "tag-muted"}`}>{a.status}</span></div>
               <div className="flex justify-end">
@@ -561,6 +565,10 @@ function FarmRolePicker({
   const addNewRole = () => {
     const r = newRole.trim();
     if (!r) return;
+    if (r.length > 6) {
+      toast.error("角色名称不超过 6 个字");
+      return;
+    }
     if (!roles.includes(r)) onCreateRole(r);
     setNewRole("");
   };
@@ -607,6 +615,7 @@ function FarmRolePicker({
                   }
                 }}
                 placeholder="新增角色名"
+                maxLength={6}
                 className="h-7 w-28 text-caption bg-card"
               />
               <Button
