@@ -698,7 +698,7 @@ function RolePage() {
                                           checked={p[a]}
                                           disabled={!editable}
                                           onCheckedChange={(v) => setMini(e.key, a, !!v)}
-                                          className="h-[18px] w-[18px] rounded-full border data-[state=unchecked]:border-[var(--border-strong)] data-[state=checked]:border-primary data-[state=checked]:border-2 data-[state=checked]:bg-[radial-gradient(circle,var(--brand)_42%,white_46%)] [&_svg]:hidden"
+                                          className="h-[18px] w-[18px] rounded-full border data-[state=unchecked]:border-[var(--border-strong)] data-[state=checked]:border-primary data-[state=checked]:border-2 data-[state=checked]:bg-primary data-[state=checked]:text-white"
                                         />
                                         <span className="text-body-sm text-text-secondary">
                                           {e.actions[a]}
