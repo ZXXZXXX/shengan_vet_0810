@@ -315,10 +315,10 @@ const risks: Array<{
   tone: keyof typeof colorMap;
   icon: typeof AlertTriangle;
 }> = [
-  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "紧急", tone: "danger", icon: PackageX },
-  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "提醒", tone: "warning", icon: Hourglass },
-  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: TimerReset },
-  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "关注", tone: "info", icon: Activity },
+  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "预警", tone: "warning", icon: AlertCircle },
+  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "预警", tone: "warning", icon: AlertCircle },
+  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: CalendarClock },
+  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "异常", tone: "danger", icon: AlertTriangle },
   { title: "复查临近：#A2150", detail: "明日复查 · 产后护理", level: "明日", tone: "purple", icon: CalendarClock },
 ];
 
