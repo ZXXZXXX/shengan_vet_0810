@@ -189,6 +189,11 @@ export function WorkOrderPage({
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
   const [diagnosis, setDiagnosis] = useState("");
   const [treatment, setTreatment] = useState("");
+  const [editingPlan, setEditingPlan] = useState(false);
+  const [draftDiagnosis, setDraftDiagnosis] = useState("");
+  const [draftTreatment, setDraftTreatment] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
+  const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
   const [range, setRange] = useState<DateRange>("all");
   const [advOpen, setAdvOpen] = useState(false);
@@ -211,9 +216,22 @@ export function WorkOrderPage({
     if (detail) {
       setDiagnosis(defaultDiagnosis);
       setTreatment(defaultTreatment);
+      setEditingPlan(false);
+      setAssignExecutor("__none__");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
+
+  const openReject = (o: WorkOrder) => {
+    setDetail(o);
+    setRejectReason("");
+    setConfirm("reject");
+  };
+  const openApprove = (o: WorkOrder) => {
+    setDetail(o);
+    setAssignExecutor("__none__");
+    setConfirm("approve");
+  };
 
   const counts = Object.fromEntries(
     statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length]),
