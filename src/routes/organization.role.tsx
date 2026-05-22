@@ -413,6 +413,9 @@ function RolePage() {
             title={!canManage ? "仅超级管理员可新建角色" : undefined}
             className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            <Plus className="h-3.5 w-3.5" /> 新建角色
+          </Button>
+
 
         </div>
 
