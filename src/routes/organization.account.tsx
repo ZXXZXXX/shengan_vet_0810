@@ -1042,7 +1042,7 @@ function AccountDrawerInner({
                 onCreateRole={(r) => onCreateRole(userType, r)}
               />
               {incomplete && (
-                <p className="text-caption text-warning">请为每个关联牧场选择至少一个角色后再保存</p>
+                <p className="text-caption text-warning">当前牧场未选择角色，保存时将自动取消该牧场关联</p>
               )}
             </>
           ) : (
