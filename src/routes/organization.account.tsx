@@ -318,8 +318,10 @@ function AccountPage() {
             <div>角色</div>
             <div>关联牧场</div>
             <div>企微 ID</div>
+            <div>微信 ID</div>
             <div>状态</div>
             <div className="text-right">管理</div>
+
           </div>
           {filteredAccounts.map((a) => (
             <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
