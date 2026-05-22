@@ -175,19 +175,20 @@ function AccountPage() {
   const [keyword, setKeyword] = useState("");
   const [onlyInternal, setOnlyInternal] = useState(false);
   const [filterRole, setFilterRole] = useState<string>("all");
-  const [filterFarm, setFilterFarm] = useState<string>("all");
+  const [filterFarms, setFilterFarms] = useState<string[]>([]);
   const [filterStatus, setFilterStatus] = useState<"all" | Status>("all");
   const [advOpen, setAdvOpen] = useState(false);
+  const [farmFilterOpen, setFarmFilterOpen] = useState(false);
 
   const resetAdv = () => {
     setFilterRole("all");
-    setFilterFarm("all");
+    setFilterFarms([]);
     setFilterStatus("all");
   };
 
   const advCount =
     (filterRole !== "all" ? 1 : 0) +
-    (filterFarm !== "all" ? 1 : 0) +
+    (filterFarms.length > 0 ? 1 : 0) +
     (filterStatus !== "all" ? 1 : 0);
 
   const toggleStatus = (id: string) => {
