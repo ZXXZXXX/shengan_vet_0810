@@ -249,7 +249,7 @@ function RolePage() {
           ),
         },
         mini: miniEvents.reduce(
-          (a, e) => ({ ...a, [e.key]: { report: false, pickup: false, record: false } }),
+          (a, e) => ({ ...a, [e.key]: { report: false, execute: false } }),
           {} as MiniPerms,
         ),
       },
