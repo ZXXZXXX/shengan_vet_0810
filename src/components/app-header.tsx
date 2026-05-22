@@ -1,6 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { Bell, Search, Building2, Users, Briefcase, LogOut, Check, ChevronDown } from "lucide-react";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { Bell, Search, Building2, Users, Briefcase, LogOut, Check, ChevronDown, Globe2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { FARMS, useFarm, setFarmId } from "@/lib/farm-store";
