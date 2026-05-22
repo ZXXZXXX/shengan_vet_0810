@@ -4,13 +4,10 @@ import {
   Camera,
   ScanLine,
   X,
-  Stethoscope,
-  PackageMinus,
   Lock,
   Mic,
   Video,
   Search,
-  Minus,
   Plus,
   UserCheck,
   Sparkles,
@@ -32,22 +29,8 @@ export const Route = createFileRoute("/m/report")({
   component: ReportPage,
 });
 
-type ReportKind = "health" | "loss";
+type ReportKind = "health";
 
-// 物资库（用于损耗上报快速匹配）
-const itemLibrary = [
-  "口蹄疫疫苗 A 型",
-  "口蹄疫疫苗 O 型",
-  "牛瘟疫苗",
-  "乳房炎抗生素",
-  "头孢噻呋钠注射液",
-  "营养补充剂（围产期）",
-  "戊二醛消毒液",
-  "高锰酸钾",
-  "蹄部消毒喷雾",
-  "一次性手套",
-  "采精管",
-];
 
 // 健康工作类型
 const healthWorkTypes = ["疾病治疗", "免疫", "普修", "复诊"] as const;
@@ -113,10 +96,7 @@ function ReportPage() {
 
   const lockTarget = !!search.lock && !!search.target;
   const lockBarn = !!search.lock && !!search.barn;
-  const [kind, setKind] = useState<ReportKind>(canReportHealth ? "health" : "loss");
-  useEffect(() => {
-    if (!canReportHealth && kind === "health") setKind("loss");
-  }, [canReportHealth, kind]);
+  const [kind] = useState<ReportKind>("health");
 
   const [target, setTarget] = useState(search.target ?? "");
   const [barn] = useState(search.barn ?? "");
@@ -138,19 +118,6 @@ function ReportPage() {
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>("");
 
-  // 损耗
-  const [itemName, setItemName] = useState("");
-  const [itemFocused, setItemFocused] = useState(false);
-  const [lossQty, setLossQty] = useState("1");
-  const [needReapply, setNeedReapply] = useState<"yes" | "no">("no");
-  const [applyName, setApplyName] = useState("");
-  const [applyQty, setApplyQty] = useState(1);
-
-  const itemMatches = useMemo(() => {
-    const kw = itemName.trim().toLowerCase();
-    if (!kw) return itemLibrary.slice(0, 6);
-    return itemLibrary.filter((i) => i.toLowerCase().includes(kw)).slice(0, 8);
-  }, [itemName]);
 
   // 是否完成"线索上传"——之后才显示疑似疾病
   const evidenceReady =
@@ -199,11 +166,6 @@ function ReportPage() {
     setShowCustomInput(false);
   };
 
-  const pickItem = (name: string) => {
-    setItemName(name);
-    setItemFocused(false);
-    if (needReapply === "yes" && !applyName) setApplyName(name);
-  };
 
   const startVoice = () => {
     if (recording) {
@@ -215,13 +177,11 @@ function ReportPage() {
   };
 
   const canSubmit =
-    kind === "health"
-      ? target.trim().length > 0 &&
-        workType !== "" &&
-        symptoms.length > 0 &&
-        handlerId !== "" &&
-        evidenceReady
-      : itemName.trim().length > 0 && Number(lossQty) > 0;
+    target.trim().length > 0 &&
+    workType !== "" &&
+    symptoms.length > 0 &&
+    handlerId !== "" &&
+    evidenceReady;
 
   const submit = () => {
     if (!canSubmit) return;
@@ -232,45 +192,9 @@ function ReportPage() {
   return (
     <MobileShell title="现场上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-3">
-        {/* 类别 Tabs */}
-        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-surface-subtle border border-border">
-          {(
-            [
-              { k: "health" as ReportKind, label: "牛只健康", icon: Stethoscope },
-              { k: "loss" as ReportKind, label: "损耗问题", icon: PackageMinus },
-            ]
-          ).map((t) => {
-            const Icon = t.icon;
-            const active = kind === t.k;
-            const disabled = t.k === "health" && !canReportHealth;
-            return (
-              <button
-                key={t.k}
-                disabled={disabled}
-                onClick={() => !disabled && setKind(t.k)}
-                className={`h-10 rounded-lg text-body-sm inline-flex items-center justify-center gap-1.5 transition-colors ${
-                  active
-                    ? "bg-card text-primary shadow-sm border border-primary/20"
-                    : disabled
-                    ? "text-text-tertiary opacity-60"
-                    : "text-text-secondary"
-                }`}
-              >
-                <Icon className="h-4 w-4" /> {t.label}
-                {disabled && <Lock className="h-3 w-3 ml-0.5" />}
-              </button>
-            );
-          })}
-        </div>
-
-        {!canReportHealth && (
-          <div className="rounded-lg border border-border bg-surface-subtle px-3 py-2 text-caption text-text-secondary">
-            当前角色（{role === "hoof_trimmer" ? "修蹄工" : "外部人员"}）仅可执行工作与上报损耗类问题，无法上报健康类问题。
-          </div>
-        )}
-
         {kind === "health" ? (
           <>
+
             {/* 处理对象 */}
             <Section title="处理对象" required>
               {lockTarget ? (
@@ -538,140 +462,8 @@ function ReportPage() {
               </>
             )}
           </>
-        ) : (
-          <>
-            {/* 物品名称 */}
-            <Section title="物品名称" required>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                <input
-                  value={itemName}
-                  onChange={(e) => {
-                    setItemName(e.target.value);
-                    setItemFocused(true);
-                  }}
-                  onFocus={() => setItemFocused(true)}
-                  onBlur={() => setTimeout(() => setItemFocused(false), 150)}
-                  placeholder="输入物品名称快速匹配"
-                  className="w-full h-12 pl-9 pr-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
-                />
-                {itemFocused && itemMatches.length > 0 && (
-                  <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-60 overflow-auto">
-                    {itemMatches.map((m) => (
-                      <button
-                        key={m}
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => pickItem(m)}
-                        className="w-full text-left px-3 h-10 text-body-sm text-foreground hover:bg-surface-subtle border-b border-border last:border-b-0"
-                      >
-                        {m}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Section>
+        ) : null}
 
-            {/* 损耗量 */}
-            <Section title="损耗量" required>
-              <input
-                value={lossQty}
-                onChange={(e) => setLossQty(e.target.value.replace(/[^\d.]/g, ""))}
-                inputMode="decimal"
-                placeholder="例如：8"
-                className="w-full h-12 px-3 rounded-lg bg-card border border-border text-body"
-              />
-            </Section>
-
-            {/* 证据材料（照片 / 文字 / 语音） */}
-            <EvidenceSection
-              desc={desc}
-              setDesc={setDesc}
-              photos={photos}
-              setPhotos={setPhotos}
-              videos={videos}
-              setVideos={setVideos}
-              voiceSecs={voiceSecs}
-              setVoiceSecs={setVoiceSecs}
-              recording={recording}
-              onVoiceToggle={startVoice}
-              hideVideo
-              descLabel="文字备注"
-            />
-
-            {/* 是否需要重新申请 */}
-            <Section title="是否需要重新申请该部分物资" required>
-              <div className="grid grid-cols-2 gap-2">
-                {([
-                  { v: "no", label: "暂不申请" },
-                  { v: "yes", label: "申请" },
-                ] as const).map((o) => {
-                  const active = needReapply === o.v;
-                  return (
-                    <button
-                      key={o.v}
-                      onClick={() => {
-                        setNeedReapply(o.v);
-                        if (o.v === "yes") {
-                          if (!applyName) setApplyName(itemName);
-                          setApplyQty(Math.max(1, Math.ceil(Number(lossQty) || 1)));
-                        }
-                      }}
-                      className={`h-10 rounded-lg border text-body-sm transition-colors ${
-                        active
-                          ? "bg-brand-subtle border-primary/30 text-primary"
-                          : "bg-card border-border text-text-secondary"
-                      }`}
-                    >
-                      {o.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {needReapply === "yes" && (
-                <div className="mt-3 p-3 rounded-lg border border-border bg-surface-subtle space-y-2">
-                  <div className="text-caption text-text-tertiary">
-                    已根据损耗内容自动填写，可调整数量
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-body-sm text-text-secondary w-14 shrink-0">物资</span>
-                    <input
-                      value={applyName}
-                      onChange={(e) => setApplyName(e.target.value)}
-                      className="flex-1 h-10 px-3 rounded-lg bg-card border border-border text-body"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-body-sm text-text-secondary w-14 shrink-0">数量</span>
-                    <div className="flex items-center h-10 rounded-lg border border-border bg-card overflow-hidden">
-                      <button
-                        onClick={() => setApplyQty((q) => Math.max(1, q - 1))}
-                        className="h-full w-10 inline-flex items-center justify-center text-text-secondary"
-                      >
-                        <Minus className="h-4 w-4" />
-                      </button>
-                      <input
-                        value={applyQty}
-                        onChange={(e) =>
-                          setApplyQty(Math.max(1, Number(e.target.value.replace(/\D/g, "")) || 1))
-                        }
-                        inputMode="numeric"
-                        className="w-14 h-full text-center bg-transparent text-body"
-                      />
-                      <button
-                        onClick={() => setApplyQty((q) => q + 1)}
-                        className="h-full w-10 inline-flex items-center justify-center text-text-secondary"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </Section>
-          </>
-        )}
       </div>
 
       {/* 底部提交 */}

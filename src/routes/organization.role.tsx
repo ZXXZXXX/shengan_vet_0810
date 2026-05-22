@@ -101,24 +101,22 @@ type MiniEventKey =
   | "vaccine"
   | "postpartum"
   | "deworm"
-  | "general"
-  | "loss";
+  | "general";
 
-type MiniActionKey = "report" | "pickup" | "record";
+type MiniActionKey = "report" | "execute";
 
 const miniEvents: {
   key: MiniEventKey;
   name: string;
   actions: Record<MiniActionKey, string>;
 }[] = [
-  { key: "disease", name: "疾病治疗", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "hoof", name: "修蹄", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "drying", name: "干奶", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "vaccine", name: "疫苗", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "postpartum", name: "产后护理", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "deworm", name: "驱虫", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "general", name: "普修", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "loss", name: "损耗 / 领用", actions: { report: "可上报", pickup: "", record: "可领用核销" } },
+  { key: "disease", name: "疾病治疗", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "hoof", name: "修蹄", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "drying", name: "干奶", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "vaccine", name: "疫苗", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "postpartum", name: "产后护理", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "deworm", name: "驱虫", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "general", name: "普修", actions: { report: "可上报", execute: "可响应 / 执行" } },
 ];
 
 type PcPerms = { allowLogin: boolean; modules: Record<PcModuleKey, boolean> };
@@ -144,8 +142,7 @@ function fullMini(v = true): MiniPerms {
       ...acc,
       [e.key]: {
         report: hasAction(e, "report") ? v : false,
-        pickup: hasAction(e, "pickup") ? v : false,
-        record: hasAction(e, "record") ? v : false,
+        execute: hasAction(e, "execute") ? v : false,
       },
     }),
     {} as MiniPerms,
@@ -166,8 +163,7 @@ function partialMini(map: Partial<Record<MiniEventKey, Partial<Record<MiniAction
     const m = map[e.key] ?? {};
     acc[e.key] = {
       report: hasAction(e, "report") && !!m.report,
-      pickup: hasAction(e, "pickup") && !!m.pickup,
-      record: hasAction(e, "record") && !!m.record,
+      execute: hasAction(e, "execute") && !!m.execute,
     };
     return acc;
   }, {} as MiniPerms);
@@ -182,24 +178,22 @@ const defaultPerms: RolePerms = {
   vet: {
     pc: partialPc(["health", "drug", "knowledge"]),
     mini: partialMini({
-      disease: { report: true, pickup: true, record: true },
-      vaccine: { report: true, pickup: true, record: true },
-      postpartum: { report: true, pickup: true, record: true },
-      deworm: { report: true, pickup: true, record: true },
-      general: { report: true, pickup: true, record: true },
-      loss: { report: true, pickup: true, record: true },
+      disease: { report: true, execute: true },
+      vaccine: { report: true, execute: true },
+      postpartum: { report: true, execute: true },
+      deworm: { report: true, execute: true },
+      general: { report: true, execute: true },
     }),
   },
   assistant: {
     pc: { allowLogin: false, modules: pcModules.reduce((a, m) => ({ ...a, [m.key]: false }), {} as Record<PcModuleKey, boolean>) },
     mini: partialMini({
-      disease: { pickup: true, record: true },
-      vaccine: { pickup: true, record: true },
-      hoof: { pickup: true, record: true },
-      drying: { pickup: true, record: true },
-      deworm: { pickup: true, record: true },
-      general: { pickup: true, record: true },
-      loss: { report: true },
+      disease: { execute: true },
+      vaccine: { execute: true },
+      hoof: { execute: true },
+      drying: { execute: true },
+      deworm: { execute: true },
+      general: { execute: true },
     }),
   },
 };
@@ -255,7 +249,7 @@ function RolePage() {
           ),
         },
         mini: miniEvents.reduce(
-          (a, e) => ({ ...a, [e.key]: { report: false, pickup: false, record: false } }),
+          (a, e) => ({ ...a, [e.key]: { report: false, execute: false } }),
           {} as MiniPerms,
         ),
       },
@@ -342,8 +336,7 @@ function RolePage() {
           ...prev[drawerRole].mini,
           [e]: {
             report: hasAction(ev, "report") ? v : false,
-            pickup: hasAction(ev, "pickup") ? v : false,
-            record: hasAction(ev, "record") ? v : false,
+            execute: hasAction(ev, "execute") ? v : false,
           },
         },
       },
@@ -699,8 +692,8 @@ function RolePage() {
 
                   <div className="rounded-md border border-border overflow-hidden">
                     {(() => {
-                      const actions: MiniActionKey[] = ["report", "pickup", "record"];
-                      const actionLabels = ["上报", "响应", "执行 / 核销"];
+                      const actions: MiniActionKey[] = ["report", "execute"];
+                      const actionLabels = ["上报", "响应 / 执行"];
                       const evsFor = (a: MiniActionKey) =>
                         miniEvents.filter((e) => hasAction(e, a));
                       const colChecked = (a: MiniActionKey) =>
