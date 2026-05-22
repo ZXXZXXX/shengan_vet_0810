@@ -237,7 +237,7 @@ function AccountPage() {
       .filter((a) => {
         if (onlyInternal && a.userType !== "内部") return false;
         if (filterRole !== "all" && !rolesOf(a).includes(filterRole)) return false;
-        if (filterFarm !== "all" && !farmsOf(a).includes(filterFarm)) return false;
+        if (filterFarms.length > 0 && !filterFarms.some((f) => farmsOf(a).includes(f))) return false;
         if (filterStatus !== "all" && a.status !== filterStatus) return false;
         if (kw) {
           const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""} ${a.wechatId ?? ""}`.toLowerCase();
