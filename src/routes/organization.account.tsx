@@ -66,9 +66,20 @@ type Account = {
   org: string;
   farmRoles: FarmRole[]; // 每个关联牧场对应一个角色
   wecomId: string | null;
+  wechatId: string | null;
   status: Status;
   createdAt: string;
 };
+
+// 脱敏：保留前 4 后 3，中间以 **** 替代；过短时仅保留首尾各 1
+const maskId = (id: string) => {
+  if (id.length <= 7) {
+    if (id.length <= 2) return id;
+    return `${id[0]}****${id[id.length - 1]}`;
+  }
+  return `${id.slice(0, 4)}****${id.slice(-3)}`;
+};
+
 
 // 模拟较多牧场场景，验证搜索能力
 const FARM_OPTIONS = [
