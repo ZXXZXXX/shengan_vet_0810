@@ -238,7 +238,8 @@ function ReportPage() {
   const canSubmit =
     target.trim().length > 0 &&
     workType !== "" &&
-    symptoms.length > 0 &&
+    (!cfg?.tags?.required || symptoms.length > 0) &&
+    (!cfg?.note || note.trim().length > 0) &&
     handlerId !== "" &&
     evidenceReady;
 
