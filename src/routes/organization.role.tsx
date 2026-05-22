@@ -193,6 +193,8 @@ function RolePage() {
 
   const [drawerRole, setDrawerRole] = useState<RoleKey | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("detail");
+  const [hoverCol, setHoverCol] = useState<MiniActionKey | null>(null);
+  const [hoverRow, setHoverRow] = useState<MiniEventKey | null>(null);
 
   const [confirmAction, setConfirmAction] = useState<
     | { kind: "toggle"; role: Role }
@@ -574,7 +576,10 @@ function RolePage() {
                       return (
                         <Table>
                           <TableHeader>
-                            <TableRow className="bg-surface-subtle hover:bg-surface-subtle">
+                            <TableRow
+                              className="bg-surface-subtle hover:bg-surface-subtle"
+                              onMouseLeave={() => setHoverRow(null)}
+                            >
                               <TableHead className="w-[220px] text-text-secondary">
                                 <div className="flex items-center gap-2">
                                   {editable ? (
@@ -589,27 +594,39 @@ function RolePage() {
                                   <span>事项类型</span>
                                 </div>
                               </TableHead>
-                              {actions.map((a, i) => (
-                                <TableHead
-                                  key={a}
-                                  className="text-center text-text-secondary"
-                                >
-                                  <div className="flex items-center justify-center gap-2">
-                                    {editable ? (
-                                      <Checkbox
-                                        checked={
-                                          colIndeterminate(a)
-                                            ? "indeterminate"
-                                            : colChecked(a)
-                                        }
-                                        onCheckedChange={(v) => setMiniColumn(a, !!v)}
-                                        aria-label={`整列：${actionLabels[i]}`}
-                                      />
-                                    ) : null}
-                                    <span>{actionLabels[i]}</span>
-                                  </div>
-                                </TableHead>
-                              ))}
+                              {actions.map((a, i) => {
+                                const isColSel = colChecked(a);
+                                const isColHover = hoverCol === a;
+                                return (
+                                  <TableHead
+                                    key={a}
+                                    className={`text-center text-text-secondary transition-colors border-t-2 ${
+                                      isColSel
+                                        ? "border-t-primary bg-[color:var(--primary-soft,#EFFBF1)]"
+                                        : isColHover
+                                        ? "border-t-primary/40 bg-surface-subtle"
+                                        : "border-t-transparent"
+                                    }`}
+                                    onMouseEnter={() => editable && setHoverCol(a)}
+                                    onMouseLeave={() => setHoverCol(null)}
+                                  >
+                                    <div className="flex items-center justify-center gap-2">
+                                      {editable ? (
+                                        <Checkbox
+                                          checked={
+                                            colIndeterminate(a)
+                                              ? "indeterminate"
+                                              : isColSel
+                                          }
+                                          onCheckedChange={(v) => setMiniColumn(a, !!v)}
+                                          aria-label={`整列：${actionLabels[i]}`}
+                                        />
+                                      ) : null}
+                                      <span>{actionLabels[i]}</span>
+                                    </div>
+                                  </TableHead>
+                                );
+                              })}
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -618,9 +635,28 @@ function RolePage() {
                               const rowAll = p.report && p.pickup && p.record;
                               const rowAny = p.report || p.pickup || p.record;
                               const rowIndeterminate = rowAny && !rowAll;
+                              const isRowHover = hoverRow === e.key;
                               return (
-                                <TableRow key={e.key} className="hover:bg-surface-subtle">
-                                  <TableCell className="w-[220px]">
+                                <TableRow
+                                  key={e.key}
+                                  className={`transition-colors ${
+                                    rowAll
+                                      ? "bg-[color:var(--primary-soft,#EFFBF1)] hover:bg-[color:var(--primary-soft,#EFFBF1)]"
+                                      : "hover:bg-surface-subtle"
+                                  }`}
+                                  onMouseLeave={() => setHoverCol(null)}
+                                >
+                                  <TableCell
+                                    className={`w-[220px] border-l-2 transition-colors ${
+                                      rowAll
+                                        ? "border-l-primary"
+                                        : isRowHover
+                                        ? "border-l-primary/40"
+                                        : "border-l-transparent"
+                                    }`}
+                                    onMouseEnter={() => editable && setHoverRow(e.key)}
+                                    onMouseLeave={() => setHoverRow(null)}
+                                  >
                                     <div className="flex items-center gap-2">
                                       {editable ? (
                                         <Checkbox
@@ -636,24 +672,38 @@ function RolePage() {
                                       </span>
                                     </div>
                                   </TableCell>
-                                  {actions.map((a) => (
-                                    <TableCell key={a} className="text-center">
-                                      <label
-                                        className={`inline-flex items-center justify-center gap-2 ${
-                                          editable ? "cursor-pointer" : ""
+                                  {actions.map((a) => {
+                                    const isColSel = colChecked(a);
+                                    const isColHover = hoverCol === a;
+                                    return (
+                                      <TableCell
+                                        key={a}
+                                        className={`text-center transition-colors ${
+                                          isColSel
+                                            ? "bg-[color:var(--primary-soft,#EFFBF1)]"
+                                            : isColHover
+                                            ? "bg-surface-subtle"
+                                            : ""
                                         }`}
+                                        onMouseEnter={() => editable && setHoverCol(a)}
                                       >
-                                        <Checkbox
-                                          checked={p[a]}
-                                          disabled={!editable}
-                                          onCheckedChange={(v) => setMini(e.key, a, !!v)}
-                                        />
-                                        <span className="text-body-sm text-text-secondary">
-                                          {e.actions[a]}
-                                        </span>
-                                      </label>
-                                    </TableCell>
-                                  ))}
+                                        <label
+                                          className={`inline-flex items-center justify-center gap-2 ${
+                                            editable ? "cursor-pointer" : ""
+                                          }`}
+                                        >
+                                          <Checkbox
+                                            checked={p[a]}
+                                            disabled={!editable}
+                                            onCheckedChange={(v) => setMini(e.key, a, !!v)}
+                                          />
+                                          <span className="text-body-sm text-text-secondary">
+                                            {e.actions[a]}
+                                          </span>
+                                        </label>
+                                      </TableCell>
+                                    );
+                                  })}
                                 </TableRow>
                               );
                             })}
