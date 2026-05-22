@@ -888,6 +888,7 @@ function AccountDrawerInner({
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>(account.farmRoles);
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
   const [wechatId, setWechatId] = useState<string | null>(account.wechatId);
+  const [status, setStatus] = useState<Status>(account.status);
 
   const baseRoles = userType === "内部" ? internalRoles : externalRoles;
   const availableRoles = useMemo(() => {
@@ -988,7 +989,20 @@ function AccountDrawerInner({
             <div className="sm:col-span-2">
               <Label className="text-caption text-text-tertiary">状态</Label>
               <div className="mt-1.5">
-                <span className={`tag ${account.status === "启用" ? "tag-success" : "tag-muted"}`}>{account.status}</span>
+                {editable ? (
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={status === "启用"}
+                      onCheckedChange={(v) => setStatus(v ? "启用" : "禁用")}
+                      className="data-[state=checked]:bg-primary"
+                    />
+                    <span className={`text-body-sm ${status === "启用" ? "text-primary" : "text-text-tertiary"}`}>
+                      {status === "启用" ? "启用" : "禁用"}
+                    </span>
+                  </div>
+                ) : (
+                  <span className={`tag ${account.status === "启用" ? "tag-success" : "tag-muted"}`}>{account.status}</span>
+                )}
               </div>
             </div>
           </div>
@@ -1077,7 +1091,7 @@ function AccountDrawerInner({
           <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">取消</Button>
           <Button
             disabled={!canSave}
-            onClick={() => onSave({ ...account, phone, userType, farmRoles: effectiveFarmRoles, wecomId, wechatId })}    
+            onClick={() => onSave({ ...account, phone, userType, farmRoles: effectiveFarmRoles, wecomId, wechatId, status })}    
             className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
