@@ -30,16 +30,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
+
 import { Textarea } from "@/components/ui/textarea";
 import {
   ClipboardList,
@@ -189,6 +181,11 @@ export function WorkOrderPage({
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
   const [diagnosis, setDiagnosis] = useState("");
   const [treatment, setTreatment] = useState("");
+  const [editingPlan, setEditingPlan] = useState(false);
+  const [draftDiagnosis, setDraftDiagnosis] = useState("");
+  const [draftTreatment, setDraftTreatment] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
+  const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
   const [range, setRange] = useState<DateRange>("all");
   const [advOpen, setAdvOpen] = useState(false);
@@ -211,9 +208,22 @@ export function WorkOrderPage({
     if (detail) {
       setDiagnosis(defaultDiagnosis);
       setTreatment(defaultTreatment);
+      setEditingPlan(false);
+      setAssignExecutor("__none__");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
+
+  const openReject = (o: WorkOrder) => {
+    setDetail(o);
+    setRejectReason("");
+    setConfirm("reject");
+  };
+  const openApprove = (o: WorkOrder) => {
+    setDetail(o);
+    setAssignExecutor("__none__");
+    setConfirm("approve");
+  };
 
   const counts = Object.fromEntries(
     statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length]),
@@ -368,12 +378,20 @@ export function WorkOrderPage({
       case "action":
         if (canReview(role) && o.status === "待审核") {
           return (
-            <div className="inline-flex items-center gap-1">
+            <div className="inline-flex items-center gap-0.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                onClick={() => setDetail(o)}
+              >
+                查看
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-                onClick={() => { setDetail(o); setConfirm("approve"); }}
+                onClick={() => openApprove(o)}
               >
                 通过
               </Button>
@@ -381,7 +399,7 @@ export function WorkOrderPage({
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 hover:text-[var(--state-danger)]"
-                onClick={() => { setDetail(o); setConfirm("reject"); }}
+                onClick={() => openReject(o)}
               >
                 驳回
               </Button>
@@ -861,86 +879,208 @@ export function WorkOrderPage({
                 )}
               </div>
 
-              {/* 兽医诊断与治疗方案 —— PC 端可编辑 */}
+              {/* 兽医诊断与治疗方案 —— 默认只读，审批员可编辑 */}
               {!isLoss && (
                 <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
                       <Stethoscope className="h-4 w-4 text-primary" /> 兽医诊断与治疗方案
                     </div>
-                    <span className="text-caption text-text-tertiary">默认填充小程序提报内容，可编辑覆盖</span>
+                    {canReview(role) && detail.status === "待审核" && !editingPlan && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 px-2 text-body-sm font-normal"
+                        onClick={() => {
+                          setDraftDiagnosis(diagnosis);
+                          setDraftTreatment(treatment);
+                          setEditingPlan(true);
+                        }}
+                      >
+                        编辑
+                      </Button>
+                    )}
                   </div>
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-1.5">诊断结论</div>
-                    <Textarea
-                      value={diagnosis}
-                      onChange={(e) => setDiagnosis(e.target.value)}
-                      rows={3}
-                      placeholder="请输入兽医诊断结论"
-                      className="text-body-sm bg-card resize-none"
-                    />
-                  </div>
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-1.5">治疗方案</div>
-                    <Textarea
-                      value={treatment}
-                      onChange={(e) => setTreatment(e.target.value)}
-                      rows={4}
-                      placeholder="请输入用药、处置、观察要点等"
-                      className="text-body-sm bg-card resize-none"
-                    />
-                  </div>
+                  {editingPlan ? (
+                    <>
+                      <div>
+                        <div className="text-caption text-text-tertiary mb-1.5">诊断结论</div>
+                        <Textarea
+                          value={draftDiagnosis}
+                          onChange={(e) => setDraftDiagnosis(e.target.value)}
+                          rows={3}
+                          placeholder="请输入兽医诊断结论"
+                          className="text-body-sm bg-card resize-none"
+                        />
+                      </div>
+                      <div>
+                        <div className="text-caption text-text-tertiary mb-1.5">治疗方案</div>
+                        <Textarea
+                          value={draftTreatment}
+                          onChange={(e) => setDraftTreatment(e.target.value)}
+                          rows={4}
+                          placeholder="请输入用药、处置、观察要点等"
+                          className="text-body-sm bg-card resize-none"
+                        />
+                      </div>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-body-sm font-normal"
+                          onClick={() => setEditingPlan(false)}
+                        >
+                          取消
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                          onClick={() => {
+                            setDiagnosis(draftDiagnosis);
+                            setTreatment(draftTreatment);
+                            setEditingPlan(false);
+                          }}
+                        >
+                          保存修改
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <div className="text-caption text-text-tertiary mb-1.5">诊断结论</div>
+                        <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{diagnosis}</p>
+                      </div>
+                      <div>
+                        <div className="text-caption text-text-tertiary mb-1.5">治疗方案</div>
+                        <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{treatment}</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
             );
           })()}
 
+          {detail && canReview(role) && detail.status === "待审核" && !editingPlan && (
+            <DialogFooter className="gap-2">
+              <Button variant="outline" className="gap-1.5" onClick={() => { setRejectReason(""); setConfirm("reject"); }}>
+                <X className="h-3.5 w-3.5" /> 驳回
+              </Button>
+              <Button
+                className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                onClick={() => { setAssignExecutor("__none__"); setConfirm("approve"); }}
+              >
+                <Check className="h-3.5 w-3.5" /> 通过
+              </Button>
+            </DialogFooter>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 驳回 —— 需填写理由 */}
+      <Dialog
+        open={confirm === "reject"}
+        onOpenChange={(o) => !o && setConfirm(null)}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">驳回该工作</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="text-body-sm text-text-secondary">
+              {detail ? `工作 ${detail.id} · ${detail.target}` : ""}
+            </div>
+            <div>
+              <div className="text-caption text-text-tertiary mb-1.5">
+                驳回理由 <span className="text-[var(--state-danger)]">*</span>
+              </div>
+              <Textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                rows={4}
+                placeholder="请说明驳回原因，如证据不足、对象错误、重复上报或无需处理等"
+                className="text-body-sm resize-none"
+              />
+            </div>
+          </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="gap-1.5" onClick={() => setConfirm("reject")}>
-              <X className="h-3.5 w-3.5" /> 不通过
-            </Button>
+            <Button variant="outline" onClick={() => setConfirm(null)}>取消</Button>
             <Button
-              className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-              onClick={() => setConfirm("approve")}
+              disabled={!rejectReason.trim()}
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white disabled:opacity-50"
+              onClick={() => {
+                setConfirm(null);
+                setDetail(null);
+                setRejectReason("");
+              }}
             >
-              <Check className="h-3.5 w-3.5" /> 通过并入待响应池
+              确认驳回
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {confirm === "approve" ? "确认通过并入待响应池？" : "确认驳回该工作？"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
+      {/* 通过 —— 二次确认诊疗方案 + 可选指派执行人 */}
+      <Dialog
+        open={confirm === "approve"}
+        onOpenChange={(o) => !o && setConfirm(null)}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">确认诊疗方案无误</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="text-body-sm text-text-secondary">
               {detail ? `工作 ${detail.id} · ${detail.target}` : ""}
-              {confirm === "approve"
-                ? "。审批通过仅完成诊疗确认与执行计划配置，不指定执行人；工作将进入对应处理权限账号的待响应池，由首位响应者承接执行，并从其他人的待响应池中流出。"
-                : "，操作后状态将更新,无法撤销。"}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction
-              className={
-                confirm === "approve"
-                  ? "bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                  : "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
-              }
+            </div>
+            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-40 overflow-y-auto">
+              <div>
+                <div className="text-caption text-text-tertiary">诊断结论</div>
+                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{diagnosis || "—"}</p>
+              </div>
+              <div>
+                <div className="text-caption text-text-tertiary">治疗方案</div>
+                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{treatment || "—"}</p>
+              </div>
+            </div>
+            <div>
+              <div className="text-caption text-text-tertiary mb-1.5">
+                指派执行人 <span className="text-text-tertiary">（非必选）</span>
+              </div>
+              <Select value={assignExecutor} onValueChange={setAssignExecutor}>
+                <SelectTrigger className="h-9 text-body-sm">
+                  <SelectValue placeholder="不指定，进入待响应池" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">不指定（进入待响应池）</SelectItem>
+                  {executorsPool.map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-caption text-text-tertiary mt-1.5">
+                {assignExecutor === "__none__"
+                  ? "未指定执行人时，工作将进入对应权限账号的待响应池，由首位响应者承接。"
+                  : `提交后将直接派发至 ${assignExecutor}。`}
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setConfirm(null)}>取消</Button>
+            <Button
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
               onClick={() => {
                 setConfirm(null);
                 setDetail(null);
               }}
             >
-              确认{confirm === "approve" ? "通过" : "驳回"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              确认提交
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 }
