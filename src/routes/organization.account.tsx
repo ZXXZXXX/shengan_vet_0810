@@ -352,8 +352,20 @@ function AccountPage() {
       });
   }, [accounts, keyword, onlyInternal, filterRole, filterFarms, filterStatus]);
 
-  // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
-  const cols = "1.5fr 0.8fr 1.1fr 1.3fr 1.8fr 140px 140px 0.7fr 0.5fr";
+  // 列宽：勾选 用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
+  const cols = "40px 1.5fr 0.8fr 1.1fr 1.3fr 1.8fr 140px 140px 0.7fr 0.5fr";
+
+  const visibleIds = filteredAccounts.map((a) => a.id);
+  const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id));
+  const someSelected = visibleIds.some((id) => selectedIds.has(id));
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) visibleIds.forEach((id) => next.delete(id));
+      else visibleIds.forEach((id) => next.add(id));
+      return next;
+    });
+  };
 
 
   return (
