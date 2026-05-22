@@ -30,6 +30,13 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
 
 
 import { Textarea } from "@/components/ui/textarea";
@@ -720,11 +727,12 @@ export function WorkOrderPage({
         </Card>
       </main>
 
-      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent className="max-w-2xl max-h-[88vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-section-title">工作详情</DialogTitle>
-          </DialogHeader>
+      <Sheet open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col gap-0">
+          <SheetHeader className="px-6 py-4 border-b border-border">
+            <SheetTitle className="text-section-title text-left">工作详情</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-5">
           {detail && (() => {
             const isLoss = detail.id.startsWith("LS");
             const symptoms = isLoss ? [] : ["体温升高", "采食下降", "反刍减少"];
@@ -962,9 +970,10 @@ export function WorkOrderPage({
             </div>
             );
           })()}
+          </div>
 
           {detail && canReview(role) && detail.status === "待审核" && !editingPlan && (
-            <DialogFooter className="gap-2">
+            <SheetFooter className="px-6 py-3 border-t border-border bg-card gap-2">
               <Button variant="outline" className="gap-1.5" onClick={() => { setRejectReason(""); setConfirm("reject"); }}>
                 <X className="h-3.5 w-3.5" /> 驳回
               </Button>
@@ -974,10 +983,10 @@ export function WorkOrderPage({
               >
                 <Check className="h-3.5 w-3.5" /> 通过
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           )}
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
 
       {/* 驳回 —— 需填写理由 */}
       <Dialog
