@@ -28,6 +28,12 @@ import {
   Pill,
   Syringe,
   Footprints,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  AlertCircle,
+  Droplets,
+  Baby,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
