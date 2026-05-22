@@ -203,9 +203,64 @@ function RolePage() {
     | null
   >(null);
 
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newRoleName, setNewRoleName] = useState("");
-  const [newRoleDesc, setNewRoleDesc] = useState("");
+  const [draftRoleKey, setDraftRoleKey] = useState<string | null>(null);
+
+  const startCreate = () => {
+    if (roles.length >= 12) {
+      toast.error("角色数量已达上限 12 个，如需更多请联系客服开放");
+      return;
+    }
+    const key = `role_${Date.now()}`;
+    setRoles((prev) => [
+      ...prev,
+      {
+        key,
+        name: "",
+        count: 0,
+        scope: "自定义",
+        desc: "",
+        enabled: true,
+        icon: ShieldCheck,
+      },
+    ]);
+    setPerms((prev) => ({
+      ...prev,
+      [key]: {
+        pc: {
+          allowLogin: true,
+          modules: pcModules.reduce(
+            (a, m) => ({ ...a, [m.key]: !!m.required }),
+            {} as Record<PcModuleKey, boolean>,
+          ),
+        },
+        mini: miniEvents.reduce(
+          (a, e) => ({ ...a, [e.key]: { report: false, pickup: false, record: false } }),
+          {} as MiniPerms,
+        ),
+      },
+    }));
+    setDraftRoleKey(key);
+    setDrawerRole(key);
+    setViewMode("edit");
+  };
+
+  const closeDrawer = () => {
+    if (draftRoleKey) {
+      const dk = draftRoleKey;
+      setRoles((prev) => prev.filter((r) => r.key !== dk));
+      setPerms((prev) => {
+        const { [dk]: _, ...rest } = prev;
+        return rest;
+      });
+      setDraftRoleKey(null);
+    }
+    setDrawerRole(null);
+  };
+
+  const updateActiveRole = (patch: Partial<Role>) => {
+    if (!drawerRole) return;
+    setRoles((prev) => prev.map((r) => (r.key === drawerRole ? { ...r, ...patch } : r)));
+  };
 
   const openDetail = (key: RoleKey) => {
     setDrawerRole(key);
@@ -319,13 +374,7 @@ function RolePage() {
           </div>
           <Button
             size="sm"
-            onClick={() => {
-              if (roles.length >= 12) {
-                toast.error("角色数量已达上限 12 个，如需更多请联系客服开放");
-                return;
-              }
-              setIsCreateOpen(true);
-            }}
+            onClick={startCreate}
             className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             <Plus className="h-3.5 w-3.5" /> 新建角色
@@ -428,7 +477,7 @@ function RolePage() {
       </main>
 
       {/* Drawer: detail / edit */}
-      <Sheet open={!!drawerRole} onOpenChange={(v) => !v && setDrawerRole(null)}>
+      <Sheet open={!!drawerRole} onOpenChange={(v) => !v && closeDrawer()}>
         <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col gap-0">
           <SheetHeader className="px-6 py-4 border-b border-border">
             <div className="flex items-center justify-between gap-3">
@@ -440,7 +489,9 @@ function RolePage() {
                 )}
                 <div className="min-w-0">
                   <SheetTitle className="text-card-title text-foreground truncate text-left">
-                    {activeRole?.name} · {viewMode === "edit" ? "编辑" : "详情"}
+                    {draftRoleKey === drawerRole
+                      ? "新建角色"
+                      : `${activeRole?.name} · ${viewMode === "edit" ? "编辑" : "详情"}`}
                   </SheetTitle>
                   <SheetDescription className="text-caption text-text-tertiary text-left">
                     {viewMode === "edit" ? "可调整角色信息与权限配置" : "查看角色信息与全部权限"}
@@ -472,8 +523,10 @@ function RolePage() {
                       <Label className="text-caption text-text-tertiary">角色名称</Label>
                       {editable ? (
                         <Input
-                          defaultValue={activeRole.name}
+                          value={activeRole.name}
+                          onChange={(e) => updateActiveRole({ name: e.target.value })}
                           maxLength={6}
+                          placeholder="请输入角色名称（最多6个字）"
                           className="h-9 mt-1.5 bg-card border-border text-body-sm"
                         />
                       ) : (
@@ -514,8 +567,10 @@ function RolePage() {
                     <Label className="text-caption text-text-tertiary">角色说明</Label>
                     {editable ? (
                       <Textarea
-                        defaultValue={activeRole.desc}
+                        value={activeRole.desc}
+                        onChange={(e) => updateActiveRole({ desc: e.target.value })}
                         rows={2}
+                        placeholder="描述该角色的职责范围"
                         className="mt-1.5 bg-card border-border text-body-sm"
                       />
                     ) : (
@@ -731,14 +786,26 @@ function RolePage() {
               <Button
                 variant="outline"
                 className="h-9 text-body-sm font-normal"
-                onClick={() => setDrawerRole(null)}
+                onClick={closeDrawer}
               >
                 取消
               </Button>
               <Button
                 className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                 onClick={() => {
-                  toast.success("已保存变更");
+                  if (activeRole && !activeRole.name.trim()) {
+                    toast.error("请输入角色名称");
+                    return;
+                  }
+                  if (draftRoleKey === drawerRole) {
+                    if (activeRole && !activeRole.desc.trim()) {
+                      updateActiveRole({ desc: "自定义角色" });
+                    }
+                    setDraftRoleKey(null);
+                    toast.success("角色创建成功");
+                  } else {
+                    toast.success("已保存变更");
+                  }
                   setDrawerRole(null);
                 }}
               >
@@ -749,104 +816,6 @@ function RolePage() {
         </SheetContent>
       </Sheet>
 
-      {/* Create role sheet */}
-      <Sheet open={isCreateOpen} onOpenChange={(v) => !v && setIsCreateOpen(false)}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col gap-1">
-          <SheetHeader className="px-6 py-4 border-b border-border">
-            <SheetTitle className="text-card-title text-foreground text-left">新建角色</SheetTitle>
-            <SheetDescription className="text-caption text-text-tertiary text-left">
-              创建自定义角色并配置基础信息
-            </SheetDescription>
-          </SheetHeader>
-          <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-            <div>
-              <Label className="text-caption text-text-tertiary">角色名称</Label>
-              <Input
-                value={newRoleName}
-                onChange={(e) => setNewRoleName(e.target.value)}
-                maxLength={6}
-                placeholder="请输入角色名称（最多6个字）"
-                className="h-9 mt-1.5 bg-card border-border text-body-sm"
-              />
-            </div>
-            <div>
-              <Label className="text-caption text-text-tertiary">角色说明</Label>
-              <Textarea
-                value={newRoleDesc}
-                onChange={(e) => setNewRoleDesc(e.target.value)}
-                rows={3}
-                placeholder="描述该角色的职责范围"
-                className="mt-1.5 bg-card border-border text-body-sm"
-              />
-            </div>
-            <p className="text-caption text-text-tertiary flex items-start gap-1.5">
-              <Info className="h-3.5 w-3.5 mt-0.5 shrink-1" />
-              新建成功后，可在角色列表中点击「编辑」配置该角色的 PC 端与小程序权限。
-            </p>
-          </div>
-          <SheetFooter className="px-6 py-3 border-t border-border bg-card">
-            <Button
-              variant="outline"
-              className="h-9 text-body-sm font-normal"
-              onClick={() => {
-                setNewRoleName("");
-                setNewRoleDesc("");
-                setIsCreateOpen(false);
-              }}
-            >
-              取消
-            </Button>
-            <Button
-              className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-              onClick={() => {
-                if (!newRoleName.trim()) {
-                  toast.error("请输入角色名称");
-                  return;
-                }
-                if (newRoleName.trim().length > 6) {
-                  toast.error("角色名称不超过 6 个字");
-                  return;
-                }
-                const key = `role_${Date.now()}`;
-                setRoles((prev) => [
-                  ...prev,
-                  {
-                    key,
-                    name: newRoleName.trim(),
-                    count: 0,
-                    scope: "自定义",
-                    desc: newRoleDesc.trim() || "自定义角色",
-                    enabled: true,
-                    icon: ShieldCheck,
-                  },
-                ]);
-                setPerms((prev) => ({
-                  ...prev,
-                  [key]: {
-                    pc: {
-                      allowLogin: false,
-                      modules: pcModules.reduce(
-                        (a, m) => ({ ...a, [m.key]: false }),
-                        {} as Record<PcModuleKey, boolean>,
-                      ),
-                    },
-                    mini: miniEvents.reduce(
-                      (a, e) => ({ ...a, [e.key]: { report: false, pickup: false, record: false } }),
-                      {} as MiniPerms,
-                    ),
-                  },
-                }));
-                setNewRoleName("");
-                setNewRoleDesc("");
-                setIsCreateOpen(false);
-                toast.success("角色创建成功");
-              }}
-            >
-              保存
-            </Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
 
       {/* Enable / Disable confirm */}
       <AlertDialog
