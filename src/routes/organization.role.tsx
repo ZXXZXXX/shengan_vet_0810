@@ -664,14 +664,13 @@ function RolePage() {
                                         {e.name}
                                       </span>
                                       {editable ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => setMiniRow(e.key, !rowAll)}
-                                          className="ml-auto text-caption px-2 py-0.5 rounded border border-border bg-card hover:bg-surface-subtle text-text-secondary transition-colors"
+                                        <Checkbox
+                                          checked={rowAll}
+                                          data-state={rowIndeterminate ? "indeterminate" : rowAll ? "checked" : "unchecked"}
+                                          onCheckedChange={(v) => setMiniRow(e.key, !!v)}
+                                          className="ml-auto"
                                           aria-label={`整行：${e.name}`}
-                                        >
-                                          {rowAll ? "清空行" : "选中行"}
-                                        </button>
+                                        />
                                       ) : null}
                                     </div>
                                   </TableCell>
