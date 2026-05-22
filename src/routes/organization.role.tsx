@@ -207,8 +207,11 @@ const defaultPerms: RolePerms = {
 type ViewMode = "detail" | "edit";
 
 function RolePage() {
+  const pcRole = usePcRole();
+  const canManage = isSuperAdmin(pcRole);
   const [roles, setRoles] = useState<Role[]>(initialRoles);
   const [perms, setPerms] = useState<RolePerms>(defaultPerms);
+
 
   const [drawerRole, setDrawerRole] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("detail");
