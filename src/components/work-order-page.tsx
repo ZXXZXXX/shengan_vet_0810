@@ -40,6 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ClipboardList,
   PlayCircle,
@@ -57,6 +58,11 @@ import {
   Mic,
   Video,
   FileText,
+  Phone,
+  MessageSquare,
+  Camera,
+  PackagePlus,
+  Stethoscope,
 } from "lucide-react";
 
 type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
