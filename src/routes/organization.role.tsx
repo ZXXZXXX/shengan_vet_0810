@@ -489,7 +489,9 @@ function RolePage() {
                 )}
                 <div className="min-w-0">
                   <SheetTitle className="text-card-title text-foreground truncate text-left">
-                    {activeRole?.name} · {viewMode === "edit" ? "编辑" : "详情"}
+                    {draftRoleKey === drawerRole
+                      ? "新建角色"
+                      : `${activeRole?.name} · ${viewMode === "edit" ? "编辑" : "详情"}`}
                   </SheetTitle>
                   <SheetDescription className="text-caption text-text-tertiary text-left">
                     {viewMode === "edit" ? "可调整角色信息与权限配置" : "查看角色信息与全部权限"}
