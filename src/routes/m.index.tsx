@@ -378,16 +378,31 @@ function DataCard({
   tone,
   label,
   value,
+  unit,
   sub,
+  delta,
+  deltaTone,
+  bar,
   compact,
 }: {
   icon: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
   value: string;
+  unit?: string;
   sub?: string;
+  delta?: string;
+  deltaTone?: "up" | "down" | "flat";
+  bar?: number;
   compact?: boolean;
 }) {
+  const deltaColor =
+    deltaTone === "up"
+      ? "text-[var(--state-success)]"
+      : deltaTone === "down"
+      ? "text-[var(--state-danger)]"
+      : "text-text-tertiary";
+  const DeltaIcon = deltaTone === "up" ? TrendingUp : deltaTone === "down" ? TrendingDown : ArrowUpRight;
   return (
     <div className="rounded-xl bg-card border border-border p-3">
       <div className="flex items-center gap-2">
@@ -396,11 +411,71 @@ function DataCard({
         </span>
         <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
+      <div className="mt-2 flex items-baseline gap-1">
+        <span className={`${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</span>
+        {unit && <span className="text-[11px] text-text-tertiary">{unit}</span>}
+      </div>
+      {delta && (
+        <div className={`mt-0.5 inline-flex items-center gap-0.5 text-[11px] ${deltaColor}`}>
+          <DeltaIcon className="h-3 w-3" />
+          {delta}
+        </div>
+      )}
       {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
+      {typeof bar === "number" && (
+        <div className="mt-2 h-1 w-full rounded-full bg-surface-subtle overflow-hidden">
+          <span
+            className={`block h-full rounded-full ${
+              tone === "danger"
+                ? "bg-[var(--state-danger)]"
+                : tone === "warning"
+                ? "bg-[var(--state-warning)]"
+                : tone === "success"
+                ? "bg-[var(--state-success)]"
+                : tone === "purple"
+                ? "bg-[var(--effect-ai-purple)]"
+                : tone === "info"
+                ? "bg-[var(--effect-ai-cyan)]"
+                : "bg-primary"
+            }`}
+            style={{ width: `${Math.min(100, Math.max(0, bar))}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }
+
+function Sparkline({ points, className }: { points: number[]; className?: string }) {
+  const w = 84;
+  const h = 36;
+  const max = Math.max(...points);
+  const min = Math.min(...points);
+  const range = max - min || 1;
+  const step = w / (points.length - 1);
+  const coords = points.map((v, i) => [i * step, h - ((v - min) / range) * (h - 4) - 2] as const);
+  const d = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const area = `${d} L${w},${h} L0,${h} Z`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} className={className} aria-hidden>
+      <path d={area} fill="currentColor" opacity="0.12" />
+      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {coords.slice(-1).map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={2} fill="currentColor" />
+      ))}
+    </svg>
+  );
+}
+
+function LegendDot({ color, label }: { color: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="h-2 w-2 rounded-full" style={{ background: color }} />
+      {label}
+    </span>
+  );
+}
+
 
 function TaskOverviewCard({
   to,
