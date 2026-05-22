@@ -325,13 +325,18 @@ function RolePage() {
   };
   const setMiniRow = (e: MiniEventKey, v: boolean) => {
     if (!drawerRole || !editable) return;
+    const ev = findEvent(e);
     setPerms((prev) => ({
       ...prev,
       [drawerRole]: {
         ...prev[drawerRole],
         mini: {
           ...prev[drawerRole].mini,
-          [e]: { report: v, pickup: v, record: v },
+          [e]: {
+            report: hasAction(ev, "report") ? v : false,
+            pickup: hasAction(ev, "pickup") ? v : false,
+            record: hasAction(ev, "record") ? v : false,
+          },
         },
       },
     }));
@@ -343,7 +348,10 @@ function RolePage() {
       [drawerRole]: {
         ...prev[drawerRole],
         mini: miniEvents.reduce((acc, e) => {
-          acc[e.key] = { ...prev[drawerRole].mini[e.key], [a]: v };
+          acc[e.key] = {
+            ...prev[drawerRole].mini[e.key],
+            [a]: hasAction(e, a) ? v : false,
+          };
           return acc;
         }, {} as MiniPerms),
       },
