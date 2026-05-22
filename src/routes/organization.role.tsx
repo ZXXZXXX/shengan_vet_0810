@@ -629,7 +629,7 @@ function RolePage() {
                                     <Checkbox
                                       checked={allIndeterminate ? "indeterminate" : allChecked}
                                       onCheckedChange={(v) => setMiniAll(!!v)}
-                                      className="h-[18px] w-[18px] border-2 data-[state=unchecked]:border-[var(--text-tertiary)]"
+                                      className="h-[18px] w-[18px] border data-[state=unchecked]:border-[var(--text-tertiary)]"
                                       aria-label="全选"
                                     />
                                   ) : null}
@@ -649,7 +649,7 @@ function RolePage() {
                                         <Checkbox
                                           checked={indet ? "indeterminate" : checked}
                                           onCheckedChange={(v) => setMiniColumn(a, !!v)}
-                                          className="h-[18px] w-[18px] border-2 data-[state=unchecked]:border-[var(--text-tertiary)]"
+                                          className="h-[18px] w-[18px] border data-[state=unchecked]:border-[var(--text-tertiary)]"
                                           aria-label={`整列：${actionLabels[i]}`}
                                         />
                                       ) : null}
@@ -676,7 +676,7 @@ function RolePage() {
                                         <Checkbox
                                           checked={rowIndeterminate ? "indeterminate" : rowAll}
                                           onCheckedChange={(v) => setMiniRow(e.key, !!v)}
-                                          className="h-[18px] w-[18px] border-2 data-[state=unchecked]:border-[var(--text-tertiary)]"
+                                          className="h-[18px] w-[18px] border data-[state=unchecked]:border-[var(--text-tertiary)]"
                                           aria-label={`整行：${e.name}`}
                                         />
                                       ) : null}
