@@ -133,9 +133,20 @@ function fullPc(allow = true, modules = true): PcPerms {
     ),
   };
 }
+type MiniEventDef = (typeof miniEvents)[number];
+const hasAction = (e: MiniEventDef, a: MiniActionKey) => !!e.actions[a];
+const findEvent = (k: MiniEventKey) => miniEvents.find((x) => x.key === k)!;
+
 function fullMini(v = true): MiniPerms {
   return miniEvents.reduce(
-    (acc, e) => ({ ...acc, [e.key]: { report: v, pickup: v, record: v } }),
+    (acc, e) => ({
+      ...acc,
+      [e.key]: {
+        report: hasAction(e, "report") ? v : false,
+        pickup: hasAction(e, "pickup") ? v : false,
+        record: hasAction(e, "record") ? v : false,
+      },
+    }),
     {} as MiniPerms,
   );
 }
@@ -152,7 +163,11 @@ function partialPc(keys: PcModuleKey[]): PcPerms {
 function partialMini(map: Partial<Record<MiniEventKey, Partial<Record<MiniActionKey, boolean>>>>): MiniPerms {
   return miniEvents.reduce((acc, e) => {
     const m = map[e.key] ?? {};
-    acc[e.key] = { report: !!m.report, pickup: !!m.pickup, record: !!m.record };
+    acc[e.key] = {
+      report: hasAction(e, "report") && !!m.report,
+      pickup: hasAction(e, "pickup") && !!m.pickup,
+      record: hasAction(e, "record") && !!m.record,
+    };
     return acc;
   }, {} as MiniPerms);
 }
