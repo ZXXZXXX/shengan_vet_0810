@@ -761,7 +761,7 @@ function EditDialog({
                 const next = v as UserType;
                 if (next !== userType) {
                   setUserType(next);
-                  setFarmRoles((cur) => cur.map((fr) => ({ ...fr, role: "" })));
+                  setFarmRoles((cur) => cur.map((fr) => ({ ...fr, roles: [] })));
                 }
               }}
             >
