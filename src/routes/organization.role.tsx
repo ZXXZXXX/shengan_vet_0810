@@ -766,21 +766,25 @@ function RolePage() {
 
                                   {actions.map((a) => (
                                     <TableCell key={a} className="text-center">
-                                      <label
-                                        className={`inline-flex items-center justify-center gap-2 ${
-                                          editable ? "cursor-pointer" : ""
-                                        }`}
-                                      >
-                                        <Checkbox
-                                          checked={p[a]}
-                                          disabled={!editable}
-                                          onCheckedChange={(v) => setMini(e.key, a, !!v)}
-                                          className="h-[18px] w-[18px] rounded-full border data-[state=unchecked]:border-[var(--border-strong)] data-[state=checked]:border-primary data-[state=checked]:border-2 data-[state=checked]:bg-primary data-[state=checked]:text-white"
-                                        />
-                                        <span className="text-body-sm text-text-secondary">
-                                          {e.actions[a]}
-                                        </span>
-                                      </label>
+                                      {hasAction(e, a) ? (
+                                        <label
+                                          className={`inline-flex items-center justify-center gap-2 ${
+                                            editable ? "cursor-pointer" : ""
+                                          }`}
+                                        >
+                                          <Checkbox
+                                            checked={p[a]}
+                                            disabled={!editable}
+                                            onCheckedChange={(v) => setMini(e.key, a, !!v)}
+                                            className="h-[18px] w-[18px] rounded-full border data-[state=unchecked]:border-[var(--border-strong)] data-[state=checked]:border-primary data-[state=checked]:border-2 data-[state=checked]:bg-primary data-[state=checked]:text-white"
+                                          />
+                                          <span className="text-body-sm text-text-secondary">
+                                            {e.actions[a]}
+                                          </span>
+                                        </label>
+                                      ) : (
+                                        <span className="text-body-sm text-text-tertiary">—</span>
+                                      )}
                                     </TableCell>
                                   ))}
                                 </TableRow>
