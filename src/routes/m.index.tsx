@@ -27,8 +27,6 @@ import {
   Pill,
   Syringe,
   Footprints,
-  TrendingUp,
-  ArrowUpRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canViewOperations, canApprove, canExecute } from "@/lib/mobile-role";
