@@ -616,8 +616,7 @@ function RolePage() {
                                   <span>事项类型</span>
                                   {editable ? (
                                     <Checkbox
-                                      checked={allChecked}
-                                      data-state={allIndeterminate ? "indeterminate" : allChecked ? "checked" : "unchecked"}
+                                      checked={allIndeterminate ? "indeterminate" : allChecked}
                                       onCheckedChange={(v) => setMiniAll(!!v)}
                                       className="ml-auto"
                                       aria-label="全选"
@@ -637,8 +636,7 @@ function RolePage() {
                                       <span>{actionLabels[i]}</span>
                                       {editable ? (
                                         <Checkbox
-                                          checked={checked}
-                                          data-state={indet ? "indeterminate" : checked ? "checked" : "unchecked"}
+                                          checked={indet ? "indeterminate" : checked}
                                           onCheckedChange={(v) => setMiniColumn(a, !!v)}
                                           aria-label={`整列：${actionLabels[i]}`}
                                         />
