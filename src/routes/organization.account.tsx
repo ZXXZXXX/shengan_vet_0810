@@ -1530,16 +1530,16 @@ function BatchAssignDialog({
 
   return (
     <>
-      <Dialog open onOpenChange={(o) => !o && onClose()}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>批量关联牧场 / 分配角色</DialogTitle>
-            <DialogDescription>
+      <Sheet open onOpenChange={(o) => !o && onClose()}>
+        <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col gap-0">
+          <SheetHeader className="px-6 py-4 border-b border-border">
+            <SheetTitle className="text-card-title text-foreground text-left">批量关联牧场 / 分配角色</SheetTitle>
+            <SheetDescription className="text-caption text-text-tertiary text-left">
               将对所选 {count} 个账号统一应用以下牧场与角色配置。
-            </DialogDescription>
-          </DialogHeader>
+            </SheetDescription>
+          </SheetHeader>
 
-          <div className="space-y-4">
+          <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
             {/* 模式 */}
             <div className="rounded-md border border-border bg-surface-subtle p-3 space-y-2">
               <div className="text-body-sm font-medium text-foreground">应用方式</div>
@@ -1589,7 +1589,7 @@ function BatchAssignDialog({
             />
           </div>
 
-          <DialogFooter>
+          <SheetFooter className="px-6 py-3 border-t border-border bg-card">
             <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">
               取消
             </Button>
@@ -1600,9 +1600,9 @@ function BatchAssignDialog({
             >
               应用到 {count} 个账号
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
