@@ -336,31 +336,48 @@ function RolePage() {
               <Card
                 key={r.key}
                 onClick={() => openDetail(r.key)}
-                className={`group relative border-border bg-card p-5 cursor-pointer transition-all hover:border-primary/40 hover:shadow-sm ${
-                  disabled ? "opacity-70" : ""
+                className={`group relative p-5 cursor-pointer transition-all ${
+                  disabled
+                    ? "bg-muted/70 border-muted-foreground/20 hover:border-muted-foreground/30 opacity-80"
+                    : "border-border bg-card hover:border-primary/40 hover:shadow-sm"
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-md bg-brand-subtle flex items-center justify-center shrink-0">
-                    <r.icon className="h-5 w-5 text-primary" strokeWidth={1.75} />
+                  <div className={`h-10 w-10 rounded-md flex items-center justify-center shrink-0 ${
+                    disabled ? "bg-muted" : "bg-brand-subtle"
+                  }`}>
+                    <r.icon className={`h-5 w-5 ${disabled ? "text-muted-foreground" : "text-primary"}`} strokeWidth={1.75} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h4 className="text-card-title text-foreground truncate">{r.name}</h4>
-                      {!r.enabled && (
-                        <Badge variant="secondary" className="h-5 px-1.5 text-caption font-normal">
+                      <h4 className={`text-card-title truncate ${disabled ? "text-muted-foreground" : "text-foreground"}`}>
+                        {r.name}
+                      </h4>
+                      {disabled && (
+                        <Badge variant="outline" className="h-5 px-1.5 text-caption font-normal border-muted-foreground/30 text-muted-foreground bg-muted">
                           已停用
                         </Badge>
                       )}
+                      {r.enabled && (
+                        <Badge variant="outline" className="h-5 px-1.5 text-caption font-normal border-[var(--success)]/30 text-[var(--success)] bg-[var(--success)]/10">
+                          启用中
+                        </Badge>
+                      )}
                     </div>
-                    <p className="text-caption text-text-tertiary mt-0.5 truncate">{r.scope}</p>
+                    <p className={`text-caption mt-0.5 truncate ${disabled ? "text-muted-foreground/70" : "text-text-tertiary"}`}>
+                      {r.scope}
+                    </p>
                   </div>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
                         onClick={(e) => e.stopPropagation()}
-                        className="h-7 w-7 rounded-md flex items-center justify-center text-text-tertiary hover:bg-surface-subtle hover:text-foreground transition-colors"
+                        className={`h-7 w-7 rounded-md flex items-center justify-center transition-colors ${
+                          disabled
+                            ? "text-muted-foreground/60 hover:bg-muted hover:text-muted-foreground"
+                            : "text-text-tertiary hover:bg-surface-subtle hover:text-foreground"
+                        }`}
                         aria-label="更多操作"
                       >
                         <MoreVertical className="h-4 w-4" strokeWidth={1.75} />
@@ -386,11 +403,13 @@ function RolePage() {
                   </DropdownMenu>
                 </div>
 
-                <p className="text-body-sm text-text-secondary mt-3 line-clamp-2 min-h-[2.5rem]">
+                <p className={`text-body-sm mt-3 line-clamp-2 min-h-[2.5rem] ${disabled ? "text-muted-foreground/60" : "text-text-secondary"}`}>
                   {r.desc}
                 </p>
 
-                <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border text-caption text-text-tertiary">
+                <div className={`flex items-center gap-4 mt-4 pt-3 border-t text-caption ${
+                  disabled ? "border-muted-foreground/10 text-muted-foreground/60" : "border-border text-text-tertiary"
+                }`}>
                   <span className="flex items-center gap-1">
                     <Users className="h-3.5 w-3.5" strokeWidth={1.75} /> {r.count} 人
                   </span>
