@@ -80,6 +80,9 @@ const maskId = (id: string) => {
   return `${id.slice(0, 4)}****${id.slice(-3)}`;
 };
 
+// 文本省略
+const ellipsize = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)}…` : s);
+
 
 // 模拟较多牧场场景，验证搜索能力
 const FARM_OPTIONS = [
