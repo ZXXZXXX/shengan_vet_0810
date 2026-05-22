@@ -213,6 +213,8 @@ function AccountPage() {
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [drawerMode, setDrawerMode] = useState<"detail" | "edit">("detail");
   const [creating, setCreating] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [batchOpen, setBatchOpen] = useState(false);
   const drawerAccount = useMemo(
     () => (drawerId ? accounts.find((a) => a.id === drawerId) ?? null : null),
     [drawerId, accounts],
@@ -226,6 +228,49 @@ function AccountPage() {
     setDrawerMode("edit");
   };
   const closeDrawer = () => setDrawerId(null);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const clearSelection = () => setSelectedIds(new Set());
+
+  const applyBatch = (
+    targetFarmRoles: FarmRole[],
+    mode: "replace" | "merge",
+  ) => {
+    const ids = selectedIds;
+    setAccounts((list) =>
+      list.map((a) => {
+        if (!ids.has(a.id)) return a;
+        if (mode === "replace") {
+          return { ...a, farmRoles: targetFarmRoles };
+        }
+        // merge：按牧场合并角色（并集）
+        const map = new Map<string, Set<string>>();
+        a.farmRoles.forEach((fr) => map.set(fr.farm, new Set(fr.roles)));
+        targetFarmRoles.forEach((fr) => {
+          const cur = map.get(fr.farm) ?? new Set<string>();
+          fr.roles.forEach((r) => cur.add(r));
+          map.set(fr.farm, cur);
+        });
+        const merged: FarmRole[] = Array.from(map.entries()).map(([farm, rs]) => ({
+          farm,
+          roles: Array.from(rs),
+        }));
+        return { ...a, farmRoles: merged };
+      }),
+    );
+    toast.success(
+      `已${mode === "replace" ? "覆盖" : "合并"}更新 ${ids.size} 个账号的牧场与角色`,
+    );
+    clearSelection();
+    setBatchOpen(false);
+  };
 
   // 筛选状态
   const [keyword, setKeyword] = useState("");
