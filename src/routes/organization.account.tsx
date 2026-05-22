@@ -372,11 +372,19 @@ function AccountPage() {
               </div>
               <div className="text-body-sm tabular-nums truncate">
                 {a.wecomId ? (
-                  <span className="text-text-secondary font-mono">{a.wecomId}</span>
+                  <span className="text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wecomId)}</span>
                 ) : (
                   <span className="tag tag-muted">未绑定</span>
                 )}
               </div>
+              <div className="text-body-sm tabular-nums truncate">
+                {a.wechatId ? (
+                  <span className="text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wechatId)}</span>
+                ) : (
+                  <span className="tag tag-muted">未绑定</span>
+                )}
+              </div>
+
               <div><span className={`tag ${a.status === "启用" ? "tag-success" : "tag-muted"}`}>{a.status}</span></div>
               <div className="flex justify-end">
                 <DropdownMenu>
