@@ -447,9 +447,6 @@ function RolePage() {
                         </Badge>
                       )}
                     </div>
-                    <p className={`text-caption mt-0.5 truncate ${disabled ? "text-muted-foreground/70" : "text-text-tertiary"}`}>
-                      {r.scope}
-                    </p>
                   </div>
 
                   <DropdownMenu>
