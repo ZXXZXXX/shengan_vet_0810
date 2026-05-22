@@ -225,10 +225,12 @@ function RolePage() {
   const [draftRoleKey, setDraftRoleKey] = useState<string | null>(null);
 
   const startCreate = () => {
+    if (!canManage) return;
     if (roles.length >= 12) {
       toast.error("角色数量已达上限 12 个，如需更多请联系客服开放");
       return;
     }
+
     const key = `role_${Date.now()}`;
     setRoles((prev) => [
       ...prev,
