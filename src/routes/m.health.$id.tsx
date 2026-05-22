@@ -85,6 +85,20 @@ function TaskDetailPage() {
     qty: "8 支",
     reapply: { name: "口蹄疫疫苗 A 型", qty: "8 支" } as { name: string; qty: string } | null,
     symptoms: ["体温升高", "采食下降", "反刍减少"],
+    // 工单声明的药品 / 器材需求；为空表示纯执行类工单，不会生成领物码
+    materials: isLoss
+      ? ([] as { name: string; spec?: string; qty: string }[])
+      : isHoof
+      ? [
+          { name: "蹄部消毒喷雾", spec: "500ml / 瓶", qty: "1 瓶" },
+          { name: "蹄部包扎绷带", spec: "5cm × 4.5m", qty: "2 卷" },
+        ]
+      : [
+          { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶" },
+          { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支" },
+          { name: "一次性注射器", spec: "20ml", qty: "8 支" },
+        ],
+    pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
   };
   const s = statusMap[o.status];
   const Icon = s.icon;
