@@ -28,15 +28,9 @@ import {
   Pill,
   Syringe,
   Footprints,
-  TrendingUp,
-  TrendingDown,
-  ArrowUpRight,
-  AlertCircle,
-  Droplets,
-  Baby,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel, canViewOperations, canApprove } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { PackageCheck, QrCode } from "lucide-react";
@@ -72,8 +66,9 @@ function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
   const isApprover = canApprove(role);
-  // 所有角色都能响应/处理其权限范围内的工单；审批人显示"待审批"，其他角色显示"待响应"
-  const showFirstBucket = true;
+  const isExternal = roleGroup[role] === "external";
+  // 内部非审批人（如兽医助理）没有"待响应/待审批"环节
+  const showFirstBucket = isExternal || isApprover;
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
   const claimed = useClaimed();
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
@@ -142,53 +137,13 @@ function MHomePage() {
       {/* ============ 数据看板 ============ */}
       <section className="px-4 mt-5">
         <SectionTitle title="农场概况" hint="数据实时同步" />
-        {/* 头部大卡：牛只总数 + 结构占比 + 7日趋势 */}
-        <div className="rounded-xl bg-card border border-border p-3 mb-2">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap.brand}`}>
-                  <Beef className="h-3.5 w-3.5" strokeWidth={1.75} />
-                </span>
-                <span className="text-caption text-text-secondary">存栏总数</span>
-              </div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-[28px] leading-none font-semibold text-foreground tabular-nums">1,284</span>
-                <span className="text-caption text-text-tertiary">头</span>
-                <span className="ml-1 inline-flex items-center gap-0.5 text-caption text-[var(--state-success)]">
-                  <TrendingUp className="h-3 w-3" />本月 +6
-                </span>
-              </div>
-            </div>
-            <Sparkline points={[18, 22, 19, 25, 24, 28, 30]} className="text-primary shrink-0" />
-          </div>
-          {/* 结构占比条 */}
-          <div className="mt-3">
-            <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-surface-subtle">
-              <span className="bg-[var(--state-success)]" style={{ width: "62%" }} />
-              <span className="bg-primary/70" style={{ width: "22%" }} />
-              <span className="bg-[var(--effect-ai-purple)]/70" style={{ width: "10%" }} />
-              <span className="bg-[var(--state-warning)]" style={{ width: "6%" }} />
-            </div>
-            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-text-tertiary">
-              <LegendDot color="var(--state-success)" label="泌乳 796" />
-              <LegendDot color="oklch(from var(--color-primary) l c h / 0.7)" label="干奶 282" />
-              <LegendDot color="oklch(from var(--effect-ai-purple) l c h / 0.7)" label="后备 128" />
-              <LegendDot color="var(--state-warning)" label="犊牛 78" />
-            </div>
-          </div>
-        </div>
-        {/* 关键指标 2x2 */}
         <div className="grid grid-cols-2 gap-2">
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" delta="+0.4%" deltaTone="up" bar={96.8} />
-          <DataCard icon={Droplets} tone="info" label="日均产奶" value="32.4" unit="kg/头" delta="+0.6" deltaTone="up" />
-          <DataCard icon={Eye} tone="warning" label="观察中" value="18" delta="今日 +3" deltaTone="up" />
-          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" delta="今日 +2" deltaTone="up" />
-          <DataCard icon={Baby} tone="purple" label="本月新生" value="24" delta="计划 30" deltaTone="flat" bar={80} />
-          <DataCard icon={Activity} tone="brand" label="采食量达标" value="92%" delta="-1.2%" deltaTone="down" bar={92} />
+          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月 +6" />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周 +0.4%" />
+          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日 +3" />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日 +2" />
         </div>
       </section>
-
 
       {canInventory && (
         <section className="px-4 mt-4">
@@ -264,6 +219,7 @@ function MHomePage() {
           ))}
           {pendingItems
             .filter((it) => it.farmId === farm.id)
+            .filter((it) => isExternal || it.bucket !== "待响应")
             .map((it) => (
             <Link
               key={it.id}
@@ -290,7 +246,7 @@ function MHomePage() {
               <ChevronRight className="relative h-4 w-4 text-text-tertiary shrink-0" />
             </Link>
           ))}
-          {pendingItems.filter((it) => it.farmId === farm.id).length === 0 && pendingPickups.length === 0 && (
+          {pendingItems.filter((it) => it.farmId === farm.id && (isExternal || it.bucket !== "待响应")).length === 0 && pendingPickups.length === 0 && (
             <div className="py-8 text-center text-caption text-text-tertiary">
               当前牧场暂无待处理事项
             </div>
@@ -315,7 +271,7 @@ function MHomePage() {
                 <div className="text-body text-foreground truncate">{r.title}</div>
                 <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
               </div>
-              <span className={`text-caption ${toneTextMap[r.tone]}`}>
+              <span className={`text-caption ${r.tone === "danger" ? "text-[var(--state-danger)]" : r.tone === "warning" ? "text-[var(--state-warning)]" : "text-text-tertiary"}`}>
                 {r.level}
               </span>
             </div>
@@ -356,13 +312,10 @@ const risks: Array<{
   tone: keyof typeof colorMap;
   icon: typeof AlertTriangle;
 }> = [
-  // 异常 → 警告色 + 警告 icon
-  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "异常", tone: "danger", icon: AlertTriangle },
-  // 库存不足 / 即将过期 → 预警色 + 预警 icon
-  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "预警", tone: "warning", icon: AlertCircle },
-  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "预警", tone: "warning", icon: AlertCircle },
-  // 与执行日期相关 → 日历 icon
-  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "今日", tone: "purple", icon: CalendarClock },
+  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "紧急", tone: "danger", icon: PackageX },
+  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "提醒", tone: "warning", icon: Hourglass },
+  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: TimerReset },
+  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "关注", tone: "info", icon: Activity },
   { title: "复查临近：#A2150", detail: "明日复查 · 产后护理", level: "明日", tone: "purple", icon: CalendarClock },
 ];
 
@@ -381,31 +334,16 @@ function DataCard({
   tone,
   label,
   value,
-  unit,
   sub,
-  delta,
-  deltaTone,
-  bar,
   compact,
 }: {
   icon: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
   value: string;
-  unit?: string;
   sub?: string;
-  delta?: string;
-  deltaTone?: "up" | "down" | "flat";
-  bar?: number;
   compact?: boolean;
 }) {
-  const deltaColor =
-    deltaTone === "up"
-      ? "text-[var(--state-success)]"
-      : deltaTone === "down"
-      ? "text-[var(--state-danger)]"
-      : "text-text-tertiary";
-  const DeltaIcon = deltaTone === "up" ? TrendingUp : deltaTone === "down" ? TrendingDown : ArrowUpRight;
   return (
     <div className="rounded-xl bg-card border border-border p-3">
       <div className="flex items-center gap-2">
@@ -414,71 +352,11 @@ function DataCard({
         </span>
         <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      <div className="mt-2 flex items-baseline gap-1">
-        <span className={`${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</span>
-        {unit && <span className="text-[11px] text-text-tertiary">{unit}</span>}
-      </div>
-      {delta && (
-        <div className={`mt-0.5 inline-flex items-center gap-0.5 text-[11px] ${deltaColor}`}>
-          <DeltaIcon className="h-3 w-3" />
-          {delta}
-        </div>
-      )}
+      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
       {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
-      {typeof bar === "number" && (
-        <div className="mt-2 h-1 w-full rounded-full bg-surface-subtle overflow-hidden">
-          <span
-            className={`block h-full rounded-full ${
-              tone === "danger"
-                ? "bg-[var(--state-danger)]"
-                : tone === "warning"
-                ? "bg-[var(--state-warning)]"
-                : tone === "success"
-                ? "bg-[var(--state-success)]"
-                : tone === "purple"
-                ? "bg-[var(--effect-ai-purple)]"
-                : tone === "info"
-                ? "bg-[var(--effect-ai-cyan)]"
-                : "bg-primary"
-            }`}
-            style={{ width: `${Math.min(100, Math.max(0, bar))}%` }}
-          />
-        </div>
-      )}
     </div>
   );
 }
-
-function Sparkline({ points, className }: { points: number[]; className?: string }) {
-  const w = 84;
-  const h = 36;
-  const max = Math.max(...points);
-  const min = Math.min(...points);
-  const range = max - min || 1;
-  const step = w / (points.length - 1);
-  const coords = points.map((v, i) => [i * step, h - ((v - min) / range) * (h - 4) - 2] as const);
-  const d = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
-  const area = `${d} L${w},${h} L0,${h} Z`;
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} className={className} aria-hidden>
-      <path d={area} fill="currentColor" opacity="0.12" />
-      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      {coords.slice(-1).map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r={2} fill="currentColor" />
-      ))}
-    </svg>
-  );
-}
-
-function LegendDot({ color, label }: { color: string; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1">
-      <span className="h-2 w-2 rounded-full" style={{ background: color }} />
-      {label}
-    </span>
-  );
-}
-
 
 function TaskOverviewCard({
   to,
