@@ -376,29 +376,22 @@ function DataCard({
   const accent = toneAccentMap[tone];
   return (
     <div
-      className="relative rounded-2xl bg-card border border-border p-3.5 overflow-hidden"
+      className="relative rounded-xl bg-card border border-border p-2.5 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(135deg, color-mix(in oklab, ${accent} 8%, transparent) 0%, color-mix(in oklab, ${accent} 0%, transparent) 60%)`,
       }}
     >
-      {/* 角落水印图标 */}
-      <span
-        className="pointer-events-none absolute -right-3 -bottom-3 opacity-[0.08]"
-        style={{ color: accent }}
-      >
-        <Icon className="h-20 w-20" strokeWidth={1.25} />
-      </span>
-      {/* 顶部：图标 + 标签 + 趋势 */}
+      {/* 顶部：图标 + 趋势 */}
       <div className="relative flex items-center justify-between">
         <span
-          className={`h-9 w-9 rounded-xl flex items-center justify-center ${colorMap[tone]} shadow-[0_4px_12px_-6px]`}
-          style={{ boxShadow: `0 6px 14px -8px ${accent}` }}
+          className={`h-7 w-7 rounded-lg flex items-center justify-center ${colorMap[tone]}`}
+          style={{ boxShadow: `0 4px 10px -6px ${accent}` }}
         >
-          <Icon className="h-4.5 w-4.5" strokeWidth={2} />
+          <Icon className="h-3.5 w-3.5" strokeWidth={2} />
         </span>
         {trend && (
           <span
-            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium tabular-nums"
+            className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full text-[10px] font-medium tabular-nums"
             style={{
               backgroundColor: `color-mix(in oklab, ${accent} 14%, transparent)`,
               color: accent,
@@ -414,13 +407,13 @@ function DataCard({
         )}
       </div>
       {/* 数值 */}
-      <div className="relative mt-3 text-section-title text-foreground tabular-nums leading-none">
+      <div className="relative mt-2 text-card-title text-foreground tabular-nums leading-none">
         {value}
       </div>
       {/* 标签 + 子说明 */}
-      <div className="relative mt-1.5 flex items-center justify-between">
+      <div className="relative mt-1 flex items-center justify-between">
         <span className="text-caption text-text-secondary truncate">{label}</span>
-        {sub && <span className="text-[11px] text-text-tertiary shrink-0 ml-2">{sub}</span>}
+        {sub && <span className="text-[11px] text-text-tertiary shrink-0 ml-1">{sub}</span>}
       </div>
     </div>
   );
