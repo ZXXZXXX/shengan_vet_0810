@@ -109,17 +109,6 @@ const FARM_OPTIONS = [
   "向阳牧场", "草原之星", "北疆牧场", "南山牧场", "万象牧场",
 ];
 
-const ORG_OPTIONS = [
-  "1 号牧场",
-  "1 号牧场 / 兽医部",
-  "1 号牧场 / 巡检 A 组",
-  "1 号牧场 / 仓储部",
-  "2 号牧场",
-  "2 号牧场 / 仓储部",
-  "外部合作 / 修蹄队",
-  "外部合作 / 干奶服务队",
-  "外部合作 / 驱虫服务队",
-];
 
 const INTERNAL_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管员"];
 const EXTERNAL_ROLES = ["修蹄工", "普修工", "干奶工", "驱虫工"];
@@ -896,12 +885,10 @@ function AccountDrawerInner({
 
   const [phone, setPhone] = useState(account.phone);
   const [userType, setUserType] = useState<UserType>(account.userType);
-  const [org, setOrg] = useState(account.org);
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>(account.farmRoles);
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
   const [wechatId, setWechatId] = useState<string | null>(account.wechatId);
 
-  const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
   const baseRoles = userType === "内部" ? internalRoles : externalRoles;
   const availableRoles = useMemo(() => {
     const set = new Set(baseRoles);
@@ -998,23 +985,6 @@ function AccountDrawerInner({
                 )}
               </div>
             </div>
-            <div>
-              <Label className="text-caption text-text-tertiary">所属组织</Label>
-              <div className="mt-1.5">
-                {editable ? (
-                  <Select value={orgValue} onValueChange={setOrg}>
-                    <SelectTrigger className="h-9 text-body-sm bg-card border-border"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {ORG_OPTIONS.map((o) => (
-                        <SelectItem key={o} value={o} className="text-body-sm">{o}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="text-body text-foreground">{account.org}</div>
-                )}
-              </div>
-            </div>
             <div className="sm:col-span-2">
               <Label className="text-caption text-text-tertiary">状态</Label>
               <div className="mt-1.5">
@@ -1107,7 +1077,7 @@ function AccountDrawerInner({
           <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">取消</Button>
           <Button
             disabled={!canSave}
-            onClick={() => onSave({ ...account, phone, userType, org, farmRoles: effectiveFarmRoles, wecomId, wechatId })}
+            onClick={() => onSave({ ...account, phone, userType, farmRoles: effectiveFarmRoles, wecomId, wechatId })}    
             className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
@@ -1250,7 +1220,6 @@ function CreateDialog({
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [userType, setUserType] = useState<UserType>("外部");
-  const [org, setOrg] = useState(ORG_OPTIONS[0]);
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>([]);
 
   const baseRoles = userType === "内部" ? internalRoles : externalRoles;
@@ -1276,7 +1245,6 @@ function CreateDialog({
         name: name.trim(),
         phone: phone.trim(),
         userType,
-        org,
         farmRoles: effectiveFarmRoles,
         wecomId: null,
         wechatId: null,
@@ -1315,18 +1283,6 @@ function CreateDialog({
               <SelectContent>
                 <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
                 <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">所属组织</Label>
-            <Select value={org} onValueChange={setOrg}>
-              <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {ORG_OPTIONS.map((o) => (
-                  <SelectItem key={o} value={o} className="text-body-sm">{o}</SelectItem>
-                ))}
               </SelectContent>
             </Select>
           </div>
