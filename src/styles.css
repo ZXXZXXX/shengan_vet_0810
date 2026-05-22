@@ -78,7 +78,9 @@
   /* State */
   --state-success: #6EDB7B;
   --state-warning: #FFD991;
+  --state-alert: #EBBF6B; /* 预警色（深色变体，可用于 icon / 文字 / 描边） */
   --state-danger: #F46A6A;
+
 
   /* Effect */
   --effect-ai-purple: #7B61FF;
