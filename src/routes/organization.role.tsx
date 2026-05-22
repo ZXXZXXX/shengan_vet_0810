@@ -227,9 +227,9 @@ function RolePage() {
       ...prev,
       [key]: {
         pc: {
-          allowLogin: true,
+          allowLogin: false,
           modules: pcModules.reduce(
-            (a, m) => ({ ...a, [m.key]: !!m.required }),
+            (a, m) => ({ ...a, [m.key]: false }),
             {} as Record<PcModuleKey, boolean>,
           ),
         },
