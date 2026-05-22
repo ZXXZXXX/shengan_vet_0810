@@ -183,20 +183,8 @@ const defaultPerms: RolePerms = {
       general: { pickup: true, record: true },
 
     }),
-  },
-  assistant: {
-    pc: { allowLogin: false, modules: pcModules.reduce((a, m) => ({ ...a, [m.key]: false }), {} as Record<PcModuleKey, boolean>) },
-    mini: partialMini({
-      disease: { pickup: true, record: true },
-      vaccine: { pickup: true, record: true },
-      hoof: { pickup: true, record: true },
-      drying: { pickup: true, record: true },
-      deworm: { pickup: true, record: true },
-      general: { pickup: true, record: true },
-      loss: { report: true },
-    }),
-  },
 };
+
 
 type ViewMode = "detail" | "edit";
 
