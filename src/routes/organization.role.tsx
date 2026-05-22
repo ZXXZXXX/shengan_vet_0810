@@ -303,11 +303,23 @@ function RolePage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-card-title text-foreground">角色列表</h3>
-            <p className="text-caption text-text-tertiary mt-0.5">共 {roles.length} 个角色</p>
+            <p className="text-caption text-text-tertiary mt-1">
+              共 {roles.length} / 12 个角色
+              {roles.length >= 12 && (
+                <span className="ml-2 text-destructive">已达上限，如需更多请联系客服开放</span>
+              )}
+            </p>
           </div>
           <Button
             size="sm"
-            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            disabled={roles.length >= 12}
+            onClick={() => {
+              if (roles.length >= 12) {
+                toast.error("角色数量已达上限 12 个，如需更多请联系客服开放");
+                return;
+              }
+            }}
+            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="h-3.5 w-3.5" /> 新建角色
           </Button>
