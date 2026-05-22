@@ -1103,6 +1103,86 @@ function AccountDrawerInner({
   );
 }
 
+function PermissionScopeSection({ farmRoles }: { farmRoles: FarmRole[] }) {
+  const [open, setOpen] = useState(false);
+  const totalRoles = useMemo(
+    () => Array.from(new Set(farmRoles.flatMap((fr) => fr.roles))).length,
+    [farmRoles],
+  );
+  return (
+    <section className="px-6 py-5 border-b border-border">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between gap-2 group"
+      >
+        <div className="flex items-center gap-2">
+          <span className="h-5 w-1 rounded-full bg-primary" />
+          <h4 className="text-body font-medium text-foreground">权限范围</h4>
+          <span className="text-caption text-text-tertiary">
+            {farmRoles.length} 个牧场 · {totalRoles} 个角色（同牧场多角色取并集）
+          </span>
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 text-text-tertiary transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div className="mt-4 space-y-3">
+          {farmRoles.map((fr) => {
+            const perms = unionPermsForRoles(fr.roles);
+            const empty = perms.pc.length === 0 && perms.mini.length === 0;
+            return (
+              <div key={fr.farm} className="rounded-md border border-border bg-surface-subtle px-4 py-3 space-y-2.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="tag tag-muted whitespace-nowrap">{fr.farm}</span>
+                  {fr.roles.length === 0 ? (
+                    <span className="tag tag-muted">未分配</span>
+                  ) : (
+                    fr.roles.map((r) => (
+                      <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
+                    ))
+                  )}
+                </div>
+                {empty ? (
+                  <p className="text-caption text-text-tertiary">该角色暂无权限，请前往「角色权限」配置。</p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">PC 端模块</div>
+                      {perms.pc.length === 0 ? (
+                        <div className="text-body-sm text-text-tertiary">—</div>
+                      ) : (
+                        <ul className="text-body-sm text-text-secondary space-y-1 list-disc pl-4">
+                          {perms.pc.map((p) => <li key={p}>{p}</li>)}
+                        </ul>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">小程序事项</div>
+                      {perms.mini.length === 0 ? (
+                        <div className="text-body-sm text-text-tertiary">—</div>
+                      ) : (
+                        <ul className="text-body-sm text-text-secondary space-y-1 list-disc pl-4">
+                          {perms.mini.map((p) => <li key={p}>{p}</li>)}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <p className="text-caption text-text-tertiary">
+            权限明细以「组织管理 / 角色权限」中各角色的最新配置为准。
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function BindRow({
   label,
   value,
