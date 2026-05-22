@@ -219,7 +219,7 @@ function RolePage() {
         count: 0,
         scope: "自定义",
         desc: "",
-        enabled: true,
+        enabled: false,
         icon: ShieldCheck,
       },
     ]);
