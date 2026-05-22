@@ -698,6 +698,7 @@ function RolePage() {
                                           checked={p[a]}
                                           disabled={!editable}
                                           onCheckedChange={(v) => setMini(e.key, a, !!v)}
+                                          className="h-[18px] w-[18px] rounded-full data-[state=checked]:bg-primary data-[state=checked]:border-primary [&_svg]:hidden"
                                         />
                                         <span className="text-body-sm text-text-secondary">
                                           {e.actions[a]}
