@@ -589,39 +589,42 @@ function RolePage() {
                             <TableRow className="bg-surface-subtle hover:bg-surface-subtle">
                               <TableHead className="w-[220px] text-text-secondary">
                                 <div className="flex items-center gap-2">
-                                  {editable ? (
-                                    <Checkbox
-                                      checked={
-                                        allIndeterminate ? "indeterminate" : allChecked
-                                      }
-                                      onCheckedChange={(v) => setMiniAll(!!v)}
-                                      aria-label="全选 / 全部清空"
-                                    />
-                                  ) : null}
                                   <span>事项类型</span>
+                                  {editable ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => setMiniAll(!allChecked)}
+                                      className="ml-auto text-caption px-2 py-0.5 rounded border border-border bg-card hover:bg-surface-subtle text-text-secondary transition-colors"
+                                    >
+                                      {allChecked ? "全部清空" : "全选"}
+                                    </button>
+                                  ) : null}
                                 </div>
                               </TableHead>
-                              {actions.map((a, i) => (
-                                <TableHead
-                                  key={a}
-                                  className="text-center text-text-secondary"
-                                >
-                                  <div className="flex items-center justify-center gap-2">
-                                    {editable ? (
-                                      <Checkbox
-                                        checked={
-                                          colIndeterminate(a)
-                                            ? "indeterminate"
-                                            : colChecked(a)
-                                        }
-                                        onCheckedChange={(v) => setMiniColumn(a, !!v)}
-                                        aria-label={`整列：${actionLabels[i]}`}
-                                      />
-                                    ) : null}
-                                    <span>{actionLabels[i]}</span>
-                                  </div>
-                                </TableHead>
-                              ))}
+                              {actions.map((a, i) => {
+                                const checked = colChecked(a);
+                                return (
+                                  <TableHead
+                                    key={a}
+                                    className="text-center text-text-secondary"
+                                  >
+                                    <div className="flex items-center justify-center gap-2">
+                                      <span>{actionLabels[i]}</span>
+                                      {editable ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => setMiniColumn(a, !checked)}
+                                          className="text-caption px-2 py-0.5 rounded border border-border bg-card hover:bg-surface-subtle text-text-secondary transition-colors"
+                                          aria-label={`整列：${actionLabels[i]}`}
+                                        >
+                                          {checked ? "清空列" : "选中列"}
+                                        </button>
+                                      ) : null}
+                                    </div>
+                                  </TableHead>
+                                );
+                              })}
+
                             </TableRow>
                           </TableHeader>
                           <TableBody>
