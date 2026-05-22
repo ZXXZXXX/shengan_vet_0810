@@ -1055,6 +1055,13 @@ function AccountDrawerInner({
           )}
         </section>
 
+        {/* 权限范围（仅详情态，默认折叠） */}
+        {!editable && account.farmRoles.length > 0 && (
+          <PermissionScopeSection farmRoles={account.farmRoles} />
+        )}
+
+
+
         {/* 绑定 ID */}
         <section className="px-6 py-5 space-y-4">
           <div className="flex items-center gap-2">
