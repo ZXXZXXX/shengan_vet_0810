@@ -727,11 +727,12 @@ export function WorkOrderPage({
         </Card>
       </main>
 
-      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent className="max-w-2xl max-h-[88vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-section-title">工作详情</DialogTitle>
-          </DialogHeader>
+      <Sheet open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col gap-0">
+          <SheetHeader className="px-6 py-4 border-b border-border">
+            <SheetTitle className="text-section-title text-left">工作详情</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-5">
           {detail && (() => {
             const isLoss = detail.id.startsWith("LS");
             const symptoms = isLoss ? [] : ["体温升高", "采食下降", "反刍减少"];
