@@ -412,7 +412,7 @@ export function WorkOrderPage({
             variant="ghost"
             size="sm"
             className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-            onClick={() => setDetail(o)}
+            onClick={() => { setMode("view"); setDetail(o); }}
           >
             查看
           </Button>
