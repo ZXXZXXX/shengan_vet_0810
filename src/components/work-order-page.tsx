@@ -392,7 +392,7 @@ export function WorkOrderPage({
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-                onClick={() => setDetail(o)}
+                onClick={() => { setMode("view"); setDetail(o); }}
               >
                 查看
               </Button>
@@ -400,17 +400,9 @@ export function WorkOrderPage({
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-                onClick={() => openApprove(o)}
+                onClick={() => { setMode("process"); setDetail(o); }}
               >
-                通过
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 hover:text-[var(--state-danger)]"
-                onClick={() => openReject(o)}
-              >
-                驳回
+                处理
               </Button>
             </div>
           );
