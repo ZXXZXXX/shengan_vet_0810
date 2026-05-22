@@ -126,6 +126,63 @@ const INTERNAL_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管
 const EXTERNAL_ROLES = ["修蹄工", "普修工", "干奶工", "驱虫工"];
 const DEFAULT_ROLES = [...INTERNAL_ROLES, ...EXTERNAL_ROLES];
 
+// 角色权限预览（用于账号详情中聚合展示，最终以「角色权限」配置为准）
+type RolePermPreview = { pc: string[]; mini: string[] };
+const ROLE_PERMISSIONS: Record<string, RolePermPreview> = {
+  场长: {
+    pc: ["工作台", "牛只基础档案", "健康管理", "药品管理", "知识库管理"],
+    mini: ["疾病治疗（上报/领取/回填）", "修蹄、干奶、疫苗、产后护理、驱虫、普修（全部）", "损耗/领用（全部）"],
+  },
+  兽医: {
+    pc: ["工作台", "牛只基础档案", "健康管理", "药品管理", "知识库管理"],
+    mini: ["疾病、疫苗、产后护理、驱虫、普修（上报/领取/回填）", "损耗/领用（全部）"],
+  },
+  兽医助理: {
+    pc: [],
+    mini: ["疾病、疫苗、修蹄、干奶、驱虫、普修（领取/回填）", "损耗（上报）"],
+  },
+  技术员: {
+    pc: ["工作台", "牛只基础档案"],
+    mini: ["疾病、疫苗（上报）"],
+  },
+  仓管员: {
+    pc: ["工作台", "牛只基础档案", "药品管理"],
+    mini: ["损耗/领用（全部）"],
+  },
+  修蹄工: {
+    pc: [],
+    mini: ["修蹄（领取/回填）"],
+  },
+  普修工: {
+    pc: [],
+    mini: ["普修（领取/回填）"],
+  },
+  干奶工: {
+    pc: [],
+    mini: ["干奶（领取/回填）"],
+  },
+  驱虫工: {
+    pc: [],
+    mini: ["驱虫（领取/回填）"],
+  },
+  超级管理员: {
+    pc: ["工作台", "牛只基础档案", "健康管理", "药品管理", "组织管理", "知识库管理"],
+    mini: ["全部小程序权限"],
+  },
+};
+
+function unionPermsForRoles(rs: string[]): RolePermPreview {
+  const pc = new Set<string>();
+  const mini = new Set<string>();
+  rs.forEach((r) => {
+    const p = ROLE_PERMISSIONS[r];
+    if (!p) return;
+    p.pc.forEach((x) => pc.add(x));
+    p.mini.forEach((x) => mini.add(x));
+  });
+  return { pc: [...pc], mini: [...mini] };
+}
+
 const initialAccounts: Account[] = [
   { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", roles: ["场长"] }], wecomId: "wm_zhanglei_8821", wechatId: "wx_zhanglei_6688", status: "启用", createdAt: "2024-03-08" },
   { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", org: "1 号牧场 / 兽医部", farmRoles: [{ farm: "1 号牧场", roles: ["兽医", "技术员"] }, { farm: "2 号牧场", roles: ["兽医助理"] }], wecomId: "wm_liyuqing_3210", wechatId: "wx_liyuqing_4521", status: "启用", createdAt: "2024-06-21" },
@@ -998,6 +1055,13 @@ function AccountDrawerInner({
           )}
         </section>
 
+        {/* 权限范围（仅详情态，默认折叠） */}
+        {!editable && account.farmRoles.length > 0 && (
+          <PermissionScopeSection farmRoles={account.farmRoles} />
+        )}
+
+
+
         {/* 绑定 ID */}
         <section className="px-6 py-5 space-y-4">
           <div className="flex items-center gap-2">
@@ -1036,6 +1100,86 @@ function AccountDrawerInner({
         </SheetFooter>
       )}
     </>
+  );
+}
+
+function PermissionScopeSection({ farmRoles }: { farmRoles: FarmRole[] }) {
+  const [open, setOpen] = useState(false);
+  const totalRoles = useMemo(
+    () => Array.from(new Set(farmRoles.flatMap((fr) => fr.roles))).length,
+    [farmRoles],
+  );
+  return (
+    <section className="px-6 py-5 border-b border-border">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between gap-2 group"
+      >
+        <div className="flex items-center gap-2">
+          <span className="h-5 w-1 rounded-full bg-primary" />
+          <h4 className="text-body font-medium text-foreground">权限范围</h4>
+          <span className="text-caption text-text-tertiary">
+            {farmRoles.length} 个牧场 · {totalRoles} 个角色（同牧场多角色取并集）
+          </span>
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 text-text-tertiary transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div className="mt-4 space-y-3">
+          {farmRoles.map((fr) => {
+            const perms = unionPermsForRoles(fr.roles);
+            const empty = perms.pc.length === 0 && perms.mini.length === 0;
+            return (
+              <div key={fr.farm} className="rounded-md border border-border bg-surface-subtle px-4 py-3 space-y-2.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="tag tag-muted whitespace-nowrap">{fr.farm}</span>
+                  {fr.roles.length === 0 ? (
+                    <span className="tag tag-muted">未分配</span>
+                  ) : (
+                    fr.roles.map((r) => (
+                      <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
+                    ))
+                  )}
+                </div>
+                {empty ? (
+                  <p className="text-caption text-text-tertiary">该角色暂无权限，请前往「角色权限」配置。</p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">PC 端模块</div>
+                      {perms.pc.length === 0 ? (
+                        <div className="text-body-sm text-text-tertiary">—</div>
+                      ) : (
+                        <ul className="text-body-sm text-text-secondary space-y-1 list-disc pl-4">
+                          {perms.pc.map((p) => <li key={p}>{p}</li>)}
+                        </ul>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">小程序事项</div>
+                      {perms.mini.length === 0 ? (
+                        <div className="text-body-sm text-text-tertiary">—</div>
+                      ) : (
+                        <ul className="text-body-sm text-text-secondary space-y-1 list-disc pl-4">
+                          {perms.mini.map((p) => <li key={p}>{p}</li>)}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <p className="text-caption text-text-tertiary">
+            权限明细以「组织管理 / 角色权限」中各角色的最新配置为准。
+          </p>
+        </div>
+      )}
+    </section>
   );
 }
 
