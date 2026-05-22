@@ -676,7 +676,7 @@ function RolePage() {
                                         <Checkbox
                                           checked={rowIndeterminate ? "indeterminate" : rowAll}
                                           onCheckedChange={(v) => setMiniRow(e.key, !!v)}
-                                          className="h-[18px] w-[18px] border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:border-primary"
+                                          className="h-[18px] w-[18px] border-2 data-[state=unchecked]:border-[var(--text-tertiary)]"
                                           aria-label={`整行：${e.name}`}
                                         />
                                       ) : null}
