@@ -224,7 +224,6 @@ function MHomePage() {
           ))}
           {pendingItems
             .filter((it) => it.farmId === farm.id)
-            .filter((it) => true)
             .map((it) => (
             <Link
               key={it.id}
