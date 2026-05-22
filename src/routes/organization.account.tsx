@@ -249,7 +249,7 @@ function AccountPage() {
         if (a.status !== b.status) return a.status === "启用" ? -1 : 1;
         return b.createdAt.localeCompare(a.createdAt);
       });
-  }, [accounts, keyword, onlyInternal, filterRole, filterFarm, filterStatus]);
+  }, [accounts, keyword, onlyInternal, filterRole, filterFarms, filterStatus]);
 
   // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
   const cols = "1.5fr 0.8fr 1.1fr 1.3fr 1.8fr 140px 140px 0.7fr 0.5fr";
