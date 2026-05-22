@@ -596,7 +596,7 @@ function AccountPage() {
 
 
 
-// 可搜索的「牧场—角色」多选：每个关联的牧场需选择对应角色
+// 左右两栏：左侧选择牧场，右侧为当前牧场分配角色
 function FarmRolePicker({
   value,
   onChange,
@@ -609,6 +609,11 @@ function FarmRolePicker({
   onCreateRole: (r: string) => void;
 }) {
   const [q, setQ] = useState("");
+  const [activeFarm, setActiveFarm] = useState<string | null>(
+    value[0]?.farm ?? null,
+  );
+  const [newRole, setNewRole] = useState("");
+
   const filteredFarms = useMemo(() => {
     const kw = q.trim().toLowerCase();
     if (!kw) return FARM_OPTIONS;
@@ -623,198 +628,202 @@ function FarmRolePicker({
 
   const toggleFarm = (f: string) => {
     if (selectedMap.has(f)) {
-      onChange(value.filter((v) => v.farm !== f));
+      const next = value.filter((v) => v.farm !== f);
+      onChange(next);
+      if (activeFarm === f) setActiveFarm(next[0]?.farm ?? null);
     } else {
       onChange([...value, { farm: f, roles: [] }]);
+      setActiveFarm(f);
     }
   };
 
-  const toggleRoleFor = (f: string, r: string) => {
+  const selectFarm = (f: string) => {
+    if (!selectedMap.has(f)) {
+      onChange([...value, { farm: f, roles: [] }]);
+    }
+    setActiveFarm(f);
+  };
+
+  const activeRoles = activeFarm ? selectedMap.get(activeFarm) ?? [] : [];
+
+  const toggleRoleFor = (r: string) => {
+    if (!activeFarm) return;
     onChange(
       value.map((v) =>
-        v.farm === f
-          ? { ...v, roles: v.roles.includes(r) ? v.roles.filter((x) => x !== r) : [...v.roles, r] }
+        v.farm === activeFarm
+          ? {
+              ...v,
+              roles: v.roles.includes(r)
+                ? v.roles.filter((x) => x !== r)
+                : [...v.roles, r],
+            }
           : v,
       ),
     );
   };
 
-  const addRoleToFarm = (f: string, r: string) => {
-    onChange(
-      value.map((v) =>
-        v.farm === f && !v.roles.includes(r) ? { ...v, roles: [...v.roles, r] } : v,
-      ),
-    );
-  };
-
-  return (
-    <div className="rounded-md border border-border bg-surface-subtle">
-      <div className="relative p-2 border-b border-border">
-        <Search className="absolute left-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="输入牧场名称搜索"
-          className="h-8 pl-8 text-body-sm bg-card"
-        />
-      </div>
-      <div className="max-h-40 overflow-y-auto p-2 space-y-1">
-        {filteredFarms.length === 0 ? (
-          <div className="text-caption text-text-tertiary text-center py-3">无匹配牧场</div>
-        ) : (
-          filteredFarms.map((f) => (
-            <label
-              key={f}
-              className="flex items-center gap-2 cursor-pointer text-body-sm px-1.5 py-1 rounded hover:bg-card"
-            >
-              <Checkbox checked={selectedMap.has(f)} onCheckedChange={() => toggleFarm(f)} />
-              <span className="text-foreground">{f}</span>
-            </label>
-          ))
-        )}
-      </div>
-
-      {value.length > 0 && (
-        <div className="border-t border-border p-2 space-y-2">
-          <div className="text-caption text-text-tertiary">为每个关联牧场选择角色（可多选，可输入新建）</div>
-          <div className="space-y-1.5">
-            {value.map((fr) => (
-              <div key={fr.farm} className="flex items-start gap-2">
-                <span className="tag tag-muted whitespace-nowrap shrink-0 mt-1.5">{fr.farm}</span>
-                <div className="flex-1 min-w-0">
-                  <RoleCombobox
-                    allRoles={roles}
-                    selected={fr.roles}
-                    onToggle={(r) => toggleRoleFor(fr.farm, r)}
-                    onCreate={(r) => {
-                      onCreateRole(r);
-                      addRoleToFarm(fr.farm, r);
-                    }}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => toggleFarm(fr.farm)}
-                  className="h-8 w-8 text-text-tertiary hover:text-destructive shrink-0 mt-0.5"
-                  aria-label="移除"
-                >
-                  <Unlink className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            ))}
-            <p className="text-caption text-text-tertiary leading-relaxed">
-              提示：同一牧场下可分配多个角色，功能权限与数据权限均取所有角色的并集。
-            </p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// 单牧场角色组合框：可搜索匹配、勾选已有角色，也可输入新角色名直接创建
-function RoleCombobox({
-  allRoles,
-  selected,
-  onToggle,
-  onCreate,
-}: {
-  allRoles: string[];
-  selected: string[];
-  onToggle: (r: string) => void;
-  onCreate: (r: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-
-  const kw = query.trim();
-  const matched = useMemo(() => {
-    if (!kw) return allRoles;
-    return allRoles.filter((r) => r.toLowerCase().includes(kw.toLowerCase()));
-  }, [allRoles, kw]);
-  const exact = allRoles.some((r) => r === kw);
-  const canCreate = kw.length > 0 && !exact;
-
-  const handleCreate = () => {
-    if (!canCreate) return;
+  const handleCreateRole = () => {
+    const kw = newRole.trim();
+    if (!kw || !activeFarm) return;
     if (kw.length > 6) {
       toast.error("角色名称不超过 6 个字");
       return;
     }
-    onCreate(kw);
-    setQuery("");
+    if (roles.includes(kw)) {
+      if (!activeRoles.includes(kw)) toggleRoleFor(kw);
+    } else {
+      onCreateRole(kw);
+      onChange(
+        value.map((v) =>
+          v.farm === activeFarm && !v.roles.includes(kw)
+            ? { ...v, roles: [...v.roles, kw] }
+            : v,
+        ),
+      );
+    }
+    setNewRole("");
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="w-full min-h-9 px-2 py-1 text-left rounded-md border border-border bg-card text-body-sm hover:border-primary/40 flex items-center gap-1.5"
-        >
-          <div className="flex-1 flex flex-wrap items-center gap-1 min-w-0">
-            {selected.length === 0 ? (
-              <span className="text-text-tertiary">选择或输入角色</span>
+    <div className="rounded-md border border-border bg-surface-subtle overflow-hidden">
+      <div className="grid grid-cols-[minmax(0,220px)_1fr] min-h-[320px]">
+        {/* 左：牧场 */}
+        <div className="border-r border-border flex flex-col bg-card">
+          <div className="relative p-2 border-b border-border">
+            <Search className="absolute left-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="搜索牧场"
+              className="h-8 pl-8 text-body-sm"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto py-1 max-h-[340px]">
+            {filteredFarms.length === 0 ? (
+              <div className="text-caption text-text-tertiary text-center py-6">
+                无匹配牧场
+              </div>
             ) : (
-              selected.map((r) => (
-                <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
-              ))
+              filteredFarms.map((f) => {
+                const checked = selectedMap.has(f);
+                const isActive = activeFarm === f;
+                const rolesForFarm = selectedMap.get(f) ?? [];
+                return (
+                  <div
+                    key={f}
+                    onClick={() => selectFarm(f)}
+                    className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer text-body-sm border-l-2 ${
+                      isActive
+                        ? "bg-sidebar-hover border-primary text-foreground"
+                        : "border-transparent hover:bg-surface-subtle text-text-secondary"
+                    }`}
+                  >
+                    <Checkbox
+                      checked={checked}
+                      onClick={(e) => e.stopPropagation()}
+                      onCheckedChange={() => toggleFarm(f)}
+                    />
+                    <span className="flex-1 truncate">{f}</span>
+                    {checked && rolesForFarm.length > 0 && (
+                      <span className="text-caption text-text-tertiary shrink-0">
+                        {rolesForFarm.length}
+                      </span>
+                    )}
+                    {checked && rolesForFarm.length === 0 && (
+                      <span className="text-caption text-warning shrink-0">!</span>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
-          <ChevronDown className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-64 p-0">
-        <Command shouldFilter={false}>
-          <CommandInput
-            value={query}
-            onValueChange={(v) => setQuery(v.slice(0, 6))}
-            placeholder="搜索或输入新角色名"
-            className="text-body-sm"
-          />
-          <CommandList>
-            {matched.length === 0 && !canCreate && (
-              <CommandEmpty>无匹配角色</CommandEmpty>
-            )}
-            {matched.length > 0 && (
-              <CommandGroup heading="选择角色">
-                {matched.map((r) => {
-                  const checked = selected.includes(r);
+          <div className="border-t border-border px-3 py-1.5 text-caption text-text-tertiary">
+            已选 {value.length} 个牧场
+          </div>
+        </div>
+
+        {/* 右：角色 */}
+        <div className="flex flex-col">
+          {!activeFarm ? (
+            <div className="flex-1 flex items-center justify-center text-caption text-text-tertiary py-12">
+              请先在左侧选择牧场
+            </div>
+          ) : (
+            <>
+              <div className="px-4 py-2.5 border-b border-border flex items-center justify-between gap-2">
+                <div className="text-body-sm text-foreground font-medium truncate">
+                  {activeFarm}
+                  <span className="ml-2 text-caption text-text-tertiary font-normal">
+                    已选 {activeRoles.length} 个角色
+                  </span>
+                </div>
+                {selectedMap.has(activeFarm) && (
+                  <button
+                    type="button"
+                    onClick={() => toggleFarm(activeFarm)}
+                    className="inline-flex items-center gap-1 text-caption text-text-tertiary hover:text-destructive"
+                  >
+                    <Unlink className="h-3 w-3" /> 取消关联此牧场
+                  </button>
+                )}
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-0.5 max-h-[260px]">
+                {roles.map((r) => {
+                  const checked = activeRoles.includes(r);
                   return (
-                    <CommandItem
+                    <label
                       key={r}
-                      value={r}
-                      onSelect={() => onToggle(r)}
-                      className="text-body-sm flex items-center gap-2"
+                      className="flex items-center gap-2 cursor-pointer text-body-sm px-2 py-1.5 rounded hover:bg-surface-subtle"
                     >
-                      <Checkbox checked={checked} className="pointer-events-none" />
-                      <span className="flex-1">{r}</span>
-                      {checked && <Check className="h-3.5 w-3.5 text-primary" />}
-                    </CommandItem>
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => toggleRoleFor(r)}
+                      />
+                      <span className="flex-1 text-foreground">{r}</span>
+                      {INTERNAL_ROLES.includes(r) ? (
+                        <span className="text-caption text-text-tertiary">内部</span>
+                      ) : EXTERNAL_ROLES.includes(r) ? (
+                        <span className="text-caption text-text-tertiary">外部</span>
+                      ) : null}
+                    </label>
                   );
                 })}
-              </CommandGroup>
-            )}
-            {canCreate && (
-              <CommandGroup heading="新建">
-                <CommandItem
-                  value={`__create__${kw}`}
-                  onSelect={handleCreate}
-                  className="text-body-sm flex items-center gap-2 text-primary"
+              </div>
+              <div className="border-t border-border p-2 flex items-center gap-2">
+                <Input
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value.slice(0, 6))}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleCreateRole();
+                    }
+                  }}
+                  placeholder="输入新角色名（不超过 6 字）"
+                  className="h-8 text-body-sm"
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCreateRole}
+                  disabled={!newRole.trim()}
+                  className="h-8 gap-1 text-body-sm shrink-0"
                 >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>新建角色「{kw}」</span>
-                </CommandItem>
-              </CommandGroup>
-            )}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+                  <Plus className="h-3.5 w-3.5" /> 新建
+                </Button>
+              </div>
+              <div className="px-4 py-2 border-t border-border text-caption text-text-tertiary leading-relaxed bg-surface-subtle">
+                提示：同一牧场下可分配多个角色，功能权限与数据权限均取所有角色的并集。
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
+
 
 
 function AccountDrawer({
