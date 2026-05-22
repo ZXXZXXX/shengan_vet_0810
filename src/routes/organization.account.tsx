@@ -763,7 +763,7 @@ function EditDialog({
             <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface-subtle px-3 h-9">
               {wecomId ? (
                 <>
-                  <span className="text-body-sm font-mono text-text-secondary truncate">{wecomId}</span>
+                  <span className="text-body-sm font-mono text-text-secondary truncate" title="已脱敏显示">{maskId(wecomId)}</span>
                   <Button type="button" variant="ghost" size="sm" onClick={() => setWecomId(null)} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
                     <Unlink className="h-3 w-3" /> 解绑
                   </Button>
@@ -776,6 +776,26 @@ function EditDialog({
               <p className="text-caption text-text-tertiary">保存后该用户需重新通过企业微信扫码绑定</p>
             )}
           </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-body-sm text-text-secondary">微信 ID</Label>
+            <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface-subtle px-3 h-9">
+              {wechatId ? (
+                <>
+                  <span className="text-body-sm font-mono text-text-secondary truncate" title="已脱敏显示">{maskId(wechatId)}</span>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setWechatId(null)} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
+                    <Unlink className="h-3 w-3" /> 解绑
+                  </Button>
+                </>
+              ) : (
+                <span className="tag tag-muted">未绑定</span>
+              )}
+            </div>
+            {!wechatId && account.wechatId && (
+              <p className="text-caption text-text-tertiary">保存后该用户需重新通过微信扫码绑定</p>
+            )}
+          </div>
+
         </div>
 
         <DialogFooter className="gap-2">
