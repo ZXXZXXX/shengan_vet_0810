@@ -682,7 +682,7 @@ function RolePage() {
                   {editable && (
                     <p className="text-caption text-text-tertiary flex items-start gap-1.5">
                       <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                      表头复选框可整列勾选 / 清除；行首复选框可整行勾选 / 清除；左上角复选框可一键全选或全部清空。
+                      表头“选中列 / 清空列”按钮可批量操作整列；行首“选中行 / 清空行”按钮可批量操作整行；左上角按钮可一键全选或全部清空。
                     </p>
                   )}
 
