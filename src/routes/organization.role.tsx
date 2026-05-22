@@ -101,24 +101,22 @@ type MiniEventKey =
   | "vaccine"
   | "postpartum"
   | "deworm"
-  | "general"
-  | "loss";
+  | "general";
 
-type MiniActionKey = "report" | "pickup" | "record";
+type MiniActionKey = "report" | "execute";
 
 const miniEvents: {
   key: MiniEventKey;
   name: string;
   actions: Record<MiniActionKey, string>;
 }[] = [
-  { key: "disease", name: "疾病治疗", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "hoof", name: "修蹄", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "drying", name: "干奶", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "vaccine", name: "疫苗", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "postpartum", name: "产后护理", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "deworm", name: "驱虫", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "general", name: "普修", actions: { report: "可上报", pickup: "可响应领取", record: "可回填执行记录" } },
-  { key: "loss", name: "损耗 / 领用", actions: { report: "可上报", pickup: "", record: "可领用核销" } },
+  { key: "disease", name: "疾病治疗", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "hoof", name: "修蹄", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "drying", name: "干奶", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "vaccine", name: "疫苗", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "postpartum", name: "产后护理", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "deworm", name: "驱虫", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "general", name: "普修", actions: { report: "可上报", execute: "可响应 / 执行" } },
 ];
 
 type PcPerms = { allowLogin: boolean; modules: Record<PcModuleKey, boolean> };
