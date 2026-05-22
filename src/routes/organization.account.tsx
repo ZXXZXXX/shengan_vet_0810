@@ -1108,7 +1108,7 @@ function AccountDrawerInner({
           <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">取消</Button>
           <Button
             disabled={!canSave}
-            onClick={() => onSave({ ...account, phone, userType, org, farmRoles, wecomId, wechatId })}
+            onClick={() => onSave({ ...account, phone, userType, org, farmRoles: effectiveFarmRoles, wecomId, wechatId })}
             className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
