@@ -187,6 +187,8 @@ export function WorkOrderPage({
   const [active, setActive] = useState<WorkStatus>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
+  const [diagnosis, setDiagnosis] = useState("");
+  const [treatment, setTreatment] = useState("");
   const [keyword, setKeyword] = useState("");
   const [range, setRange] = useState<DateRange>("all");
   const [advOpen, setAdvOpen] = useState(false);
@@ -197,6 +199,21 @@ export function WorkOrderPage({
   const [visible, setVisible] = useState<Record<ColKey, boolean>>(() =>
     Object.fromEntries(ALL_COLS.map((c) => [c.key, true])) as Record<ColKey, boolean>,
   );
+
+  // 小程序所选内容作为默认诊断与方案；兽医可在 PC 端编辑覆盖
+  const defaultDiagnosis = detail
+    ? `${detail.event ?? detail.desc}。结合现场症状（体温升高、采食下降、反刍减少），初步判断为${title}相关问题，建议进一步检查确认。`
+    : "";
+  const defaultTreatment = detail
+    ? `按${title}标准方案处置：抗生素 + 消炎对症治疗 3 天，转入隔离观察，期间每日监测体温、采食与反刍情况。`
+    : "";
+  useEffect(() => {
+    if (detail) {
+      setDiagnosis(defaultDiagnosis);
+      setTreatment(defaultTreatment);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detail?.id]);
 
   const counts = Object.fromEntries(
     statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length]),
