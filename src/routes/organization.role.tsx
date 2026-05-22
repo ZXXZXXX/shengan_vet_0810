@@ -62,7 +62,7 @@ export const Route = createFileRoute("/organization/role")({
   component: RolePage,
 });
 
-type RoleKey = "admin" | "manager" | "vet" | "assistant";
+type RoleKey = string;
 
 type Role = {
   key: RoleKey;
@@ -191,7 +191,7 @@ function RolePage() {
   const [roles, setRoles] = useState<Role[]>(initialRoles);
   const [perms, setPerms] = useState<RolePerms>(defaultPerms);
 
-  const [drawerRole, setDrawerRole] = useState<RoleKey | null>(null);
+  const [drawerRole, setDrawerRole] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("detail");
 
   const [confirmAction, setConfirmAction] = useState<
@@ -199,6 +199,10 @@ function RolePage() {
     | { kind: "delete"; role: Role }
     | null
   >(null);
+
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newRoleName, setNewRoleName] = useState("");
+  const [newRoleDesc, setNewRoleDesc] = useState("");
 
   const openDetail = (key: RoleKey) => {
     setDrawerRole(key);
