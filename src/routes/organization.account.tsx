@@ -56,7 +56,7 @@ export const Route = createFileRoute("/organization/account")({
 
 type Status = "启用" | "禁用";
 type UserType = "内部" | "外部";
-type FarmRole = { farm: string; role: string };
+type FarmRole = { farm: string; roles: string[] };
 type Account = {
   id: string;
   name: string;
@@ -109,20 +109,20 @@ const EXTERNAL_ROLES = ["修蹄工", "普修工", "干奶工", "驱虫工"];
 const DEFAULT_ROLES = [...INTERNAL_ROLES, ...EXTERNAL_ROLES];
 
 const initialAccounts: Account[] = [
-  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", role: "场长" }], wecomId: "wm_zhanglei_8821", wechatId: "wx_zhanglei_6688", status: "启用", createdAt: "2024-03-08" },
-  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", org: "1 号牧场 / 兽医部", farmRoles: [{ farm: "1 号牧场", role: "兽医" }, { farm: "2 号牧场", role: "兽医助理" }], wecomId: "wm_liyuqing_3210", wechatId: "wx_liyuqing_4521", status: "启用", createdAt: "2024-06-21" },
-  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", org: "1 号牧场 / 巡检 A 组", farmRoles: [{ farm: "1 号牧场", role: "技术员" }], wecomId: null, wechatId: "wx_chenxd_7702", status: "启用", createdAt: "2025-09-12" },
-  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", org: "1 号牧场 / 仓储部", farmRoles: [{ farm: "1 号牧场", role: "仓管员" }, { farm: "2 号牧场", role: "仓管员" }, { farm: "3 号牧场", role: "技术员" }], wecomId: "wm_wangck_5601", wechatId: null, status: "启用", createdAt: "2026-02-04" },
-  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", org: "2 号牧场 / 仓储部", farmRoles: [{ farm: "2 号牧场", role: "仓管员" }], wecomId: null, wechatId: null, status: "禁用", createdAt: "2026-04-30" },
-  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", org: "外部合作 / 修蹄队", farmRoles: [{ farm: "1 号牧场", role: "修蹄工" }, { farm: "3 号牧场", role: "修蹄工" }, { farm: "金辉牧场", role: "普修工" }], wecomId: "wm_zhaoxt_9912", wechatId: "wx_zhaoxt_3344", status: "启用", createdAt: "2025-11-18" },
-  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", org: "外部合作 / 干奶服务队", farmRoles: [{ farm: "2 号牧场", role: "干奶工" }], wecomId: null, wechatId: "wx_liujs_1209", status: "启用", createdAt: "2026-05-09" },
+  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", roles: ["场长"] }], wecomId: "wm_zhanglei_8821", wechatId: "wx_zhanglei_6688", status: "启用", createdAt: "2024-03-08" },
+  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", org: "1 号牧场 / 兽医部", farmRoles: [{ farm: "1 号牧场", roles: ["兽医", "技术员"] }, { farm: "2 号牧场", roles: ["兽医助理"] }], wecomId: "wm_liyuqing_3210", wechatId: "wx_liyuqing_4521", status: "启用", createdAt: "2024-06-21" },
+  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", org: "1 号牧场 / 巡检 A 组", farmRoles: [{ farm: "1 号牧场", roles: ["技术员"] }], wecomId: null, wechatId: "wx_chenxd_7702", status: "启用", createdAt: "2025-09-12" },
+  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", org: "1 号牧场 / 仓储部", farmRoles: [{ farm: "1 号牧场", roles: ["仓管员"] }, { farm: "2 号牧场", roles: ["仓管员"] }, { farm: "3 号牧场", roles: ["技术员", "仓管员"] }], wecomId: "wm_wangck_5601", wechatId: null, status: "启用", createdAt: "2026-02-04" },
+  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", org: "2 号牧场 / 仓储部", farmRoles: [{ farm: "2 号牧场", roles: ["仓管员"] }], wecomId: null, wechatId: null, status: "禁用", createdAt: "2026-04-30" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", org: "外部合作 / 修蹄队", farmRoles: [{ farm: "1 号牧场", roles: ["修蹄工"] }, { farm: "3 号牧场", roles: ["修蹄工", "普修工"] }, { farm: "金辉牧场", roles: ["普修工"] }], wecomId: "wm_zhaoxt_9912", wechatId: "wx_zhaoxt_3344", status: "启用", createdAt: "2025-11-18" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", org: "外部合作 / 干奶服务队", farmRoles: [{ farm: "2 号牧场", roles: ["干奶工"] }], wecomId: null, wechatId: "wx_liujs_1209", status: "启用", createdAt: "2026-05-09" },
 
 ];
 
 // 辅助：从 farmRoles 派生
 const farmsOf = (a: Pick<Account, "farmRoles">) => a.farmRoles.map((x) => x.farm);
 const rolesOf = (a: Pick<Account, "farmRoles">) =>
-  Array.from(new Set(a.farmRoles.map((x) => x.role)));
+  Array.from(new Set(a.farmRoles.flatMap((x) => x.roles)));
 
 function AccountPage() {
   const navigate = useNavigate();
@@ -364,7 +364,7 @@ function AccountPage() {
                       {fs.length > 1 && (
                         <span
                           className="tag tag-muted whitespace-nowrap"
-                          title={a.farmRoles.slice(1).map((x) => `${x.farm}（${x.role}）`).join("、")}
+                          title={a.farmRoles.slice(1).map((x) => `${x.farm}（${x.roles.join("、") || "未分配"}）`).join("\n")}
                         >
                           +{fs.length - 1}
                         </span>
@@ -450,9 +450,15 @@ function AccountPage() {
                       <span className="tag tag-muted">未关联</span>
                     ) : (
                       viewing.farmRoles.map((fr) => (
-                        <div key={fr.farm} className="flex items-center gap-1.5">
+                        <div key={fr.farm} className="flex items-center gap-1.5 flex-wrap justify-end">
                           <span className="tag tag-muted whitespace-nowrap">{fr.farm}</span>
-                          <span className="tag tag-brand whitespace-nowrap">{fr.role}</span>
+                          {fr.roles.length === 0 ? (
+                            <span className="tag tag-muted">未分配</span>
+                          ) : (
+                            fr.roles.map((r) => (
+                              <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
+                            ))
+                          )}
                         </div>
                       ))
                     )}
@@ -545,8 +551,8 @@ function FarmRolePicker({
   }, [q]);
 
   const selectedMap = useMemo(() => {
-    const m = new Map<string, string>();
-    value.forEach((v) => m.set(v.farm, v.role));
+    const m = new Map<string, string[]>();
+    value.forEach((v) => m.set(v.farm, v.roles));
     return m;
   }, [value]);
 
@@ -554,12 +560,18 @@ function FarmRolePicker({
     if (selectedMap.has(f)) {
       onChange(value.filter((v) => v.farm !== f));
     } else {
-      onChange([...value, { farm: f, role: "" }]);
+      onChange([...value, { farm: f, roles: [] }]);
     }
   };
 
-  const setRoleFor = (f: string, r: string) => {
-    onChange(value.map((v) => (v.farm === f ? { ...v, role: r } : v)));
+  const toggleRoleFor = (f: string, r: string) => {
+    onChange(
+      value.map((v) =>
+        v.farm === f
+          ? { ...v, roles: v.roles.includes(r) ? v.roles.filter((x) => x !== r) : [...v.roles, r] }
+          : v,
+      ),
+    );
   };
 
   const addNewRole = () => {
@@ -632,30 +644,59 @@ function FarmRolePicker({
           </div>
           <div className="space-y-1.5">
             {value.map((fr) => (
-              <div key={fr.farm} className="flex items-center gap-2">
-                <span className="tag tag-muted whitespace-nowrap shrink-0">{fr.farm}</span>
-                <Select value={fr.role} onValueChange={(v) => setRoleFor(fr.farm, v)}>
-                  <SelectTrigger className="h-8 text-body-sm bg-card flex-1">
-                    <SelectValue placeholder="选择角色" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roles.map((r) => (
-                      <SelectItem key={r} value={r} className="text-body-sm">{r}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div key={fr.farm} className="flex items-start gap-2">
+                <span className="tag tag-muted whitespace-nowrap shrink-0 mt-1">{fr.farm}</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex-1 min-h-8 px-2 py-1 text-left rounded-md border border-border bg-card text-body-sm hover:border-primary/40 flex flex-wrap items-center gap-1"
+                    >
+                      {fr.roles.length === 0 ? (
+                        <span className="text-text-tertiary">选择角色（可多选）</span>
+                      ) : (
+                        fr.roles.map((r) => (
+                          <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
+                        ))
+                      )}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-56 p-1">
+                    <div className="max-h-56 overflow-y-auto">
+                      {roles.length === 0 ? (
+                        <div className="text-caption text-text-tertiary text-center py-3">暂无可选角色</div>
+                      ) : (
+                        roles.map((r) => {
+                          const checked = fr.roles.includes(r);
+                          return (
+                            <label
+                              key={r}
+                              className="flex items-center gap-2 px-2 py-1.5 rounded text-body-sm cursor-pointer hover:bg-surface-subtle"
+                            >
+                              <Checkbox checked={checked} onCheckedChange={() => toggleRoleFor(fr.farm, r)} />
+                              <span className="text-foreground">{r}</span>
+                            </label>
+                          );
+                        })
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => toggleFarm(fr.farm)}
-                  className="h-7 w-7 text-text-tertiary hover:text-destructive shrink-0"
+                  className="h-7 w-7 text-text-tertiary hover:text-destructive shrink-0 mt-0.5"
                   aria-label="移除"
                 >
                   <Unlink className="h-3.5 w-3.5" />
                 </Button>
               </div>
             ))}
+            <p className="text-caption text-text-tertiary leading-relaxed">
+              提示：同一牧场下可分配多个角色，功能权限与数据权限均取所有角色的并集。
+            </p>
           </div>
         </div>
       )}
@@ -691,11 +732,11 @@ function EditDialog({
   // 切换人员类型时，已选 farmRoles 中不属于当前类型角色的清空，避免脏数据
   const availableRoles = useMemo(() => {
     const set = new Set(baseRoles);
-    farmRoles.forEach((fr) => fr.role && baseRoles.includes(fr.role) && set.add(fr.role));
+    farmRoles.forEach((fr) => fr.roles.forEach((r) => baseRoles.includes(r) && set.add(r)));
     return Array.from(set);
   }, [baseRoles, farmRoles]);
 
-  const incomplete = farmRoles.some((fr) => !fr.role);
+  const incomplete = farmRoles.some((fr) => fr.roles.length === 0);
   const canSave = farmRoles.length > 0 && !incomplete;
 
   return (
@@ -720,7 +761,7 @@ function EditDialog({
                 const next = v as UserType;
                 if (next !== userType) {
                   setUserType(next);
-                  setFarmRoles((cur) => cur.map((fr) => ({ ...fr, role: "" })));
+                  setFarmRoles((cur) => cur.map((fr) => ({ ...fr, roles: [] })));
                 }
               }}
             >
@@ -845,16 +886,16 @@ function CreateDialog({
   // 切换人员类型时，清空已选角色（保留牧场选择）
   const handleUserTypeChange = (v: UserType) => {
     setUserType(v);
-    setFarmRoles((cur) => cur.map((fr) => ({ ...fr, role: "" })));
+    setFarmRoles((cur) => cur.map((fr) => ({ ...fr, roles: [] })));
   };
 
-  const incomplete = farmRoles.some((fr) => !fr.role);
+  const incomplete = farmRoles.some((fr) => fr.roles.length === 0);
   const canSubmit = !!name.trim() && !!phone.trim() && farmRoles.length > 0 && !incomplete;
 
   const submit = () => {
     if (!canSubmit) return;
     const firstNewRole =
-      farmRoles.map((fr) => fr.role).find((r) => !baseRoles.includes(r)) ?? null;
+      farmRoles.flatMap((fr) => fr.roles).find((r) => !baseRoles.includes(r)) ?? null;
     onCreate(
       {
         name: name.trim(),
