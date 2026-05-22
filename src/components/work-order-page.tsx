@@ -386,12 +386,20 @@ export function WorkOrderPage({
       case "action":
         if (canReview(role) && o.status === "待审核") {
           return (
-            <div className="inline-flex items-center gap-1">
+            <div className="inline-flex items-center gap-0.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                onClick={() => setDetail(o)}
+              >
+                查看
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-                onClick={() => { setDetail(o); setConfirm("approve"); }}
+                onClick={() => openApprove(o)}
               >
                 通过
               </Button>
@@ -399,7 +407,7 @@ export function WorkOrderPage({
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-[var(--state-danger)]/10 hover:text-[var(--state-danger)]"
-                onClick={() => { setDetail(o); setConfirm("reject"); }}
+                onClick={() => openReject(o)}
               >
                 驳回
               </Button>
