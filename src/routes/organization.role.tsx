@@ -251,6 +251,27 @@ function RolePage() {
       },
     }));
   };
+  const setMiniColumn = (a: MiniActionKey, v: boolean) => {
+    if (!drawerRole || !editable) return;
+    setPerms((prev) => ({
+      ...prev,
+      [drawerRole]: {
+        ...prev[drawerRole],
+        mini: miniEvents.reduce((acc, e) => {
+          acc[e.key] = { ...prev[drawerRole].mini[e.key], [a]: v };
+          return acc;
+        }, {} as MiniPerms),
+      },
+    }));
+  };
+  const setMiniAll = (v: boolean) => {
+    if (!drawerRole || !editable) return;
+    setPerms((prev) => ({
+      ...prev,
+      [drawerRole]: { ...prev[drawerRole], mini: fullMini(v) },
+    }));
+  };
+
 
   const handleConfirmToggle = () => {
     if (confirmAction?.kind !== "toggle") return;
