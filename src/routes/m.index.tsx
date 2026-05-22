@@ -6,6 +6,7 @@ import {
   ClipboardList,
   Beef,
   AlertTriangle,
+  AlertCircle,
   ChevronRight,
   ChevronDown,
   Check,
@@ -29,8 +30,9 @@ import {
   Syringe,
   Footprints,
 } from "lucide-react";
+
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations, canApprove } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { PackageCheck, QrCode } from "lucide-react";
@@ -44,7 +46,8 @@ export const Route = createFileRoute("/m/")({
 
 const colorMap: Record<string, string> = {
   brand: "bg-brand-subtle text-primary",
-  warning: "bg-[var(--state-warning)]/15 text-[var(--state-warning)]",
+  warning: "bg-[var(--state-warning)]/25 text-[var(--state-alert)]",
+  alert: "bg-[var(--state-warning)]/25 text-[var(--state-alert)]",
   danger: "bg-[var(--state-danger)]/12 text-[var(--state-danger)]",
   info: "bg-[var(--effect-ai-cyan)]/15 text-[var(--effect-ai-cyan)]",
   purple: "bg-[var(--effect-ai-purple)]/15 text-[var(--effect-ai-purple)]",
@@ -54,7 +57,8 @@ const colorMap: Record<string, string> = {
 
 const toneTextMap: Record<string, string> = {
   brand: "text-primary",
-  warning: "text-[var(--state-warning)]",
+  warning: "text-[var(--state-alert)]",
+  alert: "text-[var(--state-alert)]",
   danger: "text-[var(--state-danger)]",
   info: "text-[var(--effect-ai-cyan)]",
   purple: "text-[var(--effect-ai-purple)]",
@@ -62,17 +66,26 @@ const toneTextMap: Record<string, string> = {
   muted: "text-text-secondary",
 };
 
+
 function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
   const isApprover = canApprove(role);
-  const isExternal = roleGroup[role] === "external";
-  // 内部非审批人（如兽医助理）没有"待响应/待审批"环节
-  const showFirstBucket = isExternal || isApprover;
+  
+  // 审批人看“待审批”；执行人（兽医助理、修蹄工等）看“待响应”
+  const showFirstBucket = true;
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
+  // 不同执行角色可响应的工单类型（按 ID 前缀）
+  const canRespond = (id: string) => {
+    if (isApprover) return true;
+    if (role === "vet_assistant") return id.startsWith("WO-") || id.startsWith("LS-");
+    if (role === "hoof_trimmer") return id.startsWith("HF-");
+    return false;
+  };
   const claimed = useClaimed();
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
   const farm = useFarm();
+
 
   return (
     <MobileShell>
@@ -219,8 +232,9 @@ function MHomePage() {
           ))}
           {pendingItems
             .filter((it) => it.farmId === farm.id)
-            .filter((it) => isExternal || it.bucket !== "待响应")
+            .filter((it) => it.bucket !== "待响应" || canRespond(it.id))
             .map((it) => (
+
             <Link
               key={it.id}
               to="/m/health/$id"
@@ -246,7 +260,7 @@ function MHomePage() {
               <ChevronRight className="relative h-4 w-4 text-text-tertiary shrink-0" />
             </Link>
           ))}
-          {pendingItems.filter((it) => it.farmId === farm.id && (isExternal || it.bucket !== "待响应")).length === 0 && pendingPickups.length === 0 && (
+          {pendingItems.filter((it) => it.farmId === farm.id && (it.bucket !== "待响应" || canRespond(it.id))).length === 0 && pendingPickups.length === 0 && (
             <div className="py-8 text-center text-caption text-text-tertiary">
               当前牧场暂无待处理事项
             </div>
@@ -271,9 +285,10 @@ function MHomePage() {
                 <div className="text-body text-foreground truncate">{r.title}</div>
                 <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
               </div>
-              <span className={`text-caption ${r.tone === "danger" ? "text-[var(--state-danger)]" : r.tone === "warning" ? "text-[var(--state-warning)]" : "text-text-tertiary"}`}>
+              <span className={`text-caption ${toneTextMap[r.tone] ?? "text-text-tertiary"}`}>
                 {r.level}
               </span>
+
             </div>
           ))}
         </div>
@@ -312,12 +327,13 @@ const risks: Array<{
   tone: keyof typeof colorMap;
   icon: typeof AlertTriangle;
 }> = [
-  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "紧急", tone: "danger", icon: PackageX },
-  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "提醒", tone: "warning", icon: Hourglass },
-  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: TimerReset },
-  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "关注", tone: "info", icon: Activity },
+  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "预警", tone: "alert", icon: AlertTriangle },
+  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "预警", tone: "alert", icon: AlertTriangle },
+  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: CalendarClock },
+  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "异常", tone: "warning", icon: AlertCircle },
   { title: "复查临近：#A2150", detail: "明日复查 · 产后护理", level: "明日", tone: "purple", icon: CalendarClock },
 ];
+
 
 // ---------------- 子组件 ----------------
 function SectionTitle({ title, hint }: { title: string; hint?: string }) {
