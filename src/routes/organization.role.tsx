@@ -336,8 +336,7 @@ function RolePage() {
           ...prev[drawerRole].mini,
           [e]: {
             report: hasAction(ev, "report") ? v : false,
-            pickup: hasAction(ev, "pickup") ? v : false,
-            record: hasAction(ev, "record") ? v : false,
+            execute: hasAction(ev, "execute") ? v : false,
           },
         },
       },
