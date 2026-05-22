@@ -459,12 +459,23 @@ function AccountPage() {
                 label="企微 ID"
                 value={
                   viewing.wecomId ? (
-                    <span className="font-mono text-text-secondary">{viewing.wecomId}</span>
+                    <span className="font-mono text-text-secondary" title="已脱敏显示">{maskId(viewing.wecomId)}</span>
                   ) : (
                     <span className="tag tag-muted">未绑定</span>
                   )
                 }
               />
+              <DetailRow
+                label="微信 ID"
+                value={
+                  viewing.wechatId ? (
+                    <span className="font-mono text-text-secondary" title="已脱敏显示">{maskId(viewing.wechatId)}</span>
+                  ) : (
+                    <span className="tag tag-muted">未绑定</span>
+                  )
+                }
+              />
+
               <DetailRow
                 label="状态"
                 value={<span className={`tag ${viewing.status === "启用" ? "tag-success" : "tag-muted"}`}>{viewing.status}</span>}
