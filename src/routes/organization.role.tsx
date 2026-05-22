@@ -615,18 +615,19 @@ function RolePage() {
                                 <div className="flex items-center gap-2">
                                   <span>事项类型</span>
                                   {editable ? (
-                                    <button
-                                      type="button"
-                                      onClick={() => setMiniAll(!allChecked)}
-                                      className="ml-auto text-caption px-2 py-0.5 rounded border border-border bg-card hover:bg-surface-subtle text-text-secondary transition-colors"
-                                    >
-                                      {allChecked ? "全部清空" : "全选"}
-                                    </button>
+                                    <Checkbox
+                                      checked={allChecked}
+                                      data-state={allIndeterminate ? "indeterminate" : allChecked ? "checked" : "unchecked"}
+                                      onCheckedChange={(v) => setMiniAll(!!v)}
+                                      className="ml-auto"
+                                      aria-label="全选"
+                                    />
                                   ) : null}
                                 </div>
                               </TableHead>
                               {actions.map((a, i) => {
                                 const checked = colChecked(a);
+                                const indet = colIndeterminate(a);
                                 return (
                                   <TableHead
                                     key={a}
@@ -635,14 +636,12 @@ function RolePage() {
                                     <div className="flex items-center justify-center gap-2">
                                       <span>{actionLabels[i]}</span>
                                       {editable ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => setMiniColumn(a, !checked)}
-                                          className="text-caption px-2 py-0.5 rounded border border-border bg-card hover:bg-surface-subtle text-text-secondary transition-colors"
+                                        <Checkbox
+                                          checked={checked}
+                                          data-state={indet ? "indeterminate" : checked ? "checked" : "unchecked"}
+                                          onCheckedChange={(v) => setMiniColumn(a, !!v)}
                                           aria-label={`整列：${actionLabels[i]}`}
-                                        >
-                                          {checked ? "清空列" : "选中列"}
-                                        </button>
+                                        />
                                       ) : null}
                                     </div>
                                   </TableHead>
