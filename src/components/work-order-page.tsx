@@ -186,6 +186,7 @@ export function WorkOrderPage({
   useEffect(() => setMounted(true), []);
   const [active, setActive] = useState<WorkStatus>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
+  const [mode, setMode] = useState<"view" | "process">("view");
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
   const [diagnosis, setDiagnosis] = useState("");
   const [treatment, setTreatment] = useState("");
