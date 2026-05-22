@@ -56,7 +56,7 @@ export const Route = createFileRoute("/organization/account")({
 
 type Status = "启用" | "禁用";
 type UserType = "内部" | "外部";
-type FarmRole = { farm: string; role: string };
+type FarmRole = { farm: string; roles: string[] };
 type Account = {
   id: string;
   name: string;
