@@ -76,6 +76,7 @@ function LoginPage() {
 
   const confirmBind = () => {
     if (!agreed || !isBindPhoneValid || bindCode.length < 4) return;
+    setPcRole("admin");
     setWecomStage("bound");
     setTimeout(() => navigate({ to: "/workspace" }), 800);
   };
