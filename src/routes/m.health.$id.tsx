@@ -174,6 +174,39 @@ function TaskDetailPage() {
           </div>
         )}
 
+        {/* 非损耗：所需药品 / 器材（响应后才会生成领物码） */}
+        {!isLoss && o.materials.length > 0 && (
+          <div className="rounded-xl bg-card border border-border p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
+                <PackagePlus className="h-3.5 w-3.5 text-primary" /> 所需药品 / 器材
+              </div>
+              <span className="text-caption text-text-tertiary">共 {o.materials.length} 项</span>
+            </div>
+            <ul className="divide-y divide-border">
+              {o.materials.map((m) => (
+                <li key={m.name} className="py-2 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-body-sm text-foreground truncate">{m.name}</div>
+                    {m.spec && (
+                      <div className="text-caption text-text-tertiary truncate">{m.spec}</div>
+                    )}
+                  </div>
+                  <span className="font-mono text-body-sm text-text-secondary shrink-0">× {m.qty}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-2 rounded-lg bg-brand-subtle px-3 py-2 text-caption text-primary inline-flex items-start gap-1.5 w-full">
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+              <span>
+                {o.status === "进行中" || o.status === "已完成"
+                  ? `领物码已生成：${o.pickupCode}，请前往仓库扫码核销领取。`
+                  : `本工单含药品 / 器材需求，响应后将自动生成领物码（${o.pickupCode}）供执行者到仓库核销领取。`}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* 损耗：补申请 */}
         {isLoss && (
           <div className="rounded-xl bg-card border border-border p-4">
