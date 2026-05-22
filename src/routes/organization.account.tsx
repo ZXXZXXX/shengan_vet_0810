@@ -1262,19 +1262,23 @@ function CreateDialog({
   };
 
   const incomplete = farmRoles.some((fr) => fr.roles.length === 0);
-  const canSubmit = !!name.trim() && !!phone.trim() && farmRoles.length > 0 && !incomplete;
+  const effectiveFarmRoles = useMemo(
+    () => farmRoles.filter((fr) => fr.roles.length > 0),
+    [farmRoles],
+  );
+  const canSubmit = !!name.trim() && !!phone.trim() && effectiveFarmRoles.length > 0;
 
   const submit = () => {
     if (!canSubmit) return;
     const firstNewRole =
-      farmRoles.flatMap((fr) => fr.roles).find((r) => !baseRoles.includes(r)) ?? null;
+      effectiveFarmRoles.flatMap((fr) => fr.roles).find((r) => !baseRoles.includes(r)) ?? null;
     onCreate(
       {
         name: name.trim(),
         phone: phone.trim(),
         userType,
         org,
-        farmRoles,
+        farmRoles: effectiveFarmRoles,
         wecomId: null,
         wechatId: null,
 
