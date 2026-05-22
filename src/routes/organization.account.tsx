@@ -552,8 +552,15 @@ function AccountPage() {
 
           </div>
           {filteredAccounts.map((a) => (
-            <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
+            <div key={a.id} className={`grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle ${selectedIds.has(a.id) ? "bg-brand-subtle/40" : ""}`}
               style={{ gridTemplateColumns: cols }}>
+              <div className="flex items-center">
+                <Checkbox
+                  checked={selectedIds.has(a.id)}
+                  onCheckedChange={() => toggleSelect(a.id)}
+                  aria-label={`选择 ${a.name}`}
+                />
+              </div>
               <div className="leading-tight min-w-0">
                 <div className="text-body text-foreground truncate">{a.name}</div>
                 <div className="text-caption text-text-tertiary font-mono">{a.id}</div>
