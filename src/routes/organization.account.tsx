@@ -989,7 +989,20 @@ function AccountDrawerInner({
             <div className="sm:col-span-2">
               <Label className="text-caption text-text-tertiary">状态</Label>
               <div className="mt-1.5">
-                <span className={`tag ${account.status === "启用" ? "tag-success" : "tag-muted"}`}>{account.status}</span>
+                {editable ? (
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={status === "启用"}
+                      onCheckedChange={(v) => setStatus(v ? "启用" : "禁用")}
+                      className="data-[state=checked]:bg-primary"
+                    />
+                    <span className={`text-body-sm ${status === "启用" ? "text-primary" : "text-text-tertiary"}`}>
+                      {status === "启用" ? "启用" : "禁用"}
+                    </span>
+                  </div>
+                ) : (
+                  <span className={`tag ${account.status === "启用" ? "tag-success" : "tag-muted"}`}>{account.status}</span>
+                )}
               </div>
             </div>
           </div>
