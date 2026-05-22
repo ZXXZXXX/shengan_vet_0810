@@ -458,84 +458,19 @@ function AccountPage() {
         </p>
       </main>
 
-      {/* 查看 */}
-      <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>账号详情</DialogTitle>
-            <DialogDescription>查看用户账号的基础信息</DialogDescription>
-          </DialogHeader>
-          {viewing && (
-            <div className="space-y-3 text-body-sm">
-              <DetailRow label="用户编号" value={<span className="font-mono">{viewing.id}</span>} />
-              <DetailRow label="姓名" value={viewing.name} />
-              <DetailRow label="人员类型" value={<span className={`tag ${userTypeTagClass(viewing.userType)}`}>{viewing.userType}</span>} />
-              <DetailRow label="手机号" value={<span className="tabular-nums">{viewing.phone}</span>} />
-              <DetailRow label="所属组织" value={viewing.org} />
-              <DetailRow
-                label="关联牧场 / 角色"
-                value={
-                  <div className="flex flex-col items-end gap-1">
-                    {viewing.farmRoles.length === 0 ? (
-                      <span className="tag tag-muted">未关联</span>
-                    ) : (
-                      viewing.farmRoles.map((fr) => (
-                        <div key={fr.farm} className="flex items-center gap-1.5 flex-wrap justify-end">
-                          <span className="tag tag-muted whitespace-nowrap">{fr.farm}</span>
-                          {fr.roles.length === 0 ? (
-                            <span className="tag tag-muted">未分配</span>
-                          ) : (
-                            fr.roles.map((r) => (
-                              <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
-                            ))
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                }
-              />
-              <DetailRow
-                label="企微 ID"
-                value={
-                  viewing.wecomId ? (
-                    <span className="font-mono text-text-secondary" title="已脱敏显示">{maskId(viewing.wecomId)}</span>
-                  ) : (
-                    <span className="tag tag-muted">未绑定</span>
-                  )
-                }
-              />
-              <DetailRow
-                label="微信 ID"
-                value={
-                  viewing.wechatId ? (
-                    <span className="font-mono text-text-secondary" title="已脱敏显示">{maskId(viewing.wechatId)}</span>
-                  ) : (
-                    <span className="tag tag-muted">未绑定</span>
-                  )
-                }
-              />
+      {/* 查看 / 编辑 抽屉 */}
+      <AccountDrawer
+        account={drawerAccount}
+        mode={drawerMode}
+        onModeChange={setDrawerMode}
+        internalRoles={internalRoles}
+        externalRoles={externalRoles}
+        onClose={closeDrawer}
+        onSave={saveEdit}
+        onCreateRole={addRoleFor}
+        userTypeTagClass={userTypeTagClass}
+      />
 
-              <DetailRow
-                label="状态"
-                value={<span className={`tag ${viewing.status === "启用" ? "tag-success" : "tag-muted"}`}>{viewing.status}</span>}
-              />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* 编辑 */}
-      {editing && (
-        <EditDialog
-          account={editing}
-          internalRoles={internalRoles}
-          externalRoles={externalRoles}
-          onClose={() => setEditing(null)}
-          onSave={saveEdit}
-          onCreateRole={addRoleFor}
-        />
-      )}
 
       {/* 新建 */}
       {creating && (
