@@ -888,7 +888,7 @@ export function WorkOrderPage({
                     <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
                       <Stethoscope className="h-4 w-4 text-primary" /> 兽医诊断与治疗方案
                     </div>
-                    {canReview(role) && detail.status === "待审核" && !editingPlan && (
+                    {canReview(role) && detail.status === "待审核" && mode === "process" && !editingPlan && (
                       <Button
                         variant="outline"
                         size="sm"
