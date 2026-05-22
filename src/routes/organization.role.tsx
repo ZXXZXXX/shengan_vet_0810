@@ -615,18 +615,18 @@ function RolePage() {
                                 <div className="flex items-center gap-2">
                                   <span>事项类型</span>
                                   {editable ? (
-                                    <button
-                                      type="button"
-                                      onClick={() => setMiniAll(!allChecked)}
-                                      className="ml-auto text-caption px-2 py-0.5 rounded border border-border bg-card hover:bg-surface-subtle text-text-secondary transition-colors"
-                                    >
-                                      {allChecked ? "全部清空" : "全选"}
-                                    </button>
+                                    <Checkbox
+                                      checked={allIndeterminate ? "indeterminate" : allChecked}
+                                      onCheckedChange={(v) => setMiniAll(!!v)}
+                                      className="ml-auto"
+                                      aria-label="全选"
+                                    />
                                   ) : null}
                                 </div>
                               </TableHead>
                               {actions.map((a, i) => {
                                 const checked = colChecked(a);
+                                const indet = colIndeterminate(a);
                                 return (
                                   <TableHead
                                     key={a}
@@ -635,14 +635,11 @@ function RolePage() {
                                     <div className="flex items-center justify-center gap-2">
                                       <span>{actionLabels[i]}</span>
                                       {editable ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => setMiniColumn(a, !checked)}
-                                          className="text-caption px-2 py-0.5 rounded border border-border bg-card hover:bg-surface-subtle text-text-secondary transition-colors"
+                                        <Checkbox
+                                          checked={indet ? "indeterminate" : checked}
+                                          onCheckedChange={(v) => setMiniColumn(a, !!v)}
                                           aria-label={`整列：${actionLabels[i]}`}
-                                        >
-                                          {checked ? "清空列" : "选中列"}
-                                        </button>
+                                        />
                                       ) : null}
                                     </div>
                                   </TableHead>
@@ -665,14 +662,12 @@ function RolePage() {
                                         {e.name}
                                       </span>
                                       {editable ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => setMiniRow(e.key, !rowAll)}
-                                          className="ml-auto text-caption px-2 py-0.5 rounded border border-border bg-card hover:bg-surface-subtle text-text-secondary transition-colors"
+                                        <Checkbox
+                                          checked={rowIndeterminate ? "indeterminate" : rowAll}
+                                          onCheckedChange={(v) => setMiniRow(e.key, !!v)}
+                                          className="ml-auto"
                                           aria-label={`整行：${e.name}`}
-                                        >
-                                          {rowAll ? "清空行" : "选中行"}
-                                        </button>
+                                        />
                                       ) : null}
                                     </div>
                                   </TableCell>
@@ -706,7 +701,7 @@ function RolePage() {
                   {editable && (
                     <p className="text-caption text-text-tertiary flex items-start gap-1.5">
                       <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                      表头“选中列 / 清空列”按钮可批量操作整列；行首“选中行 / 清空行”按钮可批量操作整行；左上角按钮可一键全选或全部清空。
+                      点击表头 Checkbox 可批量操作整列；点击行首 Checkbox 可批量操作整行；左上角 Checkbox 可一键全选或全部清空。
                     </p>
                   )}
 
