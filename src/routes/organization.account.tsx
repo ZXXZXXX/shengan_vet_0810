@@ -626,21 +626,24 @@ function FarmRolePicker({
     return m;
   }, [value]);
 
+  // 切走当前活动牧场时，若它没有勾选任何角色则自动取消关联
+  const pruneEmpty = (list: FarmRole[], keep: string | null) =>
+    list.filter((v) => v.roles.length > 0 || v.farm === keep);
+
   const toggleFarm = (f: string) => {
     if (selectedMap.has(f)) {
       const next = value.filter((v) => v.farm !== f);
       onChange(next);
       if (activeFarm === f) setActiveFarm(next[0]?.farm ?? null);
     } else {
-      onChange([...value, { farm: f, roles: [] }]);
+      onChange(pruneEmpty([...value, { farm: f, roles: [] }], f));
       setActiveFarm(f);
     }
   };
 
   const selectFarm = (f: string) => {
-    if (!selectedMap.has(f)) {
-      onChange([...value, { farm: f, roles: [] }]);
-    }
+    const base = selectedMap.has(f) ? value : [...value, { farm: f, roles: [] }];
+    onChange(pruneEmpty(base, f));
     setActiveFarm(f);
   };
 
