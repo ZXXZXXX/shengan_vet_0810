@@ -428,10 +428,10 @@ function AccountPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-32">
-                    <DropdownMenuItem onClick={() => setViewing(a)} className="gap-2 text-body-sm">
+                    <DropdownMenuItem onClick={() => openDetail(a)} className="gap-2 text-body-sm">
                       <Eye className="h-3.5 w-3.5" /> 查看
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setEditing(a)} className="gap-2 text-body-sm">
+                    <DropdownMenuItem onClick={() => openEdit(a)} className="gap-2 text-body-sm">
                       <Pencil className="h-3.5 w-3.5" /> 编辑
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
