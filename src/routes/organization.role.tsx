@@ -545,34 +545,43 @@ function RolePage() {
                   </div>
                   <p className="text-caption text-text-tertiary flex items-start gap-1.5 -mt-1">
                     <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                    PC 模块权限不拆分“只读 / 操作”，可进入即视为可管理。健康事项审批、确认方案、执行计划配置、工单终止，由「允许登录 PC 端 + 健康管理」共同决定。
+                    工作台、牛只基础档案为系统必备模块，不可关闭。工作台的数据看板与待办仅展示当前角色已开通模块的内容——例如关闭「健康管理」后，工作台的健康异常相关统计将不再呈现。PC 模块权限不拆分"只读 / 操作"，可进入即视为可管理。
                   </p>
 
                   {cur.pc.allowLogin ? (
                     <div className="rounded-md border border-border overflow-hidden">
                       {pcModules.map((m, idx) => {
                         const checked = cur.pc.modules[m.key];
+                        const locked = !!m.required;
                         return (
                           <label
                             key={m.key}
-                            className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-surface-subtle ${
+                            className={`flex items-start gap-3 px-4 py-3 hover:bg-surface-subtle ${
                               idx > 0 ? "border-t border-border" : ""
-                            } ${!editable ? "cursor-default" : ""}`}
+                            } ${editable && !locked ? "cursor-pointer" : "cursor-default"}`}
                           >
                             <Checkbox
-                              checked={checked}
-                              disabled={!editable}
-                              onCheckedChange={(v) => setPcModule(m.key, !!v)}
+                              checked={locked ? true : checked}
+                              disabled={!editable || locked}
+                              onCheckedChange={(v) => !locked && setPcModule(m.key, !!v)}
                               className="mt-0.5"
                             />
                             <div className="min-w-0 flex-1">
-                              <div className="text-body-sm font-medium text-foreground">{m.name}</div>
+                              <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
+                                {m.name}
+                                {locked && (
+                                  <span className="text-caption text-primary bg-primary/10 border border-primary/20 rounded px-1.5 py-0 leading-5">
+                                    必备
+                                  </span>
+                                )}
+                              </div>
                               <div className="text-caption text-text-tertiary mt-0.5">{m.desc}</div>
                             </div>
                           </label>
                         );
                       })}
                     </div>
+
                   ) : (
                     <div className="rounded-md border border-dashed border-border bg-surface-subtle px-4 py-6 text-center text-body-sm text-text-tertiary">
                       已关闭 PC 端登录权限
