@@ -67,7 +67,6 @@ function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
   const isApprover = canApprove(role);
-  const isExternal = roleGroup[role] === "external";
   const canRespond = canExecute(role); // 兽医助理 / 修蹄工 / 兽医 等执行类角色可响应权限内、其关联牧场的工单
   // 审批人看到"待审批"，可响应执行者看到"待响应"
   const showFirstBucket = isApprover || canRespond;
