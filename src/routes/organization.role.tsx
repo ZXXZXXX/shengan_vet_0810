@@ -56,6 +56,7 @@ import {
   Info,
 } from "lucide-react";
 import { toast } from "sonner";
+import { usePcRole, isSuperAdmin } from "@/lib/pc-role";
 
 export const Route = createFileRoute("/organization/role")({
   head: () => ({ meta: [{ title: "角色权限 — 奇点智牧" }] }),
