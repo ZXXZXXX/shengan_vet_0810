@@ -692,8 +692,8 @@ function RolePage() {
 
                   <div className="rounded-md border border-border overflow-hidden">
                     {(() => {
-                      const actions: MiniActionKey[] = ["report", "pickup", "record"];
-                      const actionLabels = ["上报", "响应", "执行 / 核销"];
+                      const actions: MiniActionKey[] = ["report", "execute"];
+                      const actionLabels = ["上报", "响应 / 执行"];
                       const evsFor = (a: MiniActionKey) =>
                         miniEvents.filter((e) => hasAction(e, a));
                       const colChecked = (a: MiniActionKey) =>
