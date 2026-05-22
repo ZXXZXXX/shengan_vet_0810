@@ -560,8 +560,7 @@ function FarmRolePicker({
   onCreateRole: (r: string) => void;
 }) {
   const [q, setQ] = useState("");
-  const [newRole, setNewRole] = useState("");
-  const filtered = useMemo(() => {
+  const filteredFarms = useMemo(() => {
     const kw = q.trim().toLowerCase();
     if (!kw) return FARM_OPTIONS;
     return FARM_OPTIONS.filter((f) => f.toLowerCase().includes(kw));
@@ -591,15 +590,12 @@ function FarmRolePicker({
     );
   };
 
-  const addNewRole = () => {
-    const r = newRole.trim();
-    if (!r) return;
-    if (r.length > 6) {
-      toast.error("角色名称不超过 6 个字");
-      return;
-    }
-    if (!roles.includes(r)) onCreateRole(r);
-    setNewRole("");
+  const addRoleToFarm = (f: string, r: string) => {
+    onChange(
+      value.map((v) =>
+        v.farm === f && !v.roles.includes(r) ? { ...v, roles: [...v.roles, r] } : v,
+      ),
+    );
   };
 
   return (
@@ -614,10 +610,10 @@ function FarmRolePicker({
         />
       </div>
       <div className="max-h-40 overflow-y-auto p-2 space-y-1">
-        {filtered.length === 0 ? (
+        {filteredFarms.length === 0 ? (
           <div className="text-caption text-text-tertiary text-center py-3">无匹配牧场</div>
         ) : (
-          filtered.map((f) => (
+          filteredFarms.map((f) => (
             <label
               key={f}
               className="flex items-center gap-2 cursor-pointer text-body-sm px-1.5 py-1 rounded hover:bg-card"
@@ -631,80 +627,28 @@ function FarmRolePicker({
 
       {value.length > 0 && (
         <div className="border-t border-border p-2 space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="text-caption text-text-tertiary">为每个关联牧场选择角色</div>
-            <div className="flex items-center gap-1">
-              <Input
-                value={newRole}
-                onChange={(e) => setNewRole(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addNewRole();
-                  }
-                }}
-                placeholder="新增角色名"
-                maxLength={6}
-                className="h-7 w-28 text-caption bg-card"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={addNewRole}
-                disabled={!newRole.trim()}
-                className="h-7 px-2 text-caption text-primary hover:text-primary"
-              >
-                <Sparkles className="h-3 w-3 mr-0.5" /> 新建
-              </Button>
-            </div>
-          </div>
+          <div className="text-caption text-text-tertiary">为每个关联牧场选择角色（可多选，可输入新建）</div>
           <div className="space-y-1.5">
             {value.map((fr) => (
               <div key={fr.farm} className="flex items-start gap-2">
-                <span className="tag tag-muted whitespace-nowrap shrink-0 mt-1">{fr.farm}</span>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      type="button"
-                      className="flex-1 min-h-8 px-2 py-1 text-left rounded-md border border-border bg-card text-body-sm hover:border-primary/40 flex flex-wrap items-center gap-1"
-                    >
-                      {fr.roles.length === 0 ? (
-                        <span className="text-text-tertiary">选择角色（可多选）</span>
-                      ) : (
-                        fr.roles.map((r) => (
-                          <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
-                        ))
-                      )}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" className="w-56 p-1">
-                    <div className="max-h-56 overflow-y-auto">
-                      {roles.length === 0 ? (
-                        <div className="text-caption text-text-tertiary text-center py-3">暂无可选角色</div>
-                      ) : (
-                        roles.map((r) => {
-                          const checked = fr.roles.includes(r);
-                          return (
-                            <label
-                              key={r}
-                              className="flex items-center gap-2 px-2 py-1.5 rounded text-body-sm cursor-pointer hover:bg-surface-subtle"
-                            >
-                              <Checkbox checked={checked} onCheckedChange={() => toggleRoleFor(fr.farm, r)} />
-                              <span className="text-foreground">{r}</span>
-                            </label>
-                          );
-                        })
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <span className="tag tag-muted whitespace-nowrap shrink-0 mt-1.5">{fr.farm}</span>
+                <div className="flex-1 min-w-0">
+                  <RoleCombobox
+                    allRoles={roles}
+                    selected={fr.roles}
+                    onToggle={(r) => toggleRoleFor(fr.farm, r)}
+                    onCreate={(r) => {
+                      onCreateRole(r);
+                      addRoleToFarm(fr.farm, r);
+                    }}
+                  />
+                </div>
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => toggleFarm(fr.farm)}
-                  className="h-7 w-7 text-text-tertiary hover:text-destructive shrink-0 mt-0.5"
+                  className="h-8 w-8 text-text-tertiary hover:text-destructive shrink-0 mt-0.5"
                   aria-label="移除"
                 >
                   <Unlink className="h-3.5 w-3.5" />
@@ -720,6 +664,109 @@ function FarmRolePicker({
     </div>
   );
 }
+
+// 单牧场角色组合框：可搜索匹配、勾选已有角色，也可输入新角色名直接创建
+function RoleCombobox({
+  allRoles,
+  selected,
+  onToggle,
+  onCreate,
+}: {
+  allRoles: string[];
+  selected: string[];
+  onToggle: (r: string) => void;
+  onCreate: (r: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const kw = query.trim();
+  const matched = useMemo(() => {
+    if (!kw) return allRoles;
+    return allRoles.filter((r) => r.toLowerCase().includes(kw.toLowerCase()));
+  }, [allRoles, kw]);
+  const exact = allRoles.some((r) => r === kw);
+  const canCreate = kw.length > 0 && !exact;
+
+  const handleCreate = () => {
+    if (!canCreate) return;
+    if (kw.length > 6) {
+      toast.error("角色名称不超过 6 个字");
+      return;
+    }
+    onCreate(kw);
+    setQuery("");
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="w-full min-h-9 px-2 py-1 text-left rounded-md border border-border bg-card text-body-sm hover:border-primary/40 flex items-center gap-1.5"
+        >
+          <div className="flex-1 flex flex-wrap items-center gap-1 min-w-0">
+            {selected.length === 0 ? (
+              <span className="text-text-tertiary">选择或输入角色</span>
+            ) : (
+              selected.map((r) => (
+                <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
+              ))
+            )}
+          </div>
+          <ChevronDown className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-64 p-0">
+        <Command shouldFilter={false}>
+          <CommandInput
+            value={query}
+            onValueChange={(v) => setQuery(v.slice(0, 6))}
+            placeholder="搜索或输入新角色名"
+            className="text-body-sm"
+          />
+          <CommandList>
+            {matched.length === 0 && !canCreate && (
+              <CommandEmpty>无匹配角色</CommandEmpty>
+            )}
+            {matched.length > 0 && (
+              <CommandGroup heading="选择角色">
+                {matched.map((r) => {
+                  const checked = selected.includes(r);
+                  return (
+                    <CommandItem
+                      key={r}
+                      value={r}
+                      onSelect={() => onToggle(r)}
+                      className="text-body-sm flex items-center gap-2"
+                    >
+                      <Checkbox checked={checked} className="pointer-events-none" />
+                      <span className="flex-1">{r}</span>
+                      {checked && <Check className="h-3.5 w-3.5 text-primary" />}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            )}
+            {canCreate && (
+              <CommandGroup heading="新建">
+                <CommandItem
+                  value={`__create__${kw}`}
+                  onSelect={handleCreate}
+                  className="text-body-sm flex items-center gap-2 text-primary"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>新建角色「{kw}」</span>
+                </CommandItem>
+              </CommandGroup>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 
 function EditDialog({
   account,
