@@ -684,6 +684,19 @@ function AccountPage() {
           onCreateRole={addRoleFor}
         />
       )}
+
+      {/* 批量分配 */}
+      {batchOpen && (
+        <BatchAssignDialog
+          count={selectedIds.size}
+          selectedAccounts={accounts.filter((a) => selectedIds.has(a.id))}
+          roles={roles}
+          internalRoles={internalRoles}
+          onCreateRole={(r) => addRoleFor("内部", r)}
+          onClose={() => setBatchOpen(false)}
+          onApply={applyBatch}
+        />
+      )}
     </>
   );
 }
