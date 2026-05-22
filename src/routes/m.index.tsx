@@ -6,7 +6,6 @@ import {
   ClipboardList,
   Beef,
   AlertTriangle,
-  AlertCircle,
   ChevronRight,
   ChevronDown,
   Check,
@@ -17,6 +16,7 @@ import {
   Wind,
   Thermometer,
   MapPin,
+  Activity,
   HeartPulse,
   Eye,
   Inbox,
@@ -24,12 +24,13 @@ import {
   TimerReset,
   PackageX,
   CalendarClock,
+  Hourglass,
   Pill,
   Syringe,
   Footprints,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel, canViewOperations, canApprove, canExecute } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { PackageCheck, QrCode } from "lucide-react";
@@ -65,9 +66,9 @@ function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
   const isApprover = canApprove(role);
-  const canRespond = canExecute(role); // 兽医助理 / 修蹄工 / 兽医 等执行类角色可响应权限内、其关联牧场的工单
-  // 审批人看到"待审批"，可响应执行者看到"待响应"
-  const showFirstBucket = isApprover || canRespond;
+  const isExternal = roleGroup[role] === "external";
+  // 内部非审批人（如兽医助理）没有"待响应/待审批"环节
+  const showFirstBucket = isExternal || isApprover;
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
   const claimed = useClaimed();
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
@@ -136,11 +137,11 @@ function MHomePage() {
       {/* ============ 数据看板 ============ */}
       <section className="px-4 mt-5">
         <SectionTitle title="农场概况" hint="数据实时同步" />
-        <div className="grid grid-cols-4 gap-2">
-          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月" />
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周" />
-          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日" />
-          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日" />
+        <div className="grid grid-cols-2 gap-2">
+          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月 +6" />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周 +0.4%" />
+          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日 +3" />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日 +2" />
         </div>
       </section>
 
@@ -218,7 +219,7 @@ function MHomePage() {
           ))}
           {pendingItems
             .filter((it) => it.farmId === farm.id)
-            .filter((it) => canRespond || isApprover || it.bucket !== "待响应")
+            .filter((it) => isExternal || it.bucket !== "待响应")
             .map((it) => (
             <Link
               key={it.id}
@@ -245,7 +246,7 @@ function MHomePage() {
               <ChevronRight className="relative h-4 w-4 text-text-tertiary shrink-0" />
             </Link>
           ))}
-          {pendingItems.filter((it) => it.farmId === farm.id && (canRespond || isApprover || it.bucket !== "待响应")).length === 0 && pendingPickups.length === 0 && (
+          {pendingItems.filter((it) => it.farmId === farm.id && (isExternal || it.bucket !== "待响应")).length === 0 && pendingPickups.length === 0 && (
             <div className="py-8 text-center text-caption text-text-tertiary">
               当前牧场暂无待处理事项
             </div>
@@ -311,10 +312,10 @@ const risks: Array<{
   tone: keyof typeof colorMap;
   icon: typeof AlertTriangle;
 }> = [
-  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "预警", tone: "warning", icon: AlertCircle },
-  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "预警", tone: "warning", icon: AlertCircle },
-  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: CalendarClock },
-  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "异常", tone: "danger", icon: AlertTriangle },
+  { title: "库存不足：广谱驱虫药", detail: "中央库余量 8% · 建议补货", level: "紧急", tone: "danger", icon: PackageX },
+  { title: "物资即将过期：青霉素 80 万单位", detail: "12 支 · 7 日内到期", level: "提醒", tone: "warning", icon: Hourglass },
+  { title: "工作即将超时：WO-2298 乳房炎复诊", detail: "剩余 1h 30m", level: "提醒", tone: "warning", icon: TimerReset },
+  { title: "重点牛只异常：#A2324", detail: "采食量下降 18% · 已连续 2 日", level: "关注", tone: "info", icon: Activity },
   { title: "复查临近：#A2150", detail: "明日复查 · 产后护理", level: "明日", tone: "purple", icon: CalendarClock },
 ];
 
@@ -351,7 +352,7 @@ function DataCard({
         </span>
         <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      <div className="mt-2 text-card-title text-foreground tabular-nums">{value}</div>
+      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
       {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
     </div>
   );
