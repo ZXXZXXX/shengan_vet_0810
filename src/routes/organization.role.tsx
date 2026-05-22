@@ -359,7 +359,7 @@ function RolePage() {
                         </Badge>
                       )}
                       {r.enabled && (
-                        <Badge variant="outline" className="h-5 px-1.5 text-caption font-normal border-[var(--success)]/30 text-[var(--success)] bg-[var(--success)]/10">
+                        <Badge variant="outline" className="h-5 px-1.5 text-caption font-normal border-[#6EDB7B]/30 text-[#2F7A3A] bg-[#6EDB7B]/10">
                           启用中
                         </Badge>
                       )}
