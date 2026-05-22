@@ -66,9 +66,20 @@ type Account = {
   org: string;
   farmRoles: FarmRole[]; // 每个关联牧场对应一个角色
   wecomId: string | null;
+  wechatId: string | null;
   status: Status;
   createdAt: string;
 };
+
+// 脱敏：保留前 4 后 3，中间以 **** 替代；过短时仅保留首尾各 1
+const maskId = (id: string) => {
+  if (id.length <= 7) {
+    if (id.length <= 2) return id;
+    return `${id[0]}****${id[id.length - 1]}`;
+  }
+  return `${id.slice(0, 4)}****${id.slice(-3)}`;
+};
+
 
 // 模拟较多牧场场景，验证搜索能力
 const FARM_OPTIONS = [
@@ -95,13 +106,14 @@ const EXTERNAL_ROLES = ["修蹄工", "普修工", "干奶工", "驱虫工"];
 const DEFAULT_ROLES = [...INTERNAL_ROLES, ...EXTERNAL_ROLES];
 
 const initialAccounts: Account[] = [
-  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", role: "场长" }], wecomId: "wm_zhanglei_8821", status: "启用", createdAt: "2024-03-08" },
-  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", org: "1 号牧场 / 兽医部", farmRoles: [{ farm: "1 号牧场", role: "兽医" }, { farm: "2 号牧场", role: "兽医助理" }], wecomId: "wm_liyuqing_3210", status: "启用", createdAt: "2024-06-21" },
-  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", org: "1 号牧场 / 巡检 A 组", farmRoles: [{ farm: "1 号牧场", role: "技术员" }], wecomId: null, status: "启用", createdAt: "2025-09-12" },
-  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", org: "1 号牧场 / 仓储部", farmRoles: [{ farm: "1 号牧场", role: "仓管员" }, { farm: "2 号牧场", role: "仓管员" }, { farm: "3 号牧场", role: "技术员" }], wecomId: "wm_wangck_5601", status: "启用", createdAt: "2026-02-04" },
-  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", org: "2 号牧场 / 仓储部", farmRoles: [{ farm: "2 号牧场", role: "仓管员" }], wecomId: null, status: "禁用", createdAt: "2026-04-30" },
-  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", org: "外部合作 / 修蹄队", farmRoles: [{ farm: "1 号牧场", role: "修蹄工" }, { farm: "3 号牧场", role: "修蹄工" }, { farm: "金辉牧场", role: "普修工" }], wecomId: "wm_zhaoxt_9912", status: "启用", createdAt: "2025-11-18" },
-  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", org: "外部合作 / 干奶服务队", farmRoles: [{ farm: "2 号牧场", role: "干奶工" }], wecomId: null, status: "启用", createdAt: "2026-05-09" },
+  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", role: "场长" }], wecomId: "wm_zhanglei_8821", wechatId: "wx_zhanglei_6688", status: "启用", createdAt: "2024-03-08" },
+  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", org: "1 号牧场 / 兽医部", farmRoles: [{ farm: "1 号牧场", role: "兽医" }, { farm: "2 号牧场", role: "兽医助理" }], wecomId: "wm_liyuqing_3210", wechatId: "wx_liyuqing_4521", status: "启用", createdAt: "2024-06-21" },
+  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", org: "1 号牧场 / 巡检 A 组", farmRoles: [{ farm: "1 号牧场", role: "技术员" }], wecomId: null, wechatId: "wx_chenxd_7702", status: "启用", createdAt: "2025-09-12" },
+  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", org: "1 号牧场 / 仓储部", farmRoles: [{ farm: "1 号牧场", role: "仓管员" }, { farm: "2 号牧场", role: "仓管员" }, { farm: "3 号牧场", role: "技术员" }], wecomId: "wm_wangck_5601", wechatId: null, status: "启用", createdAt: "2026-02-04" },
+  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", org: "2 号牧场 / 仓储部", farmRoles: [{ farm: "2 号牧场", role: "仓管员" }], wecomId: null, wechatId: null, status: "禁用", createdAt: "2026-04-30" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", org: "外部合作 / 修蹄队", farmRoles: [{ farm: "1 号牧场", role: "修蹄工" }, { farm: "3 号牧场", role: "修蹄工" }, { farm: "金辉牧场", role: "普修工" }], wecomId: "wm_zhaoxt_9912", wechatId: "wx_zhaoxt_3344", status: "启用", createdAt: "2025-11-18" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", org: "外部合作 / 干奶服务队", farmRoles: [{ farm: "2 号牧场", role: "干奶工" }], wecomId: null, wechatId: "wx_liujs_1209", status: "启用", createdAt: "2026-05-09" },
+
 ];
 
 // 辅助：从 farmRoles 派生
@@ -194,7 +206,7 @@ function AccountPage() {
         if (filterFarm !== "all" && !farmsOf(a).includes(filterFarm)) return false;
         if (filterStatus !== "all" && a.status !== filterStatus) return false;
         if (kw) {
-          const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""}`.toLowerCase();
+          const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""} ${a.wechatId ?? ""}`.toLowerCase();
           if (!hay.includes(kw)) return false;
         }
         return true;
@@ -205,8 +217,9 @@ function AccountPage() {
       });
   }, [accounts, keyword, onlyInternal, filterRole, filterFarm, filterStatus]);
 
-  // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 状态 管理
-  const cols = "1.8fr 1.1fr 1.3fr 0.9fr 1.7fr 1.5fr 0.8fr 0.5fr";
+  // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
+  const cols = "1.6fr 0.9fr 1.2fr 0.9fr 1.5fr 1.3fr 1.3fr 0.7fr 0.5fr";
+
 
   return (
     <>
@@ -219,7 +232,7 @@ function AccountPage() {
               <Input
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="搜索姓名 / 手机号 / 企微ID"
+                placeholder="搜索姓名 / 手机号 / 企微 / 微信 ID"
                 className="h-9 w-72 pl-9 text-body-sm"
               />
             </div>
@@ -305,8 +318,10 @@ function AccountPage() {
             <div>角色</div>
             <div>关联牧场</div>
             <div>企微 ID</div>
+            <div>微信 ID</div>
             <div>状态</div>
             <div className="text-right">管理</div>
+
           </div>
           {filteredAccounts.map((a) => (
             <div key={a.id} className="grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle"
@@ -357,11 +372,19 @@ function AccountPage() {
               </div>
               <div className="text-body-sm tabular-nums truncate">
                 {a.wecomId ? (
-                  <span className="text-text-secondary font-mono">{a.wecomId}</span>
+                  <span className="text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wecomId)}</span>
                 ) : (
                   <span className="tag tag-muted">未绑定</span>
                 )}
               </div>
+              <div className="text-body-sm tabular-nums truncate">
+                {a.wechatId ? (
+                  <span className="text-text-secondary font-mono" title="已脱敏显示">{maskId(a.wechatId)}</span>
+                ) : (
+                  <span className="tag tag-muted">未绑定</span>
+                )}
+              </div>
+
               <div><span className={`tag ${a.status === "启用" ? "tag-success" : "tag-muted"}`}>{a.status}</span></div>
               <div className="flex justify-end">
                 <DropdownMenu>
@@ -436,12 +459,23 @@ function AccountPage() {
                 label="企微 ID"
                 value={
                   viewing.wecomId ? (
-                    <span className="font-mono text-text-secondary">{viewing.wecomId}</span>
+                    <span className="font-mono text-text-secondary" title="已脱敏显示">{maskId(viewing.wecomId)}</span>
                   ) : (
                     <span className="tag tag-muted">未绑定</span>
                   )
                 }
               />
+              <DetailRow
+                label="微信 ID"
+                value={
+                  viewing.wechatId ? (
+                    <span className="font-mono text-text-secondary" title="已脱敏显示">{maskId(viewing.wechatId)}</span>
+                  ) : (
+                    <span className="tag tag-muted">未绑定</span>
+                  )
+                }
+              />
+
               <DetailRow
                 label="状态"
                 value={<span className={`tag ${viewing.status === "启用" ? "tag-success" : "tag-muted"}`}>{viewing.status}</span>}
@@ -640,6 +674,8 @@ function EditDialog({
   const [org, setOrg] = useState(account.org);
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>(account.farmRoles);
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
+  const [wechatId, setWechatId] = useState<string | null>(account.wechatId);
+
 
   const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
   const baseRoles = userType === "内部" ? internalRoles : externalRoles;
@@ -727,7 +763,7 @@ function EditDialog({
             <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface-subtle px-3 h-9">
               {wecomId ? (
                 <>
-                  <span className="text-body-sm font-mono text-text-secondary truncate">{wecomId}</span>
+                  <span className="text-body-sm font-mono text-text-secondary truncate" title="已脱敏显示">{maskId(wecomId)}</span>
                   <Button type="button" variant="ghost" size="sm" onClick={() => setWecomId(null)} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
                     <Unlink className="h-3 w-3" /> 解绑
                   </Button>
@@ -740,13 +776,33 @@ function EditDialog({
               <p className="text-caption text-text-tertiary">保存后该用户需重新通过企业微信扫码绑定</p>
             )}
           </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-body-sm text-text-secondary">微信 ID</Label>
+            <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface-subtle px-3 h-9">
+              {wechatId ? (
+                <>
+                  <span className="text-body-sm font-mono text-text-secondary truncate" title="已脱敏显示">{maskId(wechatId)}</span>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setWechatId(null)} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
+                    <Unlink className="h-3 w-3" /> 解绑
+                  </Button>
+                </>
+              ) : (
+                <span className="tag tag-muted">未绑定</span>
+              )}
+            </div>
+            {!wechatId && account.wechatId && (
+              <p className="text-caption text-text-tertiary">保存后该用户需重新通过微信扫码绑定</p>
+            )}
+          </div>
+
         </div>
 
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={onClose} className="h-9">取消</Button>
           <Button
             disabled={!canSave}
-            onClick={() => onSave({ ...account, phone, userType, org, farmRoles, wecomId })}
+            onClick={() => onSave({ ...account, phone, userType, org, farmRoles, wecomId, wechatId })}
             className="h-9 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
@@ -798,6 +854,8 @@ function CreateDialog({
         org,
         farmRoles,
         wecomId: null,
+        wechatId: null,
+
         status: "启用",
         createdAt: new Date().toISOString().slice(0, 10),
       },
