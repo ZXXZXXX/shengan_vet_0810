@@ -970,9 +970,10 @@ export function WorkOrderPage({
             </div>
             );
           })()}
+          </div>
 
           {detail && canReview(role) && detail.status === "待审核" && !editingPlan && (
-            <DialogFooter className="gap-2">
+            <SheetFooter className="px-6 py-3 border-t border-border bg-card gap-2">
               <Button variant="outline" className="gap-1.5" onClick={() => { setRejectReason(""); setConfirm("reject"); }}>
                 <X className="h-3.5 w-3.5" /> 驳回
               </Button>
@@ -982,10 +983,10 @@ export function WorkOrderPage({
               >
                 <Check className="h-3.5 w-3.5" /> 通过
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           )}
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
 
       {/* 驳回 —— 需填写理由 */}
       <Dialog
