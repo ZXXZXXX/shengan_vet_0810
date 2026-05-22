@@ -27,8 +27,6 @@ import {
   Pill,
   Syringe,
   Footprints,
-  TrendingUp,
-  ArrowUpRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel, canViewOperations, canApprove, canExecute } from "@/lib/mobile-role";
@@ -139,10 +137,10 @@ function MHomePage() {
       <section className="px-4 mt-5">
         <SectionTitle title="农场概况" hint="数据实时同步" />
         <div className="grid grid-cols-4 gap-2">
-          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月" trend="+6" trendDir="up" />
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周" trend="+0.4%" trendDir="up" />
-          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日" trend="+3" trendDir="up" />
-          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日" trend="+2" trendDir="up" />
+          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月" />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周" />
+          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日" />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日" />
         </div>
       </section>
 
@@ -330,16 +328,6 @@ function SectionTitle({ title, hint }: { title: string; hint?: string }) {
   );
 }
 
-const toneAccentMap: Record<string, string> = {
-  brand: "var(--brand)",
-  warning: "var(--state-warning)",
-  danger: "var(--state-danger)",
-  info: "var(--effect-ai-cyan)",
-  purple: "var(--effect-ai-purple)",
-  success: "var(--state-success)",
-  muted: "var(--text-secondary)",
-};
-
 function DataCard({
   icon: Icon,
   tone,
@@ -347,8 +335,6 @@ function DataCard({
   value,
   sub,
   compact,
-  trend,
-  trendDir,
 }: {
   icon: typeof Beef;
   tone: keyof typeof colorMap;
@@ -356,65 +342,17 @@ function DataCard({
   value: string;
   sub?: string;
   compact?: boolean;
-  trend?: string;
-  trendDir?: "up" | "down";
 }) {
-  if (compact) {
-    return (
-      <div className="rounded-xl bg-card border border-border p-3">
-        <div className="flex items-center gap-2">
-          <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
-            <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-          </span>
-          <span className="text-caption text-text-secondary truncate">{label}</span>
-        </div>
-        <div className="mt-2 text-card-title text-foreground tabular-nums">{value}</div>
-        {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
-      </div>
-    );
-  }
-  const accent = toneAccentMap[tone];
   return (
-    <div
-      className="relative rounded-xl bg-card border border-border p-2.5 overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(135deg, color-mix(in oklab, ${accent} 8%, transparent) 0%, color-mix(in oklab, ${accent} 0%, transparent) 60%)`,
-      }}
-    >
-      {/* 顶部：图标 + 趋势 */}
-      <div className="relative flex items-center justify-between">
-        <span
-          className={`h-7 w-7 rounded-lg flex items-center justify-center ${colorMap[tone]}`}
-          style={{ boxShadow: `0 4px 10px -6px ${accent}` }}
-        >
-          <Icon className="h-3.5 w-3.5" strokeWidth={2} />
+    <div className="rounded-xl bg-card border border-border p-3">
+      <div className="flex items-center gap-2">
+        <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
+          <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
         </span>
-        {trend && (
-          <span
-            className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full text-[10px] font-medium tabular-nums"
-            style={{
-              backgroundColor: `color-mix(in oklab, ${accent} 14%, transparent)`,
-              color: accent,
-            }}
-          >
-            {trendDir === "down" ? (
-              <ArrowUpRight className="h-2.5 w-2.5 rotate-90" />
-            ) : (
-              <TrendingUp className="h-2.5 w-2.5" />
-            )}
-            {trend}
-          </span>
-        )}
-      </div>
-      {/* 数值 */}
-      <div className="relative mt-2 text-card-title text-foreground tabular-nums leading-none">
-        {value}
-      </div>
-      {/* 标签 + 子说明 */}
-      <div className="relative mt-1 flex items-center justify-between">
         <span className="text-caption text-text-secondary truncate">{label}</span>
-        {sub && <span className="text-[11px] text-text-tertiary shrink-0 ml-1">{sub}</span>}
       </div>
+      <div className="mt-2 text-card-title text-foreground tabular-nums">{value}</div>
+      {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
     </div>
   );
 }
