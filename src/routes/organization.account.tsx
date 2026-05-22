@@ -626,21 +626,24 @@ function FarmRolePicker({
     return m;
   }, [value]);
 
+  // 切走当前活动牧场时，若它没有勾选任何角色则自动取消关联
+  const pruneEmpty = (list: FarmRole[], keep: string | null) =>
+    list.filter((v) => v.roles.length > 0 || v.farm === keep);
+
   const toggleFarm = (f: string) => {
     if (selectedMap.has(f)) {
       const next = value.filter((v) => v.farm !== f);
       onChange(next);
       if (activeFarm === f) setActiveFarm(next[0]?.farm ?? null);
     } else {
-      onChange([...value, { farm: f, roles: [] }]);
+      onChange(pruneEmpty([...value, { farm: f, roles: [] }], f));
       setActiveFarm(f);
     }
   };
 
   const selectFarm = (f: string) => {
-    if (!selectedMap.has(f)) {
-      onChange([...value, { farm: f, roles: [] }]);
-    }
+    const base = selectedMap.has(f) ? value : [...value, { farm: f, roles: [] }];
+    onChange(pruneEmpty(base, f));
     setActiveFarm(f);
   };
 
@@ -908,7 +911,11 @@ function AccountDrawerInner({
   }, [baseRoles, farmRoles]);
 
   const incomplete = farmRoles.some((fr) => fr.roles.length === 0);
-  const canSave = farmRoles.length > 0 && !incomplete;
+  const effectiveFarmRoles = useMemo(
+    () => farmRoles.filter((fr) => fr.roles.length > 0),
+    [farmRoles],
+  );
+  const canSave = effectiveFarmRoles.length > 0;
 
   return (
     <>
@@ -1039,7 +1046,7 @@ function AccountDrawerInner({
                 onCreateRole={(r) => onCreateRole(userType, r)}
               />
               {incomplete && (
-                <p className="text-caption text-warning">请为每个关联牧场选择至少一个角色后再保存</p>
+                <p className="text-caption text-warning">当前牧场未选择角色，保存时将自动取消该牧场关联</p>
               )}
             </>
           ) : (
@@ -1101,7 +1108,7 @@ function AccountDrawerInner({
           <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">取消</Button>
           <Button
             disabled={!canSave}
-            onClick={() => onSave({ ...account, phone, userType, org, farmRoles, wecomId, wechatId })}
+            onClick={() => onSave({ ...account, phone, userType, org, farmRoles: effectiveFarmRoles, wecomId, wechatId })}
             className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
@@ -1255,19 +1262,23 @@ function CreateDialog({
   };
 
   const incomplete = farmRoles.some((fr) => fr.roles.length === 0);
-  const canSubmit = !!name.trim() && !!phone.trim() && farmRoles.length > 0 && !incomplete;
+  const effectiveFarmRoles = useMemo(
+    () => farmRoles.filter((fr) => fr.roles.length > 0),
+    [farmRoles],
+  );
+  const canSubmit = !!name.trim() && !!phone.trim() && effectiveFarmRoles.length > 0;
 
   const submit = () => {
     if (!canSubmit) return;
     const firstNewRole =
-      farmRoles.flatMap((fr) => fr.roles).find((r) => !baseRoles.includes(r)) ?? null;
+      effectiveFarmRoles.flatMap((fr) => fr.roles).find((r) => !baseRoles.includes(r)) ?? null;
     onCreate(
       {
         name: name.trim(),
         phone: phone.trim(),
         userType,
         org,
-        farmRoles,
+        farmRoles: effectiveFarmRoles,
         wecomId: null,
         wechatId: null,
 
@@ -1333,10 +1344,10 @@ function CreateDialog({
               onCreateRole={(r) => onCreateRole(userType, r)}
             />
             <p className="text-caption text-text-tertiary">
-              勾选牧场后请为每个牧场指定角色；当前为「{userType}」人员，可在右上方输入新角色名创建。
+              勾选牧场后请为每个牧场至少指定一个角色；未选角色的牧场切走时会自动取消关联。当前为「{userType}」人员，可在右上方输入新角色名创建。
             </p>
             {incomplete && (
-              <p className="text-caption text-warning">请为每个关联牧场选择角色后再创建</p>
+              <p className="text-caption text-warning">当前牧场未选择角色，提交时将自动取消该牧场关联</p>
             )}
           </div>
         </div>
