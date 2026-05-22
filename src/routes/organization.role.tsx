@@ -629,7 +629,7 @@ function RolePage() {
                                     <Checkbox
                                       checked={allIndeterminate ? "indeterminate" : allChecked}
                                       onCheckedChange={(v) => setMiniAll(!!v)}
-                                      className="h-[18px] w-[18px] border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:border-primary"
+                                      className="h-[18px] w-[18px] border-2 data-[state=unchecked]:border-[var(--text-tertiary)]"
                                       aria-label="全选"
                                     />
                                   ) : null}
@@ -649,7 +649,7 @@ function RolePage() {
                                         <Checkbox
                                           checked={indet ? "indeterminate" : checked}
                                           onCheckedChange={(v) => setMiniColumn(a, !!v)}
-                                          className="h-[18px] w-[18px] border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:border-primary"
+                                          className="h-[18px] w-[18px] border-2 data-[state=unchecked]:border-[var(--text-tertiary)]"
                                           aria-label={`整列：${actionLabels[i]}`}
                                         />
                                       ) : null}
@@ -676,7 +676,7 @@ function RolePage() {
                                         <Checkbox
                                           checked={rowIndeterminate ? "indeterminate" : rowAll}
                                           onCheckedChange={(v) => setMiniRow(e.key, !!v)}
-                                          className="h-[18px] w-[18px] border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:border-primary"
+                                          className="h-[18px] w-[18px] border-2 data-[state=unchecked]:border-[var(--text-tertiary)]"
                                           aria-label={`整行：${e.name}`}
                                         />
                                       ) : null}
@@ -698,7 +698,7 @@ function RolePage() {
                                           checked={p[a]}
                                           disabled={!editable}
                                           onCheckedChange={(v) => setMini(e.key, a, !!v)}
-                                          className="h-[18px] w-[18px] rounded-full data-[state=checked]:bg-primary data-[state=checked]:border-primary [&_svg]:hidden"
+                                          className="h-[18px] w-[18px] rounded-full border data-[state=unchecked]:border-[var(--border-strong)] data-[state=checked]:border-primary data-[state=checked]:border-2 data-[state=checked]:bg-[radial-gradient(circle,var(--brand)_42%,white_46%)] [&_svg]:hidden"
                                         />
                                         <span className="text-body-sm text-text-secondary">
                                           {e.actions[a]}
