@@ -598,10 +598,6 @@ function RolePage() {
                       />
                     </div>
                   </div>
-                  <p className="text-caption text-text-tertiary flex items-start gap-1.5 -mt-1">
-                    <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                    工作台、牛只基础档案为系统必备模块，不可关闭。工作台的数据看板与待办仅展示当前角色已开通模块的内容——例如关闭「健康管理」后，工作台的健康异常相关统计将不再呈现。PC 模块权限不拆分"只读 / 操作"，可进入即视为可管理。
-                  </p>
 
                   {cur.pc.allowLogin ? (
                     <div className="rounded-md border border-border overflow-hidden">
@@ -769,12 +765,6 @@ function RolePage() {
                       );
                     })()}
                   </div>
-                  {editable && (
-                    <p className="text-caption text-text-tertiary flex items-start gap-1.5">
-                      <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                      点击表头 Checkbox 可批量操作整列；点击行首 Checkbox 可批量操作整行；左上角 Checkbox 可一键全选或全部清空。
-                    </p>
-                  )}
 
                 </section>
               </>
