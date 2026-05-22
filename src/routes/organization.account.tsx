@@ -122,7 +122,7 @@ const initialAccounts: Account[] = [
 // 辅助：从 farmRoles 派生
 const farmsOf = (a: Pick<Account, "farmRoles">) => a.farmRoles.map((x) => x.farm);
 const rolesOf = (a: Pick<Account, "farmRoles">) =>
-  Array.from(new Set(a.farmRoles.map((x) => x.role)));
+  Array.from(new Set(a.farmRoles.flatMap((x) => x.roles)));
 
 function AccountPage() {
   const navigate = useNavigate();
