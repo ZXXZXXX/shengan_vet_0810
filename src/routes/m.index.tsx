@@ -232,8 +232,9 @@ function MHomePage() {
           ))}
           {pendingItems
             .filter((it) => it.farmId === farm.id)
-            .filter((it) => isExternal || it.bucket !== "待响应")
+            .filter((it) => it.bucket !== "待响应" || canRespond(it.id))
             .map((it) => (
+
             <Link
               key={it.id}
               to="/m/health/$id"
