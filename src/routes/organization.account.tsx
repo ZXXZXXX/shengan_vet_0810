@@ -81,7 +81,6 @@ type Account = {
   initial: string;
   phone: string;
   userType: UserType;
-  org: string;
   farmRoles: FarmRole[]; // 每个关联牧场对应一个角色
   wecomId: string | null;
   wechatId: string | null;
@@ -110,17 +109,6 @@ const FARM_OPTIONS = [
   "向阳牧场", "草原之星", "北疆牧场", "南山牧场", "万象牧场",
 ];
 
-const ORG_OPTIONS = [
-  "1 号牧场",
-  "1 号牧场 / 兽医部",
-  "1 号牧场 / 巡检 A 组",
-  "1 号牧场 / 仓储部",
-  "2 号牧场",
-  "2 号牧场 / 仓储部",
-  "外部合作 / 修蹄队",
-  "外部合作 / 干奶服务队",
-  "外部合作 / 驱虫服务队",
-];
 
 const INTERNAL_ROLES = ["场长", "兽医", "兽医助理", "技术员", "仓管员"];
 const EXTERNAL_ROLES = ["修蹄工", "普修工", "干奶工", "驱虫工"];
@@ -184,13 +172,13 @@ function unionPermsForRoles(rs: string[]): RolePermPreview {
 }
 
 const initialAccounts: Account[] = [
-  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", org: "1 号牧场", farmRoles: [{ farm: "1 号牧场", roles: ["场长"] }], wecomId: "wm_zhanglei_8821", wechatId: "wx_zhanglei_6688", status: "启用", createdAt: "2024-03-08" },
-  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", org: "1 号牧场 / 兽医部", farmRoles: [{ farm: "1 号牧场", roles: ["兽医", "技术员"] }, { farm: "2 号牧场", roles: ["兽医助理"] }], wecomId: "wm_liyuqing_3210", wechatId: "wx_liyuqing_4521", status: "启用", createdAt: "2024-06-21" },
-  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", org: "1 号牧场 / 巡检 A 组", farmRoles: [{ farm: "1 号牧场", roles: ["技术员"] }], wecomId: null, wechatId: "wx_chenxd_7702", status: "启用", createdAt: "2025-09-12" },
-  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", org: "1 号牧场 / 仓储部", farmRoles: [{ farm: "1 号牧场", roles: ["仓管员"] }, { farm: "2 号牧场", roles: ["仓管员"] }, { farm: "3 号牧场", roles: ["技术员", "仓管员"] }], wecomId: "wm_wangck_5601", wechatId: null, status: "启用", createdAt: "2026-02-04" },
-  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", org: "2 号牧场 / 仓储部", farmRoles: [{ farm: "2 号牧场", roles: ["仓管员"] }], wecomId: null, wechatId: null, status: "禁用", createdAt: "2026-04-30" },
-  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", org: "外部合作 / 修蹄队", farmRoles: [{ farm: "1 号牧场", roles: ["修蹄工"] }, { farm: "3 号牧场", roles: ["修蹄工", "普修工"] }, { farm: "金辉牧场", roles: ["普修工"] }], wecomId: "wm_zhaoxt_9912", wechatId: "wx_zhaoxt_3344", status: "启用", createdAt: "2025-11-18" },
-  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", org: "外部合作 / 干奶服务队", farmRoles: [{ farm: "2 号牧场", roles: ["干奶工"] }], wecomId: null, wechatId: "wx_liujs_1209", status: "启用", createdAt: "2026-05-09" },
+  { id: "U001", name: "张磊", initial: "ZL", phone: "138****6201", userType: "内部", farmRoles: [{ farm: "1 号牧场", roles: ["场长"] }], wecomId: "wm_zhanglei_8821", wechatId: "wx_zhanglei_6688", status: "启用", createdAt: "2024-03-08" },
+  { id: "U002", name: "李雨晴", initial: "LY", phone: "139****3018", userType: "内部", farmRoles: [{ farm: "1 号牧场", roles: ["兽医", "技术员"] }, { farm: "2 号牧场", roles: ["兽医助理"] }], wecomId: "wm_liyuqing_3210", wechatId: "wx_liyuqing_4521", status: "启用", createdAt: "2024-06-21" },
+  { id: "U003", name: "陈晓东", initial: "CX", phone: "137****8520", userType: "内部", farmRoles: [{ farm: "1 号牧场", roles: ["技术员"] }], wecomId: null, wechatId: "wx_chenxd_7702", status: "启用", createdAt: "2025-09-12" },
+  { id: "U004", name: "王仓管", initial: "WC", phone: "136****4302", userType: "内部", farmRoles: [{ farm: "1 号牧场", roles: ["仓管员"] }, { farm: "2 号牧场", roles: ["仓管员"] }, { farm: "3 号牧场", roles: ["技术员", "仓管员"] }], wecomId: "wm_wangck_5601", wechatId: null, status: "启用", createdAt: "2026-02-04" },
+  { id: "U005", name: "孙库管", initial: "SK", phone: "135****9012", userType: "内部", farmRoles: [{ farm: "2 号牧场", roles: ["仓管员"] }], wecomId: null, wechatId: null, status: "禁用", createdAt: "2026-04-30" },
+  { id: "U006", name: "赵修蹄", initial: "ZX", phone: "134****7788", userType: "外部", farmRoles: [{ farm: "1 号牧场", roles: ["修蹄工"] }, { farm: "3 号牧场", roles: ["修蹄工", "普修工"] }, { farm: "金辉牧场", roles: ["普修工"] }], wecomId: "wm_zhaoxt_9912", wechatId: "wx_zhaoxt_3344", status: "启用", createdAt: "2025-11-18" },
+  { id: "U007", name: "刘技师", initial: "LJ", phone: "133****5566", userType: "外部", farmRoles: [{ farm: "2 号牧场", roles: ["干奶工"] }], wecomId: null, wechatId: "wx_liujs_1209", status: "启用", createdAt: "2026-05-09" },
 
 ];
 
@@ -562,7 +550,7 @@ function AccountPage() {
         </Card>
 
         <p className="text-caption text-text-tertiary">
-          说明：账号关联一个牧场时，仅能查看和操作该牧场的数据；关联多个牧场时，可在关联牧场之间切换并按权限查看数据。所属组织信息可在查看详情中查阅。
+          说明：账号关联一个牧场时，仅能查看和操作该牧场的数据；关联多个牧场时，可在关联牧场之间切换并按权限查看数据。
         </p>
       </main>
 
@@ -897,12 +885,10 @@ function AccountDrawerInner({
 
   const [phone, setPhone] = useState(account.phone);
   const [userType, setUserType] = useState<UserType>(account.userType);
-  const [org, setOrg] = useState(account.org);
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>(account.farmRoles);
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
   const [wechatId, setWechatId] = useState<string | null>(account.wechatId);
 
-  const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
   const baseRoles = userType === "内部" ? internalRoles : externalRoles;
   const availableRoles = useMemo(() => {
     const set = new Set(baseRoles);
@@ -999,23 +985,6 @@ function AccountDrawerInner({
                 )}
               </div>
             </div>
-            <div>
-              <Label className="text-caption text-text-tertiary">所属组织</Label>
-              <div className="mt-1.5">
-                {editable ? (
-                  <Select value={orgValue} onValueChange={setOrg}>
-                    <SelectTrigger className="h-9 text-body-sm bg-card border-border"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {ORG_OPTIONS.map((o) => (
-                        <SelectItem key={o} value={o} className="text-body-sm">{o}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="text-body text-foreground">{account.org}</div>
-                )}
-              </div>
-            </div>
             <div className="sm:col-span-2">
               <Label className="text-caption text-text-tertiary">状态</Label>
               <div className="mt-1.5">
@@ -1108,7 +1077,7 @@ function AccountDrawerInner({
           <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">取消</Button>
           <Button
             disabled={!canSave}
-            onClick={() => onSave({ ...account, phone, userType, org, farmRoles: effectiveFarmRoles, wecomId, wechatId })}
+            onClick={() => onSave({ ...account, phone, userType, farmRoles: effectiveFarmRoles, wecomId, wechatId })}    
             className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
@@ -1251,7 +1220,6 @@ function CreateDialog({
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [userType, setUserType] = useState<UserType>("外部");
-  const [org, setOrg] = useState(ORG_OPTIONS[0]);
   const [farmRoles, setFarmRoles] = useState<FarmRole[]>([]);
 
   const baseRoles = userType === "内部" ? internalRoles : externalRoles;
@@ -1277,7 +1245,6 @@ function CreateDialog({
         name: name.trim(),
         phone: phone.trim(),
         userType,
-        org,
         farmRoles: effectiveFarmRoles,
         wecomId: null,
         wechatId: null,
@@ -1316,18 +1283,6 @@ function CreateDialog({
               <SelectContent>
                 <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
                 <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">所属组织</Label>
-            <Select value={org} onValueChange={setOrg}>
-              <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {ORG_OPTIONS.map((o) => (
-                  <SelectItem key={o} value={o} className="text-body-sm">{o}</SelectItem>
-                ))}
               </SelectContent>
             </Select>
           </div>
