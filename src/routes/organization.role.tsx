@@ -681,16 +681,18 @@ function RolePage() {
                   <div className="rounded-md border border-border overflow-hidden">
                     {(() => {
                       const actions: MiniActionKey[] = ["report", "pickup", "record"];
-                      const actionLabels = ["上报", "响应 / 处理", "执行 / 核销"];
+                      const actionLabels = ["上报", "响应", "执行 / 核销"];
+                      const evsFor = (a: MiniActionKey) =>
+                        miniEvents.filter((e) => hasAction(e, a));
                       const colChecked = (a: MiniActionKey) =>
-                        miniEvents.every((e) => cur.mini[e.key][a]);
+                        evsFor(a).every((e) => cur.mini[e.key][a]);
                       const colIndeterminate = (a: MiniActionKey) =>
-                        !colChecked(a) && miniEvents.some((e) => cur.mini[e.key][a]);
+                        !colChecked(a) && evsFor(a).some((e) => cur.mini[e.key][a]);
                       const allChecked = miniEvents.every((e) =>
-                        actions.every((a) => cur.mini[e.key][a]),
+                        actions.filter((a) => hasAction(e, a)).every((a) => cur.mini[e.key][a]),
                       );
                       const anyChecked = miniEvents.some((e) =>
-                        actions.some((a) => cur.mini[e.key][a]),
+                        actions.filter((a) => hasAction(e, a)).some((a) => cur.mini[e.key][a]),
                       );
                       const allIndeterminate = anyChecked && !allChecked;
                       return (
