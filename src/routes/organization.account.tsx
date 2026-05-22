@@ -802,7 +802,7 @@ function EditDialog({
           <Button variant="outline" onClick={onClose} className="h-9">取消</Button>
           <Button
             disabled={!canSave}
-            onClick={() => onSave({ ...account, phone, userType, org, farmRoles, wecomId })}
+            onClick={() => onSave({ ...account, phone, userType, org, farmRoles, wecomId, wechatId })}
             className="h-9 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
