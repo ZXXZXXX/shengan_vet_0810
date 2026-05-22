@@ -478,17 +478,19 @@ function RolePage() {
                       className="w-32"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <DropdownMenuItem onClick={() => openEdit(r.key)}>编辑</DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setConfirmAction({ kind: "toggle", role: r })}>
+                      <DropdownMenuItem disabled={!canManage} onClick={() => openEdit(r.key)}>编辑</DropdownMenuItem>
+                      <DropdownMenuItem disabled={!canManage} onClick={() => canManage && setConfirmAction({ kind: "toggle", role: r })}>
                         {r.enabled ? "停用" : "启用"}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
+                        disabled={!canManage}
                         className="text-destructive focus:text-destructive"
-                        onClick={() => setConfirmAction({ kind: "delete", role: r })}
+                        onClick={() => canManage && setConfirmAction({ kind: "delete", role: r })}
                       >
                         删除
                       </DropdownMenuItem>
+
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
