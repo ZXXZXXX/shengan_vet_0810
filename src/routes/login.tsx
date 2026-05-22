@@ -63,6 +63,7 @@ function LoginPage() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed || !isPhoneValid || code.length < 4) return;
+    setPcRole("admin");
     navigate({ to: "/workspace" });
   };
 
