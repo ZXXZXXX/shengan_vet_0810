@@ -1196,21 +1196,43 @@ export function WorkOrderPage({
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-section-title">确认诊疗方案无误</DialogTitle>
+            <DialogTitle className="text-section-title">确认执行方案无误</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div className="text-body-sm text-text-secondary">
               {detail ? `工作 ${detail.id} · ${detail.target}` : ""}
             </div>
-            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-40 overflow-y-auto">
+            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-56 overflow-y-auto">
               <div>
-                <div className="text-caption text-text-tertiary">诊断结论</div>
-                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{diagnosis || "—"}</p>
+                <div className="text-caption text-text-tertiary">处置结论</div>
+                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{conclusion || "—"}</p>
               </div>
               <div>
-                <div className="text-caption text-text-tertiary">治疗方案</div>
-                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{treatment || "—"}</p>
+                <div className="text-caption text-text-tertiary">用药 / 材料</div>
+                {planItems.length > 0 ? (
+                  <ul className="text-body-sm text-foreground space-y-0.5 mt-0.5">
+                    {planItems.map((it) => (
+                      <li key={it.id} className="tabular-nums">
+                        · {it.name} {it.dose && `· ${it.dose}`} {it.freq && `· ${it.freq}`} {it.course && `· ${it.course}`}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-body-sm text-text-tertiary">—</p>
+                )}
               </div>
+              {steps && (
+                <div>
+                  <div className="text-caption text-text-tertiary">操作步骤</div>
+                  <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{steps}</p>
+                </div>
+              )}
+              {followup && (
+                <div>
+                  <div className="text-caption text-text-tertiary">观察 / 复查</div>
+                  <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{followup}</p>
+                </div>
+              )}
             </div>
             <div>
               <div className="text-caption text-text-tertiary mb-1.5">
