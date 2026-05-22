@@ -1414,39 +1414,49 @@ function CreateDialog({
   };
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>新建账号</DialogTitle>
-          <DialogDescription>维护内部或外部人员账号，并为每个关联牧场指定角色</DialogDescription>
-        </DialogHeader>
+    <Sheet open onOpenChange={(o) => !o && onClose()}>
+      <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col gap-0">
+        <SheetHeader className="px-6 py-4 border-b border-border">
+          <SheetTitle className="text-card-title text-foreground text-left">新建账号</SheetTitle>
+          <SheetDescription className="text-caption text-text-tertiary text-left">
+            维护内部或外部人员账号，并为每个关联牧场指定角色
+          </SheetDescription>
+        </SheetHeader>
 
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-body-sm text-text-secondary">姓名</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} className="h-9" placeholder="请输入" />
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+          <section className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="h-5 w-1 rounded-full bg-primary" />
+              <h4 className="text-body font-medium text-foreground">基础信息</h4>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-body-sm text-text-secondary">手机号</Label>
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="h-9 tabular-nums" placeholder="11 位手机号" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-caption text-text-tertiary">姓名</Label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} className="h-9 text-body-sm" placeholder="请输入" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-caption text-text-tertiary">手机号</Label>
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="h-9 text-body-sm tabular-nums" placeholder="11 位手机号" />
+              </div>
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label className="text-caption text-text-tertiary">人员类型</Label>
+                <Select value={userType} onValueChange={(v) => handleUserTypeChange(v as UserType)}>
+                  <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
+                    <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">人员类型</Label>
-            <Select value={userType} onValueChange={(v) => handleUserTypeChange(v as UserType)}>
-              <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
-                <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label className="text-body-sm text-text-secondary">关联牧场 / 角色</Label>
+          <section className="space-y-3 pt-2 border-t border-border">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="h-5 w-1 rounded-full bg-primary" />
+                <h4 className="text-body font-medium text-foreground">关联牧场 / 角色</h4>
+              </div>
               <span className="text-caption text-text-tertiary">已选 {farmRoles.length} 个</span>
             </div>
             <FarmRolePicker
@@ -1461,21 +1471,21 @@ function CreateDialog({
             {incomplete && (
               <p className="text-caption text-warning">当前牧场未选择角色，提交时将自动取消该牧场关联</p>
             )}
-          </div>
+          </section>
         </div>
 
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={onClose} className="h-9">取消</Button>
+        <SheetFooter className="px-6 py-3 border-t border-border bg-card">
+          <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">取消</Button>
           <Button
             onClick={submit}
             disabled={!canSubmit}
-            className="h-9 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             创建账号
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }
 
