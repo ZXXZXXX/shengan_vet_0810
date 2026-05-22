@@ -85,7 +85,7 @@ type PcModuleKey = "workbench" | "archive" | "health" | "drug" | "organization" 
 
 const pcModules: { key: PcModuleKey; name: string; desc: string; required?: boolean }[] = [
   { key: "workbench", name: "工作台", desc: "首页数据看板与待办，仅展示当前角色已开通模块的相关数据", required: true },
-  { key: "archive", name: "牛只基础档案", desc: "牛场、牛舍、牛只档案的维护（必选）", required: true },
+  { key: "archive", name: "牛只基础档案", desc: "牛场、牛舍、牛只档案的维护（不可关闭）", required: true },
   { key: "health", name: "健康管理", desc: "疾病、疫苗、修蹄等健康事项的方案确认、审批与执行计划" },
   { key: "drug", name: "药品管理", desc: "药品档案、库存、调拨、取药与损耗管理" },
   { key: "organization", name: "组织管理", desc: "账号、角色、租户与团队管理" },
@@ -571,7 +571,7 @@ function RolePage() {
                                 {m.name}
                                 {locked && (
                                   <span className="text-caption text-primary bg-primary/10 border border-primary/20 rounded px-1.5 py-0 leading-5">
-                                    必备
+                                    不可关闭
                                   </span>
                                 )}
                               </div>
