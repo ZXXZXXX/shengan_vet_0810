@@ -613,15 +613,15 @@ function RolePage() {
                             <TableRow className="bg-surface-subtle hover:bg-surface-subtle">
                               <TableHead className="w-[220px] text-text-secondary">
                                 <div className="flex items-center gap-2">
-                                  <span>事项类型</span>
                                   {editable ? (
                                     <Checkbox
                                       checked={allIndeterminate ? "indeterminate" : allChecked}
                                       onCheckedChange={(v) => setMiniAll(!!v)}
-                                      className="ml-auto"
+                                      className="h-[18px] w-[18px] border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:border-primary"
                                       aria-label="全选"
                                     />
                                   ) : null}
+                                  <span>事项类型</span>
                                 </div>
                               </TableHead>
                               {actions.map((a, i) => {
@@ -633,18 +633,20 @@ function RolePage() {
                                     className="text-center text-text-secondary"
                                   >
                                     <div className="flex items-center justify-center gap-2">
-                                      <span>{actionLabels[i]}</span>
                                       {editable ? (
                                         <Checkbox
                                           checked={indet ? "indeterminate" : checked}
                                           onCheckedChange={(v) => setMiniColumn(a, !!v)}
+                                          className="h-[18px] w-[18px] border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:border-primary"
                                           aria-label={`整列：${actionLabels[i]}`}
                                         />
                                       ) : null}
+                                      <span>{actionLabels[i]}</span>
                                     </div>
                                   </TableHead>
                                 );
                               })}
+
 
                             </TableRow>
                           </TableHeader>
