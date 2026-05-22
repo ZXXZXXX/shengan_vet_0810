@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { setPcRole } from "@/lib/pc-role";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -62,6 +63,7 @@ function LoginPage() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed || !isPhoneValid || code.length < 4) return;
+    setPcRole("admin");
     navigate({ to: "/workspace" });
   };
 
@@ -74,6 +76,7 @@ function LoginPage() {
 
   const confirmBind = () => {
     if (!agreed || !isBindPhoneValid || bindCode.length < 4) return;
+    setPcRole("admin");
     setWecomStage("bound");
     setTimeout(() => navigate({ to: "/workspace" }), 800);
   };
