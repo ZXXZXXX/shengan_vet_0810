@@ -162,13 +162,6 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
                   </div>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <Building2 className="h-3.5 w-3.5 text-text-tertiary mt-0.5 shrink-0" />
-                  <div className="leading-tight min-w-0">
-                    <div className="text-caption text-text-tertiary">所属集团 / 生产域</div>
-                    <div className="text-body-sm text-foreground break-words">{currentUser.org}</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2.5">
                   <Briefcase className="h-3.5 w-3.5 text-text-tertiary mt-0.5 shrink-0" />
                   <div className="leading-tight">
                     <div className="text-caption text-text-tertiary">所属班组</div>
