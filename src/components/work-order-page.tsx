@@ -968,15 +968,36 @@ export function WorkOrderPage({
 
           {detail && canReview(role) && detail.status === "待审核" && !editingPlan && (
             <SheetFooter className="px-6 py-3 border-t border-border bg-card gap-2">
-              <Button variant="outline" className="gap-1.5" onClick={() => { setRejectReason(""); setConfirm("reject"); }}>
-                <X className="h-3.5 w-3.5" /> 驳回
-              </Button>
-              <Button
-                className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                onClick={() => { setAssignExecutor("__none__"); setConfirm("approve"); }}
-              >
-                <Check className="h-3.5 w-3.5" /> 通过
-              </Button>
+              {mode === "view" ? (
+                <Button
+                  className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                  onClick={() => setMode("process")}
+                >
+                  <Check className="h-3.5 w-3.5" /> 处理
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" className="gap-1.5" onClick={() => { setRejectReason(""); setConfirm("reject"); }}>
+                    <X className="h-3.5 w-3.5" /> 驳回
+                  </Button>
+                  <Button
+                    className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                    onClick={() => {
+                      if (!diagnosis.trim() || !treatment.trim()) {
+                        toast.error("执行方案不完整，请先编辑执行方案");
+                        setDraftDiagnosis(diagnosis);
+                        setDraftTreatment(treatment);
+                        setEditingPlan(true);
+                        return;
+                      }
+                      setAssignExecutor("__none__");
+                      setConfirm("approve");
+                    }}
+                  >
+                    <Check className="h-3.5 w-3.5" /> 确认提交
+                  </Button>
+                </>
+              )}
             </SheetFooter>
           )}
         </SheetContent>
