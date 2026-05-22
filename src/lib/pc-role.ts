@@ -6,9 +6,12 @@ const KEY = "pc:role";
 const listeners = new Set<() => void>();
 
 function read(): PcRole {
-  if (typeof window === "undefined") return "admin";
-  const v = localStorage.getItem(KEY) as PcRole | null;
-  if (v === "admin" || v === "manager" || v === "vet" || v === "assistant") return v;
+  // PC 端登录账号固定为超级管理员
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(KEY, "admin");
+    } catch {}
+  }
   return "admin";
 }
 
