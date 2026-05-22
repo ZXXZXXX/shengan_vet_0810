@@ -1478,3 +1478,148 @@ function CreateDialog({
     </Dialog>
   );
 }
+
+function BatchAssignDialog({
+  count,
+  selectedAccounts,
+  roles,
+  internalRoles,
+  onCreateRole,
+  onClose,
+  onApply,
+}: {
+  count: number;
+  selectedAccounts: Account[];
+  roles: string[];
+  internalRoles: string[];
+  onCreateRole: (r: string) => void;
+  onClose: () => void;
+  onApply: (farmRoles: FarmRole[], mode: "replace" | "merge") => void;
+}) {
+  const [mode, setMode] = useState<"merge" | "replace">("merge");
+  const [farmRoles, setFarmRoles] = useState<FarmRole[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const effective = useMemo(
+    () => farmRoles.filter((fr) => fr.roles.length > 0),
+    [farmRoles],
+  );
+  const canSubmit = effective.length > 0;
+
+  // 混合人员类型时给出提示
+  const hasInternal = selectedAccounts.some((a) => a.userType === "内部");
+  const hasExternal = selectedAccounts.some((a) => a.userType === "外部");
+  const mixed = hasInternal && hasExternal;
+
+  // 仅展示与所选账号类型相容的角色（混合则全部）
+  const visibleRoles = useMemo(() => {
+    if (mixed) return roles;
+    if (hasInternal) return roles.filter((r) => internalRoles.includes(r));
+    return roles.filter((r) => !internalRoles.includes(r));
+  }, [roles, internalRoles, mixed, hasInternal]);
+
+  return (
+    <>
+      <Dialog open onOpenChange={(o) => !o && onClose()}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>批量关联牧场 / 分配角色</DialogTitle>
+            <DialogDescription>
+              将对所选 {count} 个账号统一应用以下牧场与角色配置。
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* 模式 */}
+            <div className="rounded-md border border-border bg-surface-subtle p-3 space-y-2">
+              <div className="text-body-sm font-medium text-foreground">应用方式</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label className={`flex items-start gap-2 p-3 rounded-md border cursor-pointer ${mode === "merge" ? "border-primary bg-card" : "border-border bg-card hover:border-primary/40"}`}>
+                  <input
+                    type="radio"
+                    checked={mode === "merge"}
+                    onChange={() => setMode("merge")}
+                    className="mt-0.5 accent-primary"
+                  />
+                  <div className="min-w-0">
+                    <div className="text-body-sm text-foreground">追加合并</div>
+                    <div className="text-caption text-text-tertiary mt-0.5">
+                      在账号原有牧场 / 角色基础上合并新配置（同牧场角色取并集）。
+                    </div>
+                  </div>
+                </label>
+                <label className={`flex items-start gap-2 p-3 rounded-md border cursor-pointer ${mode === "replace" ? "border-primary bg-card" : "border-border bg-card hover:border-primary/40"}`}>
+                  <input
+                    type="radio"
+                    checked={mode === "replace"}
+                    onChange={() => setMode("replace")}
+                    className="mt-0.5 accent-primary"
+                  />
+                  <div className="min-w-0">
+                    <div className="text-body-sm text-foreground">覆盖替换</div>
+                    <div className="text-caption text-text-tertiary mt-0.5">
+                      清空账号原有牧场 / 角色，统一替换为以下配置。
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {mixed && (
+              <div className="rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-caption text-text-secondary">
+                所选账号同时包含内部与外部人员，请确认分配的角色对两类人员都适用。
+              </div>
+            )}
+
+            <FarmRolePicker
+              value={farmRoles}
+              onChange={setFarmRoles}
+              roles={visibleRoles}
+              onCreateRole={onCreateRole}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">
+              取消
+            </Button>
+            <Button
+              disabled={!canSubmit}
+              onClick={() => setConfirmOpen(true)}
+              className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            >
+              应用到 {count} 个账号
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              确认{mode === "replace" ? "覆盖替换" : "追加合并"}？
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              将对所选 {count} 个账号应用 {effective.length} 个牧场配置。
+              {mode === "replace" && "账号原有的牧场与角色将被清空并替换。"}
+              此操作会立即生效。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirmOpen(false);
+                onApply(effective, mode);
+              }}
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            >
+              确认应用
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
