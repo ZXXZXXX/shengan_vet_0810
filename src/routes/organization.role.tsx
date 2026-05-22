@@ -523,8 +523,10 @@ function RolePage() {
                       <Label className="text-caption text-text-tertiary">角色名称</Label>
                       {editable ? (
                         <Input
-                          defaultValue={activeRole.name}
+                          value={activeRole.name}
+                          onChange={(e) => updateActiveRole({ name: e.target.value })}
                           maxLength={6}
+                          placeholder="请输入角色名称（最多6个字）"
                           className="h-9 mt-1.5 bg-card border-border text-body-sm"
                         />
                       ) : (
