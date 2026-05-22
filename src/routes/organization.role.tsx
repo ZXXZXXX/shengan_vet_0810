@@ -56,6 +56,7 @@ import {
   Info,
 } from "lucide-react";
 import { toast } from "sonner";
+import { usePcRole, isSuperAdmin } from "@/lib/pc-role";
 
 export const Route = createFileRoute("/organization/role")({
   head: () => ({ meta: [{ title: "角色权限 — 奇点智牧" }] }),
@@ -206,8 +207,11 @@ const defaultPerms: RolePerms = {
 type ViewMode = "detail" | "edit";
 
 function RolePage() {
+  const pcRole = usePcRole();
+  const canManage = isSuperAdmin(pcRole);
   const [roles, setRoles] = useState<Role[]>(initialRoles);
   const [perms, setPerms] = useState<RolePerms>(defaultPerms);
+
 
   const [drawerRole, setDrawerRole] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("detail");
@@ -221,10 +225,12 @@ function RolePage() {
   const [draftRoleKey, setDraftRoleKey] = useState<string | null>(null);
 
   const startCreate = () => {
+    if (!canManage) return;
     if (roles.length >= 12) {
       toast.error("角色数量已达上限 12 个，如需更多请联系客服开放");
       return;
     }
+
     const key = `role_${Date.now()}`;
     setRoles((prev) => [
       ...prev,
@@ -282,12 +288,14 @@ function RolePage() {
     setViewMode("detail");
   };
   const openEdit = (key: RoleKey) => {
+    if (!canManage) return;
     setDrawerRole(key);
     setViewMode("edit");
   };
 
   const activeRole = drawerRole ? roles.find((r) => r.key === drawerRole)! : null;
-  const editable = viewMode === "edit";
+  const editable = viewMode === "edit" && canManage;
+
   const cur = drawerRole ? perms[drawerRole] : null;
 
   const setPcAllow = (v: boolean) => {
@@ -393,15 +401,22 @@ function RolePage() {
               {roles.length >= 12 && (
                 <span className="ml-2 text-destructive">已达上限，如需更多请联系客服开放</span>
               )}
+              {!canManage && (
+                <span className="ml-2 text-text-tertiary">当前账号无角色管理权限，仅可查看</span>
+              )}
             </p>
           </div>
           <Button
             size="sm"
             onClick={startCreate}
-            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            disabled={!canManage}
+            title={!canManage ? "仅超级管理员可新建角色" : undefined}
+            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="h-3.5 w-3.5" /> 新建角色
           </Button>
+
+
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -463,17 +478,19 @@ function RolePage() {
                       className="w-32"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <DropdownMenuItem onClick={() => openEdit(r.key)}>编辑</DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setConfirmAction({ kind: "toggle", role: r })}>
+                      <DropdownMenuItem disabled={!canManage} onClick={() => openEdit(r.key)}>编辑</DropdownMenuItem>
+                      <DropdownMenuItem disabled={!canManage} onClick={() => canManage && setConfirmAction({ kind: "toggle", role: r })}>
                         {r.enabled ? "停用" : "启用"}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
+                        disabled={!canManage}
                         className="text-destructive focus:text-destructive"
-                        onClick={() => setConfirmAction({ kind: "delete", role: r })}
+                        onClick={() => canManage && setConfirmAction({ kind: "delete", role: r })}
                       >
                         删除
                       </DropdownMenuItem>
+
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -521,7 +538,7 @@ function RolePage() {
                   </SheetDescription>
                 </div>
               </div>
-              {viewMode === "detail" && activeRole && (
+              {viewMode === "detail" && activeRole && canManage && (
                 <button
                   className="h-8 px-2 text-body-sm font-normal text-primary hover:underline"
                   onClick={() => setViewMode("edit")}
@@ -529,6 +546,7 @@ function RolePage() {
                   编辑
                 </button>
               )}
+
             </div>
           </SheetHeader>
 
@@ -650,6 +668,13 @@ function RolePage() {
                                 )}
                               </div>
                               <div className="text-caption text-text-tertiary mt-0.5">{m.desc}</div>
+                              {m.key === "organization" && (
+                                <div className="mt-1.5 inline-flex items-start gap-1 text-caption text-text-tertiary bg-surface-subtle border border-border rounded px-2 py-1">
+                                  <Info className="h-3 w-3 mt-0.5 shrink-0" />
+                                  <span>角色管理权限仅超级管理员可用，无法对场长等其他角色开放</span>
+                                </div>
+                              )}
+
                             </div>
                           </label>
                         );

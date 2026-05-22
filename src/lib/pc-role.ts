@@ -1,15 +1,15 @@
 import { useSyncExternalStore } from "react";
 
-export type PcRole = "manager" | "vet" | "assistant";
+export type PcRole = "admin" | "manager" | "vet" | "assistant";
 
 const KEY = "pc:role";
 const listeners = new Set<() => void>();
 
 function read(): PcRole {
-  if (typeof window === "undefined") return "vet";
+  if (typeof window === "undefined") return "admin";
   const v = localStorage.getItem(KEY) as PcRole | null;
-  if (v === "manager" || v === "vet" || v === "assistant") return v;
-  return "vet";
+  if (v === "admin" || v === "manager" || v === "vet" || v === "assistant") return v;
+  return "admin";
 }
 
 export function setPcRole(r: PcRole) {
@@ -25,11 +25,12 @@ export function usePcRole(): PcRole {
       return () => listeners.delete(cb);
     },
     read,
-    () => "vet",
+    () => "admin",
   );
 }
 
 export const pcRoleLabel: Record<PcRole, string> = {
+  admin: "超级管理员",
   manager: "场长（可审核）",
   vet: "兽医（可审核）",
   assistant: "兽医助理（仅查看）",
@@ -37,5 +38,10 @@ export const pcRoleLabel: Record<PcRole, string> = {
 
 /** 是否拥有"审核（通过/驳回）"权限 */
 export function canReview(r: PcRole): boolean {
-  return r === "vet" || r === "manager";
+  return r === "admin" || r === "vet" || r === "manager";
+}
+
+/** 是否为超级管理员（可管理角色等） */
+export function isSuperAdmin(r: PcRole): boolean {
+  return r === "admin";
 }
