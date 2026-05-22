@@ -72,12 +72,20 @@ function MHomePage() {
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
   const isApprover = canApprove(role);
   const isExternal = roleGroup[role] === "external";
-  // 内部非审批人（如兽医助理）没有"待响应/待审批"环节
-  const showFirstBucket = isExternal || isApprover;
+  // 审批人看“待审批”；执行人（兽医助理、修蹄工等）看“待响应”
+  const showFirstBucket = true;
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
+  // 不同执行角色可响应的工单类型（按 ID 前缀）
+  const canRespond = (id: string) => {
+    if (isApprover) return true;
+    if (role === "vet_assistant") return id.startsWith("WO-") || id.startsWith("LS-");
+    if (role === "hoof_trimmer") return id.startsWith("HF-");
+    return false;
+  };
   const claimed = useClaimed();
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
   const farm = useFarm();
+
 
   return (
     <MobileShell>
