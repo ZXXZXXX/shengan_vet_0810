@@ -374,13 +374,7 @@ function RolePage() {
           </div>
           <Button
             size="sm"
-            onClick={() => {
-              if (roles.length >= 12) {
-                toast.error("角色数量已达上限 12 个，如需更多请联系客服开放");
-                return;
-              }
-              setIsCreateOpen(true);
-            }}
+            onClick={startCreate}
             className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             <Plus className="h-3.5 w-3.5" /> 新建角色
