@@ -945,6 +945,15 @@ export function WorkOrderPage({
   );
 }
 
+function FieldNode({ label, node }: { label: string; node: React.ReactNode }) {
+  return (
+    <div className="leading-tight">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="mt-0.5">{node}</div>
+    </div>
+  );
+}
+
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="leading-tight">
