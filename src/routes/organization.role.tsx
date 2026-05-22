@@ -15,6 +15,14 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -551,6 +559,7 @@ function RolePage() {
                   <div className="rounded-md border border-border overflow-hidden">
                     {(() => {
                       const actions: MiniActionKey[] = ["report", "pickup", "record"];
+                      const actionLabels = ["上报", "响应 / 处理", "执行 / 核销"];
                       const colChecked = (a: MiniActionKey) =>
                         miniEvents.every((e) => cur.mini[e.key][a]);
                       const colIndeterminate = (a: MiniActionKey) =>
@@ -561,118 +570,104 @@ function RolePage() {
                       const anyChecked = miniEvents.some((e) =>
                         actions.some((a) => cur.mini[e.key][a]),
                       );
+                      const allIndeterminate = anyChecked && !allChecked;
                       return (
-                        <>
-                          {editable && (
-                            <div className="flex items-center justify-between px-4 py-2 bg-surface-subtle border-b border-border">
-                              <span className="text-caption text-text-tertiary">
-                                提示：点击表头可整列勾选；点击事项名称下方按钮可整行勾选
-                              </span>
-                              <div className="flex items-center gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 px-2 text-caption text-text-secondary hover:text-foreground"
-                                  onClick={() => setMiniAll(true)}
-                                  disabled={allChecked}
-                                >
-                                  全选
-                                </Button>
-                                <span className="h-3 w-px bg-border" />
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 px-2 text-caption text-text-secondary hover:text-foreground"
-                                  onClick={() => setMiniAll(false)}
-                                  disabled={!anyChecked}
-                                >
-                                  全部清空
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                          <div className="grid grid-cols-12 gap-3 px-4 h-10 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
-                            <div className="col-span-3">事项类型</div>
-                            {actions.map((a, i) => (
-                              <div key={a} className="col-span-3 flex items-center justify-center gap-2">
-                                {editable ? (
-                                  <Checkbox
-                                    checked={
-                                      colIndeterminate(a)
-                                        ? "indeterminate"
-                                        : colChecked(a)
-                                    }
-                                    onCheckedChange={(v) => setMiniColumn(a, !!v)}
-                                    aria-label={["上报", "响应 / 处理", "执行 / 核销"][i]}
-                                  />
-                                ) : null}
-                                <span>{["上报", "响应 / 处理", "执行 / 核销"][i]}</span>
-                              </div>
-                            ))}
-                          </div>
-                          {miniEvents.map((e) => {
-                            const p = cur.mini[e.key];
-                            const all = p.report && p.pickup && p.record;
-                            const none = !p.report && !p.pickup && !p.record;
-                            return (
-                              <div
-                                key={e.key}
-                                className="grid grid-cols-12 gap-3 px-4 py-3 items-center border-b border-border last:border-0 hover:bg-surface-subtle"
-                              >
-                                <div className="col-span-3 min-w-0">
-                                  <div className="text-body-sm font-medium text-foreground truncate">
-                                    {e.name}
-                                  </div>
-                                  {editable && (
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                      <button
-                                        className={`text-caption ${
-                                          all
-                                            ? "text-text-tertiary cursor-default"
-                                            : "text-primary hover:underline"
-                                        }`}
-                                        onClick={() => setMiniRow(e.key, true)}
-                                        disabled={all}
-                                      >
-                                        整行选中
-                                      </button>
-                                      <span className="text-text-tertiary">·</span>
-                                      <button
-                                        className={`text-caption ${
-                                          none
-                                            ? "text-text-tertiary cursor-default"
-                                            : "text-text-secondary hover:text-foreground hover:underline"
-                                        }`}
-                                        onClick={() => setMiniRow(e.key, false)}
-                                        disabled={none}
-                                      >
-                                        清空
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                                {actions.map((a) => (
-                                  <label
-                                    key={a}
-                                    className={`col-span-3 flex items-center justify-center gap-2 ${
-                                      editable ? "cursor-pointer" : ""
-                                    }`}
-                                  >
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-surface-subtle hover:bg-surface-subtle">
+                              <TableHead className="w-[220px] text-text-secondary">
+                                <div className="flex items-center gap-2">
+                                  {editable ? (
                                     <Checkbox
-                                      checked={p[a]}
-                                      disabled={!editable}
-                                      onCheckedChange={(v) => setMini(e.key, a, !!v)}
+                                      checked={
+                                        allIndeterminate ? "indeterminate" : allChecked
+                                      }
+                                      onCheckedChange={(v) => setMiniAll(!!v)}
+                                      aria-label="全选 / 全部清空"
                                     />
-                                    <span className="text-body-sm text-text-secondary">{e.actions[a]}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            );
-                          })}
-                        </>
+                                  ) : null}
+                                  <span>事项类型</span>
+                                </div>
+                              </TableHead>
+                              {actions.map((a, i) => (
+                                <TableHead
+                                  key={a}
+                                  className="text-center text-text-secondary"
+                                >
+                                  <div className="flex items-center justify-center gap-2">
+                                    {editable ? (
+                                      <Checkbox
+                                        checked={
+                                          colIndeterminate(a)
+                                            ? "indeterminate"
+                                            : colChecked(a)
+                                        }
+                                        onCheckedChange={(v) => setMiniColumn(a, !!v)}
+                                        aria-label={`整列：${actionLabels[i]}`}
+                                      />
+                                    ) : null}
+                                    <span>{actionLabels[i]}</span>
+                                  </div>
+                                </TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {miniEvents.map((e) => {
+                              const p = cur.mini[e.key];
+                              const rowAll = p.report && p.pickup && p.record;
+                              const rowAny = p.report || p.pickup || p.record;
+                              const rowIndeterminate = rowAny && !rowAll;
+                              return (
+                                <TableRow key={e.key} className="hover:bg-surface-subtle">
+                                  <TableCell className="w-[220px]">
+                                    <div className="flex items-center gap-2">
+                                      {editable ? (
+                                        <Checkbox
+                                          checked={
+                                            rowIndeterminate ? "indeterminate" : rowAll
+                                          }
+                                          onCheckedChange={(v) => setMiniRow(e.key, !!v)}
+                                          aria-label={`整行：${e.name}`}
+                                        />
+                                      ) : null}
+                                      <span className="text-body-sm font-medium text-foreground">
+                                        {e.name}
+                                      </span>
+                                    </div>
+                                  </TableCell>
+                                  {actions.map((a) => (
+                                    <TableCell key={a} className="text-center">
+                                      <label
+                                        className={`inline-flex items-center justify-center gap-2 ${
+                                          editable ? "cursor-pointer" : ""
+                                        }`}
+                                      >
+                                        <Checkbox
+                                          checked={p[a]}
+                                          disabled={!editable}
+                                          onCheckedChange={(v) => setMini(e.key, a, !!v)}
+                                        />
+                                        <span className="text-body-sm text-text-secondary">
+                                          {e.actions[a]}
+                                        </span>
+                                      </label>
+                                    </TableCell>
+                                  ))}
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
                       );
                     })()}
                   </div>
+                  {editable && (
+                    <p className="text-caption text-text-tertiary flex items-start gap-1.5">
+                      <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                      表头复选框可整列勾选 / 清除；行首复选框可整行勾选 / 清除；左上角复选框可一键全选或全部清空。
+                    </p>
+                  )}
 
                 </section>
               </>
