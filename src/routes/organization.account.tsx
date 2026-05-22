@@ -854,6 +854,8 @@ function CreateDialog({
         org,
         farmRoles,
         wecomId: null,
+        wechatId: null,
+
         status: "启用",
         createdAt: new Date().toISOString().slice(0, 10),
       },
