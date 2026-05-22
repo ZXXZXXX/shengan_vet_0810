@@ -716,21 +716,72 @@ function RoleCombobox({
 }
 
 
-function EditDialog({
+function AccountDrawer({
   account,
+  mode,
+  onModeChange,
   internalRoles,
   externalRoles,
   onClose,
   onSave,
   onCreateRole,
+  userTypeTagClass,
 }: {
-  account: Account;
+  account: Account | null;
+  mode: "detail" | "edit";
+  onModeChange: (m: "detail" | "edit") => void;
   internalRoles: string[];
   externalRoles: string[];
   onClose: () => void;
   onSave: (a: Account) => void;
   onCreateRole: (type: UserType, r: string) => void;
+  userTypeTagClass: (t: UserType) => string;
 }) {
+  return (
+    <Sheet open={!!account} onOpenChange={(v) => !v && onClose()}>
+      <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col gap-0">
+        {account && (
+          <AccountDrawerInner
+            key={account.id}
+            account={account}
+            mode={mode}
+            onModeChange={onModeChange}
+            internalRoles={internalRoles}
+            externalRoles={externalRoles}
+            onClose={onClose}
+            onSave={onSave}
+            onCreateRole={onCreateRole}
+            userTypeTagClass={userTypeTagClass}
+          />
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function AccountDrawerInner({
+  account,
+  mode,
+  onModeChange,
+  internalRoles,
+  externalRoles,
+  onClose,
+  onSave,
+  onCreateRole,
+  userTypeTagClass,
+}: {
+  account: Account;
+  mode: "detail" | "edit";
+  onModeChange: (m: "detail" | "edit") => void;
+  internalRoles: string[];
+  externalRoles: string[];
+  onClose: () => void;
+  onSave: (a: Account) => void;
+  onCreateRole: (type: UserType, r: string) => void;
+  userTypeTagClass: (t: UserType) => string;
+}) {
+  const editable = mode === "edit";
+
   const [phone, setPhone] = useState(account.phone);
   const [userType, setUserType] = useState<UserType>(account.userType);
   const [org, setOrg] = useState(account.org);
@@ -738,10 +789,8 @@ function EditDialog({
   const [wecomId, setWecomId] = useState<string | null>(account.wecomId);
   const [wechatId, setWechatId] = useState<string | null>(account.wechatId);
 
-
   const orgValue = ORG_OPTIONS.includes(org) ? org : ORG_OPTIONS[0];
   const baseRoles = userType === "内部" ? internalRoles : externalRoles;
-  // 切换人员类型时，已选 farmRoles 中不属于当前类型角色的清空，避免脏数据
   const availableRoles = useMemo(() => {
     const set = new Set(baseRoles);
     farmRoles.forEach((fr) => fr.roles.forEach((r) => baseRoles.includes(r) && set.add(r)));
@@ -752,128 +801,235 @@ function EditDialog({
   const canSave = farmRoles.length > 0 && !incomplete;
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>编辑账号</DialogTitle>
-          <DialogDescription>修改手机号、所属组织、关联牧场及对应角色或解绑企微 ID</DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">姓名</Label>
-            <Input value={account.name} disabled className="h-9" />
+    <>
+      <SheetHeader className="px-6 py-4 border-b border-border">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="h-10 w-10 rounded-full bg-brand-subtle flex items-center justify-center shrink-0 text-primary text-body font-medium">
+              {account.initial}
+            </div>
+            <div className="min-w-0">
+              <SheetTitle className="text-card-title text-foreground truncate text-left">
+                {account.name} · {editable ? "编辑" : "详情"}
+              </SheetTitle>
+              <SheetDescription className="text-caption text-text-tertiary text-left font-mono">
+                {account.id}
+              </SheetDescription>
+            </div>
           </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">人员类型</Label>
-            <Select
-              value={userType}
-              onValueChange={(v) => {
-                const next = v as UserType;
-                if (next !== userType) {
-                  setUserType(next);
-                  setFarmRoles((cur) => cur.map((fr) => ({ ...fr, roles: [] })));
-                }
-              }}
+          {!editable && (
+            <button
+              className="h-8 px-2 text-body-sm font-normal text-primary hover:underline"
+              onClick={() => onModeChange("edit")}
             >
-              <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
-                <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-phone" className="text-body-sm text-text-secondary">手机号</Label>
-            <Input id="edit-phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="h-9 tabular-nums" />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">所属组织</Label>
-            <Select value={orgValue} onValueChange={setOrg}>
-              <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {ORG_OPTIONS.map((o) => (
-                  <SelectItem key={o} value={o} className="text-body-sm">{o}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label className="text-body-sm text-text-secondary">关联牧场 / 角色</Label>
-              <span className="text-caption text-text-tertiary">
-                已选 {farmRoles.length} 个{farmRoles.length > 1 ? "（可在牧场间切换）" : ""}
-              </span>
-            </div>
-            <FarmRolePicker
-              value={farmRoles}
-              onChange={setFarmRoles}
-              roles={availableRoles}
-              onCreateRole={(r) => onCreateRole(userType, r)}
-            />
-            {incomplete && (
-              <p className="text-caption text-warning">请为每个关联牧场选择角色后再保存</p>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">企微 ID</Label>
-            <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface-subtle px-3 h-9">
-              {wecomId ? (
-                <>
-                  <span className="text-body-sm font-mono text-text-secondary truncate" title="已脱敏显示">{maskId(wecomId)}</span>
-                  <Button type="button" variant="ghost" size="sm" onClick={() => setWecomId(null)} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
-                    <Unlink className="h-3 w-3" /> 解绑
-                  </Button>
-                </>
-              ) : (
-                <span className="tag tag-muted">未绑定</span>
-              )}
-            </div>
-            {!wecomId && account.wecomId && (
-              <p className="text-caption text-text-tertiary">保存后该用户需重新通过企业微信扫码绑定</p>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-body-sm text-text-secondary">微信 ID</Label>
-            <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface-subtle px-3 h-9">
-              {wechatId ? (
-                <>
-                  <span className="text-body-sm font-mono text-text-secondary truncate" title="已脱敏显示">{maskId(wechatId)}</span>
-                  <Button type="button" variant="ghost" size="sm" onClick={() => setWechatId(null)} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
-                    <Unlink className="h-3 w-3" /> 解绑
-                  </Button>
-                </>
-              ) : (
-                <span className="tag tag-muted">未绑定</span>
-              )}
-            </div>
-            {!wechatId && account.wechatId && (
-              <p className="text-caption text-text-tertiary">保存后该用户需重新通过微信扫码绑定</p>
-            )}
-          </div>
-
+              编辑
+            </button>
+          )}
         </div>
+      </SheetHeader>
 
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={onClose} className="h-9">取消</Button>
+      <div className="flex-1 overflow-y-auto">
+        {/* 基础信息 */}
+        <section className="px-6 py-5 border-b border-border space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="h-5 w-1 rounded-full bg-primary" />
+            <h4 className="text-body font-medium text-foreground">基础信息</h4>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-caption text-text-tertiary">姓名</Label>
+              <div className="mt-1.5">
+                {editable ? (
+                  <Input value={account.name} disabled className="h-9 bg-card border-border text-body-sm" />
+                ) : (
+                  <div className="text-body text-foreground">{account.name}</div>
+                )}
+              </div>
+            </div>
+            <div>
+              <Label className="text-caption text-text-tertiary">人员类型</Label>
+              <div className="mt-1.5">
+                {editable ? (
+                  <Select
+                    value={userType}
+                    onValueChange={(v) => {
+                      const next = v as UserType;
+                      if (next !== userType) {
+                        setUserType(next);
+                        setFarmRoles((cur) => cur.map((fr) => ({ ...fr, roles: [] })));
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-9 text-body-sm bg-card border-border"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="内部" className="text-body-sm">内部</SelectItem>
+                      <SelectItem value="外部" className="text-body-sm">外部</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <span className={`tag ${userTypeTagClass(account.userType)}`}>{account.userType}</span>
+                )}
+              </div>
+            </div>
+            <div>
+              <Label className="text-caption text-text-tertiary">手机号</Label>
+              <div className="mt-1.5">
+                {editable ? (
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="h-9 bg-card border-border text-body-sm tabular-nums" />
+                ) : (
+                  <div className="text-body text-foreground tabular-nums">{account.phone}</div>
+                )}
+              </div>
+            </div>
+            <div>
+              <Label className="text-caption text-text-tertiary">所属组织</Label>
+              <div className="mt-1.5">
+                {editable ? (
+                  <Select value={orgValue} onValueChange={setOrg}>
+                    <SelectTrigger className="h-9 text-body-sm bg-card border-border"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {ORG_OPTIONS.map((o) => (
+                        <SelectItem key={o} value={o} className="text-body-sm">{o}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="text-body text-foreground">{account.org}</div>
+                )}
+              </div>
+            </div>
+            <div className="sm:col-span-2">
+              <Label className="text-caption text-text-tertiary">状态</Label>
+              <div className="mt-1.5">
+                <span className={`tag ${account.status === "启用" ? "tag-success" : "tag-muted"}`}>{account.status}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 关联牧场 / 角色 */}
+        <section className="px-6 py-5 border-b border-border space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="h-5 w-1 rounded-full bg-primary" />
+              <h4 className="text-body font-medium text-foreground">关联牧场 / 角色</h4>
+            </div>
+            {editable && (
+              <span className="text-caption text-text-tertiary">已选 {farmRoles.length} 个牧场</span>
+            )}
+          </div>
+
+          {editable ? (
+            <>
+              <FarmRolePicker
+                value={farmRoles}
+                onChange={setFarmRoles}
+                roles={availableRoles}
+                onCreateRole={(r) => onCreateRole(userType, r)}
+              />
+              {incomplete && (
+                <p className="text-caption text-warning">请为每个关联牧场选择至少一个角色后再保存</p>
+              )}
+            </>
+          ) : (
+            <div className="space-y-2">
+              {account.farmRoles.length === 0 ? (
+                <span className="tag tag-muted">未关联</span>
+              ) : (
+                account.farmRoles.map((fr) => (
+                  <div key={fr.farm} className="flex items-center gap-2 flex-wrap">
+                    <span className="tag tag-muted whitespace-nowrap">{fr.farm}</span>
+                    {fr.roles.length === 0 ? (
+                      <span className="tag tag-muted">未分配</span>
+                    ) : (
+                      fr.roles.map((r) => (
+                        <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
+                      ))
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* 绑定 ID */}
+        <section className="px-6 py-5 space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="h-5 w-1 rounded-full bg-primary" />
+            <h4 className="text-body font-medium text-foreground">第三方绑定</h4>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <BindRow
+              label="企微 ID"
+              value={editable ? wecomId : account.wecomId}
+              editable={editable}
+              onUnbind={() => setWecomId(null)}
+              hint={editable && !wecomId && account.wecomId ? "保存后该用户需重新通过企业微信扫码绑定" : null}
+            />
+            <BindRow
+              label="微信 ID"
+              value={editable ? wechatId : account.wechatId}
+              editable={editable}
+              onUnbind={() => setWechatId(null)}
+              hint={editable && !wechatId && account.wechatId ? "保存后该用户需重新通过微信扫码绑定" : null}
+            />
+          </div>
+        </section>
+      </div>
+
+      {editable && (
+        <SheetFooter className="px-6 py-3 border-t border-border bg-card">
+          <Button variant="outline" onClick={onClose} className="h-9 text-body-sm font-normal">取消</Button>
           <Button
             disabled={!canSave}
             onClick={() => onSave({ ...account, phone, userType, org, farmRoles, wecomId, wechatId })}
-            className="h-9 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
           >
             保存
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      )}
+    </>
   );
 }
+
+function BindRow({
+  label,
+  value,
+  editable,
+  onUnbind,
+  hint,
+}: {
+  label: string;
+  value: string | null;
+  editable: boolean;
+  onUnbind: () => void;
+  hint: string | null;
+}) {
+  return (
+    <div>
+      <Label className="text-caption text-text-tertiary">{label}</Label>
+      <div className="mt-1.5 flex items-center justify-between gap-2 rounded-md border border-border bg-surface-subtle px-3 h-9">
+        {value ? (
+          <>
+            <span className="text-body-sm font-mono text-text-secondary truncate" title="已脱敏显示">{maskId(value)}</span>
+            {editable && (
+              <Button type="button" variant="ghost" size="sm" onClick={onUnbind} className="h-7 gap-1 text-caption text-destructive hover:text-destructive">
+                <Unlink className="h-3 w-3" /> 解绑
+              </Button>
+            )}
+          </>
+        ) : (
+          <span className="tag tag-muted">未绑定</span>
+        )}
+      </div>
+      {hint && <p className="mt-1 text-caption text-text-tertiary">{hint}</p>}
+    </div>
+  );
+}
+
 
 function CreateDialog({
   internalRoles,
