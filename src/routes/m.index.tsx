@@ -72,9 +72,8 @@ function MHomePage() {
   const role = useRole();
   const canInventory = canViewOperations(role); // 仅具备权限的账号可见库存概况
   const isApprover = canApprove(role);
-  const isExternal = roleGroup[role] === "external";
-  // 内部非审批人（如兽医助理）没有"待响应/待审批"环节
-  const showFirstBucket = isExternal || isApprover;
+  // 所有角色都能响应/处理其权限范围内的工单；审批人显示"待审批"，其他角色显示"待响应"
+  const showFirstBucket = true;
   const firstBucketLabel = isApprover ? "待审批" : "待响应";
   const claimed = useClaimed();
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
