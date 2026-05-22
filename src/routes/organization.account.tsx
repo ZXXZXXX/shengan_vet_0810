@@ -311,15 +311,64 @@ function AccountPage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="text-caption text-text-tertiary">关联牧场</div>
-                  <Select value={filterFarm} onValueChange={setFilterFarm}>
-                    <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
-                    <SelectContent className="max-h-64">
-                      <SelectItem value="all" className="text-body-sm">全部牧场</SelectItem>
-                      {FARM_OPTIONS.map((f) => (
-                        <SelectItem key={f} value={f} className="text-body-sm">{f}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={farmFilterOpen} onOpenChange={setFarmFilterOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-card px-3 text-body-sm text-left hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0"
+                      >
+                        <span className={filterFarms.length === 0 ? "text-text-tertiary" : "text-foreground truncate"}>
+                          {filterFarms.length === 0
+                            ? "全部牧场"
+                            : filterFarms.length === 1
+                              ? filterFarms[0]
+                              : `已选 ${filterFarms.length} 个牧场`}
+                        </span>
+                        <ChevronDown className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="输入牧场名称搜索" className="text-body-sm" />
+                        <CommandList className="max-h-64">
+                          <CommandEmpty className="text-caption text-text-tertiary py-4 text-center">无匹配牧场</CommandEmpty>
+                          <CommandGroup>
+                            {FARM_OPTIONS.map((f) => {
+                              const checked = filterFarms.includes(f);
+                              return (
+                                <CommandItem
+                                  key={f}
+                                  value={f}
+                                  onSelect={() => {
+                                    setFilterFarms((prev) =>
+                                      prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f],
+                                    );
+                                  }}
+                                  className="text-body-sm gap-2"
+                                >
+                                  <Checkbox checked={checked} className="h-4 w-4 pointer-events-none" />
+                                  <span className="flex-1 truncate">{f}</span>
+                                  {checked && <Check className="h-3.5 w-3.5 text-primary" />}
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                        </CommandList>
+                        {filterFarms.length > 0 && (
+                          <div className="border-t border-border px-2 py-1.5 flex items-center justify-between">
+                            <span className="text-caption text-text-tertiary">已选 {filterFarms.length} 个</span>
+                            <button
+                              type="button"
+                              onClick={() => setFilterFarms([])}
+                              className="text-caption text-text-tertiary hover:text-foreground inline-flex items-center gap-1"
+                            >
+                              <X className="h-3 w-3" /> 清空
+                            </button>
+                          </div>
+                        )}
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-1.5">
                   <div className="text-caption text-text-tertiary">状态</div>
