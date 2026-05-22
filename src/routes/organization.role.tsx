@@ -193,6 +193,8 @@ function RolePage() {
 
   const [drawerRole, setDrawerRole] = useState<RoleKey | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("detail");
+  const [hoverCol, setHoverCol] = useState<MiniActionKey | null>(null);
+  const [hoverRow, setHoverRow] = useState<MiniEventKey | null>(null);
 
   const [confirmAction, setConfirmAction] = useState<
     | { kind: "toggle"; role: Role }
