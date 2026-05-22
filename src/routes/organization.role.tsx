@@ -475,43 +475,42 @@ function RolePage() {
                       />
                     </div>
                   </div>
+                  <p className="text-caption text-text-tertiary flex items-start gap-1.5 -mt-1">
+                    <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                    PC 模块权限不拆分“只读 / 操作”，可进入即视为可管理。健康事项审批、确认方案、执行计划配置、工单终止，由「允许登录 PC 端 + 健康管理」共同决定。
+                  </p>
 
                   {cur.pc.allowLogin ? (
-                    <>
-                      <div className="rounded-md border border-border overflow-hidden">
-                        {pcModules.map((m, idx) => {
-                          const checked = cur.pc.modules[m.key];
-                          return (
-                            <label
-                              key={m.key}
-                              className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-surface-subtle ${
-                                idx > 0 ? "border-t border-border" : ""
-                              } ${!editable ? "cursor-default" : ""}`}
-                            >
-                              <Checkbox
-                                checked={checked}
-                                disabled={!editable}
-                                onCheckedChange={(v) => setPcModule(m.key, !!v)}
-                                className="mt-0.5"
-                              />
-                              <div className="min-w-0 flex-1">
-                                <div className="text-body-sm font-medium text-foreground">{m.name}</div>
-                                <div className="text-caption text-text-tertiary mt-0.5">{m.desc}</div>
-                              </div>
-                            </label>
-                          );
-                        })}
-                      </div>
-                      <p className="text-caption text-text-tertiary flex items-start gap-1.5">
-                        <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                        PC 模块权限不拆分“只读 / 操作”，可进入即视为可管理。健康事项审批、确认方案、执行计划配置、工单终止，由「允许登录 PC 端 + 健康管理」共同决定。
-                      </p>
-                    </>
+                    <div className="rounded-md border border-border overflow-hidden">
+                      {pcModules.map((m, idx) => {
+                        const checked = cur.pc.modules[m.key];
+                        return (
+                          <label
+                            key={m.key}
+                            className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-surface-subtle ${
+                              idx > 0 ? "border-t border-border" : ""
+                            } ${!editable ? "cursor-default" : ""}`}
+                          >
+                            <Checkbox
+                              checked={checked}
+                              disabled={!editable}
+                              onCheckedChange={(v) => setPcModule(m.key, !!v)}
+                              className="mt-0.5"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <div className="text-body-sm font-medium text-foreground">{m.name}</div>
+                              <div className="text-caption text-text-tertiary mt-0.5">{m.desc}</div>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
                   ) : (
                     <div className="rounded-md border border-dashed border-border bg-surface-subtle px-4 py-6 text-center text-body-sm text-text-tertiary">
                       已关闭 PC 端登录权限
                     </div>
                   )}
+
                 </section>
 
                 {/* 3. 小程序现场能力 */}
