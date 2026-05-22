@@ -644,30 +644,59 @@ function FarmRolePicker({
           </div>
           <div className="space-y-1.5">
             {value.map((fr) => (
-              <div key={fr.farm} className="flex items-center gap-2">
-                <span className="tag tag-muted whitespace-nowrap shrink-0">{fr.farm}</span>
-                <Select value={fr.role} onValueChange={(v) => setRoleFor(fr.farm, v)}>
-                  <SelectTrigger className="h-8 text-body-sm bg-card flex-1">
-                    <SelectValue placeholder="选择角色" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roles.map((r) => (
-                      <SelectItem key={r} value={r} className="text-body-sm">{r}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div key={fr.farm} className="flex items-start gap-2">
+                <span className="tag tag-muted whitespace-nowrap shrink-0 mt-1">{fr.farm}</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex-1 min-h-8 px-2 py-1 text-left rounded-md border border-border bg-card text-body-sm hover:border-primary/40 flex flex-wrap items-center gap-1"
+                    >
+                      {fr.roles.length === 0 ? (
+                        <span className="text-text-tertiary">选择角色（可多选）</span>
+                      ) : (
+                        fr.roles.map((r) => (
+                          <span key={r} className="tag tag-brand whitespace-nowrap">{r}</span>
+                        ))
+                      )}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-56 p-1">
+                    <div className="max-h-56 overflow-y-auto">
+                      {roles.length === 0 ? (
+                        <div className="text-caption text-text-tertiary text-center py-3">暂无可选角色</div>
+                      ) : (
+                        roles.map((r) => {
+                          const checked = fr.roles.includes(r);
+                          return (
+                            <label
+                              key={r}
+                              className="flex items-center gap-2 px-2 py-1.5 rounded text-body-sm cursor-pointer hover:bg-surface-subtle"
+                            >
+                              <Checkbox checked={checked} onCheckedChange={() => toggleRoleFor(fr.farm, r)} />
+                              <span className="text-foreground">{r}</span>
+                            </label>
+                          );
+                        })
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => toggleFarm(fr.farm)}
-                  className="h-7 w-7 text-text-tertiary hover:text-destructive shrink-0"
+                  className="h-7 w-7 text-text-tertiary hover:text-destructive shrink-0 mt-0.5"
                   aria-label="移除"
                 >
                   <Unlink className="h-3.5 w-3.5" />
                 </Button>
               </div>
             ))}
+            <p className="text-caption text-text-tertiary leading-relaxed">
+              提示：同一牧场下可分配多个角色，功能权限与数据权限均取所有角色的并集。
+            </p>
           </div>
         </div>
       )}
