@@ -567,8 +567,10 @@ function RolePage() {
                     <Label className="text-caption text-text-tertiary">角色说明</Label>
                     {editable ? (
                       <Textarea
-                        defaultValue={activeRole.desc}
+                        value={activeRole.desc}
+                        onChange={(e) => updateActiveRole({ desc: e.target.value })}
                         rows={2}
+                        placeholder="描述该角色的职责范围"
                         className="mt-1.5 bg-card border-border text-body-sm"
                       />
                     ) : (
