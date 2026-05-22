@@ -224,7 +224,7 @@ function MHomePage() {
           ))}
           {pendingItems
             .filter((it) => it.farmId === farm.id)
-            .filter((it) => isExternal || it.bucket !== "待响应")
+            .filter((it) => true)
             .map((it) => (
             <Link
               key={it.id}
@@ -251,7 +251,7 @@ function MHomePage() {
               <ChevronRight className="relative h-4 w-4 text-text-tertiary shrink-0" />
             </Link>
           ))}
-          {pendingItems.filter((it) => it.farmId === farm.id && (isExternal || it.bucket !== "待响应")).length === 0 && pendingPickups.length === 0 && (
+          {pendingItems.filter((it) => it.farmId === farm.id && (true)).length === 0 && pendingPickups.length === 0 && (
             <div className="py-8 text-center text-caption text-text-tertiary">
               当前牧场暂无待处理事项
             </div>
