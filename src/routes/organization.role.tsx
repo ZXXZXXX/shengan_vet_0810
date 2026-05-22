@@ -288,12 +288,14 @@ function RolePage() {
     setViewMode("detail");
   };
   const openEdit = (key: RoleKey) => {
+    if (!canManage) return;
     setDrawerRole(key);
     setViewMode("edit");
   };
 
   const activeRole = drawerRole ? roles.find((r) => r.key === drawerRole)! : null;
-  const editable = viewMode === "edit";
+  const editable = viewMode === "edit" && canManage;
+
   const cur = drawerRole ? perms[drawerRole] : null;
 
   const setPcAllow = (v: boolean) => {
