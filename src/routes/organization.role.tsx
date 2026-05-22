@@ -668,6 +668,13 @@ function RolePage() {
                                 )}
                               </div>
                               <div className="text-caption text-text-tertiary mt-0.5">{m.desc}</div>
+                              {m.key === "organization" && (
+                                <div className="mt-1.5 inline-flex items-start gap-1 text-caption text-text-tertiary bg-surface-subtle border border-border rounded px-2 py-1">
+                                  <Info className="h-3 w-3 mt-0.5 shrink-0" />
+                                  <span>角色管理权限仅超级管理员可用，无法对场长等其他角色开放</span>
+                                </div>
+                              )}
+
                             </div>
                           </label>
                         );
