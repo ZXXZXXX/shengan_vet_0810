@@ -166,11 +166,6 @@ function ReportPage() {
     setShowCustomInput(false);
   };
 
-  const pickItem = (name: string) => {
-    setItemName(name);
-    setItemFocused(false);
-    if (needReapply === "yes" && !applyName) setApplyName(name);
-  };
 
   const startVoice = () => {
     if (recording) {
