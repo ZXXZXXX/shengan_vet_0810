@@ -477,7 +477,7 @@ function RolePage() {
       </main>
 
       {/* Drawer: detail / edit */}
-      <Sheet open={!!drawerRole} onOpenChange={(v) => !v && setDrawerRole(null)}>
+      <Sheet open={!!drawerRole} onOpenChange={(v) => !v && closeDrawer()}>
         <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col gap-0">
           <SheetHeader className="px-6 py-4 border-b border-border">
             <div className="flex items-center justify-between gap-3">
