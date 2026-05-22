@@ -6,6 +6,7 @@ import {
   ClipboardList,
   Beef,
   AlertTriangle,
+  AlertCircle,
   ChevronRight,
   ChevronDown,
   Check,
@@ -16,7 +17,6 @@ import {
   Wind,
   Thermometer,
   MapPin,
-  Activity,
   HeartPulse,
   Eye,
   Inbox,
@@ -24,13 +24,15 @@ import {
   TimerReset,
   PackageX,
   CalendarClock,
-  Hourglass,
   Pill,
   Syringe,
   Footprints,
+  TrendingUp,
+  ArrowUpRight,
+  Sparkles,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel, canViewOperations, canApprove, roleGroup } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations, canApprove, canExecute, roleGroup } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { PackageCheck, QrCode } from "lucide-react";
