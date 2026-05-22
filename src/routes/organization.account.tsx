@@ -63,6 +63,7 @@ import {
   RotateCcw,
   Check,
   ChevronDown,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -175,19 +176,20 @@ function AccountPage() {
   const [keyword, setKeyword] = useState("");
   const [onlyInternal, setOnlyInternal] = useState(false);
   const [filterRole, setFilterRole] = useState<string>("all");
-  const [filterFarm, setFilterFarm] = useState<string>("all");
+  const [filterFarms, setFilterFarms] = useState<string[]>([]);
   const [filterStatus, setFilterStatus] = useState<"all" | Status>("all");
   const [advOpen, setAdvOpen] = useState(false);
+  const [farmFilterOpen, setFarmFilterOpen] = useState(false);
 
   const resetAdv = () => {
     setFilterRole("all");
-    setFilterFarm("all");
+    setFilterFarms([]);
     setFilterStatus("all");
   };
 
   const advCount =
     (filterRole !== "all" ? 1 : 0) +
-    (filterFarm !== "all" ? 1 : 0) +
+    (filterFarms.length > 0 ? 1 : 0) +
     (filterStatus !== "all" ? 1 : 0);
 
   const toggleStatus = (id: string) => {
@@ -236,7 +238,7 @@ function AccountPage() {
       .filter((a) => {
         if (onlyInternal && a.userType !== "内部") return false;
         if (filterRole !== "all" && !rolesOf(a).includes(filterRole)) return false;
-        if (filterFarm !== "all" && !farmsOf(a).includes(filterFarm)) return false;
+        if (filterFarms.length > 0 && !filterFarms.some((f) => farmsOf(a).includes(f))) return false;
         if (filterStatus !== "all" && a.status !== filterStatus) return false;
         if (kw) {
           const hay = `${a.name} ${a.phone} ${a.wecomId ?? ""} ${a.wechatId ?? ""}`.toLowerCase();
@@ -248,7 +250,7 @@ function AccountPage() {
         if (a.status !== b.status) return a.status === "启用" ? -1 : 1;
         return b.createdAt.localeCompare(a.createdAt);
       });
-  }, [accounts, keyword, onlyInternal, filterRole, filterFarm, filterStatus]);
+  }, [accounts, keyword, onlyInternal, filterRole, filterFarms, filterStatus]);
 
   // 列宽：用户 类型 手机号 角色 关联牧场 企微ID 微信ID 状态 管理
   const cols = "1.5fr 0.8fr 1.1fr 1.3fr 1.8fr 140px 140px 0.7fr 0.5fr";
@@ -309,15 +311,64 @@ function AccountPage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="text-caption text-text-tertiary">关联牧场</div>
-                  <Select value={filterFarm} onValueChange={setFilterFarm}>
-                    <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
-                    <SelectContent className="max-h-64">
-                      <SelectItem value="all" className="text-body-sm">全部牧场</SelectItem>
-                      {FARM_OPTIONS.map((f) => (
-                        <SelectItem key={f} value={f} className="text-body-sm">{f}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={farmFilterOpen} onOpenChange={setFarmFilterOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-card px-3 text-body-sm text-left hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0"
+                      >
+                        <span className={filterFarms.length === 0 ? "text-text-tertiary" : "text-foreground truncate"}>
+                          {filterFarms.length === 0
+                            ? "全部牧场"
+                            : filterFarms.length === 1
+                              ? filterFarms[0]
+                              : `已选 ${filterFarms.length} 个牧场`}
+                        </span>
+                        <ChevronDown className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="输入牧场名称搜索" className="text-body-sm" />
+                        <CommandList className="max-h-64">
+                          <CommandEmpty className="text-caption text-text-tertiary py-4 text-center">无匹配牧场</CommandEmpty>
+                          <CommandGroup>
+                            {FARM_OPTIONS.map((f) => {
+                              const checked = filterFarms.includes(f);
+                              return (
+                                <CommandItem
+                                  key={f}
+                                  value={f}
+                                  onSelect={() => {
+                                    setFilterFarms((prev) =>
+                                      prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f],
+                                    );
+                                  }}
+                                  className="text-body-sm gap-2"
+                                >
+                                  <Checkbox checked={checked} className="h-4 w-4 pointer-events-none" />
+                                  <span className="flex-1 truncate">{f}</span>
+                                  {checked && <Check className="h-3.5 w-3.5 text-primary" />}
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                        </CommandList>
+                        {filterFarms.length > 0 && (
+                          <div className="border-t border-border px-2 py-1.5 flex items-center justify-between">
+                            <span className="text-caption text-text-tertiary">已选 {filterFarms.length} 个</span>
+                            <button
+                              type="button"
+                              onClick={() => setFilterFarms([])}
+                              className="text-caption text-text-tertiary hover:text-foreground inline-flex items-center gap-1"
+                            >
+                              <X className="h-3 w-3" /> 清空
+                            </button>
+                          </div>
+                        )}
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-1.5">
                   <div className="text-caption text-text-tertiary">状态</div>
