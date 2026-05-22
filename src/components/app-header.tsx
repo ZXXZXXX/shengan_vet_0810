@@ -46,6 +46,11 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [farmOpen, setFarmOpen] = useState(false);
   const currentFarm = useFarm();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const globalScope =
+    pathname.startsWith("/organization") ||
+    pathname.startsWith("/knowledge") ||
+    pathname.startsWith("/archive");
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card">
       <div className="flex h-14 items-center gap-3 px-6">
