@@ -46,7 +46,8 @@ export const Route = createFileRoute("/m/")({
 
 const colorMap: Record<string, string> = {
   brand: "bg-brand-subtle text-primary",
-  warning: "bg-[var(--state-warning)]/15 text-[var(--state-warning)]",
+  warning: "bg-[var(--state-warning)]/25 text-[var(--state-alert)]",
+  alert: "bg-[var(--state-warning)]/25 text-[var(--state-alert)]",
   danger: "bg-[var(--state-danger)]/12 text-[var(--state-danger)]",
   info: "bg-[var(--effect-ai-cyan)]/15 text-[var(--effect-ai-cyan)]",
   purple: "bg-[var(--effect-ai-purple)]/15 text-[var(--effect-ai-purple)]",
@@ -56,13 +57,15 @@ const colorMap: Record<string, string> = {
 
 const toneTextMap: Record<string, string> = {
   brand: "text-primary",
-  warning: "text-[var(--state-warning)]",
+  warning: "text-[var(--state-alert)]",
+  alert: "text-[var(--state-alert)]",
   danger: "text-[var(--state-danger)]",
   info: "text-[var(--effect-ai-cyan)]",
   purple: "text-[var(--effect-ai-purple)]",
   success: "text-[var(--state-success)]",
   muted: "text-text-secondary",
 };
+
 
 function MHomePage() {
   const role = useRole();
