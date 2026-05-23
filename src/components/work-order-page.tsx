@@ -119,6 +119,8 @@ export type Plan = {
   suspectedDisease: string;
   kbSource: string;
   kbAdjusted: boolean;
+  maxWithdraw: string;
+  maxWithdrawOverridden: boolean;
 };
 function newMaterial(): MaterialItem {
   return {
@@ -126,6 +128,40 @@ function newMaterial(): MaterialItem {
     name: "", qty: "", unit: "支", usage: "", duration: "", note: "",
   };
 }
+
+// 药品休药期规则（天）。键为药品名称，可子串匹配。
+const DRUG_WITHDRAW_DAYS: Record<string, number> = {
+  "头孢噻呋钠": 4,
+  "氟尼辛葡甲胺": 7,
+  "青霉素": 3,
+  "土霉素": 14,
+  "地塞米松": 5,
+  "葡萄糖酸钙": 0,
+  "口蹄疫疫苗": 21,
+  "缩宫素": 0,
+  "乳房炎抗生素": 7,
+  "伊维菌素": 14,
+};
+function lookupWithdrawDays(name: string): number | null {
+  const n = name.trim();
+  if (!n) return null;
+  for (const key of Object.keys(DRUG_WITHDRAW_DAYS)) {
+    if (n.includes(key)) return DRUG_WITHDRAW_DAYS[key];
+  }
+  return null;
+}
+function computeMaxWithdraw(materials: MaterialItem[]): number | null {
+  let max: number | null = null;
+  for (const m of materials) {
+    const d = lookupWithdrawDays(m.name);
+    if (d !== null) max = max === null ? d : Math.max(max, d);
+  }
+  return max;
+}
+function hasWithdrawRule(materials: MaterialItem[]): boolean {
+  return materials.some((m) => lookupWithdrawDays(m.name) !== null);
+}
+
 
 export type WorkOrderAttachment = {
   type: "audio" | "video" | "text";
@@ -252,6 +288,8 @@ export function WorkOrderPage({
     execStart: "", execTime: "", execMode: "single", cycleRule: "",
     needReview: false, reviewDate: "", reviewNote: "",
     suspectedDisease: "", kbSource: "", kbAdjusted: false,
+    maxWithdraw: "", maxWithdrawOverridden: false,
+
   };
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const [draft, setDraft] = useState<Plan>(emptyPlan);
@@ -318,15 +356,17 @@ export function WorkOrderPage({
     const startDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
     const hasDisease = title === "疾病治疗" || title === "产后护理";
     // 仅当工单含疑似病例 + 系统匹配方案时，才自动带出方案说明 / 物资 / 复查等内容
+    const materials: MaterialItem[] = hasDisease
+      ? [
+          { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
+          { id: "p2", name: "氟尼辛葡甲胺注射液", qty: "100", unit: "ml", usage: "肌肉注射，每日 1 次", duration: "2 天", note: "" },
+        ]
+      : [];
+    const auto = computeMaxWithdraw(materials);
     return {
       desc: "",
       needMaterials: hasDisease,
-      materials: hasDisease
-        ? [
-            { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
-            { id: "p2", name: "氟尼辛葡甲胺注射液", qty: "100", unit: "ml", usage: "肌肉注射，每日 1 次", duration: "2 天", note: "" },
-          ]
-        : [],
+      materials,
       execStart: startDate,
       execTime: "",
       execMode: "single",
@@ -337,8 +377,11 @@ export function WorkOrderPage({
       suspectedDisease: hasDisease ? "细菌性感染（疑似）" : "",
       kbSource: hasDisease ? `${title} · 标准处置方案 v2.3` : "",
       kbAdjusted: false,
+      maxWithdraw: auto !== null ? String(auto) : "",
+      maxWithdrawOverridden: false,
     };
   };
+
   useEffect(() => {
     if (detail) {
       const p = buildDefaultPlan(detail);
@@ -1671,12 +1714,19 @@ function PlanView({ plan }: { plan: Plan }) {
                   <span>{m.duration || "—"}</span>
                 </div>
               ))}
+              {hasWithdrawRule(plan.materials) && (
+                <div className="flex items-center justify-between px-3 py-2 border-t border-border bg-surface-subtle text-body-sm">
+                  <span className="text-text-secondary">本次最长休药期</span>
+                  <span className="text-foreground tabular-nums font-medium">{plan.maxWithdraw || "0"} 天</span>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-body-sm text-text-tertiary">未填写</p>
           )}
         </div>
       )}
+
       <div>
         <div className="text-caption text-text-tertiary mb-1.5">执行安排</div>
         <div className="text-body-sm text-foreground space-y-0.5">
@@ -1726,10 +1776,21 @@ function PlanEditor({
   const update = <K extends keyof Plan>(k: K, v: Plan[K]) =>
     setDraft((d) => ({ ...d, [k]: v }));
   const updateMat = (idx: number, patch: Partial<MaterialItem>) =>
-    setDraft((d) => ({
-      ...d,
-      materials: d.materials.map((m, i) => (i === idx ? { ...m, ...patch } : m)),
-    }));
+    setDraft((d) => {
+      const materials = d.materials.map((m, i) => (i === idx ? { ...m, ...patch } : m));
+      if (d.maxWithdrawOverridden) return { ...d, materials };
+      const auto = computeMaxWithdraw(materials);
+      return { ...d, materials, maxWithdraw: auto !== null ? String(auto) : "" };
+    });
+  const removeMat = (idx: number) =>
+    setDraft((d) => {
+      const materials = d.materials.filter((_, i) => i !== idx);
+      if (d.maxWithdrawOverridden) return { ...d, materials };
+      const auto = computeMaxWithdraw(materials);
+      return { ...d, materials, maxWithdraw: auto !== null ? String(auto) : "" };
+    });
+  const showWithdraw = draft.needMaterials && hasWithdrawRule(draft.materials);
+
   return (
     <div className="space-y-4">
       <div>
@@ -1779,15 +1840,11 @@ function PlanEditor({
                     variant="ghost"
                     size="sm"
                     className="h-9 w-9 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
-                    onClick={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        materials: d.materials.filter((_, i) => i !== idx),
-                      }))
-                    }
+                    onClick={() => removeMat(idx)}
                   >
                     <X className="h-3.5 w-3.5" />
                   </Button>
+
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
                   <Input
@@ -1821,9 +1878,45 @@ function PlanEditor({
             >
               <Plus className="h-3.5 w-3.5 mr-1" /> 添加物资 / 药品
             </Button>
+            {showWithdraw && (
+              <div className="rounded-md border border-border bg-surface-subtle px-3 py-2 flex items-center justify-between gap-2">
+                <div className="flex flex-col">
+                  <span className="text-body-sm text-foreground">本次最长休药期</span>
+                  <span className="text-caption text-text-tertiary">根据所选药品自动计算，可手动调整</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Input
+                    type="number"
+                    min={0}
+                    value={draft.maxWithdraw}
+                    onChange={(e) =>
+                      setDraft((d) => ({ ...d, maxWithdraw: e.target.value, maxWithdrawOverridden: true }))
+                    }
+                    className="h-8 w-20 text-body-sm bg-card tabular-nums text-right"
+                  />
+                  <span className="text-body-sm text-text-secondary">天</span>
+                  {draft.maxWithdrawOverridden && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-2 text-caption font-normal text-primary"
+                      onClick={() =>
+                        setDraft((d) => {
+                          const auto = computeMaxWithdraw(d.materials);
+                          return { ...d, maxWithdraw: auto !== null ? String(auto) : "", maxWithdrawOverridden: false };
+                        })
+                      }
+                    >
+                      重置
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
+
 
       <div className="rounded-md border border-border bg-card p-3 space-y-3">
         <div className="text-caption text-text-tertiary">执行安排</div>
