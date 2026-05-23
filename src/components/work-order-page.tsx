@@ -1248,8 +1248,19 @@ export function WorkOrderPage({
                   <Button
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                     onClick={() => {
-                      if (!planComplete) {
-                        toast.error("请完整填写执行计划");
+                      const nextErrors: typeof errors = {};
+                      if (!(review.confirmedType || "").trim()) nextErrors.confirmedType = true;
+                      if (!draft.execStart.trim()) nextErrors.execStart = true;
+                      if (draft.needReview && !draft.reviewDate.trim()) nextErrors.reviewDate = true;
+                      setErrors(nextErrors);
+                      if (Object.keys(nextErrors).length > 0) {
+                        const target =
+                          nextErrors.confirmedType ? confirmedTypeRef.current :
+                          nextErrors.execStart ? execStartRef.current :
+                          reviewDateRef.current;
+                        target?.scrollIntoView({ behavior: "smooth", block: "center" });
+                        try { target?.focus({ preventScroll: true }); } catch { /* noop */ }
+                        toast.error("请填写所有必填项");
                         return;
                       }
                       setPlan({
