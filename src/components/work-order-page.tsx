@@ -141,7 +141,6 @@ export type WorkOrder = {
 type ColKey =
   | "id"
   | "target"
-  | "desc"
   | "status"
   | "proposer"
   | "proposedAt"
@@ -162,7 +161,6 @@ type ColDef = {
 const ALL_COLS: ColDef[] = [
   { key: "id", label: "工作编号", width: 120, locked: true },
   { key: "target", label: "牛只耳号", width: 110, locked: true },
-  { key: "desc", label: "具体描述", width: 280, locked: true },
   { key: "status", label: "当前状态", width: 100 },
   { key: "proposer", label: "提出人", width: 100 },
   { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
@@ -381,7 +379,7 @@ export function WorkOrderPage({
       .filter((o) => inRange(o.createdAt, range))
       .filter((o) =>
         kw
-          ? [o.id, o.target, o.desc, o.event, o.proposer]
+          ? [o.id, o.target, o.event, o.proposer]
               .filter(Boolean)
               .some((v) => String(v).toLowerCase().includes(kw))
           : true,
@@ -458,29 +456,6 @@ export function WorkOrderPage({
         return <span className="font-mono text-body text-foreground">{o.id}</span>;
       case "target":
         return <span className="text-body text-foreground">{o.target}</span>;
-      case "desc": {
-        const text = o.event ?? o.desc;
-        const truncated = text.length > 15 ? text.slice(0, 15) + "…" : text;
-        if (text.length > 15) {
-          return (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="text-body-sm text-text-secondary truncate block cursor-default">
-                  {truncated}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-sm">
-                {text}
-              </TooltipContent>
-            </Tooltip>
-          );
-        }
-        return (
-          <span className="text-body-sm text-text-secondary truncate block">
-            {text}
-          </span>
-        );
-      }
       case "status":
         return (
           <span className={toneStyles[statusList.find((s) => s.key === o.status)!.tone].tag}>
@@ -1018,12 +993,6 @@ export function WorkOrderPage({
                           </button>
                         );
                       })}
-                    </div>
-                  )}
-                  {detail.desc && (
-                    <div className="pt-2 border-t border-border">
-                      <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
-                      <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc}</p>
                     </div>
                   )}
                 </div>
@@ -1923,7 +1892,6 @@ export function makeOrders(
       [
         { type: "audio", name: "现场情况语音.m4a", meta: "00:38" },
         { type: "video", name: "现场拍摄视频.mp4", meta: "01:12" },
-        { type: "text", name: "具体描述.txt" },
       ],
       [
         { type: "audio", name: "口述说明.m4a", meta: "00:52" },
