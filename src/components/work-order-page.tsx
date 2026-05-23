@@ -258,20 +258,23 @@ export function WorkOrderPage({
     const today = new Date();
     const startDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
     const hasDisease = title === "疾病治疗" || title === "产后护理";
+    // 仅当工单含疑似病例 + 系统匹配方案时，才自动带出方案说明 / 物资 / 复查等内容
     return {
-      desc: `${o.event ?? o.desc}。结合现场情况，按${title}标准方案处置。`,
-      needMaterials: true,
-      materials: [
-        { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
-        { id: "p2", name: "氟尼辛葡甲胺注射液", qty: "100", unit: "ml", usage: "肌肉注射，每日 1 次", duration: "2 天", note: "" },
-      ],
+      desc: hasDisease ? `${o.event ?? o.desc}。结合现场情况，按${title}标准方案处置。` : "",
+      needMaterials: hasDisease,
+      materials: hasDisease
+        ? [
+            { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
+            { id: "p2", name: "氟尼辛葡甲胺注射液", qty: "100", unit: "ml", usage: "肌肉注射，每日 1 次", duration: "2 天", note: "" },
+          ]
+        : [],
       execStart: startDate,
       execTime: "",
       execMode: "single",
       cycleRule: "",
-      needReview: true,
+      needReview: hasDisease,
       reviewDate: "",
-      reviewNote: "复查体温、采食与反刍情况",
+      reviewNote: hasDisease ? "复查体温、采食与反刍情况" : "",
       suspectedDisease: hasDisease ? "细菌性感染（疑似）" : "",
       kbSource: hasDisease ? `${title} · 标准处置方案 v2.3` : "",
       kbAdjusted: false,
