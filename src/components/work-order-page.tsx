@@ -70,8 +70,19 @@ import {
   ClipboardCheck,
   FileSearch,
   UserPlus,
-  
+  MoreHorizontal,
+  XCircle,
+  Repeat2,
+  LogOut,
+  Ban,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
 
@@ -268,6 +279,31 @@ export function WorkOrderPage({
   const [visible, setVisible] = useState<Record<ColKey, boolean>>(() =>
     Object.fromEntries(ALL_COLS.map((c) => [c.key, true])) as Record<ColKey, boolean>,
   );
+  // 折叠操作：终止 / 转派 / 释放
+  type MoreActionType = "terminate" | "transfer" | "release";
+  const [moreAction, setMoreAction] = useState<{ type: MoreActionType; order: WorkOrder } | null>(null);
+  const [actionReason, setActionReason] = useState("");
+  const [newExecutor, setNewExecutor] = useState<string>("");
+  const [confirmTerminate, setConfirmTerminate] = useState(false);
+  const [overrides, setOverrides] = useState<Record<string, { status?: "已终止"; executor?: string | null }>>({});
+  const effectiveStatus = (o: WorkOrder): WorkStatus | "已终止" =>
+    overrides[o.id]?.status ?? o.status;
+  const effectiveExecutor = (o: WorkOrder): string | undefined => {
+    const ov = overrides[o.id];
+    if (ov && "executor" in ov) return ov.executor ?? undefined;
+    return o.executor ?? o.who;
+  };
+  const openMoreAction = (type: MoreActionType, o: WorkOrder) => {
+    setActionReason("");
+    setNewExecutor("");
+    setMoreAction({ type, order: o });
+  };
+  const closeMoreAction = () => {
+    setMoreAction(null);
+    setActionReason("");
+    setNewExecutor("");
+    setConfirmTerminate(false);
+  };
 
   // 常用药品/材料候选（搜索匹配）
   const DRUG_PRESETS = [
@@ -455,12 +491,17 @@ export function WorkOrderPage({
         return <span className="font-mono text-body text-foreground">{o.id}</span>;
       case "target":
         return <span className="text-body text-foreground">{o.target}</span>;
-      case "status":
+      case "status": {
+        const st = effectiveStatus(o);
+        if (st === "已终止") {
+          return <span className="tag tag-muted">已终止</span>;
+        }
         return (
-          <span className={toneStyles[statusList.find((s) => s.key === o.status)!.tone].tag}>
-            {o.status}
+          <span className={toneStyles[statusList.find((s) => s.key === st)!.tone].tag}>
+            {st}
           </span>
         );
+      }
       case "proposer":
         return <span className="text-body-sm text-text-secondary">{o.proposer}</span>;
       case "proposedAt":
@@ -476,7 +517,7 @@ export function WorkOrderPage({
       case "executor":
         return (
           <span className="text-body-sm text-text-secondary">
-            {o.executor ?? o.who ?? "—"}
+            {effectiveExecutor(o) ?? "—"}
           </span>
         );
       case "executedAt":
@@ -485,7 +526,49 @@ export function WorkOrderPage({
             {o.executedAt ?? "—"}
           </span>
         );
-      case "action":
+      case "action": {
+        const st = effectiveStatus(o);
+        const exec = effectiveExecutor(o);
+        // 终止：已通过审核后、未完成前 → 执行中 / 待响应
+        const canTerminate = st === "执行中" || st === "待响应";
+        // 转派 / 释放：已指定或已响应但未完成 → 有执行人且为 执行中/待响应
+        const canTransfer = (st === "执行中" || st === "待响应") && !!exec;
+        const canRelease = (st === "执行中" || st === "待响应") && !!exec;
+        const hasMore = canTerminate || canTransfer || canRelease;
+        const MoreBtn = hasMore ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                aria-label="更多操作"
+              >
+                <MoreHorizontal className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              {canTerminate && (
+                <DropdownMenuItem
+                  className="text-[var(--state-danger)] focus:text-[var(--state-danger)]"
+                  onClick={() => openMoreAction("terminate", o)}
+                >
+                  <Ban className="h-3.5 w-3.5 mr-2" /> 终止
+                </DropdownMenuItem>
+              )}
+              {canTransfer && (
+                <DropdownMenuItem onClick={() => openMoreAction("transfer", o)}>
+                  <Repeat2 className="h-3.5 w-3.5 mr-2" /> 转派
+                </DropdownMenuItem>
+              )}
+              {canRelease && (
+                <DropdownMenuItem onClick={() => openMoreAction("release", o)}>
+                  <LogOut className="h-3.5 w-3.5 mr-2" /> 释放
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null;
         if (canReview(role) && o.status === "待审核") {
           return (
             <div className="inline-flex items-center gap-0.5">
@@ -505,19 +588,24 @@ export function WorkOrderPage({
               >
                 处理
               </Button>
+              {MoreBtn}
             </div>
           );
         }
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-            onClick={() => { setMode("view"); setDetail(o); }}
-          >
-            查看
-          </Button>
+          <div className="inline-flex items-center gap-0.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+              onClick={() => { setMode("view"); setDetail(o); }}
+            >
+              查看
+            </Button>
+            {MoreBtn}
+          </div>
         );
+      }
     }
   };
 
@@ -1382,6 +1470,151 @@ export function WorkOrderPage({
         </DialogContent>
       </Dialog>
 
+      {/* 更多操作：终止 / 转派 / 释放 */}
+      <Dialog
+        open={!!moreAction && !confirmTerminate}
+        onOpenChange={(o) => { if (!o) closeMoreAction(); }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">
+              {moreAction?.type === "terminate" && "终止工作"}
+              {moreAction?.type === "transfer" && "转派执行人"}
+              {moreAction?.type === "release" && "释放工作"}
+            </DialogTitle>
+          </DialogHeader>
+          {moreAction && (
+            <div className="space-y-4">
+              <div className="rounded-md bg-surface-subtle px-3 py-2 text-body-sm text-text-secondary">
+                <span className="font-mono text-foreground">{moreAction.order.id}</span>
+                <span className="mx-2 text-text-tertiary">·</span>
+                {moreAction.order.target}
+                {moreAction.order.event && (
+                  <>
+                    <span className="mx-2 text-text-tertiary">·</span>
+                    {moreAction.order.event}
+                  </>
+                )}
+              </div>
+
+              {moreAction.type === "transfer" && (
+                <div className="space-y-1.5">
+                  <Label className="text-body-sm">
+                    新执行人 <span className="text-[var(--state-danger)]">*</span>
+                  </Label>
+                  <Select value={newExecutor} onValueChange={setNewExecutor}>
+                    <SelectTrigger className="h-9 text-body-sm">
+                      <SelectValue placeholder="请选择新执行人" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {executorsPool
+                        .filter((n) => n !== effectiveExecutor(moreAction.order))
+                        .map((n) => (
+                          <SelectItem key={n} value={n}>{n}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-caption text-text-tertiary">
+                    当前执行人：{effectiveExecutor(moreAction.order) ?? "—"}
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label className="text-body-sm">
+                  原因 <span className="text-[var(--state-danger)]">*</span>
+                </Label>
+                <Textarea
+                  value={actionReason}
+                  onChange={(e) => setActionReason(e.target.value)}
+                  rows={3}
+                  placeholder={
+                    moreAction.type === "terminate"
+                      ? "请填写终止原因"
+                      : moreAction.type === "transfer"
+                        ? "请填写转派原因"
+                        : "请填写释放原因"
+                  }
+                  className="text-body-sm"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={closeMoreAction}>取消</Button>
+            <Button
+              className={
+                moreAction?.type === "terminate"
+                  ? "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+                  : "bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              }
+              disabled={
+                !moreAction ||
+                !actionReason.trim() ||
+                (moreAction.type === "transfer" && !newExecutor)
+              }
+              onClick={() => {
+                if (!moreAction) return;
+                if (moreAction.type === "terminate") {
+                  setConfirmTerminate(true);
+                  return;
+                }
+                if (moreAction.type === "transfer") {
+                  setOverrides((m) => ({
+                    ...m,
+                    [moreAction.order.id]: { ...m[moreAction.order.id], executor: newExecutor },
+                  }));
+                  toast.success(`已转派至 ${newExecutor}`);
+                } else {
+                  setOverrides((m) => ({
+                    ...m,
+                    [moreAction.order.id]: { ...m[moreAction.order.id], executor: null },
+                  }));
+                  toast.success("已释放，回到待响应池");
+                }
+                closeMoreAction();
+              }}
+            >
+              {moreAction?.type === "terminate" ? "提交" : "确认提交"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 终止二次确认 */}
+      <Dialog open={confirmTerminate} onOpenChange={setConfirmTerminate}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">确认终止该工作？</DialogTitle>
+          </DialogHeader>
+          <div className="text-body-sm text-text-secondary space-y-2">
+            <p>终止后该工作将停止执行，状态变更为「已终止」，不可恢复。</p>
+            {moreAction && (
+              <div className="rounded-md bg-surface-subtle px-3 py-2">
+                <div className="text-caption text-text-tertiary mb-1">终止原因</div>
+                <div className="text-foreground whitespace-pre-wrap">{actionReason}</div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConfirmTerminate(false)}>再想想</Button>
+            <Button
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+              onClick={() => {
+                if (!moreAction) return;
+                setOverrides((m) => ({
+                  ...m,
+                  [moreAction.order.id]: { ...m[moreAction.order.id], status: "已终止" },
+                }));
+                toast.success("工作已终止");
+                closeMoreAction();
+              }}
+            >
+              确认终止
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </TooltipProvider>
   );
