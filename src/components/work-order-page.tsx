@@ -1264,6 +1264,34 @@ export function WorkOrderPage({
                 </section>
               )}
 
+              {/* ============ 四、存至知识库草稿箱（处理态） ============ */}
+              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
+                <section className="space-y-3">
+                  <SectionHeader icon={<BookOpen className="h-3.5 w-3.5" />} title="知识库沉淀" hint="将本次诊疗经验沉淀至诊疗知识库草稿箱" />
+                  <div className="rounded-md border border-border p-4 bg-surface-subtle">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <Label htmlFor="save-to-kb" className="text-body-sm font-medium text-foreground cursor-pointer">
+                          存至知识库草稿箱
+                        </Label>
+                        <p className="text-caption text-text-tertiary leading-relaxed">
+                          开启后，本工单的<span className="text-foreground">症状标签、疾病名称、治疗方案</span>将一并存入「诊疗知识库 · 草稿箱」，可后续进入查看、编辑后发布。
+                        </p>
+                      </div>
+                      <Switch id="save-to-kb" checked={saveToKb} onCheckedChange={setSaveToKb} />
+                    </div>
+                    {saveToKb && (
+                      <div className="mt-3 rounded-md bg-card border border-dashed border-primary/40 px-3 py-2 space-y-1">
+                        <div className="text-caption text-text-tertiary">将沉淀以下内容：</div>
+                        <div className="text-caption text-foreground">· 症状标签：{review.confirmedTags.length ? review.confirmedTags.join("、") : "—"}</div>
+                        <div className="text-caption text-foreground">· 疾病名称：{review.diagnosis || "—"}</div>
+                        <div className="text-caption text-foreground">· 治疗方案：{draft.desc.trim() ? draft.desc.trim().slice(0, 40) + (draft.desc.trim().length > 40 ? "…" : "") : "—"}</div>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
+
               {/* 查看态：仅展示固定的审核 / 响应人元数据 */}
               {(detail.status !== "待审核" || mode === "view") && (
                 <section className="space-y-3">
