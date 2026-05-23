@@ -838,15 +838,23 @@ export function WorkOrderPage({
                 <Field label="响应时间" value={detail.executedAt ?? "—"} />
               </div>
 
-              {/* 症状说明 */}
+              {/* 标签（症状 / 异常 / 问题） */}
               {symptoms.length > 0 && (
                 <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-2">症状说明（小程序提报）</div>
+                  <div className="text-caption text-text-tertiary mb-2">标签</div>
                   <div className="flex flex-wrap gap-1.5">
                     {symptoms.map((sym) => (
                       <span key={sym} className="tag tag-brand">{sym}</span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* 疑似疾病 / 系统带出方案（来自小程序上报 + 知识库） */}
+              {!isLoss && (plan.suspectedDisease || plan.kbSource) && (
+                <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
+                  <Field label="疑似疾病" value={plan.suspectedDisease || "—"} />
+                  <Field label="系统带出方案" value={plan.kbSource || "—"} />
                 </div>
               )}
 
