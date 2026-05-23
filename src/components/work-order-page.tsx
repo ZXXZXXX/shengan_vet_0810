@@ -1185,7 +1185,7 @@ export function WorkOrderPage({
               {/* ============ 五、知识库沉淀（处理态） ============ */}
               {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
                 <section className="space-y-3">
-                  <SectionHeader icon={<BookOpen className="h-3.5 w-3.5" />} title="知识库沉淀" hint="选填" />
+                  <SectionHeader icon={<BookOpen className="h-3.5 w-3.5" />} title="知识库沉淀" />
                   <div className="rounded-md border border-border bg-card p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div className="space-y-0.5">
