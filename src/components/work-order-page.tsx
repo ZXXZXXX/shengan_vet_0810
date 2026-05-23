@@ -1181,7 +1181,7 @@ export function WorkOrderPage({
                     {/* 诊断结论 / 疑似疾病结论 */}
                     {typeConfig.showDisease && (
                       <div>
-                        <div className="text-caption text-text-tertiary mb-1.5">诊断结论 / 疑似疾病结论</div>
+                        <div className="text-caption text-text-tertiary mb-1.5">具体描述结论</div>
                         <Input
                           value={review.diagnosis}
                           onChange={(e) => setReview((r) => ({ ...r, diagnosis: e.target.value }))}
