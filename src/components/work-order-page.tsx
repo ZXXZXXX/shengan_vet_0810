@@ -67,7 +67,20 @@ import {
   PackagePlus,
   Stethoscope,
   Pencil,
+  BookOpen,
+  ClipboardCheck,
+  FileSearch,
+  Inbox,
 } from "lucide-react";
+
+const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
+
+export type ReviewConclusion = {
+  confirmedType: string;
+  confirmedTags: string[];
+  diagnosis: string;
+  conclusionNote: string;
+};
 
 type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
 
@@ -234,6 +247,9 @@ export function WorkOrderPage({
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const [draft, setDraft] = useState<Plan>(emptyPlan);
   const [editingPlan, setEditingPlan] = useState(false);
+  const emptyReview: ReviewConclusion = { confirmedType: "", confirmedTags: [], diagnosis: "", conclusionNote: "" };
+  const [review, setReview] = useState<ReviewConclusion>(emptyReview);
+  const [kbDraftOpen, setKbDraftOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
@@ -288,6 +304,12 @@ export function WorkOrderPage({
       setDraft({ ...p, materials: p.materials.length ? p.materials : [newMaterial()] });
       setEditingPlan(false);
       setAssignExecutor("__none__");
+      setReview({
+        confirmedType: title,
+        confirmedTags: [],
+        diagnosis: p.suspectedDisease || "",
+        conclusionNote: "",
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
@@ -843,7 +865,7 @@ export function WorkOrderPage({
             const voiceSecs = isLoss ? 42 : 28;
             const proposerPhone = "138 0000 0001";
             return (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-body-sm text-foreground">{detail.id}</span>
@@ -854,178 +876,273 @@ export function WorkOrderPage({
                 </span>
               </div>
 
-              {/* 字段网格 —— 与小程序保持一致 */}
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
-                <Field label="工作类型" value={title} />
-                <Field label={isLoss ? "关联牛舍" : "上报对象"} value={detail.target} />
-                <Field label="提出事件" value={detail.event ?? "—"} />
-                <FieldNode
-                  label="提出人"
-                  node={
-                    <div className="flex items-center gap-2">
-                      <span className="text-body-sm text-foreground">{detail.proposer}</span>
-                      <a
-                        href={`tel:${proposerPhone.replace(/\s/g, "")}`}
-                        className="h-5 w-5 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center"
-                      >
-                        <Phone className="h-3 w-3" />
-                      </a>
-                      <button className="h-5 w-5 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center">
-                        <MessageSquare className="h-3 w-3" />
-                      </button>
-                    </div>
-                  }
-                />
-                <Field label="提出时间" value={detail.createdAt} />
-                <Field label="负责人" value={detail.executor ?? detail.who ?? "—"} />
-                <Field label="审核人" value={detail.reviewer ?? "—"} />
-                <Field label="审核时间" value={detail.reviewedAt ?? "—"} />
-                <Field label="响应时间" value={detail.executedAt ?? "—"} />
-              </div>
+              {/* ============ 一、原始上报信息 ============ */}
+              <section className="space-y-3">
+                <SectionHeader icon={<FileSearch className="h-3.5 w-3.5" />} title="原始上报信息" hint="小程序上报内容，仅供查看" />
 
-              {/* 标签（症状 / 异常 / 问题）—— 仅特定工单类型展示 */}
-              {!isLoss && typeConfig.tagLabel && typeConfig.tags.length > 0 && (
-                <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-2">{typeConfig.tagLabel}</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {typeConfig.tags.map((sym) => (
-                      <span key={sym} className="tag tag-brand">{sym}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-
-              {/* 事项说明 —— 干奶 / 疫苗 / 驱虫 */}
-              {!isLoss && typeConfig.showNote && (
-                <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-1.5">事项说明</div>
-                  <p className="text-body-sm text-text-secondary leading-relaxed whitespace-pre-line">
-                    {detail.desc || detail.event || "—"}
-                  </p>
-                </div>
-              )}
-
-              {/* 损耗补申请 */}
-              {isLoss && (
-                <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1.5">
-                    <PackagePlus className="h-3.5 w-3.5 text-primary" /> 补申请物资
-                  </div>
-                  <div className="flex items-center justify-between text-body-sm text-foreground">
-                    <span>口蹄疫疫苗 A 型</span>
-                    <span className="font-mono text-text-secondary">× 8 支</span>
-                  </div>
-                </div>
-              )}
-
-              {/* 工作说明 */}
-              <div className="rounded-md border border-border p-4">
-                <div className="text-caption text-text-tertiary mb-1.5">
-                  {isLoss ? "文字备注" : "工作说明"}
-                </div>
-                <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc}</p>
-              </div>
-
-              {/* 证据材料 */}
-              <div className="rounded-md border border-border p-4 space-y-3">
-                <div className="text-caption text-text-tertiary">证据材料</div>
-                {photos > 0 && (
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                      <Camera className="h-3 w-3" /> 照片 · {photos} 张
-                    </div>
-                    <div className="grid grid-cols-6 gap-2">
-                      {Array.from({ length: photos }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="aspect-square rounded-md bg-gradient-to-br from-surface-subtle to-border border border-border"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {videos > 0 && (
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                      <Video className="h-3 w-3" /> 视频 · {videos} 段
-                    </div>
-                    <div className="grid grid-cols-6 gap-2">
-                      {Array.from({ length: videos }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="aspect-square rounded-md bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center"
+                {/* 字段网格 */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
+                  <Field label="上报工单类型" value={title} />
+                  <Field label={isLoss ? "关联牛舍" : "上报对象"} value={detail.target} />
+                  <Field label="提出事件" value={detail.event ?? "—"} />
+                  <FieldNode
+                    label="提出人"
+                    node={
+                      <div className="flex items-center gap-2">
+                        <span className="text-body-sm text-foreground">{detail.proposer}</span>
+                        <a
+                          href={`tel:${proposerPhone.replace(/\s/g, "")}`}
+                          className="h-5 w-5 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center"
                         >
-                          <PlayCircle className="h-5 w-5 text-text-tertiary" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {voiceSecs > 0 && (
-                  <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-surface-subtle border border-border">
-                    <Mic className="h-4 w-4 text-primary" />
-                    <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
-                      <div className="h-full w-2/3 bg-primary/60" />
-                    </div>
-                    <span className="font-mono text-caption text-text-secondary">
-                      00:{String(voiceSecs).padStart(2, "0")}
-                    </span>
-                  </div>
-                )}
-                {detail.attachments && detail.attachments.length > 0 && (
-                  <div className="pt-2 border-t border-border space-y-1.5">
-                    {detail.attachments.map((a, i) => {
-                      const Icon = a.type === "audio" ? Mic : a.type === "video" ? Video : FileText;
-                      const tone =
-                        a.type === "audio"
-                          ? "text-[var(--state-warning)] bg-[var(--state-warning)]/10"
-                          : a.type === "video"
-                            ? "text-primary bg-brand-subtle"
-                            : "text-text-secondary bg-surface-subtle";
-                      return (
-                        <button
-                          key={i}
-                          className="w-full flex items-center gap-2 px-3 h-9 rounded-md border border-border hover:bg-surface-subtle text-left"
-                        >
-                          <span className={`h-6 w-6 rounded-md inline-flex items-center justify-center ${tone}`}>
-                            <Icon className="h-3.5 w-3.5" />
-                          </span>
-                          <span className="text-body-sm text-foreground flex-1 truncate">{a.name}</span>
-                          {a.meta && <span className="text-caption text-text-tertiary">{a.meta}</span>}
+                          <Phone className="h-3 w-3" />
+                        </a>
+                        <button className="h-5 w-5 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center">
+                          <MessageSquare className="h-3 w-3" />
                         </button>
-                      );
-                    })}
+                      </div>
+                    }
+                  />
+                  <Field label="提出时间" value={detail.createdAt} />
+                </div>
+
+                {/* 上报标签 */}
+                {!isLoss && typeConfig.tagLabel && typeConfig.tags.length > 0 && (
+                  <div className="rounded-md border border-border p-4">
+                    <div className="text-caption text-text-tertiary mb-2">上报{typeConfig.tagLabel}</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {typeConfig.tags.map((sym) => (
+                        <span key={sym} className="tag tag-muted">{sym}</span>
+                      ))}
+                    </div>
                   </div>
                 )}
-              </div>
 
-              {/* 疑似疾病 / 系统带出治疗方案 —— 紧随证据材料；仅疾病治疗、产后护理 */}
-              {!isLoss && typeConfig.showDisease && (
-                <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
-                  <Field label="疑似疾病（选填）" value={plan.suspectedDisease || "—"} />
-                  <Field label="系统带出治疗方案" value={plan.kbSource || "—"} />
+                {/* 事项说明 —— 干奶 / 疫苗 / 驱虫 */}
+                {!isLoss && typeConfig.showNote && (
+                  <div className="rounded-md border border-border p-4">
+                    <div className="text-caption text-text-tertiary mb-1.5">事项说明</div>
+                    <p className="text-body-sm text-text-secondary leading-relaxed whitespace-pre-line">
+                      {detail.desc || detail.event || "—"}
+                    </p>
+                  </div>
+                )}
+
+                {/* 损耗补申请 */}
+                {isLoss && (
+                  <div className="rounded-md border border-border p-4">
+                    <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1.5">
+                      <PackagePlus className="h-3.5 w-3.5 text-primary" /> 补申请物资
+                    </div>
+                    <div className="flex items-center justify-between text-body-sm text-foreground">
+                      <span>口蹄疫疫苗 A 型</span>
+                      <span className="font-mono text-text-secondary">× 8 支</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 图文/语音/视频素材 */}
+                <div className="rounded-md border border-border p-4 space-y-3">
+                  <div className="text-caption text-text-tertiary">图文 / 语音 / 视频素材</div>
+                  {photos > 0 && (
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                        <Camera className="h-3 w-3" /> 照片 · {photos} 张
+                      </div>
+                      <div className="grid grid-cols-6 gap-2">
+                        {Array.from({ length: photos }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="aspect-square rounded-md bg-gradient-to-br from-surface-subtle to-border border border-border"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {videos > 0 && (
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                        <Video className="h-3 w-3" /> 视频 · {videos} 段
+                      </div>
+                      <div className="grid grid-cols-6 gap-2">
+                        {Array.from({ length: videos }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="aspect-square rounded-md bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center"
+                          >
+                            <PlayCircle className="h-5 w-5 text-text-tertiary" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {voiceSecs > 0 && (
+                    <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-surface-subtle border border-border">
+                      <Mic className="h-4 w-4 text-primary" />
+                      <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
+                        <div className="h-full w-2/3 bg-primary/60" />
+                      </div>
+                      <span className="font-mono text-caption text-text-secondary">
+                        00:{String(voiceSecs).padStart(2, "0")}
+                      </span>
+                    </div>
+                  )}
+                  {detail.attachments && detail.attachments.length > 0 && (
+                    <div className="pt-2 border-t border-border space-y-1.5">
+                      {detail.attachments.map((a, i) => {
+                        const Icon = a.type === "audio" ? Mic : a.type === "video" ? Video : FileText;
+                        const tone =
+                          a.type === "audio"
+                            ? "text-[var(--state-warning)] bg-[var(--state-warning)]/10"
+                            : a.type === "video"
+                              ? "text-primary bg-brand-subtle"
+                              : "text-text-secondary bg-surface-subtle";
+                        return (
+                          <button
+                            key={i}
+                            className="w-full flex items-center gap-2 px-3 h-9 rounded-md border border-border hover:bg-surface-subtle text-left"
+                          >
+                            <span className={`h-6 w-6 rounded-md inline-flex items-center justify-center ${tone}`}>
+                              <Icon className="h-3.5 w-3.5" />
+                            </span>
+                            <span className="text-body-sm text-foreground flex-1 truncate">{a.name}</span>
+                            {a.meta && <span className="text-caption text-text-tertiary">{a.meta}</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
+
+                {/* 上报疑似疾病 + 系统初始匹配方案 —— 仅疾病治疗 / 产后护理 */}
+                {!isLoss && typeConfig.showDisease && (
+                  <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
+                    <Field label="上报疑似疾病（选填）" value={plan.suspectedDisease || "—"} />
+                    <Field label="系统初始匹配方案" value={plan.kbSource || "—"} />
+                  </div>
+                )}
+
+                {/* 文字备注 */}
+                <div className="rounded-md border border-border p-4">
+                  <div className="text-caption text-text-tertiary mb-1.5">文字备注</div>
+                  <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc || "—"}</p>
+                </div>
+              </section>
+
+              {/* ============ 二、审核结论（处理态） ============ */}
+              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
+                <section className="space-y-3">
+                  <SectionHeader icon={<ClipboardCheck className="h-3.5 w-3.5" />} title="审核结论" hint="以专业视角，根据线索重新确认类型、标签与结论" tone="brand" />
+                  <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-4">
+                    {/* 确认工单类型 */}
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">
+                        确认工单类型 <span className="text-[var(--state-danger)]">*</span>
+                      </div>
+                      <Select
+                        value={review.confirmedType || title}
+                        onValueChange={(v) => setReview((r) => ({ ...r, confirmedType: v }))}
+                      >
+                        <SelectTrigger className="h-9 text-body-sm bg-card"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {WORK_TYPES.map((t) => (
+                            <SelectItem key={t} value={t}>{t}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {review.confirmedType && review.confirmedType !== title && (
+                        <p className="text-caption text-[var(--state-warning)] mt-1">已将工单类型由「{title}」调整为「{review.confirmedType}」</p>
+                      )}
+                    </div>
+
+                    {/* 确认标签 */}
+                    {typeConfig.tagLabel && (
+                      <div>
+                        <div className="text-caption text-text-tertiary mb-1.5">确认{typeConfig.tagLabel}</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {Array.from(new Set([...typeConfig.tags, ...review.confirmedTags])).map((t) => {
+                            const on = review.confirmedTags.includes(t);
+                            return (
+                              <button
+                                key={t}
+                                type="button"
+                                onClick={() =>
+                                  setReview((r) => ({
+                                    ...r,
+                                    confirmedTags: on ? r.confirmedTags.filter((x) => x !== t) : [...r.confirmedTags, t],
+                                  }))
+                                }
+                                className={`tag ${on ? "tag-brand" : "tag-muted"} cursor-pointer`}
+                              >
+                                {on && <Check className="h-3 w-3 mr-0.5 inline" />}{t}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 诊断结论 / 疑似疾病结论 */}
+                    {typeConfig.showDisease && (
+                      <div>
+                        <div className="text-caption text-text-tertiary mb-1.5">诊断结论 / 疑似疾病结论</div>
+                        <Input
+                          value={review.diagnosis}
+                          onChange={(e) => setReview((r) => ({ ...r, diagnosis: e.target.value }))}
+                          placeholder="如：细菌性子宫炎"
+                          className="h-9 text-body-sm bg-card"
+                        />
+                      </div>
+                    )}
+
+                    {/* 结论说明 */}
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">
+                        结论说明 <span className="text-[var(--state-danger)]">*</span>
+                      </div>
+                      <Textarea
+                        value={review.conclusionNote}
+                        onChange={(e) => setReview((r) => ({ ...r, conclusionNote: e.target.value }))}
+                        rows={3}
+                        placeholder="基于上报线索，给出专业判断与处理建议"
+                        className="text-body-sm bg-card resize-none"
+                      />
+                    </div>
+                  </div>
+                </section>
               )}
 
-              {/* 执行方案 —— 仅审核处理态展示与编辑 */}
+              {/* ============ 三、执行计划（处理态） ============ */}
               {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
-                <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
-                      <Stethoscope className="h-4 w-4 text-primary" /> 执行方案
-                    </div>
-                    <span className="text-caption text-text-tertiary">请审核人填写</span>
-                  </div>
-
-                  <PlanEditor
-                    draft={draft}
-                    setDraft={setDraft}
-                    presets={DRUG_PRESETS}
-                    newMaterial={newMaterial}
-                    hideActions
+                <section className="space-y-3">
+                  <SectionHeader
+                    icon={<Stethoscope className="h-3.5 w-3.5" />}
+                    title="执行计划"
+                    hint={plan.kbSource ? "已根据系统初始匹配方案预填，其余请自行完善" : "请填写执行计划"}
+                    tone="brand"
                   />
-                </div>
+                  <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4">
+                    <PlanEditor
+                      draft={draft}
+                      setDraft={setDraft}
+                      presets={DRUG_PRESETS}
+                      newMaterial={newMaterial}
+                      hideActions
+                    />
+                  </div>
+                </section>
+              )}
+
+              {/* 查看态：仅展示固定的审核 / 响应人元数据 */}
+              {(detail.status !== "待审核" || mode === "view") && (
+                <section className="space-y-3">
+                  <SectionHeader icon={<ClipboardList className="h-3.5 w-3.5" />} title="审核与执行记录" />
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
+                    <Field label="负责人" value={detail.executor ?? detail.who ?? "—"} />
+                    <Field label="审核人" value={detail.reviewer ?? "—"} />
+                    <Field label="审核时间" value={detail.reviewedAt ?? "—"} />
+                    <Field label="响应时间" value={detail.executedAt ?? "—"} />
+                  </div>
+                </section>
               )}
 
             </div>
@@ -1048,15 +1165,27 @@ export function WorkOrderPage({
                     <X className="h-3.5 w-3.5" /> 驳回
                   </Button>
                   <Button
+                    variant="outline"
+                    className="gap-1.5"
+                    onClick={() => setKbDraftOpen(true)}
+                  >
+                    <Inbox className="h-3.5 w-3.5" /> 存入知识库草稿箱
+                  </Button>
+                  <Button
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                     onClick={() => {
+                      if (!review.conclusionNote.trim()) {
+                        toast.error("请填写审核结论说明");
+                        return;
+                      }
                       if (!planComplete) {
-                        toast.error("请完整填写执行方案");
+                        toast.error("请完整填写执行计划");
                         return;
                       }
                       setPlan({
                         ...draft,
                         materials: draft.needMaterials ? draft.materials.filter((m) => m.name.trim()) : [],
+                        suspectedDisease: review.diagnosis || draft.suspectedDisease,
                       });
                       setAssignExecutor("__none__");
                       setConfirm("approve");
@@ -1204,7 +1333,56 @@ export function WorkOrderPage({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* 存入知识库草稿箱 */}
+      <Dialog open={kbDraftOpen} onOpenChange={setKbDraftOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-section-title inline-flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-[var(--state-success)]" /> 已存至知识库草稿箱
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              当前的审核结论与执行计划已保存为知识库草稿，可在「知识库 · 草稿箱」中继续编辑或发布。
+            </p>
+            <div className="rounded-md bg-surface-subtle border border-border px-3 py-2 text-caption text-text-tertiary inline-flex items-center gap-1.5">
+              <BookOpen className="h-3.5 w-3.5 text-primary" />
+              草稿名：{(review.diagnosis || detail?.event || title) + " · 草稿"}
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setKbDraftOpen(false)}>知道了</Button>
+            <Button
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => {
+                setKbDraftOpen(false);
+                toast.success("已跳转至知识库草稿箱");
+              }}
+            >
+              前往草稿箱
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
+  );
+}
+
+function SectionHeader({
+  icon, title, hint, tone = "default",
+}: { icon: React.ReactNode; title: string; hint?: string; tone?: "default" | "brand" }) {
+  const isBrand = tone === "brand";
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div className="inline-flex items-center gap-2">
+        <span className={`h-6 w-6 rounded-md inline-flex items-center justify-center ${isBrand ? "bg-primary text-primary-foreground" : "bg-surface-subtle text-text-secondary"}`}>
+          {icon}
+        </span>
+        <span className={`text-body font-medium ${isBrand ? "text-primary" : "text-foreground"}`}>{title}</span>
+      </div>
+      {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
+    </div>
   );
 }
 
