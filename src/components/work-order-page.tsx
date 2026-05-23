@@ -915,7 +915,7 @@ export function WorkOrderPage({
                 {/* 事项说明 —— 干奶 / 疫苗 / 驱虫 */}
                 {!isLoss && typeConfig.showNote && (
                   <div className="rounded-md border border-border p-4">
-                    <div className="text-caption text-text-tertiary mb-1.5">事项说明</div>
+                    <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
                     <p className="text-body-sm text-text-secondary leading-relaxed whitespace-pre-line">
                       {detail.desc || detail.event || "—"}
                     </p>
