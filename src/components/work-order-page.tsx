@@ -1033,7 +1033,7 @@ export function WorkOrderPage({
           })()}
           </div>
 
-          {detail && canReview(role) && detail.status === "待审核" && !editingPlan && (
+          {detail && canReview(role) && detail.status === "待审核" && (
             <SheetFooter className="px-6 py-3 border-t border-border bg-card gap-2">
               {mode === "view" ? (
                 <Button
@@ -1051,14 +1051,13 @@ export function WorkOrderPage({
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                     onClick={() => {
                       if (!planComplete) {
-                        toast.error("执行方案不完整，请先编辑执行方案");
-                        setDraft({
-                          ...plan,
-                          materials: plan.materials.length ? plan.materials : [newMaterial()],
-                        });
-                        setEditingPlan(true);
+                        toast.error("请完整填写执行方案");
                         return;
                       }
+                      setPlan({
+                        ...draft,
+                        materials: draft.needMaterials ? draft.materials.filter((m) => m.name.trim()) : [],
+                      });
                       setAssignExecutor("__none__");
                       setConfirm("approve");
                     }}
