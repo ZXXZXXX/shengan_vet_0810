@@ -256,7 +256,7 @@ export function WorkOrderPage({
   const [newTagValue, setNewTagValue] = useState("");
   const newTagRef = useRef<HTMLInputElement>(null);
   const editTagRef = useRef<HTMLInputElement>(null);
-  const [kbDraftOpen, setKbDraftOpen] = useState(false);
+  const [saveToKb, setSaveToKb] = useState(true);
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
