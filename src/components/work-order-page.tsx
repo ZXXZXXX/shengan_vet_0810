@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePcRole, setPcRole, canReview, pcRoleLabel, type PcRole } from "@/lib/pc-role";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
