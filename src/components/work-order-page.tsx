@@ -1157,29 +1157,36 @@ export function WorkOrderPage({
                 </section>
               )}
 
-              {/* ============ 四、执行人 & 知识库（处理态） ============ */}
+              {/* ============ 四、指派执行人（处理态） ============ */}
               {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
                 <section className="space-y-3">
-                  <SectionHeader icon={<UserPlus className="h-3.5 w-3.5" />} title="指派与沉淀" hint="可选" />
-                  <div className="rounded-md border border-border bg-card p-4 space-y-4">
-                    <div>
-                      <div className="text-caption text-text-tertiary mb-1.5">
-                        指派执行人 <span className="text-text-tertiary">（选填，留空则进入待响应池）</span>
-                      </div>
-                      <input
-                        list="executor-options"
-                        value={assignExecutor === "__none__" ? "" : assignExecutor}
-                        onChange={(e) => setAssignExecutor(e.target.value.trim() ? e.target.value : "__none__")}
-                        placeholder="输入姓名搜索或点击下拉选择"
-                        className="h-9 w-full rounded-md border border-input bg-card px-3 text-body-sm outline-none focus:ring-2 focus:ring-ring"
-                      />
-                      <datalist id="executor-options">
-                        {executorsPool.map((p) => (
-                          <option key={p} value={p} />
-                        ))}
-                      </datalist>
+                  <SectionHeader icon={<UserPlus className="h-3.5 w-3.5" />} title="指派执行人" hint="选填" />
+                  <div className="rounded-md border border-border bg-card p-4">
+                    <div className="text-caption text-text-tertiary mb-1.5">
+                      指派执行人 <span className="text-text-tertiary">（留空则进入待响应池）</span>
                     </div>
-                    <div className="flex items-center justify-between gap-3 pt-1 border-t border-border">
+                    <input
+                      list="executor-options"
+                      value={assignExecutor === "__none__" ? "" : assignExecutor}
+                      onChange={(e) => setAssignExecutor(e.target.value.trim() ? e.target.value : "__none__")}
+                      placeholder="输入姓名搜索或点击下拉选择"
+                      className="h-9 w-full rounded-md border border-input bg-card px-3 text-body-sm outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <datalist id="executor-options">
+                      {executorsPool.map((p) => (
+                        <option key={p} value={p} />
+                      ))}
+                    </datalist>
+                  </div>
+                </section>
+              )}
+
+              {/* ============ 五、知识库沉淀（处理态） ============ */}
+              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
+                <section className="space-y-3">
+                  <SectionHeader icon={<BookOpen className="h-3.5 w-3.5" />} title="知识库沉淀" hint="选填" />
+                  <div className="rounded-md border border-border bg-card p-4">
+                    <div className="flex items-center justify-between gap-3">
                       <div className="space-y-0.5">
                         <div className="text-body-sm text-foreground">存至知识库草稿箱</div>
                         <div className="text-caption text-text-tertiary">
