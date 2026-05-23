@@ -279,6 +279,31 @@ export function WorkOrderPage({
   const [visible, setVisible] = useState<Record<ColKey, boolean>>(() =>
     Object.fromEntries(ALL_COLS.map((c) => [c.key, true])) as Record<ColKey, boolean>,
   );
+  // 折叠操作：终止 / 转派 / 释放
+  type MoreActionType = "terminate" | "transfer" | "release";
+  const [moreAction, setMoreAction] = useState<{ type: MoreActionType; order: WorkOrder } | null>(null);
+  const [actionReason, setActionReason] = useState("");
+  const [newExecutor, setNewExecutor] = useState<string>("");
+  const [confirmTerminate, setConfirmTerminate] = useState(false);
+  const [overrides, setOverrides] = useState<Record<string, { status?: "已终止"; executor?: string | null }>>({});
+  const effectiveStatus = (o: WorkOrder): WorkStatus | "已终止" =>
+    overrides[o.id]?.status ?? o.status;
+  const effectiveExecutor = (o: WorkOrder): string | undefined => {
+    const ov = overrides[o.id];
+    if (ov && "executor" in ov) return ov.executor ?? undefined;
+    return o.executor ?? o.who;
+  };
+  const openMoreAction = (type: MoreActionType, o: WorkOrder) => {
+    setActionReason("");
+    setNewExecutor("");
+    setMoreAction({ type, order: o });
+  };
+  const closeMoreAction = () => {
+    setMoreAction(null);
+    setActionReason("");
+    setNewExecutor("");
+    setConfirmTerminate(false);
+  };
 
   // 常用药品/材料候选（搜索匹配）
   const DRUG_PRESETS = [
