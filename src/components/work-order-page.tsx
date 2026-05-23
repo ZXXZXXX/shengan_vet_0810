@@ -491,12 +491,17 @@ export function WorkOrderPage({
         return <span className="font-mono text-body text-foreground">{o.id}</span>;
       case "target":
         return <span className="text-body text-foreground">{o.target}</span>;
-      case "status":
+      case "status": {
+        const st = effectiveStatus(o);
+        if (st === "已终止") {
+          return <span className="tag tag-muted">已终止</span>;
+        }
         return (
-          <span className={toneStyles[statusList.find((s) => s.key === o.status)!.tone].tag}>
-            {o.status}
+          <span className={toneStyles[statusList.find((s) => s.key === st)!.tone].tag}>
+            {st}
           </span>
         );
+      }
       case "proposer":
         return <span className="text-body-sm text-text-secondary">{o.proposer}</span>;
       case "proposedAt":
@@ -512,7 +517,7 @@ export function WorkOrderPage({
       case "executor":
         return (
           <span className="text-body-sm text-text-secondary">
-            {o.executor ?? o.who ?? "—"}
+            {effectiveExecutor(o) ?? "—"}
           </span>
         );
       case "executedAt":
@@ -521,7 +526,49 @@ export function WorkOrderPage({
             {o.executedAt ?? "—"}
           </span>
         );
-      case "action":
+      case "action": {
+        const st = effectiveStatus(o);
+        const exec = effectiveExecutor(o);
+        // 终止：已通过审核后、未完成前 → 执行中 / 待响应
+        const canTerminate = st === "执行中" || st === "待响应";
+        // 转派 / 释放：已指定或已响应但未完成 → 有执行人且为 执行中/待响应
+        const canTransfer = (st === "执行中" || st === "待响应") && !!exec;
+        const canRelease = (st === "执行中" || st === "待响应") && !!exec;
+        const hasMore = canTerminate || canTransfer || canRelease;
+        const MoreBtn = hasMore ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                aria-label="更多操作"
+              >
+                <MoreHorizontal className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              {canTerminate && (
+                <DropdownMenuItem
+                  className="text-[var(--state-danger)] focus:text-[var(--state-danger)]"
+                  onClick={() => openMoreAction("terminate", o)}
+                >
+                  <Ban className="h-3.5 w-3.5 mr-2" /> 终止
+                </DropdownMenuItem>
+              )}
+              {canTransfer && (
+                <DropdownMenuItem onClick={() => openMoreAction("transfer", o)}>
+                  <Repeat2 className="h-3.5 w-3.5 mr-2" /> 转派
+                </DropdownMenuItem>
+              )}
+              {canRelease && (
+                <DropdownMenuItem onClick={() => openMoreAction("release", o)}>
+                  <LogOut className="h-3.5 w-3.5 mr-2" /> 释放
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null;
         if (canReview(role) && o.status === "待审核") {
           return (
             <div className="inline-flex items-center gap-0.5">
@@ -541,19 +588,24 @@ export function WorkOrderPage({
               >
                 处理
               </Button>
+              {MoreBtn}
             </div>
           );
         }
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-            onClick={() => { setMode("view"); setDetail(o); }}
-          >
-            查看
-          </Button>
+          <div className="inline-flex items-center gap-0.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+              onClick={() => { setMode("view"); setDetail(o); }}
+            >
+              查看
+            </Button>
+            {MoreBtn}
+          </div>
         );
+      }
     }
   };
 
