@@ -69,6 +69,7 @@ import {
   Pencil,
   ClipboardCheck,
   FileSearch,
+  UserPlus,
 } from "lucide-react";
 
 const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
@@ -257,6 +258,8 @@ export function WorkOrderPage({
   
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
+  const [saveToKb, setSaveToKb] = useState(false);
+  const [kbHintOpen, setKbHintOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [range, setRange] = useState<DateRange>("all");
   const [advOpen, setAdvOpen] = useState(false);
@@ -342,7 +345,6 @@ export function WorkOrderPage({
   }, [mode, detail?.id]);
 
   const planComplete =
-    draft.desc.trim().length > 0 &&
     (!draft.needMaterials || draft.materials.some((m) => m.name.trim())) &&
     draft.execStart.trim().length > 0 &&
     (draft.execMode !== "cycle" || draft.cycleRule.trim().length > 0) &&
@@ -1224,19 +1226,6 @@ export function WorkOrderPage({
                       </div>
                     )}
 
-                    {/* 结论说明 */}
-                    <div>
-                      <div className="text-caption text-text-tertiary mb-1.5">
-                        结论说明 <span className="text-[var(--state-danger)]">*</span>
-                      </div>
-                      <Textarea
-                        value={review.conclusionNote}
-                        onChange={(e) => setReview((r) => ({ ...r, conclusionNote: e.target.value }))}
-                        rows={3}
-                        placeholder="基于上报线索，给出专业判断与处理建议"
-                        className="text-body-sm bg-card resize-none"
-                      />
-                    </div>
                   </div>
                 </section>
               )}
@@ -1261,6 +1250,48 @@ export function WorkOrderPage({
                   </div>
                 </section>
               )}
+
+              {/* ============ 四、执行人 & 知识库（处理态） ============ */}
+              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
+                <section className="space-y-3">
+                  <SectionHeader icon={<UserPlus className="h-3.5 w-3.5" />} title="指派与沉淀" hint="可选" />
+                  <div className="rounded-md border border-border bg-card p-4 space-y-4">
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">
+                        指派执行人 <span className="text-text-tertiary">（选填，留空则进入待响应池）</span>
+                      </div>
+                      <input
+                        list="executor-options"
+                        value={assignExecutor === "__none__" ? "" : assignExecutor}
+                        onChange={(e) => setAssignExecutor(e.target.value.trim() ? e.target.value : "__none__")}
+                        placeholder="输入姓名搜索或点击下拉选择"
+                        className="h-9 w-full rounded-md border border-input bg-card px-3 text-body-sm outline-none focus:ring-2 focus:ring-ring"
+                      />
+                      <datalist id="executor-options">
+                        {executorsPool.map((p) => (
+                          <option key={p} value={p} />
+                        ))}
+                      </datalist>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 pt-1 border-t border-border">
+                      <div className="space-y-0.5">
+                        <div className="text-body-sm text-foreground">存至知识库草稿箱</div>
+                        <div className="text-caption text-text-tertiary">
+                          症状标签、疾病名称、治疗方案将存入诊疗知识库草稿箱
+                        </div>
+                      </div>
+                      <Switch
+                        checked={saveToKb}
+                        onCheckedChange={(v) => {
+                          setSaveToKb(!!v);
+                          if (v) setKbHintOpen(true);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </section>
+              )}
+
 
 
               {/* 查看态：仅展示固定的审核 / 响应人元数据 */}
@@ -1298,10 +1329,6 @@ export function WorkOrderPage({
                   <Button
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                     onClick={() => {
-                      if (!review.conclusionNote.trim()) {
-                        toast.error("请填写审核结论说明");
-                        return;
-                      }
                       if (!planComplete) {
                         toast.error("请完整填写执行计划");
                         return;
@@ -1311,7 +1338,6 @@ export function WorkOrderPage({
                         materials: draft.needMaterials ? draft.materials.filter((m) => m.name.trim()) : [],
                         suspectedDisease: review.diagnosis || draft.suspectedDisease,
                       });
-                      setAssignExecutor("__none__");
                       setConfirm("approve");
                     }}
                   >
@@ -1413,26 +1439,17 @@ export function WorkOrderPage({
                 </div>
               )}
             </div>
-            <div>
-              <div className="text-caption text-text-tertiary mb-1.5">
-                指派执行人 <span className="text-text-tertiary">（非必选）</span>
-              </div>
-              <Select value={assignExecutor} onValueChange={setAssignExecutor}>
-                <SelectTrigger className="h-9 text-body-sm">
-                  <SelectValue placeholder="不指定，进入待响应池" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">不指定（进入待响应池）</SelectItem>
-                  {executorsPool.map((p) => (
-                    <SelectItem key={p} value={p}>{p}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-caption text-text-tertiary mt-1.5">
+            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-1">
+              <div className="text-caption text-text-tertiary">
                 {assignExecutor === "__none__"
-                  ? "未指定执行人时，工作将进入对应权限账号的待响应池，由首位响应者承接。"
-                  : `提交后将直接派发至 ${assignExecutor}。`}
-              </p>
+                  ? "未指定执行人，工单将进入待响应池，由首位响应者承接。"
+                  : `执行人：${assignExecutor}，提交后直接派发。`}
+              </div>
+              {saveToKb && (
+                <div className="text-caption text-primary">
+                  · 症状标签、疾病名称、治疗方案将同步存入诊疗知识库草稿箱
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter className="gap-2">
@@ -1442,9 +1459,36 @@ export function WorkOrderPage({
               onClick={() => {
                 setConfirm(null);
                 setDetail(null);
+                if (saveToKb) {
+                  toast.success("已存至诊疗知识库草稿箱", {
+                    description: "可前往知识库 → 草稿箱 查看、编辑后发布",
+                  });
+                }
               }}
             >
               确认提交
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 知识库草稿箱开关提示 */}
+      <Dialog open={kbHintOpen} onOpenChange={setKbHintOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">将沉淀至诊疗知识库</DialogTitle>
+          </DialogHeader>
+          <div className="text-body-sm text-text-secondary leading-relaxed">
+            本工单中的<span className="text-foreground font-medium">症状标签</span>、
+            <span className="text-foreground font-medium">疾病名称</span>、
+            <span className="text-foreground font-medium">治疗方案</span>将存至诊疗知识库的草稿箱中，后续可前往编辑发布。
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => setKbHintOpen(false)}
+            >
+              知道了
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1560,13 +1604,13 @@ function PlanEditor({
     <div className="space-y-4">
       <div>
         <div className="text-caption text-text-tertiary mb-1.5">
-          方案说明 / 处理要求 <span className="text-[var(--state-danger)]">*</span>
+          方案说明 / 处理要求 <span className="text-text-tertiary">（选填）</span>
         </div>
         <Textarea
           value={draft.desc}
           onChange={(e) => update("desc", e.target.value)}
           rows={3}
-          placeholder="请输入处理方案 / 操作要求"
+          placeholder="如需补充说明或特殊操作要求，可在此填写"
           className="text-body-sm bg-card resize-none"
         />
       </div>
