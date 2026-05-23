@@ -356,15 +356,17 @@ export function WorkOrderPage({
     const startDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
     const hasDisease = title === "疾病治疗" || title === "产后护理";
     // 仅当工单含疑似病例 + 系统匹配方案时，才自动带出方案说明 / 物资 / 复查等内容
+    const materials: MaterialItem[] = hasDisease
+      ? [
+          { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
+          { id: "p2", name: "氟尼辛葡甲胺注射液", qty: "100", unit: "ml", usage: "肌肉注射，每日 1 次", duration: "2 天", note: "" },
+        ]
+      : [];
+    const auto = computeMaxWithdraw(materials);
     return {
       desc: "",
       needMaterials: hasDisease,
-      materials: hasDisease
-        ? [
-            { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
-            { id: "p2", name: "氟尼辛葡甲胺注射液", qty: "100", unit: "ml", usage: "肌肉注射，每日 1 次", duration: "2 天", note: "" },
-          ]
-        : [],
+      materials,
       execStart: startDate,
       execTime: "",
       execMode: "single",
@@ -375,8 +377,11 @@ export function WorkOrderPage({
       suspectedDisease: hasDisease ? "细菌性感染（疑似）" : "",
       kbSource: hasDisease ? `${title} · 标准处置方案 v2.3` : "",
       kbAdjusted: false,
+      maxWithdraw: auto !== null ? String(auto) : "",
+      maxWithdrawOverridden: false,
     };
   };
+
   useEffect(() => {
     if (detail) {
       const p = buildDefaultPlan(detail);
