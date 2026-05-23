@@ -247,6 +247,9 @@ export function WorkOrderPage({
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const [draft, setDraft] = useState<Plan>(emptyPlan);
   const [editingPlan, setEditingPlan] = useState(false);
+  const emptyReview: ReviewConclusion = { confirmedType: "", confirmedTags: [], diagnosis: "", conclusionNote: "" };
+  const [review, setReview] = useState<ReviewConclusion>(emptyReview);
+  const [kbDraftOpen, setKbDraftOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
