@@ -1041,48 +1041,6 @@ export function WorkOrderPage({
                         <div className="flex flex-wrap gap-1.5 items-center">
                           {allTags.map((t) => {
                             const on = review.confirmedTags.includes(t);
-                            const isEditing = editingTag === t;
-                            if (isEditing) {
-                              return (
-                                <Input
-                                  key={`edit-${t}`}
-                                  ref={editTagRef}
-                                  value={editTagValue}
-                                  onChange={(e) => setEditTagValue(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                      const trimmed = editTagValue.trim();
-                                      if (trimmed && trimmed !== t) {
-                                        setAllTags((prev) => prev.map((x) => (x === t ? trimmed : x)));
-                                        setReview((r) => ({
-                                          ...r,
-                                          confirmedTags: r.confirmedTags.map((x) => (x === t ? trimmed : x)),
-                                        }));
-                                      }
-                                      setEditingTag(null);
-                                      setEditTagValue("");
-                                    } else if (e.key === "Escape") {
-                                      setEditingTag(null);
-                                      setEditTagValue("");
-                                    }
-                                  }}
-                                  onBlur={() => {
-                                    const trimmed = editTagValue.trim();
-                                    if (trimmed && trimmed !== t) {
-                                      setAllTags((prev) => prev.map((x) => (x === t ? trimmed : x)));
-                                      setReview((r) => ({
-                                        ...r,
-                                        confirmedTags: r.confirmedTags.map((x) => (x === t ? trimmed : x)),
-                                      }));
-                                    }
-                                    setEditingTag(null);
-                                    setEditTagValue("");
-                                  }}
-                                  className="h-7 w-28 text-body-sm bg-card px-2 py-0"
-                                  autoFocus
-                                />
-                              );
-                            }
                             return (
                               <span
                                 key={t}
@@ -1096,18 +1054,6 @@ export function WorkOrderPage({
                               >
                                 {on && <Check className="h-3 w-3 mr-0.5 inline" />}
                                 <span>{t}</span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingTag(t);
-                                    setEditTagValue(t);
-                                  }}
-                                  className="ml-0.5 h-3.5 w-3.5 rounded-sm inline-flex items-center justify-center opacity-0 group-hover/tag:opacity-100 transition-opacity hover:bg-black/10"
-                                  title="编辑"
-                                >
-                                  <Pencil className="h-2.5 w-2.5" />
-                                </button>
                                 <button
                                   type="button"
                                   onClick={(e) => {
