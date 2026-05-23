@@ -1519,23 +1519,25 @@ function PlanEditor({
         </div>
       )}
 
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 text-body-sm font-normal"
-          onClick={onCancel}
-        >
-          取消
-        </Button>
-        <Button
-          size="sm"
-          className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-          onClick={onSave}
-        >
-          保存修改
-        </Button>
-      </div>
+      {!hideActions && (
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-body-sm font-normal"
+            onClick={onCancel}
+          >
+            取消
+          </Button>
+          <Button
+            size="sm"
+            className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            onClick={onSave}
+          >
+            保存修改
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
