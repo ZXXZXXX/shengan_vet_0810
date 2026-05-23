@@ -1024,11 +1024,10 @@ export function WorkOrderPage({
                     onClick={() => {
                       if (!planComplete) {
                         toast.error("执行方案不完整，请先编辑执行方案");
-                        setDraftConclusion(conclusion);
-                        setDraftItems(planItems.length ? planItems : [{ id: `n${Date.now()}`, name: "", dose: "", freq: "", course: "" }]);
-                        setDraftSteps(steps);
-                        setDraftFollowup(followup);
-                        setDraftNote(planNote);
+                        setDraft({
+                          ...plan,
+                          materials: plan.materials.length ? plan.materials : [newMaterial()],
+                        });
                         setEditingPlan(true);
                         return;
                       }
