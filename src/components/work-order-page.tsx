@@ -1225,19 +1225,6 @@ export function WorkOrderPage({
                       </div>
                     )}
 
-                    {/* 结论说明 */}
-                    <div>
-                      <div className="text-caption text-text-tertiary mb-1.5">
-                        结论说明 <span className="text-[var(--state-danger)]">*</span>
-                      </div>
-                      <Textarea
-                        value={review.conclusionNote}
-                        onChange={(e) => setReview((r) => ({ ...r, conclusionNote: e.target.value }))}
-                        rows={3}
-                        placeholder="基于上报线索，给出专业判断与处理建议"
-                        className="text-body-sm bg-card resize-none"
-                      />
-                    </div>
                   </div>
                 </section>
               )}
