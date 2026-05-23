@@ -1714,12 +1714,19 @@ function PlanView({ plan }: { plan: Plan }) {
                   <span>{m.duration || "—"}</span>
                 </div>
               ))}
+              {hasWithdrawRule(plan.materials) && (
+                <div className="flex items-center justify-between px-3 py-2 border-t border-border bg-surface-subtle text-body-sm">
+                  <span className="text-text-secondary">本次最长休药期</span>
+                  <span className="text-foreground tabular-nums font-medium">{plan.maxWithdraw || "0"} 天</span>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-body-sm text-text-tertiary">未填写</p>
           )}
         </div>
       )}
+
       <div>
         <div className="text-caption text-text-tertiary mb-1.5">执行安排</div>
         <div className="text-body-sm text-foreground space-y-0.5">
