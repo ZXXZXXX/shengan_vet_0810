@@ -1470,6 +1470,151 @@ export function WorkOrderPage({
         </DialogContent>
       </Dialog>
 
+      {/* 更多操作：终止 / 转派 / 释放 */}
+      <Dialog
+        open={!!moreAction && !confirmTerminate}
+        onOpenChange={(o) => { if (!o) closeMoreAction(); }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">
+              {moreAction?.type === "terminate" && "终止工作"}
+              {moreAction?.type === "transfer" && "转派执行人"}
+              {moreAction?.type === "release" && "释放工作"}
+            </DialogTitle>
+          </DialogHeader>
+          {moreAction && (
+            <div className="space-y-4">
+              <div className="rounded-md bg-surface-subtle px-3 py-2 text-body-sm text-text-secondary">
+                <span className="font-mono text-foreground">{moreAction.order.id}</span>
+                <span className="mx-2 text-text-tertiary">·</span>
+                {moreAction.order.target}
+                {moreAction.order.event && (
+                  <>
+                    <span className="mx-2 text-text-tertiary">·</span>
+                    {moreAction.order.event}
+                  </>
+                )}
+              </div>
+
+              {moreAction.type === "transfer" && (
+                <div className="space-y-1.5">
+                  <Label className="text-body-sm">
+                    新执行人 <span className="text-[var(--state-danger)]">*</span>
+                  </Label>
+                  <Select value={newExecutor} onValueChange={setNewExecutor}>
+                    <SelectTrigger className="h-9 text-body-sm">
+                      <SelectValue placeholder="请选择新执行人" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {executorsPool
+                        .filter((n) => n !== effectiveExecutor(moreAction.order))
+                        .map((n) => (
+                          <SelectItem key={n} value={n}>{n}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-caption text-text-tertiary">
+                    当前执行人：{effectiveExecutor(moreAction.order) ?? "—"}
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label className="text-body-sm">
+                  原因 <span className="text-[var(--state-danger)]">*</span>
+                </Label>
+                <Textarea
+                  value={actionReason}
+                  onChange={(e) => setActionReason(e.target.value)}
+                  rows={3}
+                  placeholder={
+                    moreAction.type === "terminate"
+                      ? "请填写终止原因"
+                      : moreAction.type === "transfer"
+                        ? "请填写转派原因"
+                        : "请填写释放原因"
+                  }
+                  className="text-body-sm"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={closeMoreAction}>取消</Button>
+            <Button
+              className={
+                moreAction?.type === "terminate"
+                  ? "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+                  : "bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              }
+              disabled={
+                !moreAction ||
+                !actionReason.trim() ||
+                (moreAction.type === "transfer" && !newExecutor)
+              }
+              onClick={() => {
+                if (!moreAction) return;
+                if (moreAction.type === "terminate") {
+                  setConfirmTerminate(true);
+                  return;
+                }
+                if (moreAction.type === "transfer") {
+                  setOverrides((m) => ({
+                    ...m,
+                    [moreAction.order.id]: { ...m[moreAction.order.id], executor: newExecutor },
+                  }));
+                  toast.success(`已转派至 ${newExecutor}`);
+                } else {
+                  setOverrides((m) => ({
+                    ...m,
+                    [moreAction.order.id]: { ...m[moreAction.order.id], executor: null },
+                  }));
+                  toast.success("已释放，回到待响应池");
+                }
+                closeMoreAction();
+              }}
+            >
+              {moreAction?.type === "terminate" ? "提交" : "确认提交"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 终止二次确认 */}
+      <Dialog open={confirmTerminate} onOpenChange={setConfirmTerminate}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">确认终止该工作？</DialogTitle>
+          </DialogHeader>
+          <div className="text-body-sm text-text-secondary space-y-2">
+            <p>终止后该工作将停止执行，状态变更为「已终止」，不可恢复。</p>
+            {moreAction && (
+              <div className="rounded-md bg-surface-subtle px-3 py-2">
+                <div className="text-caption text-text-tertiary mb-1">终止原因</div>
+                <div className="text-foreground whitespace-pre-wrap">{actionReason}</div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConfirmTerminate(false)}>再想想</Button>
+            <Button
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+              onClick={() => {
+                if (!moreAction) return;
+                setOverrides((m) => ({
+                  ...m,
+                  [moreAction.order.id]: { ...m[moreAction.order.id], status: "已终止" },
+                }));
+                toast.success("工作已终止");
+                closeMoreAction();
+              }}
+            >
+              确认终止
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </TooltipProvider>
   );
