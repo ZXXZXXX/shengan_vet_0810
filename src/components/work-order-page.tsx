@@ -70,8 +70,19 @@ import {
   ClipboardCheck,
   FileSearch,
   UserPlus,
-  
+  MoreHorizontal,
+  XCircle,
+  Repeat2,
+  LogOut,
+  Ban,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
 
