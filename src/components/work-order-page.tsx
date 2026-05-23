@@ -798,7 +798,30 @@ export function WorkOrderPage({
           <div className="flex-1 overflow-y-auto px-6 py-5">
           {detail && (() => {
             const isLoss = detail.id.startsWith("LS");
-            const symptoms = isLoss ? [] : ["体温升高", "采食下降", "反刍减少"];
+            // 按工单类型差异化展示字段
+            const typeConfig: {
+              tagLabel: string | null;
+              tags: string[];
+              showDisease: boolean;
+              showNote: boolean;
+            } = (() => {
+              switch (title) {
+                case "疾病治疗":
+                  return { tagLabel: "症状标签", tags: ["体温升高", "采食下降", "反刍减少"], showDisease: true, showNote: false };
+                case "产后护理":
+                  return { tagLabel: "症状 / 护理异常标签", tags: ["恶露异常", "采食下降", "站立困难"], showDisease: true, showNote: false };
+                case "修蹄工作":
+                  return { tagLabel: "症状 / 问题标签", tags: ["右后蹄跛行", "趾间皮炎"], showDisease: false, showNote: false };
+                case "普修工作":
+                  return { tagLabel: "问题标签", tags: ["围栏松动", "饮水器漏水"], showDisease: false, showNote: false };
+                case "干奶工作":
+                case "疫苗免疫":
+                case "驱虫工作":
+                  return { tagLabel: null, tags: [], showDisease: false, showNote: true };
+                default:
+                  return { tagLabel: null, tags: [], showDisease: false, showNote: true };
+              }
+            })();
             const photos = 2;
             const videos = isLoss ? 1 : 0;
             const voiceSecs = isLoss ? 42 : 28;
@@ -818,7 +841,7 @@ export function WorkOrderPage({
               {/* 字段网格 —— 与小程序保持一致 */}
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
                 <Field label="工作类型" value={title} />
-                <Field label={isLoss ? "关联牛舍" : "处理对象"} value={detail.target} />
+                <Field label={isLoss ? "关联牛舍" : "上报对象"} value={detail.target} />
                 <Field label="提出事件" value={detail.event ?? "—"} />
                 <FieldNode
                   label="提出人"
@@ -844,23 +867,33 @@ export function WorkOrderPage({
                 <Field label="响应时间" value={detail.executedAt ?? "—"} />
               </div>
 
-              {/* 标签（症状 / 异常 / 问题） */}
-              {symptoms.length > 0 && (
+              {/* 标签（症状 / 异常 / 问题）—— 仅特定工单类型展示 */}
+              {!isLoss && typeConfig.tagLabel && typeConfig.tags.length > 0 && (
                 <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-2">标签</div>
+                  <div className="text-caption text-text-tertiary mb-2">{typeConfig.tagLabel}</div>
                   <div className="flex flex-wrap gap-1.5">
-                    {symptoms.map((sym) => (
+                    {typeConfig.tags.map((sym) => (
                       <span key={sym} className="tag tag-brand">{sym}</span>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* 疑似疾病 / 系统带出方案（来自小程序上报 + 知识库） */}
-              {!isLoss && (plan.suspectedDisease || plan.kbSource) && (
+              {/* 疑似疾病 / 系统带出方案 —— 仅疾病治疗、产后护理 */}
+              {!isLoss && typeConfig.showDisease && (
                 <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
-                  <Field label="疑似疾病" value={plan.suspectedDisease || "—"} />
-                  <Field label="系统带出方案" value={plan.kbSource || "—"} />
+                  <Field label="疑似疾病（选填）" value={plan.suspectedDisease || "—"} />
+                  <Field label="系统带出治疗方案" value={plan.kbSource || "—"} />
+                </div>
+              )}
+
+              {/* 事项说明 —— 干奶 / 疫苗 / 驱虫 */}
+              {!isLoss && typeConfig.showNote && (
+                <div className="rounded-md border border-border p-4">
+                  <div className="text-caption text-text-tertiary mb-1.5">事项说明</div>
+                  <p className="text-body-sm text-text-secondary leading-relaxed whitespace-pre-line">
+                    {detail.desc || detail.event || "—"}
+                  </p>
                 </div>
               )}
 
