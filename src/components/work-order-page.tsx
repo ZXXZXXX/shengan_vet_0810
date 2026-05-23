@@ -1878,9 +1878,45 @@ function PlanEditor({
             >
               <Plus className="h-3.5 w-3.5 mr-1" /> 添加物资 / 药品
             </Button>
+            {showWithdraw && (
+              <div className="rounded-md border border-border bg-surface-subtle px-3 py-2 flex items-center justify-between gap-2">
+                <div className="flex flex-col">
+                  <span className="text-body-sm text-foreground">本次最长休药期</span>
+                  <span className="text-caption text-text-tertiary">根据所选药品自动计算，可手动调整</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Input
+                    type="number"
+                    min={0}
+                    value={draft.maxWithdraw}
+                    onChange={(e) =>
+                      setDraft((d) => ({ ...d, maxWithdraw: e.target.value, maxWithdrawOverridden: true }))
+                    }
+                    className="h-8 w-20 text-body-sm bg-card tabular-nums text-right"
+                  />
+                  <span className="text-body-sm text-text-secondary">天</span>
+                  {draft.maxWithdrawOverridden && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-2 text-caption font-normal text-primary"
+                      onClick={() =>
+                        setDraft((d) => {
+                          const auto = computeMaxWithdraw(d.materials);
+                          return { ...d, maxWithdraw: auto !== null ? String(auto) : "", maxWithdrawOverridden: false };
+                        })
+                      }
+                    >
+                      重置
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
+
 
       <div className="rounded-md border border-border bg-card p-3 space-y-3">
         <div className="text-caption text-text-tertiary">执行安排</div>
