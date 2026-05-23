@@ -1656,11 +1656,18 @@ function PlanEditor({
               开始执行日期 <span className="text-[var(--state-danger)]">*</span>
             </div>
             <Input
+              ref={execStartRef}
               type="date"
               value={draft.execStart}
-              onChange={(e) => update("execStart", e.target.value)}
-              className="h-9 text-body-sm bg-card"
+              onChange={(e) => {
+                update("execStart", e.target.value);
+                if (e.target.value.trim()) clearError?.("execStart");
+              }}
+              className={`h-9 text-body-sm bg-card ${errors?.execStart ? "border-[var(--state-danger)] ring-1 ring-[var(--state-danger)]" : ""}`}
             />
+            {errors?.execStart && (
+              <p className="text-caption text-[var(--state-danger)] mt-1">此为必填项</p>
+            )}
           </div>
           <div>
             <div className="text-caption text-text-tertiary mb-1">执行时间段（选填）</div>
