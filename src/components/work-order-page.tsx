@@ -844,7 +844,7 @@ export function WorkOrderPage({
                 case "产后护理":
                   return { tagLabel: "具体描述标签", tags: ["恶露异常", "采食下降", "站立困难"], showDisease: true, showNote: false };
                 case "修蹄工作":
-                  return { tagLabel: "症状 / 问题标签", tags: ["右后蹄跛行", "趾间皮炎"], showDisease: false, showNote: false };
+                  return { tagLabel: "具体描述标签", tags: ["右后蹄跛行", "趾间皮炎"], showDisease: false, showNote: false };
                 case "普修工作":
                   return { tagLabel: "问题标签", tags: ["围栏松动", "饮水器漏水"], showDisease: false, showNote: false };
                 case "干奶工作":
