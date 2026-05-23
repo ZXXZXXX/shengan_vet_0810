@@ -1905,7 +1905,7 @@ export function makeOrders(
       ],
       [
         { type: "video", name: "病灶特写.mp4", meta: "00:46" },
-        { type: "text", name: "诊疗建议.txt" },
+        { type: "text", name: "具体描述.txt" },
       ],
     ];
     const order: WorkOrder = {
