@@ -261,7 +261,7 @@ export function WorkOrderPage({
     const hasDisease = title === "疾病治疗" || title === "产后护理";
     // 仅当工单含疑似病例 + 系统匹配方案时，才自动带出方案说明 / 物资 / 复查等内容
     return {
-      desc: hasDisease ? `${o.event ?? o.desc}。结合现场情况，按${title}标准方案处置。` : "",
+      desc: "",
       needMaterials: hasDisease,
       materials: hasDisease
         ? [
@@ -275,7 +275,7 @@ export function WorkOrderPage({
       cycleRule: "",
       needReview: hasDisease,
       reviewDate: "",
-      reviewNote: hasDisease ? "复查体温、采食与反刍情况" : "",
+      reviewNote: "",
       suspectedDisease: hasDisease ? "细菌性感染（疑似）" : "",
       kbSource: hasDisease ? `${title} · 标准处置方案 v2.3` : "",
       kbAdjusted: false,
@@ -283,19 +283,30 @@ export function WorkOrderPage({
   };
   useEffect(() => {
     if (detail) {
-      setPlan(buildDefaultPlan(detail));
+      const p = buildDefaultPlan(detail);
+      setPlan(p);
+      setDraft({ ...p, materials: p.materials.length ? p.materials : [newMaterial()] });
       setEditingPlan(false);
       setAssignExecutor("__none__");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
 
+  // 进入处理态时，确保执行方案处于可编辑状态
+  useEffect(() => {
+    if (mode === "process" && detail) {
+      setDraft((d) => ({ ...d, materials: d.materials.length ? d.materials : [newMaterial()] }));
+      setEditingPlan(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, detail?.id]);
+
   const planComplete =
-    plan.desc.trim().length > 0 &&
-    (!plan.needMaterials || plan.materials.some((m) => m.name.trim())) &&
-    plan.execStart.trim().length > 0 &&
-    (plan.execMode !== "cycle" || plan.cycleRule.trim().length > 0) &&
-    (!plan.needReview || plan.reviewDate.trim().length > 0);
+    draft.desc.trim().length > 0 &&
+    (!draft.needMaterials || draft.materials.some((m) => m.name.trim())) &&
+    draft.execStart.trim().length > 0 &&
+    (draft.execMode !== "cycle" || draft.cycleRule.trim().length > 0) &&
+    (!draft.needReview || draft.reviewDate.trim().length > 0);
 
   const openReject = (o: WorkOrder) => {
     setDetail(o);
@@ -1004,44 +1015,16 @@ export function WorkOrderPage({
                     <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
                       <Stethoscope className="h-4 w-4 text-primary" /> 执行方案
                     </div>
-                    {!editingPlan && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-7 px-2 text-body-sm font-normal"
-                        onClick={() => {
-                          setDraft({
-                            ...plan,
-                            materials: plan.materials.length ? plan.materials : [newMaterial()],
-                          });
-                          setEditingPlan(true);
-                        }}
-                      >
-                        编辑
-                      </Button>
-                    )}
+                    <span className="text-caption text-text-tertiary">请审核人填写</span>
                   </div>
 
-                  {editingPlan ? (
-                    <PlanEditor
-                      draft={draft}
-                      setDraft={setDraft}
-                      presets={DRUG_PRESETS}
-                      newMaterial={newMaterial}
-                      onCancel={() => setEditingPlan(false)}
-                      onSave={() => {
-                        setPlan({
-                          ...draft,
-                          materials: draft.needMaterials
-                            ? draft.materials.filter((m) => m.name.trim())
-                            : [],
-                        });
-                        setEditingPlan(false);
-                      }}
-                    />
-                  ) : (
-                    <PlanView plan={plan} />
-                  )}
+                  <PlanEditor
+                    draft={draft}
+                    setDraft={setDraft}
+                    presets={DRUG_PRESETS}
+                    newMaterial={newMaterial}
+                    hideActions
+                  />
                 </div>
               )}
 
@@ -1050,7 +1033,7 @@ export function WorkOrderPage({
           })()}
           </div>
 
-          {detail && canReview(role) && detail.status === "待审核" && !editingPlan && (
+          {detail && canReview(role) && detail.status === "待审核" && (
             <SheetFooter className="px-6 py-3 border-t border-border bg-card gap-2">
               {mode === "view" ? (
                 <Button
@@ -1068,14 +1051,13 @@ export function WorkOrderPage({
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                     onClick={() => {
                       if (!planComplete) {
-                        toast.error("执行方案不完整，请先编辑执行方案");
-                        setDraft({
-                          ...plan,
-                          materials: plan.materials.length ? plan.materials : [newMaterial()],
-                        });
-                        setEditingPlan(true);
+                        toast.error("请完整填写执行方案");
                         return;
                       }
+                      setPlan({
+                        ...draft,
+                        materials: draft.needMaterials ? draft.materials.filter((m) => m.name.trim()) : [],
+                      });
                       setAssignExecutor("__none__");
                       setConfirm("approve");
                     }}
@@ -1304,13 +1286,15 @@ function PlanEditor({
   presets,
   onCancel,
   onSave,
+  hideActions,
 }: {
   draft: Plan;
   setDraft: React.Dispatch<React.SetStateAction<Plan>>;
   presets: string[];
   newMaterial: () => MaterialItem;
-  onCancel: () => void;
-  onSave: () => void;
+  onCancel?: () => void;
+  onSave?: () => void;
+  hideActions?: boolean;
 }) {
   const update = <K extends keyof Plan>(k: K, v: Plan[K]) =>
     setDraft((d) => ({ ...d, [k]: v }));
@@ -1535,23 +1519,25 @@ function PlanEditor({
         </div>
       )}
 
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 text-body-sm font-normal"
-          onClick={onCancel}
-        >
-          取消
-        </Button>
-        <Button
-          size="sm"
-          className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-          onClick={onSave}
-        >
-          保存修改
-        </Button>
-      </div>
+      {!hideActions && (
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-body-sm font-normal"
+            onClick={onCancel}
+          >
+            取消
+          </Button>
+          <Button
+            size="sm"
+            className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            onClick={onSave}
+          >
+            保存修改
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
