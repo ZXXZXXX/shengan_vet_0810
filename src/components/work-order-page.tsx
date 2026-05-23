@@ -1390,11 +1390,6 @@ export function WorkOrderPage({
                   ? "未指定执行人，工单将进入待响应池，由首位响应者承接。"
                   : `执行人：${assignExecutor}，提交后直接派发。`}
               </div>
-              {saveToKb && (
-                <div className="text-caption text-primary">
-                  · 症状标签、疾病名称、治疗方案将同步存入诊疗知识库草稿箱
-                </div>
-              )}
             </div>
           </div>
           <DialogFooter className="gap-2">
