@@ -288,6 +288,8 @@ export function WorkOrderPage({
     execStart: "", execTime: "", execMode: "single", cycleRule: "",
     needReview: false, reviewDate: "", reviewNote: "",
     suspectedDisease: "", kbSource: "", kbAdjusted: false,
+    maxWithdraw: "", maxWithdrawOverridden: false,
+
   };
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const [draft, setDraft] = useState<Plan>(emptyPlan);
