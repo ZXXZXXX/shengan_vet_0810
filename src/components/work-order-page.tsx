@@ -189,26 +189,44 @@ export function WorkOrderPage({
   const [mode, setMode] = useState<"view" | "process">("view");
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
   // ============ 执行方案（统一通用字段） ============
-  // 处置结论 + 结构化用药/材料清单 + 操作步骤 + 观察/复查 + 备注
-  type PlanItem = {
+  type MaterialItem = {
     id: string;
-    name: string;        // 药品 / 材料 名称
-    dose: string;        // 剂量
-    freq: string;        // 频次
-    course: string;      // 疗程
+    name: string;     // 物品 / 药品名称
+    qty: string;      // 数量
+    unit: string;     // 单位
+    usage: string;    // 用法 / 使用方式
+    duration: string; // 使用时长（选填）
+    note: string;     // 备注（选填）
   };
-  const [conclusion, setConclusion] = useState("");
-  const [planItems, setPlanItems] = useState<PlanItem[]>([]);
-  const [steps, setSteps] = useState("");
-  const [followup, setFollowup] = useState("");
-  const [planNote, setPlanNote] = useState("");
+  type ExecMode = "single" | "cycle";
+  type Plan = {
+    desc: string;
+    needMaterials: boolean;
+    materials: MaterialItem[];
+    execStart: string;
+    execTime: string;
+    execMode: ExecMode;
+    cycleRule: string;
+    needReview: boolean;
+    reviewDate: string;
+    reviewNote: string;
+    suspectedDisease: string;
+    kbSource: string;
+    kbAdjusted: boolean;
+  };
+  const emptyPlan: Plan = {
+    desc: "", needMaterials: false, materials: [],
+    execStart: "", execTime: "", execMode: "single", cycleRule: "",
+    needReview: false, reviewDate: "", reviewNote: "",
+    suspectedDisease: "", kbSource: "", kbAdjusted: false,
+  };
+  const newMaterial = (): MaterialItem => ({
+    id: `m${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
+    name: "", qty: "", unit: "支", usage: "", duration: "", note: "",
+  });
+  const [plan, setPlan] = useState<Plan>(emptyPlan);
+  const [draft, setDraft] = useState<Plan>(emptyPlan);
   const [editingPlan, setEditingPlan] = useState(false);
-  // 编辑暂存
-  const [draftConclusion, setDraftConclusion] = useState("");
-  const [draftItems, setDraftItems] = useState<PlanItem[]>([]);
-  const [draftSteps, setDraftSteps] = useState("");
-  const [draftFollowup, setDraftFollowup] = useState("");
-  const [draftNote, setDraftNote] = useState("");
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
@@ -229,32 +247,44 @@ export function WorkOrderPage({
     "蹄部包扎绷带", "一次性注射器", "缩宫素", "鱼石脂软膏",
   ];
 
-  // 小程序所选内容作为默认处置结论；兽医可在 PC 端编辑覆盖
-  const defaultConclusion = detail
-    ? `${detail.event ?? detail.desc}。结合现场症状（体温升高、采食下降、反刍减少），初步判断为${title}相关问题。`
-    : "";
-  const defaultItems: PlanItem[] = detail
-    ? [
-        { id: "p1", name: "头孢噻呋钠", dose: "2g", freq: "每日 1 次", course: "3 天" },
-        { id: "p2", name: "氟尼辛葡甲胺注射液", dose: "100ml", freq: "每日 1 次", course: "2 天" },
-      ]
-    : [];
-  const defaultSteps = "按治疗方案肌肉注射，注射前消毒，记录用药时间。";
-  const defaultFollowup = "每日监测体温、采食与反刍，3 天后复诊评估。";
+  // 小程序上报 + 知识库带出的默认方案
+  const buildDefaultPlan = (o: WorkOrder): Plan => {
+    const today = new Date();
+    const startDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    return {
+      desc: `${o.event ?? o.desc}。结合现场症状（体温升高、采食下降、反刍减少），按${title}标准方案处置。`,
+      needMaterials: true,
+      materials: [
+        { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
+        { id: "p2", name: "氟尼辛葡甲胺注射液", qty: "100", unit: "ml", usage: "肌肉注射，每日 1 次", duration: "2 天", note: "" },
+      ],
+      execStart: startDate,
+      execTime: "",
+      execMode: "single",
+      cycleRule: "",
+      needReview: true,
+      reviewDate: "",
+      reviewNote: "复查体温、采食与反刍情况",
+      suspectedDisease: "细菌性感染（疑似）",
+      kbSource: `${title} · 标准处置方案 v2.3`,
+      kbAdjusted: false,
+    };
+  };
   useEffect(() => {
     if (detail) {
-      setConclusion(defaultConclusion);
-      setPlanItems(defaultItems);
-      setSteps(defaultSteps);
-      setFollowup(defaultFollowup);
-      setPlanNote("");
+      setPlan(buildDefaultPlan(detail));
       setEditingPlan(false);
       setAssignExecutor("__none__");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
 
-  const planComplete = conclusion.trim().length > 0 && planItems.some((it) => it.name.trim());
+  const planComplete =
+    plan.desc.trim().length > 0 &&
+    (!plan.needMaterials || plan.materials.some((m) => m.name.trim())) &&
+    plan.execStart.trim().length > 0 &&
+    (plan.execMode !== "cycle" || plan.cycleRule.trim().length > 0) &&
+    (!plan.needReview || plan.reviewDate.trim().length > 0);
 
   const openReject = (o: WorkOrder) => {
     setDetail(o);
