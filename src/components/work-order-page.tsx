@@ -1020,6 +1020,12 @@ export function WorkOrderPage({
                       })}
                     </div>
                   )}
+                  {detail.desc && (
+                    <div className="pt-2 border-t border-border">
+                      <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
+                      <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc}</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* 上报疑似疾病 + 系统初始匹配方案 —— 仅疾病治疗 / 产后护理 */}
@@ -1030,11 +1036,6 @@ export function WorkOrderPage({
                   </div>
                 )}
 
-                {/* 具体描述 */}
-                <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
-                  <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc || "—"}</p>
-                </div>
               </section>
 
               {/* ============ 二、审核结论（处理态） ============ */}
