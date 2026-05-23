@@ -1472,6 +1472,28 @@ export function WorkOrderPage({
         </DialogContent>
       </Dialog>
 
+      {/* 知识库草稿箱开关提示 */}
+      <Dialog open={kbHintOpen} onOpenChange={setKbHintOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">将沉淀至诊疗知识库</DialogTitle>
+          </DialogHeader>
+          <div className="text-body-sm text-text-secondary leading-relaxed">
+            本工单中的<span className="text-foreground font-medium">症状标签</span>、
+            <span className="text-foreground font-medium">疾病名称</span>、
+            <span className="text-foreground font-medium">治疗方案</span>将存至诊疗知识库的草稿箱中，后续可前往编辑发布。
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => setKbHintOpen(false)}
+            >
+              知道了
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </TooltipProvider>
   );
 }
