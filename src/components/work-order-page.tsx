@@ -1716,7 +1716,7 @@ function PlanView({ plan }: { plan: Plan }) {
               ))}
               {hasWithdrawRule(plan.materials) && (
                 <div className="flex items-center justify-between px-3 py-2 border-t border-border bg-surface-subtle text-body-sm">
-                  <span className="text-text-secondary">本次最长休药期</span>
+                  <span className="text-text-secondary">休药期时长</span>
                   <span className="text-foreground tabular-nums font-medium">{plan.maxWithdraw || "0"} 天</span>
                 </div>
               )}
@@ -1881,7 +1881,7 @@ function PlanEditor({
             {showWithdraw && (
               <div className="rounded-md border border-border bg-surface-subtle px-3 py-2 flex items-center justify-between gap-2">
                 <div className="flex flex-col">
-                  <span className="text-body-sm text-foreground">本次最长休药期</span>
+                  <span className="text-body-sm text-foreground">休药期时长</span>
                   <span className="text-caption text-text-tertiary">根据所选药品自动计算，可手动调整</span>
                 </div>
                 <div className="flex items-center gap-1.5">
