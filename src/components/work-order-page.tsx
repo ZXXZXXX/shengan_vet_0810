@@ -254,8 +254,6 @@ export function WorkOrderPage({
   
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
-  const [saveToKb, setSaveToKb] = useState(false);
-  const [kbHintOpen, setKbHintOpen] = useState(false);
   const [errors, setErrors] = useState<{ confirmedType?: boolean; execStart?: boolean; reviewDate?: boolean }>({});
   const confirmedTypeRef = useRef<HTMLButtonElement>(null);
   const execStartRef = useRef<HTMLInputElement>(null);
