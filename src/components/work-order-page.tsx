@@ -1412,7 +1412,7 @@ export function WorkOrderPage({
               </div>
               {saveToKb && (
                 <div className="text-caption text-primary">
-                  · 症状标签、疾病名称、治疗方案将同步存入诊疗知识库草稿箱
+                  · 具体描述标签、具体描述结论、具体描述方案将同步存入诊疗知识库草稿箱
                 </div>
               )}
             </div>
