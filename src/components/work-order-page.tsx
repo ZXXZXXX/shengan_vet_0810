@@ -938,6 +938,12 @@ export function WorkOrderPage({
                 {/* 图文/语音/视频素材 */}
                 <div className="rounded-md border border-border p-4 space-y-3">
                   <div className="text-caption text-text-tertiary">图文 / 语音 / 视频素材</div>
+                  {detail.desc && (
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
+                      <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{detail.desc}</p>
+                    </div>
+                  )}
                   {photos > 0 && (
                     <div>
                       <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
