@@ -66,6 +66,7 @@ import {
   Camera,
   PackagePlus,
   Stethoscope,
+  Pencil,
 } from "lucide-react";
 
 type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
@@ -1056,7 +1057,7 @@ export function WorkOrderPage({
                   className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                   onClick={() => setMode("process")}
                 >
-                  <Check className="h-3.5 w-3.5" /> 处理
+                  <Pencil className="h-3.5 w-3.5" /> 处理
                 </Button>
               ) : (
                 <>
