@@ -1013,7 +1013,7 @@ export function WorkOrderPage({
                             <span className={`h-6 w-6 rounded-md inline-flex items-center justify-center ${tone}`}>
                               <Icon className="h-3.5 w-3.5" />
                             </span>
-                            <span className="text-body-sm text-foreground flex-1 truncate">{a.name}</span>
+                            <span className="text-body-sm text-foreground flex-1 truncate">{a.name.replace(/\.[^.]+$/, "")}</span>
                             {a.meta && <span className="text-caption text-text-tertiary">{a.meta}</span>}
                           </button>
                         );
@@ -1030,9 +1030,9 @@ export function WorkOrderPage({
                   </div>
                 )}
 
-                {/* 文字备注 */}
+                {/* 具体描述 */}
                 <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-1.5">文字备注</div>
+                  <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
                   <p className="text-body-sm text-text-secondary leading-relaxed">{detail.desc || "—"}</p>
                 </div>
               </section>
@@ -1922,7 +1922,7 @@ export function makeOrders(
       [
         { type: "audio", name: "现场情况语音.m4a", meta: "00:38" },
         { type: "video", name: "现场拍摄视频.mp4", meta: "01:12" },
-        { type: "text", name: "巡检记录.txt" },
+        { type: "text", name: "具体描述.txt" },
       ],
       [
         { type: "audio", name: "口述说明.m4a", meta: "00:52" },
