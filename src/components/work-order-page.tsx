@@ -1007,7 +1007,7 @@ export function WorkOrderPage({
                 {!isLoss && typeConfig.showDisease && (
                   <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
                     <Field label="具体描述疑似（选填）" value={plan.suspectedDisease || "—"} />
-                    <Field label="系统初始匹配方案" value={plan.kbSource || "—"} />
+                    <Field label="系统初始匹配具体描述方案" value={plan.kbSource || "—"} />
                   </div>
                 )}
 
