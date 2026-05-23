@@ -879,7 +879,7 @@ export function WorkOrderPage({
                 <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
                   <Field label="上报工单类型" value={title} />
                   <Field label={isLoss ? "关联牛舍" : "上报对象"} value={detail.target} />
-                  <Field label="提出事件" value={detail.event ?? "—"} />
+                  <Field label="提出具体描述" value={detail.event ?? "—"} />
                   <FieldNode
                     label="提出人"
                     node={
