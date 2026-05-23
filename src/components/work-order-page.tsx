@@ -58,7 +58,7 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
-  Mic,
+  Play,
   Video,
   FileText,
   Phone,
