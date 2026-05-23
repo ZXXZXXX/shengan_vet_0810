@@ -571,66 +571,92 @@ function EvidenceSection({
   hideVideo?: boolean;
   descLabel?: string;
 }) {
+  type MediaItem = { id: number; type: "photo" | "video" };
+  const media: MediaItem[] = [
+    ...photos.map((id) => ({ id, type: "photo" as const })),
+    ...videos.map((id) => ({ id, type: "video" as const })),
+  ];
+  const maxMedia = 9;
+  const remaining = maxMedia - media.length;
+
   return (
     <>
-      <Section title="照片记录">
+      <Section title="照片 / 视频" hint="支持拍摄或从相册选择">
         <div className="grid grid-cols-3 gap-2">
-          {photos.map((p) => (
+          {media.map((m) => (
             <div
-              key={p}
-              className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border"
+              key={`${m.type}-${m.id}`}
+              className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center"
             >
+              {m.type === "video" && <Video className="h-5 w-5 text-text-tertiary" />}
               <button
-                onClick={() => setPhotos((prev) => prev.filter((x) => x !== p))}
+                onClick={() =>
+                  m.type === "photo"
+                    ? setPhotos((prev) => prev.filter((x) => x !== m.id))
+                    : setVideos((prev) => prev.filter((x) => x !== m.id))
+                }
                 className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/80 text-background inline-flex items-center justify-center"
               >
                 <X className="h-3 w-3" />
               </button>
             </div>
           ))}
-          {photos.length < 6 && (
-            <button
-              onClick={() => setPhotos((p) => [...p, Date.now()])}
-              className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary"
-            >
-              <Camera className="h-5 w-5" />
-              <span className="text-caption">拍照</span>
-            </button>
+          {remaining > 0 && (
+            <>
+              <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
+                <Camera className="h-5 w-5" />
+                <span className="text-caption">拍照</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.length) setPhotos((p) => [...p, Date.now()]);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              {!hideVideo && (
+                <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
+                  <Video className="h-5 w-5" />
+                  <span className="text-caption">录像</span>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files?.length) setVideos((p) => [...p, Date.now()]);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              )}
+              <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
+                <ImagePlus className="h-5 w-5" />
+                <span className="text-caption">相册</span>
+                <input
+                  type="file"
+                  accept={hideVideo ? "image/*" : "image/*,video/*"}
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    files.forEach((f) => {
+                      if (f.type.startsWith("video/")) setVideos((p) => [...p, Date.now() + Math.random()]);
+                      else setPhotos((p) => [...p, Date.now() + Math.random()]);
+                    });
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            </>
           )}
         </div>
       </Section>
 
-      {!hideVideo && (
-        <Section title="视频记录">
-          <div className="grid grid-cols-3 gap-2">
-            {videos.map((p) => (
-              <div
-                key={p}
-                className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center"
-              >
-                <Video className="h-5 w-5 text-text-tertiary" />
-                <button
-                  onClick={() => setVideos((prev) => prev.filter((x) => x !== p))}
-                  className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/80 text-background inline-flex items-center justify-center"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            ))}
-            {videos.length < 3 && (
-              <button
-                onClick={() => setVideos((p) => [...p, Date.now()])}
-                className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary"
-              >
-                <Video className="h-5 w-5" />
-                <span className="text-caption">录像</span>
-              </button>
-            )}
-          </div>
-        </Section>
-      )}
-
-      <Section title="语音录入">
+      <Section title="现场录音">
         {voiceSecs === null ? (
           <button
             onClick={onVoiceToggle}
@@ -674,6 +700,70 @@ function EvidenceSection({
   );
 }
 
+function HandlerDropdown({
+  value,
+  onChange,
+  options,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { id: string; name: string; role: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = options.find((o) => o.id === value);
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full h-12 px-3 rounded-lg border border-border bg-card flex items-center justify-between"
+      >
+        <span className="inline-flex items-center gap-1.5">
+          <UserCheck className={`h-3.5 w-3.5 ${selected ? "text-primary" : "text-text-tertiary"}`} />
+          {selected ? (
+            <>
+              <span className="text-body-sm text-foreground">{selected.name}</span>
+              <span className="text-caption text-text-tertiary">· {selected.role}</span>
+            </>
+          ) : (
+            <span className="text-body-sm text-text-tertiary">点击选择处理人</span>
+          )}
+        </span>
+        <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute z-20 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg overflow-hidden">
+            {options.map((o) => {
+              const active = o.id === value;
+              return (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => {
+                    onChange(o.id);
+                    setOpen(false);
+                  }}
+                  className={`w-full px-3 h-12 flex items-center justify-between text-left border-b border-border last:border-b-0 ${
+                    active ? "bg-brand-subtle" : "hover:bg-surface-subtle"
+                  }`}
+                >
+                  <div>
+                    <div className={`text-body-sm ${active ? "text-primary" : "text-foreground"}`}>{o.name}</div>
+                    <div className="text-caption text-text-tertiary mt-0.5">{o.role}</div>
+                  </div>
+                  {active && <Check className="h-4 w-4 text-primary" />}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function Section({
   title,
   required,
@@ -698,3 +788,4 @@ function Section({
     </div>
   );
 }
+
