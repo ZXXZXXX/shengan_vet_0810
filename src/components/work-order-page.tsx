@@ -1200,29 +1200,6 @@ export function WorkOrderPage({
                 </section>
               )}
 
-              {/* ============ 五、知识库沉淀（处理态） ============ */}
-              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
-                <section className="space-y-3">
-                  <SectionHeader icon={<BookOpen className="h-3.5 w-3.5" />} title="知识库沉淀" />
-                  <div className="rounded-md border border-border bg-card p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-0.5">
-                        <div className="text-body-sm text-foreground">存至知识库草稿箱</div>
-                        <div className="text-caption text-text-tertiary">
-                          症状标签、疾病名称、治疗方案将存入诊疗知识库草稿箱
-                        </div>
-                      </div>
-                      <Switch
-                        checked={saveToKb}
-                        onCheckedChange={(v) => {
-                          setSaveToKb(!!v);
-                          if (v) setKbHintOpen(true);
-                        }}
-                      />
-                    </div>
-                  </div>
-                </section>
-              )}
 
 
 
@@ -1397,11 +1374,6 @@ export function WorkOrderPage({
               onClick={() => {
                 setConfirm(null);
                 setDetail(null);
-                if (saveToKb) {
-                  toast.success("已存至诊疗知识库草稿箱", {
-                    description: "可前往知识库 → 草稿箱 查看、编辑后发布",
-                  });
-                }
               }}
             >
               确认提交
@@ -1410,27 +1382,6 @@ export function WorkOrderPage({
         </DialogContent>
       </Dialog>
 
-      {/* 知识库草稿箱开关提示 */}
-      <Dialog open={kbHintOpen} onOpenChange={setKbHintOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-section-title">将沉淀至诊疗知识库</DialogTitle>
-          </DialogHeader>
-          <div className="text-body-sm text-text-secondary leading-relaxed">
-            本工单中的<span className="text-foreground font-medium">症状标签</span>、
-            <span className="text-foreground font-medium">疾病名称</span>、
-            <span className="text-foreground font-medium">治疗方案</span>将存至诊疗知识库的草稿箱中，后续可前往编辑发布。
-          </div>
-          <DialogFooter>
-            <Button
-              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-              onClick={() => setKbHintOpen(false)}
-            >
-              知道了
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
     </TooltipProvider>
   );
