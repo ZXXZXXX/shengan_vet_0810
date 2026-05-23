@@ -256,6 +256,10 @@ export function WorkOrderPage({
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [saveToKb, setSaveToKb] = useState(false);
   const [kbHintOpen, setKbHintOpen] = useState(false);
+  const [errors, setErrors] = useState<{ confirmedType?: boolean; execStart?: boolean; reviewDate?: boolean }>({});
+  const confirmedTypeRef = useRef<HTMLButtonElement>(null);
+  const execStartRef = useRef<HTMLInputElement>(null);
+  const reviewDateRef = useRef<HTMLInputElement>(null);
   const [keyword, setKeyword] = useState("");
   const [range, setRange] = useState<DateRange>("all");
   const [advOpen, setAdvOpen] = useState(false);
@@ -325,6 +329,7 @@ export function WorkOrderPage({
       })());
       setAddingTag(false);
       setNewTagValue("");
+      setErrors({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
@@ -1021,15 +1026,26 @@ export function WorkOrderPage({
                       </div>
                       <Select
                         value={review.confirmedType || title}
-                        onValueChange={(v) => setReview((r) => ({ ...r, confirmedType: v }))}
+                        onValueChange={(v) => {
+                          setReview((r) => ({ ...r, confirmedType: v }));
+                          if (v) setErrors((e) => ({ ...e, confirmedType: false }));
+                        }}
                       >
-                        <SelectTrigger className="h-9 text-body-sm bg-card"><SelectValue /></SelectTrigger>
+                        <SelectTrigger
+                          ref={confirmedTypeRef}
+                          className={`h-9 text-body-sm bg-card ${errors.confirmedType ? "border-[var(--state-danger)] ring-1 ring-[var(--state-danger)]" : ""}`}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent>
                           {WORK_TYPES.map((t) => (
                             <SelectItem key={t} value={t}>{t}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                      {errors.confirmedType && (
+                        <p className="text-caption text-[var(--state-danger)] mt-1">此为必填项</p>
+                      )}
                       {review.confirmedType && review.confirmedType !== title && (
                         <p className="text-caption text-[var(--state-warning)] mt-1">已将工单类型由「{title}」调整为「{review.confirmedType}」</p>
                       )}
@@ -1153,6 +1169,10 @@ export function WorkOrderPage({
                       presets={DRUG_PRESETS}
                       newMaterial={newMaterial}
                       hideActions
+                      errors={errors}
+                      clearError={(k) => setErrors((e) => ({ ...e, [k]: false }))}
+                      execStartRef={execStartRef}
+                      reviewDateRef={reviewDateRef}
                     />
                   </div>
                 </section>
@@ -1243,8 +1263,19 @@ export function WorkOrderPage({
                   <Button
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                     onClick={() => {
-                      if (!planComplete) {
-                        toast.error("请完整填写执行计划");
+                      const nextErrors: typeof errors = {};
+                      if (!(review.confirmedType || "").trim()) nextErrors.confirmedType = true;
+                      if (!draft.execStart.trim()) nextErrors.execStart = true;
+                      if (draft.needReview && !draft.reviewDate.trim()) nextErrors.reviewDate = true;
+                      setErrors(nextErrors);
+                      if (Object.keys(nextErrors).length > 0) {
+                        const target =
+                          nextErrors.confirmedType ? confirmedTypeRef.current :
+                          nextErrors.execStart ? execStartRef.current :
+                          reviewDateRef.current;
+                        target?.scrollIntoView({ behavior: "smooth", block: "center" });
+                        try { target?.focus({ preventScroll: true }); } catch { /* noop */ }
+                        toast.error("请填写所有必填项");
                         return;
                       }
                       setPlan({
@@ -1498,6 +1529,10 @@ function PlanEditor({
   onCancel,
   onSave,
   hideActions,
+  errors,
+  clearError,
+  execStartRef,
+  reviewDateRef,
 }: {
   draft: Plan;
   setDraft: React.Dispatch<React.SetStateAction<Plan>>;
@@ -1506,6 +1541,10 @@ function PlanEditor({
   onCancel?: () => void;
   onSave?: () => void;
   hideActions?: boolean;
+  errors?: { execStart?: boolean; reviewDate?: boolean };
+  clearError?: (k: "execStart" | "reviewDate") => void;
+  execStartRef?: React.Ref<HTMLInputElement>;
+  reviewDateRef?: React.Ref<HTMLInputElement>;
 }) {
   const update = <K extends keyof Plan>(k: K, v: Plan[K]) =>
     setDraft((d) => ({ ...d, [k]: v }));
@@ -1617,11 +1656,18 @@ function PlanEditor({
               开始执行日期 <span className="text-[var(--state-danger)]">*</span>
             </div>
             <Input
+              ref={execStartRef}
               type="date"
               value={draft.execStart}
-              onChange={(e) => update("execStart", e.target.value)}
-              className="h-9 text-body-sm bg-card"
+              onChange={(e) => {
+                update("execStart", e.target.value);
+                if (e.target.value.trim()) clearError?.("execStart");
+              }}
+              className={`h-9 text-body-sm bg-card ${errors?.execStart ? "border-[var(--state-danger)] ring-1 ring-[var(--state-danger)]" : ""}`}
             />
+            {errors?.execStart && (
+              <p className="text-caption text-[var(--state-danger)] mt-1">此为必填项</p>
+            )}
           </div>
           <div>
             <div className="text-caption text-text-tertiary mb-1">执行时间段（选填）</div>
@@ -1650,11 +1696,18 @@ function PlanEditor({
                 复查 / 验收日期 <span className="text-[var(--state-danger)]">*</span>
               </div>
               <Input
+                ref={reviewDateRef}
                 type="date"
                 value={draft.reviewDate}
-                onChange={(e) => update("reviewDate", e.target.value)}
-                className="h-9 text-body-sm bg-card"
+                onChange={(e) => {
+                  update("reviewDate", e.target.value);
+                  if (e.target.value.trim()) clearError?.("reviewDate");
+                }}
+                className={`h-9 text-body-sm bg-card ${errors?.reviewDate ? "border-[var(--state-danger)] ring-1 ring-[var(--state-danger)]" : ""}`}
               />
+              {errors?.reviewDate && (
+                <p className="text-caption text-[var(--state-danger)] mt-1">此为必填项</p>
+              )}
             </div>
             <div>
               <div className="text-caption text-text-tertiary mb-1">复查 / 验收说明（选填）</div>
