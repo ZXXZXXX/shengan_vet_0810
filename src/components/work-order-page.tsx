@@ -304,6 +304,12 @@ export function WorkOrderPage({
       setDraft({ ...p, materials: p.materials.length ? p.materials : [newMaterial()] });
       setEditingPlan(false);
       setAssignExecutor("__none__");
+      setReview({
+        confirmedType: title,
+        confirmedTags: [],
+        diagnosis: p.suspectedDisease || "",
+        conclusionNote: "",
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
