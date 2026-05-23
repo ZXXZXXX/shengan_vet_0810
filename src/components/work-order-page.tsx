@@ -344,7 +344,6 @@ export function WorkOrderPage({
   }, [mode, detail?.id]);
 
   const planComplete =
-    draft.desc.trim().length > 0 &&
     (!draft.needMaterials || draft.materials.some((m) => m.name.trim())) &&
     draft.execStart.trim().length > 0 &&
     (draft.execMode !== "cycle" || draft.cycleRule.trim().length > 0) &&
