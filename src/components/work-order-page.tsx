@@ -1026,15 +1026,26 @@ export function WorkOrderPage({
                       </div>
                       <Select
                         value={review.confirmedType || title}
-                        onValueChange={(v) => setReview((r) => ({ ...r, confirmedType: v }))}
+                        onValueChange={(v) => {
+                          setReview((r) => ({ ...r, confirmedType: v }));
+                          if (v) setErrors((e) => ({ ...e, confirmedType: false }));
+                        }}
                       >
-                        <SelectTrigger className="h-9 text-body-sm bg-card"><SelectValue /></SelectTrigger>
+                        <SelectTrigger
+                          ref={confirmedTypeRef}
+                          className={`h-9 text-body-sm bg-card ${errors.confirmedType ? "border-[var(--state-danger)] ring-1 ring-[var(--state-danger)]" : ""}`}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent>
                           {WORK_TYPES.map((t) => (
                             <SelectItem key={t} value={t}>{t}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                      {errors.confirmedType && (
+                        <p className="text-caption text-[var(--state-danger)] mt-1">此为必填项</p>
+                      )}
                       {review.confirmedType && review.confirmedType !== title && (
                         <p className="text-caption text-[var(--state-warning)] mt-1">已将工单类型由「{title}」调整为「{review.confirmedType}」</p>
                       )}
