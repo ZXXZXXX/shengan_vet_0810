@@ -1078,25 +1078,137 @@ export function WorkOrderPage({
                     {typeConfig.tagLabel && (
                       <div>
                         <div className="text-caption text-text-tertiary mb-1.5">确认{typeConfig.tagLabel}</div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {Array.from(new Set([...typeConfig.tags, ...review.confirmedTags])).map((t) => {
+                        <div className="flex flex-wrap gap-1.5 items-center">
+                          {allTags.map((t) => {
                             const on = review.confirmedTags.includes(t);
+                            const isEditing = editingTag === t;
+                            if (isEditing) {
+                              return (
+                                <Input
+                                  key={`edit-${t}`}
+                                  ref={editTagRef}
+                                  value={editTagValue}
+                                  onChange={(e) => setEditTagValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      const trimmed = editTagValue.trim();
+                                      if (trimmed && trimmed !== t) {
+                                        setAllTags((prev) => prev.map((x) => (x === t ? trimmed : x)));
+                                        setReview((r) => ({
+                                          ...r,
+                                          confirmedTags: r.confirmedTags.map((x) => (x === t ? trimmed : x)),
+                                        }));
+                                      }
+                                      setEditingTag(null);
+                                      setEditTagValue("");
+                                    } else if (e.key === "Escape") {
+                                      setEditingTag(null);
+                                      setEditTagValue("");
+                                    }
+                                  }}
+                                  onBlur={() => {
+                                    const trimmed = editTagValue.trim();
+                                    if (trimmed && trimmed !== t) {
+                                      setAllTags((prev) => prev.map((x) => (x === t ? trimmed : x)));
+                                      setReview((r) => ({
+                                        ...r,
+                                        confirmedTags: r.confirmedTags.map((x) => (x === t ? trimmed : x)),
+                                      }));
+                                    }
+                                    setEditingTag(null);
+                                    setEditTagValue("");
+                                  }}
+                                  className="h-7 w-28 text-body-sm bg-card px-2 py-0"
+                                  autoFocus
+                                />
+                              );
+                            }
                             return (
-                              <button
+                              <span
                                 key={t}
-                                type="button"
+                                className={`group/tag inline-flex items-center gap-0.5 tag ${on ? "tag-brand" : "tag-muted"} cursor-pointer`}
                                 onClick={() =>
                                   setReview((r) => ({
                                     ...r,
                                     confirmedTags: on ? r.confirmedTags.filter((x) => x !== t) : [...r.confirmedTags, t],
                                   }))
                                 }
-                                className={`tag ${on ? "tag-brand" : "tag-muted"} cursor-pointer`}
                               >
-                                {on && <Check className="h-3 w-3 mr-0.5 inline" />}{t}
-                              </button>
+                                {on && <Check className="h-3 w-3 mr-0.5 inline" />}
+                                <span>{t}</span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingTag(t);
+                                    setEditTagValue(t);
+                                  }}
+                                  className="ml-0.5 h-3.5 w-3.5 rounded-sm inline-flex items-center justify-center opacity-0 group-hover/tag:opacity-100 transition-opacity hover:bg-black/10"
+                                  title="编辑"
+                                >
+                                  <Pencil className="h-2.5 w-2.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setAllTags((prev) => prev.filter((x) => x !== t));
+                                    setReview((r) => ({ ...r, confirmedTags: r.confirmedTags.filter((x) => x !== t) }));
+                                  }}
+                                  className="ml-0.5 h-3.5 w-3.5 rounded-sm inline-flex items-center justify-center opacity-0 group-hover/tag:opacity-100 transition-opacity hover:bg-black/10"
+                                  title="删除"
+                                >
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              </span>
                             );
                           })}
+                          {addingTag ? (
+                            <Input
+                              ref={newTagRef}
+                              value={newTagValue}
+                              onChange={(e) => setNewTagValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  const trimmed = newTagValue.trim();
+                                  if (trimmed && !allTags.includes(trimmed)) {
+                                    setAllTags((prev) => [...prev, trimmed]);
+                                    setReview((r) => ({ ...r, confirmedTags: [...r.confirmedTags, trimmed] }));
+                                  }
+                                  setNewTagValue("");
+                                  setAddingTag(false);
+                                } else if (e.key === "Escape") {
+                                  setNewTagValue("");
+                                  setAddingTag(false);
+                                }
+                              }}
+                              onBlur={() => {
+                                const trimmed = newTagValue.trim();
+                                if (trimmed && !allTags.includes(trimmed)) {
+                                  setAllTags((prev) => [...prev, trimmed]);
+                                  setReview((r) => ({ ...r, confirmedTags: [...r.confirmedTags, trimmed] }));
+                                }
+                                setNewTagValue("");
+                                setAddingTag(false);
+                              }}
+                              placeholder="输入标签…"
+                              className="h-7 w-28 text-body-sm bg-card px-2 py-0"
+                              autoFocus
+                            />
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAddingTag(true);
+                                setNewTagValue("");
+                                setTimeout(() => newTagRef.current?.focus(), 0);
+                              }}
+                              className="tag tag-muted inline-flex items-center gap-0.5 hover:border-primary/40"
+                              title="添加标签"
+                            >
+                              <Plus className="h-3 w-3" /> 添加
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
