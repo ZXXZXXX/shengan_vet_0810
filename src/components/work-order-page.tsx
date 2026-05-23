@@ -317,6 +317,11 @@ export function WorkOrderPage({
         diagnosis: p.suspectedDisease || "",
         conclusionNote: "",
       });
+      setAllTags(typeConfig.tags);
+      setEditingTag(null);
+      setEditTagValue("");
+      setAddingTag(false);
+      setNewTagValue("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
