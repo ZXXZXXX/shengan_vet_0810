@@ -840,13 +840,13 @@ export function WorkOrderPage({
             } = (() => {
               switch (title) {
                 case "疾病治疗":
-                  return { tagLabel: "症状标签", tags: ["体温升高", "采食下降", "反刍减少"], showDisease: true, showNote: false };
+                  return { tagLabel: "具体描述标签", tags: ["体温升高", "采食下降", "反刍减少"], showDisease: true, showNote: false };
                 case "产后护理":
-                  return { tagLabel: "症状 / 护理异常标签", tags: ["恶露异常", "采食下降", "站立困难"], showDisease: true, showNote: false };
+                  return { tagLabel: "具体描述标签", tags: ["恶露异常", "采食下降", "站立困难"], showDisease: true, showNote: false };
                 case "修蹄工作":
-                  return { tagLabel: "症状 / 问题标签", tags: ["右后蹄跛行", "趾间皮炎"], showDisease: false, showNote: false };
+                  return { tagLabel: "具体描述标签", tags: ["右后蹄跛行", "趾间皮炎"], showDisease: false, showNote: false };
                 case "普修工作":
-                  return { tagLabel: "问题标签", tags: ["围栏松动", "饮水器漏水"], showDisease: false, showNote: false };
+                  return { tagLabel: "具体描述标签", tags: ["围栏松动", "饮水器漏水"], showDisease: false, showNote: false };
                 case "干奶工作":
                 case "疫苗免疫":
                 case "驱虫工作":
@@ -879,7 +879,7 @@ export function WorkOrderPage({
                 <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
                   <Field label="上报工单类型" value={title} />
                   <Field label={isLoss ? "关联牛舍" : "上报对象"} value={detail.target} />
-                  <Field label="提出事件" value={detail.event ?? "—"} />
+                  <Field label="提出具体描述" value={detail.event ?? "—"} />
                   <FieldNode
                     label="提出人"
                     node={
@@ -915,7 +915,7 @@ export function WorkOrderPage({
                 {/* 事项说明 —— 干奶 / 疫苗 / 驱虫 */}
                 {!isLoss && typeConfig.showNote && (
                   <div className="rounded-md border border-border p-4">
-                    <div className="text-caption text-text-tertiary mb-1.5">事项说明</div>
+                    <div className="text-caption text-text-tertiary mb-1.5">具体描述</div>
                     <p className="text-body-sm text-text-secondary leading-relaxed whitespace-pre-line">
                       {detail.desc || detail.event || "—"}
                     </p>
@@ -1006,8 +1006,8 @@ export function WorkOrderPage({
                 {/* 上报疑似疾病 + 系统初始匹配方案 —— 仅疾病治疗 / 产后护理 */}
                 {!isLoss && typeConfig.showDisease && (
                   <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
-                    <Field label="上报疑似疾病（选填）" value={plan.suspectedDisease || "—"} />
-                    <Field label="系统初始匹配方案" value={plan.kbSource || "—"} />
+                    <Field label="具体描述疑似（选填）" value={plan.suspectedDisease || "—"} />
+                    <Field label="系统初始匹配具体描述方案" value={plan.kbSource || "—"} />
                   </div>
                 )}
 
@@ -1181,7 +1181,7 @@ export function WorkOrderPage({
                     {/* 诊断结论 / 疑似疾病结论 */}
                     {typeConfig.showDisease && (
                       <div>
-                        <div className="text-caption text-text-tertiary mb-1.5">诊断结论 / 疑似疾病结论</div>
+                        <div className="text-caption text-text-tertiary mb-1.5">具体描述结论</div>
                         <Input
                           value={review.diagnosis}
                           onChange={(e) => setReview((r) => ({ ...r, diagnosis: e.target.value }))}
@@ -1373,7 +1373,7 @@ export function WorkOrderPage({
             </div>
             <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-64 overflow-y-auto">
               <div>
-                <div className="text-caption text-text-tertiary">方案说明 / 处理要求</div>
+                <div className="text-caption text-text-tertiary">具体描述要求</div>
                 <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{plan.desc || "—"}</p>
               </div>
               {plan.needMaterials && plan.materials.length > 0 && (
@@ -1412,7 +1412,7 @@ export function WorkOrderPage({
               </div>
               {saveToKb && (
                 <div className="text-caption text-primary">
-                  · 症状标签、疾病名称、治疗方案将同步存入诊疗知识库草稿箱
+                  · 具体描述标签、具体描述结论、具体描述方案将同步存入诊疗知识库草稿箱
                 </div>
               )}
             </div>
@@ -1444,9 +1444,9 @@ export function WorkOrderPage({
             <DialogTitle className="text-section-title">将沉淀至诊疗知识库</DialogTitle>
           </DialogHeader>
           <div className="text-body-sm text-text-secondary leading-relaxed">
-            本工单中的<span className="text-foreground font-medium">症状标签</span>、
-            <span className="text-foreground font-medium">疾病名称</span>、
-            <span className="text-foreground font-medium">治疗方案</span>将存至诊疗知识库的草稿箱中，后续可前往编辑发布。
+            本工单中的<span className="text-foreground font-medium">具体描述标签</span>、
+            <span className="text-foreground font-medium">具体描述结论</span>、
+            <span className="text-foreground font-medium">具体描述方案</span>将存至诊疗知识库的草稿箱中，后续可前往编辑发布。
           </div>
           <DialogFooter>
             <Button
@@ -1901,11 +1901,11 @@ export function makeOrders(
       ],
       [
         { type: "audio", name: "口述说明.m4a", meta: "00:52" },
-        { type: "text", name: "处理意见.docx" },
+        { type: "text", name: "具体描述.docx" },
       ],
       [
         { type: "video", name: "病灶特写.mp4", meta: "00:46" },
-        { type: "text", name: "诊疗建议.txt" },
+        { type: "text", name: "具体描述.txt" },
       ],
     ];
     const order: WorkOrder = {
