@@ -514,6 +514,15 @@ function ReportPage() {
                     )}
                   </Section>
                 )}
+
+                {/* 处理人（放在最后，下拉展开选择） */}
+                <Section title="处理人" required hint="仅可选择具备处方权的角色">
+                  <HandlerDropdown
+                    value={handlerId}
+                    onChange={setHandlerId}
+                    options={prescriptionHandlers}
+                  />
+                </Section>
               </>
             )}
           </>
