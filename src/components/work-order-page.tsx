@@ -1439,26 +1439,17 @@ export function WorkOrderPage({
                 </div>
               )}
             </div>
-            <div>
-              <div className="text-caption text-text-tertiary mb-1.5">
-                指派执行人 <span className="text-text-tertiary">（非必选）</span>
-              </div>
-              <Select value={assignExecutor} onValueChange={setAssignExecutor}>
-                <SelectTrigger className="h-9 text-body-sm">
-                  <SelectValue placeholder="不指定，进入待响应池" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">不指定（进入待响应池）</SelectItem>
-                  {executorsPool.map((p) => (
-                    <SelectItem key={p} value={p}>{p}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-caption text-text-tertiary mt-1.5">
+            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-1">
+              <div className="text-caption text-text-tertiary">
                 {assignExecutor === "__none__"
-                  ? "未指定执行人时，工作将进入对应权限账号的待响应池，由首位响应者承接。"
-                  : `提交后将直接派发至 ${assignExecutor}。`}
-              </p>
+                  ? "未指定执行人，工单将进入待响应池，由首位响应者承接。"
+                  : `执行人：${assignExecutor}，提交后直接派发。`}
+              </div>
+              {saveToKb && (
+                <div className="text-caption text-primary">
+                  · 症状标签、疾病名称、治疗方案将同步存入诊疗知识库草稿箱
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter className="gap-2">
@@ -1468,6 +1459,11 @@ export function WorkOrderPage({
               onClick={() => {
                 setConfirm(null);
                 setDetail(null);
+                if (saveToKb) {
+                  toast.success("已存至诊疗知识库草稿箱", {
+                    description: "可前往知识库 → 草稿箱 查看、编辑后发布",
+                  });
+                }
               }}
             >
               确认提交
