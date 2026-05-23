@@ -249,6 +249,13 @@ export function WorkOrderPage({
   const [editingPlan, setEditingPlan] = useState(false);
   const emptyReview: ReviewConclusion = { confirmedType: "", confirmedTags: [], diagnosis: "", conclusionNote: "" };
   const [review, setReview] = useState<ReviewConclusion>(emptyReview);
+  const [allTags, setAllTags] = useState<string[]>([]);
+  const [editingTag, setEditingTag] = useState<string | null>(null);
+  const [editTagValue, setEditTagValue] = useState("");
+  const [addingTag, setAddingTag] = useState(false);
+  const [newTagValue, setNewTagValue] = useState("");
+  const newTagRef = useRef<HTMLInputElement>(null);
+  const editTagRef = useRef<HTMLInputElement>(null);
   const [kbDraftOpen, setKbDraftOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
