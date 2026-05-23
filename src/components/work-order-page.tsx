@@ -1286,13 +1286,15 @@ function PlanEditor({
   presets,
   onCancel,
   onSave,
+  hideActions,
 }: {
   draft: Plan;
   setDraft: React.Dispatch<React.SetStateAction<Plan>>;
   presets: string[];
   newMaterial: () => MaterialItem;
-  onCancel: () => void;
-  onSave: () => void;
+  onCancel?: () => void;
+  onSave?: () => void;
+  hideActions?: boolean;
 }) {
   const update = <K extends keyof Plan>(k: K, v: Plan[K]) =>
     setDraft((d) => ({ ...d, [k]: v }));
