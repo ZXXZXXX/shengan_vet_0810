@@ -317,7 +317,15 @@ export function WorkOrderPage({
         diagnosis: p.suspectedDisease || "",
         conclusionNote: "",
       });
-      setAllTags(typeConfig.tags);
+      setAllTags((() => {
+        switch (title) {
+          case "疾病治疗": return ["体温升高", "采食下降", "反刍减少"];
+          case "产后护理": return ["恶露异常", "采食下降", "站立困难"];
+          case "修蹄工作": return ["右后蹄跛行", "趾间皮炎"];
+          case "普修工作": return ["围栏松动", "饮水器漏水"];
+          default: return [];
+        }
+      })());
       setEditingTag(null);
       setEditTagValue("");
       setAddingTag(false);
