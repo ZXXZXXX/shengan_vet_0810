@@ -1100,35 +1100,44 @@ export function WorkOrderPage({
             <div className="text-body-sm text-text-secondary">
               {detail ? `工作 ${detail.id} · ${detail.target}` : ""}
             </div>
-            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-56 overflow-y-auto">
+            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-64 overflow-y-auto">
               <div>
-                <div className="text-caption text-text-tertiary">处置结论</div>
-                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{conclusion || "—"}</p>
+                <div className="text-caption text-text-tertiary">方案说明 / 处理要求</div>
+                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{plan.desc || "—"}</p>
               </div>
-              <div>
-                <div className="text-caption text-text-tertiary">用药 / 材料</div>
-                {planItems.length > 0 ? (
+              {plan.needMaterials && plan.materials.length > 0 && (
+                <div>
+                  <div className="text-caption text-text-tertiary">物资 / 药品</div>
                   <ul className="text-body-sm text-foreground space-y-0.5 mt-0.5">
-                    {planItems.map((it) => (
-                      <li key={it.id} className="tabular-nums">
-                        · {it.name} {it.dose && `· ${it.dose}`} {it.freq && `· ${it.freq}`} {it.course && `· ${it.course}`}
+                    {plan.materials.map((m) => (
+                      <li key={m.id} className="tabular-nums">
+                        · {m.name} · {m.qty}{m.unit} · {m.usage}{m.duration && ` · ${m.duration}`}
                       </li>
                     ))}
                   </ul>
-                ) : (
-                  <p className="text-body-sm text-text-tertiary">—</p>
-                )}
-              </div>
-              {steps && (
-                <div>
-                  <div className="text-caption text-text-tertiary">操作步骤</div>
-                  <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{steps}</p>
                 </div>
               )}
-              {followup && (
+              <div>
+                <div className="text-caption text-text-tertiary">执行安排</div>
+                <p className="text-body-sm text-foreground">
+                  {plan.execStart}{plan.execTime && ` · ${plan.execTime}`} ·{" "}
+                  {plan.execMode === "single" ? "单次" : `周期：${plan.cycleRule || "—"}`}
+                </p>
+              </div>
+              {plan.needReview && (
                 <div>
-                  <div className="text-caption text-text-tertiary">观察 / 复查</div>
-                  <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{followup}</p>
+                  <div className="text-caption text-text-tertiary">复查 / 验收</div>
+                  <p className="text-body-sm text-foreground">
+                    {plan.reviewDate}{plan.reviewNote && ` · ${plan.reviewNote}`}
+                  </p>
+                </div>
+              )}
+              {(plan.suspectedDisease || plan.kbSource) && (
+                <div>
+                  <div className="text-caption text-text-tertiary">知识库关联</div>
+                  <p className="text-body-sm text-foreground">
+                    {plan.suspectedDisease || "—"} · 来源：{plan.kbSource || "—"} · {plan.kbAdjusted ? "已调整" : "未调整"}
+                  </p>
                 </div>
               )}
             </div>
