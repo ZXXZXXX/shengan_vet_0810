@@ -192,41 +192,12 @@ export function WorkOrderPage({
   const [mode, setMode] = useState<"view" | "process">("view");
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
   // ============ 执行方案（统一通用字段） ============
-  type MaterialItem = {
-    id: string;
-    name: string;     // 物品 / 药品名称
-    qty: string;      // 数量
-    unit: string;     // 单位
-    usage: string;    // 用法 / 使用方式
-    duration: string; // 使用时长（选填）
-    note: string;     // 备注（选填）
-  };
-  type ExecMode = "single" | "cycle";
-  type Plan = {
-    desc: string;
-    needMaterials: boolean;
-    materials: MaterialItem[];
-    execStart: string;
-    execTime: string;
-    execMode: ExecMode;
-    cycleRule: string;
-    needReview: boolean;
-    reviewDate: string;
-    reviewNote: string;
-    suspectedDisease: string;
-    kbSource: string;
-    kbAdjusted: boolean;
-  };
   const emptyPlan: Plan = {
     desc: "", needMaterials: false, materials: [],
     execStart: "", execTime: "", execMode: "single", cycleRule: "",
     needReview: false, reviewDate: "", reviewNote: "",
     suspectedDisease: "", kbSource: "", kbAdjusted: false,
   };
-  const newMaterial = (): MaterialItem => ({
-    id: `m${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
-    name: "", qty: "", unit: "支", usage: "", duration: "", note: "",
-  });
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const [draft, setDraft] = useState<Plan>(emptyPlan);
   const [editingPlan, setEditingPlan] = useState(false);
