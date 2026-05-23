@@ -58,7 +58,7 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
-  Mic,
+  Play,
   Video,
   FileText,
   Phone,
@@ -998,7 +998,7 @@ export function WorkOrderPage({
                   {detail.attachments && detail.attachments.length > 0 && (
                     <div className="pt-2 border-t border-border space-y-1.5">
                       {detail.attachments.map((a, i) => {
-                        const Icon = a.type === "audio" ? Mic : a.type === "video" ? Video : FileText;
+                        const Icon = a.type === "audio" ? Play : a.type === "video" ? Video : FileText;
                         const tone =
                           a.type === "audio"
                             ? "text-[var(--state-warning)] bg-[var(--state-warning)]/10"
