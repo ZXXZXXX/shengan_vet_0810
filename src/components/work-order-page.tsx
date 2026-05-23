@@ -119,6 +119,8 @@ export type Plan = {
   suspectedDisease: string;
   kbSource: string;
   kbAdjusted: boolean;
+  maxWithdraw: string;
+  maxWithdrawOverridden: boolean;
 };
 function newMaterial(): MaterialItem {
   return {
@@ -126,6 +128,40 @@ function newMaterial(): MaterialItem {
     name: "", qty: "", unit: "支", usage: "", duration: "", note: "",
   };
 }
+
+// 药品休药期规则（天）。键为药品名称，可子串匹配。
+const DRUG_WITHDRAW_DAYS: Record<string, number> = {
+  "头孢噻呋钠": 4,
+  "氟尼辛葡甲胺": 7,
+  "青霉素": 3,
+  "土霉素": 14,
+  "地塞米松": 5,
+  "葡萄糖酸钙": 0,
+  "口蹄疫疫苗": 21,
+  "缩宫素": 0,
+  "乳房炎抗生素": 7,
+  "伊维菌素": 14,
+};
+function lookupWithdrawDays(name: string): number | null {
+  const n = name.trim();
+  if (!n) return null;
+  for (const key of Object.keys(DRUG_WITHDRAW_DAYS)) {
+    if (n.includes(key)) return DRUG_WITHDRAW_DAYS[key];
+  }
+  return null;
+}
+function computeMaxWithdraw(materials: MaterialItem[]): number | null {
+  let max: number | null = null;
+  for (const m of materials) {
+    const d = lookupWithdrawDays(m.name);
+    if (d !== null) max = max === null ? d : Math.max(max, d);
+  }
+  return max;
+}
+function hasWithdrawRule(materials: MaterialItem[]): boolean {
+  return materials.some((m) => lookupWithdrawDays(m.name) !== null);
+}
+
 
 export type WorkOrderAttachment = {
   type: "audio" | "video" | "text";
