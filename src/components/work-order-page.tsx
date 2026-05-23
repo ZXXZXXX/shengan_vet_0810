@@ -67,7 +67,20 @@ import {
   PackagePlus,
   Stethoscope,
   Pencil,
+  BookOpen,
+  ClipboardCheck,
+  FileSearch,
+  Inbox,
 } from "lucide-react";
+
+const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
+
+export type ReviewConclusion = {
+  confirmedType: string;
+  confirmedTags: string[];
+  diagnosis: string;
+  conclusionNote: string;
+};
 
 type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
 
