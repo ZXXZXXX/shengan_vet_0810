@@ -243,7 +243,6 @@ function ReportPage() {
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
     handlerId !== "" &&
-    desc.trim().length > 0 &&
     evidenceReady;
 
   const submit = () => {
@@ -557,7 +556,7 @@ function EvidenceSection({
   recording,
   onVoiceToggle,
   hideVideo,
-  descLabel = "具体描述",
+  descLabel = "文字描述",
 }: {
   desc: string;
   setDesc: (v: string) => void;
@@ -656,11 +655,11 @@ function EvidenceSection({
         )}
       </Section>
 
-      <Section title={descLabel} required>
+      <Section title={descLabel}>
         <textarea
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          placeholder="请补充关键信息"
+          placeholder="补充关键信息（可选）"
           rows={3}
           className="w-full p-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary resize-none"
         />
