@@ -1169,6 +1169,10 @@ export function WorkOrderPage({
                       presets={DRUG_PRESETS}
                       newMaterial={newMaterial}
                       hideActions
+                      errors={errors}
+                      clearError={(k) => setErrors((e) => ({ ...e, [k]: false }))}
+                      execStartRef={execStartRef}
+                      reviewDateRef={reviewDateRef}
                     />
                   </div>
                 </section>
