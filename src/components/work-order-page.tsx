@@ -1625,31 +1625,6 @@ function PlanEditor({
             />
           </div>
         </div>
-        <div>
-          <div className="text-caption text-text-tertiary mb-1.5">执行方式</div>
-          <RadioGroup
-            value={draft.execMode}
-            onValueChange={(v) => update("execMode", v as ExecMode)}
-            className="flex gap-4"
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="single" id="exec-single" />
-              <Label htmlFor="exec-single" className="text-body-sm font-normal cursor-pointer">单次</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="cycle" id="exec-cycle" />
-              <Label htmlFor="exec-cycle" className="text-body-sm font-normal cursor-pointer">周期</Label>
-            </div>
-          </RadioGroup>
-          {draft.execMode === "cycle" && (
-            <Input
-              value={draft.cycleRule}
-              placeholder="周期规则，如 每日 1 次 · 共 3 天"
-              onChange={(e) => update("cycleRule", e.target.value)}
-              className="h-9 text-body-sm bg-card mt-2"
-            />
-          )}
-        </div>
       </div>
 
       <div className="rounded-md border border-border bg-card p-3 space-y-3">
