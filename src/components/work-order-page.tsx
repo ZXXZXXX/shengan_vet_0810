@@ -880,13 +880,6 @@ export function WorkOrderPage({
                 </div>
               )}
 
-              {/* 疑似疾病 / 系统带出方案 —— 仅疾病治疗、产后护理 */}
-              {!isLoss && typeConfig.showDisease && (
-                <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
-                  <Field label="疑似疾病（选填）" value={plan.suspectedDisease || "—"} />
-                  <Field label="系统带出治疗方案" value={plan.kbSource || "—"} />
-                </div>
-              )}
 
               {/* 事项说明 —— 干奶 / 疫苗 / 驱虫 */}
               {!isLoss && typeConfig.showNote && (
