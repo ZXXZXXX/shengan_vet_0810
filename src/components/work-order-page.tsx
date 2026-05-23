@@ -846,7 +846,7 @@ export function WorkOrderPage({
                 case "修蹄工作":
                   return { tagLabel: "具体描述标签", tags: ["右后蹄跛行", "趾间皮炎"], showDisease: false, showNote: false };
                 case "普修工作":
-                  return { tagLabel: "问题标签", tags: ["围栏松动", "饮水器漏水"], showDisease: false, showNote: false };
+                  return { tagLabel: "具体描述标签", tags: ["围栏松动", "饮水器漏水"], showDisease: false, showNote: false };
                 case "干奶工作":
                 case "疫苗免疫":
                 case "驱虫工作":
