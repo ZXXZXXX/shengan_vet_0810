@@ -1443,11 +1443,6 @@ export function WorkOrderPage({
               className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
               onClick={() => {
                 setConfirm(null);
-                if (saveToKb) {
-                  toast.success("已存至诊疗知识库草稿箱", {
-                    description: `症状标签、疾病名称与治疗方案已沉淀，可在「知识库 · 草稿箱」继续编辑后发布。`,
-                  });
-                }
                 setDetail(null);
               }}
             >
@@ -1536,16 +1531,6 @@ function PlanView({ plan }: { plan: Plan }) {
           <div className="text-body-sm text-text-secondary">不需要</div>
         )}
       </div>
-      {(plan.suspectedDisease || plan.kbSource) && (
-        <div>
-          <div className="text-caption text-text-tertiary mb-1.5">知识库关联</div>
-          <div className="text-body-sm text-foreground space-y-0.5">
-            <div>疑似疾病：{plan.suspectedDisease || "—"}</div>
-            <div>来源方案：{plan.kbSource || "—"}</div>
-            <div>是否调整知识库方案：{plan.kbAdjusted ? "是" : "否"}</div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1754,40 +1739,6 @@ function PlanEditor({
         )}
       </div>
 
-      {(draft.suspectedDisease || draft.kbSource) && (
-        <div className="rounded-md border border-border bg-card p-3 space-y-3">
-          <div className="text-caption text-text-tertiary">知识库关联</div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <div className="text-caption text-text-tertiary mb-1">疑似疾病</div>
-              <Input
-                value={draft.suspectedDisease}
-                onChange={(e) => update("suspectedDisease", e.target.value)}
-                className="h-9 text-body-sm bg-card"
-              />
-            </div>
-            <div>
-              <div className="text-caption text-text-tertiary mb-1">来源知识库方案</div>
-              <Input
-                value={draft.kbSource}
-                onChange={(e) => update("kbSource", e.target.value)}
-                className="h-9 text-body-sm bg-card"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="kb-adj" className="text-caption text-text-tertiary cursor-pointer">
-              是否调整知识库方案
-            </Label>
-            <Switch
-              id="kb-adj"
-              checked={draft.kbAdjusted}
-              onCheckedChange={(v) => update("kbAdjusted", !!v)}
-            />
-          </div>
-        </div>
-      )}
 
       {!hideActions && (
         <div className="flex items-center justify-end gap-2">
