@@ -985,14 +985,22 @@ export function WorkOrderPage({
                 )}
               </div>
 
-              {/* 执行方案 —— 默认只读，审批员可编辑 */}
-              {!isLoss && (
+              {/* 疑似疾病 / 系统带出治疗方案 —— 紧随证据材料；仅疾病治疗、产后护理 */}
+              {!isLoss && typeConfig.showDisease && (
+                <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
+                  <Field label="疑似疾病（选填）" value={plan.suspectedDisease || "—"} />
+                  <Field label="系统带出治疗方案" value={plan.kbSource || "—"} />
+                </div>
+              )}
+
+              {/* 执行方案 —— 仅审核处理态展示与编辑 */}
+              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
                 <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
                       <Stethoscope className="h-4 w-4 text-primary" /> 执行方案
                     </div>
-                    {canReview(role) && detail.status === "待审核" && mode === "process" && !editingPlan && (
+                    {!editingPlan && (
                       <Button
                         variant="outline"
                         size="sm"
