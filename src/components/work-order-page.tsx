@@ -995,17 +995,6 @@ export function WorkOrderPage({
                       </div>
                     </div>
                   )}
-                  {voiceSecs > 0 && (
-                    <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-surface-subtle border border-border">
-                      <Mic className="h-4 w-4 text-primary" />
-                      <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
-                        <div className="h-full w-2/3 bg-primary/60" />
-                      </div>
-                      <span className="font-mono text-caption text-text-secondary">
-                        00:{String(voiceSecs).padStart(2, "0")}
-                      </span>
-                    </div>
-                  )}
                   {detail.attachments && detail.attachments.length > 0 && (
                     <div className="pt-2 border-t border-border space-y-1.5">
                       {detail.attachments.map((a, i) => {
