@@ -1548,13 +1548,13 @@ function PlanEditor({
     <div className="space-y-4">
       <div>
         <div className="text-caption text-text-tertiary mb-1.5">
-          方案说明 / 处理要求 <span className="text-[var(--state-danger)]">*</span>
+          方案说明 / 处理要求 <span className="text-text-tertiary">（选填）</span>
         </div>
         <Textarea
           value={draft.desc}
           onChange={(e) => update("desc", e.target.value)}
           rows={3}
-          placeholder="请输入处理方案 / 操作要求"
+          placeholder="如需补充说明或特殊操作要求，可在此填写"
           className="text-body-sm bg-card resize-none"
         />
       </div>
