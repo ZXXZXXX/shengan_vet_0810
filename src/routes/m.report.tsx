@@ -557,7 +557,7 @@ function EvidenceSection({
   recording,
   onVoiceToggle,
   hideVideo,
-  descLabel = "文字描述",
+  descLabel = "具体描述",
 }: {
   desc: string;
   setDesc: (v: string) => void;
