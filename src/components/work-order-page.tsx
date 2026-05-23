@@ -40,6 +40,9 @@ import {
 
 
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   ClipboardList,
@@ -66,6 +69,38 @@ import {
 } from "lucide-react";
 
 type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
+
+export type MaterialItem = {
+  id: string;
+  name: string;
+  qty: string;
+  unit: string;
+  usage: string;
+  duration: string;
+  note: string;
+};
+export type ExecMode = "single" | "cycle";
+export type Plan = {
+  desc: string;
+  needMaterials: boolean;
+  materials: MaterialItem[];
+  execStart: string;
+  execTime: string;
+  execMode: ExecMode;
+  cycleRule: string;
+  needReview: boolean;
+  reviewDate: string;
+  reviewNote: string;
+  suspectedDisease: string;
+  kbSource: string;
+  kbAdjusted: boolean;
+};
+function newMaterial(): MaterialItem {
+  return {
+    id: `m${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
+    name: "", qty: "", unit: "支", usage: "", duration: "", note: "",
+  };
+}
 
 export type WorkOrderAttachment = {
   type: "audio" | "video" | "text";
@@ -189,26 +224,15 @@ export function WorkOrderPage({
   const [mode, setMode] = useState<"view" | "process">("view");
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
   // ============ 执行方案（统一通用字段） ============
-  // 处置结论 + 结构化用药/材料清单 + 操作步骤 + 观察/复查 + 备注
-  type PlanItem = {
-    id: string;
-    name: string;        // 药品 / 材料 名称
-    dose: string;        // 剂量
-    freq: string;        // 频次
-    course: string;      // 疗程
+  const emptyPlan: Plan = {
+    desc: "", needMaterials: false, materials: [],
+    execStart: "", execTime: "", execMode: "single", cycleRule: "",
+    needReview: false, reviewDate: "", reviewNote: "",
+    suspectedDisease: "", kbSource: "", kbAdjusted: false,
   };
-  const [conclusion, setConclusion] = useState("");
-  const [planItems, setPlanItems] = useState<PlanItem[]>([]);
-  const [steps, setSteps] = useState("");
-  const [followup, setFollowup] = useState("");
-  const [planNote, setPlanNote] = useState("");
+  const [plan, setPlan] = useState<Plan>(emptyPlan);
+  const [draft, setDraft] = useState<Plan>(emptyPlan);
   const [editingPlan, setEditingPlan] = useState(false);
-  // 编辑暂存
-  const [draftConclusion, setDraftConclusion] = useState("");
-  const [draftItems, setDraftItems] = useState<PlanItem[]>([]);
-  const [draftSteps, setDraftSteps] = useState("");
-  const [draftFollowup, setDraftFollowup] = useState("");
-  const [draftNote, setDraftNote] = useState("");
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
@@ -229,32 +253,44 @@ export function WorkOrderPage({
     "蹄部包扎绷带", "一次性注射器", "缩宫素", "鱼石脂软膏",
   ];
 
-  // 小程序所选内容作为默认处置结论；兽医可在 PC 端编辑覆盖
-  const defaultConclusion = detail
-    ? `${detail.event ?? detail.desc}。结合现场症状（体温升高、采食下降、反刍减少），初步判断为${title}相关问题。`
-    : "";
-  const defaultItems: PlanItem[] = detail
-    ? [
-        { id: "p1", name: "头孢噻呋钠", dose: "2g", freq: "每日 1 次", course: "3 天" },
-        { id: "p2", name: "氟尼辛葡甲胺注射液", dose: "100ml", freq: "每日 1 次", course: "2 天" },
-      ]
-    : [];
-  const defaultSteps = "按治疗方案肌肉注射，注射前消毒，记录用药时间。";
-  const defaultFollowup = "每日监测体温、采食与反刍，3 天后复诊评估。";
+  // 小程序上报 + 知识库带出的默认方案
+  const buildDefaultPlan = (o: WorkOrder): Plan => {
+    const today = new Date();
+    const startDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    return {
+      desc: `${o.event ?? o.desc}。结合现场症状（体温升高、采食下降、反刍减少），按${title}标准方案处置。`,
+      needMaterials: true,
+      materials: [
+        { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
+        { id: "p2", name: "氟尼辛葡甲胺注射液", qty: "100", unit: "ml", usage: "肌肉注射，每日 1 次", duration: "2 天", note: "" },
+      ],
+      execStart: startDate,
+      execTime: "",
+      execMode: "single",
+      cycleRule: "",
+      needReview: true,
+      reviewDate: "",
+      reviewNote: "复查体温、采食与反刍情况",
+      suspectedDisease: "细菌性感染（疑似）",
+      kbSource: `${title} · 标准处置方案 v2.3`,
+      kbAdjusted: false,
+    };
+  };
   useEffect(() => {
     if (detail) {
-      setConclusion(defaultConclusion);
-      setPlanItems(defaultItems);
-      setSteps(defaultSteps);
-      setFollowup(defaultFollowup);
-      setPlanNote("");
+      setPlan(buildDefaultPlan(detail));
       setEditingPlan(false);
       setAssignExecutor("__none__");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
 
-  const planComplete = conclusion.trim().length > 0 && planItems.some((it) => it.name.trim());
+  const planComplete =
+    plan.desc.trim().length > 0 &&
+    (!plan.needMaterials || plan.materials.some((m) => m.name.trim())) &&
+    plan.execStart.trim().length > 0 &&
+    (plan.execMode !== "cycle" || plan.cycleRule.trim().length > 0) &&
+    (!plan.needReview || plan.reviewDate.trim().length > 0);
 
   const openReject = (o: WorkOrder) => {
     setDetail(o);
@@ -808,15 +844,23 @@ export function WorkOrderPage({
                 <Field label="响应时间" value={detail.executedAt ?? "—"} />
               </div>
 
-              {/* 症状说明 */}
+              {/* 标签（症状 / 异常 / 问题） */}
               {symptoms.length > 0 && (
                 <div className="rounded-md border border-border p-4">
-                  <div className="text-caption text-text-tertiary mb-2">症状说明（小程序提报）</div>
+                  <div className="text-caption text-text-tertiary mb-2">标签</div>
                   <div className="flex flex-wrap gap-1.5">
                     {symptoms.map((sym) => (
                       <span key={sym} className="tag tag-brand">{sym}</span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* 疑似疾病 / 系统带出方案（来自小程序上报 + 知识库） */}
+              {!isLoss && (plan.suspectedDisease || plan.kbSource) && (
+                <div className="rounded-md border border-border p-4 grid grid-cols-2 gap-x-4 gap-y-3">
+                  <Field label="疑似疾病" value={plan.suspectedDisease || "—"} />
+                  <Field label="系统带出方案" value={plan.kbSource || "—"} />
                 </div>
               )}
 
@@ -916,7 +960,7 @@ export function WorkOrderPage({
 
               {/* 执行方案 —— 默认只读，审批员可编辑 */}
               {!isLoss && (
-                <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-3">
+                <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
                       <Stethoscope className="h-4 w-4 text-primary" /> 执行方案
@@ -927,11 +971,10 @@ export function WorkOrderPage({
                         size="sm"
                         className="h-7 px-2 text-body-sm font-normal"
                         onClick={() => {
-                          setDraftConclusion(conclusion);
-                          setDraftItems(planItems.length ? planItems : [{ id: `n${Date.now()}`, name: "", dose: "", freq: "", course: "" }]);
-                          setDraftSteps(steps);
-                          setDraftFollowup(followup);
-                          setDraftNote(planNote);
+                          setDraft({
+                            ...plan,
+                            materials: plan.materials.length ? plan.materials : [newMaterial()],
+                          });
                           setEditingPlan(true);
                         }}
                       >
@@ -939,164 +982,26 @@ export function WorkOrderPage({
                       </Button>
                     )}
                   </div>
+
                   {editingPlan ? (
-                    <>
-                      <div>
-                        <div className="text-caption text-text-tertiary mb-1.5">
-                          处置结论 <span className="text-[var(--state-danger)]">*</span>
-                        </div>
-                        <Textarea
-                          value={draftConclusion}
-                          onChange={(e) => setDraftConclusion(e.target.value)}
-                          rows={3}
-                          placeholder="请输入诊断/处置结论"
-                          className="text-body-sm bg-card resize-none"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-caption text-text-tertiary mb-1.5">
-                          用药 / 材料清单 <span className="text-[var(--state-danger)]">*</span>
-                        </div>
-                        <div className="space-y-2">
-                          {draftItems.map((it, idx) => (
-                            <div key={it.id} className="grid grid-cols-[1.6fr_0.9fr_0.9fr_0.9fr_auto] gap-1.5 items-center">
-                              <DrugCombo
-                                value={it.name}
-                                presets={DRUG_PRESETS}
-                                onChange={(v) =>
-                                  setDraftItems((arr) => arr.map((x, i) => (i === idx ? { ...x, name: v } : x)))
-                                }
-                              />
-                              <Input
-                                value={it.dose}
-                                placeholder="剂量"
-                                onChange={(e) =>
-                                  setDraftItems((arr) => arr.map((x, i) => (i === idx ? { ...x, dose: e.target.value } : x)))
-                                }
-                                className="h-9 text-body-sm bg-card"
-                              />
-                              <Input
-                                value={it.freq}
-                                placeholder="频次"
-                                onChange={(e) =>
-                                  setDraftItems((arr) => arr.map((x, i) => (i === idx ? { ...x, freq: e.target.value } : x)))
-                                }
-                                className="h-9 text-body-sm bg-card"
-                              />
-                              <Input
-                                value={it.course}
-                                placeholder="疗程"
-                                onChange={(e) =>
-                                  setDraftItems((arr) => arr.map((x, i) => (i === idx ? { ...x, course: e.target.value } : x)))
-                                }
-                                className="h-9 text-body-sm bg-card"
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-9 w-9 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
-                                onClick={() =>
-                                  setDraftItems((arr) => arr.filter((_, i) => i !== idx))
-                                }
-                              >
-                                <X className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
-                          ))}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 w-full text-body-sm font-normal border-dashed"
-                            onClick={() =>
-                              setDraftItems((arr) => [...arr, { id: `n${Date.now()}`, name: "", dose: "", freq: "", course: "" }])
-                            }
-                          >
-                            <Plus className="h-3.5 w-3.5 mr-1" /> 添加用药 / 材料
-                          </Button>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-caption text-text-tertiary mb-1.5">操作步骤</div>
-                        <Textarea
-                          value={draftSteps}
-                          onChange={(e) => setDraftSteps(e.target.value)}
-                          rows={2}
-                          placeholder="如：注射部位、消毒、操作顺序等"
-                          className="text-body-sm bg-card resize-none"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-caption text-text-tertiary mb-1.5">观察 / 复查安排</div>
-                        <Textarea
-                          value={draftFollowup}
-                          onChange={(e) => setDraftFollowup(e.target.value)}
-                          rows={2}
-                          placeholder="如：每日监测指标、复查时间等"
-                          className="text-body-sm bg-card resize-none"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-caption text-text-tertiary mb-1.5">备注</div>
-                        <Textarea
-                          value={draftNote}
-                          onChange={(e) => setDraftNote(e.target.value)}
-                          rows={2}
-                          placeholder="选填"
-                          className="text-body-sm bg-card resize-none"
-                        />
-                      </div>
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 text-body-sm font-normal"
-                          onClick={() => setEditingPlan(false)}
-                        >
-                          取消
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                          onClick={() => {
-                            setConclusion(draftConclusion);
-                            setPlanItems(draftItems.filter((it) => it.name.trim()));
-                            setSteps(draftSteps);
-                            setFollowup(draftFollowup);
-                            setPlanNote(draftNote);
-                            setEditingPlan(false);
-                          }}
-                        >
-                          保存修改
-                        </Button>
-                      </div>
-                    </>
+                    <PlanEditor
+                      draft={draft}
+                      setDraft={setDraft}
+                      presets={DRUG_PRESETS}
+                      newMaterial={newMaterial}
+                      onCancel={() => setEditingPlan(false)}
+                      onSave={() => {
+                        setPlan({
+                          ...draft,
+                          materials: draft.needMaterials
+                            ? draft.materials.filter((m) => m.name.trim())
+                            : [],
+                        });
+                        setEditingPlan(false);
+                      }}
+                    />
                   ) : (
-                    <>
-                      <PlanReadRow label="处置结论" text={conclusion} />
-                      <div>
-                        <div className="text-caption text-text-tertiary mb-1.5">用药 / 材料清单</div>
-                        {planItems.length > 0 ? (
-                          <div className="rounded-md border border-border bg-card overflow-hidden">
-                            <div className="grid grid-cols-[1.6fr_0.9fr_0.9fr_0.9fr] px-3 h-8 items-center bg-surface-subtle text-caption text-text-tertiary">
-                              <span>药品 / 材料</span><span>剂量</span><span>频次</span><span>疗程</span>
-                            </div>
-                            {planItems.map((it) => (
-                              <div key={it.id} className="grid grid-cols-[1.6fr_0.9fr_0.9fr_0.9fr] px-3 h-9 items-center border-t border-border text-body-sm text-foreground">
-                                <span className="truncate">{it.name}</span>
-                                <span className="tabular-nums">{it.dose || "—"}</span>
-                                <span>{it.freq || "—"}</span>
-                                <span>{it.course || "—"}</span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-body-sm text-text-tertiary">未填写</p>
-                        )}
-                      </div>
-                      {steps && <PlanReadRow label="操作步骤" text={steps} />}
-                      {followup && <PlanReadRow label="观察 / 复查安排" text={followup} />}
-                      {planNote && <PlanReadRow label="备注" text={planNote} />}
-                    </>
+                    <PlanView plan={plan} />
                   )}
                 </div>
               )}
@@ -1125,11 +1030,10 @@ export function WorkOrderPage({
                     onClick={() => {
                       if (!planComplete) {
                         toast.error("执行方案不完整，请先编辑执行方案");
-                        setDraftConclusion(conclusion);
-                        setDraftItems(planItems.length ? planItems : [{ id: `n${Date.now()}`, name: "", dose: "", freq: "", course: "" }]);
-                        setDraftSteps(steps);
-                        setDraftFollowup(followup);
-                        setDraftNote(planNote);
+                        setDraft({
+                          ...plan,
+                          materials: plan.materials.length ? plan.materials : [newMaterial()],
+                        });
                         setEditingPlan(true);
                         return;
                       }
@@ -1202,35 +1106,44 @@ export function WorkOrderPage({
             <div className="text-body-sm text-text-secondary">
               {detail ? `工作 ${detail.id} · ${detail.target}` : ""}
             </div>
-            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-56 overflow-y-auto">
+            <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-64 overflow-y-auto">
               <div>
-                <div className="text-caption text-text-tertiary">处置结论</div>
-                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{conclusion || "—"}</p>
+                <div className="text-caption text-text-tertiary">方案说明 / 处理要求</div>
+                <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{plan.desc || "—"}</p>
               </div>
-              <div>
-                <div className="text-caption text-text-tertiary">用药 / 材料</div>
-                {planItems.length > 0 ? (
+              {plan.needMaterials && plan.materials.length > 0 && (
+                <div>
+                  <div className="text-caption text-text-tertiary">物资 / 药品</div>
                   <ul className="text-body-sm text-foreground space-y-0.5 mt-0.5">
-                    {planItems.map((it) => (
-                      <li key={it.id} className="tabular-nums">
-                        · {it.name} {it.dose && `· ${it.dose}`} {it.freq && `· ${it.freq}`} {it.course && `· ${it.course}`}
+                    {plan.materials.map((m) => (
+                      <li key={m.id} className="tabular-nums">
+                        · {m.name} · {m.qty}{m.unit} · {m.usage}{m.duration && ` · ${m.duration}`}
                       </li>
                     ))}
                   </ul>
-                ) : (
-                  <p className="text-body-sm text-text-tertiary">—</p>
-                )}
-              </div>
-              {steps && (
-                <div>
-                  <div className="text-caption text-text-tertiary">操作步骤</div>
-                  <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{steps}</p>
                 </div>
               )}
-              {followup && (
+              <div>
+                <div className="text-caption text-text-tertiary">执行安排</div>
+                <p className="text-body-sm text-foreground">
+                  {plan.execStart}{plan.execTime && ` · ${plan.execTime}`} ·{" "}
+                  {plan.execMode === "single" ? "单次" : `周期：${plan.cycleRule || "—"}`}
+                </p>
+              </div>
+              {plan.needReview && (
                 <div>
-                  <div className="text-caption text-text-tertiary">观察 / 复查</div>
-                  <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{followup}</p>
+                  <div className="text-caption text-text-tertiary">复查 / 验收</div>
+                  <p className="text-body-sm text-foreground">
+                    {plan.reviewDate}{plan.reviewNote && ` · ${plan.reviewNote}`}
+                  </p>
+                </div>
+              )}
+              {(plan.suspectedDisease || plan.kbSource) && (
+                <div>
+                  <div className="text-caption text-text-tertiary">知识库关联</div>
+                  <p className="text-body-sm text-foreground">
+                    {plan.suspectedDisease || "—"} · 来源：{plan.kbSource || "—"} · {plan.kbAdjusted ? "已调整" : "未调整"}
+                  </p>
                 </div>
               )}
             </div>
@@ -1279,6 +1192,327 @@ function PlanReadRow({ label, text }: { label: string; text: string }) {
     <div>
       <div className="text-caption text-text-tertiary mb-1.5">{label}</div>
       <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{text || "—"}</p>
+    </div>
+  );
+}
+
+function PlanView({ plan }: { plan: Plan }) {
+  return (
+    <div className="space-y-3">
+      <PlanReadRow label="方案说明 / 处理要求" text={plan.desc} />
+      <div>
+        <div className="text-caption text-text-tertiary mb-1.5">是否需要领取物资 / 药品</div>
+        <div className="text-body-sm text-foreground">{plan.needMaterials ? "是" : "否"}</div>
+      </div>
+      {plan.needMaterials && (
+        <div>
+          <div className="text-caption text-text-tertiary mb-1.5">物资 / 药品清单</div>
+          {plan.materials.length > 0 ? (
+            <div className="rounded-md border border-border bg-card overflow-hidden">
+              <div className="grid grid-cols-[1.5fr_0.6fr_0.5fr_1.2fr_0.7fr] px-3 h-8 items-center bg-surface-subtle text-caption text-text-tertiary">
+                <span>名称</span><span>数量</span><span>单位</span><span>用法</span><span>使用时长</span>
+              </div>
+              {plan.materials.map((m) => (
+                <div key={m.id} className="grid grid-cols-[1.5fr_0.6fr_0.5fr_1.2fr_0.7fr] px-3 py-2 items-center border-t border-border text-body-sm text-foreground">
+                  <span className="truncate">{m.name}</span>
+                  <span className="tabular-nums">{m.qty || "—"}</span>
+                  <span>{m.unit || "—"}</span>
+                  <span className="truncate">{m.usage || "—"}</span>
+                  <span>{m.duration || "—"}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-body-sm text-text-tertiary">未填写</p>
+          )}
+        </div>
+      )}
+      <div>
+        <div className="text-caption text-text-tertiary mb-1.5">执行安排</div>
+        <div className="text-body-sm text-foreground space-y-0.5">
+          <div>开始执行：{plan.execStart || "—"}{plan.execTime && ` · ${plan.execTime}`}</div>
+          <div>执行方式：{plan.execMode === "single" ? "单次" : `周期 · ${plan.cycleRule || "—"}`}</div>
+        </div>
+      </div>
+      <div>
+        <div className="text-caption text-text-tertiary mb-1.5">复查 / 验收</div>
+        {plan.needReview ? (
+          <div className="text-body-sm text-foreground space-y-0.5">
+            <div>日期：{plan.reviewDate || "—"}</div>
+            {plan.reviewNote && <div>说明：{plan.reviewNote}</div>}
+          </div>
+        ) : (
+          <div className="text-body-sm text-text-secondary">不需要</div>
+        )}
+      </div>
+      {(plan.suspectedDisease || plan.kbSource) && (
+        <div>
+          <div className="text-caption text-text-tertiary mb-1.5">知识库关联</div>
+          <div className="text-body-sm text-foreground space-y-0.5">
+            <div>疑似疾病：{plan.suspectedDisease || "—"}</div>
+            <div>来源方案：{plan.kbSource || "—"}</div>
+            <div>是否调整知识库方案：{plan.kbAdjusted ? "是" : "否"}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PlanEditor({
+  draft,
+  setDraft,
+  presets,
+  onCancel,
+  onSave,
+}: {
+  draft: Plan;
+  setDraft: React.Dispatch<React.SetStateAction<Plan>>;
+  presets: string[];
+  newMaterial: () => MaterialItem;
+  onCancel: () => void;
+  onSave: () => void;
+}) {
+  const update = <K extends keyof Plan>(k: K, v: Plan[K]) =>
+    setDraft((d) => ({ ...d, [k]: v }));
+  const updateMat = (idx: number, patch: Partial<MaterialItem>) =>
+    setDraft((d) => ({
+      ...d,
+      materials: d.materials.map((m, i) => (i === idx ? { ...m, ...patch } : m)),
+    }));
+  return (
+    <div className="space-y-4">
+      <div>
+        <div className="text-caption text-text-tertiary mb-1.5">
+          方案说明 / 处理要求 <span className="text-[var(--state-danger)]">*</span>
+        </div>
+        <Textarea
+          value={draft.desc}
+          onChange={(e) => update("desc", e.target.value)}
+          rows={3}
+          placeholder="请输入处理方案 / 操作要求"
+          className="text-body-sm bg-card resize-none"
+        />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <div className="text-caption text-text-tertiary">是否需要领取物资 / 药品</div>
+          <Switch
+            checked={draft.needMaterials}
+            onCheckedChange={(v) => update("needMaterials", !!v)}
+          />
+        </div>
+        {draft.needMaterials && (
+          <div className="space-y-2 mt-2">
+            {draft.materials.map((m, idx) => (
+              <div key={m.id} className="rounded-md border border-border bg-card p-2 space-y-1.5">
+                <div className="grid grid-cols-[1.5fr_0.7fr_0.7fr_auto] gap-1.5 items-center">
+                  <DrugCombo
+                    value={m.name}
+                    presets={presets}
+                    onChange={(v) => updateMat(idx, { name: v })}
+                  />
+                  <Input
+                    value={m.qty}
+                    placeholder="数量"
+                    onChange={(e) => updateMat(idx, { qty: e.target.value })}
+                    className="h-9 text-body-sm bg-card"
+                  />
+                  <Input
+                    value={m.unit}
+                    placeholder="单位"
+                    onChange={(e) => updateMat(idx, { unit: e.target.value })}
+                    className="h-9 text-body-sm bg-card"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 w-9 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
+                    onClick={() =>
+                      setDraft((d) => ({
+                        ...d,
+                        materials: d.materials.filter((_, i) => i !== idx),
+                      }))
+                    }
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <Input
+                    value={m.usage}
+                    placeholder="用法 / 使用方式"
+                    onChange={(e) => updateMat(idx, { usage: e.target.value })}
+                    className="h-9 text-body-sm bg-card"
+                  />
+                  <Input
+                    value={m.duration}
+                    placeholder="使用时长（选填）"
+                    onChange={(e) => updateMat(idx, { duration: e.target.value })}
+                    className="h-9 text-body-sm bg-card"
+                  />
+                </div>
+                <Input
+                  value={m.note}
+                  placeholder="备注（选填）"
+                  onChange={(e) => updateMat(idx, { note: e.target.value })}
+                  className="h-9 text-body-sm bg-card"
+                />
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-full text-body-sm font-normal border-dashed"
+              onClick={() =>
+                setDraft((d) => ({ ...d, materials: [...d.materials, newMaterial()] }))
+              }
+            >
+              <Plus className="h-3.5 w-3.5 mr-1" /> 添加物资 / 药品
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-md border border-border bg-card p-3 space-y-3">
+        <div className="text-caption text-text-tertiary">执行安排</div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <div className="text-caption text-text-tertiary mb-1">
+              开始执行日期 <span className="text-[var(--state-danger)]">*</span>
+            </div>
+            <Input
+              type="date"
+              value={draft.execStart}
+              onChange={(e) => update("execStart", e.target.value)}
+              className="h-9 text-body-sm bg-card"
+            />
+          </div>
+          <div>
+            <div className="text-caption text-text-tertiary mb-1">执行时间段（选填）</div>
+            <Input
+              value={draft.execTime}
+              placeholder="如 08:00 - 10:00"
+              onChange={(e) => update("execTime", e.target.value)}
+              className="h-9 text-body-sm bg-card"
+            />
+          </div>
+        </div>
+        <div>
+          <div className="text-caption text-text-tertiary mb-1.5">执行方式</div>
+          <RadioGroup
+            value={draft.execMode}
+            onValueChange={(v) => update("execMode", v as ExecMode)}
+            className="flex gap-4"
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="single" id="exec-single" />
+              <Label htmlFor="exec-single" className="text-body-sm font-normal cursor-pointer">单次</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="cycle" id="exec-cycle" />
+              <Label htmlFor="exec-cycle" className="text-body-sm font-normal cursor-pointer">周期</Label>
+            </div>
+          </RadioGroup>
+          {draft.execMode === "cycle" && (
+            <Input
+              value={draft.cycleRule}
+              placeholder="周期规则，如 每日 1 次 · 共 3 天"
+              onChange={(e) => update("cycleRule", e.target.value)}
+              className="h-9 text-body-sm bg-card mt-2"
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-md border border-border bg-card p-3 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="text-caption text-text-tertiary">是否需要复查 / 验收</div>
+          <Switch
+            checked={draft.needReview}
+            onCheckedChange={(v) => update("needReview", !!v)}
+          />
+        </div>
+        {draft.needReview && (
+          <>
+            <div>
+              <div className="text-caption text-text-tertiary mb-1">
+                复查 / 验收日期 <span className="text-[var(--state-danger)]">*</span>
+              </div>
+              <Input
+                type="date"
+                value={draft.reviewDate}
+                onChange={(e) => update("reviewDate", e.target.value)}
+                className="h-9 text-body-sm bg-card"
+              />
+            </div>
+            <div>
+              <div className="text-caption text-text-tertiary mb-1">复查 / 验收说明（选填）</div>
+              <Textarea
+                value={draft.reviewNote}
+                onChange={(e) => update("reviewNote", e.target.value)}
+                rows={2}
+                placeholder="如：复查指标、验收标准等"
+                className="text-body-sm bg-card resize-none"
+              />
+            </div>
+          </>
+        )}
+      </div>
+
+      {(draft.suspectedDisease || draft.kbSource) && (
+        <div className="rounded-md border border-border bg-card p-3 space-y-3">
+          <div className="text-caption text-text-tertiary">知识库关联</div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <div className="text-caption text-text-tertiary mb-1">疑似疾病</div>
+              <Input
+                value={draft.suspectedDisease}
+                onChange={(e) => update("suspectedDisease", e.target.value)}
+                className="h-9 text-body-sm bg-card"
+              />
+            </div>
+            <div>
+              <div className="text-caption text-text-tertiary mb-1">来源知识库方案</div>
+              <Input
+                value={draft.kbSource}
+                onChange={(e) => update("kbSource", e.target.value)}
+                className="h-9 text-body-sm bg-card"
+                readOnly
+              />
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="kb-adj" className="text-caption text-text-tertiary cursor-pointer">
+              是否调整知识库方案
+            </Label>
+            <Switch
+              id="kb-adj"
+              checked={draft.kbAdjusted}
+              onCheckedChange={(v) => update("kbAdjusted", !!v)}
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 text-body-sm font-normal"
+          onClick={onCancel}
+        >
+          取消
+        </Button>
+        <Button
+          size="sm"
+          className="h-8 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+          onClick={onSave}
+        >
+          保存修改
+        </Button>
+      </div>
     </div>
   );
 }
