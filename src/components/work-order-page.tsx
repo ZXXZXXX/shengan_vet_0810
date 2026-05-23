@@ -1478,6 +1478,11 @@ export function WorkOrderPage({
               className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
               onClick={() => {
                 setConfirm(null);
+                if (saveToKb) {
+                  toast.success("已存至诊疗知识库草稿箱", {
+                    description: `症状标签、疾病名称与治疗方案已沉淀，可在「知识库 · 草稿箱」继续编辑后发布。`,
+                  });
+                }
                 setDetail(null);
               }}
             >
