@@ -1776,10 +1776,21 @@ function PlanEditor({
   const update = <K extends keyof Plan>(k: K, v: Plan[K]) =>
     setDraft((d) => ({ ...d, [k]: v }));
   const updateMat = (idx: number, patch: Partial<MaterialItem>) =>
-    setDraft((d) => ({
-      ...d,
-      materials: d.materials.map((m, i) => (i === idx ? { ...m, ...patch } : m)),
-    }));
+    setDraft((d) => {
+      const materials = d.materials.map((m, i) => (i === idx ? { ...m, ...patch } : m));
+      if (d.maxWithdrawOverridden) return { ...d, materials };
+      const auto = computeMaxWithdraw(materials);
+      return { ...d, materials, maxWithdraw: auto !== null ? String(auto) : "" };
+    });
+  const removeMat = (idx: number) =>
+    setDraft((d) => {
+      const materials = d.materials.filter((_, i) => i !== idx);
+      if (d.maxWithdrawOverridden) return { ...d, materials };
+      const auto = computeMaxWithdraw(materials);
+      return { ...d, materials, maxWithdraw: auto !== null ? String(auto) : "" };
+    });
+  const showWithdraw = draft.needMaterials && hasWithdrawRule(draft.materials);
+
   return (
     <div className="space-y-4">
       <div>
