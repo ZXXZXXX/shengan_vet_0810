@@ -256,7 +256,7 @@ export function WorkOrderPage({
   const [newTagValue, setNewTagValue] = useState("");
   const newTagRef = useRef<HTMLInputElement>(null);
   const editTagRef = useRef<HTMLInputElement>(null);
-  const [kbDraftOpen, setKbDraftOpen] = useState(false);
+  const [saveToKb, setSaveToKb] = useState(true);
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
@@ -1264,6 +1264,34 @@ export function WorkOrderPage({
                 </section>
               )}
 
+              {/* ============ 四、存至知识库草稿箱（处理态） ============ */}
+              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
+                <section className="space-y-3">
+                  <SectionHeader icon={<BookOpen className="h-3.5 w-3.5" />} title="知识库沉淀" hint="将本次诊疗经验沉淀至诊疗知识库草稿箱" />
+                  <div className="rounded-md border border-border p-4 bg-surface-subtle">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <Label htmlFor="save-to-kb" className="text-body-sm font-medium text-foreground cursor-pointer">
+                          存至知识库草稿箱
+                        </Label>
+                        <p className="text-caption text-text-tertiary leading-relaxed">
+                          开启后，本工单的<span className="text-foreground">症状标签、疾病名称、治疗方案</span>将一并存入「诊疗知识库 · 草稿箱」，可后续进入查看、编辑后发布。
+                        </p>
+                      </div>
+                      <Switch id="save-to-kb" checked={saveToKb} onCheckedChange={setSaveToKb} />
+                    </div>
+                    {saveToKb && (
+                      <div className="mt-3 rounded-md bg-card border border-dashed border-primary/40 px-3 py-2 space-y-1">
+                        <div className="text-caption text-text-tertiary">将沉淀以下内容：</div>
+                        <div className="text-caption text-foreground">· 症状标签：{review.confirmedTags.length ? review.confirmedTags.join("、") : "—"}</div>
+                        <div className="text-caption text-foreground">· 疾病名称：{review.diagnosis || "—"}</div>
+                        <div className="text-caption text-foreground">· 治疗方案：{draft.desc.trim() ? draft.desc.trim().slice(0, 40) + (draft.desc.trim().length > 40 ? "…" : "") : "—"}</div>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
+
               {/* 查看态：仅展示固定的审核 / 响应人元数据 */}
               {(detail.status !== "待审核" || mode === "view") && (
                 <section className="space-y-3">
@@ -1295,13 +1323,6 @@ export function WorkOrderPage({
                 <>
                   <Button variant="outline" className="gap-1.5" onClick={() => { setRejectReason(""); setConfirm("reject"); }}>
                     <X className="h-3.5 w-3.5" /> 驳回
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="gap-1.5"
-                    onClick={() => setKbDraftOpen(true)}
-                  >
-                    <Inbox className="h-3.5 w-3.5" /> 存入知识库草稿箱
                   </Button>
                   <Button
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
@@ -1457,6 +1478,11 @@ export function WorkOrderPage({
               className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
               onClick={() => {
                 setConfirm(null);
+                if (saveToKb) {
+                  toast.success("已存至诊疗知识库草稿箱", {
+                    description: `症状标签、疾病名称与治疗方案已沉淀，可在「知识库 · 草稿箱」继续编辑后发布。`,
+                  });
+                }
                 setDetail(null);
               }}
             >
@@ -1466,37 +1492,6 @@ export function WorkOrderPage({
         </DialogContent>
       </Dialog>
 
-      {/* 存入知识库草稿箱 */}
-      <Dialog open={kbDraftOpen} onOpenChange={setKbDraftOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-section-title inline-flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-[var(--state-success)]" /> 已存至知识库草稿箱
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2">
-            <p className="text-body-sm text-text-secondary leading-relaxed">
-              当前的审核结论与执行计划已保存为知识库草稿，可在「知识库 · 草稿箱」中继续编辑或发布。
-            </p>
-            <div className="rounded-md bg-surface-subtle border border-border px-3 py-2 text-caption text-text-tertiary inline-flex items-center gap-1.5">
-              <BookOpen className="h-3.5 w-3.5 text-primary" />
-              草稿名：{(review.diagnosis || detail?.event || title) + " · 草稿"}
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setKbDraftOpen(false)}>知道了</Button>
-            <Button
-              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-              onClick={() => {
-                setKbDraftOpen(false);
-                toast.success("已跳转至知识库草稿箱");
-              }}
-            >
-              前往草稿箱
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </TooltipProvider>
   );
 }
