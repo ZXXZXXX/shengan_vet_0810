@@ -840,7 +840,7 @@ export function WorkOrderPage({
             } = (() => {
               switch (title) {
                 case "疾病治疗":
-                  return { tagLabel: "症状标签", tags: ["体温升高", "采食下降", "反刍减少"], showDisease: true, showNote: false };
+                  return { tagLabel: "具体描述标签", tags: ["体温升高", "采食下降", "反刍减少"], showDisease: true, showNote: false };
                 case "产后护理":
                   return { tagLabel: "症状 / 护理异常标签", tags: ["恶露异常", "采食下降", "站立困难"], showDisease: true, showNote: false };
                 case "修蹄工作":
