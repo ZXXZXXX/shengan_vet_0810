@@ -70,6 +70,38 @@ import {
 
 type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
 
+export type MaterialItem = {
+  id: string;
+  name: string;
+  qty: string;
+  unit: string;
+  usage: string;
+  duration: string;
+  note: string;
+};
+export type ExecMode = "single" | "cycle";
+export type Plan = {
+  desc: string;
+  needMaterials: boolean;
+  materials: MaterialItem[];
+  execStart: string;
+  execTime: string;
+  execMode: ExecMode;
+  cycleRule: string;
+  needReview: boolean;
+  reviewDate: string;
+  reviewNote: string;
+  suspectedDisease: string;
+  kbSource: string;
+  kbAdjusted: boolean;
+};
+function newMaterial(): MaterialItem {
+  return {
+    id: `m${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
+    name: "", qty: "", unit: "支", usage: "", duration: "", note: "",
+  };
+}
+
 export type WorkOrderAttachment = {
   type: "audio" | "video" | "text";
   name: string;
