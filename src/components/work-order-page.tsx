@@ -69,6 +69,7 @@ import {
   Pencil,
   ClipboardCheck,
   FileSearch,
+  UserPlus,
 } from "lucide-react";
 
 const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
