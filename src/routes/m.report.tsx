@@ -602,57 +602,26 @@ function EvidenceSection({
             </div>
           ))}
           {remaining > 0 && (
-            <>
-              <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
-                <Camera className="h-5 w-5" />
-                <span className="text-caption">拍照</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files?.length) setPhotos((p) => [...p, Date.now()]);
-                    e.target.value = "";
-                  }}
-                />
-              </label>
-              {!hideVideo && (
-                <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
-                  <Video className="h-5 w-5" />
-                  <span className="text-caption">录像</span>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    capture="environment"
-                    className="hidden"
-                    onChange={(e) => {
-                      if (e.target.files?.length) setVideos((p) => [...p, Date.now()]);
-                      e.target.value = "";
-                    }}
-                  />
-                </label>
-              )}
-              <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
-                <ImagePlus className="h-5 w-5" />
-                <span className="text-caption">相册</span>
-                <input
-                  type="file"
-                  accept={hideVideo ? "image/*" : "image/*,video/*"}
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files ?? []);
-                    files.forEach((f) => {
-                      if (f.type.startsWith("video/")) setVideos((p) => [...p, Date.now() + Math.random()]);
-                      else setPhotos((p) => [...p, Date.now() + Math.random()]);
-                    });
-                    e.target.value = "";
-                  }}
-                />
-              </label>
-            </>
+            <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
+              <ImagePlus className="h-5 w-5" />
+              <span className="text-caption">拍摄 / 选择</span>
+              <input
+                type="file"
+                accept={hideVideo ? "image/*" : "image/*,video/*"}
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files ?? []);
+                  files.forEach((f) => {
+                    if (f.type.startsWith("video/")) setVideos((p) => [...p, Date.now() + Math.random()]);
+                    else setPhotos((p) => [...p, Date.now() + Math.random()]);
+                  });
+                  e.target.value = "";
+                }}
+              />
+            </label>
           )}
+
         </div>
       </Section>
 
