@@ -1373,7 +1373,7 @@ export function WorkOrderPage({
             </div>
             <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-64 overflow-y-auto">
               <div>
-                <div className="text-caption text-text-tertiary">方案说明 / 处理要求</div>
+                <div className="text-caption text-text-tertiary">具体描述要求</div>
                 <p className="text-body-sm text-foreground leading-relaxed whitespace-pre-wrap">{plan.desc || "—"}</p>
               </div>
               {plan.needMaterials && plan.materials.length > 0 && (
