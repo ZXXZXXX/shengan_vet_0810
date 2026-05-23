@@ -1492,37 +1492,6 @@ export function WorkOrderPage({
         </DialogContent>
       </Dialog>
 
-      {/* 存入知识库草稿箱 */}
-      <Dialog open={kbDraftOpen} onOpenChange={setKbDraftOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-section-title inline-flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-[var(--state-success)]" /> 已存至知识库草稿箱
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2">
-            <p className="text-body-sm text-text-secondary leading-relaxed">
-              当前的审核结论与执行计划已保存为知识库草稿，可在「知识库 · 草稿箱」中继续编辑或发布。
-            </p>
-            <div className="rounded-md bg-surface-subtle border border-border px-3 py-2 text-caption text-text-tertiary inline-flex items-center gap-1.5">
-              <BookOpen className="h-3.5 w-3.5 text-primary" />
-              草稿名：{(review.diagnosis || detail?.event || title) + " · 草稿"}
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setKbDraftOpen(false)}>知道了</Button>
-            <Button
-              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-              onClick={() => {
-                setKbDraftOpen(false);
-                toast.success("已跳转至知识库草稿箱");
-              }}
-            >
-              前往草稿箱
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </TooltipProvider>
   );
 }
