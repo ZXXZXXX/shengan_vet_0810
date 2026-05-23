@@ -261,7 +261,7 @@ export function WorkOrderPage({
     const hasDisease = title === "疾病治疗" || title === "产后护理";
     // 仅当工单含疑似病例 + 系统匹配方案时，才自动带出方案说明 / 物资 / 复查等内容
     return {
-      desc: hasDisease ? `${o.event ?? o.desc}。结合现场情况，按${title}标准方案处置。` : "",
+      desc: "",
       needMaterials: hasDisease,
       materials: hasDisease
         ? [
@@ -275,7 +275,7 @@ export function WorkOrderPage({
       cycleRule: "",
       needReview: hasDisease,
       reviewDate: "",
-      reviewNote: hasDisease ? "复查体温、采食与反刍情况" : "",
+      reviewNote: "",
       suspectedDisease: hasDisease ? "细菌性感染（疑似）" : "",
       kbSource: hasDisease ? `${title} · 标准处置方案 v2.3` : "",
       kbAdjusted: false,
