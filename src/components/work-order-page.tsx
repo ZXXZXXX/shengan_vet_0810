@@ -1015,44 +1015,16 @@ export function WorkOrderPage({
                     <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
                       <Stethoscope className="h-4 w-4 text-primary" /> 执行方案
                     </div>
-                    {!editingPlan && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-7 px-2 text-body-sm font-normal"
-                        onClick={() => {
-                          setDraft({
-                            ...plan,
-                            materials: plan.materials.length ? plan.materials : [newMaterial()],
-                          });
-                          setEditingPlan(true);
-                        }}
-                      >
-                        编辑
-                      </Button>
-                    )}
+                    <span className="text-caption text-text-tertiary">请审核人填写</span>
                   </div>
 
-                  {editingPlan ? (
-                    <PlanEditor
-                      draft={draft}
-                      setDraft={setDraft}
-                      presets={DRUG_PRESETS}
-                      newMaterial={newMaterial}
-                      onCancel={() => setEditingPlan(false)}
-                      onSave={() => {
-                        setPlan({
-                          ...draft,
-                          materials: draft.needMaterials
-                            ? draft.materials.filter((m) => m.name.trim())
-                            : [],
-                        });
-                        setEditingPlan(false);
-                      }}
-                    />
-                  ) : (
-                    <PlanView plan={plan} />
-                  )}
+                  <PlanEditor
+                    draft={draft}
+                    setDraft={setDraft}
+                    presets={DRUG_PRESETS}
+                    newMaterial={newMaterial}
+                    hideActions
+                  />
                 </div>
               )}
 
