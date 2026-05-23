@@ -283,19 +283,30 @@ export function WorkOrderPage({
   };
   useEffect(() => {
     if (detail) {
-      setPlan(buildDefaultPlan(detail));
+      const p = buildDefaultPlan(detail);
+      setPlan(p);
+      setDraft({ ...p, materials: p.materials.length ? p.materials : [newMaterial()] });
       setEditingPlan(false);
       setAssignExecutor("__none__");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
 
+  // 进入处理态时，确保执行方案处于可编辑状态
+  useEffect(() => {
+    if (mode === "process" && detail) {
+      setDraft((d) => ({ ...d, materials: d.materials.length ? d.materials : [newMaterial()] }));
+      setEditingPlan(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, detail?.id]);
+
   const planComplete =
-    plan.desc.trim().length > 0 &&
-    (!plan.needMaterials || plan.materials.some((m) => m.name.trim())) &&
-    plan.execStart.trim().length > 0 &&
-    (plan.execMode !== "cycle" || plan.cycleRule.trim().length > 0) &&
-    (!plan.needReview || plan.reviewDate.trim().length > 0);
+    draft.desc.trim().length > 0 &&
+    (!draft.needMaterials || draft.materials.some((m) => m.name.trim())) &&
+    draft.execStart.trim().length > 0 &&
+    (draft.execMode !== "cycle" || draft.cycleRule.trim().length > 0) &&
+    (!draft.needReview || draft.reviewDate.trim().length > 0);
 
   const openReject = (o: WorkOrder) => {
     setDetail(o);
