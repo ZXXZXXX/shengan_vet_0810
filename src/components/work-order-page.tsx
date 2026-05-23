@@ -67,10 +67,8 @@ import {
   PackagePlus,
   Stethoscope,
   Pencil,
-  BookOpen,
   ClipboardCheck,
   FileSearch,
-  Inbox,
 } from "lucide-react";
 
 const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
@@ -256,7 +254,7 @@ export function WorkOrderPage({
   const [newTagValue, setNewTagValue] = useState("");
   const newTagRef = useRef<HTMLInputElement>(null);
   const editTagRef = useRef<HTMLInputElement>(null);
-  const [saveToKb, setSaveToKb] = useState(true);
+  
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
   const [keyword, setKeyword] = useState("");
@@ -1264,33 +1262,6 @@ export function WorkOrderPage({
                 </section>
               )}
 
-              {/* ============ 四、存至知识库草稿箱（处理态） ============ */}
-              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
-                <section className="space-y-3">
-                  <SectionHeader icon={<BookOpen className="h-3.5 w-3.5" />} title="知识库沉淀" hint="将本次诊疗经验沉淀至诊疗知识库草稿箱" />
-                  <div className="rounded-md border border-border p-4 bg-surface-subtle">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-1">
-                        <Label htmlFor="save-to-kb" className="text-body-sm font-medium text-foreground cursor-pointer">
-                          存至知识库草稿箱
-                        </Label>
-                        <p className="text-caption text-text-tertiary leading-relaxed">
-                          开启后，本工单的<span className="text-foreground">症状标签、疾病名称、治疗方案</span>将一并存入「诊疗知识库 · 草稿箱」，可后续进入查看、编辑后发布。
-                        </p>
-                      </div>
-                      <Switch id="save-to-kb" checked={saveToKb} onCheckedChange={setSaveToKb} />
-                    </div>
-                    {saveToKb && (
-                      <div className="mt-3 rounded-md bg-card border border-dashed border-primary/40 px-3 py-2 space-y-1">
-                        <div className="text-caption text-text-tertiary">将沉淀以下内容：</div>
-                        <div className="text-caption text-foreground">· 症状标签：{review.confirmedTags.length ? review.confirmedTags.join("、") : "—"}</div>
-                        <div className="text-caption text-foreground">· 疾病名称：{review.diagnosis || "—"}</div>
-                        <div className="text-caption text-foreground">· 治疗方案：{draft.desc.trim() ? draft.desc.trim().slice(0, 40) + (draft.desc.trim().length > 40 ? "…" : "") : "—"}</div>
-                      </div>
-                    )}
-                  </div>
-                </section>
-              )}
 
               {/* 查看态：仅展示固定的审核 / 响应人元数据 */}
               {(detail.status !== "待审核" || mode === "view") && (
@@ -1441,14 +1412,6 @@ export function WorkOrderPage({
                   </p>
                 </div>
               )}
-              {(plan.suspectedDisease || plan.kbSource) && (
-                <div>
-                  <div className="text-caption text-text-tertiary">知识库关联</div>
-                  <p className="text-body-sm text-foreground">
-                    {plan.suspectedDisease || "—"} · 来源：{plan.kbSource || "—"} · {plan.kbAdjusted ? "已调整" : "未调整"}
-                  </p>
-                </div>
-              )}
             </div>
             <div>
               <div className="text-caption text-text-tertiary mb-1.5">
@@ -1478,11 +1441,6 @@ export function WorkOrderPage({
               className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
               onClick={() => {
                 setConfirm(null);
-                if (saveToKb) {
-                  toast.success("已存至诊疗知识库草稿箱", {
-                    description: `症状标签、疾病名称与治疗方案已沉淀，可在「知识库 · 草稿箱」继续编辑后发布。`,
-                  });
-                }
                 setDetail(null);
               }}
             >
@@ -1571,16 +1529,6 @@ function PlanView({ plan }: { plan: Plan }) {
           <div className="text-body-sm text-text-secondary">不需要</div>
         )}
       </div>
-      {(plan.suspectedDisease || plan.kbSource) && (
-        <div>
-          <div className="text-caption text-text-tertiary mb-1.5">知识库关联</div>
-          <div className="text-body-sm text-foreground space-y-0.5">
-            <div>疑似疾病：{plan.suspectedDisease || "—"}</div>
-            <div>来源方案：{plan.kbSource || "—"}</div>
-            <div>是否调整知识库方案：{plan.kbAdjusted ? "是" : "否"}</div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1789,40 +1737,6 @@ function PlanEditor({
         )}
       </div>
 
-      {(draft.suspectedDisease || draft.kbSource) && (
-        <div className="rounded-md border border-border bg-card p-3 space-y-3">
-          <div className="text-caption text-text-tertiary">知识库关联</div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <div className="text-caption text-text-tertiary mb-1">疑似疾病</div>
-              <Input
-                value={draft.suspectedDisease}
-                onChange={(e) => update("suspectedDisease", e.target.value)}
-                className="h-9 text-body-sm bg-card"
-              />
-            </div>
-            <div>
-              <div className="text-caption text-text-tertiary mb-1">来源知识库方案</div>
-              <Input
-                value={draft.kbSource}
-                onChange={(e) => update("kbSource", e.target.value)}
-                className="h-9 text-body-sm bg-card"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="kb-adj" className="text-caption text-text-tertiary cursor-pointer">
-              是否调整知识库方案
-            </Label>
-            <Switch
-              id="kb-adj"
-              checked={draft.kbAdjusted}
-              onCheckedChange={(v) => update("kbAdjusted", !!v)}
-            />
-          </div>
-        </div>
-      )}
 
       {!hideActions && (
         <div className="flex items-center justify-end gap-2">
