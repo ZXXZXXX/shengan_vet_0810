@@ -1445,7 +1445,7 @@ export function WorkOrderPage({
           </DialogHeader>
           <div className="text-body-sm text-text-secondary leading-relaxed">
             本工单中的<span className="text-foreground font-medium">症状标签</span>、
-            <span className="text-foreground font-medium">疾病名称</span>、
+            <span className="text-foreground font-medium">具体描述结论</span>、
             <span className="text-foreground font-medium">治疗方案</span>将存至诊疗知识库的草稿箱中，后续可前往编辑发布。
           </div>
           <DialogFooter>
