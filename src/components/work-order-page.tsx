@@ -329,6 +329,7 @@ export function WorkOrderPage({
       })());
       setAddingTag(false);
       setNewTagValue("");
+      setErrors({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id]);
