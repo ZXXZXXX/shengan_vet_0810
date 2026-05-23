@@ -257,6 +257,8 @@ export function WorkOrderPage({
   
   const [rejectReason, setRejectReason] = useState("");
   const [assignExecutor, setAssignExecutor] = useState<string>("__none__");
+  const [saveToKb, setSaveToKb] = useState(false);
+  const [kbHintOpen, setKbHintOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [range, setRange] = useState<DateRange>("all");
   const [advOpen, setAdvOpen] = useState(false);
