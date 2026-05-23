@@ -1529,6 +1529,10 @@ function PlanEditor({
   onCancel,
   onSave,
   hideActions,
+  errors,
+  clearError,
+  execStartRef,
+  reviewDateRef,
 }: {
   draft: Plan;
   setDraft: React.Dispatch<React.SetStateAction<Plan>>;
@@ -1537,6 +1541,10 @@ function PlanEditor({
   onCancel?: () => void;
   onSave?: () => void;
   hideActions?: boolean;
+  errors?: { execStart?: boolean; reviewDate?: boolean };
+  clearError?: (k: "execStart" | "reviewDate") => void;
+  execStartRef?: React.Ref<HTMLInputElement>;
+  reviewDateRef?: React.Ref<HTMLInputElement>;
 }) {
   const update = <K extends keyof Plan>(k: K, v: Plan[K]) =>
     setDraft((d) => ({ ...d, [k]: v }));
