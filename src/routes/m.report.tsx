@@ -405,35 +405,8 @@ function ReportPage() {
                   </Section>
                 )}
 
-                {/* 处理人 */}
-                <Section title="处理人" required hint="仅可选择具备处方权的角色">
-                  <div className="grid grid-cols-2 gap-2">
-                    {prescriptionHandlers.map((h) => {
-                      const active = handlerId === h.id;
-                      return (
-                        <button
-                          key={h.id}
-                          onClick={() => setHandlerId(h.id)}
-                          className={`h-12 px-3 rounded-lg border text-left transition-colors ${
-                            active
-                              ? "bg-brand-subtle border-primary/30"
-                              : "bg-card border-border"
-                          }`}
-                        >
-                          <div className="flex items-center gap-1.5">
-                            <UserCheck
-                              className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-text-tertiary"}`}
-                            />
-                            <span className={`text-body-sm ${active ? "text-primary" : "text-foreground"}`}>
-                              {h.name}
-                            </span>
-                          </div>
-                          <div className="text-caption text-text-tertiary mt-0.5">{h.role}</div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </Section>
+                {/* 处理人已移至页面底部 */}
+
 
                 {/* 证据材料 / 线索 */}
                 <EvidenceSection
