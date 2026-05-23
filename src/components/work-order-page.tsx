@@ -1414,14 +1414,6 @@ export function WorkOrderPage({
                   </p>
                 </div>
               )}
-              {(plan.suspectedDisease || plan.kbSource) && (
-                <div>
-                  <div className="text-caption text-text-tertiary">知识库关联</div>
-                  <p className="text-body-sm text-foreground">
-                    {plan.suspectedDisease || "—"} · 来源：{plan.kbSource || "—"} · {plan.kbAdjusted ? "已调整" : "未调整"}
-                  </p>
-                </div>
-              )}
             </div>
             <div>
               <div className="text-caption text-text-tertiary mb-1.5">
