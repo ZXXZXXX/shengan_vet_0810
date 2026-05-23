@@ -1329,10 +1329,6 @@ export function WorkOrderPage({
                   <Button
                     className="gap-1.5 bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
                     onClick={() => {
-                      if (!review.conclusionNote.trim()) {
-                        toast.error("请填写审核结论说明");
-                        return;
-                      }
                       if (!planComplete) {
                         toast.error("请完整填写执行计划");
                         return;
@@ -1342,7 +1338,6 @@ export function WorkOrderPage({
                         materials: draft.needMaterials ? draft.materials.filter((m) => m.name.trim()) : [],
                         suspectedDisease: review.diagnosis || draft.suspectedDisease,
                       });
-                      setAssignExecutor("__none__");
                       setConfirm("approve");
                     }}
                   >
