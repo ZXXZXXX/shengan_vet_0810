@@ -1840,15 +1840,11 @@ function PlanEditor({
                     variant="ghost"
                     size="sm"
                     className="h-9 w-9 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
-                    onClick={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        materials: d.materials.filter((_, i) => i !== idx),
-                      }))
-                    }
+                    onClick={() => removeMat(idx)}
                   >
                     <X className="h-3.5 w-3.5" />
                   </Button>
+
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
                   <Input
