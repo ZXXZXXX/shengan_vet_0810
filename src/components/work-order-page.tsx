@@ -321,7 +321,7 @@ export function WorkOrderPage({
           case "普修工作": return ["围栏松动", "饮水器漏水"];
           default: return [];
         }
-      })()));
+      })());
       setAddingTag(false);
       setNewTagValue("");
     }
