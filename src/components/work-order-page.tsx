@@ -257,8 +257,9 @@ export function WorkOrderPage({
   const buildDefaultPlan = (o: WorkOrder): Plan => {
     const today = new Date();
     const startDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    const hasDisease = title === "疾病治疗" || title === "产后护理";
     return {
-      desc: `${o.event ?? o.desc}。结合现场症状（体温升高、采食下降、反刍减少），按${title}标准方案处置。`,
+      desc: `${o.event ?? o.desc}。结合现场情况，按${title}标准方案处置。`,
       needMaterials: true,
       materials: [
         { id: "p1", name: "头孢噻呋钠", qty: "2", unit: "g", usage: "肌肉注射，每日 1 次", duration: "3 天", note: "" },
@@ -271,8 +272,8 @@ export function WorkOrderPage({
       needReview: true,
       reviewDate: "",
       reviewNote: "复查体温、采食与反刍情况",
-      suspectedDisease: "细菌性感染（疑似）",
-      kbSource: `${title} · 标准处置方案 v2.3`,
+      suspectedDisease: hasDisease ? "细菌性感染（疑似）" : "",
+      kbSource: hasDisease ? `${title} · 标准处置方案 v2.3` : "",
       kbAdjusted: false,
     };
   };
