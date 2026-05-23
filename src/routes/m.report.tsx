@@ -13,6 +13,8 @@ import {
   Sparkles,
   FileText,
   Check,
+  ImagePlus,
+  ChevronDown,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
