@@ -1696,11 +1696,18 @@ function PlanEditor({
                 复查 / 验收日期 <span className="text-[var(--state-danger)]">*</span>
               </div>
               <Input
+                ref={reviewDateRef}
                 type="date"
                 value={draft.reviewDate}
-                onChange={(e) => update("reviewDate", e.target.value)}
-                className="h-9 text-body-sm bg-card"
+                onChange={(e) => {
+                  update("reviewDate", e.target.value);
+                  if (e.target.value.trim()) clearError?.("reviewDate");
+                }}
+                className={`h-9 text-body-sm bg-card ${errors?.reviewDate ? "border-[var(--state-danger)] ring-1 ring-[var(--state-danger)]" : ""}`}
               />
+              {errors?.reviewDate && (
+                <p className="text-caption text-[var(--state-danger)] mt-1">此为必填项</p>
+              )}
             </div>
             <div>
               <div className="text-caption text-text-tertiary mb-1">复查 / 验收说明（选填）</div>
