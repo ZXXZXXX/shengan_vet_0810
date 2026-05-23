@@ -1465,7 +1465,7 @@ function PlanView({ plan }: { plan: Plan }) {
         <div className="text-caption text-text-tertiary mb-1.5">执行安排</div>
         <div className="text-body-sm text-foreground space-y-0.5">
           <div>开始执行：{plan.execStart || "—"}{plan.execTime && ` · ${plan.execTime}`}</div>
-          <div>执行方式：{plan.execMode === "single" ? "单次" : `周期 · ${plan.cycleRule || "—"}`}</div>
+          
         </div>
       </div>
       <div>
