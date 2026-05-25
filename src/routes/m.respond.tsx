@@ -73,7 +73,7 @@ const initialCards: RespondCard[] = [
     execAt: "2026-05-25T13:30:00",
     execLabel: "今日 13:30",
     needPickup: true,
-    pickupNote: "需补领：口蹄疫疫苗 A 型 × 8 支",
+    pickupNote: "需领取：免疫器械包 × 1",
     approver: "孙明",
     approvedAt: "今日 08:45",
     approvedAtISO: "2026-05-25T08:45:00",
