@@ -473,7 +473,7 @@ type ExecItem = {
 
 function buildDayItems(day: number): ExecItem[] {
   const tags = ["#A2381", "#A2382", "#A2383"];
-  const base: Omit<ExecItem, "status" | "photos" | "audio" | "note" | "reason">[] = tags.map((tag, i) => ({
+  const base: Omit<ExecItem, "status" | "note" | "reason">[] = tags.map((tag, i) => ({
     id: `d${day}-${i + 1}`,
     title: tag,
     desc: "",
@@ -481,8 +481,6 @@ function buildDayItems(day: number): ExecItem[] {
   return base.map((b) => ({
     ...b,
     status: "pending",
-    photos: 0,
-    audio: false,
     note: "",
     reason: "",
   }));
@@ -661,7 +659,7 @@ function ChecklistDay({
                     </button>
                     <button
                       onClick={() => {
-                        update(it.id, { status: "blocked", photos: 0, audio: false, note: "" });
+                        update(it.id, { status: "blocked", note: "" });
                         setOpenId(it.id);
                       }}
                       className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
