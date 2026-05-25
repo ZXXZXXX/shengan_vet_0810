@@ -570,6 +570,7 @@ function ChecklistDay({
     setItems((arr) => arr.map((it) => (it.id === id ? { ...it, ...patch } : it)));
 
   const isPending = settled === 0;
+  const dayLocked = allSettled;
 
   return (
     <div className={`rounded-xl bg-card border border-border overflow-hidden ${isPending ? "opacity-70" : ""}`}>
@@ -642,7 +643,7 @@ function ChecklistDay({
                   </div>
                 </div>
 
-                {!isPending && (
+                {!isPending && !dayLocked && (
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => {
@@ -681,7 +682,7 @@ function ChecklistDay({
                       <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
                         <FileText className="h-3 w-3" /> 备注（选填）
                       </div>
-                      {open ? (
+                      {open && !dayLocked ? (
                         <textarea
                           value={it.note}
                           onChange={(e) => update(it.id, { note: e.target.value })}
@@ -690,19 +691,25 @@ function ChecklistDay({
                         />
                       ) : it.note ? (
                         <div className="text-caption text-text-secondary">{it.note}</div>
-                      ) : null}
+                      ) : (
+                        <div className="text-caption text-text-tertiary">无</div>
+                      )}
                     </div>
                   ) : (
                     <div className="rounded-md bg-card border border-border p-2.5 space-y-2">
                       <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
-                        <FileText className="h-3 w-3" /> 无法执行说明（必填）
+                        <FileText className="h-3 w-3" /> 无法执行说明{dayLocked ? "" : "（必填）"}
                       </div>
-                      <textarea
-                        value={it.reason}
-                        onChange={(e) => update(it.id, { reason: e.target.value })}
-                        placeholder="如：对象不在指定位置 / 拒绝接近 / 物资不足"
-                        className="w-full min-h-[60px] rounded-md border border-border bg-bg px-2 py-1.5 text-body-sm text-foreground placeholder:text-text-tertiary"
-                      />
+                      {dayLocked ? (
+                        <div className="text-body-sm text-foreground">{it.reason || "—"}</div>
+                      ) : (
+                        <textarea
+                          value={it.reason}
+                          onChange={(e) => update(it.id, { reason: e.target.value })}
+                          placeholder="如：对象不在指定位置 / 拒绝接近 / 物资不足"
+                          className="w-full min-h-[60px] rounded-md border border-border bg-bg px-2 py-1.5 text-body-sm text-foreground placeholder:text-text-tertiary"
+                        />
+                      )}
                     </div>
                   )}
                 </div>
@@ -766,7 +773,7 @@ function PieProgress({ done, blocked, total }: { done: number; blocked: number; 
       {allDone && (
         <>
           <circle cx={cx} cy={cy} r={r - 1} fill="var(--surface-subtle)" />
-          <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--primary)" strokeWidth="1.6" />
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--text-tertiary)" strokeWidth="1.6" />
         </>
       )}
     </svg>
