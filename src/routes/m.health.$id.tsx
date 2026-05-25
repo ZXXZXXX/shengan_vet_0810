@@ -478,7 +478,7 @@ function buildDayItems(day: number): ExecItem[] {
   const base: Omit<ExecItem, "status" | "photos" | "audio" | "note" | "reason">[] = tags.map((tag, i) => ({
     id: `d${day}-${i + 1}`,
     title: tag,
-    desc: "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录",
+    desc: "",
   }));
   return base.map((b) => ({
     ...b,
