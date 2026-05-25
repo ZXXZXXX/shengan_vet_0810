@@ -58,7 +58,7 @@ function TaskDetailPage() {
   const role = useRole();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"report" | "review" | "execute">("report");
-  const [confirm, setConfirm] = useState<"approve" | "reject" | "finish" | null>(null);
+  
 
   // mock data
   const isLoss = id.startsWith("LS");
