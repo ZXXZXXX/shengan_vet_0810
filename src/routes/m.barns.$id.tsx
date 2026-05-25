@@ -57,8 +57,8 @@ function BarnDetailPage() {
   const all: WO[] = [
     { id: "WO-2381", target: "#A2381", kind: "健康", type: "疾病治疗", event: "持续高烧 39.6℃", owner: "李雨晴" },
     { id: "WO-2298", target: "#A2298", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", owner: "李雨晴" },
-    { id: "HF-0702", target: "#A2150", kind: "修蹄", type: "趾间皮炎处置", event: "右后蹄清创", owner: "张师傅" },
-    { id: "HF-0688", target: "#A2270", kind: "修蹄", type: "蹄底溃疡", event: "处置 + 包蹄", owner: "张师傅" },
+    { id: "HF-0702", target: "#A2150", kind: "疾病治疗", type: "趾间皮炎处置", event: "右后蹄清创", owner: "张师傅" },
+    { id: "HF-0688", target: "#A2270", kind: "疾病治疗", type: "蹄底溃疡", event: "处置 + 包蹄", owner: "张师傅" },
     { id: "WO-2401", target: "犊牛舍 A", kind: "免疫", type: "口蹄疫加强", event: "批次免疫", owner: "周凯" },
   ];
 
