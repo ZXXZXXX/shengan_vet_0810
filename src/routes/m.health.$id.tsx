@@ -575,16 +575,16 @@ function ChecklistDay({
   const update = (id: string, patch: Partial<ExecItem>) =>
     setItems((arr) => arr.map((it) => (it.id === id ? { ...it, ...patch } : it)));
 
+  const isPending = settled === 0;
+
   return (
-    <div className="rounded-xl bg-card border border-border overflow-hidden">
+    <div className={`rounded-xl bg-card border border-border overflow-hidden ${isPending ? "opacity-70" : ""}`}>
       <div className="px-4 h-11 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-2">
-          {dayDone ? (
-            <CheckSquare className="h-4 w-4 text-primary" />
-          ) : (
-            <Square className="h-4 w-4 text-text-tertiary" />
-          )}
-          <span className="text-body-sm font-medium text-foreground">第 {day} 天执行</span>
+          <PieProgress done={doneCount} blocked={blockedCount} total={total} />
+          <span className={`text-body-sm font-medium ${isPending ? "text-text-secondary" : "text-foreground"}`}>
+            第 {day} 天执行
+          </span>
           <span className="text-caption text-text-tertiary">
             {doneCount}/{total} 已执行{blockedCount > 0 ? ` · ${blockedCount} 无法执行` : ""}
           </span>
@@ -610,6 +610,7 @@ function ChecklistDay({
       <ul className="px-4 py-3 space-y-2">
         {items.map((it) => {
           const open = openId === it.id;
+          const itemPending = it.status === "pending";
           return (
             <li
               key={it.id}
@@ -622,47 +623,51 @@ function ChecklistDay({
               }`}
             >
               <div className="flex items-start gap-2 px-3 py-2.5">
-                <div className="mt-0.5">
-                  {it.status === "done" ? (
-                    <CheckSquare className="h-4 w-4 text-primary" />
-                  ) : it.status === "blocked" ? (
-                    <AlertTriangle className="h-4 w-4 text-[var(--state-danger)]" />
-                  ) : (
-                    <Square className="h-4 w-4 text-text-tertiary" />
-                  )}
-                </div>
+                {!itemPending && (
+                  <div className="mt-0.5">
+                    {it.status === "done" ? (
+                      <CheckSquare className="h-4 w-4 text-primary" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-[var(--state-danger)]" />
+                    )}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
-                  <div className="text-body-sm text-foreground truncate">{it.title}</div>
+                  <div className={`text-body-sm truncate ${itemPending ? "text-text-secondary" : "text-foreground"}`}>
+                    {it.title}
+                  </div>
                   <div className="text-caption text-text-tertiary">{it.desc}</div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => {
-                      update(it.id, { status: "done", reason: "" });
-                      setOpenId(it.id);
-                    }}
-                    className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
-                      it.status === "done"
-                        ? "bg-primary text-primary-foreground"
-                        : "border border-border text-text-secondary"
-                    }`}
-                  >
-                    <CheckCircle2 className="h-3 w-3" /> 已执行
-                  </button>
-                  <button
-                    onClick={() => {
-                      update(it.id, { status: "blocked", photos: 0, audio: false, note: "" });
-                      setOpenId(it.id);
-                    }}
-                    className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
-                      it.status === "blocked"
-                        ? "bg-[var(--state-danger)] text-white"
-                        : "border border-border text-text-secondary"
-                    }`}
-                  >
-                    <AlertTriangle className="h-3 w-3" /> 无法执行
-                  </button>
-                </div>
+                {!isPending && (
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => {
+                        update(it.id, { status: "done", reason: "" });
+                        setOpenId(it.id);
+                      }}
+                      className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
+                        it.status === "done"
+                          ? "bg-primary text-primary-foreground"
+                          : "border border-border text-text-secondary"
+                      }`}
+                    >
+                      <CheckCircle2 className="h-3 w-3" /> 已执行
+                    </button>
+                    <button
+                      onClick={() => {
+                        update(it.id, { status: "blocked", photos: 0, audio: false, note: "" });
+                        setOpenId(it.id);
+                      }}
+                      className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
+                        it.status === "blocked"
+                          ? "bg-[var(--state-danger)] text-white"
+                          : "border border-border text-text-secondary"
+                      }`}
+                    >
+                      <AlertTriangle className="h-3 w-3" /> 无法执行
+                    </button>
+                  </div>
+                )}
               </div>
 
               {it.status !== "pending" && (
@@ -729,4 +734,46 @@ function ChecklistDay({
     </div>
   );
 }
+
+function PieProgress({ done, blocked, total }: { done: number; blocked: number; total: number }) {
+  const size = 16;
+  const r = 7;
+  const c = 2 * Math.PI * r;
+  const doneFrac = total > 0 ? done / total : 0;
+  const blockedFrac = total > 0 ? blocked / total : 0;
+  const doneLen = c * doneFrac;
+  const blockedLen = c * blockedFrac;
+  const allDone = done === total && total > 0;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border)" strokeWidth="2" />
+      {blockedLen > 0 && (
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--state-danger)"
+          strokeWidth="2"
+          strokeDasharray={`${blockedLen} ${c - blockedLen}`}
+          strokeDashoffset={-doneLen}
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      )}
+      {doneLen > 0 && (
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill={allDone ? "var(--primary)" : "none"}
+          stroke="var(--primary)"
+          strokeWidth="2"
+          strokeDasharray={`${doneLen} ${c - doneLen}`}
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      )}
+    </svg>
+  );
+}
+
 
