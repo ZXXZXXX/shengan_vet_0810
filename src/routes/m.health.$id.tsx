@@ -607,7 +607,17 @@ function ChecklistDay({
         </div>
       )}
 
+      <div className="px-4 pt-3">
+        <div className="rounded-lg bg-surface-subtle border border-border px-3 py-2">
+          <div className="text-caption text-text-tertiary mb-0.5">本日统一执行动作</div>
+          <div className="text-body-sm text-foreground">
+            氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录
+          </div>
+        </div>
+      </div>
+
       <ul className="px-4 py-3 space-y-2">
+
         {items.map((it) => {
           const open = openId === it.id;
           const itemPending = it.status === "pending";
