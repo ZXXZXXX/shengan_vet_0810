@@ -70,7 +70,7 @@ function TaskDetailPage() {
     farm: "奇点示范牧场",
     barn: isLoss ? "2 号牛舍" : "3 号牛舍",
     target: isLoss ? "口蹄疫疫苗 A 型" : "#A2381",
-    type: isLoss ? "物资损耗" : isHoof ? "批次修蹄" : "疾病治疗 · 普修",
+    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : "疾病治疗 · 普修",
     status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待审批") as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
