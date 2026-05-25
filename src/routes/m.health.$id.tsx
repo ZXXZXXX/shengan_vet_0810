@@ -81,8 +81,12 @@ function TaskDetailPage() {
   const s = statusMap[o.status];
   const Icon = s.icon;
 
-  const showApproval = canApprove(role) && o.status === "待审批";
-  const showExecBtn = canExecute(role) && o.status === "进行中";
+  // 进行中 的编辑/查看 + 是否曾填写过
+  const [editing, setEditing] = useState(false);
+  const [hasFilled, setHasFilled] = useState(false);
+  const [recordComplete, setRecordComplete] = useState(false);
+
+
 
   return (
     <MobileShell title="工单详情" back hideTabBar>
