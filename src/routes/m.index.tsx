@@ -351,9 +351,6 @@ function DataCard({
   label,
   value,
   unit,
-  viz,
-  series,
-  compact,
 }: {
   icon: typeof Beef;
   tone: keyof typeof colorMap;
@@ -365,27 +362,18 @@ function DataCard({
   compact?: boolean;
 }) {
   return (
-    <div className="rounded-xl bg-card border border-border p-3 flex flex-col">
-      <div className="flex items-center gap-1.5">
-        <span className={`h-6 w-6 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
-          <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+    <div className="rounded-2xl bg-card border border-border p-3.5 flex flex-col gap-3">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-caption text-text-secondary leading-tight">{label}</span>
+        <span className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 ${colorMap[tone]}`}>
+          <Icon className="h-3.5 w-3.5" strokeWidth={2} />
         </span>
-        <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      {!compact && series && (
-        <div className="mt-2 h-8">
-          {viz === "line" ? (
-            <Sparkline data={series} tone={tone} />
-          ) : (
-            <SparkBars data={series} tone={tone} />
-          )}
-        </div>
-      )}
-      <div className={`flex items-baseline gap-1 ${compact ? "mt-2" : "mt-1.5"}`}>
-        <span className={`${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums font-medium leading-none`}>
+      <div className="flex items-baseline gap-1">
+        <span className="text-[22px] leading-none font-semibold text-foreground tabular-nums">
           {value}
         </span>
-        {unit && <span className="text-caption text-text-tertiary leading-none">{unit}</span>}
+        {unit && <span className="text-caption text-text-tertiary">{unit}</span>}
       </div>
     </div>
   );
