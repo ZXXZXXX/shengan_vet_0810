@@ -23,7 +23,7 @@ export const Route = createFileRoute("/m/health/")({
   component: TaskListPage,
 });
 
-type Status = "待审批" | "进行中" | "已驳回" | "已完成";
+type Status = "待审批" | "进行中" | "已驳回" | "已完成" | "已终止";
 type Kind = "健康" | "损耗" | "修蹄" | "领取";
 
 type Scope = { type: "single"; ear: string } | { type: "batch"; label: string };
@@ -42,6 +42,7 @@ type Task = {
   reportedAt?: string;
   executedAt?: string;
   reviewedAt?: string;
+  terminatedAt?: string;
   /** 单只 or 批量 */
   scope: Scope;
   /** 结论 / 疑似结论 */
@@ -76,6 +77,7 @@ const tabs: { key: Status | "全部"; label: string }[] = [
   { key: "进行中", label: "进行中" },
   { key: "已完成", label: "已完成" },
   { key: "已驳回", label: "已驳回" },
+  { key: "已终止", label: "已终止" },
 ];
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
@@ -83,6 +85,7 @@ const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: 
   进行中: { tag: "tag tag-success", icon: PlayCircle, color: "text-[#2F7A3A]" },
   已驳回: { tag: "tag tag-danger", icon: AlertTriangle, color: "text-[var(--state-danger)]" },
   已完成: { tag: "tag tag-muted", icon: CheckCircle2, color: "text-text-secondary" },
+  已终止: { tag: "tag tag-muted", icon: AlertTriangle, color: "text-text-secondary" },
 };
 
 const kindIcon: Record<Kind, typeof Stethoscope> = {
@@ -269,6 +272,13 @@ function TaskListPage() {
                         {o.status === "已驳回" && (
                           <>
                             <span>审核 <span className="text-text-secondary">{o.reviewedAt ?? o.createdAt}</span></span>
+                            <span>·</span>
+                            <Avatar name={o.approver ?? "—"} label="审核" />
+                          </>
+                        )}
+                        {o.status === "已终止" && (
+                          <>
+                            <span>终止 <span className="text-text-secondary">{o.terminatedAt ?? o.createdAt}</span></span>
                             <span>·</span>
                             <Avatar name={o.approver ?? "—"} label="审核" />
                           </>
