@@ -139,17 +139,7 @@ function RespondListPage() {
   };
 
   return (
-    <MobileShell
-      title="待响应"
-      left={
-        <Link
-          to="/m/"
-          className="h-7 w-7 rounded-full bg-card border border-border inline-flex items-center justify-center"
-        >
-          <ChevronLeft className="h-4 w-4 text-text-secondary" />
-        </Link>
-      }
-    >
+    <MobileShell title="待响应" back={{ to: "/m/" }}>
       {/* 搜索 */}
       <div className="px-4 pt-3">
         <div className="relative">

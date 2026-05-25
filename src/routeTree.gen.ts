@@ -44,6 +44,7 @@ import { Route as OrganizationRoleRouteImport } from './routes/organization.role
 import { Route as OrganizationAccountRouteImport } from './routes/organization.account'
 import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
 import { Route as MScanRouteImport } from './routes/m.scan'
+import { Route as MRespondRouteImport } from './routes/m.respond'
 import { Route as MReportRouteImport } from './routes/m.report'
 import { Route as MNotificationsRouteImport } from './routes/m.notifications'
 import { Route as MMeRouteImport } from './routes/m.me'
@@ -236,6 +237,11 @@ const MScanRoute = MScanRouteImport.update({
   path: '/scan',
   getParentRoute: () => MRoute,
 } as any)
+const MRespondRoute = MRespondRouteImport.update({
+  id: '/respond',
+  path: '/respond',
+  getParentRoute: () => MRoute,
+} as any)
 const MReportRoute = MReportRouteImport.update({
   id: '/report',
   path: '/report',
@@ -339,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
+  '/m/respond': typeof MRespondRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
@@ -387,6 +394,7 @@ export interface FileRoutesByTo {
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
+  '/m/respond': typeof MRespondRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
@@ -441,6 +449,7 @@ export interface FileRoutesById {
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
+  '/m/respond': typeof MRespondRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
@@ -496,6 +505,7 @@ export interface FileRouteTypes {
     | '/m/me'
     | '/m/notifications'
     | '/m/report'
+    | '/m/respond'
     | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
@@ -544,6 +554,7 @@ export interface FileRouteTypes {
     | '/m/me'
     | '/m/notifications'
     | '/m/report'
+    | '/m/respond'
     | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
@@ -597,6 +608,7 @@ export interface FileRouteTypes {
     | '/m/me'
     | '/m/notifications'
     | '/m/report'
+    | '/m/respond'
     | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
@@ -890,6 +902,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MScanRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/respond': {
+      id: '/m/respond'
+      path: '/respond'
+      fullPath: '/m/respond'
+      preLoaderRoute: typeof MRespondRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/report': {
       id: '/m/report'
       path: '/report'
@@ -1041,6 +1060,7 @@ interface MRouteChildren {
   MMeRoute: typeof MMeRoute
   MNotificationsRoute: typeof MNotificationsRoute
   MReportRoute: typeof MReportRoute
+  MRespondRoute: typeof MRespondRoute
   MScanRoute: typeof MScanRoute
   MWorkspaceRoute: typeof MWorkspaceRoute
   MIndexRoute: typeof MIndexRoute
@@ -1057,6 +1077,7 @@ const MRouteChildren: MRouteChildren = {
   MMeRoute: MMeRoute,
   MNotificationsRoute: MNotificationsRoute,
   MReportRoute: MReportRoute,
+  MRespondRoute: MRespondRoute,
   MScanRoute: MScanRoute,
   MWorkspaceRoute: MWorkspaceRoute,
   MIndexRoute: MIndexRoute,
