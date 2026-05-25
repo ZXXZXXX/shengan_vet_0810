@@ -118,10 +118,12 @@ function RespondListPage() {
 
   const [cards, setCards] = useState<RespondCard[]>(initialCards);
   const [q, setQ] = useState("");
+  const [sortBy, setSortBy] = useState<"exec" | "approved">("exec");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   const list = useMemo(() => {
     const kw = q.trim().toLowerCase();
-    return cards
+    const filtered = cards
       .filter((c) => canSee(c.id))
       .filter((c) => {
         if (!kw) return true;
@@ -132,9 +134,16 @@ function RespondListPage() {
           c.conclusion.toLowerCase().includes(kw) ||
           c.kind.toLowerCase().includes(kw)
         );
-      })
-      .sort((a, b) => +new Date(a.execAt) - +new Date(b.execAt));
-  }, [cards, q, role]);
+      });
+
+    const sortKey = sortBy === "exec" ? "execAt" : "approvedAtISO";
+    const dir = sortDir === "asc" ? 1 : -1;
+    return filtered.sort((a, b) => {
+      const aTime = +new Date(a[sortKey as keyof RespondCard] as string);
+      const bTime = +new Date(b[sortKey as keyof RespondCard] as string);
+      return (aTime - bTime) * dir;
+    });
+  }, [cards, q, role, sortBy, sortDir]);
 
   const handleIgnore = (id: string) => {
     setCards((prev) => prev.filter((c) => c.id !== id));
@@ -158,9 +167,31 @@ function RespondListPage() {
             className="h-10 w-full pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary"
           />
         </div>
-        <div className="mt-2 flex items-center justify-between text-caption text-text-tertiary">
-          <span>共 {list.length} 项 · 按执行时间排序</span>
-          <span>由近及远</span>
+
+        {/* 排序筛选器 */}
+        <div className="mt-2.5 flex items-center gap-2">
+          <button
+            onClick={() => setSortBy((prev) => (prev === "exec" ? "approved" : "exec"))}
+            className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption transition-colors ${
+              sortBy === "exec"
+                ? "bg-primary/10 text-primary"
+                : "bg-secondary text-text-secondary"
+            }`}
+          >
+            <ArrowUpDown className="h-3 w-3" />
+            {sortBy === "exec" ? "执行时间" : "发布时间"}
+          </button>
+          <button
+            onClick={() => setSortDir((prev) => (prev === "asc" ? "desc" : "asc"))}
+            className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption transition-colors ${
+              sortDir === "desc"
+                ? "bg-primary/10 text-primary"
+                : "bg-secondary text-text-secondary"
+            }`}
+          >
+            {sortDir === "desc" ? "最近优先" : "最早优先"}
+          </button>
+          <span className="ml-auto text-caption text-text-tertiary">共 {list.length} 项</span>
         </div>
       </div>
 
