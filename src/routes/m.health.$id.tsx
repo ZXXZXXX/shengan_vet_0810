@@ -766,7 +766,7 @@ function PieProgress({ done, blocked, total }: { done: number; blocked: number; 
       {allDone && (
         <>
           <circle cx={cx} cy={cy} r={r - 1} fill="var(--surface-subtle)" />
-          <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--primary)" strokeWidth="1.6" />
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--text-tertiary)" strokeWidth="1.6" />
         </>
       )}
     </svg>
