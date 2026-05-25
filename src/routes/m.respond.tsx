@@ -24,7 +24,12 @@ type RespondCard = {
   kind: "疾病治疗" | "免疫" | "修蹄" | "普修" | "产后护理";
   ear: string;
   barn: string;
+  /** 单只 or 批量 */
+  scope: { type: "single"; ear: string } | { type: "batch"; label: string };
+  /** 结论/疑似结论 */
   conclusion: string;
+  /** 具体描述 */
+  desc?: string;
   /** ISO 时间字符串，用于排序 */
   execAt: string;
   execLabel: string;
@@ -34,6 +39,7 @@ type RespondCard = {
   approvedAt: string;
   /** ISO 时间字符串，用于发布时间排序 */
   approvedAtISO: string;
+  overdue?: boolean;
 };
 
 const initialCards: RespondCard[] = [
