@@ -159,43 +159,71 @@ function TaskDetailPage() {
       </div>
 
       {/* === 3. 底部操作区 === */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-        {showApproval ? (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setConfirm("reject")}
-              className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
-            >
-              驳回
-            </button>
-            <button
-              onClick={() => setConfirm("approve")}
-              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body"
-            >
-              通过
-            </button>
+      {(() => {
+        const isResponder = canApprove(role) || canExecute(role);
+        const showRespond = isResponder && o.status === "待审批";
+        const showExec = canExecute(role) && o.status === "进行中";
+        if (!showRespond && !showExec) return null;
+        return (
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+            {showRespond ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    toast("已忽视该工单");
+                    navigate({ to: "/m/health" });
+                  }}
+                  className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
+                >
+                  忽视
+                </button>
+                <button
+                  onClick={() => navigate({ to: "/m/respond" })}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body"
+                >
+                  响应
+                </button>
+              </div>
+            ) : editing ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setHasFilled(true);
+                    setRecordComplete(true);
+                    setEditing(false);
+                    toast.success("已保存");
+                  }}
+                  className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
+                >
+                  保存
+                </button>
+                <button
+                  onClick={() => {
+                    if (!recordComplete) {
+                      toast.error("提交失败，记录不完整");
+                      return;
+                    }
+                    toast.success("提交成功");
+                    navigate({ to: "/m/health" });
+                  }}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+                >
+                  <Send className="h-4 w-4" /> 提交记录
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setEditing(true)}
+                className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <PlayCircle className="h-4 w-4" />
+                {hasFilled ? "继续执行" : "开始执行"}
+              </button>
+            )}
           </div>
-        ) : showExecBtn ? (
-          <div className="flex gap-2">
-            <button className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary">
-              暂存
-            </button>
-            <button
-              onClick={() => setConfirm("finish")}
-              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-            >
-              <Send className="h-4 w-4" /> 提交记录
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => navigate({ to: "/m/health" })}
-            className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body"
-          >
-            返回工单列表
-          </button>
-        )}
-      </div>
+        );
+      })()}
+
 
       <AlertDialog open={!!confirm} onOpenChange={(v) => !v && setConfirm(null)}>
         <AlertDialogContent className="!max-w-[440px] !w-full !top-auto !bottom-0 !left-1/2 !-translate-x-1/2 !translate-y-0 !rounded-b-none !rounded-t-2xl !border-0 !p-0 pb-[calc(env(safe-area-inset-bottom)+16px)]">
