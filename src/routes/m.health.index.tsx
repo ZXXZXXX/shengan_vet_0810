@@ -161,16 +161,11 @@ function TaskListPage() {
         )}
         {Object.entries(
           list.reduce<Record<string, Task[]>>((acc, t) => {
-            const group = t.kind === "损耗" ? "物资" : t.barn;
-            (acc[group] ||= []).push(t);
+            (acc[t.barn] ||= []).push(t);
             return acc;
           }, {})
         )
-          .sort(([a], [b]) => {
-            if (a === "物资") return 1;
-            if (b === "物资") return -1;
-            return a.localeCompare(b, "zh");
-          })
+          .sort(([a], [b]) => a.localeCompare(b, "zh"))
           .map(([barn, items]) => (
             <section key={barn}>
               <div className="sticky top-0 z-[1] -mx-4 px-4 py-2 bg-background/85 backdrop-blur flex items-center gap-2">
