@@ -125,7 +125,7 @@ function TaskListPage() {
   let list: Task[] = tasks.filter((t) => t.kind !== "损耗");
   void claimed;
   void PICKUPS;
-  if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
+  if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "疾病治疗");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
   const kw = q.trim().toLowerCase();
   if (kw) {
