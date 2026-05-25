@@ -53,9 +53,9 @@ function AnimalDetailPage() {
     },
     {
       id: "WO-2026-0521",
-      kind: "疾病治疗",
+      kind: "修蹄",
       type: "趾间皮炎处置",
-      event: "右后蹄清创疾病治疗",
+      event: "右后蹄清创修蹄",
       owner: "张师傅",
     },
   ];

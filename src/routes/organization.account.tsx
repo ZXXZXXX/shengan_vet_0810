@@ -129,7 +129,7 @@ type RolePermPreview = { pc: string[]; mini: string[] };
 const ROLE_PERMISSIONS: Record<string, RolePermPreview> = {
   场长: {
     pc: ["工作台", "牛只基础档案", "健康管理", "药品管理", "知识库管理"],
-    mini: ["疾病治疗（上报/领取/回填）", "疾病治疗、干奶、疫苗、产后护理、驱虫、普修（全部）", "损耗/领用（全部）"],
+    mini: ["疾病治疗（上报/领取/回填）", "修蹄、干奶、疫苗、产后护理、驱虫、普修（全部）", "损耗/领用（全部）"],
   },
   兽医: {
     pc: ["工作台", "牛只基础档案", "健康管理", "药品管理", "知识库管理"],
@@ -137,7 +137,7 @@ const ROLE_PERMISSIONS: Record<string, RolePermPreview> = {
   },
   兽医助理: {
     pc: [],
-    mini: ["疾病、疫苗、疾病治疗、干奶、驱虫、普修（领取/回填）", "损耗（上报）"],
+    mini: ["疾病、疫苗、修蹄、干奶、驱虫、普修（领取/回填）", "损耗（上报）"],
   },
   技术员: {
     pc: ["工作台", "牛只基础档案"],
@@ -149,7 +149,7 @@ const ROLE_PERMISSIONS: Record<string, RolePermPreview> = {
   },
   修蹄工: {
     pc: [],
-    mini: ["疾病治疗（领取/回填）"],
+    mini: ["修蹄（领取/回填）"],
   },
   普修工: {
     pc: [],
