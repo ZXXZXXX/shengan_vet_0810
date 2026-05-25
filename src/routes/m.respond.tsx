@@ -8,6 +8,7 @@ import {
   Search,
   Inbox,
   ShieldCheck,
+  ArrowUpDown,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
