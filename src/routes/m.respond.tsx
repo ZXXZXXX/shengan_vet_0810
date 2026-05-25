@@ -48,6 +48,7 @@ const initialCards: RespondCard[] = [
     pickupNote: "需领药：头孢噻呋钠 × 4 支",
     approver: "陈晓东",
     approvedAt: "今日 09:12",
+    approvedAtISO: "2026-05-25T09:12:00",
   },
   {
     id: "WO-2502",
@@ -60,6 +61,7 @@ const initialCards: RespondCard[] = [
     needPickup: false,
     approver: "李雨晴",
     approvedAt: "今日 09:40",
+    approvedAtISO: "2026-05-25T09:40:00",
   },
   {
     id: "LS-1029",
@@ -73,6 +75,7 @@ const initialCards: RespondCard[] = [
     pickupNote: "需补领：口蹄疫疫苗 A 型 × 8 支",
     approver: "孙明",
     approvedAt: "今日 08:45",
+    approvedAtISO: "2026-05-25T08:45:00",
   },
   {
     id: "WO-2401",
@@ -86,6 +89,7 @@ const initialCards: RespondCard[] = [
     pickupNote: "需领物：免疫器械包 × 1",
     approver: "周凯",
     approvedAt: "昨日 17:20",
+    approvedAtISO: "2026-05-24T17:20:00",
   },
   {
     id: "HF-0815",
@@ -98,6 +102,7 @@ const initialCards: RespondCard[] = [
     needPickup: false,
     approver: "周凯",
     approvedAt: "今日 08:10",
+    approvedAtISO: "2026-05-25T08:10:00",
   },
 ];
 
