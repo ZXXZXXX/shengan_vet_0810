@@ -1,21 +1,70 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ShieldCheck, ArrowLeft, Phone, KeyRound, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/login")({
   head: () => ({ meta: [{ title: "登录 · 奇点智牧" }] }),
   component: MLoginPage,
 });
 
+const BOUND_KEY = "mp:wecom_bound";
+
+type Step = "idle" | "binding" | "loading";
+
 function MLoginPage() {
   const navigate = useNavigate();
   const [agreed, setAgreed] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<Step>("idle");
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
+  const [countdown, setCountdown] = useState(0);
 
-  const onLogin = () => {
-    if (!agreed) return;
-    setLoading(true);
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
+
+  const isBound = () =>
+    typeof window !== "undefined" && localStorage.getItem(BOUND_KEY) === "1";
+
+  const onWeComLogin = () => {
+    if (!agreed) {
+      toast.error("请先勾选并同意服务协议");
+      return;
+    }
+    if (isBound()) {
+      setStep("loading");
+      setTimeout(() => navigate({ to: "/m/workspace" }), 600);
+      return;
+    }
+    // 首次企微登录 → 需绑定手机号
+    setStep("binding");
+  };
+
+  const sendCode = () => {
+    if (!/^1\d{10}$/.test(phone)) {
+      toast.error("请输入正确的手机号");
+      return;
+    }
+    setCountdown(60);
+    toast.success("验证码已发送");
+  };
+
+  const confirmBind = () => {
+    if (!/^1\d{10}$/.test(phone)) {
+      toast.error("请输入正确的手机号");
+      return;
+    }
+    if (code.length < 4) {
+      toast.error("请输入验证码");
+      return;
+    }
+    localStorage.setItem(BOUND_KEY, "1");
+    setStep("loading");
+    toast.success("企微已绑定账户");
     setTimeout(() => navigate({ to: "/m/workspace" }), 600);
   };
 
@@ -31,53 +80,127 @@ function MLoginPage() {
 
         {/* 顶部品牌区 */}
         <div className="px-6 pt-24 pb-12">
-          <h1 className="text-page-title text-foreground tracking-tight">奇点智牧</h1>
-          <p className="text-body text-text-secondary mt-1">让每一头牛被精准照护</p>
+          {step === "binding" ? (
+            <>
+              <button
+                onClick={() => setStep("idle")}
+                className="inline-flex items-center gap-1 text-body-sm text-text-tertiary mb-3"
+              >
+                <ArrowLeft className="h-4 w-4" /> 返回
+              </button>
+              <h1 className="text-page-title text-foreground tracking-tight">绑定手机号</h1>
+              <p className="text-body text-text-secondary mt-1">
+                首次使用企业微信登录，需验证手机号以绑定您的账户
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-page-title text-foreground tracking-tight">奇点智牧</h1>
+              <p className="text-body text-text-secondary mt-1">让每一头牛被精准照护</p>
+            </>
+          )}
         </div>
 
-        {/* 中间品牌图形 */}
-        <div className="flex-1 flex items-center justify-center px-8">
-          <div className="relative w-full aspect-square max-w-[260px]">
-            <div className="absolute inset-4 rounded-full border border-primary/20 animate-pulse" />
-            <div className="absolute inset-10 rounded-full border border-primary/15" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-24 w-24 rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-[0_20px_60px_-20px_var(--brand)] flex items-center justify-center">
-                <span className="text-[40px] leading-none text-primary-foreground font-medium">智</span>
+        {/* 中间区 */}
+        {step === "binding" ? (
+          <div className="flex-1 px-6 space-y-4">
+            <div className="rounded-xl bg-card border border-border p-1.5">
+              <div className="flex items-center gap-2 h-12 px-3">
+                <Phone className="h-4 w-4 text-text-tertiary" />
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={11}
+                  placeholder="请输入手机号"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                  className="flex-1 bg-transparent outline-none text-body text-foreground placeholder:text-text-tertiary"
+                />
+              </div>
+              <div className="h-px bg-border mx-3" />
+              <div className="flex items-center gap-2 h-12 px-3">
+                <KeyRound className="h-4 w-4 text-text-tertiary" />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="验证码"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                  className="flex-1 bg-transparent outline-none text-body text-foreground placeholder:text-text-tertiary"
+                />
+                <button
+                  onClick={sendCode}
+                  disabled={countdown > 0}
+                  className="text-body-sm text-primary disabled:text-text-tertiary"
+                >
+                  {countdown > 0 ? `${countdown}s` : "获取验证码"}
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-brand-subtle/60 px-3 py-2 flex items-start gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+              <span className="text-caption text-text-secondary leading-relaxed">
+                绑定后下次可直接使用企业微信一键登录，无需重复验证。
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center px-8">
+            <div className="relative w-full aspect-square max-w-[260px]">
+              <div className="absolute inset-4 rounded-full border border-primary/20 animate-pulse" />
+              <div className="absolute inset-10 rounded-full border border-primary/15" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-24 w-24 rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-[0_20px_60px_-20px_var(--brand)] flex items-center justify-center">
+                  <span className="text-[40px] leading-none text-primary-foreground font-medium">智</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* 登录操作 */}
+        {/* 底部操作 */}
         <div className="px-6 pb-10 space-y-4">
-          <Button
-            onClick={onLogin}
-            disabled={!agreed || loading}
-            className="w-full h-12 text-body bg-[#07C160] hover:bg-[#07C160]/90 text-white gap-2 disabled:opacity-50"
-          >
-            <WeComIcon className="h-5 w-5" />
-            {loading ? "正在登录..." : "企业微信一键登录"}
-          </Button>
+          {step === "binding" ? (
+            <Button
+              onClick={confirmBind}
+              className="w-full h-12 text-body bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              确认绑定并登录
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={onWeComLogin}
+                disabled={step === "loading"}
+                className="w-full h-12 text-body bg-[#07C160] hover:bg-[#07C160]/90 text-white gap-2 disabled:opacity-50"
+              >
+                <WeComIcon className="h-5 w-5" />
+                {step === "loading" ? "正在登录..." : "企业微信一键登录"}
+              </Button>
 
-          <label className="flex items-start gap-2 px-1 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-0.5 h-3.5 w-3.5 accent-[var(--brand)]"
-            />
-            <span className="text-caption text-text-tertiary leading-relaxed">
-              已阅读并同意
-              <Link to="/m/login" className="text-primary mx-0.5">《用户服务协议》</Link>
-              与
-              <Link to="/m/login" className="text-primary mx-0.5">《隐私政策》</Link>
-              ，授权使用企业微信身份完成登录
-            </span>
-          </label>
+              <label className="flex items-start gap-2 px-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="mt-0.5 h-3.5 w-3.5 accent-[var(--brand)]"
+                />
+                <span className="text-caption text-text-tertiary leading-relaxed">
+                  已阅读并同意
+                  <Link to="/m/login" className="text-primary mx-0.5">《用户服务协议》</Link>
+                  与
+                  <Link to="/m/login" className="text-primary mx-0.5">《隐私政策》</Link>
+                  ，授权使用企业微信身份完成登录
+                </span>
+              </label>
 
-          <div className="pt-2 flex items-center justify-center gap-1.5 text-caption text-text-tertiary">
-            <ShieldCheck className="h-3 w-3" /> 企业级身份与权限受控
-          </div>
+              <div className="pt-2 flex items-center justify-center gap-1.5 text-caption text-text-tertiary">
+                <ShieldCheck className="h-3 w-3" /> 企业级身份与权限受控
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
