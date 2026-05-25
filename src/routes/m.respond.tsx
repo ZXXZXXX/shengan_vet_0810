@@ -46,7 +46,7 @@ const initialCards: RespondCard[] = [
     execAt: "2026-05-25T10:30:00",
     execLabel: "今日 10:30",
     needPickup: true,
-    pickupNote: "需领药：头孢噻呋钠 × 4 支",
+    pickupNote: "需领取：头孢噻呋钠 × 4 支",
     approver: "陈晓东",
     approvedAt: "今日 09:12",
     approvedAtISO: "2026-05-25T09:12:00",
