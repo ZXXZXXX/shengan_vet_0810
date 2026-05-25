@@ -125,7 +125,7 @@ function RespondListPage() {
   const list = useMemo(() => {
     const kw = q.trim().toLowerCase();
     const filtered = cards
-      .filter((c) => canSee(c.id))
+      .filter((c) => canSee(c))
       .filter((c) => {
         if (!kw) return true;
         return (
