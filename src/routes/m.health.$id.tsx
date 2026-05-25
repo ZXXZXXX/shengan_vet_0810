@@ -528,15 +528,11 @@ function ChecklistDay({
   const [items, setItems] = useState<ExecItem[]>(() => {
     const base = buildDayItems(day);
     if (initialAllDone) {
-      return base.map((it) => ({
-        ...it,
-        status: "done",
-        note: "体温 39.2℃，采食略增。",
-      }));
+      return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
     }
     return base;
   });
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [dayNote, setDayNote] = useState("");
 
   const total = items.length;
   const doneCount = items.filter((i) => i.status === "done").length;
@@ -605,9 +601,7 @@ function ChecklistDay({
       </div>
 
       <ul className="px-4 py-3 space-y-2">
-
         {items.map((it) => {
-          const open = openId === it.id;
           const itemPending = it.status === "pending";
           return (
             <li
@@ -639,10 +633,7 @@ function ChecklistDay({
                 {!isPending && !dayLocked && (
                   <div className="flex items-center gap-1.5">
                     <button
-                      onClick={() => {
-                        update(it.id, { status: "done", reason: "" });
-                        setOpenId(it.id);
-                      }}
+                      onClick={() => update(it.id, { status: "done" })}
                       className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
                         it.status === "done"
                           ? "bg-primary text-primary-foreground"
@@ -652,10 +643,7 @@ function ChecklistDay({
                       <CheckCircle2 className="h-3 w-3" /> 已执行
                     </button>
                     <button
-                      onClick={() => {
-                        update(it.id, { status: "blocked", note: "" });
-                        setOpenId(it.id);
-                      }}
+                      onClick={() => update(it.id, { status: "blocked" })}
                       className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
                         it.status === "blocked"
                           ? "bg-[var(--state-danger)] text-white"
@@ -667,50 +655,30 @@ function ChecklistDay({
                   </div>
                 )}
               </div>
-
-              {it.status !== "pending" && (
-                <div className="px-3 pb-3">
-                  {it.status === "done" ? (
-                    <div className="rounded-md bg-card border border-border p-2.5 space-y-2">
-                      <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
-                        <FileText className="h-3 w-3" /> 备注（选填）
-                      </div>
-                      {open && !dayLocked ? (
-                        <textarea
-                          value={it.note}
-                          onChange={(e) => update(it.id, { note: e.target.value })}
-                          placeholder="填写执行备注"
-                          className="w-full min-h-[60px] rounded-md border border-border bg-bg px-2 py-1.5 text-body-sm text-foreground placeholder:text-text-tertiary"
-                        />
-                      ) : it.note ? (
-                        <div className="text-caption text-text-secondary">{it.note}</div>
-                      ) : (
-                        <div className="text-caption text-text-tertiary">无</div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="rounded-md bg-card border border-border p-2.5 space-y-2">
-                      <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
-                        <FileText className="h-3 w-3" /> 无法执行说明{dayLocked ? "" : "（必填）"}
-                      </div>
-                      {dayLocked ? (
-                        <div className="text-body-sm text-foreground">{it.reason || "—"}</div>
-                      ) : (
-                        <textarea
-                          value={it.reason}
-                          onChange={(e) => update(it.id, { reason: e.target.value })}
-                          placeholder="如：对象不在指定位置 / 拒绝接近 / 物资不足"
-                          className="w-full min-h-[60px] rounded-md border border-border bg-bg px-2 py-1.5 text-body-sm text-foreground placeholder:text-text-tertiary"
-                        />
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
             </li>
           );
         })}
       </ul>
+
+      {!isPending && (
+        <div className="px-4 pb-4">
+          <div className="rounded-md bg-card border border-border p-3 space-y-2">
+            <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
+              <FileText className="h-3 w-3" /> 备注（选填）
+            </div>
+            {dayLocked ? (
+              <div className="text-body-sm text-foreground min-h-[20px]">{dayNote || "—"}</div>
+            ) : (
+              <textarea
+                value={dayNote}
+                onChange={(e) => setDayNote(e.target.value)}
+                placeholder="填写本日执行备注"
+                className="w-full min-h-[60px] rounded-md border border-border bg-bg px-2 py-1.5 text-body-sm text-foreground placeholder:text-text-tertiary"
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
