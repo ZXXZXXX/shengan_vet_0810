@@ -228,7 +228,7 @@ function TaskListPage() {
                         <span className={o.needPickup ? "text-primary font-medium" : "text-text-tertiary"}>
                           {o.needPickup ? "需领物" : "无需领物"}
                         </span>
-                        <span className="ml-auto inline-flex items-center gap-0.5 text-text-secondary font-medium">
+                        <span className="ml-auto inline-flex items-center gap-0.5 text-primary font-medium">
                           {isPickup ? (o.status === "已完成" ? "查看清单" : "领取") : canExecuteThis ? "执行" : "查看"}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
