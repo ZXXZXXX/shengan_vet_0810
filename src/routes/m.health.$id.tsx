@@ -646,8 +646,8 @@ function ChecklistDay({
                   <div className={`text-body-sm truncate ${itemPending ? "text-text-secondary" : "text-foreground"}`}>
                     {it.title}
                   </div>
-                  </div>
                 </div>
+
                 {!isPending && (
                   <div className="flex items-center gap-1.5">
                     <button
