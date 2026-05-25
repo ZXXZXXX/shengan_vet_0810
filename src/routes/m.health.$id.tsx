@@ -348,7 +348,7 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
         <Section title="上报疑似疾病">
           <div className="flex flex-wrap gap-1">
             <span className="tag tag-warning">疑似 呼吸道感染</span>
-            <span className="tag tag-muted">置信度 72%</span>
+            <span className="tag tag-muted">符合症状 2项</span>
           </div>
         </Section>
       )}
