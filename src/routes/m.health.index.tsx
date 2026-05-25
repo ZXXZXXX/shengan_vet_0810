@@ -127,7 +127,7 @@ function TaskListPage() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="搜索工作号 / 对象 / 工作类型 / 牛舍 / 物资"
+            placeholder="搜索工单号 / 对象 / 工单类型 / 牛舍"
             className="h-10 w-full pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary"
           />
         </div>
