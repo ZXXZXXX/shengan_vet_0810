@@ -467,22 +467,15 @@ type ExecItem = {
   title: string;
   desc: string;
   status: ItemStatus;
-  note: string;
-  reason: string;
 };
 
 function buildDayItems(day: number): ExecItem[] {
   const tags = ["#A2381", "#A2382", "#A2383"];
-  const base: Omit<ExecItem, "status" | "note" | "reason">[] = tags.map((tag, i) => ({
+  return tags.map((tag, i) => ({
     id: `d${day}-${i + 1}`,
     title: tag,
     desc: "",
-  }));
-  return base.map((b) => ({
-    ...b,
-    status: "pending",
-    note: "",
-    reason: "",
+    status: "pending" as ItemStatus,
   }));
 }
 
