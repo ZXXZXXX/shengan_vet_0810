@@ -151,7 +151,7 @@ function RespondListPage() {
   };
   const handleRespond = (id: string) => {
     setCards((prev) => prev.filter((c) => c.id !== id));
-    toast.success(`已响应 ${id}，进入待执行`);
+    toast.success("已成功加入工作列表");
   };
 
   return (
