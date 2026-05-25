@@ -258,7 +258,7 @@ function ReportPage() {
           <>
 
             {/* 处理对象 */}
-            <Section title="处理对象" required>
+            <Section title="执行对象" required>
               {lockTarget ? (
                 <div className="space-y-2">
                   <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
@@ -286,7 +286,7 @@ function ReportPage() {
                     <input
                       value={target}
                       onChange={(e) => setTarget(e.target.value)}
-                      placeholder="牛只编号 / 牛舍标号 / 批量对象"
+                      placeholder="牛只编号 / 牛舍标号 / 批量执行对象"
                       className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
                     />
                     <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">

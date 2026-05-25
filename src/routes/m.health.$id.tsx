@@ -105,7 +105,7 @@ function TaskDetailPage() {
           <div className="grid grid-cols-2 gap-y-2 gap-x-3 text-caption">
             <SumRow icon={MapPin} label="牧场" value={o.farm} />
             <SumRow icon={MapPin} label="牛舍" value={o.barn} />
-            <SumRow icon={Stethoscope} label="服务对象" value={o.target} />
+            <SumRow icon={Stethoscope} label="执行对象" value={o.target} />
             <SumRow icon={User} label="执行人" value={cleanName(o.who)} />
             <SumRow icon={Clock} label="计划时间" value={o.plannedAt} />
             <SumRow
