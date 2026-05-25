@@ -20,7 +20,7 @@ import { useRole, canApprove } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
 export const Route = createFileRoute("/m/health/")({
-  head: () => ({ meta: [{ title: "工作列表 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "工单列表 · 奇点智牧" }] }),
   component: TaskListPage,
 });
 
