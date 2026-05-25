@@ -474,11 +474,12 @@ type ExecItem = {
 };
 
 function buildDayItems(day: number): ExecItem[] {
-  const base: Omit<ExecItem, "status" | "photos" | "audio" | "note" | "reason">[] = [
-    { id: `d${day}-1`, title: "#A2381 · 氟尼辛葡甲胺", desc: "肌肉注射 2ml" },
-    { id: `d${day}-2`, title: "#A2381 · 头孢噻呋钠", desc: "肌肉注射 1g" },
-    { id: `d${day}-3`, title: "#A2381 · 体温记录", desc: "测温并记录" },
-  ];
+  const tags = ["#A2381", "#A2382", "#A2383"];
+  const base: Omit<ExecItem, "status" | "photos" | "audio" | "note" | "reason">[] = tags.map((tag, i) => ({
+    id: `d${day}-${i + 1}`,
+    title: tag,
+    desc: "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录",
+  }));
   return base.map((b) => ({
     ...b,
     status: "pending",
