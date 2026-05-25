@@ -235,7 +235,7 @@ function TaskListPage() {
                         <span className="text-text-tertiary truncate">
                           {canApproveThis ? "请前往 PC 审批" : ""}
                         </span>
-                        <span className="shrink-0 ml-3 inline-flex items-center gap-1 text-primary font-medium">
+                        <span className="shrink-0 ml-3 inline-flex items-center gap-1 text-primary font-medium text-neutral-500">
                           {isPickup
                             ? o.status === "已完成"
                               ? "查看清单"
