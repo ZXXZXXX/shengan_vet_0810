@@ -467,15 +467,13 @@ type ExecItem = {
   title: string;
   desc: string;
   status: ItemStatus;
-  photos: number;
-  audio: boolean;
   note: string;
   reason: string;
 };
 
 function buildDayItems(day: number): ExecItem[] {
   const tags = ["#A2381", "#A2382", "#A2383"];
-  const base: Omit<ExecItem, "status" | "photos" | "audio" | "note" | "reason">[] = tags.map((tag, i) => ({
+  const base: Omit<ExecItem, "status" | "note" | "reason">[] = tags.map((tag, i) => ({
     id: `d${day}-${i + 1}`,
     title: tag,
     desc: "",
@@ -483,8 +481,6 @@ function buildDayItems(day: number): ExecItem[] {
   return base.map((b) => ({
     ...b,
     status: "pending",
-    photos: 0,
-    audio: false,
     note: "",
     reason: "",
   }));
@@ -506,7 +502,7 @@ function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: str
         <Field label="开始执行时间" value="今日 13:08" />
       </Section>
 
-      <div className="text-caption text-text-tertiary px-1">执行 Checklist · 勾选执行对象并上传现场材料</div>
+      <div className="text-caption text-text-tertiary px-1">执行 Checklist · 勾选执行对象并记录执行情况</div>
 
       <ChecklistDay day={1} pickupCode={pickupCode} initialAllDone />
       <ChecklistDay day={2} pickupCode={pickupCode} initialAllDone={status === "已完成"} />
@@ -542,8 +538,6 @@ function ChecklistDay({
       return base.map((it) => ({
         ...it,
         status: "done",
-        photos: 2,
-        audio: true,
         note: "体温 39.2℃，采食略增。",
       }));
     }
@@ -665,7 +659,7 @@ function ChecklistDay({
                     </button>
                     <button
                       onClick={() => {
-                        update(it.id, { status: "blocked", photos: 0, audio: false, note: "" });
+                        update(it.id, { status: "blocked", note: "" });
                         setOpenId(it.id);
                       }}
                       className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
@@ -684,38 +678,14 @@ function ChecklistDay({
                 <div className="px-3 pb-3">
                   {it.status === "done" ? (
                     <div className="rounded-md bg-card border border-border p-2.5 space-y-2">
-                      <div className="text-caption text-text-tertiary">现场材料</div>
-                      <div className="grid grid-cols-4 gap-2">
-                        {Array.from({ length: it.photos }).map((_, i) => (
-                          <div
-                            key={i}
-                            className="aspect-square rounded-md bg-gradient-to-br from-surface-subtle to-border border border-border"
-                          />
-                        ))}
-                        <button
-                          onClick={() => update(it.id, { photos: it.photos + 1 })}
-                          className="aspect-square rounded-md border border-dashed border-border inline-flex flex-col items-center justify-center text-text-tertiary"
-                        >
-                          <Camera className="h-4 w-4" />
-                          <span className="text-[10px] mt-0.5">拍照</span>
-                        </button>
+                      <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                        <FileText className="h-3 w-3" /> 备注（选填）
                       </div>
-                      <button
-                        onClick={() => update(it.id, { audio: !it.audio })}
-                        className={`w-full h-9 rounded-md inline-flex items-center justify-center gap-1.5 text-caption ${
-                          it.audio
-                            ? "bg-brand-subtle text-primary"
-                            : "border border-dashed border-border text-text-tertiary"
-                        }`}
-                      >
-                        <Mic className="h-3.5 w-3.5" />
-                        {it.audio ? "已录音 00:18 · 点击重录" : "录音说明"}
-                      </button>
                       {open ? (
                         <textarea
                           value={it.note}
                           onChange={(e) => update(it.id, { note: e.target.value })}
-                          placeholder="补充备注（可选）"
+                          placeholder="填写执行备注"
                           className="w-full min-h-[60px] rounded-md border border-border bg-bg px-2 py-1.5 text-body-sm text-foreground placeholder:text-text-tertiary"
                         />
                       ) : it.note ? (
