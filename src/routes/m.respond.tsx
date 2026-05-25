@@ -9,6 +9,7 @@ import {
   Inbox,
   ShieldCheck,
   ArrowUpDown,
+  ChevronDown,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
