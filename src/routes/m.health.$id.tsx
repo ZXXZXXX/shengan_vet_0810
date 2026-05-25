@@ -461,6 +461,34 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
 }
 
 // === 执行记录 ===
+type ItemStatus = "pending" | "done" | "blocked";
+type ExecItem = {
+  id: string;
+  title: string;
+  desc: string;
+  status: ItemStatus;
+  photos: number;
+  audio: boolean;
+  note: string;
+  reason: string;
+};
+
+function buildDayItems(day: number): ExecItem[] {
+  const base: Omit<ExecItem, "status" | "photos" | "audio" | "note" | "reason">[] = [
+    { id: `d${day}-1`, title: "#A2381 · 氟尼辛葡甲胺", desc: "肌肉注射 2ml" },
+    { id: `d${day}-2`, title: "#A2381 · 头孢噻呋钠", desc: "肌肉注射 1g" },
+    { id: `d${day}-3`, title: "#A2381 · 体温记录", desc: "测温并记录" },
+  ];
+  return base.map((b) => ({
+    ...b,
+    status: "pending",
+    photos: 0,
+    audio: false,
+    note: "",
+    reason: "",
+  }));
+}
+
 function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: string | null }) {
   if (status === "待审批" || status === "已驳回") {
     return (
@@ -477,11 +505,11 @@ function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: str
         <Field label="开始执行时间" value="今日 13:08" />
       </Section>
 
-      <div className="text-caption text-text-tertiary px-1">执行 Checklist</div>
+      <div className="text-caption text-text-tertiary px-1">执行 Checklist · 勾选执行对象并上传现场材料</div>
 
-      <ChecklistDay day={1} done pickupCode={pickupCode} />
-      <ChecklistDay day={2} done={status === "已完成"} pickupCode={pickupCode} />
-      <ChecklistDay day={3} done={status === "已完成"} pickupCode={pickupCode} />
+      <ChecklistDay day={1} pickupCode={pickupCode} initialAllDone />
+      <ChecklistDay day={2} pickupCode={pickupCode} initialAllDone={status === "已完成"} />
+      <ChecklistDay day={3} pickupCode={pickupCode} initialAllDone={status === "已完成"} />
 
       <div className="rounded-xl bg-card border border-border p-4">
         <div className="flex items-center justify-between mb-2">
@@ -500,28 +528,71 @@ function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: str
 
 function ChecklistDay({
   day,
-  done,
   pickupCode,
+  initialAllDone = false,
 }: {
   day: number;
-  done: boolean;
   pickupCode: string | null;
+  initialAllDone?: boolean;
 }) {
+  const [items, setItems] = useState<ExecItem[]>(() => {
+    const base = buildDayItems(day);
+    if (initialAllDone) {
+      return base.map((it) => ({
+        ...it,
+        status: "done",
+        photos: 2,
+        audio: true,
+        note: "体温 39.2℃，采食略增。",
+      }));
+    }
+    return base;
+  });
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  const total = items.length;
+  const doneCount = items.filter((i) => i.status === "done").length;
+  const blockedCount = items.filter((i) => i.status === "blocked").length;
+  const settled = doneCount + blockedCount;
+  const allSettled = settled === total;
+  const dayDone = allSettled && blockedCount === 0;
+  const dayStatusTag = dayDone
+    ? "tag tag-success"
+    : allSettled
+      ? "tag tag-warning"
+      : settled > 0
+        ? "tag tag-brand"
+        : "tag tag-muted";
+  const dayStatusText = dayDone
+    ? "已完成"
+    : allSettled
+      ? "部分无法执行"
+      : settled > 0
+        ? "进行中"
+        : "待执行";
+
+  const update = (id: string, patch: Partial<ExecItem>) =>
+    setItems((arr) => arr.map((it) => (it.id === id ? { ...it, ...patch } : it)));
+
   return (
     <div className="rounded-xl bg-card border border-border overflow-hidden">
       <div className="px-4 h-11 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-2">
-          {done ? (
+          {dayDone ? (
             <CheckSquare className="h-4 w-4 text-primary" />
           ) : (
             <Square className="h-4 w-4 text-text-tertiary" />
           )}
           <span className="text-body-sm font-medium text-foreground">第 {day} 天执行</span>
+          <span className="text-caption text-text-tertiary">
+            {doneCount}/{total} 已执行{blockedCount > 0 ? ` · ${blockedCount} 无法执行` : ""}
+          </span>
         </div>
-        <span className={done ? "tag tag-success" : "tag tag-muted"}>{done ? "已完成" : "待执行"}</span>
+        <span className={dayStatusTag}>{dayStatusText}</span>
       </div>
-      <div className="px-4 py-3 space-y-2">
-        {pickupCode && (
+
+      {pickupCode && (
+        <div className="px-4 pt-3">
           <Link
             to="/m/pickup/$id"
             params={{ id: pickupCode }}
@@ -532,17 +603,129 @@ function ChecklistDay({
             </span>
             <ChevronRight className="h-4 w-4" />
           </Link>
-        )}
-        <Field label="执行动作" value="肌肉注射 + 体温记录" />
-        <Field label="执行对象" value="#A2381" />
-        <Field label="现场材料" value="氟尼辛 2ml + 头孢噻呋 1g" />
-        <Field label="备注" value={done ? "体温 39.2℃，采食略增。" : "—"} />
-        {!done && (
-          <button className="w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5">
-            <ArrowRight className="h-3.5 w-3.5" /> 开始执行
-          </button>
-        )}
-      </div>
+        </div>
+      )}
+
+      <ul className="px-4 py-3 space-y-2">
+        {items.map((it) => {
+          const open = openId === it.id;
+          return (
+            <li
+              key={it.id}
+              className={`rounded-lg border ${
+                it.status === "done"
+                  ? "border-primary/30 bg-brand-subtle/40"
+                  : it.status === "blocked"
+                    ? "border-[var(--state-danger)]/30 bg-[var(--state-danger)]/5"
+                    : "border-border bg-bg"
+              }`}
+            >
+              <div className="flex items-start gap-2 px-3 py-2.5">
+                <div className="mt-0.5">
+                  {it.status === "done" ? (
+                    <CheckSquare className="h-4 w-4 text-primary" />
+                  ) : it.status === "blocked" ? (
+                    <AlertTriangle className="h-4 w-4 text-[var(--state-danger)]" />
+                  ) : (
+                    <Square className="h-4 w-4 text-text-tertiary" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-body-sm text-foreground truncate">{it.title}</div>
+                  <div className="text-caption text-text-tertiary">{it.desc}</div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => {
+                      update(it.id, { status: "done", reason: "" });
+                      setOpenId(it.id);
+                    }}
+                    className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
+                      it.status === "done"
+                        ? "bg-primary text-primary-foreground"
+                        : "border border-border text-text-secondary"
+                    }`}
+                  >
+                    <CheckCircle2 className="h-3 w-3" /> 已执行
+                  </button>
+                  <button
+                    onClick={() => {
+                      update(it.id, { status: "blocked", photos: 0, audio: false, note: "" });
+                      setOpenId(it.id);
+                    }}
+                    className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
+                      it.status === "blocked"
+                        ? "bg-[var(--state-danger)] text-white"
+                        : "border border-border text-text-secondary"
+                    }`}
+                  >
+                    <AlertTriangle className="h-3 w-3" /> 无法执行
+                  </button>
+                </div>
+              </div>
+
+              {it.status !== "pending" && (
+                <div className="px-3 pb-3">
+                  {it.status === "done" ? (
+                    <div className="rounded-md bg-card border border-border p-2.5 space-y-2">
+                      <div className="text-caption text-text-tertiary">现场材料</div>
+                      <div className="grid grid-cols-4 gap-2">
+                        {Array.from({ length: it.photos }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="aspect-square rounded-md bg-gradient-to-br from-surface-subtle to-border border border-border"
+                          />
+                        ))}
+                        <button
+                          onClick={() => update(it.id, { photos: it.photos + 1 })}
+                          className="aspect-square rounded-md border border-dashed border-border inline-flex flex-col items-center justify-center text-text-tertiary"
+                        >
+                          <Camera className="h-4 w-4" />
+                          <span className="text-[10px] mt-0.5">拍照</span>
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => update(it.id, { audio: !it.audio })}
+                        className={`w-full h-9 rounded-md inline-flex items-center justify-center gap-1.5 text-caption ${
+                          it.audio
+                            ? "bg-brand-subtle text-primary"
+                            : "border border-dashed border-border text-text-tertiary"
+                        }`}
+                      >
+                        <Mic className="h-3.5 w-3.5" />
+                        {it.audio ? "已录音 00:18 · 点击重录" : "录音说明"}
+                      </button>
+                      {open ? (
+                        <textarea
+                          value={it.note}
+                          onChange={(e) => update(it.id, { note: e.target.value })}
+                          placeholder="补充备注（可选）"
+                          className="w-full min-h-[60px] rounded-md border border-border bg-bg px-2 py-1.5 text-body-sm text-foreground placeholder:text-text-tertiary"
+                        />
+                      ) : it.note ? (
+                        <div className="text-caption text-text-secondary">{it.note}</div>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <div className="rounded-md bg-card border border-border p-2.5 space-y-2">
+                      <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                        <FileText className="h-3 w-3" /> 无法执行说明（必填）
+                      </div>
+                      <textarea
+                        value={it.reason}
+                        onChange={(e) => update(it.id, { reason: e.target.value })}
+                        placeholder="如：对象不在指定位置 / 拒绝接近 / 物资不足"
+                        className="w-full min-h-[60px] rounded-md border border-border bg-bg px-2 py-1.5 text-body-sm text-foreground placeholder:text-text-tertiary"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
+
