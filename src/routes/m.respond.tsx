@@ -107,7 +107,7 @@ const initialCards: RespondCard[] = [
   },
   {
     id: "HF-0815",
-    kind: "修蹄",
+    kind: "疾病治疗",
     ear: "#A2615",
     barn: "3 号牛舍",
     scope: { type: "single", ear: "#A2615" },
