@@ -193,67 +193,50 @@ function TaskListPage() {
                   const canExecuteThis = !isApprover && o.status === "进行中";
                   const commonInner = (
                     <>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          <Icon className={`h-3.5 w-3.5 ${s.color}`} />
-                          <span className="font-mono text-body-sm text-foreground">{o.id}</span>
-                          <span className={`tag inline-flex items-center gap-1 ${isPickup ? "tag-brand" : "tag-muted"}`}>
-                            <KIcon className="h-3 w-3" /> {o.kind}
-                          </span>
-                        </div>
-                        <span className={s.tag}>{isPickup && o.status === "进行中" ? "待领取" : o.status}</span>
-                      </div>
-                      <div className="text-body text-foreground">
-                        {o.kind === "损耗"
-                          ? `${o.item ?? o.target} · ${o.qty ?? "—"}`
-                          : isPickup
-                          ? o.target
-                          : `${o.target} · ${o.event}`}
-                      </div>
-                      {isPickup && (
-                        <div className="mt-1.5 space-y-0.5">
-                          <div className="text-caption text-text-secondary inline-flex items-center gap-1">
-                            <QrCode className="h-3 w-3 text-primary" />
-                            {o.event}
-                          </div>
-                          {o.source && (
-                            <div className="text-caption text-text-tertiary">
-                              由 <span className="font-mono">{o.source}</span> 响应后自动生成
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      {o.kind === "健康" && o.symptoms && o.symptoms.length > 0 && (
-                        <div className="mt-1.5 flex flex-wrap gap-1">
-                          {o.symptoms.slice(0, 4).map((sym) => (
-                            <span key={sym} className="tag tag-muted">{sym}</span>
-                          ))}
-                        </div>
-                      )}
-                      {o.kind === "损耗" && o.reapply && (
-                        <div className="mt-1.5 text-caption text-text-secondary">
-                          需补申请：{o.reapply.name} × {o.reapply.qty}
-                        </div>
-                      )}
-                      <div className="mt-2 flex items-center justify-between text-caption text-text-tertiary">
-                        <span className="truncate">提出 {o.proposer} · 负责 {o.who}</span>
-                        <span className="shrink-0 ml-3">{o.createdAt}</span>
-                      </div>
-                      <div className="mt-1.5 flex items-center justify-between text-caption">
-                        <span className="text-text-tertiary truncate">
-                          {canApproveThis ? "请前往 PC 审批" : ""}
+                      {/* Line 1: 编号 · 类型 · 状态 */}
+                      <div className="flex items-center gap-1.5 text-body-sm">
+                        <Icon className={`h-3.5 w-3.5 ${s.color}`} />
+                        <span className="font-mono text-foreground">{o.id}</span>
+                        <span className="text-text-tertiary">｜</span>
+                        <span className="inline-flex items-center gap-1 text-text-secondary">
+                          <KIcon className="h-3 w-3" />{o.type}
                         </span>
-                        <span className="shrink-0 ml-3 inline-flex items-center gap-1 text-primary font-medium">
-                          {isPickup
-                            ? o.status === "已完成"
-                              ? "查看清单"
-                              : "领取"
-                            : canExecuteThis
-                            ? "执行"
-                            : "查看"}
+                        <span className={`${s.tag} ml-auto`}>
+                          {isPickup && o.status === "进行中" ? "待领取" : o.status}
+                        </span>
+                      </div>
+
+                      {/* Line 2: 对象 · 结论 */}
+                      <div className="mt-1.5 text-card-title text-foreground">
+                        {o.scope.type === "single" ? `单只 ${o.scope.ear}` : `${o.scope.label}`}
+                        <span className="text-text-tertiary"> · </span>
+                        {o.conclusion}
+                      </div>
+
+                      {/* Line 3: 具体描述 */}
+                      {o.desc && (
+                        <div className="mt-1 text-body-sm text-text-secondary leading-relaxed">
+                          {o.desc}
+                        </div>
+                      )}
+
+                      {/* Line 4: 时间 · 人员 · 是否需要领物 */}
+                      <div className="mt-2 text-caption text-text-tertiary flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                        <span>计划 <span className="text-text-secondary">{o.createdAt}</span></span>
+                        <span>·</span>
+                        <span>执行 <span className="text-text-secondary">{o.who}</span></span>
+                        <span>·</span>
+                        <span className={o.needPickup ? "text-primary font-medium" : "text-text-tertiary"}>
+                          {o.needPickup ? "需领物" : "无需领物"}
+                        </span>
+                        <span className="ml-auto inline-flex items-center gap-0.5 text-primary font-medium">
+                          {isPickup ? (o.status === "已完成" ? "查看清单" : "领取") : canExecuteThis ? "执行" : "查看"}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
                       </div>
+                      {canApproveThis && (
+                        <div className="mt-1 text-caption text-text-tertiary">请前往 PC 审批</div>
+                      )}
                     </>
                   );
                   const cls = `block rounded-xl bg-card border p-4 active:bg-surface-subtle ${
