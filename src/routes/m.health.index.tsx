@@ -88,26 +88,10 @@ function TaskListPage() {
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
   const [q, setQ] = useState("");
 
-  // 注入"领取"工作（来自审批通过的处方/补领申请）
-  const pickupTasks: Task[] = PICKUPS.map((p) => {
-    const done = claimed.includes(p.id);
-    return {
-      id: p.id,
-      target: p.title,
-      barn: p.barn,
-      kind: "领取",
-      type: "药品/器材领取",
-      event: `${p.warehouse} · ${p.items.length} 项`,
-      proposer: p.approver.split("（")[0],
-      who: "李雨晴",
-      status: done ? "已完成" : "进行中",
-      createdAt: p.approvedAt,
-      source: p.source,
-    };
-  });
-
-  // 修蹄工只看到自己的修蹄工作
-  let list: Task[] = [...pickupTasks, ...tasks];
+  // 列表仅展示工单卡片：排除领取（取物）和损耗（物资）
+  let list: Task[] = tasks.filter((t) => t.kind !== "损耗");
+  void claimed;
+  void PICKUPS;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (tab !== "全部") list = list.filter((o) => o.status === tab);
   const kw = q.trim().toLowerCase();
