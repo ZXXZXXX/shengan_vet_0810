@@ -21,7 +21,7 @@ export const Route = createFileRoute("/m/respond")({
 
 type RespondCard = {
   id: string;
-  kind: "疾病治疗" | "免疫" | "修蹄" | "普修" | "产后护理";
+  kind: "疾病治疗" | "免疫" | "普修" | "产后护理";
   ear: string;
   barn: string;
   /** 单只 or 批量 */
@@ -107,7 +107,7 @@ const initialCards: RespondCard[] = [
   },
   {
     id: "HF-0815",
-    kind: "修蹄",
+    kind: "疾病治疗",
     ear: "#A2615",
     barn: "3 号牛舍",
     scope: { type: "single", ear: "#A2615" },
@@ -126,7 +126,7 @@ function RespondListPage() {
   const role = useRole();
   // 按角色过滤可响应的工单类型
   const canSee = (c: RespondCard) => {
-    if (role === "hoof_trimmer") return c.kind === "修蹄";
+    if (role === "hoof_trimmer") return c.kind === "疾病治疗";
     if (role === "vet_assistant")
       return c.kind === "疾病治疗" || c.kind === "免疫" || c.kind === "产后护理";
     return true;

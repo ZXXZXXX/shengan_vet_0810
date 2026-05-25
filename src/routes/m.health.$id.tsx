@@ -63,14 +63,14 @@ function TaskDetailPage() {
   // mock data
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
-  const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
+  const kind = isLoss ? "损耗" : isHoof ? "疾病治疗" : "健康";
 
   const o = {
     id,
     farm: "奇点示范牧场",
     barn: isLoss ? "2 号牛舍" : "3 号牛舍",
     target: isLoss ? "口蹄疫疫苗 A 型" : "#A2381",
-    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : "疾病治疗",
+    type: isLoss ? "物资损耗" : isHoof ? "疾病治疗" : "疾病治疗",
     status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待审批") as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
