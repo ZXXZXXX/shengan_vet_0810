@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, useParams, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   ClipboardList,
   AlertTriangle,
@@ -57,7 +58,7 @@ function TaskDetailPage() {
   const role = useRole();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"report" | "review" | "execute">("report");
-  const [confirm, setConfirm] = useState<"approve" | "reject" | "finish" | null>(null);
+  
 
   // mock data
   const isLoss = id.startsWith("LS");
@@ -80,8 +81,12 @@ function TaskDetailPage() {
   const s = statusMap[o.status];
   const Icon = s.icon;
 
-  const showApproval = canApprove(role) && o.status === "待审批";
-  const showExecBtn = canExecute(role) && o.status === "进行中";
+  // 进行中 的编辑/查看 + 是否曾填写过
+  const [editing, setEditing] = useState(false);
+  const [hasFilled, setHasFilled] = useState(false);
+  const [recordComplete, setRecordComplete] = useState(false);
+
+
 
   return (
     <MobileShell title="工单详情" back hideTabBar>
@@ -154,78 +159,71 @@ function TaskDetailPage() {
       </div>
 
       {/* === 3. 底部操作区 === */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-        {showApproval ? (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setConfirm("reject")}
-              className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
-            >
-              驳回
-            </button>
-            <button
-              onClick={() => setConfirm("approve")}
-              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body"
-            >
-              通过
-            </button>
+      {(() => {
+        const isResponder = canApprove(role) || canExecute(role);
+        const showRespond = isResponder && o.status === "待审批";
+        const showExec = canExecute(role) && o.status === "进行中";
+        if (!showRespond && !showExec) return null;
+        return (
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+            {showRespond ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    toast("已忽视该工单");
+                    navigate({ to: "/m/health" });
+                  }}
+                  className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
+                >
+                  忽视
+                </button>
+                <button
+                  onClick={() => navigate({ to: "/m/respond" })}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body"
+                >
+                  响应
+                </button>
+              </div>
+            ) : editing ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setHasFilled(true);
+                    setRecordComplete(true);
+                    setEditing(false);
+                    toast.success("已保存");
+                  }}
+                  className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
+                >
+                  保存
+                </button>
+                <button
+                  onClick={() => {
+                    if (!recordComplete) {
+                      toast.error("提交失败，记录不完整");
+                      return;
+                    }
+                    toast.success("提交成功");
+                    navigate({ to: "/m/health" });
+                  }}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+                >
+                  <Send className="h-4 w-4" /> 提交记录
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setEditing(true)}
+                className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <PlayCircle className="h-4 w-4" />
+                {hasFilled ? "继续执行" : "开始执行"}
+              </button>
+            )}
           </div>
-        ) : showExecBtn ? (
-          <div className="flex gap-2">
-            <button className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary">
-              暂存
-            </button>
-            <button
-              onClick={() => setConfirm("finish")}
-              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-            >
-              <Send className="h-4 w-4" /> 提交记录
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => navigate({ to: "/m/health" })}
-            className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body"
-          >
-            返回工单列表
-          </button>
-        )}
-      </div>
+        );
+      })()}
 
-      <AlertDialog open={!!confirm} onOpenChange={(v) => !v && setConfirm(null)}>
-        <AlertDialogContent className="!max-w-[440px] !w-full !top-auto !bottom-0 !left-1/2 !-translate-x-1/2 !translate-y-0 !rounded-b-none !rounded-t-2xl !border-0 !p-0 pb-[calc(env(safe-area-inset-bottom)+16px)]">
-          <AlertDialogHeader className="px-6 pt-7 pb-2 sm:text-center">
-            <AlertDialogTitle className="text-section-title">
-              {confirm === "approve"
-                ? "确认通过该工单?"
-                : confirm === "reject"
-                ? "确认驳回该工单?"
-                : "确认提交完成?"}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-body-sm text-text-tertiary mt-1">
-              工单 {o.id} · {o.target}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="!flex-row gap-3 px-4 pt-5">
-            <AlertDialogCancel className="flex-1 h-12 m-0 rounded-xl bg-surface-subtle border-0 text-body text-text-secondary">
-              取消
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className={`flex-1 h-12 rounded-xl text-body ${
-                confirm === "reject"
-                  ? "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
-                  : "bg-primary text-primary-foreground"
-              }`}
-              onClick={() => {
-                setConfirm(null);
-                navigate({ to: "/m/health" });
-              }}
-            >
-              确认
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </MobileShell>
   );
 }
