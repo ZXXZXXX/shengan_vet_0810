@@ -151,10 +151,10 @@ function MHomePage() {
       <section className="px-4 mt-5">
         <SectionTitle title="农场概况" hint="数据实时同步" />
         <div className="grid grid-cols-2 gap-2">
-          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" unit="头" viz="bars" series={[6, 8, 5, 9, 7, 10, 8, 11, 9, 12, 10, 13]} />
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8" unit="%" viz="line" series={[95.8, 96.0, 95.6, 96.2, 96.4, 96.1, 96.5, 96.6, 96.4, 96.7, 96.6, 96.8]} />
-          <DataCard icon={Eye} tone="warning" label="观察中" value="18" unit="头" viz="bars" series={[12, 14, 13, 15, 14, 16, 15, 17, 16, 18, 17, 18]} />
-          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" unit="头" viz="bars" series={[8, 9, 11, 10, 12, 11, 13, 12, 14, 13, 12, 12]} />
+          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月 +6" />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周 +0.4%" />
+          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日 +3" />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日 +2" />
         </div>
       </section>
 
@@ -162,9 +162,9 @@ function MHomePage() {
         <section className="px-4 mt-4">
           <SectionTitle title="库存概况" hint="今日" />
           <div className="grid grid-cols-3 gap-2">
-            <DataCard icon={Warehouse} tone="info" label="物资品类" value="86" unit="类" compact />
-            <DataCard icon={PackageMinus} tone="brand" label="今日入库" value="12" unit="批" compact />
-            <DataCard icon={PackageX} tone="purple" label="今日出库" value="9" unit="批" compact />
+            <DataCard icon={Warehouse} tone="info" label="物资品类" value="86" sub="" compact />
+            <DataCard icon={PackageMinus} tone="brand" label="今日入库" value="12" sub="批次" compact />
+            <DataCard icon={PackageX} tone="purple" label="今日出库" value="9" sub="批次" compact />
           </div>
         </section>
       )}
@@ -350,85 +350,27 @@ function DataCard({
   tone,
   label,
   value,
-  unit,
-  viz,
-  series,
+  sub,
   compact,
 }: {
   icon: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
   value: string;
-  unit?: string;
-  viz?: "bars" | "line";
-  series?: number[];
+  sub?: string;
   compact?: boolean;
 }) {
   return (
-    <div className="rounded-xl bg-card border border-border p-3 flex flex-col">
-      <div className="flex items-center gap-1.5">
-        <span className={`h-6 w-6 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
+    <div className="rounded-xl bg-card border border-border p-3">
+      <div className="flex items-center gap-2">
+        <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
           <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
         </span>
         <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      {!compact && series && (
-        <div className="mt-2 h-8">
-          {viz === "line" ? (
-            <Sparkline data={series} tone={tone} />
-          ) : (
-            <SparkBars data={series} tone={tone} />
-          )}
-        </div>
-      )}
-      <div className={`flex items-baseline gap-1 ${compact ? "mt-2" : "mt-1.5"}`}>
-        <span className={`${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums font-medium leading-none`}>
-          {value}
-        </span>
-        {unit && <span className="text-caption text-text-tertiary leading-none">{unit}</span>}
-      </div>
+      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
+      {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
     </div>
-  );
-}
-
-function SparkBars({ data, tone }: { data: number[]; tone: keyof typeof colorMap }) {
-  const max = Math.max(...data, 1);
-  return (
-    <div className="h-full w-full flex items-end gap-[3px]">
-      {data.map((v, i) => (
-        <div
-          key={i}
-          className={`flex-1 rounded-sm ${toneTextMap[tone] ?? "text-primary"}`}
-          style={{
-            height: `${Math.max(12, (v / max) * 100)}%`,
-            background: "currentColor",
-            opacity: 0.35 + (i / data.length) * 0.6,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function Sparkline({ data, tone }: { data: number[]; tone: keyof typeof colorMap }) {
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const range = max - min || 1;
-  const w = 100;
-  const h = 32;
-  const step = w / (data.length - 1);
-  const pts = data.map((v, i) => {
-    const x = i * step;
-    const y = h - ((v - min) / range) * (h - 4) - 2;
-    return [x, y] as const;
-  });
-  const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
-  const area = `${path} L${w},${h} L0,${h} Z`;
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className={`h-full w-full ${toneTextMap[tone] ?? "text-primary"}`}>
-      <path d={area} fill="currentColor" opacity="0.12" />
-      <path d={path} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }
 
