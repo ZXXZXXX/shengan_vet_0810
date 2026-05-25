@@ -360,16 +360,28 @@ function DataCard({
   sub?: string;
   compact?: boolean;
 }) {
+  const tintMap: Record<string, string> = {
+    brand: "bg-[var(--core-brand)]/10 border-[var(--core-brand)]/20",
+    warning: "bg-[var(--state-warning)]/10 border-[var(--state-warning)]/20",
+    alert: "bg-[var(--state-warning)]/10 border-[var(--state-warning)]/20",
+    danger: "bg-[var(--state-danger)]/10 border-[var(--state-danger)]/20",
+    info: "bg-[var(--effect-ai-cyan)]/10 border-[var(--effect-ai-cyan)]/20",
+    purple: "bg-[var(--effect-ai-purple)]/10 border-[var(--effect-ai-purple)]/20",
+    success: "bg-[var(--state-success)]/10 border-[var(--state-success)]/20",
+    muted: "bg-surface-subtle border-border",
+  };
   return (
-    <div className="rounded-xl bg-card border border-border p-3">
-      <div className="flex items-center gap-2">
-        <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
-          <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+    <div className={`rounded-xl border p-3 relative overflow-hidden ${tintMap[tone]}`}>
+      <div className="flex items-start justify-between">
+        <div className="min-w-1 flex-1">
+          <span className="text-caption text-text-secondary truncate">{label}</span>
+          <div className={`mt-1 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
+          {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
+        </div>
+        <span className={`shrink-0 ml-2 h-10 w-10 rounded-xl flex items-center justify-center ${colorMap[tone]}`}>
+          <Icon className="h-5 w-5" strokeWidth={1.75} />
         </span>
-        <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
-      {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
     </div>
   );
 }
