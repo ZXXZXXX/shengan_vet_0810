@@ -224,41 +224,6 @@ function TaskDetailPage() {
         );
       })()}
 
-
-      <AlertDialog open={!!confirm} onOpenChange={(v) => !v && setConfirm(null)}>
-        <AlertDialogContent className="!max-w-[440px] !w-full !top-auto !bottom-0 !left-1/2 !-translate-x-1/2 !translate-y-0 !rounded-b-none !rounded-t-2xl !border-0 !p-0 pb-[calc(env(safe-area-inset-bottom)+16px)]">
-          <AlertDialogHeader className="px-6 pt-7 pb-2 sm:text-center">
-            <AlertDialogTitle className="text-section-title">
-              {confirm === "approve"
-                ? "确认通过该工单?"
-                : confirm === "reject"
-                ? "确认驳回该工单?"
-                : "确认提交完成?"}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-body-sm text-text-tertiary mt-1">
-              工单 {o.id} · {o.target}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="!flex-row gap-3 px-4 pt-5">
-            <AlertDialogCancel className="flex-1 h-12 m-0 rounded-xl bg-surface-subtle border-0 text-body text-text-secondary">
-              取消
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className={`flex-1 h-12 rounded-xl text-body ${
-                confirm === "reject"
-                  ? "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
-                  : "bg-primary text-primary-foreground"
-              }`}
-              onClick={() => {
-                setConfirm(null);
-                navigate({ to: "/m/health" });
-              }}
-            >
-              确认
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </MobileShell>
   );
 }
