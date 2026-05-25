@@ -107,17 +107,11 @@ function TaskDetailPage() {
             <SumRow icon={MapPin} label="牛舍" value={o.barn} />
             <SumRow icon={Stethoscope} label="执行对象" value={o.target} />
             <SumRow icon={User} label="执行人" value={cleanName(o.who)} />
-            <SumRow icon={Clock} label="计划时间" value={o.plannedAt} />
+            <SumRow icon={Clock} label="计划开始时间" value={o.plannedAt} />
             <SumRow
               icon={PackagePlus}
-              label="领物状态"
-              value={
-                o.needPickup
-                  ? o.status === "进行中" || o.status === "已完成"
-                    ? `已生成 ${o.pickupCode}`
-                    : "待生成"
-                  : "无需领物"
-              }
+              label="领物需求"
+              value={o.needPickup ? "需要" : "不需要"}
             />
           </div>
 
