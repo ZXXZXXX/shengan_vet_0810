@@ -7,7 +7,6 @@ import {
   EyeOff,
   Search,
   Inbox,
-  ShieldCheck,
   ArrowUpDown,
   ChevronDown,
 } from "lucide-react";
@@ -254,11 +253,11 @@ function RespondListPage() {
 
             {/* 审核信息 */}
             <div className="flex items-center gap-1.5 text-caption text-text-tertiary pt-1 border-t border-border/60">
-              <ShieldCheck className="h-3 w-3" />
-              <span>
-                审核 <span className="text-text-secondary">{c.approver}</span> ·{" "}
-                {c.approvedAt}
-              </span>
+              <div className="h-5 w-5 rounded-full bg-primary/10 text-primary text-[10px] inline-flex items-center justify-center">
+                {c.approver.charAt(0)}
+              </div>
+              <span className="text-text-secondary">{c.approver}</span>
+              <span className="text-text-tertiary">· {c.approvedAt}</span>
             </div>
 
             {/* 操作按钮 */}

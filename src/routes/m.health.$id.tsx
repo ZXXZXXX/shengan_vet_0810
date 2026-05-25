@@ -5,8 +5,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   PlayCircle,
-  Phone,
-  MessageSquare,
   Camera,
   Send,
   Mic,
@@ -146,16 +144,10 @@ function TaskDetailPage() {
             label="提出者"
             value={
               <div className="flex items-center gap-2">
+                <div className="h-6 w-6 rounded-full bg-primary/10 text-primary text-caption inline-flex items-center justify-center">
+                  {o.proposer.charAt(0)}
+                </div>
                 <span className="text-body text-foreground">{o.proposer}</span>
-                <a
-                  href={`tel:${o.proposerPhone.replace(/\s/g, "")}`}
-                  className="h-6 w-6 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center"
-                >
-                  <Phone className="h-3 w-3" />
-                </a>
-                <button className="h-6 w-6 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center">
-                  <MessageSquare className="h-3 w-3" />
-                </button>
               </div>
             }
           />
