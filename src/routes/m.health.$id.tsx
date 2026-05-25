@@ -570,6 +570,7 @@ function ChecklistDay({
     setItems((arr) => arr.map((it) => (it.id === id ? { ...it, ...patch } : it)));
 
   const isPending = settled === 0;
+  const dayLocked = allSettled;
 
   return (
     <div className={`rounded-xl bg-card border border-border overflow-hidden ${isPending ? "opacity-70" : ""}`}>
