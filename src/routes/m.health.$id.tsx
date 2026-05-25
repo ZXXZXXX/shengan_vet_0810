@@ -63,7 +63,7 @@ function TaskDetailPage() {
   // mock data
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
-  const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
+  const kind = isLoss ? "损耗" : isHoof ? "疾病治疗" : "健康";
 
   const o = {
     id,
