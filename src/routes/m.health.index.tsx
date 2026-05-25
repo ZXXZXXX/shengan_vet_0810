@@ -68,8 +68,8 @@ const tabs: { key: Status | "全部"; label: string }[] = [
 ];
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
-  待审批: { tag: "tag tag-brand", icon: ClipboardList, color: "text-primary" },
-  进行中: { tag: "tag tag-success", icon: PlayCircle, color: "text-[var(--state-success)]" },
+  待审批: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
+  进行中: { tag: "tag tag-success", icon: PlayCircle, color: "text-[#2F7A3A]" },
   已驳回: { tag: "tag tag-danger", icon: AlertTriangle, color: "text-[var(--state-danger)]" },
   已完成: { tag: "tag tag-muted", icon: CheckCircle2, color: "text-text-secondary" },
 };
