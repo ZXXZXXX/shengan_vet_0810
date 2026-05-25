@@ -225,56 +225,46 @@ function RespondListPage() {
             key={c.id}
             className="rounded-xl bg-card border border-border p-4 space-y-2"
           >
-            {/* 头部：工单编号｜类型｜状态 */}
+            {/* Line 1: 编号 · 类型 · 状态 */}
             <div className="flex items-center gap-1.5 text-body-sm">
               <span className="font-mono text-foreground">{c.id}</span>
               <span className="text-text-tertiary">｜</span>
               <span className="text-text-secondary">{c.kind}</span>
-              <span className="text-text-tertiary">｜</span>
-              <span className="tag tag-warning">待响应</span>
+              <span className="tag tag-warning ml-auto">待响应</span>
             </div>
 
-            {/* 耳号 · 牛舍 */}
+            {/* Line 2: 对象 · 结论 */}
             <div className="text-card-title text-foreground">
-              {c.ear} <span className="text-text-tertiary">·</span> {c.barn}
-            </div>
-
-            {/* 症状结论 */}
-            <div className="text-body-sm text-text-secondary leading-relaxed">
+              {c.scope.type === "single" ? `单只 ${c.scope.ear}` : c.scope.label}
+              <span className="text-text-tertiary"> · </span>
               {c.conclusion}
             </div>
 
-            {/* 执行时间 */}
-            <div className="flex items-center gap-1.5 text-body-sm text-text-secondary">
-              <Clock className="h-3.5 w-3.5 text-primary" />
-              <span>执行时间：</span>
-              <span className="text-foreground">{c.execLabel}</span>
-            </div>
-
-            {/* 是否需要领药/领物 */}
-            <div className="flex items-center gap-1.5 text-body-sm">
-              <PackageCheck
-                className={`h-3.5 w-3.5 ${
-                  c.needPickup ? "text-primary" : "text-text-tertiary"
-                }`}
-              />
-              {c.needPickup ? (
-                <span className="text-foreground">
-                  {c.pickupNote ?? "需领药 / 领物"}
-                </span>
-              ) : (
-                <span className="text-text-tertiary">无需领药 / 领物</span>
-              )}
-            </div>
-
-            {/* 审核信息 */}
-            <div className="flex items-center gap-1.5 text-caption text-text-tertiary pt-1 border-t border-border/60">
-              <div className="h-5 w-5 rounded-full bg-primary/10 text-primary text-[10px] inline-flex items-center justify-center">
-                {c.approver.charAt(0)}
+            {/* Line 3: 具体描述 */}
+            {c.desc && (
+              <div className="text-body-sm text-text-secondary leading-relaxed">
+                {c.desc}
               </div>
-              <span className="text-text-secondary">{c.approver}</span>
-              <span className="text-text-tertiary">· {c.approvedAt}</span>
+            )}
+
+            {/* Line 4: 时间 · 人员 · 是否需要领物 */}
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-caption text-text-tertiary pt-1 border-t border-border/60">
+              <Clock className="h-3 w-3 text-primary" />
+              <span>计划 <span className="text-text-secondary">{c.execLabel}</span></span>
+              <span>·</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
+                  {c.approver.charAt(0)}
+                </span>
+                审核 <span className="text-text-secondary">{c.approver}</span>
+              </span>
+              <span>·</span>
+              <span className={c.needPickup ? "text-primary font-medium inline-flex items-center gap-0.5" : "text-text-tertiary inline-flex items-center gap-0.5"}>
+                <PackageCheck className="h-3 w-3" />
+                {c.needPickup ? (c.pickupNote ?? "需领物") : "无需领物"}
+              </span>
             </div>
+
 
             {/* 操作按钮 */}
             <div className="flex items-center gap-2 pt-1">
