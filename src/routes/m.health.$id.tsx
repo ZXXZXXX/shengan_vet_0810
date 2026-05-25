@@ -749,41 +749,59 @@ function PieProgress({ done, blocked, total }: { done: number; blocked: number; 
   const size = 16;
   const r = 7;
   const c = 2 * Math.PI * r;
-  const doneFrac = total > 0 ? done / total : 0;
-  const blockedFrac = total > 0 ? blocked / total : 0;
-  const doneLen = c * doneFrac;
-  const blockedLen = c * blockedFrac;
-  const allDone = done === total && total > 0;
+  const settled = done + blocked;
+  const progressFrac = total > 0 ? settled / total : 0;
+  const progressLen = c * progressFrac;
+  const notStarted = settled === 0;
+  const allDone = settled === total && total > 0;
+  const cx = size / 2;
+  const cy = size / 2;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border)" strokeWidth="2" />
-      {blockedLen > 0 && (
+      {notStarted && (
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={cx}
+          cy={cy}
           r={r}
           fill="none"
-          stroke="var(--state-danger)"
-          strokeWidth="2"
-          strokeDasharray={`${blockedLen} ${c - blockedLen}`}
-          strokeDashoffset={-doneLen}
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          stroke="var(--text-tertiary)"
+          strokeWidth="1.2"
+          strokeDasharray="2 2"
         />
       )}
-      {doneLen > 0 && (
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill={allDone ? "var(--primary)" : "none"}
-          stroke="var(--primary)"
-          strokeWidth="2"
-          strokeDasharray={`${doneLen} ${c - doneLen}`}
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        />
+      {!notStarted && !allDone && (
+        <>
+          <circle
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill="none"
+            stroke="var(--primary)"
+            strokeWidth="1.2"
+            strokeDasharray="2 2"
+          />
+          <circle
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill="none"
+            stroke="var(--primary)"
+            strokeWidth="1.6"
+            strokeDasharray={`${progressLen} ${c - progressLen}`}
+            transform={`rotate(-90 ${cx} ${cy})`}
+            strokeLinecap="butt"
+          />
+        </>
+      )}
+      {allDone && (
+        <>
+          <circle cx={cx} cy={cy} r={r - 1} fill="var(--surface-subtle)" />
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--primary)" strokeWidth="1.6" />
+        </>
       )}
     </svg>
   );
 }
+
 
 
