@@ -35,7 +35,7 @@ type ReportKind = "health";
 
 
 // 健康工作类型
-const healthWorkTypes = ["疾病治疗", "修蹄", "产后护理", "干奶", "疫苗", "驱虫", "普修"] as const;
+const healthWorkTypes = ["疾病治疗", "产后护理", "干奶", "疫苗", "驱虫", "普修"] as const;
 type WorkType = (typeof healthWorkTypes)[number];
 
 // 每种工作类型的字段配置
