@@ -643,7 +643,7 @@ function ChecklistDay({
                   </div>
                 </div>
 
-                {!isPending && (
+                {!isPending && !dayLocked && (
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => {
