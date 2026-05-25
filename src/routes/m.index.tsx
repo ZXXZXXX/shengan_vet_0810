@@ -175,7 +175,7 @@ function MHomePage() {
         <div className={`grid gap-2 ${showFirstBucket ? "grid-cols-3" : "grid-cols-2"}`}>
           {showFirstBucket && (
             <TaskOverviewCard
-              to="/m/health"
+              to={isApprover ? "/m/health" : "/m/respond"}
               icon={isApprover ? ClipboardList : Inbox}
               tone="warning"
               label={firstBucketLabel}
