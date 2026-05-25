@@ -151,10 +151,10 @@ function MHomePage() {
       <section className="px-4 mt-5">
         <SectionTitle title="农场概况" hint="数据实时同步" />
         <div className="grid grid-cols-2 gap-2">
-          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月 +6" />
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周 +0.4%" />
-          <DataCard icon={Eye} tone="warning" label="观察中" value="18" sub="今日 +3" />
-          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" sub="今日 +2" />
+          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" unit="头" viz="bars" series={[6, 8, 5, 9, 7, 10, 8, 11, 9, 12, 10, 13]} />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8" unit="%" viz="line" series={[95.8, 96.0, 95.6, 96.2, 96.4, 96.1, 96.5, 96.6, 96.4, 96.7, 96.6, 96.8]} />
+          <DataCard icon={Eye} tone="warning" label="观察中" value="18" unit="头" viz="bars" series={[12, 14, 13, 15, 14, 16, 15, 17, 16, 18, 17, 18]} />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" unit="头" viz="bars" series={[8, 9, 11, 10, 12, 11, 13, 12, 14, 13, 12, 12]} />
         </div>
       </section>
 
@@ -162,9 +162,9 @@ function MHomePage() {
         <section className="px-4 mt-4">
           <SectionTitle title="库存概况" hint="今日" />
           <div className="grid grid-cols-3 gap-2">
-            <DataCard icon={Warehouse} tone="info" label="物资品类" value="86" sub="" compact />
-            <DataCard icon={PackageMinus} tone="brand" label="今日入库" value="12" sub="批次" compact />
-            <DataCard icon={PackageX} tone="purple" label="今日出库" value="9" sub="批次" compact />
+            <DataCard icon={Warehouse} tone="info" label="物资品类" value="86" unit="类" compact />
+            <DataCard icon={PackageMinus} tone="brand" label="今日入库" value="12" unit="批" compact />
+            <DataCard icon={PackageX} tone="purple" label="今日出库" value="9" unit="批" compact />
           </div>
         </section>
       )}
