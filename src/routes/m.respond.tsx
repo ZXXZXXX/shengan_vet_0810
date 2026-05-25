@@ -31,6 +31,8 @@ type RespondCard = {
   pickupNote?: string;
   approver: string;
   approvedAt: string;
+  /** ISO 时间字符串，用于发布时间排序 */
+  approvedAtISO: string;
 };
 
 const initialCards: RespondCard[] = [
