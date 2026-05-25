@@ -22,7 +22,7 @@ export const Route = createFileRoute("/m/respond")({
 
 type RespondCard = {
   id: string;
-  kind: "疾病治疗" | "免疫" | "修蹄" | "普修" | "物资损耗";
+  kind: "疾病治疗" | "免疫" | "修蹄" | "普修" | "产后护理";
   ear: string;
   barn: string;
   conclusion: string;
