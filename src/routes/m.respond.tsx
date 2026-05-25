@@ -9,6 +9,7 @@ import {
   Inbox,
   ShieldCheck,
   ArrowUpDown,
+  ChevronDown,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
@@ -170,17 +171,17 @@ function RespondListPage() {
 
         {/* 排序筛选器 */}
         <div className="mt-2.5 flex items-center gap-2">
-          <button
-            onClick={() => setSortBy((prev) => (prev === "exec" ? "approved" : "exec"))}
-            className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption transition-colors ${
-              sortBy === "exec"
-                ? "bg-primary/10 text-primary"
-                : "bg-secondary text-text-secondary"
-            }`}
-          >
-            <ArrowUpDown className="h-3 w-3" />
-            {sortBy === "exec" ? "执行时间" : "发布时间"}
-          </button>
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as "exec" | "approved")}
+              className="appearance-none h-7 pl-2.5 pr-6 rounded-full text-caption bg-secondary text-text-secondary inline-flex items-center cursor-pointer focus:outline-none"
+            >
+              <option value="exec">按执行时间排序</option>
+              <option value="approved">按发布时间排序</option>
+            </select>
+            <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-text-tertiary pointer-events-none" />
+          </div>
           <button
             onClick={() => setSortDir((prev) => (prev === "asc" ? "desc" : "asc"))}
             className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption transition-colors ${
@@ -189,6 +190,7 @@ function RespondListPage() {
                 : "bg-secondary text-text-secondary"
             }`}
           >
+            <ArrowUpDown className="h-3 w-3" />
             {sortDir === "desc" ? "最近优先" : "最早优先"}
           </button>
           <span className="ml-auto text-caption text-text-tertiary">共 {list.length} 项</span>
