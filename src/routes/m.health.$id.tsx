@@ -399,7 +399,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
       {status !== "已驳回" && (
         <>
           <Section title="确认信息">
-            <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗 · 普修"}</span>} />
+            <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
             <Field
               label="确认标签"
               value={
