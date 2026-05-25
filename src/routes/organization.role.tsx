@@ -111,7 +111,7 @@ const miniEvents: {
   actions: Record<MiniActionKey, string>;
 }[] = [
   { key: "disease", name: "疾病治疗", actions: { report: "可上报", execute: "可响应 / 执行" } },
-  { key: "hoof", name: "修蹄", actions: { report: "可上报", execute: "可响应 / 执行" } },
+  { key: "hoof", name: "疾病治疗", actions: { report: "可上报", execute: "可响应 / 执行" } },
   { key: "drying", name: "干奶", actions: { report: "可上报", execute: "可响应 / 执行" } },
   { key: "vaccine", name: "疫苗", actions: { report: "可上报", execute: "可响应 / 执行" } },
   { key: "postpartum", name: "产后护理", actions: { report: "可上报", execute: "可响应 / 执行" } },
