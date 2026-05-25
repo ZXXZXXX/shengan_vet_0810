@@ -19,7 +19,7 @@ import {
   Stethoscope,
   CheckSquare,
   Square,
-  ArrowRight,
+  
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove, canExecute } from "@/lib/mobile-role";
