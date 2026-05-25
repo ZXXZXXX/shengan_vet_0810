@@ -77,8 +77,8 @@ function TaskDetailPage() {
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
-  const status: Status =
-    role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待审批";
+  const status =
+    (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待审批") as Status;
 
   const o = {
     id,
