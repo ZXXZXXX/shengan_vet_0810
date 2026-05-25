@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useParams, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ClipboardList,
@@ -11,6 +11,14 @@ import {
   Video,
   FileText,
   PackagePlus,
+  ChevronRight,
+  Clock,
+  User,
+  MapPin,
+  Stethoscope,
+  CheckSquare,
+  Square,
+  ArrowRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove, canExecute } from "@/lib/mobile-role";
@@ -26,77 +34,48 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/m/health/$id")({
-  head: () => ({ meta: [{ title: "工作详情 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "工单详情 · 奇点智牧" }] }),
   component: TaskDetailPage,
 });
 
-const statusMap: Record<string, { tag: string; icon: typeof PlayCircle; color: string }> = {
+type StatusKey = "待审批" | "进行中" | "已完成" | "已驳回" | "已终止";
+
+const statusMap: Record<StatusKey, { tag: string; icon: typeof PlayCircle; color: string }> = {
   待审批: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
   进行中: { tag: "tag tag-success", icon: PlayCircle, color: "text-[#2F7A3A]" },
   已驳回: { tag: "tag tag-danger", icon: AlertTriangle, color: "text-[var(--state-danger)]" },
   已完成: { tag: "tag tag-muted", icon: CheckCircle2, color: "text-text-secondary" },
+  已终止: { tag: "tag tag-muted", icon: AlertTriangle, color: "text-text-secondary" },
 };
+
+function cleanName(n: string) {
+  return n.replace(/^(内部|外部)·/, "");
+}
 
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
   const navigate = useNavigate();
-  const [confirm, setConfirm] = useState<"approve" | "reject" | "finish" | "issue" | null>(null);
-  const [execNote, setExecNote] = useState("");
-  const [issueNote, setIssueNote] = useState("");
-  const [showExec, setShowExec] = useState(false);
-  const [showIssue, setShowIssue] = useState(false);
+  const [tab, setTab] = useState<"report" | "review" | "execute">("report");
+  const [confirm, setConfirm] = useState<"approve" | "reject" | "finish" | null>(null);
 
-  // mock —— 修蹄工默认看到的是修蹄类，否则健康类
+  // mock data
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
+
   const o = {
     id,
-    target: isLoss ? "口蹄疫疫苗 A 型" : "#A2381",
+    farm: "奇点示范牧场",
     barn: isLoss ? "2 号牛舍" : "3 号牛舍",
-    kind,
-    type: isLoss ? "物资损耗" : isHoof ? "批次修蹄" : "疾病治疗",
-    event: isLoss
-      ? "冷链断电导致失效"
-      : isHoof
-      ? "右后蹄趾间皮炎"
-      : "持续高烧 2 小时",
-    proposer: isLoss ? "孙明" : "陈晓东",
-    proposerPhone: "138 0000 0001",
-    who: isLoss ? "李雨晴" : isHoof ? "外部·张师傅" : "李雨晴",
-    status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待审批") as
-      | "待审批"
-      | "进行中"
-      | "已完成"
-      | "已驳回",
-    createdAt: "2026-05-20 09:08",
-    desc: isLoss
-      ? "冷链监测发现 #2 冷柜断电 4 小时,该批疫苗已失效,需作损耗登记并补充申请。"
-      : isHoof
-      ? "巡检发现 #A2381 右后蹄趾间皮炎,需进行清创修蹄并涂抹药剂,建议进入隔离观察 3 天。"
-      : "饲养员巡检发现该牛持续高烧 2 小时(39.6℃),同时表现出食欲下降、反刍减少。建议立即抗生素治疗并进入隔离观察。",
-    photos: 2,
-    videos: isLoss ? 1 : 0,
-    voiceSecs: isLoss ? 42 : 28,
-    item: "口蹄疫疫苗 A 型",
-    qty: "8 支",
-    reapply: { name: "口蹄疫疫苗 A 型", qty: "8 支" } as { name: string; qty: string } | null,
-    symptoms: ["体温升高", "采食下降", "反刍减少"],
-    // 工单声明的药品 / 器材需求；为空表示纯执行类工单，不会生成领物码
-    materials: isLoss
-      ? ([] as { name: string; spec?: string; qty: string }[])
-      : isHoof
-      ? [
-          { name: "蹄部消毒喷雾", spec: "500ml / 瓶", qty: "1 瓶" },
-          { name: "蹄部包扎绷带", spec: "5cm × 4.5m", qty: "2 卷" },
-        ]
-      : [
-          { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶" },
-          { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支" },
-          { name: "一次性注射器", spec: "20ml", qty: "8 支" },
-        ],
+    target: isLoss ? "口蹄疫疫苗 A 型" : "#A2381",
+    type: isLoss ? "物资损耗" : isHoof ? "批次修蹄" : "疾病治疗 · 普修",
+    status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待审批") as StatusKey,
+    who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
+    plannedAt: "今日 13:00",
+    needPickup: !isLoss,
     pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
+    flow: "陈晓东 上报 → 王医生 审核 → 李雨晴 执行",
   };
   const s = statusMap[o.status];
   const Icon = s.icon;
@@ -105,307 +84,126 @@ function TaskDetailPage() {
   const showExecBtn = canExecute(role) && o.status === "进行中";
 
   return (
-    <MobileShell title="工作详情" back hideTabBar>
-      <div className="px-4 pt-3 pb-28 space-y-3">
-        {/* 状态卡 */}
-        <div className="rounded-xl bg-card border border-border p-4">
+    <MobileShell title="工单详情" back hideTabBar>
+      <div className="pb-28">
+        {/* === 1. 顶部工单摘要 === */}
+        <div className="px-4 pt-3 pb-3 bg-card border-b border-border space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Icon className={`h-4 w-4 ${s.color}`} />
               <span className="font-mono text-body text-foreground">{o.id}</span>
-              <span className="tag tag-muted">{o.kind}</span>
+              <span className="tag tag-muted">{o.type}</span>
             </div>
             <span className={s.tag}>{o.status}</span>
           </div>
-          <div className="mt-2 text-section-title text-foreground">
-            {isLoss ? `${o.item} · 损耗 ${o.qty}` : `${o.target} · ${o.event}`}
-          </div>
-          <div className="text-caption text-text-tertiary mt-1">
-            {isLoss ? "物资" : o.barn} · 创建于 {o.createdAt}
-          </div>
-        </div>
 
-        {/* 字段网格 */}
-        <div className="rounded-xl bg-card border border-border divide-y divide-border">
-          <Row label="工作类型" value={<span className="tag tag-muted">{o.type}</span>} />
-          {isLoss ? (
-            <>
-              <Row label="物品名称" value={<span className="text-body text-foreground">{o.item}</span>} />
-              <Row label="损耗量" value={<span className="text-body text-foreground">{o.qty}</span>} />
-              <Row label="关联牛舍" value={<span className="text-body text-foreground">{o.barn}</span>} />
-            </>
-          ) : (
-            <>
-              <Row label="处理对象" value={<span className="text-body text-foreground">{o.target}</span>} />
-              <Row label="提出事件" value={<span className="text-body text-foreground">{o.event}</span>} />
-            </>
-          )}
-          <Row
-            label="提出者"
-            value={
-              <div className="flex items-center gap-2">
-                <div className="h-6 w-6 rounded-full bg-primary/10 text-primary text-caption inline-flex items-center justify-center">
-                  {o.proposer.charAt(0)}
-                </div>
-                <span className="text-body text-foreground">{o.proposer}</span>
-              </div>
-            }
-          />
-          <Row label="负责人" value={<span className="text-body text-foreground">{o.who}</span>} />
-        </div>
-
-        {/* 健康：症状标签 */}
-        {kind === "健康" && o.symptoms.length > 0 && (
-          <div className="rounded-xl bg-card border border-border p-4">
-            <div className="text-caption text-text-tertiary mb-2">症状说明</div>
-            <div className="flex flex-wrap gap-1.5">
-              {o.symptoms.map((sym) => (
-                <span key={sym} className="tag tag-brand">{sym}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 非损耗：所需药品 / 器材（响应后才会生成领物码） */}
-        {!isLoss && o.materials.length > 0 && (
-          <div className="rounded-xl bg-card border border-border p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
-                <PackagePlus className="h-3.5 w-3.5 text-primary" /> 所需药品 / 器材
-              </div>
-              <span className="text-caption text-text-tertiary">共 {o.materials.length} 项</span>
-            </div>
-            <ul className="divide-y divide-border">
-              {o.materials.map((m) => (
-                <li key={m.name} className="py-2 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="text-body-sm text-foreground truncate">{m.name}</div>
-                    {m.spec && (
-                      <div className="text-caption text-text-tertiary truncate">{m.spec}</div>
-                    )}
-                  </div>
-                  <span className="font-mono text-body-sm text-text-secondary shrink-0">× {m.qty}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-2 rounded-lg bg-brand-subtle px-3 py-2 text-caption text-primary inline-flex items-start gap-1.5 w-full">
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-              <span>
-                {o.status === "进行中" || o.status === "已完成"
-                  ? `领物码已生成：${o.pickupCode}，请前往仓库扫码核销领取。`
-                  : `本工单含药品 / 器材需求，响应后将自动生成领物码（${o.pickupCode}）供执行者到仓库核销领取。`}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* 损耗：补申请 */}
-        {isLoss && (
-          <div className="rounded-xl bg-card border border-border p-4">
-            <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1.5">
-              <PackagePlus className="h-3.5 w-3.5 text-primary" /> 补申请物资
-            </div>
-            {o.reapply ? (
-              <div className="flex items-center justify-between text-body text-foreground">
-                <span>{o.reapply.name}</span>
-                <span className="font-mono text-text-secondary">× {o.reapply.qty}</span>
-              </div>
-            ) : (
-              <div className="text-body-sm text-text-tertiary">无需补申请</div>
-            )}
-          </div>
-        )}
-
-        {/* 工作说明 / 文字备注 */}
-        <div className="rounded-xl bg-card border border-border p-4">
-          <div className="text-caption text-text-tertiary mb-1.5">
-            {isLoss ? "文字备注" : "工作说明"}
-          </div>
-          <p className="text-body-sm text-text-secondary leading-relaxed">{o.desc}</p>
-        </div>
-
-        {/* 证据材料 */}
-        <div className="rounded-xl bg-card border border-border p-4 space-y-3">
-          <div className="text-caption text-text-tertiary">证据材料</div>
-          {o.photos > 0 && (
-            <div>
-              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                <Camera className="h-3 w-3" /> 照片 · {o.photos} 张
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {Array.from({ length: o.photos }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border"
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-          {o.videos > 0 && (
-            <div>
-              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                <Video className="h-3 w-3" /> 视频 · {o.videos} 段
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {Array.from({ length: o.videos }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center"
-                  >
-                    <PlayCircle className="h-6 w-6 text-text-tertiary" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {o.voiceSecs > 0 && (
-            <div className="flex items-center gap-2 px-3 h-10 rounded-lg bg-surface-subtle border border-border">
-              <Mic className="h-4 w-4 text-primary" />
-              <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
-                <div className="h-full w-2/3 bg-primary/60" />
-              </div>
-              <span className="font-mono text-caption text-text-secondary">
-                00:{String(o.voiceSecs).padStart(2, "0")}
-              </span>
-            </div>
-          )}
-          {o.photos === 0 && o.videos === 0 && o.voiceSecs === 0 && (
-            <div className="text-body-sm text-text-tertiary inline-flex items-center gap-1.5">
-              <FileText className="h-3.5 w-3.5" /> 仅文字描述,无附件
-            </div>
-          )}
-        </div>
-
-        {/* 执行记录面板（流程性） */}
-        {showExec && (
-          <div className="rounded-xl bg-card border border-primary/30 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
-                <PlayCircle className="h-4 w-4 text-primary" /> 执行记录
-              </div>
-              <span className="text-caption text-text-tertiary">按流程填写处置内容</span>
-            </div>
-            <textarea
-              value={execNote}
-              onChange={(e) => setExecNote(e.target.value)}
-              placeholder="填写执行过程、用药 / 处置、操作要点等"
-              rows={4}
-              className="w-full p-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary resize-none"
+          <div className="grid grid-cols-2 gap-y-2 gap-x-3 text-caption">
+            <SumRow icon={MapPin} label="牧场" value={o.farm} />
+            <SumRow icon={MapPin} label="牛舍" value={o.barn} />
+            <SumRow icon={Stethoscope} label="服务对象" value={o.target} />
+            <SumRow icon={User} label="执行人" value={cleanName(o.who)} />
+            <SumRow icon={Clock} label="计划时间" value={o.plannedAt} />
+            <SumRow
+              icon={PackagePlus}
+              label="领物状态"
+              value={
+                o.needPickup
+                  ? o.status === "进行中" || o.status === "已完成"
+                    ? `已生成 ${o.pickupCode}`
+                    : "待生成"
+                  : "无需领物"
+              }
             />
-            <button className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5">
-              <Camera className="h-4 w-4" /> 添加现场照片 / 视频
-            </button>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShowExec(false)}
-                className="flex-1 h-11 rounded-lg border border-border text-body-sm text-text-secondary"
-              >
-                暂存
-              </button>
-              <button
-                disabled={!execNote.trim()}
-                onClick={() => setConfirm("finish")}
-                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
-              >
-                <Send className="h-4 w-4" /> 提交完成
-              </button>
-            </div>
           </div>
-        )}
 
-        {/* 异常反馈面板（异常分支） */}
-        {showIssue && (
-          <div className="rounded-xl bg-card border border-[var(--state-danger)]/30 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
-                <AlertTriangle className="h-4 w-4 text-[var(--state-danger)]" /> 异常反馈
-              </div>
-              <span className="text-caption text-text-tertiary">执行中发现的异常情况</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {["牛只状态异常", "用药不足", "环境/设施问题", "操作受阻", "其他"].map((t) => (
-                <button
-                  key={t}
-                  className="px-2.5 h-7 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary"
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-            <textarea
-              value={issueNote}
-              onChange={(e) => setIssueNote(e.target.value)}
-              placeholder="描述异常现象、影响范围、当前处置建议等"
-              rows={4}
-              className="w-full p-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary resize-none"
-            />
-            <button className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5">
-              <Camera className="h-4 w-4" /> 上传异常照片 / 视频
-            </button>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShowIssue(false)}
-                className="flex-1 h-11 rounded-lg border border-border text-body-sm text-text-secondary"
-              >
-                取消
-              </button>
-              <button
-                disabled={!issueNote.trim()}
-                onClick={() => setConfirm("issue")}
-                className="flex-1 h-11 rounded-lg bg-[var(--state-danger)] text-white text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
-              >
-                <Send className="h-4 w-4" /> 提交反馈
-              </button>
-            </div>
+          <div className="rounded-lg bg-surface-subtle px-3 py-2 text-caption text-text-secondary">
+            <span className="text-text-tertiary">流转：</span>
+            {o.flow}
           </div>
+        </div>
+
+        {/* === 2. Tab === */}
+        <div className="sticky top-0 z-10 bg-bg border-b border-border">
+          <div className="px-4 flex gap-1">
+            {[
+              { key: "report", label: "上报记录" },
+              { key: "review", label: "审核记录" },
+              { key: "execute", label: "执行记录" },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key as typeof tab)}
+                className={`relative h-11 px-3 text-body-sm ${
+                  tab === t.key ? "text-foreground font-medium" : "text-text-tertiary"
+                }`}
+              >
+                {t.label}
+                {tab === t.key && (
+                  <span className="absolute left-3 right-3 bottom-0 h-0.5 bg-primary rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="px-4 pt-3 space-y-3">
+          {tab === "report" && <ReportTab isLoss={isLoss} />}
+          {tab === "review" && <ReviewTab isLoss={isLoss} status={o.status} />}
+          {tab === "execute" && <ExecuteTab status={o.status} pickupCode={o.pickupCode} />}
+        </div>
+      </div>
+
+      {/* === 3. 底部操作区 === */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        {showApproval ? (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setConfirm("reject")}
+              className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
+            >
+              驳回
+            </button>
+            <button
+              onClick={() => setConfirm("approve")}
+              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body"
+            >
+              通过
+            </button>
+          </div>
+        ) : showExecBtn ? (
+          <div className="flex gap-2">
+            <button className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary">
+              暂存
+            </button>
+            <button
+              onClick={() => setConfirm("finish")}
+              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+            >
+              <Send className="h-4 w-4" /> 提交记录
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => navigate({ to: "/m/health" })}
+            className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body"
+          >
+            返回工单列表
+          </button>
         )}
       </div>
 
-      {/* 底部操作栏 —— 小程序仅查看，审批 / 执行需前往 PC */}
-      {(showApproval || showExecBtn) ? (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] space-y-2">
-          <div className="rounded-lg bg-surface-subtle px-3 py-2 text-caption text-text-secondary inline-flex items-start gap-1.5 w-full">
-            <AlertTriangle className="h-3.5 w-3.5 text-[var(--state-warning)] shrink-0 mt-0.5" />
-            <span>
-              小程序暂不支持{showApproval ? "审批操作" : "执行 / 反馈操作"}，请前往 PC 端处理。
-            </span>
-          </div>
-          <button
-            onClick={() => navigate({ to: "/m/health" })}
-            className="w-full h-11 rounded-lg border border-border text-body text-text-secondary"
-          >
-            返回工作列表
-          </button>
-        </div>
-      ) : (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-          <button
-            onClick={() => navigate({ to: "/m/health" })}
-            className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body"
-          >
-            返回工作列表
-          </button>
-        </div>
-      )}
-
-
-      <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
-        <AlertDialogContent className="!max-w-[440px] !w-full !top-auto !bottom-0 !left-1/2 !-translate-x-1/2 !translate-y-0 !rounded-b-none !rounded-t-2xl !border-0 !p-0 data-[state=open]:!slide-in-from-bottom-4 data-[state=closed]:!slide-out-to-bottom-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
+      <AlertDialog open={!!confirm} onOpenChange={(v) => !v && setConfirm(null)}>
+        <AlertDialogContent className="!max-w-[440px] !w-full !top-auto !bottom-0 !left-1/2 !-translate-x-1/2 !translate-y-0 !rounded-b-none !rounded-t-2xl !border-0 !p-0 pb-[calc(env(safe-area-inset-bottom)+16px)]">
           <AlertDialogHeader className="px-6 pt-7 pb-2 sm:text-center">
             <AlertDialogTitle className="text-section-title">
               {confirm === "approve"
-                ? "确认通过该工作?"
+                ? "确认通过该工单?"
                 : confirm === "reject"
-                ? "确认驳回该工作?"
-                : confirm === "issue"
-                ? "提交异常反馈?"
+                ? "确认驳回该工单?"
                 : "确认提交完成?"}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-body-sm text-text-tertiary mt-1">
-              工作 {o.id} · {o.target}
-              <br />
-              {o.event},操作后状态将更新
+              工单 {o.id} · {o.target}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="!flex-row gap-3 px-4 pt-5">
@@ -414,7 +212,7 @@ function TaskDetailPage() {
             </AlertDialogCancel>
             <AlertDialogAction
               className={`flex-1 h-12 rounded-xl text-body ${
-                confirm === "reject" || confirm === "issue"
+                confirm === "reject"
                   ? "bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
                   : "bg-primary text-primary-foreground"
               }`}
@@ -432,11 +230,327 @@ function TaskDetailPage() {
   );
 }
 
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
+function SumRow({
+  icon: I,
+  label,
+  value,
+}: {
+  icon: typeof Clock;
+  label: string;
+  value: string;
+}) {
   return (
-    <div className="px-4 h-12 flex items-center justify-between">
-      <span className="text-body-sm text-text-tertiary">{label}</span>
-      <div>{value}</div>
+    <div className="flex items-start gap-1.5 min-w-0">
+      <I className="h-3.5 w-3.5 text-text-tertiary shrink-0 mt-0.5" />
+      <div className="min-w-0">
+        <div className="text-text-tertiary">{label}</div>
+        <div className="text-body-sm text-foreground truncate">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function Section({ title, children, extra }: { title: string; children: React.ReactNode; extra?: React.ReactNode }) {
+  return (
+    <div className="rounded-xl bg-card border border-border p-4">
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-caption text-text-tertiary">{title}</div>
+        {extra}
+      </div>
+      <div className="space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <span className="text-body-sm text-text-tertiary shrink-0">{label}</span>
+      <div className="text-body-sm text-foreground text-right min-w-0">{value}</div>
+    </div>
+  );
+}
+
+function PersonChip({ name }: { name: string }) {
+  const n = cleanName(name);
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-[10px] inline-flex items-center justify-center">
+        {n.charAt(0)}
+      </span>
+      <span className="text-body-sm text-foreground">{n}</span>
+    </span>
+  );
+}
+
+// === 上报记录 ===
+function ReportTab({ isLoss }: { isLoss: boolean }) {
+  return (
+    <>
+      <Section title="上报基础信息">
+        <Field label="上报人" value={<PersonChip name="陈晓东" />} />
+        <Field label="上报时间" value="2026-05-20 09:08" />
+        <Field label="原始工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
+        <Field
+          label="原始标签"
+          value={
+            <div className="flex flex-wrap gap-1 justify-end">
+              {(isLoss ? ["冷链异常", "疫苗"] : ["高烧", "食欲下降", "反刍减少"]).map((t) => (
+                <span key={t} className="tag tag-brand">
+                  {t}
+                </span>
+              ))}
+            </div>
+          }
+        />
+      </Section>
+
+      <Section title="具体描述">
+        <p className="text-body-sm text-text-secondary leading-relaxed">
+          {isLoss
+            ? "冷链监测发现 #2 冷柜断电 4 小时，该批疫苗已失效，需作损耗登记并补充申请。"
+            : "饲养员巡检发现该牛持续高烧 2 小时(39.6℃)，同时表现出食欲下降、反刍减少。建议立即抗生素治疗并进入隔离观察。"}
+        </p>
+      </Section>
+
+      <Section title="证据材料">
+        <div>
+          <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+            <Camera className="h-3 w-3" /> 照片 · 2 张
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[0, 1].map((i) => (
+              <div
+                key={i}
+                className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border"
+              />
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+            <Video className="h-3 w-3" /> 视频 · 1 段
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center">
+              <PlayCircle className="h-6 w-6 text-text-tertiary" />
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 px-3 h-10 rounded-lg bg-surface-subtle border border-border">
+          <Mic className="h-4 w-4 text-primary" />
+          <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
+            <div className="h-full w-2/3 bg-primary/60" />
+          </div>
+          <span className="font-mono text-caption text-text-secondary">00:28</span>
+        </div>
+      </Section>
+
+      {!isLoss && (
+        <Section title="上报疑似疾病">
+          <div className="flex flex-wrap gap-1">
+            <span className="tag tag-warning">疑似 呼吸道感染</span>
+            <span className="tag tag-muted">置信度 72%</span>
+          </div>
+        </Section>
+      )}
+
+      <Section title="系统初始带出方案">
+        <p className="text-body-sm text-text-secondary leading-relaxed">
+          {isLoss
+            ? "建议：登记损耗 8 支 → 触发库存补申请（口蹄疫疫苗 A 型 × 8 支）。"
+            : "建议方案：氟尼辛葡甲胺 2ml IM × 3 天 + 头孢噻呋钠 1g IM × 3 天，隔离观察并每日测温。"}
+        </p>
+      </Section>
+    </>
+  );
+}
+
+// === 审核记录 ===
+function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
+  if (status === "待审批") {
+    return (
+      <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
+        <ClipboardList className="h-6 w-6 text-text-tertiary mx-auto mb-2" />
+        <div className="text-body-sm text-text-tertiary">尚未审核</div>
+      </div>
+    );
+  }
+  return (
+    <>
+      <Section title="审核基础信息">
+        <Field label="审核人" value={<PersonChip name="王医生" />} />
+        <Field label="审核时间" value="2026-05-20 10:15" />
+        <Field
+          label="审核结果"
+          value={
+            status === "已驳回" ? (
+              <span className="tag tag-danger">已驳回</span>
+            ) : status === "已终止" ? (
+              <span className="tag tag-muted">已终止</span>
+            ) : (
+              <span className="tag tag-success">通过</span>
+            )
+          }
+        />
+        {status === "已驳回" && (
+          <Field label="驳回理由" value="证据不充分，请补充体温记录与历史病历。" />
+        )}
+      </Section>
+
+      {status !== "已驳回" && (
+        <>
+          <Section title="确认信息">
+            <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗 · 普修"}</span>} />
+            <Field
+              label="确认标签"
+              value={
+                <div className="flex flex-wrap gap-1 justify-end">
+                  {(isLoss ? ["冷链异常"] : ["呼吸道感染", "需隔离"]).map((t) => (
+                    <span key={t} className="tag tag-brand">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              }
+            />
+            <Field label="诊断结论" value={isLoss ? "疫苗失效，作损耗处理" : "支气管肺炎（早期）"} />
+          </Section>
+
+          <Section title="具体描述">
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              结合症状与现场视频，判定为支气管肺炎早期，采用标准 3 日方案治疗，隔离至症状消退后 48 小时。
+            </p>
+          </Section>
+
+          <Section title="治疗方案 / 执行方案">
+            <ul className="divide-y divide-border -mx-1">
+              {[
+                { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", days: "3 天" },
+                { name: "头孢噻呋钠", spec: "1g / 支", use: "肌肉注射", dose: "1g / 次", days: "3 天" },
+              ].map((m) => (
+                <li key={m.name} className="px-1 py-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-body-sm text-foreground">{m.name}</div>
+                    <span className="text-caption text-text-tertiary">{m.days}</span>
+                  </div>
+                  <div className="text-caption text-text-tertiary mt-0.5">
+                    {m.spec} · {m.use} · {m.dose}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Section>
+
+          <Section title="物资 / 药品需求">
+            <ul className="divide-y divide-border -mx-1">
+              {[
+                { name: "一次性注射器", qty: "8 支" },
+                { name: "消毒酒精棉", qty: "1 盒" },
+              ].map((m) => (
+                <li key={m.name} className="px-1 py-2 flex items-center justify-between">
+                  <span className="text-body-sm text-foreground">{m.name}</span>
+                  <span className="font-mono text-body-sm text-text-secondary">× {m.qty}</span>
+                </li>
+              ))}
+            </ul>
+          </Section>
+
+          <Section title="执行安排">
+            <Field label="计划时间" value="今日 13:00 起，共 3 天" />
+            <Field label="指定执行人" value={<PersonChip name="李雨晴" />} />
+            <Field label="复查 / 验收" value="第 4 天复测体温与采食情况" />
+            <Field label="备注" value="如出现严重过敏立即停药并上报。" />
+          </Section>
+        </>
+      )}
+    </>
+  );
+}
+
+// === 执行记录 ===
+function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: string | null }) {
+  if (status === "待审批" || status === "已驳回") {
+    return (
+      <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
+        <PlayCircle className="h-6 w-6 text-text-tertiary mx-auto mb-2" />
+        <div className="text-body-sm text-text-tertiary">尚未开始执行</div>
+      </div>
+    );
+  }
+  return (
+    <>
+      <Section title="执行基础信息">
+        <Field label="执行人" value={<PersonChip name="李雨晴" />} />
+        <Field label="开始执行时间" value="今日 13:08" />
+      </Section>
+
+      <div className="text-caption text-text-tertiary px-1">执行 Checklist</div>
+
+      <ChecklistDay day={1} done pickupCode={pickupCode} />
+      <ChecklistDay day={2} done={status === "已完成"} pickupCode={pickupCode} />
+      <ChecklistDay day={3} done={status === "已完成"} pickupCode={pickupCode} />
+
+      <div className="rounded-xl bg-card border border-border p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
+            <CheckCircle2 className="h-4 w-4 text-primary" /> 复查 / 验收
+          </div>
+          <span className={status === "已完成" ? "tag tag-success" : "tag tag-muted"}>
+            {status === "已完成" ? "已完成" : "待执行"}
+          </span>
+        </div>
+        <div className="text-caption text-text-tertiary">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
+      </div>
+    </>
+  );
+}
+
+function ChecklistDay({
+  day,
+  done,
+  pickupCode,
+}: {
+  day: number;
+  done: boolean;
+  pickupCode: string | null;
+}) {
+  return (
+    <div className="rounded-xl bg-card border border-border overflow-hidden">
+      <div className="px-4 h-11 flex items-center justify-between border-b border-border">
+        <div className="flex items-center gap-2">
+          {done ? (
+            <CheckSquare className="h-4 w-4 text-primary" />
+          ) : (
+            <Square className="h-4 w-4 text-text-tertiary" />
+          )}
+          <span className="text-body-sm font-medium text-foreground">第 {day} 天执行</span>
+        </div>
+        <span className={done ? "tag tag-success" : "tag tag-muted"}>{done ? "已完成" : "待执行"}</span>
+      </div>
+      <div className="px-4 py-3 space-y-2">
+        {pickupCode && (
+          <Link
+            to="/m/pickup/$id"
+            params={{ id: pickupCode }}
+            className="flex items-center justify-between px-3 h-10 rounded-lg bg-brand-subtle text-primary text-body-sm"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <PackagePlus className="h-3.5 w-3.5" /> 领物检查 · {pickupCode}
+            </span>
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        )}
+        <Field label="执行动作" value="肌肉注射 + 体温记录" />
+        <Field label="执行对象" value="#A2381" />
+        <Field label="现场材料" value="氟尼辛 2ml + 头孢噻呋 1g" />
+        <Field label="备注" value={done ? "体温 39.2℃，采食略增。" : "—"} />
+        {!done && (
+          <button className="w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5">
+            <ArrowRight className="h-3.5 w-3.5" /> 开始执行
+          </button>
+        )}
+      </div>
     </div>
   );
 }
