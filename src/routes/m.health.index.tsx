@@ -156,7 +156,7 @@ function TaskListPage() {
       <div className="px-4 mt-3 pb-4 space-y-4">
         {list.length === 0 && (
           <div className="py-16 text-center text-body-sm text-text-tertiary">
-            暂无{tab === "全部" ? "" : tab}工作
+            暂无{tab === "全部" ? "" : tab}工单
           </div>
         )}
         {Object.entries(
