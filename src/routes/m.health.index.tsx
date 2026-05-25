@@ -36,8 +36,12 @@ type Task = {
   event: string;
   proposer: string;
   who: string;
+  approver?: string;
   status: Status;
   createdAt: string;
+  reportedAt?: string;
+  executedAt?: string;
+  reviewedAt?: string;
   /** 单只 or 批量 */
   scope: Scope;
   /** 结论 / 疑似结论 */
