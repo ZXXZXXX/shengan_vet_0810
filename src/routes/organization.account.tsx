@@ -149,7 +149,7 @@ const ROLE_PERMISSIONS: Record<string, RolePermPreview> = {
   },
   修蹄工: {
     pc: [],
-    mini: ["修蹄（领取/回填）"],
+    mini: ["疾病治疗（领取/回填）"],
   },
   普修工: {
     pc: [],
