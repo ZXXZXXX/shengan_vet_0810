@@ -223,16 +223,40 @@ function TaskListPage() {
                         </div>
                       )}
 
-                      {/* Line 4: 时间 · 人员 · 是否需要领物 */}
-                      <div className="mt-2 text-caption text-text-tertiary flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                        <span>计划 <span className="text-text-secondary">{o.createdAt}</span></span>
-                        <span>·</span>
-                        <span>执行 <span className="text-text-secondary">{o.who}</span></span>
-                        <span>·</span>
-                        <span className={o.needPickup ? "text-primary font-medium" : "text-text-tertiary"}>
-                          {o.needPickup ? "需领物" : "无需领物"}
-                        </span>
-                        <span className="ml-auto inline-flex items-center gap-0.5 text-primary font-medium">
+                      {/* Line 4: 按状态展示不同的时间 + 人员（含头像） */}
+                      <div className="mt-2 text-caption text-text-tertiary flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                        {o.status === "待审批" && (
+                          <>
+                            <span>上报 <span className="text-text-secondary">{o.reportedAt ?? o.createdAt}</span></span>
+                            <span>·</span>
+                            <Avatar name={o.proposer} label="上报" />
+                            <span>·</span>
+                            <Avatar name={o.approver ?? "—"} label="审核" />
+                          </>
+                        )}
+                        {(o.status === "进行中" || o.status === "已完成") && (
+                          <>
+                            <span>执行 <span className="text-text-secondary">{o.executedAt ?? o.createdAt}</span></span>
+                            <span>·</span>
+                            <Avatar name={o.who} label="执行" />
+                            {o.status === "进行中" && (
+                              <>
+                                <span>·</span>
+                                <span className={o.needPickup ? "text-primary font-medium" : "text-text-tertiary"}>
+                                  {o.needPickup ? "需领物" : "无需领物"}
+                                </span>
+                              </>
+                            )}
+                          </>
+                        )}
+                        {o.status === "已驳回" && (
+                          <>
+                            <span>审核 <span className="text-text-secondary">{o.reviewedAt ?? o.createdAt}</span></span>
+                            <span>·</span>
+                            <Avatar name={o.approver ?? "—"} label="审核" />
+                          </>
+                        )}
+                        <span className="ml-auto inline-flex items-center gap-0.5 text-text-secondary">
                           {isPickup ? (o.status === "已完成" ? "查看清单" : "领取") : canExecuteThis ? "执行" : "查看"}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
