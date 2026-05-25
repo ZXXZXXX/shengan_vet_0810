@@ -54,14 +54,6 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
     },
     allowDisease: true,
   },
-  修蹄: {
-    tags: {
-      label: "问题 / 症状标签",
-      required: true,
-      presets: ["跛行", "蹄底溃疡", "趾间皮炎", "蹄叶炎", "蹄壁裂", "白线病", "蹄过长", "腐蹄"],
-    },
-    allowDisease: false,
-  },
   产后护理: {
     tags: {
       label: "护理 / 异常标签",
