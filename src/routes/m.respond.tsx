@@ -24,7 +24,12 @@ type RespondCard = {
   kind: "疾病治疗" | "免疫" | "修蹄" | "普修" | "产后护理";
   ear: string;
   barn: string;
+  /** 单只 or 批量 */
+  scope: { type: "single"; ear: string } | { type: "batch"; label: string };
+  /** 结论/疑似结论 */
   conclusion: string;
+  /** 具体描述 */
+  desc?: string;
   /** ISO 时间字符串，用于排序 */
   execAt: string;
   execLabel: string;
@@ -34,6 +39,7 @@ type RespondCard = {
   approvedAt: string;
   /** ISO 时间字符串，用于发布时间排序 */
   approvedAtISO: string;
+  overdue?: boolean;
 };
 
 const initialCards: RespondCard[] = [
@@ -42,7 +48,9 @@ const initialCards: RespondCard[] = [
     kind: "疾病治疗",
     ear: "#A2381",
     barn: "3 号牛舍",
-    conclusion: "持续高烧 2 小时，疑似乳房炎急性发作",
+    scope: { type: "single", ear: "#A2381" },
+    conclusion: "疑似乳房炎急性发作",
+    desc: "持续高烧 2 小时，需复查体温与乳样",
     execAt: "2026-05-25T10:30:00",
     execLabel: "今日 10:30",
     needPickup: true,
@@ -56,7 +64,9 @@ const initialCards: RespondCard[] = [
     kind: "疾病治疗",
     ear: "#A2502",
     barn: "1 号牛舍",
-    conclusion: "乳房炎复诊，需复查体温与乳样",
+    scope: { type: "single", ear: "#A2502" },
+    conclusion: "乳房炎复诊",
+    desc: "复查体温与乳样",
     execAt: "2026-05-25T11:00:00",
     execLabel: "今日 11:00",
     needPickup: false,
@@ -69,7 +79,9 @@ const initialCards: RespondCard[] = [
     kind: "产后护理",
     ear: "#A2710",
     barn: "产房 1 号",
-    conclusion: "产后 3 天，需复查恶露与体温",
+    scope: { type: "single", ear: "#A2710" },
+    conclusion: "产后复查",
+    desc: "产后 3 天，需复查恶露与体温",
     execAt: "2026-05-25T13:30:00",
     execLabel: "今日 13:30",
     needPickup: false,
@@ -82,7 +94,9 @@ const initialCards: RespondCard[] = [
     kind: "免疫",
     ear: "犊牛批次 B-07",
     barn: "犊牛舍 A",
-    conclusion: "口蹄疫加强免疫，批次共 32 头",
+    scope: { type: "batch", label: "32 头" },
+    conclusion: "口蹄疫加强免疫",
+    desc: "犊牛批次 B-07 春季加强",
     execAt: "2026-05-26T09:00:00",
     execLabel: "明日 09:00",
     needPickup: true,
@@ -96,7 +110,9 @@ const initialCards: RespondCard[] = [
     kind: "修蹄",
     ear: "#A2615",
     barn: "3 号牛舍",
-    conclusion: "蹄底溃疡，需削蹄并贴蹄垫",
+    scope: { type: "single", ear: "#A2615" },
+    conclusion: "蹄底溃疡",
+    desc: "削蹄并贴蹄垫",
     execAt: "2026-05-26T14:00:00",
     execLabel: "明日 14:00",
     needPickup: false,
@@ -209,56 +225,46 @@ function RespondListPage() {
             key={c.id}
             className="rounded-xl bg-card border border-border p-4 space-y-2"
           >
-            {/* 头部：工单编号｜类型｜状态 */}
+            {/* Line 1: 编号 · 类型 · 状态 */}
             <div className="flex items-center gap-1.5 text-body-sm">
               <span className="font-mono text-foreground">{c.id}</span>
               <span className="text-text-tertiary">｜</span>
               <span className="text-text-secondary">{c.kind}</span>
-              <span className="text-text-tertiary">｜</span>
-              <span className="tag tag-warning">待响应</span>
+              <span className="tag tag-warning ml-auto">待响应</span>
             </div>
 
-            {/* 耳号 · 牛舍 */}
+            {/* Line 2: 对象 · 结论 */}
             <div className="text-card-title text-foreground">
-              {c.ear} <span className="text-text-tertiary">·</span> {c.barn}
-            </div>
-
-            {/* 症状结论 */}
-            <div className="text-body-sm text-text-secondary leading-relaxed">
+              {c.scope.type === "single" ? `单只 ${c.scope.ear}` : c.scope.label}
+              <span className="text-text-tertiary"> · </span>
               {c.conclusion}
             </div>
 
-            {/* 执行时间 */}
-            <div className="flex items-center gap-1.5 text-body-sm text-text-secondary">
-              <Clock className="h-3.5 w-3.5 text-primary" />
-              <span>执行时间：</span>
-              <span className="text-foreground">{c.execLabel}</span>
-            </div>
-
-            {/* 是否需要领药/领物 */}
-            <div className="flex items-center gap-1.5 text-body-sm">
-              <PackageCheck
-                className={`h-3.5 w-3.5 ${
-                  c.needPickup ? "text-primary" : "text-text-tertiary"
-                }`}
-              />
-              {c.needPickup ? (
-                <span className="text-foreground">
-                  {c.pickupNote ?? "需领药 / 领物"}
-                </span>
-              ) : (
-                <span className="text-text-tertiary">无需领药 / 领物</span>
-              )}
-            </div>
-
-            {/* 审核信息 */}
-            <div className="flex items-center gap-1.5 text-caption text-text-tertiary pt-1 border-t border-border/60">
-              <div className="h-5 w-5 rounded-full bg-primary/10 text-primary text-[10px] inline-flex items-center justify-center">
-                {c.approver.charAt(0)}
+            {/* Line 3: 具体描述 */}
+            {c.desc && (
+              <div className="text-body-sm text-text-secondary leading-relaxed">
+                {c.desc}
               </div>
-              <span className="text-text-secondary">{c.approver}</span>
-              <span className="text-text-tertiary">· {c.approvedAt}</span>
+            )}
+
+            {/* Line 4: 时间 · 人员 · 是否需要领物 */}
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-caption text-text-tertiary pt-1 border-t border-border/60">
+              <Clock className="h-3 w-3 text-primary" />
+              <span>计划 <span className="text-text-secondary">{c.execLabel}</span></span>
+              <span>·</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
+                  {c.approver.charAt(0)}
+                </span>
+                审核 <span className="text-text-secondary">{c.approver}</span>
+              </span>
+              <span>·</span>
+              <span className={c.needPickup ? "text-primary font-medium inline-flex items-center gap-0.5" : "text-text-tertiary inline-flex items-center gap-0.5"}>
+                <PackageCheck className="h-3 w-3" />
+                {c.needPickup ? (c.pickupNote ?? "需领物") : "无需领物"}
+              </span>
             </div>
+
 
             {/* 操作按钮 */}
             <div className="flex items-center gap-2 pt-1">
