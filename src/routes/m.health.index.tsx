@@ -69,6 +69,8 @@ const tasks: Task[] = [
   { id: "HF-0688", target: "#A2270", barn: "3 号牛舍", kind: "修蹄", type: "批次修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", approver: "王主管", status: "已完成", createdAt: "5 月 12 日", executedAt: "5 月 12 日 10:00", scope: { type: "single", ear: "#A2270" }, conclusion: "蹄底溃疡", desc: "削蹄并贴蹄垫", needPickup: false },
   { id: "LS-1029", target: "口蹄疫疫苗 A 型", barn: "2 号牛舍", kind: "损耗", type: "物资损耗", event: "冷链断电", proposer: "孙明", who: "李雨晴", approver: "王主管", status: "待审批", createdAt: "今日 08:20", reportedAt: "今日 08:20", scope: { type: "batch", label: "8 支" }, conclusion: "冷链断电导致失效", needPickup: false, item: "口蹄疫疫苗 A 型", qty: "8 支", reapply: { name: "口蹄疫疫苗 A 型", qty: "8 支" } },
   { id: "LS-1011", target: "营养补充剂", barn: "5 号牛舍", kind: "损耗", type: "物资损耗", event: "外箱破损渗漏", proposer: "孙明", who: "孙明", approver: "王主管", status: "已完成", createdAt: "5 月 15 日", executedAt: "5 月 15 日 14:00", scope: { type: "batch", label: "2 罐" }, conclusion: "外箱破损渗漏", needPickup: false, item: "营养补充剂", qty: "2 罐" },
+  // 已终止示例
+  { id: "YM-2042", target: "24 头牛", barn: "1 号牛舍", kind: "健康", type: "疫苗", event: "疫苗补免", proposer: "周凯", who: "周凯", approver: "王医生", status: "已终止", createdAt: "今日 10:20", terminatedAt: "今日 10:20", scope: { type: "batch", label: "24 头牛" }, conclusion: "疫苗补免", desc: "计划调整，暂不执行", needPickup: false },
 ];
 
 const tabs: { key: Status | "全部"; label: string }[] = [
