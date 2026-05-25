@@ -87,7 +87,7 @@ const initialCards: RespondCard[] = [
     execAt: "2026-05-26T09:00:00",
     execLabel: "明日 09:00",
     needPickup: true,
-    pickupNote: "需领物：免疫器械包 × 1",
+    pickupNote: "需领取：免疫器械包 × 1",
     approver: "周凯",
     approvedAt: "昨日 17:20",
     approvedAtISO: "2026-05-24T17:20:00",
