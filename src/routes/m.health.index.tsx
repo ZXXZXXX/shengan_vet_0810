@@ -97,14 +97,13 @@ function TaskListPage() {
   const kw = q.trim().toLowerCase();
   if (kw) {
     list = list.filter((o) => {
-      const group = o.kind === "损耗" ? "物资" : o.barn;
       return (
         o.id.toLowerCase().includes(kw) ||
         o.target.toLowerCase().includes(kw) ||
         o.event.toLowerCase().includes(kw) ||
         o.kind.toLowerCase().includes(kw) ||
         o.type.toLowerCase().includes(kw) ||
-        group.toLowerCase().includes(kw)
+        o.barn.toLowerCase().includes(kw)
       );
     });
   }
