@@ -350,27 +350,85 @@ function DataCard({
   tone,
   label,
   value,
-  sub,
+  unit,
+  viz,
+  series,
   compact,
 }: {
   icon: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
   value: string;
-  sub?: string;
+  unit?: string;
+  viz?: "bars" | "line";
+  series?: number[];
   compact?: boolean;
 }) {
   return (
-    <div className="rounded-xl bg-card border border-border p-3">
-      <div className="flex items-center gap-2">
-        <span className={`h-7 w-7 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
+    <div className="rounded-xl bg-card border border-border p-3 flex flex-col">
+      <div className="flex items-center gap-1.5">
+        <span className={`h-6 w-6 rounded-md flex items-center justify-center ${colorMap[tone]}`}>
           <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
         </span>
         <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      <div className={`mt-2 ${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums`}>{value}</div>
-      {sub && <div className="text-caption text-text-tertiary mt-0.5 truncate">{sub}</div>}
+      {!compact && series && (
+        <div className="mt-2 h-8">
+          {viz === "line" ? (
+            <Sparkline data={series} tone={tone} />
+          ) : (
+            <SparkBars data={series} tone={tone} />
+          )}
+        </div>
+      )}
+      <div className={`flex items-baseline gap-1 ${compact ? "mt-2" : "mt-1.5"}`}>
+        <span className={`${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums font-medium leading-none`}>
+          {value}
+        </span>
+        {unit && <span className="text-caption text-text-tertiary leading-none">{unit}</span>}
+      </div>
     </div>
+  );
+}
+
+function SparkBars({ data, tone }: { data: number[]; tone: keyof typeof colorMap }) {
+  const max = Math.max(...data, 1);
+  return (
+    <div className="h-full w-full flex items-end gap-[3px]">
+      {data.map((v, i) => (
+        <div
+          key={i}
+          className={`flex-1 rounded-sm ${toneTextMap[tone] ?? "text-primary"}`}
+          style={{
+            height: `${Math.max(12, (v / max) * 100)}%`,
+            background: "currentColor",
+            opacity: 0.35 + (i / data.length) * 0.6,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function Sparkline({ data, tone }: { data: number[]; tone: keyof typeof colorMap }) {
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const w = 100;
+  const h = 32;
+  const step = w / (data.length - 1);
+  const pts = data.map((v, i) => {
+    const x = i * step;
+    const y = h - ((v - min) / range) * (h - 4) - 2;
+    return [x, y] as const;
+  });
+  const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
+  const area = `${path} L${w},${h} L0,${h} Z`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className={`h-full w-full ${toneTextMap[tone] ?? "text-primary"}`}>
+      <path d={area} fill="currentColor" opacity="0.12" />
+      <path d={path} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
