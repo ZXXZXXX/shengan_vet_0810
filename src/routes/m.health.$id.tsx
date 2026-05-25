@@ -353,7 +353,7 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
         </Section>
       )}
 
-      <Section title="系统推荐治疗方案">
+      <Section title="系统推荐 · 治疗方案">
         <p className="text-body-sm text-text-secondary leading-relaxed">
           {isLoss
             ? "建议：登记损耗 8 支 → 触发库存补申请（口蹄疫疫苗 A 型 × 8 支）。"
