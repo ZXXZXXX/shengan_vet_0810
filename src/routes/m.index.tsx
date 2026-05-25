@@ -152,9 +152,9 @@ function MHomePage() {
         <SectionTitle title="农场概况" hint="数据实时同步" />
         <div className="grid grid-cols-2 gap-2">
           <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" unit="头" viz="bars" series={[6, 8, 5, 9, 7, 10, 8, 11, 9, 12, 10, 13]} />
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8" unit="%" viz="line" series={[95.8, 96.0, 95.6, 96.2, 96.4, 96.1, 96.5, 96.6, 96.4, 96.7, 96.6, 96.8]} />
-          <DataCard icon={Eye} tone="warning" label="观察中" value="18" unit="头" viz="bars" series={[12, 14, 13, 15, 14, 16, 15, 17, 16, 18, 17, 18]} />
-          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" unit="头" viz="bars" series={[8, 9, 11, 10, 12, 11, 13, 12, 14, 13, 12, 12]} />
+          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8" unit="%" viz="ring" ratio={0.968} />
+          <DataCard icon={Eye} tone="warning" label="观察中" value="18" unit="头" viz="line" series={[12, 14, 13, 15, 14, 16, 15, 17, 16, 18, 17, 18]} />
+          <DataCard icon={Stethoscope} tone="danger" label="治疗中" value="12" unit="头" viz="line" series={[8, 9, 11, 10, 12, 11, 13, 12, 14, 13, 12, 12]} />
         </div>
       </section>
 
@@ -353,6 +353,7 @@ function DataCard({
   unit,
   viz,
   series,
+  ratio,
   compact,
 }: {
   icon: typeof Beef;
@@ -360,8 +361,9 @@ function DataCard({
   label: string;
   value: string;
   unit?: string;
-  viz?: "bars" | "line";
+  viz?: "bars" | "line" | "ring";
   series?: number[];
+  ratio?: number;
   compact?: boolean;
 }) {
   return (
@@ -372,7 +374,11 @@ function DataCard({
         </span>
         <span className="text-caption text-text-secondary truncate">{label}</span>
       </div>
-      {!compact && series && (
+      {!compact && (viz === "ring" ? (
+        <div className="mt-2 h-8 flex items-center">
+          <RingMeter ratio={ratio ?? 0} tone={tone} />
+        </div>
+      ) : series && (
         <div className="mt-2 h-8">
           {viz === "line" ? (
             <Sparkline data={series} tone={tone} />
@@ -380,7 +386,7 @@ function DataCard({
             <SparkBars data={series} tone={tone} />
           )}
         </div>
-      )}
+      ))}
       <div className={`flex items-baseline gap-1 ${compact ? "mt-2" : "mt-1.5"}`}>
         <span className={`${compact ? "text-card-title" : "text-section-title"} text-foreground tabular-nums font-medium leading-none`}>
           {value}
@@ -388,6 +394,30 @@ function DataCard({
         {unit && <span className="text-caption text-text-tertiary leading-none">{unit}</span>}
       </div>
     </div>
+  );
+}
+
+function RingMeter({ ratio, tone }: { ratio: number; tone: keyof typeof colorMap }) {
+  const pct = Math.max(0, Math.min(1, ratio));
+  const size = 32;
+  const stroke = 4;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className={toneTextMap[tone] ?? "text-primary"}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" strokeWidth={stroke} opacity="0.15" />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeDasharray={`${c * pct} ${c}`}
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+      />
+    </svg>
   );
 }
 
