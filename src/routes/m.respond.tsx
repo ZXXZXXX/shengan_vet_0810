@@ -22,7 +22,7 @@ export const Route = createFileRoute("/m/respond")({
 
 type RespondCard = {
   id: string;
-  kind: "疾病治疗" | "免疫" | "修蹄" | "普修" | "物资损耗";
+  kind: "疾病治疗" | "免疫" | "修蹄" | "普修" | "产后护理";
   ear: string;
   barn: string;
   conclusion: string;
@@ -66,15 +66,14 @@ const initialCards: RespondCard[] = [
     approvedAtISO: "2026-05-25T09:40:00",
   },
   {
-    id: "LS-1029",
-    kind: "物资损耗",
-    ear: "—",
-    barn: "2 号牛舍",
-    conclusion: "口蹄疫疫苗 A 型 8 支冷链断电失效，需补领",
+    id: "WO-2610",
+    kind: "产后护理",
+    ear: "#A2710",
+    barn: "产房 1 号",
+    conclusion: "产后 3 天，需复查恶露与体温",
     execAt: "2026-05-25T13:30:00",
     execLabel: "今日 13:30",
-    needPickup: true,
-    pickupNote: "需领取：免疫器械包 × 1",
+    needPickup: false,
     approver: "孙明",
     approvedAt: "今日 08:45",
     approvedAtISO: "2026-05-25T08:45:00",
@@ -111,9 +110,10 @@ const initialCards: RespondCard[] = [
 function RespondListPage() {
   const role = useRole();
   // 按角色过滤可响应的工单类型
-  const canSee = (id: string) => {
-    if (role === "hoof_trimmer") return id.startsWith("HF-");
-    if (role === "vet_assistant") return id.startsWith("WO-") || id.startsWith("LS-");
+  const canSee = (c: RespondCard) => {
+    if (role === "hoof_trimmer") return c.kind === "修蹄";
+    if (role === "vet_assistant")
+      return c.kind === "疾病治疗" || c.kind === "免疫" || c.kind === "产后护理";
     return true;
   };
 
@@ -125,7 +125,7 @@ function RespondListPage() {
   const list = useMemo(() => {
     const kw = q.trim().toLowerCase();
     const filtered = cards
-      .filter((c) => canSee(c.id))
+      .filter((c) => canSee(c))
       .filter((c) => {
         if (!kw) return true;
         return (
