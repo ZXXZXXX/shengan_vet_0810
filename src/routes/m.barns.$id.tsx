@@ -35,7 +35,7 @@ type WO = {
 
 const kindIcon = {
   健康: Stethoscope,
-  修蹄: Footprints,
+  疾病治疗: Footprints,
   免疫: Syringe,
 } as const;
 
