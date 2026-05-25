@@ -27,7 +27,7 @@ const roleToName: Record<string, string> = {
 type WO = {
   id: string;
   target: string;
-  kind: "健康" | "修蹄" | "免疫";
+  kind: "健康" | "疾病治疗" | "免疫";
   type: string;
   event: string;
   owner: string;
