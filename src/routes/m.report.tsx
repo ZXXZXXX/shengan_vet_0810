@@ -258,7 +258,7 @@ function ReportPage() {
           <>
 
             {/* 处理对象 */}
-            <Section title="处理对象" required>
+            <Section title="执行对象" required>
               {lockTarget ? (
                 <div className="space-y-2">
                   <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
