@@ -92,14 +92,19 @@ const kindIcon: Record<Kind, typeof Stethoscope> = {
   领取: PackageCheck,
 };
 
+function cleanName(name: string) {
+  return name.replace(/^(内部|外部)·/, "");
+}
+
 function Avatar({ name, label }: { name: string; label: string }) {
+  const display = cleanName(name);
   return (
     <span className="inline-flex items-center gap-1">
       <span>{label}</span>
       <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
-        {name.charAt(0)}
+        {display.charAt(0)}
       </span>
-      <span className="text-text-secondary">{name}</span>
+      <span className="text-text-secondary">{display}</span>
     </span>
   );
 }
