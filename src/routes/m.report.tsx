@@ -148,6 +148,7 @@ function ReportPage() {
   const [voiceSecs, setVoiceSecs] = useState<number | null>(null);
   const [recording, setRecording] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showDraftDialog, setShowDraftDialog] = useState(false);
 
   // 健康
   const [workType, setWorkType] = useState<WorkType | "">("");
