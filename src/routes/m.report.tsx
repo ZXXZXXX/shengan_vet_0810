@@ -558,7 +558,7 @@ function EvidenceSection({
   recording,
   onVoiceToggle,
   hideVideo,
-  descLabel = "文字描述",
+  descLabel = "具体描述",
 }: {
   desc: string;
   setDesc: (v: string) => void;
@@ -573,6 +573,7 @@ function EvidenceSection({
   hideVideo?: boolean;
   descLabel?: string;
 }) {
+
   type MediaItem = { id: number; type: "photo" | "video" };
   const media: MediaItem[] = [
     ...photos.map((id) => ({ id, type: "photo" as const })),
