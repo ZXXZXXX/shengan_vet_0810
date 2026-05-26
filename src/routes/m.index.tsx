@@ -141,35 +141,27 @@ function MHomePage() {
 
       {/* ============ 牧场摘要 ============ */}
       <section className="px-4 mt-5">
-        <SectionTitle title="牧场摘要" hint="数据实时同步" />
+        <SectionTitle title="牧场摘要" />
         <div className="grid grid-cols-3 gap-2">
-          <DataCard icon={Beef} tone="brand" label="牛只总数" value="1,284" sub="本月" compact />
-          <DataCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" sub="本周" compact />
-          <DataCard icon={AlertCircle} tone="warning" label="异常数" value="18" sub="今日" compact />
+          <SummaryCard icon={Beef} tone="brand" label="牛只总数" value="1,284" />
+          <SummaryCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" />
+          <SummaryCard icon={Stethoscope} tone="warning" label="异常数" value="18" />
         </div>
       </section>
 
       {/* ============ 今日工作 ============ */}
       <section className="px-4 mt-5">
-        <SectionTitle title="今日工作" hint="与“我”相关" />
+        <SectionTitle title="今日工作" />
         <div className="grid grid-cols-3 gap-2">
           <TaskOverviewCard to="/m/respond" icon={Inbox} tone="warning" label="待响应" value="6" />
           <TaskOverviewCard to="/m/pickup" icon={PackageCheck} tone="info" label="待领物" value={String(pendingPickups.length)} />
           <TaskOverviewCard to="/m/health" search={{ tab: "待执行" }} icon={PlayCircle} tone="brand" label="待执行" value="4" />
         </div>
-        {/* 跨牧场说明 */}
-        <div className="mt-2 rounded-lg bg-surface-subtle border border-border px-3 py-2 text-caption text-text-tertiary inline-flex items-start gap-1.5 w-full">
-          <MapPin className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-          <span>
-            仅显示 <span className="text-foreground">{farm.name}</span> 的工作；其它牧场的提醒可在
-            <Link to="/m/notifications" className="text-primary mx-1">消息中心</Link>查看。
-          </span>
-        </div>
       </section>
 
       {/* ============ 风险提醒 ============ */}
       <section className="px-4 mt-5 mb-4">
-        <SectionTitle title="风险提醒" hint={`共 ${risks.length} 项`} />
+        <SectionTitle title="风险提醒" />
         <div className="space-y-2">
           {risks.map((r) => (
             <Link
@@ -235,6 +227,34 @@ const toneAccentMap: Record<string, string> = {
   success: "var(--state-success)",
   muted: "var(--text-secondary)",
 };
+
+function SummaryCard({
+  icon: Icon,
+  tone,
+  label,
+  value,
+}: {
+  icon: typeof Beef;
+  tone: keyof typeof colorMap;
+  label: string;
+  value: string;
+}) {
+  const accent = toneAccentMap[tone];
+  return (
+    <div className="relative rounded-xl bg-card border border-border p-3 overflow-hidden h-[92px]">
+      <span
+        className="pointer-events-none absolute -right-2 -bottom-2 opacity-[0.12]"
+        style={{ color: accent }}
+      >
+        <Icon className="h-20 w-20" strokeWidth={1.25} />
+      </span>
+      <div className="relative text-caption text-text-secondary">{label}</div>
+      <div className="relative mt-2 text-section-title text-foreground tabular-nums leading-none">
+        {value}
+      </div>
+    </div>
+  );
+}
 
 function DataCard({
   icon: Icon,
