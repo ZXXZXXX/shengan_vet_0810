@@ -441,8 +441,8 @@ export function WorkOrderPage({
   };
 
   const counts = Object.fromEntries(
-    statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length]),
-  ) as Record<WorkStatus, number>;
+    statusList.map((s) => [s.key, orders.filter((o) => effectiveStatus(o) === s.key).length]),
+  ) as Record<StatusKey, number>;
 
   const proposers = useMemo(
     () => Array.from(new Set(orders.map((o) => o.proposer).filter(Boolean))),
