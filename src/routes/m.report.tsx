@@ -243,7 +243,9 @@ function ReportPage() {
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
     handlerId !== "" &&
+    desc.trim().length > 0 &&
     evidenceReady;
+
 
   const submit = () => {
     if (!canSubmit) return;
@@ -556,7 +558,7 @@ function EvidenceSection({
   recording,
   onVoiceToggle,
   hideVideo,
-  descLabel = "文字描述",
+  descLabel = "具体描述",
 }: {
   desc: string;
   setDesc: (v: string) => void;
@@ -571,6 +573,7 @@ function EvidenceSection({
   hideVideo?: boolean;
   descLabel?: string;
 }) {
+
   type MediaItem = { id: number; type: "photo" | "video" };
   const media: MediaItem[] = [
     ...photos.map((id) => ({ id, type: "photo" as const })),
@@ -655,16 +658,17 @@ function EvidenceSection({
         )}
       </Section>
 
-      <Section title={descLabel}>
+      <Section title={descLabel} required>
         <textarea
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          placeholder="补充关键信息（可选）"
+          placeholder="请补充关键信息（必填）"
           rows={3}
           className="w-full p-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary resize-none"
         />
         <div className="text-right text-caption text-text-tertiary mt-1">{desc.length} / 200</div>
       </Section>
+
     </>
   );
 }

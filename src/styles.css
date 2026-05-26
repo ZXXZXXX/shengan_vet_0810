@@ -159,6 +159,20 @@
   [data-slot="input"] {
     box-shadow: none !important;
   }
+  /* Unified focus style — brand color border, no glow */
+  input:focus,
+  input:focus-visible,
+  textarea:focus,
+  textarea:focus-visible,
+  select:focus,
+  select:focus-visible,
+  [data-slot="input"]:focus,
+  [data-slot="input"]:focus-visible {
+    outline: none !important;
+    border-color: var(--brand) !important;
+    box-shadow: 0 0 0 1px var(--brand) !important;
+  }
+
 }
 
 @layer utilities {
