@@ -114,7 +114,13 @@ function TaskListPage() {
   const role = useRole();
   const isApprover = canApprove(role);
   const claimed = useClaimed();
-  const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
+  const search = Route.useSearch();
+  const initialTab: (typeof tabs)[number]["key"] = search.tab === "待执行"
+    ? "待执行"
+    : isApprover
+      ? "待审批"
+      : "全部";
+  const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(initialTab);
   const [q, setQ] = useState("");
 
   // 列表仅展示工单卡片：排除领取（取物）和损耗（物资）
@@ -122,7 +128,9 @@ function TaskListPage() {
   void claimed;
   void PICKUPS;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
-  if (tab !== "全部") list = list.filter((o) => o.status === tab);
+  if (tab === "待执行") list = list.filter((o) => o.status === "进行中");
+  else if (tab !== "全部") list = list.filter((o) => o.status === tab);
+
   const kw = q.trim().toLowerCase();
   if (kw) {
     list = list.filter((o) => {
