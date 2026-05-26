@@ -45,7 +45,8 @@ const REASONS = [
 
 function PickupListPage() {
   const claimed = useClaimed();
-  const list = PICKUPS.filter((p) => !claimed.includes(p.id));
+  const history = usePickupHistory();
+  const list = PICKUPS.filter((p) => !claimed.includes(p.id) && !history.some((h) => h.id === p.id));
   const [skipId, setSkipId] = useState<string | null>(null);
   const [reason, setReason] = useState<string>("");
   const [other, setOther] = useState("");
@@ -66,10 +67,7 @@ function PickupListPage() {
       toast.error("请选择或填写原因");
       return;
     }
-    unclaimPickup(skipping.id);
-    // mock: 标记为已处理（用 claim 占位以从列表移除）
-    // 这里复用 claim 的语义：从待领物列表中消失
-    import("@/lib/pickup-store").then((m) => m.claimPickup(skipping.id));
+    invalidatePickup(skipping.id, final);
     toast.success(`已提交「无需领物」· ${final}`);
     setSkipId(null);
   };
