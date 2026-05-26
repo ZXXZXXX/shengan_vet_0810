@@ -535,14 +535,66 @@ function ReportPage() {
 
       {/* 底部提交 */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-        <button
-          disabled={!canSubmit || submitted}
-          onClick={submit}
-          className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body disabled:opacity-50 transition-opacity"
-        >
-          {submitted ? "已提交,工作已生成" : "提交上报"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowDraftDialog(true)}
+            className="h-12 px-4 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center active:bg-surface-subtle"
+          >
+            存草稿
+          </button>
+          <button
+            disabled={!canSubmit || submitted}
+            onClick={submit}
+            className="flex-1 h-12 rounded-lg bg-primary text-primary-foreground text-body disabled:opacity-50 transition-opacity"
+          >
+            {submitted ? "已提交,工作已生成" : "提交上报"}
+          </button>
+        </div>
       </div>
+
+      {/* 存草稿确认弹窗 */}
+      {showDraftDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="mx-4 w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4">
+            <h3 className="text-card-title text-foreground">保存草稿？</h3>
+            <p className="text-body-sm text-text-secondary">
+              当前已填写的内容将被保存为草稿，下次进入可继续编辑。
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowDraftDialog(false)}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center"
+              >
+                取消
+              </button>
+              <button
+                onClick={() => {
+                  const draft = {
+                    target,
+                    workType,
+                    symptoms,
+                    customSymptom,
+                    note,
+                    handlerId,
+                    suspectedDisease,
+                    desc,
+                    photos,
+                    videos,
+                    voiceSecs,
+                    savedAt: new Date().toISOString(),
+                  };
+                  localStorage.setItem("report:draft", JSON.stringify(draft));
+                  setShowDraftDialog(false);
+                  toast.success("草稿已保存");
+                }}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center"
+              >
+                确认保存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </MobileShell>
   );
 }
