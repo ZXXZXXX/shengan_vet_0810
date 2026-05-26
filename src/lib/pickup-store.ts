@@ -1,10 +1,12 @@
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, useMemo } from "react";
 
 export type PickupItem = {
   name: string;
   spec?: string;
   qty: string;
 };
+
+export type PickupResult = "claimed" | "invalidated";
 
 export type Pickup = {
   id: string;
@@ -15,6 +17,9 @@ export type Pickup = {
   approver: string;
   warehouse: string;
   items: PickupItem[];
+  result?: PickupResult; // 历史结果状态
+  handledAt?: string; // 处理时间
+  invalidReason?: string; // 无需领物原因
 };
 
 export const PICKUPS: Pickup[] = [
@@ -47,29 +52,106 @@ export const PICKUPS: Pickup[] = [
   },
 ];
 
+/** 既往记录（已领取 / 已失效） */
+export const PICKUP_HISTORY: Pickup[] = [
+  {
+    id: "PK-2103",
+    title: "产后护理药品领取",
+    source: "WO-2103",
+    barn: "1 号牛舍",
+    approvedAt: "昨日 14:20",
+    approver: "王芳（兽医）",
+    warehouse: "中央药房 · B 区货架 01",
+    items: [
+      { name: "钙注射液", spec: "500ml / 瓶", qty: "1 瓶" },
+      { name: "维生素 AD", spec: "10ml / 支", qty: "3 支" },
+    ],
+    result: "claimed",
+    handledAt: "昨日 15:05",
+  },
+  {
+    id: "PK-2098",
+    title: "蹄病治疗药品领取",
+    source: "WO-2098",
+    barn: "4 号牛舍",
+    approvedAt: "昨日 09:10",
+    approver: "张磊（场长）",
+    warehouse: "中央药房 · A 区货架 05",
+    items: [
+      { name: "蹄浴液", spec: "5L / 桶", qty: "1 桶" },
+      { name: "绷带", spec: "宽型", qty: "2 卷" },
+    ],
+    result: "claimed",
+    handledAt: "昨日 10:30",
+  },
+  {
+    id: "PK-2085",
+    title: "驱虫药品领取",
+    source: "WO-2085",
+    barn: "2 号牛舍",
+    approvedAt: "05-24 16:00",
+    approver: "刘洋（兽医）",
+    warehouse: "中央药房 · C 区货架 02",
+    items: [
+      { name: "伊维菌素", spec: "50ml / 瓶", qty: "2 瓶" },
+    ],
+    result: "invalidated",
+    handledAt: "05-24 16:30",
+    invalidReason: "现场已有备用物资",
+  },
+  {
+    id: "PK-2072",
+    title: "疫苗冷藏运输袋领取",
+    source: "LS-2072",
+    barn: "3 号牛舍",
+    approvedAt: "05-23 08:30",
+    approver: "王芳（兽医）",
+    warehouse: "冷链库 · 冷柜 #2",
+    items: [
+      { name: "保温运输袋", spec: "大号", qty: "1 个" },
+    ],
+    result: "invalidated",
+    handledAt: "05-23 09:00",
+    invalidReason: "由其他人代为领取",
+  },
+];
+
 const KEY = "mp:pickup-claimed";
+const INVALIDATED_KEY = "mp:pickup-invalidated";
 const listeners = new Set<() => void>();
 
-function readSet(): Set<string> {
+function readSet(key: string): Set<string> {
   if (typeof window === "undefined") return new Set();
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(key);
     return new Set(raw ? (JSON.parse(raw) as string[]) : []);
   } catch {
     return new Set();
   }
 }
 
-let snapshot: string[] = typeof window === "undefined" ? [] : Array.from(readSet());
+function readInvalidatedMap(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(INVALIDATED_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
+
+let claimedSnapshot: string[] = typeof window === "undefined" ? [] : Array.from(readSet(KEY));
+let invalidatedSnapshot: Record<string, string> = typeof window === "undefined" ? {} : readInvalidatedMap();
 
 function refresh() {
-  snapshot = Array.from(readSet());
+  claimedSnapshot = Array.from(readSet(KEY));
+  invalidatedSnapshot = readInvalidatedMap();
   listeners.forEach((fn) => fn());
 }
 
 export function claimPickup(id: string) {
   if (typeof window === "undefined") return;
-  const set = readSet();
+  const set = readSet(KEY);
   set.add(id);
   localStorage.setItem(KEY, JSON.stringify(Array.from(set)));
   refresh();
@@ -77,9 +159,17 @@ export function claimPickup(id: string) {
 
 export function unclaimPickup(id: string) {
   if (typeof window === "undefined") return;
-  const set = readSet();
+  const set = readSet(KEY);
   set.delete(id);
   localStorage.setItem(KEY, JSON.stringify(Array.from(set)));
+  refresh();
+}
+
+export function invalidatePickup(id: string, reason?: string) {
+  if (typeof window === "undefined") return;
+  const map = readInvalidatedMap();
+  map[id] = reason || "";
+  localStorage.setItem(INVALIDATED_KEY, JSON.stringify(map));
   refresh();
 }
 
@@ -89,9 +179,41 @@ export function useClaimed(): string[] {
       listeners.add(cb);
       return () => listeners.delete(cb);
     },
-    () => snapshot,
-    () => snapshot
+    () => claimedSnapshot,
+    () => claimedSnapshot
   );
+}
+
+export function useInvalidated(): Record<string, string> {
+  return useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    () => invalidatedSnapshot,
+    () => invalidatedSnapshot
+  );
+}
+
+export function usePickupHistory(): Pickup[] {
+  const claimed = useClaimed();
+  const invalidated = useInvalidated();
+  return useMemo(() => {
+    const dynamicClaimed = PICKUPS.filter((p) => claimed.includes(p.id)).map((p) => ({
+      ...p,
+      result: "claimed" as PickupResult,
+    }));
+    const dynamicInvalidated = PICKUPS.filter((p) => Object.prototype.hasOwnProperty.call(invalidated, p.id)).map((p) => ({
+      ...p,
+      result: "invalidated" as PickupResult,
+      invalidReason: invalidated[p.id],
+    }));
+    return [...PICKUP_HISTORY, ...dynamicClaimed, ...dynamicInvalidated].sort((a, b) => {
+      const ta = a.handledAt || a.approvedAt;
+      const tb = b.handledAt || b.approvedAt;
+      return tb.localeCompare(ta);
+    });
+  }, [claimed, invalidated]);
 }
 
 export function isClaimed(id: string, claimed: string[]) {
