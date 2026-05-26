@@ -20,8 +20,12 @@ import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
 export const Route = createFileRoute("/m/health/")({
   head: () => ({ meta: [{ title: "工单列表 · 奇点智牧" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    tab: typeof s.tab === "string" ? (s.tab as string) : undefined,
+  }),
   component: TaskListPage,
 });
+
 
 type Status = "待审批" | "进行中" | "已驳回" | "已完成" | "已终止";
 type Kind = "健康" | "损耗" | "修蹄" | "领取";
