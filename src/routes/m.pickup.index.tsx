@@ -8,9 +8,17 @@ import {
   Inbox,
   MapPin,
   Clock,
+  CheckCircle2,
+  XCircle,
+  Archive,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { PICKUPS, useClaimed, unclaimPickup } from "@/lib/pickup-store";
+import {
+  PICKUPS,
+  useClaimed,
+  usePickupHistory,
+  invalidatePickup,
+} from "@/lib/pickup-store";
 import {
   Dialog,
   DialogContent,
