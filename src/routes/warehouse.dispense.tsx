@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Clock, HandCoins } from "lucide-react";
+import { Clock, HandCoins, XCircle } from "lucide-react";
 import {
   WarehouseEventPage,
   type StatusConfig,
@@ -11,11 +11,12 @@ export const Route = createFileRoute("/warehouse/dispense")({
   component: DispensePage,
 });
 
-type DStatus = "待取药" | "已取药";
+type DStatus = "待取药" | "已取药" | "已失效";
 
 const statuses: StatusConfig<DStatus>[] = [
   { key: "待取药", label: "待取药", icon: Clock, tone: "warning" },
   { key: "已取药", label: "已取药", icon: HandCoins, tone: "success" },
+  { key: "已失效", label: "已失效", icon: XCircle, tone: "danger" },
 ];
 
 const records: WarehouseEvent<DStatus>[] = [
