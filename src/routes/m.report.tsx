@@ -658,16 +658,17 @@ function EvidenceSection({
         )}
       </Section>
 
-      <Section title={descLabel}>
+      <Section title={descLabel} required>
         <textarea
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          placeholder="补充关键信息（可选）"
+          placeholder="请补充关键信息（必填）"
           rows={3}
           className="w-full p-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary resize-none"
         />
         <div className="text-right text-caption text-text-tertiary mt-1">{desc.length} / 200</div>
       </Section>
+
     </>
   );
 }
