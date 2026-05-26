@@ -28,6 +28,14 @@ const records: WarehouseEvent<DStatus>[] = [
     operator: "李雨晴",
     operatedAt: "-",
   },
+  {
+    id: "DP-3196",
+    lines: [{ item: "头孢噻呋钠", qty: "2 支" }],
+    desc: "工作 WO-2350 已终止，对应取药单失效。",
+    status: "已失效",
+    operator: "系统",
+    operatedAt: "2026-05-12 11:05",
+  },
 
   {
     id: "DP-3201",
