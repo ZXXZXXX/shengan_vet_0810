@@ -243,7 +243,9 @@ function ReportPage() {
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
     handlerId !== "" &&
+    desc.trim().length > 0 &&
     evidenceReady;
+
 
   const submit = () => {
     if (!canSubmit) return;
