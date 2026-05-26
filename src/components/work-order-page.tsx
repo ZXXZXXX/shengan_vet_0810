@@ -456,7 +456,7 @@ export function WorkOrderPage({
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     const list = orders
-      .filter((o) => o.status === active)
+      .filter((o) => effectiveStatus(o) === active)
       .filter((o) => inRange(o.createdAt, range))
       .filter((o) =>
         kw
