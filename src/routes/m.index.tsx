@@ -228,6 +228,34 @@ const toneAccentMap: Record<string, string> = {
   muted: "var(--text-secondary)",
 };
 
+function SummaryCard({
+  icon: Icon,
+  tone,
+  label,
+  value,
+}: {
+  icon: typeof Beef;
+  tone: keyof typeof colorMap;
+  label: string;
+  value: string;
+}) {
+  const accent = toneAccentMap[tone];
+  return (
+    <div className="relative rounded-xl bg-card border border-border p-3 overflow-hidden h-[92px]">
+      <span
+        className="pointer-events-none absolute -right-2 -bottom-2 opacity-[0.12]"
+        style={{ color: accent }}
+      >
+        <Icon className="h-20 w-20" strokeWidth={1.25} />
+      </span>
+      <div className="relative text-caption text-text-secondary">{label}</div>
+      <div className="relative mt-2 text-section-title text-foreground tabular-nums leading-none">
+        {value}
+      </div>
+    </div>
+  );
+}
+
 function DataCard({
   icon: Icon,
   tone,
