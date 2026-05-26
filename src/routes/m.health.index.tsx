@@ -18,10 +18,15 @@ import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
+type HealthSearch = { tab?: string };
 export const Route = createFileRoute("/m/health/")({
   head: () => ({ meta: [{ title: "工单列表 · 奇点智牧" }] }),
+  validateSearch: (s: Record<string, unknown>): HealthSearch =>
+    typeof s.tab === "string" ? { tab: s.tab } : {},
   component: TaskListPage,
 });
+
+
 
 type Status = "待审批" | "进行中" | "已驳回" | "已完成" | "已终止";
 type Kind = "健康" | "损耗" | "修蹄" | "领取";
@@ -73,14 +78,16 @@ const tasks: Task[] = [
   { id: "YM-2042", target: "24 头牛", barn: "1 号牛舍", kind: "健康", type: "疫苗", event: "疫苗补免", proposer: "周凯", who: "周凯", approver: "王医生", status: "已终止", createdAt: "今日 10:20", terminatedAt: "今日 10:20", scope: { type: "batch", label: "24 头牛" }, conclusion: "疫苗补免", desc: "计划调整，暂不执行", needPickup: false },
 ];
 
-const tabs: { key: Status | "全部"; label: string }[] = [
+// 进行中对执行人即“待执行”
+const tabs: { key: Status | "全部" | "待执行"; label: string }[] = [
   { key: "全部", label: "全部" },
   { key: "待审批", label: "待审批" },
-  { key: "进行中", label: "进行中" },
+  { key: "待执行", label: "待执行" },
   { key: "已完成", label: "已完成" },
   { key: "已驳回", label: "已驳回" },
   { key: "已终止", label: "已终止" },
 ];
+
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
   待审批: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
@@ -108,7 +115,13 @@ function TaskListPage() {
   const role = useRole();
   const isApprover = canApprove(role);
   const claimed = useClaimed();
-  const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(isApprover ? "待审批" : "全部");
+  const search = Route.useSearch();
+  const initialTab: (typeof tabs)[number]["key"] = search.tab === "待执行"
+    ? "待执行"
+    : isApprover
+      ? "待审批"
+      : "全部";
+  const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(initialTab);
   const [q, setQ] = useState("");
 
   // 列表仅展示工单卡片：排除领取（取物）和损耗（物资）
@@ -116,7 +129,9 @@ function TaskListPage() {
   void claimed;
   void PICKUPS;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
-  if (tab !== "全部") list = list.filter((o) => o.status === tab);
+  if (tab === "待执行") list = list.filter((o) => o.status === "进行中");
+  else if (tab !== "全部") list = list.filter((o) => o.status === tab);
+
   const kw = q.trim().toLowerCase();
   if (kw) {
     list = list.filter((o) => {
