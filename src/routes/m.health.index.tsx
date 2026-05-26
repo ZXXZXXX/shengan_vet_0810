@@ -216,84 +216,96 @@ function TaskListPage() {
                   const isPickup = o.kind === "领取";
                   const canApproveThis = isApprover && o.status === "待审批";
                   const canExecuteThis = !isApprover && o.status === "进行中";
+
+                  // 统一 Footer 元信息：左侧时间·人员
+                  let metaTimeLabel = "";
+                  let metaTime = "";
+                  let metaPersonLabel = "";
+                  let metaPersonName = "";
+                  if (o.status === "待审批") {
+                    metaTimeLabel = "上报";
+                    metaTime = o.reportedAt ?? o.createdAt;
+                    metaPersonLabel = "审核";
+                    metaPersonName = o.approver ?? "—";
+                  } else if (o.status === "进行中" || o.status === "已完成") {
+                    metaTimeLabel = "执行";
+                    metaTime = o.executedAt ?? o.createdAt;
+                    metaPersonLabel = "执行";
+                    metaPersonName = o.who;
+                  } else if (o.status === "已驳回") {
+                    metaTimeLabel = "审核";
+                    metaTime = o.reviewedAt ?? o.createdAt;
+                    metaPersonLabel = "审核";
+                    metaPersonName = o.approver ?? "—";
+                  } else if (o.status === "已终止") {
+                    metaTimeLabel = "终止";
+                    metaTime = o.terminatedAt ?? o.createdAt;
+                    metaPersonLabel = "审核";
+                    metaPersonName = o.approver ?? "—";
+                  }
+
+                  const ctaText = isPickup
+                    ? (o.status === "已完成" ? "查看清单" : "领取")
+                    : canApproveThis
+                      ? "前往 PC 审批"
+                      : canExecuteThis
+                        ? "执行"
+                        : "查看";
+
                   const commonInner = (
-                    <>
-                      {/* Line 1: 编号 · 类型 · 状态 */}
-                      <div className="flex items-center gap-1.5 text-body-sm">
-                        <Icon className={`h-3.5 w-3.5 ${s.color}`} />
-                        <span className="font-mono text-foreground">{o.id}</span>
-                        <span className="text-text-tertiary">｜</span>
-                        <span className="inline-flex items-center gap-1 text-text-secondary">
-                          <KIcon className="h-3 w-3" />{o.type}
-                        </span>
-                        <span className={`${s.tag} ml-auto`}>
+                    <div className="flex flex-col gap-2">
+                      {/* Header 区：状态 + 编号·类型 */}
+                      <div className="flex items-center gap-1.5 text-body-sm h-5">
+                        <span className={`${s.tag} inline-flex items-center gap-1`}>
+                          <Icon className="h-3 w-3" />
                           {isPickup && o.status === "进行中" ? "待领取" : o.status}
+                        </span>
+                        <span className="font-mono text-text-tertiary text-caption ml-auto">{o.id}</span>
+                        <span className="text-text-tertiary">·</span>
+                        <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                          <KIcon className="h-3 w-3" />{o.type}
                         </span>
                       </div>
 
-                      {/* Line 2: 对象 · 结论 */}
-                      <div className="mt-1.5 text-card-title text-foreground">
+                      {/* Title 区：对象 · 结论 —— 单行 truncate */}
+                      <div className="text-card-title text-foreground truncate h-[26px] leading-[26px]">
                         {o.scope.type === "single" ? `单只 ${o.scope.ear}` : `${o.scope.label}`}
                         <span className="text-text-tertiary"> · </span>
                         {o.conclusion}
                       </div>
 
-                      {/* Line 3: 具体描述 */}
-                      {o.desc && (
-                        <div className="mt-1 text-body-sm text-text-secondary leading-relaxed">
-                          {o.desc}
-                        </div>
-                      )}
+                      {/* Desc 区：描述 —— 单行 line-clamp-1，无内容占位保持高度 */}
+                      <div className="text-body-sm text-text-secondary truncate h-[22px] leading-[22px]">
+                        {o.desc || <span className="text-text-tertiary/0">·</span>}
+                      </div>
 
-                      {/* Line 4: 按状态展示不同的时间 + 人员（含头像） */}
-                      <div className="mt-2 text-caption text-text-tertiary flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                        {o.status === "待审批" && (
-                          <>
-                            <span>上报 <span className="text-text-secondary">{o.reportedAt ?? o.createdAt}</span></span>
-                            <span>·</span>
-                            <Avatar name={o.proposer} label="上报" />
-                            <span>·</span>
-                            <Avatar name={o.approver ?? "—"} label="审核" />
-                          </>
-                        )}
-                        {(o.status === "进行中" || o.status === "已完成") && (
-                          <>
-                            <span>执行 <span className="text-text-secondary">{o.executedAt ?? o.createdAt}</span></span>
-                            <span>·</span>
-                            <Avatar name={o.who} label="执行" />
-                            {o.status === "进行中" && (
-                              <>
-                                <span>·</span>
-                                <span className={o.needPickup ? "text-primary font-medium" : "text-text-tertiary"}>
-                                  {o.needPickup ? "需领物" : "无需领物"}
-                                </span>
-                              </>
-                            )}
-                          </>
-                        )}
-                        {o.status === "已驳回" && (
-                          <>
-                            <span>审核 <span className="text-text-secondary">{o.reviewedAt ?? o.createdAt}</span></span>
-                            <span>·</span>
-                            <Avatar name={o.approver ?? "—"} label="审核" />
-                          </>
-                        )}
-                        {o.status === "已终止" && (
-                          <>
-                            <span>终止 <span className="text-text-secondary">{o.terminatedAt ?? o.createdAt}</span></span>
-                            <span>·</span>
-                            <Avatar name={o.approver ?? "—"} label="审核" />
-                          </>
-                        )}
-                        <span className="ml-auto inline-flex items-center gap-0.5 text-text-secondary">
-                          {isPickup ? (o.status === "已完成" ? "查看清单" : "领取") : canExecuteThis ? "执行" : "查看"}
+                      {/* Footer 区：时间·人员 + 操作 */}
+                      <div className="flex items-center text-caption text-text-tertiary pt-2 border-t border-border/60 h-9">
+                        <span className="truncate">
+                          {metaTimeLabel} <span className="text-text-secondary">{metaTime}</span>
+                          <span className="mx-1.5">·</span>
+                          <span className="inline-flex items-center gap-1 align-middle">
+                            {metaPersonLabel}
+                            <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
+                              {cleanName(metaPersonName).charAt(0)}
+                            </span>
+                            <span className="text-text-secondary">{cleanName(metaPersonName)}</span>
+                          </span>
+                          {o.status === "进行中" && !isPickup && (
+                            <>
+                              <span className="mx-1.5">·</span>
+                              <span className={o.needPickup ? "text-primary font-medium" : "text-text-tertiary"}>
+                                {o.needPickup ? "需领物" : "无需领物"}
+                              </span>
+                            </>
+                          )}
+                        </span>
+                        <span className="ml-auto inline-flex items-center gap-0.5 text-text-secondary shrink-0 pl-2">
+                          {ctaText}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
                       </div>
-                      {canApproveThis && (
-                        <div className="mt-1 text-caption text-text-tertiary">请前往 PC 审批</div>
-                      )}
-                    </>
+                    </div>
                   );
                   const cls = `block rounded-xl bg-card border p-4 active:bg-surface-subtle ${
                     isPickup && o.status === "进行中" ? "border-primary/30" : "border-border"
@@ -308,6 +320,7 @@ function TaskListPage() {
                     </Link>
                   );
                 })}
+
               </div>
             </section>
           ))}
