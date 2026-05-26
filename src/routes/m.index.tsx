@@ -334,12 +334,14 @@ function DataCard({
 
 function TaskOverviewCard({
   to,
+  search,
   icon: Icon,
   tone,
   label,
   value,
 }: {
   to: string;
+  search?: Record<string, string>;
   icon: typeof Inbox;
   tone: keyof typeof colorMap;
   label: string;
@@ -348,6 +350,7 @@ function TaskOverviewCard({
   return (
     <Link
       to={to}
+      search={search as never}
       className="rounded-xl bg-card border border-border p-3 flex flex-col gap-2 active:bg-surface-subtle"
     >
       <div className="flex items-center justify-between">
@@ -363,6 +366,7 @@ function TaskOverviewCard({
     </Link>
   );
 }
+
 
 // ---------------- 牧场切换 ----------------
 function FarmSwitcher() {
