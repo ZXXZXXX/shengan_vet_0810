@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
+import { toast } from "sonner";
 
 type ReportSearch = { target?: string; barn?: string; lock?: number };
 
