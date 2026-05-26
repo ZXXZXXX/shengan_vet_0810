@@ -77,14 +77,16 @@ const tasks: Task[] = [
   { id: "YM-2042", target: "24 头牛", barn: "1 号牛舍", kind: "健康", type: "疫苗", event: "疫苗补免", proposer: "周凯", who: "周凯", approver: "王医生", status: "已终止", createdAt: "今日 10:20", terminatedAt: "今日 10:20", scope: { type: "batch", label: "24 头牛" }, conclusion: "疫苗补免", desc: "计划调整，暂不执行", needPickup: false },
 ];
 
-const tabs: { key: Status | "全部"; label: string }[] = [
+// 进行中对执行人即“待执行”
+const tabs: { key: Status | "全部" | "待执行"; label: string }[] = [
   { key: "全部", label: "全部" },
   { key: "待审批", label: "待审批" },
-  { key: "进行中", label: "进行中" },
+  { key: "待执行", label: "待执行" },
   { key: "已完成", label: "已完成" },
   { key: "已驳回", label: "已驳回" },
   { key: "已终止", label: "已终止" },
 ];
+
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
   待审批: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
