@@ -281,7 +281,7 @@ export function WorkOrderPage({
   const role = usePcRole();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const [active, setActive] = useState<WorkStatus>("待审核");
+  const [active, setActive] = useState<StatusKey>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
   const [mode, setMode] = useState<"view" | "process">("view");
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
