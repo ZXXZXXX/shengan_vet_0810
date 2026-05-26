@@ -219,12 +219,14 @@ const ALL_COLS: ColDef[] = [
   { key: "action", label: "功能", width: 140, locked: true },
 ];
 
-const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
+type StatusKey = WorkStatus | "已终止";
+const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; tone: string }[] = [
   { key: "待审核", label: "待审核", icon: ClipboardList, tone: "warning" },
   { key: "待响应", label: "待响应", icon: PlayCircle, tone: "pending" },
   { key: "执行中", label: "执行中", icon: PlayCircle, tone: "info" },
   { key: "已驳回", label: "已驳回", icon: AlertTriangle, tone: "danger" },
   { key: "已完成", label: "已完成", icon: CheckCircle2, tone: "success" },
+  { key: "已终止", label: "已终止", icon: Ban, tone: "muted" },
 ];
 
 const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
@@ -233,6 +235,7 @@ const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
   info: { bg: "bg-brand-subtle", text: "text-primary", tag: "tag tag-brand" },
   danger: { bg: "bg-[var(--state-danger)]/10", text: "text-[var(--state-danger)]", tag: "tag tag-danger" },
   success: { bg: "bg-[var(--state-success)]/10", text: "text-[var(--state-success)]", tag: "tag tag-success" },
+  muted: { bg: "bg-surface-subtle", text: "text-text-tertiary", tag: "tag tag-muted" },
 };
 
 type DateRange = "all" | "today" | "7d" | "30d";
