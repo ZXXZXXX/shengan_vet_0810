@@ -18,13 +18,14 @@ import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
+type HealthSearch = { tab?: string };
 export const Route = createFileRoute("/m/health/")({
   head: () => ({ meta: [{ title: "工单列表 · 奇点智牧" }] }),
-  validateSearch: (s: Record<string, unknown>) => ({
-    tab: typeof s.tab === "string" ? (s.tab as string) : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): HealthSearch =>
+    typeof s.tab === "string" ? { tab: s.tab } : {},
   component: TaskListPage,
 });
+
 
 
 type Status = "待审批" | "进行中" | "已驳回" | "已完成" | "已终止";
