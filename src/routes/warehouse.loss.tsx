@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Search, X } from "lucide-react";
+import { CheckCircle2, ClipboardList, XCircle, Clock, Search, X } from "lucide-react";
 import {
   WarehouseEventPage,
   type StatusConfig,
