@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Search, X } from "lucide-react";
+import { CheckCircle2, ClipboardList, XCircle, Clock, Search, X } from "lucide-react";
 import {
   WarehouseEventPage,
   type StatusConfig,
@@ -27,10 +27,14 @@ export const Route = createFileRoute("/warehouse/loss")({
   component: LossPage,
 });
 
-type LStatus = "已记录";
+type LStatus = "待审核" | "已确认" | "已驳回" | "待生效" | "已生效";
 
 const statuses: StatusConfig<LStatus>[] = [
-  { key: "已记录", label: "已记录损耗", icon: CheckCircle2, tone: "success" },
+  { key: "待审核", label: "待审核", icon: ClipboardList, tone: "warning" },
+  { key: "已确认", label: "已确认", icon: CheckCircle2, tone: "info" },
+  { key: "已驳回", label: "已驳回", icon: XCircle, tone: "danger" },
+  { key: "待生效", label: "待生效", icon: Clock, tone: "brand" },
+  { key: "已生效", label: "已生效", icon: CheckCircle2, tone: "success" },
 ];
 
 // 物品/药品候选
@@ -65,7 +69,7 @@ const initial: WarehouseEvent<LStatus>[] = [
     id: "LS-1086",
     lines: [{ item: "口蹄疫疫苗 A 型", qty: "8 支" }],
     desc: "[出库前 · 冷链断电] 冷链断电导致失效，估损 ¥ 480。",
-    status: "已记录",
+    status: "待审核",
     operator: "孙库管",
     operatedAt: "2026-05-12 10:18",
   },
@@ -73,7 +77,7 @@ const initial: WarehouseEvent<LStatus>[] = [
     id: "LS-1085",
     lines: [{ item: "营养补充剂", qty: "2 罐" }],
     desc: "[出库后 · 运输破损 · 需补领] 运输过程中外箱破损渗漏，估损 ¥ 180。",
-    status: "已记录",
+    status: "已确认",
     operator: "王仓管",
     operatedAt: "2026-05-11 15:30",
   },
@@ -81,7 +85,7 @@ const initial: WarehouseEvent<LStatus>[] = [
     id: "LS-1084",
     lines: [{ item: "消毒液 戊二醛", qty: "5 L" }],
     desc: "[出库前 · 过期失效] 过期销毁登记，估损 ¥ 220。",
-    status: "已记录",
+    status: "待生效",
     operator: "孙库管",
     operatedAt: "2026-05-10 09:00",
   },
@@ -89,7 +93,7 @@ const initial: WarehouseEvent<LStatus>[] = [
     id: "LS-1083",
     lines: [{ item: "乳房炎抗生素", qty: "1 盒" }],
     desc: "[出库后 · 误开未用 · 无需补领] 误开未使用，已退回登记。",
-    status: "已记录",
+    status: "已驳回",
     operator: "李雨晴",
     operatedAt: "2026-05-09 14:42",
   },
@@ -158,7 +162,7 @@ function LossPage() {
       id: nextId,
       lines: [{ item: item.name, qty: `${qty} ${item.unit}` }],
       desc: `[${tags.join(" · ")}] ${remark || `于 ${warehouse.label} 登记损耗`}`,
-      status: "已记录",
+      status: "待审核",
       operator: "超级管理员",
       operatedAt: stamp,
     };

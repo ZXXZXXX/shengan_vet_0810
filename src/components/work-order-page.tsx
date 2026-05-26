@@ -219,12 +219,14 @@ const ALL_COLS: ColDef[] = [
   { key: "action", label: "功能", width: 140, locked: true },
 ];
 
-const statusList: { key: WorkStatus; label: string; icon: typeof ClipboardList; tone: string }[] = [
+type StatusKey = WorkStatus | "已终止";
+const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; tone: string }[] = [
   { key: "待审核", label: "待审核", icon: ClipboardList, tone: "warning" },
   { key: "待响应", label: "待响应", icon: PlayCircle, tone: "pending" },
   { key: "执行中", label: "执行中", icon: PlayCircle, tone: "info" },
   { key: "已驳回", label: "已驳回", icon: AlertTriangle, tone: "danger" },
   { key: "已完成", label: "已完成", icon: CheckCircle2, tone: "success" },
+  { key: "已终止", label: "已终止", icon: Ban, tone: "muted" },
 ];
 
 const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
@@ -233,6 +235,7 @@ const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
   info: { bg: "bg-brand-subtle", text: "text-primary", tag: "tag tag-brand" },
   danger: { bg: "bg-[var(--state-danger)]/10", text: "text-[var(--state-danger)]", tag: "tag tag-danger" },
   success: { bg: "bg-[var(--state-success)]/10", text: "text-[var(--state-success)]", tag: "tag tag-success" },
+  muted: { bg: "bg-surface-subtle", text: "text-text-tertiary", tag: "tag tag-muted" },
 };
 
 type DateRange = "all" | "today" | "7d" | "30d";
@@ -278,7 +281,7 @@ export function WorkOrderPage({
   const role = usePcRole();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const [active, setActive] = useState<WorkStatus>("待审核");
+  const [active, setActive] = useState<StatusKey>("待审核");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
   const [mode, setMode] = useState<"view" | "process">("view");
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
@@ -438,8 +441,8 @@ export function WorkOrderPage({
   };
 
   const counts = Object.fromEntries(
-    statusList.map((s) => [s.key, orders.filter((o) => o.status === s.key).length]),
-  ) as Record<WorkStatus, number>;
+    statusList.map((s) => [s.key, orders.filter((o) => effectiveStatus(o) === s.key).length]),
+  ) as Record<StatusKey, number>;
 
   const proposers = useMemo(
     () => Array.from(new Set(orders.map((o) => o.proposer).filter(Boolean))),
@@ -453,7 +456,7 @@ export function WorkOrderPage({
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     const list = orders
-      .filter((o) => o.status === active)
+      .filter((o) => effectiveStatus(o) === active)
       .filter((o) => inRange(o.createdAt, range))
       .filter((o) =>
         kw
@@ -678,7 +681,7 @@ export function WorkOrderPage({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {statusList.map((s) => {
             const tone = toneStyles[s.tone];
             const isActive = active === s.key;

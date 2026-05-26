@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Clock, HandCoins } from "lucide-react";
+import { Clock, HandCoins, XCircle } from "lucide-react";
 import {
   WarehouseEventPage,
   type StatusConfig,
@@ -11,11 +11,12 @@ export const Route = createFileRoute("/warehouse/dispense")({
   component: DispensePage,
 });
 
-type DStatus = "待取药" | "已取药";
+type DStatus = "待取药" | "已取药" | "已失效";
 
 const statuses: StatusConfig<DStatus>[] = [
   { key: "待取药", label: "待取药", icon: Clock, tone: "warning" },
   { key: "已取药", label: "已取药", icon: HandCoins, tone: "success" },
+  { key: "已失效", label: "已失效", icon: XCircle, tone: "danger" },
 ];
 
 const records: WarehouseEvent<DStatus>[] = [
@@ -26,6 +27,14 @@ const records: WarehouseEvent<DStatus>[] = [
     status: "待取药",
     operator: "李雨晴",
     operatedAt: "-",
+  },
+  {
+    id: "DP-3196",
+    lines: [{ item: "头孢噻呋钠", qty: "2 支" }],
+    desc: "工作 WO-2350 已终止，对应取药单失效。",
+    status: "已失效",
+    operator: "系统",
+    operatedAt: "2026-05-12 11:05",
   },
 
   {
