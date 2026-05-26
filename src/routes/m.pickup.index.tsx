@@ -150,6 +150,69 @@ function PickupListPage() {
         ))}
       </div>
 
+      {/* 既往记录 */}
+      {history.length > 0 && (
+        <div className="px-4 mt-2 pb-8">
+          <div className="flex items-center gap-1.5 mb-3">
+            <Archive className="h-3.5 w-3.5 text-text-tertiary" />
+            <span className="text-caption font-medium text-text-tertiary">既往记录</span>
+            <span className="text-caption text-text-tertiary">({history.length})</span>
+          </div>
+          <div className="space-y-2">
+            {history.map((h) => {
+              const isClaimed = h.result === "claimed";
+              return (
+                <Link
+                  key={h.id}
+                  to="/m/pickup/$id"
+                  params={{ id: h.id }}
+                  className="block rounded-xl bg-card border border-border overflow-hidden active:bg-surface-subtle"
+                >
+                  <div className="relative p-4">
+                    {/* Header */}
+                    <div className="flex items-center gap-1.5 text-body-sm">
+                      {isClaimed ? (
+                        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 bg-success/10 text-success text-caption">
+                          <CheckCircle2 className="h-3 w-3" /> 已领取
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 bg-muted text-text-tertiary text-caption">
+                          <XCircle className="h-3 w-3" /> 已失效
+                        </span>
+                      )}
+                      <span className="font-mono text-text-tertiary text-caption ml-auto">{h.id}</span>
+                    </div>
+                    {/* Title */}
+                    <div className="mt-2 text-card-title text-foreground truncate">{h.title}</div>
+                    {/* Desc */}
+                    <div className="mt-1 text-body-sm text-text-secondary truncate">
+                      {h.warehouse} · 共 {h.items.length} 项
+                    </div>
+                    {/* Footer */}
+                    <div className="mt-2 pt-2 border-t border-border/60 flex items-center text-caption text-text-tertiary">
+                      {isClaimed ? (
+                        <>
+                          <CheckCircle2 className="h-3 w-3 mr-1 text-success" />
+                          <span>已领取 <span className="text-text-secondary">{h.handledAt}</span></span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-3 w-3 mr-1 text-text-tertiary" />
+                          <span>无需领物 <span className="text-text-secondary">{h.invalidReason}</span></span>
+                        </>
+                      )}
+                      <span className="ml-auto inline-flex items-center gap-0.5 text-text-secondary">
+                        详情 <ChevronRight className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* 无需领物原因弹窗 */}
       <Dialog open={!!skipping} onOpenChange={(o) => !o && setSkipId(null)}>
         <DialogContent className="max-w-[360px] rounded-2xl">
