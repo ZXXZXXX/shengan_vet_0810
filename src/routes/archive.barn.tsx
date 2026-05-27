@@ -3,7 +3,8 @@ import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Home, Plus, Search, Filter, Pencil, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Home, Plus, Search, Filter, MoreHorizontal, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/archive/barn")({
   head: () => ({ meta: [{ title: "牛舍信息 — 奇点智牧" }] }),
