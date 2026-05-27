@@ -38,8 +38,8 @@ function BarnPage() {
           </Button>
         </div>
 
-        <Card className="border-border bg-card overflow-hidden">
-          <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle">
+        <Card className="border-border bg-card overflow-x-auto">
+          <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle min-w-[960px]">
             <div className="col-span-2">编号</div>
             <div className="col-span-2">牛舍名称</div>
             <div className="col-span-2">所属牧场</div>
