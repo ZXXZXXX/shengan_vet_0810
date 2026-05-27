@@ -49,6 +49,7 @@ function SymptomKBPage() {
   const [list, setList] = useState<Symptom[]>(seed);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<Symptom | null>(null);
+  const [viewing, setViewing] = useState<Symptom | null>(null);
   const [pendingDelete, setPendingDelete] = useState<string[] | null>(null);
 
   const allChecked = list.length > 0 && selected.size === list.length;
