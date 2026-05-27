@@ -201,7 +201,7 @@ function DiseaseKBPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-                <div className="flex items-start justify-between mb-3 pl-7 pr-16">
+                <div className="flex items-start justify-between mb-3 pl-7 pr-32">
                   <div className="flex items-center gap-2.5">
                     <div className="h-10 w-10 rounded-lg bg-brand-subtle flex items-center justify-center">
                       <BookOpen className="h-4 w-4 text-primary" strokeWidth={1.75} />
