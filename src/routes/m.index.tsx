@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 
 import { MobileShell } from "@/components/mobile-shell";
+import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, canViewOperations, canApprove } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
@@ -159,30 +160,58 @@ function MHomePage() {
         </div>
       </section>
 
+      {/* ============ 草稿箱入口 ============ */}
+      <section className="px-4 mt-3">
+        <Link
+          to="/m/drafts"
+          className="flex items-center gap-3 p-3 rounded-xl bg-card border border-dashed border-border active:bg-surface-subtle"
+        >
+          <span className="h-9 w-9 rounded-lg bg-surface-subtle text-text-secondary inline-flex items-center justify-center">
+            <ClipboardList className="h-4 w-4" strokeWidth={1.75} />
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="text-body text-foreground">草稿箱</div>
+            <div className="text-caption text-text-tertiary mt-0.5">查看未完成的现场上报</div>
+          </div>
+          <ChevronRight className="h-3.5 w-3.5 text-text-tertiary" />
+        </Link>
+      </section>
+
       {/* ============ 风险提醒 ============ */}
       <section className="px-4 mt-5 mb-4">
         <SectionTitle title="风险提醒" />
-        <div className="space-y-2">
-          {risks.map((r) => (
-            <Link
-              key={r.title}
-              to={r.to}
-              className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
-            >
-              <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[r.tone]}`}>
-                <r.icon className="h-4 w-4" strokeWidth={1.75} />
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="text-body text-foreground truncate">{r.title}</div>
-                <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
-              </div>
-              <span className={`text-caption ${toneTextMap[r.tone] ?? "text-text-tertiary"} shrink-0`}>
-                {r.count}
-              </span>
-              <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-            </Link>
-          ))}
-        </div>
+        {risks.length === 0 ? (
+          <div className="rounded-xl bg-card border border-border">
+            <EmptyState
+              icon={HeartPulse}
+              size="sm"
+              title="暂无风险提醒"
+              desc="当前牧场各项指标正常"
+            />
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {risks.map((r) => (
+              <Link
+                key={r.title}
+                to={r.to}
+                className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
+              >
+                <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[r.tone]}`}>
+                  <r.icon className="h-4 w-4" strokeWidth={1.75} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-body text-foreground truncate">{r.title}</div>
+                  <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
+                </div>
+                <span className={`text-caption ${toneTextMap[r.tone] ?? "text-text-tertiary"} shrink-0`}>
+                  {r.count}
+                </span>
+                <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
 
