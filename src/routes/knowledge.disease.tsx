@@ -197,8 +197,12 @@ function DiseaseKBPage() {
 
                 <div className="mt-4 space-y-2.5">
                   <div>
-                    <div className="text-caption text-text-tertiary mb-0.5">典型症状</div>
-                    <div className="text-body-sm text-text-secondary line-clamp-2">{d.symptoms}</div>
+                    <div className="text-caption text-text-tertiary mb-1">典型症状</div>
+                    <div className="flex flex-wrap gap-1">
+                      {d.symptoms.map((s) => (
+                        <span key={s} className="tag tag-muted">{s}</span>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <div className="text-caption text-text-tertiary mb-0.5">防控要点</div>
