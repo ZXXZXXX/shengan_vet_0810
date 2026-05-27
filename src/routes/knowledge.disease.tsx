@@ -60,16 +60,13 @@ function DiseaseKBPage() {
   const allChecked = list.length > 0 && selected.size === list.length;
   const someChecked = selected.size > 0 && !allChecked;
 
-  const toggleOne = (id: string) => {
+  const toggleOne = (id: string) =>
     setSelected((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
-  };
-  const toggleAll = () => {
-    setSelected(allChecked ? new Set() : new Set(list.map((d) => d.id)));
-  };
+  const toggleAll = () => setSelected(allChecked ? new Set() : new Set(list.map((d) => d.id)));
 
   const confirmDelete = () => {
     if (!pendingDelete) return;
@@ -123,47 +120,63 @@ function DiseaseKBPage() {
           </Button>
         </div>
 
-        <div className="flex items-center justify-between gap-3 px-4 h-11 rounded-md border border-border bg-surface-subtle">
-          <div className="flex items-center gap-3">
-            <Checkbox ref={headerCheckRef} checked={allChecked} onCheckedChange={toggleAll} aria-label="全选" />
-            <span className="text-body-sm text-text-secondary">
-              {selected.size > 0 ? `已选 ${selected.size} 项` : `共 ${list.length} 条`}
-            </span>
+        {selected.size > 0 && (
+          <div className="flex items-center justify-between gap-3 px-4 h-11 rounded-md border border-primary/30 bg-brand-subtle">
+            <span className="text-body-sm text-foreground">已选 {selected.size} 项</span>
+            <div className="flex items-center gap-1.5">
+              <Button variant="outline" size="sm" className="h-8 gap-1.5 text-body-sm font-normal" onClick={batchEdit}>
+                <Pencil className="h-3.5 w-3.5" /> 批量编辑
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1.5 text-body-sm font-normal text-[var(--state-danger)] hover:text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
+                onClick={() => setPendingDelete(Array.from(selected))}
+              >
+                <Trash2 className="h-3.5 w-3.5" /> 批量删除
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 gap-1 text-body-sm font-normal text-text-tertiary" onClick={() => setSelected(new Set())}>
+                <X className="h-3.5 w-3.5" /> 取消
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            {selected.size > 0 && (
-              <>
-                <Button variant="outline" size="sm" className="h-8 gap-1.5 text-body-sm font-normal" onClick={batchEdit}>
-                  <Pencil className="h-3.5 w-3.5" /> 批量编辑
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 gap-1.5 text-body-sm font-normal text-[var(--state-danger)] hover:text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
-                  onClick={() => setPendingDelete(Array.from(selected))}
-                >
-                  <Trash2 className="h-3.5 w-3.5" /> 批量删除
-                </Button>
-                <Button variant="ghost" size="sm" className="h-8 gap-1 text-body-sm font-normal text-text-tertiary" onClick={() => setSelected(new Set())}>
-                  <X className="h-3.5 w-3.5" /> 取消
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
+        )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="border-border bg-card overflow-hidden">
+          <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
+            <Checkbox ref={headerCheckRef} checked={allChecked} onCheckedChange={toggleAll} aria-label="全选" />
+            <div className="grid grid-cols-[110px_minmax(140px,1fr)_120px_80px_minmax(220px,1.6fr)_minmax(180px,1.4fr)] gap-4 flex-1 min-w-0">
+              <div>编号</div>
+              <div>疾病名称</div>
+              <div>分类</div>
+              <div>严重程度</div>
+              <div>典型症状</div>
+              <div>防控要点</div>
+            </div>
+            <div className="w-[160px] text-right shrink-0">功能</div>
+          </div>
           {list.map((d) => {
             const checked = selected.has(d.id);
             return (
-              <Card
+              <div
                 key={d.id}
-                className={`relative border-border bg-card p-5 transition-colors ${checked ? "border-primary/60 ring-1 ring-primary/20" : "hover:border-primary/40"}`}
+                className={`flex items-center gap-4 px-6 py-3 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
               >
-                <div className="absolute top-3 left-3">
-                  <Checkbox checked={checked} onCheckedChange={() => toggleOne(d.id)} aria-label={`选择 ${d.name}`} />
+                <Checkbox checked={checked} onCheckedChange={() => toggleOne(d.id)} aria-label={`选择 ${d.name}`} />
+                <div className="grid grid-cols-[110px_minmax(140px,1fr)_120px_80px_minmax(220px,1.6fr)_minmax(180px,1.4fr)] gap-4 flex-1 min-w-0 items-center">
+                  <div className="font-mono text-body text-foreground truncate">{d.id}</div>
+                  <div className="flex items-center gap-1.5 text-body text-foreground truncate">
+                    <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" strokeWidth={1.75} />
+                    <span className="truncate">{d.name}</span>
+                  </div>
+                  <div className="text-body-sm text-text-secondary truncate">{d.cat}</div>
+                  <div className="truncate">
+                    <span className={`tag ${d.severity === "高" ? "tag-danger" : d.severity === "中" ? "tag-warning" : "tag-muted"}`}>{d.severity}</span>
+                  </div>
+                  <div className="text-body-sm text-text-secondary truncate" title={d.symptoms}>{d.symptoms}</div>
+                  <div className="text-body-sm text-text-secondary truncate" title={d.prevent}>{d.prevent}</div>
                 </div>
-                <div className="absolute top-2.5 right-2.5 flex items-center gap-0.5">
+                <div className="w-[160px] shrink-0 flex justify-end items-center gap-0.5">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -201,32 +214,10 @@ function DiseaseKBPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-                <div className="flex items-start justify-between mb-3 pl-7 pr-32">
-                  <div className="flex items-center gap-2.5">
-                    <div className="h-10 w-10 rounded-lg bg-brand-subtle flex items-center justify-center">
-                      <BookOpen className="h-4 w-4 text-primary" strokeWidth={1.75} />
-                    </div>
-                    <div>
-                      <div className="text-card-title text-foreground">{d.name}</div>
-                      <div className="text-caption text-text-tertiary font-mono">{d.id} · {d.cat}</div>
-                    </div>
-                  </div>
-                  <span className={`tag ${d.severity === "高" ? "tag-danger" : d.severity === "中" ? "tag-warning" : "tag-muted"}`}>{d.severity}</span>
-                </div>
-                <div className="space-y-2">
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-1">典型症状</div>
-                    <p className="text-body-sm text-text-secondary leading-relaxed">{d.symptoms}</p>
-                  </div>
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-1">防控要点</div>
-                    <p className="text-body-sm text-text-secondary leading-relaxed">{d.prevent}</p>
-                  </div>
-                </div>
-              </Card>
+              </div>
             );
           })}
-        </div>
+        </Card>
       </main>
 
       <Sheet open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
@@ -288,7 +279,6 @@ function DiseaseKBPage() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
-
 
       <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent>
