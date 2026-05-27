@@ -286,7 +286,12 @@ function DiseaseKBPage() {
               <ViewRow label="名称" value={viewing.name} />
               <ViewRow label="分类" value={viewing.cat} />
               <ViewRow label="严重程度" value={viewing.severity} />
-              <ViewRow label="典型症状" value={viewing.symptoms} />
+              <div className="flex items-start gap-3">
+                <div className="w-20 shrink-0 text-body-sm text-text-secondary">典型症状</div>
+                <div className="flex-1 flex flex-wrap gap-1">
+                  {viewing.symptoms.map((s) => <span key={s} className="tag tag-muted">{s}</span>)}
+                </div>
+              </div>
               <ViewRow label="防控要点" value={viewing.prevent} />
             </div>
           )}
