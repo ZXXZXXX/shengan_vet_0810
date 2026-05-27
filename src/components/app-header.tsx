@@ -1,13 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { Bell, Search, Building2, Users, Briefcase, LogOut, Check, ChevronDown, Globe2 } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
+import { Bell, Building2, Users, Briefcase, LogOut, Check, ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { FARMS, useFarm, setFarmId } from "@/lib/farm-store";
 
@@ -46,10 +39,7 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
   const [farmOpen, setFarmOpen] = useState(false);
   const currentFarm = useFarm();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const globalScope =
-    pathname.startsWith("/organization") ||
-    pathname.startsWith("/knowledge") ||
-    pathname.startsWith("/archive");
+  const showFarmSwitcher = pathname === "/" || pathname.startsWith("/production");
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card">
       <div className="flex h-14 items-center gap-3 px-6">
@@ -65,22 +55,7 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          {globalScope ? (
-            <TooltipProvider delayDuration={150}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="inline-flex items-center gap-2 h-9 px-3 rounded-md border border-dashed border-border bg-surface-subtle/60 cursor-help">
-                    <Globe2 className="h-3.5 w-3.5 text-text-tertiary" />
-                    <span className="text-body-sm text-text-secondary font-medium">全集团数据</span>
-                    <span className="text-caption text-text-tertiary hidden lg:inline">· 不区分牧场</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-[260px]">
-                  当前模块（组织管理 / 诊疗知识库 / 基础档案）的数据范围为全集团统一维护，与顶部牧场切换无关。
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
+          {showFarmSwitcher && (
             <Popover open={farmOpen} onOpenChange={setFarmOpen}>
               <PopoverTrigger asChild>
                 <button className="inline-flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card hover:bg-surface-subtle transition-colors">
@@ -115,14 +90,6 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
               </PopoverContent>
             </Popover>
           )}
-
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-            <Input
-              placeholder="请输入工作编号"
-              className="h-9 w-64 rounded-md border-border bg-card pl-9 text-body-sm placeholder:text-text-tertiary focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
-            />
-          </div>
 
 
           <button className="relative h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors">
