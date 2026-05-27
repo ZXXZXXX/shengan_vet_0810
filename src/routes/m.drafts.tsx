@@ -70,7 +70,7 @@ function DraftsPage() {
         <EmptyState
           icon={FileEdit}
           title="暂无草稿"
-          desc="在现场上报中点击"存草稿"即可保存未完成的工单"
+          desc="在现场上报中点击「存草稿」即可保存未完成的工单"
           action={
             <Link
               to="/m/report"
