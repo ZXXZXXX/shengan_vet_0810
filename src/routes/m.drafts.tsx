@@ -124,7 +124,7 @@ function DraftsPage() {
   ) : undefined;
 
   return (
-    <MobileShell title="草稿箱" back right={right}>
+    <MobileShell title="草稿箱" back right={right} hideTabBar>
       {drafts.length === 0 ? (
         <EmptyState
           icon={FileEdit}
