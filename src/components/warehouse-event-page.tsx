@@ -23,12 +23,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
 import {
   Plus,
   Search,
@@ -396,6 +396,7 @@ export function WarehouseEventPage<S extends string>({
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-surface-subtle">
+                <span className="px-2 text-caption text-text-tertiary">按操作时间</span>
                 {dateRanges.map((r) => (
                   <button
                     key={r.key}
@@ -563,11 +564,11 @@ export function WarehouseEventPage<S extends string>({
         </Card>
       </main>
 
-      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-section-title">{title}详情</DialogTitle>
-          </DialogHeader>
+      <Sheet open={!!detail} onOpenChange={(o: boolean) => !o && setDetail(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-section-title">{title}详情</SheetTitle>
+          </SheetHeader>
           {detail && detailStatus && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -639,7 +640,7 @@ export function WarehouseEventPage<S extends string>({
               )}
             </div>
           )}
-          <DialogFooter className="gap-2">
+          <SheetFooter className="gap-2">
             {detail && renderDetailActions ? (
               renderDetailActions(detail, () => setDetail(null))
             ) : detail && reviewStatus !== undefined && detail.status === reviewStatus && onReview ? (
@@ -661,10 +662,10 @@ export function WarehouseEventPage<S extends string>({
             ) : (
               <Button variant="outline" onClick={() => setDetail(null)}>关闭</Button>
             )}
-          </DialogFooter>
+          </SheetFooter>
 
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </TooltipProvider>
   );
 }
