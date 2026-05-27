@@ -128,14 +128,8 @@ export function AppSidebar() {
     <Sidebar collapsible="none" className="border-r border-border bg-card">
       <SidebarHeader className="border-b border-border bg-card">
         <div className="flex items-center px-2 py-3">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle">
-              <span className="text-card-title text-primary font-semibold leading-none">奇</span>
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className="text-card-title font-medium text-foreground leading-tight">奇点</span>
-              <span className="text-caption text-text-tertiary leading-tight">智牧管理系统</span>
-            </div>
+          <Link to="/" className="flex items-center">
+            <img src={brandLogo} alt="智慧牧场" className="h-9 w-auto" />
           </Link>
         </div>
       </SidebarHeader>
