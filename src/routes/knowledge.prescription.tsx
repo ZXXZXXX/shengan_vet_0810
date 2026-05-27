@@ -251,6 +251,34 @@ function PrescriptionPage() {
         </SheetContent>
       </Sheet>
 
+      <Sheet open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-section-title">处方详情</SheetTitle>
+          </SheetHeader>
+          {viewing && (
+            <div className="mt-4 space-y-4 text-body-sm">
+              <ViewRow label="编号" value={viewing.id} mono />
+              <ViewRow label="处方名称" value={viewing.name} />
+              <ViewRow label="适用疾病" value={viewing.disease} />
+              <ViewRow label="疗程" value={viewing.duration} />
+              <div className="space-y-1.5">
+                <div className="text-body-sm text-text-secondary">用药组成</div>
+                <ul className="list-disc pl-5 text-body text-foreground space-y-0.5">
+                  {viewing.drugs.map((d) => <li key={d}>{d}</li>)}
+                </ul>
+              </div>
+              <ViewRow label="创建人" value={viewing.author} />
+              <ViewRow label="更新时间" value={viewing.updated} />
+            </div>
+          )}
+          <SheetFooter className="mt-6 flex-row justify-end gap-2">
+            <Button variant="outline" onClick={() => setViewing(null)}>关闭</Button>
+            <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={() => { if (viewing) { setEditing({ ...viewing }); setViewing(null); } }}>编辑</Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
       <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
