@@ -47,30 +47,30 @@ function CattlePage() {
         </div>
 
         <Card className="border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-3 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
-            <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
-              <div className="col-span-2">编号</div>
-              <div className="col-span-1">耳号</div>
-              <div className="col-span-2">品种</div>
-              <div className="col-span-1">性别</div>
-              <div className="col-span-2">出生日期</div>
-              <div className="col-span-1">所属牧场</div>
-              <div className="col-span-1">所在牛舍</div>
-              <div className="col-span-1">健康</div>
+          <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
+            <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
+              <div>编号</div>
+              <div>耳号</div>
+              <div>品种</div>
+              <div>性别</div>
+              <div>出生日期</div>
+              <div>所属牧场</div>
+              <div>所在牛舍</div>
+              <div>健康</div>
             </div>
             <div className="w-[140px] text-right shrink-0">功能</div>
           </div>
           {cattle.map((c) => (
-            <div key={c.id} className="flex items-center gap-3 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
-              <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
-                <div className="col-span-2 font-mono text-body text-foreground">{c.id}</div>
-                <div className="col-span-1 flex items-center gap-1.5 text-body text-foreground"><Beef className="h-3.5 w-3.5 text-primary" />{c.ear}</div>
-                <div className="col-span-2 text-body-sm text-text-secondary">{c.breed}</div>
-                <div className="col-span-1 text-body-sm text-text-secondary">{c.sex}</div>
-                <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{c.birth}</div>
-                <div className="col-span-1 text-body-sm text-text-secondary truncate">{c.farm}</div>
-                <div className="col-span-1 text-body-sm text-text-secondary truncate">{c.barn}</div>
-                <div className="col-span-1"><span className={healthTag(c.health)}>{c.health}</span></div>
+            <div key={c.id} className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
+              <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
+                <div className="font-mono text-body text-foreground truncate">{c.id}</div>
+                <div className="flex items-center gap-1.5 text-body text-foreground truncate"><Beef className="h-3.5 w-3.5 text-primary shrink-0" />{c.ear}</div>
+                <div className="text-body-sm text-text-secondary truncate">{c.breed}</div>
+                <div className="text-body-sm text-text-secondary">{c.sex}</div>
+                <div className="text-body-sm text-text-secondary tabular-nums truncate">{c.birth}</div>
+                <div className="text-body-sm text-text-secondary truncate">{c.farm}</div>
+                <div className="text-body-sm text-text-secondary truncate">{c.barn}</div>
+                <div><span className={healthTag(c.health)}>{c.health}</span></div>
               </div>
               <div className="w-[140px] shrink-0 flex items-center justify-end gap-0.5">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
