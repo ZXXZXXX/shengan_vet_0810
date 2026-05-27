@@ -208,7 +208,7 @@ type ColDef = {
 
 const ALL_COLS: ColDef[] = [
   { key: "id", label: "工单编号", width: 120, locked: true },
-  { key: "target", label: "牛只耳号", width: 110, locked: true },
+  { key: "target", label: "牛舍/牛只", width: 200, locked: true },
   { key: "status", label: "当前状态", width: 100 },
   { key: "proposer", label: "提出人", width: 100 },
   { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
