@@ -159,7 +159,7 @@ function LossPage() {
       id: nextId,
       lines: [{ item: item.name, qty: `${qty} ${item.unit}` }],
       desc: `[${tags.join(" · ")}] ${remark || `于 ${warehouse.label} 登记损耗`}`,
-      status: "待审核",
+      status: "待生效",
       operator: "超级管理员",
       operatedAt: stamp,
     };
