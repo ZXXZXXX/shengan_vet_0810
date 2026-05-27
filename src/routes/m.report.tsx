@@ -282,11 +282,11 @@ function ReportPage() {
           <>
 
             {/* 处理对象 */}
-            <Section title="执行对象" required>
+            <Section title="执行对象" required hint="可一次性选择多只牛或多个牛舍">
               {lockTarget ? (
                 <div className="space-y-2">
                   <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
-                    <span className="font-mono">#{target}</span>
+                    <span className="font-mono">#{targets[0] ?? search.target}</span>
                     <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
                       <Lock className="h-3 w-3" /> 已锁定
                     </span>
@@ -310,21 +310,55 @@ function ReportPage() {
                     <input
                       value={target}
                       onChange={(e) => setTarget(e.target.value)}
-                      placeholder="牛只编号 / 牛舍标号 / 批量执行对象"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addTarget(target);
+                        }
+                      }}
+                      placeholder="输入牛只编号或牛舍后回车添加，可多选"
                       className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
                     />
+                    <button
+                      onClick={() => addTarget(target)}
+                      disabled={!target.trim()}
+                      className="h-12 px-3 rounded-lg bg-primary text-primary-foreground text-body-sm disabled:opacity-40"
+                    >
+                      添加
+                    </button>
                     <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
                       <ScanLine className="h-4 w-4" /> 扫码
                     </button>
                   </div>
+                  {targets.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 p-2 rounded-lg bg-surface-subtle border border-border">
+                      {targets.map((t) => (
+                        <span
+                          key={t}
+                          className="inline-flex items-center gap-1 h-7 pl-2.5 pr-1 rounded-full bg-card border border-border text-caption text-foreground"
+                        >
+                          {t}
+                          <button
+                            onClick={() => removeTarget(t)}
+                            className="h-5 w-5 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      ))}
+                      <span className="ml-auto self-center text-caption text-text-tertiary">
+                        共 {targets.length} 项
+                      </span>
+                    </div>
+                  )}
                   <div className="flex flex-wrap gap-1.5">
                     {["3 号牛舍", "犊牛舍 A", "批量·待挤奶群"].map((q) => (
                       <button
                         key={q}
-                        onClick={() => setTarget(q)}
+                        onClick={() => addTarget(q)}
                         className="h-7 px-2.5 rounded-full bg-card border border-border text-caption text-text-secondary"
                       >
-                        {q}
+                        + {q}
                       </button>
                     ))}
                   </div>
