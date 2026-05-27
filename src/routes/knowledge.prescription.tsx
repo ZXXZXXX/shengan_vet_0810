@@ -54,6 +54,7 @@ function PrescriptionPage() {
   const [list, setList] = useState<Rx[]>(seed);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<Rx | null>(null);
+  const [viewing, setViewing] = useState<Rx | null>(null);
   const [pendingDelete, setPendingDelete] = useState<string[] | null>(null);
 
   const allChecked = list.length > 0 && selected.size === list.length;
