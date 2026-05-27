@@ -151,14 +151,16 @@ function MenuItem({
   icon: Icon,
   label,
   badge,
+  to,
 }: {
   icon: typeof Bell;
   label: string;
   badge?: string;
+  to?: string;
 }) {
   return (
     <Link
-      to="/m/me"
+      to={to ?? "/m/me"}
       className="flex items-center gap-3 px-4 h-12 rounded-xl bg-card border border-border active:bg-surface-subtle"
     >
       <Icon className="h-4 w-4 text-text-secondary" strokeWidth={1.75} />
