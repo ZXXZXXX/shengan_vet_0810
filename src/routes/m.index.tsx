@@ -475,5 +475,3 @@ function FarmSwitcher() {
   );
 }
 
-// Suppress unused imports kept for readability
-void ClipboardList;
