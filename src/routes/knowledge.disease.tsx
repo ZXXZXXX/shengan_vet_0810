@@ -238,16 +238,29 @@ function DiseaseKBPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-body-sm text-text-secondary">分类</Label>
-                  <Input value={editing.cat} onChange={(e) => setEditing({ ...editing, cat: e.target.value })} />
+                  <Select value={editing.cat} onValueChange={(v) => setEditing({ ...editing, cat: v })}>
+                    <SelectTrigger><SelectValue placeholder="选择分类" /></SelectTrigger>
+                    <SelectContent>
+                      {CAT_OPTIONS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-body-sm text-text-secondary">严重程度</Label>
-                  <Input value={editing.severity} onChange={(e) => setEditing({ ...editing, severity: e.target.value })} />
+                  <Select value={editing.severity} onValueChange={(v) => setEditing({ ...editing, severity: v })}>
+                    <SelectTrigger><SelectValue placeholder="选择严重程度" /></SelectTrigger>
+                    <SelectContent>
+                      {SEVERITY_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-body-sm text-text-secondary">典型症状</Label>
-                <Textarea rows={3} value={editing.symptoms} onChange={(e) => setEditing({ ...editing, symptoms: e.target.value })} />
+                <SymptomTags
+                  value={editing.symptoms}
+                  onChange={(next) => setEditing({ ...editing, symptoms: next })}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-body-sm text-text-secondary">防控要点</Label>
