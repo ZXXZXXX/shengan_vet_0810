@@ -54,6 +54,7 @@ function DiseaseKBPage() {
   const [list, setList] = useState<Disease[]>(seed);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<Disease | null>(null);
+  const [viewing, setViewing] = useState<Disease | null>(null);
   const [pendingDelete, setPendingDelete] = useState<string[] | null>(null);
 
   const allChecked = list.length > 0 && selected.size === list.length;
