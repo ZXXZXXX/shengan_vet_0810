@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BookOpen, Plus, Search, Filter, Pencil, Trash2, X, MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/knowledge/disease")({
@@ -38,16 +39,19 @@ type Disease = {
   name: string;
   cat: string;
   severity: string;
-  symptoms: string;
+  symptoms: string[];
   prevent: string;
 };
 
+const CAT_OPTIONS = ["繁殖系统", "蹄部疾病", "消化系统", "传染病", "代谢疾病", "呼吸系统", "其他"];
+const SEVERITY_OPTIONS = ["低", "中", "中-高", "高"];
+
 const seed: Disease[] = [
-  { id: "DZ-001", name: "乳房炎", cat: "繁殖系统", severity: "中-高", symptoms: "乳房红肿、热痛，乳汁异常", prevent: "挤奶卫生、乳头药浴" },
-  { id: "DZ-002", name: "蹄叶炎", cat: "蹄部疾病", severity: "中", symptoms: "跛行、蹄部发热、行走困难", prevent: "定期修蹄、地面保持干燥" },
-  { id: "DZ-003", name: "瘤胃酸中毒", cat: "消化系统", severity: "高", symptoms: "食欲减退、腹泻、瘤胃运动减弱", prevent: "饲料过渡渐进、平衡精粗比" },
-  { id: "DZ-004", name: "口蹄疫", cat: "传染病", severity: "高", symptoms: "口腔、蹄部、乳房水疱、溃烂", prevent: "强制免疫、隔离消毒" },
-  { id: "DZ-005", name: "酮病", cat: "代谢疾病", severity: "中", symptoms: "食欲下降、产奶量骤减、酮味", prevent: "围产期能量平衡、监测血酮" },
+  { id: "DZ-001", name: "乳房炎", cat: "繁殖系统", severity: "中-高", symptoms: ["乳房红肿", "热痛", "乳汁异常"], prevent: "挤奶卫生、乳头药浴" },
+  { id: "DZ-002", name: "蹄叶炎", cat: "蹄部疾病", severity: "中", symptoms: ["跛行", "蹄部发热", "行走困难"], prevent: "定期修蹄、地面保持干燥" },
+  { id: "DZ-003", name: "瘤胃酸中毒", cat: "消化系统", severity: "高", symptoms: ["食欲减退", "腹泻", "瘤胃运动减弱"], prevent: "饲料过渡渐进、平衡精粗比" },
+  { id: "DZ-004", name: "口蹄疫", cat: "传染病", severity: "高", symptoms: ["口腔水疱", "蹄部水疱", "乳房水疱", "溃烂"], prevent: "强制免疫、隔离消毒" },
+  { id: "DZ-005", name: "酮病", cat: "代谢疾病", severity: "中", symptoms: ["食欲下降", "产奶量骤减", "酮味"], prevent: "围产期能量平衡、监测血酮" },
 ];
 
 function DiseaseKBPage() {
@@ -193,8 +197,12 @@ function DiseaseKBPage() {
 
                 <div className="mt-4 space-y-2.5">
                   <div>
-                    <div className="text-caption text-text-tertiary mb-0.5">典型症状</div>
-                    <div className="text-body-sm text-text-secondary line-clamp-2">{d.symptoms}</div>
+                    <div className="text-caption text-text-tertiary mb-1">典型症状</div>
+                    <div className="flex flex-wrap gap-1">
+                      {d.symptoms.map((s) => (
+                        <span key={s} className="tag tag-muted">{s}</span>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <div className="text-caption text-text-tertiary mb-0.5">防控要点</div>
@@ -230,16 +238,29 @@ function DiseaseKBPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-body-sm text-text-secondary">分类</Label>
-                  <Input value={editing.cat} onChange={(e) => setEditing({ ...editing, cat: e.target.value })} />
+                  <Select value={editing.cat} onValueChange={(v) => setEditing({ ...editing, cat: v })}>
+                    <SelectTrigger><SelectValue placeholder="选择分类" /></SelectTrigger>
+                    <SelectContent>
+                      {CAT_OPTIONS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-body-sm text-text-secondary">严重程度</Label>
-                  <Input value={editing.severity} onChange={(e) => setEditing({ ...editing, severity: e.target.value })} />
+                  <Select value={editing.severity} onValueChange={(v) => setEditing({ ...editing, severity: v })}>
+                    <SelectTrigger><SelectValue placeholder="选择严重程度" /></SelectTrigger>
+                    <SelectContent>
+                      {SEVERITY_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-body-sm text-text-secondary">典型症状</Label>
-                <Textarea rows={3} value={editing.symptoms} onChange={(e) => setEditing({ ...editing, symptoms: e.target.value })} />
+                <SymptomTags
+                  value={editing.symptoms}
+                  onChange={(next) => setEditing({ ...editing, symptoms: next })}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-body-sm text-text-secondary">防控要点</Label>
@@ -265,7 +286,12 @@ function DiseaseKBPage() {
               <ViewRow label="名称" value={viewing.name} />
               <ViewRow label="分类" value={viewing.cat} />
               <ViewRow label="严重程度" value={viewing.severity} />
-              <ViewRow label="典型症状" value={viewing.symptoms} />
+              <div className="flex items-start gap-3">
+                <div className="w-20 shrink-0 text-body-sm text-text-secondary">典型症状</div>
+                <div className="flex-1 flex flex-wrap gap-1">
+                  {viewing.symptoms.map((s) => <span key={s} className="tag tag-muted">{s}</span>)}
+                </div>
+              </div>
               <ViewRow label="防控要点" value={viewing.prevent} />
             </div>
           )}
@@ -304,6 +330,40 @@ function ViewRow({ label, value, mono }: { label: string; value: string; mono?: 
     <div className="flex items-start gap-3">
       <div className="w-20 shrink-0 text-body-sm text-text-secondary">{label}</div>
       <div className={`flex-1 text-body text-foreground ${mono ? "font-mono" : ""}`}>{value}</div>
+    </div>
+  );
+}
+
+function SymptomTags({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+  const [draft, setDraft] = useState("");
+  const add = () => {
+    const v = draft.trim();
+    if (!v || value.includes(v)) { setDraft(""); return; }
+    onChange([...value, v]);
+    setDraft("");
+  };
+  const remove = (s: string) => onChange(value.filter((x) => x !== s));
+  return (
+    <div className="rounded-md border border-input bg-background px-2 py-2 min-h-[40px] flex flex-wrap gap-1.5 items-center focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0">
+      {value.map((s) => (
+        <span key={s} className="inline-flex items-center gap-1 rounded-md bg-brand-subtle text-primary text-body-sm px-2 py-0.5">
+          {s}
+          <button type="button" onClick={() => remove(s)} className="hover:text-[var(--state-danger)]" aria-label={`移除 ${s}`}>
+            <X className="h-3 w-3" />
+          </button>
+        </span>
+      ))}
+      <input
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === ",") { e.preventDefault(); add(); }
+          else if (e.key === "Backspace" && !draft && value.length) { onChange(value.slice(0, -1)); }
+        }}
+        onBlur={add}
+        placeholder={value.length ? "" : "输入症状后回车添加"}
+        className="flex-1 min-w-[120px] bg-transparent outline-none text-body-sm placeholder:text-text-tertiary"
+      />
     </div>
   );
 }
