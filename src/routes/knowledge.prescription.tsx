@@ -24,7 +24,8 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, Plus, Search, Filter, Pencil, Trash2, X } from "lucide-react";
+import { FileText, Plus, Search, Filter, Pencil, Trash2, X, MoreHorizontal } from "lucide-react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/knowledge/prescription")({
@@ -53,6 +54,7 @@ function PrescriptionPage() {
   const [list, setList] = useState<Rx[]>(seed);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<Rx | null>(null);
+  const [viewing, setViewing] = useState<Rx | null>(null);
   const [pendingDelete, setPendingDelete] = useState<string[] | null>(null);
 
   const allChecked = list.length > 0 && selected.size === list.length;
@@ -168,7 +170,14 @@ function PrescriptionPage() {
                   <div className="text-body-sm text-text-secondary truncate">{r.duration}</div>
                 </div>
                 <div className="w-[160px] shrink-0 flex justify-end items-center gap-0.5">
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                    onClick={() => setViewing(r)}
+                  >
+                    查看
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -177,15 +186,26 @@ function PrescriptionPage() {
                   >
                     编辑
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-text-tertiary hover:text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
-                    aria-label="删除"
-                    onClick={() => setPendingDelete([r.id])}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                        aria-label="更多操作"
+                      >
+                        <MoreHorizontal className="h-3.5 w-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-32">
+                      <DropdownMenuItem
+                        className="text-[var(--state-danger)] focus:text-[var(--state-danger)]"
+                        onClick={() => setPendingDelete([r.id])}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             );
@@ -231,6 +251,34 @@ function PrescriptionPage() {
         </SheetContent>
       </Sheet>
 
+      <Sheet open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-section-title">处方详情</SheetTitle>
+          </SheetHeader>
+          {viewing && (
+            <div className="mt-4 space-y-4 text-body-sm">
+              <ViewRow label="编号" value={viewing.id} mono />
+              <ViewRow label="处方名称" value={viewing.name} />
+              <ViewRow label="适用疾病" value={viewing.disease} />
+              <ViewRow label="疗程" value={viewing.duration} />
+              <div className="space-y-1.5">
+                <div className="text-body-sm text-text-secondary">用药组成</div>
+                <ul className="list-disc pl-5 text-body text-foreground space-y-0.5">
+                  {viewing.drugs.map((d) => <li key={d}>{d}</li>)}
+                </ul>
+              </div>
+              <ViewRow label="创建人" value={viewing.author} />
+              <ViewRow label="更新时间" value={viewing.updated} />
+            </div>
+          )}
+          <SheetFooter className="mt-6 flex-row justify-end gap-2">
+            <Button variant="outline" onClick={() => setViewing(null)}>关闭</Button>
+            <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={() => { if (viewing) { setEditing({ ...viewing }); setViewing(null); } }}>编辑</Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
       <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -251,5 +299,14 @@ function PrescriptionPage() {
         </AlertDialogContent>
       </AlertDialog>
     </>
+  );
+}
+
+function ViewRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-20 shrink-0 text-body-sm text-text-secondary">{label}</div>
+      <div className={`flex-1 text-body text-foreground ${mono ? "font-mono" : ""}`}>{value}</div>
+    </div>
   );
 }
