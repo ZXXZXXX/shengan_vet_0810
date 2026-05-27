@@ -396,6 +396,7 @@ export function WarehouseEventPage<S extends string>({
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-surface-subtle">
+                <span className="px-2 text-caption text-text-tertiary">按操作时间</span>
                 {dateRanges.map((r) => (
                   <button
                     key={r.key}
