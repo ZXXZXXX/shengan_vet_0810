@@ -248,7 +248,7 @@ function ReportPage() {
   };
 
   const canSubmit =
-    target.trim().length > 0 &&
+    targets.length > 0 &&
     workType !== "" &&
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
