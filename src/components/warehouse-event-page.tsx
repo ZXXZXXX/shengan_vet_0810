@@ -639,7 +639,7 @@ export function WarehouseEventPage<S extends string>({
               )}
             </div>
           )}
-          <DialogFooter className="gap-2">
+          <SheetFooter className="gap-2">
             {detail && renderDetailActions ? (
               renderDetailActions(detail, () => setDetail(null))
             ) : detail && reviewStatus !== undefined && detail.status === reviewStatus && onReview ? (
@@ -661,10 +661,10 @@ export function WarehouseEventPage<S extends string>({
             ) : (
               <Button variant="outline" onClick={() => setDetail(null)}>关闭</Button>
             )}
-          </DialogFooter>
+          </SheetFooter>
 
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </TooltipProvider>
   );
 }
