@@ -208,7 +208,7 @@ type ColDef = {
 
 const ALL_COLS: ColDef[] = [
   { key: "id", label: "工单编号", width: 120, locked: true },
-  { key: "target", label: "牛只耳号", width: 110, locked: true },
+  { key: "target", label: "牛舍/牛只", width: 200, locked: true },
   { key: "status", label: "当前状态", width: 100 },
   { key: "proposer", label: "提出人", width: 100 },
   { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
@@ -535,8 +535,20 @@ export function WorkOrderPage({
     switch (key) {
       case "id":
         return <span className="font-mono text-body text-foreground">{o.id}</span>;
-      case "target":
-        return <span className="text-body text-foreground">{o.target}</span>;
+      case "target": {
+        const parts = o.target.split(/[,，、;；\n]+/).map((s) => s.trim()).filter(Boolean);
+        const first = parts[0] ?? "";
+        const truncated = first.length > 16 ? first.slice(0, 16) + "…" : first;
+        const extra = parts.length - 1;
+        return (
+          <span className="inline-flex items-center gap-1 max-w-full">
+            <span className="text-body text-foreground truncate" title={parts.join("、")}>{truncated}</span>
+            {extra > 0 && (
+              <span className="tag tag-muted shrink-0" title={parts.slice(1).join("、")}>+{extra}</span>
+            )}
+          </span>
+        );
+      }
       case "status": {
         const st = effectiveStatus(o);
         if (st === "已终止") {
