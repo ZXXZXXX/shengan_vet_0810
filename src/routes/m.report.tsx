@@ -256,7 +256,19 @@ function ReportPage() {
   };
 
   return (
-    <MobileShell title="现场上报" back hideTabBar>
+    <MobileShell
+      title="现场上报"
+      back
+      hideTabBar
+      right={
+        <Link
+          to="/m/drafts"
+          className="h-7 px-2 rounded-md text-caption text-text-secondary hover:text-primary inline-flex items-center"
+        >
+          草稿箱
+        </Link>
+      }
+    >
       <div className="px-4 pt-3 pb-28 space-y-3">
         {kind === "health" ? (
           <>
