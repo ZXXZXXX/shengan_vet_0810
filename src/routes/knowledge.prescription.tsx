@@ -36,22 +36,26 @@ function PrescriptionPage() {
         </div>
 
         <Card className="border-border bg-card overflow-hidden">
-          <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle">
-            <div className="col-span-2">编号</div>
-            <div className="col-span-3">处方名称</div>
-            <div className="col-span-2">适用疾病</div>
-            <div className="col-span-3">用药组成</div>
-            <div className="col-span-1">疗程</div>
-            <div className="col-span-1 text-right">操作</div>
+          <div className="flex items-center gap-3 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
+            <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
+              <div className="col-span-2">编号</div>
+              <div className="col-span-3">处方名称</div>
+              <div className="col-span-2">适用疾病</div>
+              <div className="col-span-3">用药组成</div>
+              <div className="col-span-1">疗程</div>
+            </div>
+            <div className="w-[140px] text-right shrink-0">功能</div>
           </div>
           {rxs.map((r) => (
-            <div key={r.id} className="grid grid-cols-12 gap-3 px-6 py-3 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
-              <div className="col-span-2 font-mono text-body text-foreground">{r.id}</div>
-              <div className="col-span-3 flex items-center gap-1.5 text-body text-foreground"><FileText className="h-3.5 w-3.5 text-primary" />{r.name}</div>
-              <div className="col-span-2"><span className="tag tag-brand">{r.disease}</span></div>
-              <div className="col-span-3 text-body-sm text-text-secondary">{r.drugs.join("、")}</div>
-              <div className="col-span-1 text-body-sm text-text-secondary">{r.duration}</div>
-              <div className="col-span-1 flex justify-end"><Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button></div>
+            <div key={r.id} className="flex items-center gap-3 px-6 py-3 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
+              <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
+                <div className="col-span-2 font-mono text-body text-foreground">{r.id}</div>
+                <div className="col-span-3 flex items-center gap-1.5 text-body text-foreground"><FileText className="h-3.5 w-3.5 text-primary" />{r.name}</div>
+                <div className="col-span-2"><span className="tag tag-brand">{r.disease}</span></div>
+                <div className="col-span-3 text-body-sm text-text-secondary">{r.drugs.join("、")}</div>
+                <div className="col-span-1 text-body-sm text-text-secondary">{r.duration}</div>
+              </div>
+              <div className="w-[140px] shrink-0 flex justify-end"><Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button></div>
             </div>
           ))}
         </Card>

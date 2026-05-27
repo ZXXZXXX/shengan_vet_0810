@@ -368,31 +368,35 @@ function OrganizationPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-y border-border bg-surface-subtle">
-                <div className="col-span-3">姓名</div>
-                <div className="col-span-2">角色</div>
-                <div className="col-span-3">部门</div>
-                <div className="col-span-2">联系方式</div>
-                <div className="col-span-1">账号状态</div>
-                <div className="col-span-1 text-right">操作</div>
+              <div className="flex items-center gap-3 px-6 h-12 text-table-header text-text-secondary border-y border-border bg-surface-subtle">
+                <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
+                  <div className="col-span-3">姓名</div>
+                  <div className="col-span-2">角色</div>
+                  <div className="col-span-3">部门</div>
+                  <div className="col-span-2">联系方式</div>
+                  <div className="col-span-1">账号状态</div>
+                </div>
+                <div className="w-[140px] text-right shrink-0">操作</div>
               </div>
               {farm.people.map((p, idx) => (
-                <div key={p.name + idx} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors">
-                  <div className="col-span-3 flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-brand-subtle text-primary text-body-sm font-medium">
-                        {p.name.slice(0, 1)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="text-body text-foreground">{p.name}</div>
+                <div key={p.name + idx} className="flex items-center gap-3 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors">
+                  <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
+                    <div className="col-span-3 flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-brand-subtle text-primary text-body-sm font-medium">
+                          {p.name.slice(0, 1)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-body text-foreground">{p.name}</div>
+                    </div>
+                    <div className="col-span-2"><span className="tag tag-brand">{p.role}</span></div>
+                    <div className="col-span-3 text-body-sm text-text-secondary">{p.dept}</div>
+                    <div className="col-span-2 font-mono text-body-sm text-text-tertiary">{p.phone}</div>
+                    <div className="col-span-1">
+                      <span className={`tag ${p.status === "正常" ? "tag-success" : "tag-muted"}`}>{p.status}</span>
+                    </div>
                   </div>
-                  <div className="col-span-2"><span className="tag tag-brand">{p.role}</span></div>
-                  <div className="col-span-3 text-body-sm text-text-secondary">{p.dept}</div>
-                  <div className="col-span-2 font-mono text-body-sm text-text-tertiary">{p.phone}</div>
-                  <div className="col-span-1">
-                    <span className={`tag ${p.status === "正常" ? "tag-success" : "tag-muted"}`}>{p.status}</span>
-                  </div>
-                  <div className="col-span-1 flex items-center justify-end gap-1">
+                  <div className="w-[140px] shrink-0 flex items-center justify-end gap-1">
                     <Button
                       variant="ghost"
                       size="sm"

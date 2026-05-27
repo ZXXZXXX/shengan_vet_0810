@@ -431,13 +431,15 @@ function ObjectListPage() {
                   </span>
                 </div>
               </div>
-              <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border">
-                <div className="col-span-2">编号</div>
-                <div className="col-span-2">品种 / 月龄</div>
-                <div className="col-span-2">阶段</div>
-                <div className="col-span-2">状态</div>
-                <div className="col-span-3">健康指数</div>
-                <div className="col-span-1 text-right">操作</div>
+              <div className="flex items-center gap-3 px-6 h-12 text-table-header text-text-secondary border-b border-border">
+                <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
+                  <div className="col-span-2">编号</div>
+                  <div className="col-span-2">品种 / 月龄</div>
+                  <div className="col-span-2">阶段</div>
+                  <div className="col-span-2">状态</div>
+                  <div className="col-span-3">健康指数</div>
+                </div>
+                <div className="w-[140px] text-right shrink-0">操作</div>
               </div>
               {list.length === 0 && (
                 <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
@@ -447,31 +449,33 @@ function ObjectListPage() {
               {list.map((a) => (
                 <div
                   key={a.id}
-                  className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors relative"
+                  className="flex items-center gap-3 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors relative"
                 >
                   {a.alert && (
                     <div className="absolute left-0 top-2 bottom-2 w-[2px] rounded-r bg-[var(--state-danger)]" />
                   )}
-                  <div className="col-span-2 flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-md bg-brand-subtle flex items-center justify-center">
-                      <Beef className="h-3.5 w-3.5 text-primary" strokeWidth={1.75} />
+                  <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
+                    <div className="col-span-2 flex items-center gap-2.5">
+                      <div className="h-7 w-7 rounded-md bg-brand-subtle flex items-center justify-center">
+                        <Beef className="h-3.5 w-3.5 text-primary" strokeWidth={1.75} />
+                      </div>
+                      <div className="font-mono text-body text-foreground">#{a.id}</div>
                     </div>
-                    <div className="font-mono text-body text-foreground">#{a.id}</div>
+                    <div className="col-span-2 leading-tight">
+                      <div className="text-body text-foreground">{a.breed}</div>
+                      <div className="text-caption text-text-tertiary">{a.age}</div>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="tag tag-muted">{a.stage}</span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className={statusTag(a.status)}>{a.status}</span>
+                    </div>
+                    <div className="col-span-3">
+                      <HealthBars score={a.health} />
+                    </div>
                   </div>
-                  <div className="col-span-2 leading-tight">
-                    <div className="text-body text-foreground">{a.breed}</div>
-                    <div className="text-caption text-text-tertiary">{a.age}</div>
-                  </div>
-                  <div className="col-span-2">
-                    <span className="tag tag-muted">{a.stage}</span>
-                  </div>
-                  <div className="col-span-2">
-                    <span className={statusTag(a.status)}>{a.status}</span>
-                  </div>
-                  <div className="col-span-3">
-                    <HealthBars score={a.health} />
-                  </div>
-                  <div className="col-span-1 flex items-center justify-end">
+                  <div className="w-[140px] shrink-0 flex items-center justify-end">
                     <Button
                       variant="ghost"
                       size="sm"
