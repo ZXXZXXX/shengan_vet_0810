@@ -326,7 +326,7 @@ export function WarehouseEventPage<S extends string>({
       <AppHeader title={title} breadcrumb={breadcrumb} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h3 className="text-section-title text-foreground">{title}看板</h3>
+          <h3 className="text-section-title text-foreground">{title}</h3>
           {createLabel && onCreate && (
             <Button
               size="sm"

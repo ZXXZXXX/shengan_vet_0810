@@ -660,7 +660,7 @@ export function WorkOrderPage({
       <AppHeader title={title} breadcrumb={["健康管理", title]} />
       <main className="flex-1 px-6 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h3 className="text-section-title text-foreground">工作看板</h3>
+          <h3 className="text-section-title text-foreground">工作</h3>
           <div className="flex items-center gap-2">
             <Select value={role} onValueChange={(v) => setPcRole(v as PcRole)}>
               <SelectTrigger className="h-9 w-44 text-body-sm">
