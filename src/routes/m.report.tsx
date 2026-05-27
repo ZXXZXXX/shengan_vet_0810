@@ -141,8 +141,16 @@ function ReportPage() {
   const lockBarn = !!search.lock && !!search.barn;
   const [kind] = useState<ReportKind>("health");
 
-  const [target, setTarget] = useState(search.target ?? "");
+  const [targets, setTargets] = useState<string[]>(search.target ? [search.target] : []);
+  const [target, setTarget] = useState("");
   const [barn] = useState(search.barn ?? "");
+  const addTarget = (v: string) => {
+    const t = v.trim();
+    if (!t) return;
+    setTargets((prev) => (prev.includes(t) ? prev : [...prev, t]));
+    setTarget("");
+  };
+  const removeTarget = (t: string) => setTargets((prev) => prev.filter((x) => x !== t));
   const [desc, setDesc] = useState("");
   const [photos, setPhotos] = useState<number[]>([1, 2]);
   const [videos, setVideos] = useState<number[]>([]);
