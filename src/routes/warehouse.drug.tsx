@@ -107,16 +107,12 @@ function DrugArchivePage() {
               )}
             </div>
           )}
-          <SheetFooter className="gap-2 mt-6">
-            {mode === "edit" ? (
-              <>
-                <Button variant="outline" onClick={() => setDetail(null)}>取消</Button>
-                <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={() => setDetail(null)}>保存</Button>
-              </>
-            ) : (
-              <Button variant="outline" onClick={() => setDetail(null)}>关闭</Button>
-            )}
-          </SheetFooter>
+          {mode === "edit" && (
+            <SheetFooter className="gap-2 mt-6">
+              <Button variant="outline" onClick={() => setDetail(null)}>取消</Button>
+              <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={() => setDetail(null)}>保存</Button>
+            </SheetFooter>
+          )}
         </SheetContent>
       </Sheet>
     </>
