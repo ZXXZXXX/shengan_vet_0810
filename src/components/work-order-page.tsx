@@ -84,7 +84,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
-const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
+const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工单", "普修工单", "干奶工单", "疫苗免疫", "驱虫工单"];
 
 export type ReviewConclusion = {
   confirmedType: string;
@@ -207,7 +207,7 @@ type ColDef = {
 };
 
 const ALL_COLS: ColDef[] = [
-  { key: "id", label: "工作编号", width: 120, locked: true },
+  { key: "id", label: "工单编号", width: 120, locked: true },
   { key: "target", label: "牛只耳号", width: 110, locked: true },
   { key: "status", label: "当前状态", width: 100 },
   { key: "proposer", label: "提出人", width: 100 },
@@ -402,8 +402,8 @@ export function WorkOrderPage({
         switch (title) {
           case "疾病治疗": return ["体温升高", "采食下降", "反刍减少"];
           case "产后护理": return ["恶露异常", "采食下降", "站立困难"];
-          case "修蹄工作": return ["右后蹄跛行", "趾间皮炎"];
-          case "普修工作": return ["围栏松动", "饮水器漏水"];
+          case "修蹄工单": return ["右后蹄跛行", "趾间皮炎"];
+          case "普修工单": return ["围栏松动", "饮水器漏水"];
           default: return [];
         }
       })());
@@ -659,26 +659,23 @@ export function WorkOrderPage({
     <TooltipProvider delayDuration={200}>
       <AppHeader title={title} breadcrumb={["健康管理", title]} />
       <main className="flex-1 px-6 py-6 space-y-4">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h3 className="text-section-title text-foreground">工作</h3>
-          <div className="flex items-center gap-2">
-            <Select value={role} onValueChange={(v) => setPcRole(v as PcRole)}>
-              <SelectTrigger className="h-9 w-44 text-body-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="manager">{pcRoleLabel.manager}</SelectItem>
-                <SelectItem value="vet">{pcRoleLabel.vet}</SelectItem>
-                <SelectItem value="assistant">{pcRoleLabel.assistant}</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              size="sm"
-              className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-            >
-              <Plus className="h-3.5 w-3.5" /> 新建工作
-            </Button>
-          </div>
+        <div className="flex items-center justify-end gap-2 flex-wrap">
+          <Select value={role} onValueChange={(v) => setPcRole(v as PcRole)}>
+            <SelectTrigger className="h-9 w-44 text-body-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="manager">{pcRoleLabel.manager}</SelectItem>
+              <SelectItem value="vet">{pcRoleLabel.vet}</SelectItem>
+              <SelectItem value="assistant">{pcRoleLabel.assistant}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            size="sm"
+            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+          >
+            <Plus className="h-3.5 w-3.5" /> 新建工单
+          </Button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -738,7 +735,7 @@ export function WorkOrderPage({
               <Input
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="按工作号 / 耳号 / 描述搜索"
+                placeholder="按工单号 / 耳号 / 描述搜索"
                 className="h-9 w-64 pl-9 text-body-sm bg-card border-border"
               />
             </div>
@@ -862,7 +859,7 @@ export function WorkOrderPage({
             <div style={{ minWidth: minW }} className="relative">
               {/* 表头 */}
               <div className="flex h-12 items-center text-table-header text-text-secondary bg-surface-subtle border-b border-border">
-                {/* 左冻结：工作编号、牛只耳号 */}
+                {/* 左冻结：工单编号、牛只耳号 */}
                 {leftCols.map((c, i) => (
                   <div
                     key={c.key}
@@ -910,7 +907,7 @@ export function WorkOrderPage({
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
-                  暂无符合条件的{active}工作
+                  暂无符合条件的{active}工单
                 </div>
               ) : (
                 filtered.map((o) => (
@@ -960,7 +957,7 @@ export function WorkOrderPage({
       <Sheet open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
         <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col gap-0">
           <SheetHeader className="px-6 py-4 border-b border-border">
-            <SheetTitle className="text-section-title text-left">工作详情</SheetTitle>
+            <SheetTitle className="text-section-title text-left">工单详情</SheetTitle>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-6 py-5">
           {detail && (() => {
@@ -977,13 +974,13 @@ export function WorkOrderPage({
                   return { tagLabel: "症状标签", tags: ["体温升高", "采食下降", "反刍减少"], showDisease: true, showNote: false };
                 case "产后护理":
                   return { tagLabel: "症状 / 护理异常标签", tags: ["恶露异常", "采食下降", "站立困难"], showDisease: true, showNote: false };
-                case "修蹄工作":
+                case "修蹄工单":
                   return { tagLabel: "症状 / 问题标签", tags: ["右后蹄跛行", "趾间皮炎"], showDisease: false, showNote: false };
-                case "普修工作":
+                case "普修工单":
                   return { tagLabel: "问题标签", tags: ["围栏松动", "饮水器漏水"], showDisease: false, showNote: false };
-                case "干奶工作":
+                case "干奶工单":
                 case "疫苗免疫":
-                case "驱虫工作":
+                case "驱虫工单":
                   return { tagLabel: null, tags: [], showDisease: false, showNote: true };
                 default:
                   return { tagLabel: null, tags: [], showDisease: false, showNote: true };
@@ -1412,11 +1409,11 @@ export function WorkOrderPage({
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-section-title">驳回该工作</DialogTitle>
+            <DialogTitle className="text-section-title">驳回该工单</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div className="text-body-sm text-text-secondary">
-              {detail ? `工作 ${detail.id} · ${detail.target}` : ""}
+              {detail ? `工单 ${detail.id} · ${detail.target}` : ""}
             </div>
             <div>
               <div className="text-caption text-text-tertiary mb-1.5">
@@ -1459,7 +1456,7 @@ export function WorkOrderPage({
           </DialogHeader>
           <div className="space-y-3">
             <div className="text-body-sm text-text-secondary">
-              {detail ? `工作 ${detail.id} · ${detail.target}` : ""}
+              {detail ? `工单 ${detail.id} · ${detail.target}` : ""}
             </div>
             <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-2 max-h-64 overflow-y-auto">
               <div>
@@ -1525,9 +1522,9 @@ export function WorkOrderPage({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-section-title">
-              {moreAction?.type === "terminate" && "终止工作"}
+              {moreAction?.type === "terminate" && "终止工单"}
               {moreAction?.type === "transfer" && "转派执行人"}
-              {moreAction?.type === "release" && "释放工作"}
+              {moreAction?.type === "release" && "释放工单"}
             </DialogTitle>
           </DialogHeader>
           {moreAction && (
@@ -1632,10 +1629,10 @@ export function WorkOrderPage({
       <Dialog open={confirmTerminate} onOpenChange={setConfirmTerminate}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-section-title">确认终止该工作？</DialogTitle>
+            <DialogTitle className="text-section-title">确认终止该工单？</DialogTitle>
           </DialogHeader>
           <div className="text-body-sm text-text-secondary space-y-2">
-            <p>终止后该工作将停止执行，状态变更为「已终止」，不可恢复。</p>
+            <p>终止后该工单将停止执行，状态变更为「已终止」，不可恢复。</p>
             {moreAction && (
               <div className="rounded-md bg-surface-subtle px-3 py-2">
                 <div className="text-caption text-text-tertiary mb-1">终止原因</div>
@@ -1653,7 +1650,7 @@ export function WorkOrderPage({
                   ...m,
                   [moreAction.order.id]: { ...m[moreAction.order.id], status: "已终止" },
                 }));
-                toast.success("工作已终止");
+                toast.success("工单已终止");
                 closeMoreAction();
               }}
             >
@@ -2093,7 +2090,7 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
-// ============== 工作 mock 数据生成器 ==============
+// ============== 工单 mock 数据生成器 ==============
 const proposersPool = ["陈晓东", "李雨晴", "周凯", "李娜", "张伟", "孙明", "王建国", "赵璐"];
 const reviewersPool = ["王建国", "李雨晴", "孙明"];
 const executorsPool = ["李雨晴", "周凯", "孙明", "王建国", "李娜"];
@@ -2105,10 +2102,10 @@ function fmt(d: Date) {
 function pick<T>(arr: T[], i: number): T { return arr[i % arr.length]; }
 
 /**
- * 生成 15 条 mock 工作：
+ * 生成 15 条 mock 工单：
  * - 状态按 [待审核, 执行中, 已完成, 已驳回] 循环
  * - 提出时间从今天起向前递推（覆盖今天 / 7天 / 30天 / 更早）
- * - 工作编号 = 类型拼音首字母 + 月日 + 当日该类下序号（两位数字）
+ * - 工单编号 = 类型拼音首字母 + 月日 + 当日该类下序号（两位数字）
  */
 export function makeOrders(
   prefix: string,
@@ -2118,7 +2115,7 @@ export function makeOrders(
   const now = new Date();
   // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
   const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
-  // 按"日期"统计当日该类工作的序号
+  // 按"日期"统计当日该类工单的序号
   const dailySeq = new Map<string, number>();
   // 注意：按提出时间倒序生成时，需保证同一日内的序号按时间先后稳定
   // 先按时间升序计算 seq，再返回原顺序
@@ -2144,7 +2141,7 @@ export function makeOrders(
     const proposer = pick(proposersPool, i);
     const reviewer = pick(reviewersPool, i);
     const executor = pick(executorsPool, i);
-    // 媒体附件：每条工作按索引轮换三种媒体组合，保证演示多样性
+    // 媒体附件：每条工单按索引轮换三种媒体组合，保证演示多样性
     const attachmentSets: WorkOrderAttachment[][] = [
       [
         { type: "audio", name: "现场情况语音.m4a", meta: "00:38" },

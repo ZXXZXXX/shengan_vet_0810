@@ -13,6 +13,6 @@ const orders = makeOrders("GN", [
 ]);
 
 export const Route = createFileRoute("/production/drying")({
-  head: () => ({ meta: [{ title: "干奶工作 — 奇点智牧" }] }),
-  component: () => <WorkOrderPage title="干奶工作" orders={orders} />,
+  head: () => ({ meta: [{ title: "干奶工单 — 奇点智牧" }] }),
+  component: () => <WorkOrderPage title="干奶工单" orders={orders} />,
 });
