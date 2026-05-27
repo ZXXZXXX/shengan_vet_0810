@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BookOpen, Plus, Search, Filter, Pencil, Trash2, X, MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/knowledge/disease")({
@@ -38,16 +39,19 @@ type Disease = {
   name: string;
   cat: string;
   severity: string;
-  symptoms: string;
+  symptoms: string[];
   prevent: string;
 };
 
+const CAT_OPTIONS = ["繁殖系统", "蹄部疾病", "消化系统", "传染病", "代谢疾病", "呼吸系统", "其他"];
+const SEVERITY_OPTIONS = ["低", "中", "中-高", "高"];
+
 const seed: Disease[] = [
-  { id: "DZ-001", name: "乳房炎", cat: "繁殖系统", severity: "中-高", symptoms: "乳房红肿、热痛，乳汁异常", prevent: "挤奶卫生、乳头药浴" },
-  { id: "DZ-002", name: "蹄叶炎", cat: "蹄部疾病", severity: "中", symptoms: "跛行、蹄部发热、行走困难", prevent: "定期修蹄、地面保持干燥" },
-  { id: "DZ-003", name: "瘤胃酸中毒", cat: "消化系统", severity: "高", symptoms: "食欲减退、腹泻、瘤胃运动减弱", prevent: "饲料过渡渐进、平衡精粗比" },
-  { id: "DZ-004", name: "口蹄疫", cat: "传染病", severity: "高", symptoms: "口腔、蹄部、乳房水疱、溃烂", prevent: "强制免疫、隔离消毒" },
-  { id: "DZ-005", name: "酮病", cat: "代谢疾病", severity: "中", symptoms: "食欲下降、产奶量骤减、酮味", prevent: "围产期能量平衡、监测血酮" },
+  { id: "DZ-001", name: "乳房炎", cat: "繁殖系统", severity: "中-高", symptoms: ["乳房红肿", "热痛", "乳汁异常"], prevent: "挤奶卫生、乳头药浴" },
+  { id: "DZ-002", name: "蹄叶炎", cat: "蹄部疾病", severity: "中", symptoms: ["跛行", "蹄部发热", "行走困难"], prevent: "定期修蹄、地面保持干燥" },
+  { id: "DZ-003", name: "瘤胃酸中毒", cat: "消化系统", severity: "高", symptoms: ["食欲减退", "腹泻", "瘤胃运动减弱"], prevent: "饲料过渡渐进、平衡精粗比" },
+  { id: "DZ-004", name: "口蹄疫", cat: "传染病", severity: "高", symptoms: ["口腔水疱", "蹄部水疱", "乳房水疱", "溃烂"], prevent: "强制免疫、隔离消毒" },
+  { id: "DZ-005", name: "酮病", cat: "代谢疾病", severity: "中", symptoms: ["食欲下降", "产奶量骤减", "酮味"], prevent: "围产期能量平衡、监测血酮" },
 ];
 
 function DiseaseKBPage() {
