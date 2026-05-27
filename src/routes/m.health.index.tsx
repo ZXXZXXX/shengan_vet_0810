@@ -15,6 +15,7 @@ import {
   PackageCheck,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { EmptyState } from "@/components/empty-state";
 import { useRole, canApprove } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
@@ -193,9 +194,20 @@ function TaskListPage() {
       {/* 列表 —— 按牛舍分组 */}
       <div className="px-4 mt-3 pb-4 space-y-4">
         {list.length === 0 && (
-          <div className="py-16 text-center text-body-sm text-text-tertiary">
-            暂无{tab === "全部" ? "" : tab}工单
-          </div>
+          <EmptyState
+            icon={ClipboardList}
+            title={`暂无${tab === "全部" ? "" : tab}工单`}
+            desc={q ? "试试更换关键词或切换状态筛选" : "新工单将在这里显示，可下拉刷新或新建上报"}
+            action={
+              <Link
+                to="/m/report"
+                className="h-9 px-4 rounded-full bg-primary text-primary-foreground text-body-sm inline-flex items-center gap-1"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                现场上报
+              </Link>
+            }
+          />
         )}
         {Object.entries(
           list.reduce<Record<string, Task[]>>((acc, t) => {

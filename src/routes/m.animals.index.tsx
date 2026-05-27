@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { Search, ScanLine, Beef, Filter, ChevronRight } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { EmptyState } from "@/components/empty-state";
 
 export const Route = createFileRoute("/m/animals/")({
   head: () => ({ meta: [{ title: "基础档案 · 奇点智牧" }] }),
@@ -123,9 +124,11 @@ function AnimalsPage() {
           </Link>
         ))}
         {list.length === 0 && (
-          <div className="py-16 text-center text-body-sm text-text-tertiary">
-            未找到匹配的牛只
-          </div>
+          <EmptyState
+            icon={Beef}
+            title="未找到匹配的牛只"
+            desc={q ? `没有与「${q}」匹配的档案，试试更换关键词或筛选条件` : "暂无牛只档案，请通过扫耳标录入新档案"}
+          />
         )}
       </div>
     </MobileShell>
