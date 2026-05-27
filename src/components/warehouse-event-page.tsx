@@ -325,9 +325,8 @@ export function WarehouseEventPage<S extends string>({
     <TooltipProvider delayDuration={200}>
       <AppHeader title={title} breadcrumb={breadcrumb} />
       <main className="flex-1 px-6 py-6 space-y-4">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h3 className="text-section-title text-foreground">{title}</h3>
-          {createLabel && onCreate && (
+        {createLabel && onCreate && (
+          <div className="flex items-center justify-end gap-3 flex-wrap">
             <Button
               size="sm"
               className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
@@ -335,8 +334,8 @@ export function WarehouseEventPage<S extends string>({
             >
               <Plus className="h-3.5 w-3.5" /> {createLabel}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className={`grid ${gridCols} gap-4`}>
           {statuses.map((s) => {
