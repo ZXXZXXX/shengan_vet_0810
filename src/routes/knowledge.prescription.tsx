@@ -169,7 +169,14 @@ function PrescriptionPage() {
                   <div className="text-body-sm text-text-secondary truncate">{r.duration}</div>
                 </div>
                 <div className="w-[160px] shrink-0 flex justify-end items-center gap-0.5">
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                    onClick={() => setViewing(r)}
+                  >
+                    查看
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -178,15 +185,26 @@ function PrescriptionPage() {
                   >
                     编辑
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-text-tertiary hover:text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
-                    aria-label="删除"
-                    onClick={() => setPendingDelete([r.id])}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                        aria-label="更多操作"
+                      >
+                        <MoreHorizontal className="h-3.5 w-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-32">
+                      <DropdownMenuItem
+                        className="text-[var(--state-danger)] focus:text-[var(--state-danger)]"
+                        onClick={() => setPendingDelete([r.id])}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             );
