@@ -47,16 +47,16 @@ function CattlePage() {
         </div>
 
         <Card className="border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-3 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
-            <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
-              <div className="col-span-2">编号</div>
-              <div className="col-span-1">耳号</div>
-              <div className="col-span-2">品种</div>
-              <div className="col-span-1">性别</div>
-              <div className="col-span-2">出生日期</div>
-              <div className="col-span-1">所属牧场</div>
-              <div className="col-span-1">所在牛舍</div>
-              <div className="col-span-1">健康</div>
+          <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
+            <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
+              <div>编号</div>
+              <div>耳号</div>
+              <div>品种</div>
+              <div>性别</div>
+              <div>出生日期</div>
+              <div>所属牧场</div>
+              <div>所在牛舍</div>
+              <div>健康</div>
             </div>
             <div className="w-[140px] text-right shrink-0">功能</div>
           </div>
