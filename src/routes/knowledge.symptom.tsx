@@ -241,6 +241,27 @@ function SymptomKBPage() {
         </SheetContent>
       </Sheet>
 
+      <Sheet open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-section-title">症状详情</SheetTitle>
+          </SheetHeader>
+          {viewing && (
+            <div className="mt-4 space-y-3">
+              <ViewRow label="编号" value={viewing.id} mono />
+              <ViewRow label="名称" value={viewing.name} />
+              <ViewRow label="紧急程度" value={viewing.urgency} />
+              <ViewRow label="关联疾病" value={viewing.related.join("、")} />
+            </div>
+          )}
+          <SheetFooter className="mt-6 flex-row justify-end gap-2">
+            <Button variant="outline" onClick={() => setViewing(null)}>关闭</Button>
+            <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={() => { if (viewing) { setEditing({ ...viewing }); setViewing(null); } }}>编辑</Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+
       <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
