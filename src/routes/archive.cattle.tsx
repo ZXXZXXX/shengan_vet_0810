@@ -56,7 +56,7 @@ function CattlePage() {
             <div className="col-span-1">所属牧场</div>
             <div className="col-span-1">所在牛舍</div>
             <div className="col-span-1">健康</div>
-            <div className="col-span-1 text-right">操作</div>
+            <div className="col-span-1 text-right">功能</div>
           </div>
           {cattle.map((c) => (
             <div key={c.id} className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
@@ -69,8 +69,20 @@ function CattlePage() {
               <div className="col-span-1 text-body-sm text-text-secondary truncate">{c.barn}</div>
               <div className="col-span-1"><span className={healthTag(c.health)}>{c.health}</span></div>
               <div className="col-span-1 flex items-center justify-end gap-0.5">
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></Button>
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-danger"><Trash2 className="h-3.5 w-3.5" /></Button>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-text-secondary hover:bg-surface-subtle hover:text-foreground" aria-label="更多">
+                      <MoreHorizontal className="h-3.5 w-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-28">
+                    <DropdownMenuItem className="text-[var(--state-danger)] focus:text-[var(--state-danger)]">
+                      <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           ))}
