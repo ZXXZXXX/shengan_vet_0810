@@ -565,9 +565,9 @@ export function WarehouseEventPage<S extends string>({
 
       <Sheet open={!!detail} onOpenChange={(o: boolean) => !o && setDetail(null)}>
         <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-section-title">{title}详情</DialogTitle>
-          </DialogHeader>
+          <SheetHeader>
+            <SheetTitle className="text-section-title">{title}详情</SheetTitle>
+          </SheetHeader>
           {detail && detailStatus && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
