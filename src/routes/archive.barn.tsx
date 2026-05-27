@@ -46,7 +46,7 @@ function BarnPage() {
             <div className="col-span-2">类型</div>
             <div className="col-span-1">存栏只数</div>
             <div className="col-span-2">牛舍描述</div>
-            <div className="col-span-1 text-right">功能</div>
+            <div className="col-span-1 text-right sticky right-0 bg-surface-subtle border-l border-border -mr-6 pr-6 pl-3">功能</div>
           </div>
           {barns.map((b) => (
             <div key={b.id} className="grid grid-cols-12 gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
