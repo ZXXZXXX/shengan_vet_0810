@@ -13,6 +13,6 @@ const orders = makeOrders("PX", [
 ]);
 
 export const Route = createFileRoute("/production/general")({
-  head: () => ({ meta: [{ title: "普修工作 — 奇点智牧" }] }),
-  component: () => <WorkOrderPage title="普修工作" orders={orders} />,
+  head: () => ({ meta: [{ title: "普修工单 — 奇点智牧" }] }),
+  component: () => <WorkOrderPage title="普修工单" orders={orders} />,
 });

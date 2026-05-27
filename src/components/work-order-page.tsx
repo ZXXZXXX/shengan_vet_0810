@@ -84,7 +84,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
-const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工作", "普修工作", "干奶工作", "疫苗免疫", "驱虫工作"];
+const WORK_TYPES = ["疾病治疗", "产后护理", "修蹄工单", "普修工单", "干奶工单", "疫苗免疫", "驱虫工单"];
 
 export type ReviewConclusion = {
   confirmedType: string;
@@ -402,8 +402,8 @@ export function WorkOrderPage({
         switch (title) {
           case "疾病治疗": return ["体温升高", "采食下降", "反刍减少"];
           case "产后护理": return ["恶露异常", "采食下降", "站立困难"];
-          case "修蹄工作": return ["右后蹄跛行", "趾间皮炎"];
-          case "普修工作": return ["围栏松动", "饮水器漏水"];
+          case "修蹄工单": return ["右后蹄跛行", "趾间皮炎"];
+          case "普修工单": return ["围栏松动", "饮水器漏水"];
           default: return [];
         }
       })());
@@ -977,13 +977,13 @@ export function WorkOrderPage({
                   return { tagLabel: "症状标签", tags: ["体温升高", "采食下降", "反刍减少"], showDisease: true, showNote: false };
                 case "产后护理":
                   return { tagLabel: "症状 / 护理异常标签", tags: ["恶露异常", "采食下降", "站立困难"], showDisease: true, showNote: false };
-                case "修蹄工作":
+                case "修蹄工单":
                   return { tagLabel: "症状 / 问题标签", tags: ["右后蹄跛行", "趾间皮炎"], showDisease: false, showNote: false };
-                case "普修工作":
+                case "普修工单":
                   return { tagLabel: "问题标签", tags: ["围栏松动", "饮水器漏水"], showDisease: false, showNote: false };
-                case "干奶工作":
+                case "干奶工单":
                 case "疫苗免疫":
-                case "驱虫工作":
+                case "驱虫工单":
                   return { tagLabel: null, tags: [], showDisease: false, showNote: true };
                 default:
                   return { tagLabel: null, tags: [], showDisease: false, showNote: true };
