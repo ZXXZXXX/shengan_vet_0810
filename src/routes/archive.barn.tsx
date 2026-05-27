@@ -44,9 +44,9 @@ function BarnPage() {
               <div className="col-span-2">编号</div>
               <div className="col-span-2">牛舍名称</div>
               <div className="col-span-2">所属牧场</div>
+              <div className="col-span-2">牛舍描述</div>
               <div className="col-span-2">类型</div>
               <div className="col-span-1">存栏只数</div>
-              <div className="col-span-2">牛舍描述</div>
             </div>
             <div className="w-[140px] text-right shrink-0">功能</div>
           </div>
@@ -56,9 +56,9 @@ function BarnPage() {
                 <div className="col-span-2 font-mono text-body text-foreground">{b.id}</div>
                 <div className="col-span-2 flex items-center gap-2 text-body text-foreground"><Home className="h-3.5 w-3.5 text-primary" />{b.name}</div>
                 <div className="col-span-2 text-body-sm text-text-secondary">{b.farm}</div>
+                <div className="col-span-2 text-body-sm text-text-secondary truncate" title={b.desc}>{b.desc}</div>
                 <div className="col-span-2"><span className="tag tag-muted">{b.type}</span></div>
                 <div className="col-span-1 tabular-nums text-body text-foreground">{b.stock} <span className="text-caption text-text-tertiary">头</span></div>
-                <div className="col-span-2 text-body-sm text-text-secondary truncate" title={b.desc}>{b.desc}</div>
               </div>
               <div className="w-[140px] shrink-0 flex items-center justify-end gap-0.5">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
