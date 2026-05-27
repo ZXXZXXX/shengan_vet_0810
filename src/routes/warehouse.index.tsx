@@ -149,34 +149,34 @@ function InventoryPage() {
         </div>
 
         <Card className="border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-3 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
-            <div className="grid grid-cols-10 gap-3 flex-1 min-w-0">
-              <div className="col-span-3">物资</div>
-              <div className="col-span-2">库存</div>
-              <div className="col-span-1">库位</div>
-              <div className="col-span-2">效期</div>
-              <div className="col-span-2">状态</div>
+          <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
+            <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+              <div>物资</div>
+              <div>库存</div>
+              <div>库位</div>
+              <div>效期</div>
+              <div>状态</div>
             </div>
             <div className="w-[140px] text-right shrink-0">操作</div>
           </div>
           {inventory.map((item) => (
-            <div key={item.sku} className="flex items-center gap-3 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors">
-              <div className="grid grid-cols-10 gap-3 flex-1 min-w-0">
-                <div className="col-span-3 leading-tight">
-                  <div className="text-body text-foreground">{item.name}</div>
-                  <div className="text-caption text-text-tertiary font-mono">{item.sku} · {item.cat}</div>
+            <div key={item.sku} className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors">
+              <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+                <div className="leading-tight min-w-0">
+                  <div className="text-body text-foreground truncate">{item.name}</div>
+                  <div className="text-caption text-text-tertiary font-mono truncate">{item.sku} · {item.cat}</div>
                 </div>
-                <div className="col-span-2">
+                <div className="min-w-0">
                   <div className="flex items-baseline gap-1">
                     <span className={`text-body font-medium tabular-nums ${item.stock < item.min ? "text-[var(--state-danger)]" : "text-foreground"}`}>
                       {item.stock}
                     </span>
-                    <span className="text-caption text-text-tertiary">/ {item.min} {item.unit}</span>
+                    <span className="text-caption text-text-tertiary truncate">/ {item.min} {item.unit}</span>
                   </div>
                 </div>
-                <div className="col-span-1 font-mono text-body-sm text-text-tertiary">{item.loc}</div>
-                <div className="col-span-2 text-body-sm text-text-secondary tabular-nums">{item.expiry}</div>
-                <div className="col-span-2">
+                <div className="font-mono text-body-sm text-text-tertiary truncate">{item.loc}</div>
+                <div className="text-body-sm text-text-secondary tabular-nums truncate">{item.expiry}</div>
+                <div className="truncate">
                   <span className={statusTag(item.status)}>{item.status}</span>
                 </div>
               </div>
