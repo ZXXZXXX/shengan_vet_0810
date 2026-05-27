@@ -284,3 +284,12 @@ function SymptomKBPage() {
     </>
   );
 }
+
+function ViewRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-20 shrink-0 text-body-sm text-text-secondary">{label}</div>
+      <div className={`flex-1 text-body text-foreground ${mono ? "font-mono" : ""}`}>{value}</div>
+    </div>
+  );
+}
