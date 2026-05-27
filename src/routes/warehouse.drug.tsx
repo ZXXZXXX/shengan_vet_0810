@@ -45,26 +45,26 @@ function DrugArchivePage() {
         </div>
 
         <Card className="border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-3 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
-            <div className="grid grid-cols-10 gap-3 flex-1 min-w-0">
-              <div className="col-span-2">编号</div>
-              <div className="col-span-3">药品名称</div>
-              <div className="col-span-2">规格</div>
-              <div className="col-span-1">分类</div>
-              <div className="col-span-1">生产厂家</div>
-              <div className="col-span-1">休药期</div>
+          <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
+            <div className="grid grid-cols-6 gap-4 flex-1 min-w-0">
+              <div>编号</div>
+              <div>药品名称</div>
+              <div>规格</div>
+              <div>分类</div>
+              <div>生产厂家</div>
+              <div>休药期</div>
             </div>
             <div className="w-[140px] text-right shrink-0">功能</div>
           </div>
           {drugs.map((d) => (
-            <div key={d.id} className="flex items-center gap-3 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
-              <div className="grid grid-cols-10 gap-3 flex-1 min-w-0">
-                <div className="col-span-2 font-mono text-body text-foreground">{d.id}</div>
-                <div className="col-span-3 flex items-center gap-1.5 text-body text-foreground"><Pill className="h-3.5 w-3.5 text-primary" />{d.name}</div>
-                <div className="col-span-2 text-body-sm text-text-secondary">{d.spec}</div>
-                <div className="col-span-1"><span className="tag tag-muted">{d.cat}</span></div>
-                <div className="col-span-1 text-body-sm text-text-secondary truncate">{d.maker}</div>
-                <div className="col-span-1 text-body-sm text-text-secondary">{d.withdraw}</div>
+            <div key={d.id} className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
+              <div className="grid grid-cols-6 gap-4 flex-1 min-w-0">
+                <div className="font-mono text-body text-foreground truncate">{d.id}</div>
+                <div className="flex items-center gap-1.5 text-body text-foreground truncate"><Pill className="h-3.5 w-3.5 text-primary shrink-0" /><span className="truncate">{d.name}</span></div>
+                <div className="text-body-sm text-text-secondary truncate">{d.spec}</div>
+                <div className="truncate"><span className="tag tag-muted">{d.cat}</span></div>
+                <div className="text-body-sm text-text-secondary truncate">{d.maker}</div>
+                <div className="text-body-sm text-text-secondary truncate">{d.withdraw}</div>
               </div>
               <div className="w-[140px] shrink-0 flex justify-end items-center gap-1">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground" onClick={() => { setMode("view"); setDetail(d); }}>查看</Button>
