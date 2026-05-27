@@ -563,8 +563,8 @@ export function WarehouseEventPage<S extends string>({
         </Card>
       </main>
 
-      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent className="max-w-lg">
+      <Sheet open={!!detail} onOpenChange={(o: boolean) => !o && setDetail(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-section-title">{title}详情</DialogTitle>
           </DialogHeader>
