@@ -27,12 +27,9 @@ export const Route = createFileRoute("/warehouse/loss")({
   component: LossPage,
 });
 
-type LStatus = "待审核" | "已确认" | "已驳回" | "待生效" | "已生效";
+type LStatus = "待生效" | "已生效";
 
 const statuses: StatusConfig<LStatus>[] = [
-  { key: "待审核", label: "待审核", icon: ClipboardList, tone: "warning" },
-  { key: "已确认", label: "已确认", icon: CheckCircle2, tone: "info" },
-  { key: "已驳回", label: "已驳回", icon: XCircle, tone: "danger" },
   { key: "待生效", label: "待生效", icon: Clock, tone: "brand" },
   { key: "已生效", label: "已生效", icon: CheckCircle2, tone: "success" },
 ];
