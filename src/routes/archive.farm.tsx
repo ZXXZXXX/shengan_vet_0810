@@ -3,7 +3,7 @@ import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, Plus, Search, MapPin, Users, Beef } from "lucide-react";
+import { Building2, Plus, Search, MapPin, Users, Beef, Pencil, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/archive/farm")({
   head: () => ({ meta: [{ title: "牛场信息 — 奇点智牧" }] }),
@@ -60,8 +60,10 @@ function FarmPage() {
                   <div className="flex items-baseline gap-1 mt-0.5"><span className="tabular-nums text-section-title text-foreground">{f.barns}</span><span className="text-caption text-text-tertiary">个</span></div>
                 </div>
               </div>
-              <div className="mt-4 pt-3 border-t border-border flex justify-end">
+              <div className="mt-4 pt-3 border-t border-border flex justify-end gap-1">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+                <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"><Pencil className="h-3.5 w-3.5" />编辑</Button>
+                <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-danger"><Trash2 className="h-3.5 w-3.5" />删除</Button>
               </div>
             </Card>
 
