@@ -38,25 +38,25 @@ function BarnPage() {
           </Button>
         </div>
 
-        <Card className="border-border bg-card overflow-x-auto">
-          <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle min-w-[960px]">
+        <Card className="border-border bg-card overflow-hidden">
+          <div className="grid grid-cols-12 gap-3 px-6 h-12 items-center text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <div className="col-span-2">编号</div>
             <div className="col-span-2">牛舍名称</div>
             <div className="col-span-2">所属牧场</div>
             <div className="col-span-2">类型</div>
             <div className="col-span-1">存栏只数</div>
             <div className="col-span-2">牛舍描述</div>
-            <div className="col-span-1 text-right sticky right-0 bg-surface-subtle border-l border-border -mr-6 pr-6 pl-3">功能</div>
+            <div className="col-span-1 text-right">功能</div>
           </div>
           {barns.map((b) => (
-            <div key={b.id} className="group/row grid grid-cols-12 gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
+            <div key={b.id} className="grid grid-cols-12 gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
               <div className="col-span-2 font-mono text-body text-foreground">{b.id}</div>
               <div className="col-span-2 flex items-center gap-2 text-body text-foreground"><Home className="h-3.5 w-3.5 text-primary" />{b.name}</div>
               <div className="col-span-2 text-body-sm text-text-secondary">{b.farm}</div>
               <div className="col-span-2"><span className="tag tag-muted">{b.type}</span></div>
               <div className="col-span-1 tabular-nums text-body text-foreground">{b.stock} <span className="text-caption text-text-tertiary">头</span></div>
               <div className="col-span-2 text-body-sm text-text-secondary truncate" title={b.desc}>{b.desc}</div>
-              <div className="col-span-1 flex items-center justify-end gap-0.5 sticky right-0 bg-card group-hover/row:bg-surface-subtle border-l border-border -mr-6 pr-6 pl-3">
+              <div className="col-span-1 flex items-center justify-end gap-0.5">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button>
                 <DropdownMenu>
