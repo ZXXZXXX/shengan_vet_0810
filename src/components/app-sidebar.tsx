@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
+import brandLogo from "@/assets/brand-logo.png";
 import {
   LayoutDashboard,
   Users,
