@@ -626,7 +626,8 @@ function ReportPage() {
                 onClick={() => {
                   const draft = {
                     id: `DR-${Date.now().toString().slice(-6)}`,
-                    target,
+                    target: targets.join("、"),
+                    targets,
                     workType,
                     symptoms,
                     customSymptom,
