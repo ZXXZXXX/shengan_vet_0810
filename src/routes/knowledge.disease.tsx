@@ -333,3 +333,37 @@ function ViewRow({ label, value, mono }: { label: string; value: string; mono?: 
     </div>
   );
 }
+
+function SymptomTags({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+  const [draft, setDraft] = useState("");
+  const add = () => {
+    const v = draft.trim();
+    if (!v || value.includes(v)) { setDraft(""); return; }
+    onChange([...value, v]);
+    setDraft("");
+  };
+  const remove = (s: string) => onChange(value.filter((x) => x !== s));
+  return (
+    <div className="rounded-md border border-input bg-background px-2 py-2 min-h-[40px] flex flex-wrap gap-1.5 items-center focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0">
+      {value.map((s) => (
+        <span key={s} className="inline-flex items-center gap-1 rounded-md bg-brand-subtle text-primary text-body-sm px-2 py-0.5">
+          {s}
+          <button type="button" onClick={() => remove(s)} className="hover:text-[var(--state-danger)]" aria-label={`移除 ${s}`}>
+            <X className="h-3 w-3" />
+          </button>
+        </span>
+      ))}
+      <input
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === ",") { e.preventDefault(); add(); }
+          else if (e.key === "Backspace" && !draft && value.length) { onChange(value.slice(0, -1)); }
+        }}
+        onBlur={add}
+        placeholder={value.length ? "" : "输入症状后回车添加"}
+        className="flex-1 min-w-[120px] bg-transparent outline-none text-body-sm placeholder:text-text-tertiary"
+      />
+    </div>
+  );
+}
