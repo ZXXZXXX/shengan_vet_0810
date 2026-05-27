@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Camera,
@@ -256,7 +256,19 @@ function ReportPage() {
   };
 
   return (
-    <MobileShell title="现场上报" back hideTabBar>
+    <MobileShell
+      title="现场上报"
+      back
+      hideTabBar
+      right={
+        <Link
+          to="/m/drafts"
+          className="h-7 px-2 rounded-md text-caption text-text-secondary hover:text-primary inline-flex items-center"
+        >
+          草稿箱
+        </Link>
+      }
+    >
       <div className="px-4 pt-3 pb-28 space-y-3">
         {kind === "health" ? (
           <>
@@ -571,6 +583,7 @@ function ReportPage() {
               <button
                 onClick={() => {
                   const draft = {
+                    id: `DR-${Date.now().toString().slice(-6)}`,
                     target,
                     workType,
                     symptoms,
@@ -584,9 +597,17 @@ function ReportPage() {
                     voiceSecs,
                     savedAt: new Date().toISOString(),
                   };
-                  localStorage.setItem("report:draft", JSON.stringify(draft));
+                  try {
+                    const raw = localStorage.getItem("report:drafts");
+                    const list = raw ? JSON.parse(raw) : [];
+                    list.unshift(draft);
+                    localStorage.setItem("report:drafts", JSON.stringify(list));
+                  } catch {
+                    localStorage.setItem("report:drafts", JSON.stringify([draft]));
+                  }
                   setShowDraftDialog(false);
                   toast.success("草稿已保存");
+                  setTimeout(() => navigate({ to: "/m/drafts" }), 400);
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center"
               >
