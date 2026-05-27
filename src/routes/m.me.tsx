@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   LogOut,
   RefreshCw,
+  ClipboardList,
 } from "lucide-react";
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
@@ -57,6 +58,7 @@ function MePage() {
 
       <section className="px-4 mt-5 space-y-2">
         <MenuItem icon={Bell} label="消息通知" badge="3" />
+        <MenuItem icon={ClipboardList} label="草稿箱" to="/m/drafts" />
         <MenuItem icon={ShieldCheck} label="账号与安全" />
         <MenuItem icon={Settings} label="偏好设置" />
         <MenuItem icon={HelpCircle} label="帮助与反馈" />
@@ -149,14 +151,16 @@ function MenuItem({
   icon: Icon,
   label,
   badge,
+  to,
 }: {
   icon: typeof Bell;
   label: string;
   badge?: string;
+  to?: string;
 }) {
   return (
     <Link
-      to="/m/me"
+      to={to ?? "/m/me"}
       className="flex items-center gap-3 px-4 h-12 rounded-xl bg-card border border-border active:bg-surface-subtle"
     >
       <Icon className="h-4 w-4 text-text-secondary" strokeWidth={1.75} />

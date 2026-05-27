@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from "react";
 import {
   Bell,
   Camera,
-  ClipboardList,
   Beef,
   AlertTriangle,
   AlertCircle,
@@ -158,23 +157,6 @@ function MHomePage() {
           <TaskOverviewCard to="/m/pickup" icon={PackageCheck} tone="info" label="待领物" value={String(pendingPickups.length)} />
           <TaskOverviewCard to="/m/health" search={{ tab: "待执行" }} icon={PlayCircle} tone="brand" label="待执行" value="4" />
         </div>
-      </section>
-
-      {/* ============ 草稿箱入口 ============ */}
-      <section className="px-4 mt-3">
-        <Link
-          to="/m/drafts"
-          className="flex items-center gap-3 p-3 rounded-xl bg-card border border-dashed border-border active:bg-surface-subtle"
-        >
-          <span className="h-9 w-9 rounded-lg bg-surface-subtle text-text-secondary inline-flex items-center justify-center">
-            <ClipboardList className="h-4 w-4" strokeWidth={1.75} />
-          </span>
-          <div className="flex-1 min-w-0">
-            <div className="text-body text-foreground">草稿箱</div>
-            <div className="text-caption text-text-tertiary mt-0.5">查看未完成的现场上报</div>
-          </div>
-          <ChevronRight className="h-3.5 w-3.5 text-text-tertiary" />
-        </Link>
       </section>
 
       {/* ============ 风险提醒 ============ */}
@@ -493,5 +475,3 @@ function FarmSwitcher() {
   );
 }
 
-// Suppress unused imports kept for readability
-void ClipboardList;
