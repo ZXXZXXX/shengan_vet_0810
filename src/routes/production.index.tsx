@@ -431,13 +431,13 @@ function ObjectListPage() {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-3 px-6 h-12 text-table-header text-text-secondary border-b border-border">
-                <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
-                  <div className="col-span-2">编号</div>
-                  <div className="col-span-2">品种 / 月龄</div>
-                  <div className="col-span-2">阶段</div>
-                  <div className="col-span-2">状态</div>
-                  <div className="col-span-3">健康指数</div>
+              <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border">
+                <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+                  <div>编号</div>
+                  <div>品种 / 月龄</div>
+                  <div>阶段</div>
+                  <div>状态</div>
+                  <div>健康指数</div>
                 </div>
                 <div className="w-[140px] text-right shrink-0">操作</div>
               </div>
@@ -449,29 +449,29 @@ function ObjectListPage() {
               {list.map((a) => (
                 <div
                   key={a.id}
-                  className="flex items-center gap-3 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors relative"
+                  className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle transition-colors relative"
                 >
                   {a.alert && (
                     <div className="absolute left-0 top-2 bottom-2 w-[2px] rounded-r bg-[var(--state-danger)]" />
                   )}
-                  <div className="grid grid-cols-11 gap-3 flex-1 min-w-0">
-                    <div className="col-span-2 flex items-center gap-2.5">
-                      <div className="h-7 w-7 rounded-md bg-brand-subtle flex items-center justify-center">
+                  <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="h-7 w-7 rounded-md bg-brand-subtle flex items-center justify-center shrink-0">
                         <Beef className="h-3.5 w-3.5 text-primary" strokeWidth={1.75} />
                       </div>
-                      <div className="font-mono text-body text-foreground">#{a.id}</div>
+                      <div className="font-mono text-body text-foreground truncate">#{a.id}</div>
                     </div>
-                    <div className="col-span-2 leading-tight">
-                      <div className="text-body text-foreground">{a.breed}</div>
-                      <div className="text-caption text-text-tertiary">{a.age}</div>
+                    <div className="leading-tight min-w-0">
+                      <div className="text-body text-foreground truncate">{a.breed}</div>
+                      <div className="text-caption text-text-tertiary truncate">{a.age}</div>
                     </div>
-                    <div className="col-span-2">
+                    <div className="truncate">
                       <span className="tag tag-muted">{a.stage}</span>
                     </div>
-                    <div className="col-span-2">
+                    <div className="truncate">
                       <span className={statusTag(a.status)}>{a.status}</span>
                     </div>
-                    <div className="col-span-3">
+                    <div className="min-w-0">
                       <HealthBars score={a.health} />
                     </div>
                   </div>
