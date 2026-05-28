@@ -208,6 +208,7 @@ type HomeTask = {
   conclusion: string;
   type: string; // 工单类型
   status: "待诊断" | "进行中";
+  minutesAgo: number;
 };
 
 const homeTasks: HomeTask[] = [
