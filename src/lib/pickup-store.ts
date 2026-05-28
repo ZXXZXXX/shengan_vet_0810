@@ -220,8 +220,27 @@ export function isClaimed(id: string, claimed: string[]) {
   return claimed.includes(id);
 }
 
-export function getPickup(id: string) {
-  return PICKUPS.find((p) => p.id === id) ?? null;
+export function getPickup(id: string): Pickup | null {
+  const found =
+    PICKUPS.find((p) => p.id === id) ??
+    PICKUP_HISTORY.find((p) => p.id === id);
+  if (found) return found;
+  // 合成兜底数据，避免从工单跳转过来时领取单为空
+  const source = id.replace(/^PK-?/i, "");
+  return {
+    id,
+    title: "诊疗物资领取",
+    source: source.startsWith("LS") ? source : `WO-${source.replace(/^WO-?/i, "")}`,
+    barn: "3 号牛舍",
+    approvedAt: "今日 09:42",
+    visitor: "王医生",
+    warehouse: "中央药房 · A 区货架 03",
+    items: [
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶" },
+      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支" },
+      { name: "一次性注射器", spec: "20ml", qty: "8 支" },
+    ],
+  };
 }
 
 /** Fake QR pattern (deterministic from id) */
