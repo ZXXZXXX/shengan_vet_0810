@@ -333,17 +333,10 @@ function TodayTaskList({ role }: { role: Role }) {
           <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
         </Link>
       ))}
-      <Link
-        to="/m/health"
-        search={{ tab: tabParam, type: filter.type } as never}
-        className="flex items-center justify-center gap-1 h-10 rounded-xl bg-card border border-border text-body-sm text-primary active:bg-surface-subtle"
-      >
-        查看更多{remaining > 0 ? ` (还有 ${remaining} 项)` : ""}
-        <ChevronRight className="h-3.5 w-3.5" />
-      </Link>
     </div>
   );
 }
+
 
 
 
