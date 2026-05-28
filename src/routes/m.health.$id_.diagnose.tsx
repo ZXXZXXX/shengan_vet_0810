@@ -141,8 +141,11 @@ function DiagnosePage() {
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
   const [videos, setVideos] = useState<string[]>([]);
+  const [audios, setAudios] = useState<{ id: string; duration: number }[]>([]);
   const [note, setNote] = useState("");
   const [showMediaPicker, setShowMediaPicker] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recordSec, setRecordSec] = useState(0);
 
   // 指派执行人
   const [executor, setExecutor] = useState("");
