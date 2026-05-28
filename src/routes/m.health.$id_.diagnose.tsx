@@ -470,14 +470,15 @@ function DiagnosePage() {
                 setEditingRx({
                   id: nextId,
                   name: "",
+                  maker: "",
                   spec: "",
                   use: "肌肉注射",
                   dose: "",
-                  days: "3 天",
+                  days: "3",
                 });
                 setRxList((prev) => [
                   ...prev,
-                  { id: nextId, name: "", spec: "", use: "肌肉注射", dose: "", days: "3 天" },
+                  { id: nextId, name: "", maker: "", spec: "", use: "肌肉注射", dose: "", days: "3" },
                 ]);
               }}
               className="mt-2 w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
