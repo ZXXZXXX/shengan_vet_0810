@@ -498,34 +498,6 @@ function HomePage() {
             })}
           </div>
         </Card>
-
-        {/* Todos */}
-        <Card ref={todosRef} className="border-border bg-card scroll-mt-20">
-          <div className="p-6 pb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ClipboardList className="h-4 w-4 text-primary" strokeWidth={1.75} />
-              <h3 className="text-card-title text-foreground">待办事项</h3>
-              <span className="tag tag-muted">{todos.length} 项</span>
-            </div>
-            <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
-              查看全部 <ChevronRight className="h-3 w-3 ml-0.5" />
-            </Button>
-          </div>
-          <div className="divide-y divide-border">
-            {todos.map((t, i) => (
-              <div key={i} className="flex items-center gap-3 px-6 py-3.5">
-                <div className="h-7 w-7 rounded-md border border-border bg-card flex items-center justify-center">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-text-tertiary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-body text-foreground">{t.title}</p>
-                  <p className="text-caption text-text-tertiary mt-0.5">负责人 · {t.owner}</p>
-                </div>
-                <span className="tag tag-outline tabular-nums">{t.due}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
       </main>
 
       <Dialog
