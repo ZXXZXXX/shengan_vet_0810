@@ -31,7 +31,7 @@ export const Route = createFileRoute("/m/health/")({
 
 
 
-type Status = "待诊断" | "进行中" | "已驳回" | "已完成" | "已终止";
+type Status = "待诊断" | "进行中" | "已完成" | "已终止";
 type Kind = "健康" | "损耗" | "修蹄" | "领取";
 
 type Scope = { type: "single"; ear: string } | { type: "batch"; label: string };
