@@ -222,6 +222,15 @@ function ReportPage() {
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>("");
 
+  // 是否转栏
+  const [needTransfer, setNeedTransfer] = useState(false);
+  const [transferBarn, setTransferBarn] = useState<string>("");
+  const [transferQ, setTransferQ] = useState("");
+  const [transferFocused, setTransferFocused] = useState(false);
+  const lastTransferBarn = typeof window !== "undefined"
+    ? localStorage.getItem("mp:lastTransferBarn") ?? ""
+    : "";
+
   // 切换工作类型时重置标签集
   useEffect(() => {
     if (cfg?.tags) {
@@ -790,6 +799,107 @@ function ReportPage() {
                     )}
                   </Section>
                 )}
+
+                {/* 是否转栏 */}
+                <Section title="是否转栏" hint="转入新栏会同步更新档案">
+                  <div className="flex gap-2">
+                    {[
+                      { v: false, label: "不转栏" },
+                      { v: true, label: "需转栏" },
+                    ].map((o) => {
+                      const active = needTransfer === o.v;
+                      return (
+                        <button
+                          key={o.label}
+                          onClick={() => setNeedTransfer(o.v)}
+                          className={`flex-1 h-11 rounded-xl border text-body-sm font-medium transition-all active:scale-[0.97] ${
+                            active
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : "bg-card border-border text-text-secondary"
+                          }`}
+                        >
+                          {o.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {needTransfer && (
+                    <div className="mt-3">
+                      {transferBarn ? (
+                        <div className="flex items-center justify-between gap-2 h-11 px-3 rounded-xl bg-brand-subtle border border-primary/20">
+                          <span className="inline-flex items-center gap-1.5 text-body-sm text-primary font-medium">
+                            <Check className="h-3.5 w-3.5" />
+                            转入 {transferBarn}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setTransferBarn("");
+                              setTransferQ("");
+                            }}
+                            className="text-caption text-text-tertiary"
+                          >
+                            更换
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                          <input
+                            value={transferQ}
+                            onChange={(e) => {
+                              setTransferQ(e.target.value);
+                              setTransferFocused(true);
+                            }}
+                            onFocus={() => setTransferFocused(true)}
+                            onBlur={() => setTimeout(() => setTransferFocused(false), 150)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && transferQ.trim()) {
+                                e.preventDefault();
+                                const v = transferQ.trim();
+                                setTransferBarn(v);
+                                localStorage.setItem("mp:lastTransferBarn", v);
+                                setTransferFocused(false);
+                              }
+                            }}
+                            placeholder="输入或搜索转入栏编号"
+                            className="w-full h-12 pl-9 pr-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
+                          />
+                          {transferFocused && (() => {
+                            const kw = transferQ.trim();
+                            const pool = allBarns.filter((b) => !barns.includes(b) && b !== barn);
+                            const ordered = lastTransferBarn && pool.includes(lastTransferBarn)
+                              ? [lastTransferBarn, ...pool.filter((b) => b !== lastTransferBarn)]
+                              : pool;
+                            const matches = (kw ? ordered.filter((b) => b.includes(kw)) : ordered).slice(0, 6);
+                            if (matches.length === 0) return null;
+                            return (
+                              <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-72 overflow-auto">
+                                {matches.map((b) => (
+                                  <button
+                                    key={b}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => {
+                                      setTransferBarn(b);
+                                      localStorage.setItem("mp:lastTransferBarn", b);
+                                      setTransferFocused(false);
+                                    }}
+                                    className="w-full text-left px-3 py-2.5 hover:bg-surface-subtle border-b border-border last:border-b-0 flex items-center justify-between gap-2"
+                                  >
+                                    <span className="text-body-sm text-foreground">{b}</span>
+                                    {b === lastTransferBarn && (
+                                      <span className="tag tag-muted">上次选择</span>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Section>
 
                 {/* 处理人（放在最后，下拉展开选择） */}
                 <Section title="处理人" required hint="仅可选择具备处方权的角色">
