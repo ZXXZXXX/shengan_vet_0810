@@ -483,7 +483,7 @@ function buildDayItems(day: number, _tags: string[]): ExecItem[] {
   ];
 }
 
-// === 执行记录（详情页只读摘要） ===
+// === 执行任务（详情页只读摘要） ===
 type DayPhase = "done" | "active" | "pending";
 type DaySummary = {
   day: number;
