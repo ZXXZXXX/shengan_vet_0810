@@ -126,16 +126,12 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-border bg-card">
         <div className="flex items-center px-2 py-3">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <svg viewBox="0 0 24 24" className="h-5 w-5 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2c3 2 5 5 5 9a5 5 0 0 1-10 0c0-4 2-7 5-9z" />
-                <circle cx="10" cy="10" r="1" fill="currentColor" />
-                <circle cx="14" cy="10" r="1" fill="currentColor" />
-              </svg>
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle">
+              <span className="text-card-title text-primary font-semibold leading-none">奇</span>
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="text-card-title font-semibold text-foreground leading-tight">智慧牧场</span>
-              <span className="text-caption text-text-tertiary leading-tight">数字化管理系统</span>
+              <span className="text-card-title font-medium text-foreground leading-tight">奇点</span>
+              <span className="text-caption text-text-tertiary leading-tight">智牧管理系统</span>
             </div>
           </Link>
         </div>

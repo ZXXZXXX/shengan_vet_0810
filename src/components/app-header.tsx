@@ -1,22 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import {
-  Bell,
-  Building2,
-  Users,
-  Briefcase,
-  LogOut,
-  Check,
-  ChevronDown,
-  PanelLeft,
-  Search,
-  Sun,
-  Moon,
-  MapPin,
-} from "lucide-react";
+import { Bell, Building2, Users, Briefcase, LogOut, Check, ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { FARMS, useFarm, setFarmId } from "@/lib/farm-store";
-import { useSidebar } from "@/components/ui/sidebar";
 
 import {
   Popover,
@@ -34,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+
 interface AppHeaderProps {
   title: string;
   breadcrumb?: string[];
@@ -42,7 +29,7 @@ interface AppHeaderProps {
 const currentUser = {
   name: "张磊",
   initial: "ZL",
-  role: "牧场管理员",
+  role: "场长",
   team: "兽医部 · 巡检 A 组",
 };
 
@@ -50,67 +37,31 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
   const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [farmOpen, setFarmOpen] = useState(false);
-  const [dark, setDark] = useState(false);
   const currentFarm = useFarm();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const showFarmSwitcher = pathname === "/" || pathname.startsWith("/production");
-  const { toggleSidebar } = useSidebar();
-
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
-
-  // Build breadcrumb: 控制台 / ...rest / title
-  const crumbs: string[] = ["控制台"];
-  if (breadcrumb && breadcrumb.length > 0) {
-    breadcrumb.forEach((c) => {
-      if (!crumbs.includes(c)) crumbs.push(c);
-    });
-  }
-  if (title && crumbs[crumbs.length - 1] !== title) crumbs.push(title);
-
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card">
-      <div className="flex h-14 items-center gap-3 px-4">
-        <button
-          onClick={toggleSidebar}
-          className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors shrink-0"
-          aria-label="切换侧边栏"
-        >
-          <PanelLeft className="h-4 w-4" />
-        </button>
+      <div className="flex h-14 items-center gap-3 px-6">
+        {breadcrumb && breadcrumb.length > 0 && (
+          <nav className="text-body-sm text-text-tertiary flex items-center gap-1.5">
+            {breadcrumb.map((b, i) => (
+              <span key={i} className="flex items-center gap-1.5">
+                {i > 0 && <span className="text-text-tertiary/60">/</span>}
+                <span className={i === breadcrumb.length - 1 ? "text-foreground" : ""}>{b}</span>
+              </span>
+            ))}
+          </nav>
+        )}
 
-        <nav className="text-body-sm flex items-center gap-1.5 shrink-0">
-          {crumbs.map((b, i) => (
-            <span key={i} className="flex items-center gap-1.5">
-              {i > 0 && <span className="text-text-tertiary/60">/</span>}
-              <span className={i === crumbs.length - 1 ? "text-foreground font-medium" : "text-text-tertiary"}>{b}</span>
-            </span>
-          ))}
-        </nav>
-
-        <div className="flex-1 max-w-xl mx-auto">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary pointer-events-none" />
-            <input
-              type="text"
-              placeholder="搜索牛只编号、栏舍、设备…"
-              className="w-full h-9 pl-9 pr-14 rounded-md border border-border bg-surface-subtle/60 text-body-sm text-foreground placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 focus:bg-card transition-colors"
-            />
-            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex items-center h-5 px-1.5 rounded border border-border bg-card text-caption text-text-tertiary font-mono">
-              ⌘K
-            </kbd>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="ml-auto flex items-center gap-2">
           {showFarmSwitcher && (
             <Popover open={farmOpen} onOpenChange={setFarmOpen}>
               <PopoverTrigger asChild>
-                <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-border bg-card hover:bg-surface-subtle transition-colors">
-                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                <button className="inline-flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card hover:bg-surface-subtle transition-colors">
+                  <Building2 className="h-3.5 w-3.5 text-primary" />
                   <span className="text-body-sm text-foreground font-medium">{currentFarm.name}</span>
+                  <span className="text-caption text-text-tertiary hidden lg:inline">· {currentFarm.region}</span>
                   <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
                 </button>
               </PopoverTrigger>
@@ -140,31 +91,20 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
             </Popover>
           )}
 
+
           <button className="relative h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors">
             <Bell className="h-4 w-4" />
             <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-destructive" />
           </button>
 
-          <button
-            onClick={() => setDark((v) => !v)}
-            className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors"
-            aria-label="切换主题"
-          >
-            {dark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-          </button>
-
           <Popover>
             <PopoverTrigger asChild>
-              <button className="inline-flex items-center gap-2 h-9 pl-1 pr-2 rounded-md hover:bg-surface-subtle transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
-                <Avatar className="h-7 w-7">
-                  <AvatarFallback className="bg-brand-subtle text-primary text-caption font-medium">
+              <button className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+                <Avatar className="h-8 w-8 cursor-pointer">
+                  <AvatarFallback className="bg-brand-subtle text-primary text-body-sm font-medium">
                     {currentUser.initial}
                   </AvatarFallback>
                 </Avatar>
-                <div className="leading-tight text-left hidden md:block">
-                  <div className="text-body-sm text-foreground font-medium">{currentUser.name}</div>
-                  <div className="text-caption text-text-tertiary">{currentUser.role}</div>
-                </div>
               </button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-72 p-0 border-border">
@@ -195,18 +135,25 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
                   </div>
                 </div>
               </div>
+              <div className="border-t border-border p-2">
+                <button
+                  onClick={() => setConfirmOpen(true)}
+                  className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-body-sm text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  退出登录
+                </button>
+              </div>
             </PopoverContent>
           </Popover>
-
-          <button
-            onClick={() => setConfirmOpen(true)}
-            className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary hover:bg-surface-subtle hover:text-foreground transition-colors"
-            aria-label="退出登录"
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
         </div>
       </div>
+
+      {title && (
+        <div className="px-6 pb-4 pt-1">
+          <h1 className="text-page-title text-foreground">{title}</h1>
+        </div>
+      )}
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
@@ -230,9 +177,6 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* Preserve title prop reference to avoid unused warning */}
-      <span className="hidden" aria-hidden>{title}</span>
     </header>
   );
 }
