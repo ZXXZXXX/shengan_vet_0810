@@ -222,6 +222,15 @@ function ReportPage() {
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>("");
 
+  // 是否转栏
+  const [needTransfer, setNeedTransfer] = useState(false);
+  const [transferBarn, setTransferBarn] = useState<string>("");
+  const [transferQ, setTransferQ] = useState("");
+  const [transferFocused, setTransferFocused] = useState(false);
+  const lastTransferBarn = typeof window !== "undefined"
+    ? localStorage.getItem("mp:lastTransferBarn") ?? ""
+    : "";
+
   // 切换工作类型时重置标签集
   useEffect(() => {
     if (cfg?.tags) {
