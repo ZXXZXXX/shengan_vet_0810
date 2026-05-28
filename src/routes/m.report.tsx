@@ -21,7 +21,7 @@ import { toast } from "sonner";
 type ReportSearch = { target?: string; barn?: string; lock?: number };
 
 export const Route = createFileRoute("/m/report")({
-  head: () => ({ meta: [{ title: "现场上报 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "疾病上报 · 奇点智牧" }] }),
   validateSearch: (s: Record<string, unknown>): ReportSearch => ({
     target: typeof s.target === "string" ? s.target : undefined,
     barn: typeof s.barn === "string" ? s.barn : undefined,
@@ -200,8 +200,9 @@ function ReportPage() {
   const [showDraftDialog, setShowDraftDialog] = useState(false);
 
   // 健康
-  const [workType, setWorkType] = useState<WorkType | "">("");
-  const cfg = workType ? workTypeConfig[workType] : null;
+  // 仅支持疾病治疗类型工单
+  const [workType] = useState<WorkType>("疾病治疗");
+  const cfg = workTypeConfig[workType];
   const [symptomTags, setSymptomTags] = useState<string[]>([]);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [customSymptom, setCustomSymptom] = useState("");
@@ -297,7 +298,6 @@ function ReportPage() {
 
   const canSubmit =
     (barnMode ? barns.length > 0 : targets.length > 0) &&
-    workType !== "" &&
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
     desc.trim().length > 0 &&
@@ -329,7 +329,7 @@ function ReportPage() {
   
 
   return (
-    <MobileShell title="现场上报" back hideTabBar>
+    <MobileShell title="疾病上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-5">
         {kind === "health" ? (
           <>
@@ -581,29 +581,17 @@ function ReportPage() {
             </Section>
 
 
-            {/* 工作类型 */}
-            <Section title="工作类型" required>
-              <div className="grid grid-cols-4 gap-2">
-                {healthWorkTypes.map((t) => {
-                  const active = workType === t;
-                  return (
-                    <button
-                      key={t}
-                      onClick={() => setWorkType(t)}
-                      className={`h-12 rounded-xl border text-body-sm font-medium transition-all active:scale-[0.97] ${
-                        active
-                          ? "bg-primary border-primary text-primary-foreground shadow-[0_2px_8px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
-                          : "bg-card border-border text-text-secondary"
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
+            {/* 工单类型：固定为疾病治疗 */}
+            <Section title="工单类型">
+              <div className="h-11 px-3 rounded-xl bg-surface-subtle border border-border inline-flex items-center text-body-sm text-foreground">
+                疾病治疗
               </div>
             </Section>
 
-            {workType !== "" && (
+            {(
+              <></>
+            )}
+            {true && (
               <>
                 {/* 标签字段（按工作类型显示） */}
                 {cfg?.tags && (
