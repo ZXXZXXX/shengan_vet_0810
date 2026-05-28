@@ -76,15 +76,15 @@ function AnimalDetailPage() {
                 <div className="text-section-title font-mono">#{a.id}</div>
               </div>
               <span
-                className={`ml-auto h-7 px-2.5 rounded-full inline-flex items-center text-caption backdrop-blur ${
+                className={`ml-auto h-8 px-3 rounded-full inline-flex items-center text-body-sm font-medium ${
                   a.health === "异常"
-                    ? "bg-[var(--state-danger)]/35"
+                    ? "bg-[#FFE4E1] text-[#D9534F]"
                     : a.health === "观察中"
-                    ? "bg-[var(--state-warning)]/35"
-                    : "bg-[var(--state-success)]/35"
+                    ? "bg-[#FFF7D6] text-[#B8860B]"
+                    : "bg-[#E8F5E9] text-[#2E7D32]"
                 }`}
               >
-                <Activity className="h-3 w-3 mr-1" />
+                <Activity className="h-3.5 w-3.5 mr-1" />
                 {a.health}
               </span>
             </div>
