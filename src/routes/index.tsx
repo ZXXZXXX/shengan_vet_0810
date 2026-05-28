@@ -569,22 +569,44 @@ function HomePage() {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`tag ${activeRequest.type === "health" ? "tag-warning" : "tag-danger"}`}>
-                    {requestTypeMeta[activeRequest.type].label}
+                  <span className={`tag tag-${workOrderTypeMeta[activeRequest.type].tone}`}>
+                    {workOrderTypeMeta[activeRequest.type].label}
                   </span>
                   <span className="text-caption text-text-tertiary tabular-nums">{activeRequest.id}</span>
                 </div>
-                <DialogTitle className="text-card-title">{activeRequest.title}</DialogTitle>
+                <DialogTitle className="text-card-title">
+                  {workOrderTypeMeta[activeRequest.type].label} · {activeRequest.target}
+                </DialogTitle>
                 <DialogDescription className="text-body-sm text-text-secondary">
-                  提出者 {activeRequest.applicant} · {activeRequest.time}
+                  提出者 {activeRequest.applicantRole} {activeRequest.applicant} · {activeRequest.time}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-3 py-1">
+                {activeRequest.symptoms.length > 0 && (
+                  <div>
+                    <p className="text-caption text-text-tertiary mb-1.5">症状标签</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {activeRequest.symptoms.map((s) => (
+                        <span
+                          key={s}
+                          className="inline-flex items-center h-[24px] px-2 rounded-md text-caption"
+                          style={{
+                            background: "color-mix(in oklab, var(--state-warning) 12%, transparent)",
+                            color: "#A35A00",
+                          }}
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="rounded-md bg-surface-subtle border border-border p-3">
                   <p className="text-caption text-text-tertiary mb-1">申请详情</p>
                   <p className="text-body-sm text-foreground leading-relaxed">{activeRequest.detail}</p>
                 </div>
+
                 <div>
                   <label className="text-caption text-text-tertiary">不通过原因（驳回时必填）</label>
                   <Textarea
