@@ -463,7 +463,7 @@ function buildDayItems(day: number, tags: string[]): ExecItem[] {
   }));
 }
 
-function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
+export function ExecuteTab({ status, pickupCode, tags, readOnly = false }: { status: StatusKey; pickupCode: string | null; tags: string[]; readOnly?: boolean }) {
   if (status === "待审批" || status === "已驳回") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -492,12 +492,13 @@ function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCod
         const day3State: DayState = allDone ? "done" : "pending";
         return (
           <>
-            <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} dayState={day1State} initialNote="精神略沉郁，已测温 39.8℃" />
-            <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} dayState={day2State} initialNote={allDone ? "体温回落至 39.1℃，采食正常" : ""} />
-            <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} dayState={day3State} initialNote={allDone ? "体温 38.6℃，恢复良好" : ""} />
+            <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} dayState={day1State} initialNote="精神略沉郁，已测温 39.8℃" readOnly={readOnly} />
+            <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} dayState={day2State} initialNote={allDone ? "体温回落至 39.1℃，采食正常" : ""} readOnly={readOnly} />
+            <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} dayState={day3State} initialNote={allDone ? "体温 38.6℃，恢复良好" : ""} readOnly={readOnly} />
           </>
         );
       })()}
+
 
 
       <div className="rounded-xl bg-card border border-border p-4">
