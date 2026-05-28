@@ -115,6 +115,11 @@ function DiagnosePage() {
   // 终止工单
   const [confirmTerminate, setConfirmTerminate] = useState(false);
 
+  // 现场记录
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [videos, setVideos] = useState<string[]>([]);
+  const [note, setNote] = useState("");
+
   // 按匹配症状数排序的候选疾病
   const rankedDiseases = useMemo(() => {
     const kw = diseaseQuery.trim().toLowerCase();
