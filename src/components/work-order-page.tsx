@@ -93,7 +93,7 @@ export type ReviewConclusion = {
   conclusionNote: string;
 };
 
-type WorkStatus = "待审核" | "待响应" | "执行中" | "已驳回" | "已完成";
+type WorkStatus = "待出诊" | "待响应" | "执行中" | "已驳回" | "已完成";
 
 export type MaterialItem = {
   id: string;
@@ -212,8 +212,8 @@ const ALL_COLS: ColDef[] = [
   { key: "status", label: "当前状态", width: 100 },
   { key: "proposer", label: "提出人", width: 100 },
   { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
-  { key: "reviewer", label: "审核人", width: 100 },
-  { key: "reviewedAt", label: "审核时间", width: 160, isTime: true },
+  { key: "reviewer", label: "出诊人", width: 100 },
+  { key: "reviewedAt", label: "出诊时间", width: 160, isTime: true },
   { key: "executor", label: "响应人", width: 100 },
   { key: "executedAt", label: "响应时间", width: 160, isTime: true },
   { key: "action", label: "功能", width: 140, locked: true },
@@ -221,7 +221,7 @@ const ALL_COLS: ColDef[] = [
 
 type StatusKey = WorkStatus | "已终止";
 const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; tone: string }[] = [
-  { key: "待审核", label: "待审核", icon: ClipboardList, tone: "warning" },
+  { key: "待出诊", label: "待出诊", icon: ClipboardList, tone: "warning" },
   { key: "待响应", label: "待响应", icon: PlayCircle, tone: "pending" },
   { key: "执行中", label: "执行中", icon: PlayCircle, tone: "info" },
   { key: "已驳回", label: "已驳回", icon: AlertTriangle, tone: "danger" },
@@ -281,7 +281,7 @@ export function WorkOrderPage({
   const role = usePcRole();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const [active, setActive] = useState<StatusKey>("待审核");
+  const [active, setActive] = useState<StatusKey>("待出诊");
   const [detail, setDetail] = useState<WorkOrder | null>(null);
   const [mode, setMode] = useState<"view" | "process">("view");
   const [confirm, setConfirm] = useState<"approve" | "reject" | null>(null);
@@ -434,7 +434,7 @@ export function WorkOrderPage({
     setRejectReason("");
     setConfirm("reject");
   };
-  const openApprove = (o: WorkOrder) => {
+  const openVisit = (o: WorkOrder) => {
     setDetail(o);
     setAssignExecutor("__none__");
     setConfirm("approve");
@@ -627,7 +627,7 @@ export function WorkOrderPage({
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null;
-        if (canReview(role) && o.status === "待审核") {
+        if (canReview(role) && o.status === "待出诊") {
           return (
             <div className="inline-flex items-center gap-0.5">
               <Button
@@ -857,7 +857,7 @@ export function WorkOrderPage({
                   <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="proposedAt">提出时间</SelectItem>
-                    <SelectItem value="reviewedAt">审核时间</SelectItem>
+                    <SelectItem value="reviewedAt">出诊时间</SelectItem>
                     <SelectItem value="executedAt">执行时间</SelectItem>
                   </SelectContent>
                 </Select>
@@ -1165,10 +1165,10 @@ export function WorkOrderPage({
 
               </section>
 
-              {/* ============ 二、审核结论（处理态） ============ */}
-              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
+              {/* ============ 二、出诊结论（处理态） ============ */}
+              {!isLoss && canReview(role) && detail.status === "待出诊" && mode === "process" && (
                 <section className="space-y-3">
-                  <SectionHeader icon={<ClipboardCheck className="h-3.5 w-3.5" />} title="审核结论" hint="以专业视角，根据线索重新确认类型、标签与结论" tone="brand" />
+                  <SectionHeader icon={<ClipboardCheck className="h-3.5 w-3.5" />} title="出诊结论" hint="以专业视角，根据线索重新确认类型、标签与结论" tone="brand" />
                   <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-4">
                     {/* 确认工单类型 */}
                     <div>
@@ -1305,7 +1305,7 @@ export function WorkOrderPage({
               )}
 
               {/* ============ 三、执行计划（处理态） ============ */}
-              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
+              {!isLoss && canReview(role) && detail.status === "待出诊" && mode === "process" && (
                 <section className="space-y-3">
                   <SectionHeader
                     icon={<Stethoscope className="h-3.5 w-3.5" />}
@@ -1330,7 +1330,7 @@ export function WorkOrderPage({
               )}
 
               {/* ============ 四、指派执行人（处理态） ============ */}
-              {!isLoss && canReview(role) && detail.status === "待审核" && mode === "process" && (
+              {!isLoss && canReview(role) && detail.status === "待出诊" && mode === "process" && (
                 <section className="space-y-3">
                   <SectionHeader icon={<UserPlus className="h-3.5 w-3.5" />} title="指派执行人" hint="选填" />
                   <div className="rounded-md border border-border bg-card p-4">
@@ -1357,13 +1357,13 @@ export function WorkOrderPage({
 
 
               {/* 查看态：仅展示固定的审核 / 响应人元数据 */}
-              {(detail.status !== "待审核" || mode === "view") && (
+              {(detail.status !== "待出诊" || mode === "view") && (
                 <section className="space-y-3">
-                  <SectionHeader icon={<ClipboardList className="h-3.5 w-3.5" />} title="审核与执行记录" />
+                  <SectionHeader icon={<ClipboardList className="h-3.5 w-3.5" />} title="出诊与执行记录" />
                   <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
                     <Field label="负责人" value={detail.executor ?? detail.who ?? "—"} />
-                    <Field label="审核人" value={detail.reviewer ?? "—"} />
-                    <Field label="审核时间" value={detail.reviewedAt ?? "—"} />
+                    <Field label="出诊人" value={detail.reviewer ?? "—"} />
+                    <Field label="出诊时间" value={detail.reviewedAt ?? "—"} />
                     <Field label="响应时间" value={detail.executedAt ?? "—"} />
                   </div>
                 </section>
@@ -1374,7 +1374,7 @@ export function WorkOrderPage({
           })()}
           </div>
 
-          {detail && canReview(role) && detail.status === "待审核" && (
+          {detail && canReview(role) && detail.status === "待出诊" && (
             <SheetFooter className="px-6 py-3 border-t border-border bg-card gap-2">
               {mode === "view" ? (
                 <Button
@@ -2124,7 +2124,7 @@ function pick<T>(arr: T[], i: number): T { return arr[i % arr.length]; }
 
 /**
  * 生成 15 条 mock 工单：
- * - 状态按 [待审核, 执行中, 已完成, 已驳回] 循环
+ * - 状态按 [待出诊, 执行中, 已完成, 已驳回] 循环
  * - 提出时间从今天起向前递推（覆盖今天 / 7天 / 30天 / 更早）
  * - 工单编号 = 类型拼音首字母 + 月日 + 当日该类下序号（两位数字）
  */
@@ -2132,7 +2132,7 @@ export function makeOrders(
   prefix: string,
   events: { target: string; event: string; desc: string }[],
 ): WorkOrder[] {
-  const statuses: WorkStatus[] = ["待审核", "待响应", "执行中", "已完成", "已驳回"];
+  const statuses: WorkStatus[] = ["待出诊", "待响应", "执行中", "已完成", "已驳回"];
   const now = new Date();
   // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
   const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
@@ -2188,7 +2188,7 @@ export function makeOrders(
       attachments: attachmentSets[i % attachmentSets.length],
     };
 
-    if (status !== "待审核") {
+    if (status !== "待出诊") {
       order.reviewer = reviewer;
       order.reviewedAt = fmt(reviewedAt);
     }
