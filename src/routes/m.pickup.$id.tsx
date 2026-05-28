@@ -107,7 +107,7 @@ function PickupDetailPage() {
           />
           <Row
             label="出诊人"
-            value={<span className="text-body text-foreground">{pickup.approver}</span>}
+            value={<span className="text-body text-foreground">{pickup.visitor}</span>}
           />
           <Row
             label="使用牛舍"
