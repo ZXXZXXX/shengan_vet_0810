@@ -155,12 +155,12 @@ function DiseaseKBPage() {
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <Checkbox ref={headerCheckRef} checked={allChecked} onCheckedChange={toggleAll} aria-label="全选" />
-            <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 flex-1 min-w-0">
               <div>编号</div>
               <div>名称</div>
               <div>分类</div>
               <div>严重程度</div>
-              <div className="col-span-1">典型症状</div>
+              <div>典型症状</div>
             </div>
             <div className="w-[160px] text-right shrink-0">功能</div>
           </div>
