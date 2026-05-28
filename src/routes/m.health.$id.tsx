@@ -44,11 +44,12 @@ export const Route = createFileRoute("/m/health/$id")({
 type StatusKey = "待诊断" | "进行中" | "已完成" | "已终止";
 
 const statusMap: Record<StatusKey, { tag: string; icon: typeof PlayCircle; color: string }> = {
-  待诊断: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
-  进行中: { tag: "tag tag-success", icon: PlayCircle, color: "text-[#2F7A3A]" },
-  已完成: { tag: "tag tag-muted", icon: CheckCircle2, color: "text-text-secondary" },
-  已终止: { tag: "tag tag-muted", icon: AlertTriangle, color: "text-text-secondary" },
+  待诊断: { tag: "tag tag-warning", icon: ClipboardList, color: "" },
+  进行中: { tag: "tag tag-info", icon: PlayCircle, color: "" },
+  已完成: { tag: "tag tag-success", icon: CheckCircle2, color: "" },
+  已终止: { tag: "tag tag-danger", icon: AlertTriangle, color: "" },
 };
+
 
 function cleanName(n: string) {
   return n.replace(/^(内部|外部)·/, "");
