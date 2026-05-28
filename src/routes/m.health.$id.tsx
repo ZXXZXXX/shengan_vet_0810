@@ -608,6 +608,7 @@ function ChecklistDay({
   });
   const [dayNote, setDayNote] = useState(initialNote);
   const [noteEditing, setNoteEditing] = useState(false);
+  const [reasons, setReasons] = useState<Record<string, string>>({});
 
   const total = items.length;
   const doneCount = items.filter((i) => i.status === "done").length;
@@ -703,7 +704,7 @@ function ChecklistDay({
               const done = it.status === "done";
               const blocked = it.status === "blocked";
               return (
-                <li key={it.id}>
+                <li key={it.id} className="space-y-2">
                   <button
                     type="button"
                     onClick={() => toggleDone(it.id, it.status)}
@@ -749,6 +750,27 @@ function ChecklistDay({
                       </span>
                     )}
                   </button>
+                  {blocked && (interactive ? (
+                    <div className="rounded-xl border border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5 px-3 py-2.5">
+                      <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1 mb-1">
+                        <AlertTriangle className="h-3 w-3" /> 无法执行原因（必填）
+                      </div>
+                      <textarea
+                        value={reasons[it.id] ?? ""}
+                        onChange={(e) => setReasons((r) => ({ ...r, [it.id]: e.target.value }))}
+                        placeholder="请说明无法执行的具体原因"
+                        required
+                        className="w-full min-h-[44px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none"
+                      />
+                    </div>
+                  ) : reasons[it.id] ? (
+                    <div className="rounded-xl border border-border bg-surface-subtle px-3 py-2.5">
+                      <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-0.5">
+                        <AlertTriangle className="h-3 w-3" /> 无法执行原因
+                      </div>
+                      <div className="text-body-sm text-foreground">{reasons[it.id]}</div>
+                    </div>
+                  ) : null)}
                 </li>
               );
             })}
