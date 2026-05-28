@@ -265,7 +265,7 @@ function HomePage() {
 
   const handleApprove = () => {
     if (!activeRequest) return;
-    toast.success(`已通过：${activeRequest.title}`);
+    toast.success(`已通过：${workOrderTypeMeta[activeRequest.type].label} · ${activeRequest.target}`);
     setActiveRequest(null);
     setRejectReason("");
   };
