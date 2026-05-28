@@ -256,7 +256,7 @@ function RespondListPage() {
                 <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
                   {c.visitor.charAt(0)}
                 </span>
-                出诊 <span className="text-text-secondary">{c.visitor}</span>
+                诊断 <span className="text-text-secondary">{c.visitor}</span>
               </span>
               <span>·</span>
               <span className={c.needPickup ? "text-primary font-medium inline-flex items-center gap-0.5" : "text-text-tertiary inline-flex items-center gap-0.5"}>

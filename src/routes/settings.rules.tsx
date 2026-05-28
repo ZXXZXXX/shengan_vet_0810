@@ -26,7 +26,7 @@ function RulesPage() {
           <div className="flex items-center gap-2">
             <Workflow className="h-4 w-4 text-primary" strokeWidth={1.75} />
             <h2 className="text-section-title text-foreground">规则列表</h2>
-            <span className="text-body-sm text-text-tertiary">告警、派单、升级、出诊、通知</span>
+            <span className="text-body-sm text-text-tertiary">告警、派单、升级、诊断、通知</span>
           </div>
           <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
             <Plus className="h-3.5 w-3.5" /> 新建规则

@@ -87,7 +87,7 @@ type PcModuleKey = "workbench" | "archive" | "health" | "drug" | "organization" 
 const pcModules: { key: PcModuleKey; name: string; desc: string; required?: boolean }[] = [
   { key: "workbench", name: "工作台", desc: "首页数据看板与待办，仅展示当前角色已开通模块的相关数据", required: true },
   { key: "archive", name: "牛只基础档案", desc: "牛场、牛舍、牛只档案的维护（不可关闭）", required: true },
-  { key: "health", name: "健康管理", desc: "疾病、疫苗、修蹄等健康事项的方案确认、出诊与执行计划" },
+  { key: "health", name: "健康管理", desc: "疾病、疫苗、修蹄等健康事项的方案确认、诊断与执行计划" },
   { key: "drug", name: "药品管理", desc: "药品档案、库存、调拨、取药与损耗管理" },
   { key: "organization", name: "组织管理", desc: "账号、角色、租户与团队管理" },
   { key: "knowledge", name: "知识库管理", desc: "疾病、症状、处方等诊疗知识维护" },
@@ -610,14 +610,14 @@ function RolePage() {
                   </div>
                 </section>
 
-                {/* 2. PC 管理与出诊权限 */}
+                {/* 2. PC 管理与诊断权限 */}
                 <section className="px-6 py-5 border-b border-border space-y-4">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
                       <span className="h-5 w-1 rounded-full bg-primary" />
                       <h4 className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
                         <Monitor className="h-3.5 w-3.5 text-text-secondary" />
-                        PC 端 · 管理与出诊权限
+                        PC 端 · 管理与诊断权限
                       </h4>
                     </div>
                     <div className="flex items-center gap-2">
