@@ -13,13 +13,9 @@ import {
   FileText,
   PackagePlus,
   ChevronRight,
-  Clock,
-  User,
-  MapPin,
   Stethoscope,
   CheckSquare,
   Square,
-  
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove, canExecute } from "@/lib/mobile-role";
@@ -107,7 +103,7 @@ function TaskDetailPage() {
     <MobileShell title="工单详情" back hideTabBar>
       <div className="pb-28">
         {/* === 1. 顶部工单摘要 === */}
-        <div className="px-4 pt-3 pb-3 bg-card border-b border-border space-y-3">
+        <div className="px-4 pt-3 pb-3 bg-card border-b border-border space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Icon className={`h-4 w-4 ${s.color}`} />
@@ -116,20 +112,11 @@ function TaskDetailPage() {
             </div>
             <span className={s.tag}>{o.status}</span>
           </div>
-
-          <div className="grid grid-cols-2 gap-y-2 gap-x-3 text-caption">
-            <SumRow icon={MapPin} label="牧场" value={o.farm} />
-            <SumRow icon={MapPin} label="牛舍" value={o.barn} />
-            <SumRow icon={Stethoscope} label="执行对象" value={o.target} />
-            <SumRow icon={User} label="执行人" value={cleanName(o.who)} />
-            <SumRow icon={Clock} label="计划开始时间" value={o.plannedAt} />
-            <SumRow
-              icon={PackagePlus}
-              label="领物需求"
-              value={o.needPickup ? "需要" : "不需要"}
-            />
+          <div className="flex items-center gap-1.5 text-caption">
+            <Stethoscope className="h-3.5 w-3.5 text-text-tertiary" />
+            <span className="text-text-tertiary">执行对象</span>
+            <span className="text-body-sm text-foreground">{earTag}</span>
           </div>
-
         </div>
 
         {/* === 2. Tab === */}
@@ -206,26 +193,6 @@ function TaskDetailPage() {
       })()}
 
     </MobileShell>
-  );
-}
-
-function SumRow({
-  icon: I,
-  label,
-  value,
-}: {
-  icon: typeof Clock;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-start gap-1.5 min-w-0">
-      <I className="h-3.5 w-3.5 text-text-tertiary shrink-0 mt-0.5" />
-      <div className="min-w-0">
-        <div className="text-text-tertiary">{label}</div>
-        <div className="text-body-sm text-foreground truncate">{value}</div>
-      </div>
-    </div>
   );
 }
 
