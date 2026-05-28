@@ -79,11 +79,11 @@ const tasks: Task[] = [
   { id: "YM-2042", target: "24 头牛", barn: "1 号牛舍", kind: "健康", type: "疫苗", event: "疫苗补免", proposer: "周凯", who: "周凯", approver: "王医生", status: "已终止", createdAt: "今日 10:20", terminatedAt: "今日 10:20", scope: { type: "batch", label: "24 头牛" }, conclusion: "疫苗补免", desc: "计划调整，暂不执行", needPickup: false },
 ];
 
-// 进行中对执行人即“待执行”
-const tabs: { key: Status | "全部" | "待执行"; label: string }[] = [
+// 进行中对执行人即“执行中”
+const tabs: { key: Status | "全部" | "执行中"; label: string }[] = [
   { key: "全部", label: "全部" },
   { key: "待审批", label: "待审批" },
-  { key: "待执行", label: "待执行" },
+  { key: "执行中", label: "执行中" },
   { key: "已完成", label: "已完成" },
   { key: "已驳回", label: "已驳回" },
   { key: "已终止", label: "已终止" },
@@ -117,8 +117,8 @@ function TaskListPage() {
   const isApprover = canApprove(role);
   const claimed = useClaimed();
   const search = Route.useSearch();
-  const initialTab: (typeof tabs)[number]["key"] = search.tab === "待执行"
-    ? "待执行"
+  const initialTab: (typeof tabs)[number]["key"] = search.tab === "执行中"
+    ? "执行中"
     : isApprover
       ? "待审批"
       : "全部";
@@ -130,7 +130,7 @@ function TaskListPage() {
   void claimed;
   void PICKUPS;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
-  if (tab === "待执行") list = list.filter((o) => o.status === "进行中");
+  if (tab === "执行中") list = list.filter((o) => o.status === "进行中");
   else if (tab !== "全部") list = list.filter((o) => o.status === tab);
 
   const kw = q.trim().toLowerCase();
@@ -266,7 +266,7 @@ function TaskListPage() {
                       <div className="flex items-center gap-1.5 text-body-sm h-5">
                         <span className={`${s.tag} inline-flex items-center gap-1`}>
                           <Icon className="h-3 w-3" />
-                          {isPickup && o.status === "进行中" ? "待领取" : o.status}
+                          {isPickup && o.status === "进行中" ? "待领取" : o.status === "进行中" ? "执行中" : o.status}
                         </span>
                         <span className="font-mono text-text-tertiary text-caption ml-auto">{o.id}</span>
                         <span className="text-text-tertiary">·</span>
