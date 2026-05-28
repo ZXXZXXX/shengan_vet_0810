@@ -311,44 +311,30 @@ function DiagnosePage() {
               </span>
             }
           >
-            {disease ? (
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-brand-subtle text-primary text-body">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  {disease}
-                </span>
-                <button
-                  onClick={() => setShowDiseasePicker(true)}
-                  className="text-body-sm text-text-tertiary underline"
-                >
-                  更换
-                </button>
+            <div className="space-y-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                <input
+                  value={diseaseQuery}
+                  onChange={(e) => {
+                    setDiseaseQuery(e.target.value);
+                    setDisease(e.target.value.trim());
+                  }}
+                  onFocus={() => setDiseaseFocused(true)}
+                  onBlur={() => setTimeout(() => setDiseaseFocused(false), 150)}
+                  placeholder="搜索或直接输入疾病名称"
+                  className="h-10 w-full pl-9 pr-9 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                />
+                {disease && (
+                  <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-primary" />
+                )}
               </div>
-            ) : (
-              <button
-                onClick={() => setShowDiseasePicker(true)}
-                className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
-              >
-                <Search className="h-3.5 w-3.5" /> 选择疾病
-              </button>
-            )}
-
-            {showDiseasePicker && (
-              <div className="mt-3 space-y-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
-                  <input
-                    value={diseaseQuery}
-                    onChange={(e) => setDiseaseQuery(e.target.value)}
-                    autoFocus
-                    placeholder="搜索疾病名称"
-                    className="h-10 w-full pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-                  />
-                </div>
-                <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden bg-card">
+              {diseaseFocused && rankedDiseases.length > 0 && (
+                <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden bg-card max-h-72 overflow-y-auto">
                   {rankedDiseases.map((d) => (
                     <li key={d.name}>
                       <button
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => pickDisease(d)}
                         className="w-full px-3 py-2.5 flex items-center justify-between gap-2 hover:bg-surface-subtle text-left"
                       >
@@ -366,14 +352,15 @@ function DiagnosePage() {
                       </button>
                     </li>
                   ))}
-                  {rankedDiseases.length === 0 && (
-                    <li className="px-3 py-4 text-center text-caption text-text-tertiary">
-                      无匹配疾病
-                    </li>
-                  )}
                 </ul>
-              </div>
-            )}
+              )}
+              {diseaseFocused && rankedDiseases.length === 0 && diseaseQuery.trim() && (
+                <div className="text-caption text-text-tertiary px-1">
+                  未匹配到库内疾病，将以「{diseaseQuery.trim()}」作为新疾病名称
+                </div>
+              )}
+            </div>
+
           </Section>
 
           {/* === 处方 === */}
