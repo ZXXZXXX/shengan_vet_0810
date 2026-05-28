@@ -230,6 +230,13 @@ function DiagnosePage() {
           </button>
         </div>
 
+        {/* 顶部提示 */}
+        <div className="px-4 pt-2 pb-1">
+          <div className="flex items-center gap-1.5 text-caption text-primary">
+            <Sparkles className="h-3 w-3" />
+            已自动将上报信息填写至下方，方便编辑更改
+          </div>
+        </div>
 
         <div className="px-4 space-y-3">
           {/* === 症状 === */}
