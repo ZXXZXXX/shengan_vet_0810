@@ -276,11 +276,12 @@ function EmptyTab({ label }: { label: string }) {
 }
 
 // === 上报记录 ===
-function ReportTab({ isLoss }: { isLoss: boolean }) {
+function ReportTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
+  const isTerminated = status === "已终止";
   return (
     <>
       <Section title="基础信息">
-        <Field label="上报人" value={<PersonChip name="陈晓东" />} />
+        {!isTerminated && <Field label="上报人" value={<PersonChip name="陈晓东" />} />}
         <Field label="上报时间" value="2026-05-20 09:08" />
       </Section>
 
