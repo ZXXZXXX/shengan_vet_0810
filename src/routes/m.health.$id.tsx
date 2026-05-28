@@ -16,6 +16,8 @@ import {
   Stethoscope,
   CheckSquare,
   Square,
+  MapPin,
+  Warehouse,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canVisit, canExecute } from "@/lib/mobile-role";
