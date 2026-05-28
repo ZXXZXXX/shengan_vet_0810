@@ -511,9 +511,19 @@ function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCod
         执行 Checklist · {singleObject ? "记录每日执行情况" : "勾选执行对象并记录执行情况"}
       </div>
 
-      <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} initialAllDone initialNote="无特殊情况" isActive />
-      <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
-      <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
+      {(() => {
+        const allDone = status === "已完成";
+        const day1State: DayState = "done";
+        const day2State: DayState = allDone ? "done" : "active";
+        const day3State: DayState = allDone ? "done" : "pending";
+        return (
+          <>
+            <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} dayState={day1State} initialNote="精神略沉郁，已测温 39.8℃" />
+            <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} dayState={day2State} initialNote={allDone ? "体温回落至 39.1℃，采食正常" : ""} />
+            <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} dayState={day3State} initialNote={allDone ? "体温 38.6℃，恢复良好" : ""} />
+          </>
+        );
+      })()}
 
 
       <div className="rounded-xl bg-card border border-border p-4">
@@ -531,26 +541,30 @@ function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCod
   );
 }
 
+type DayState = "done" | "active" | "pending";
+
 function ChecklistDay({
   day,
   date,
   pickupCode,
   tags,
-  initialAllDone = false,
+  dayState,
   initialNote = "",
-  isActive = false,
 }: {
   day: number;
   date: string;
   pickupCode: string | null;
   tags: string[];
-  initialAllDone?: boolean;
+  dayState: DayState;
   initialNote?: string;
-  isActive?: boolean;
 }) {
+  const isActive = dayState === "active";
+  const isDone = dayState === "done";
+  const isPending = dayState === "pending";
+
   const [items, setItems] = useState<ExecItem[]>(() => {
     const base = buildDayItems(day, tags);
-    if (initialAllDone) return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
+    if (isDone) return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
     return base;
   });
   const [dayNote, setDayNote] = useState(initialNote);
@@ -561,12 +575,12 @@ function ChecklistDay({
   const blockedCount = items.filter((i) => i.status === "blocked").length;
   const settled = doneCount + blockedCount;
   const allSettled = settled === total;
-  const dayDone = allSettled && blockedCount === 0;
+  const dayDone = isDone || (isActive && allSettled && blockedCount === 0);
 
   // 状态标签
   let dayStatusTag: string;
   let dayStatusText: string;
-  if (dayDone) {
+  if (isDone || dayDone) {
     dayStatusTag = "bg-brand-subtle text-primary";
     dayStatusText = "已完成";
   } else if (isActive) {
@@ -593,7 +607,7 @@ function ChecklistDay({
       <div className="px-4 h-12 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <DayDot active={isActive} done={dayDone} />
-          <span className={`text-body font-medium ${isActive ? "text-foreground" : "text-text-tertiary"}`}>
+          <span className={`text-body font-medium ${isPending ? "text-text-tertiary" : "text-foreground"}`}>
             第 {day} 天执行
           </span>
           <span className="text-caption text-text-tertiary font-mono">{date}</span>
@@ -603,134 +617,145 @@ function ChecklistDay({
         </span>
       </div>
 
-      {/* Pickup row */}
-      {pickupCode && (
-        <div className="px-4 pb-2">
-          <Link
-            to="/m/pickup/$id"
-            params={{ id: pickupCode }}
-            className={`flex items-center justify-between px-3 h-10 rounded-lg text-body-sm ${
-              pickupDone
-                ? "bg-surface-subtle text-text-secondary"
-                : "bg-[var(--state-warning,#FFF7E6)] text-[#8A5A0A]"
-            }`}
-            style={
-              !pickupDone
-                ? { backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }
-                : undefined
-            }
-          >
-            <span className="inline-flex items-center gap-1.5">
-              <PackagePlus className="h-3.5 w-3.5" />
-              {pickupDone ? "已领物" : "需领物"} · {pickupCode}
-            </span>
-            <ChevronRight className="h-4 w-4 opacity-70" />
-          </Link>
-        </div>
-      )}
-
-      {/* Unified action */}
-      <div className="px-4 pb-3">
-        <div className="rounded-lg bg-surface-subtle px-3 py-2.5">
-          <div className="text-caption text-text-tertiary mb-0.5">本日统一执行动作</div>
-          <div className={`text-body-sm leading-relaxed ${isActive ? "text-foreground" : "text-text-secondary"}`}>
-            氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录
-          </div>
-        </div>
-      </div>
-
-      {/* Items */}
-      <ul className="px-4 pb-3 space-y-2">
-        {items.map((it) => {
-          const done = it.status === "done";
-          const blocked = it.status === "blocked";
-          return (
-            <li key={it.id}>
-              <button
-                type="button"
-                onClick={() => toggleDone(it.id, it.status)}
-                disabled={!isActive}
-                className={`w-full flex items-center gap-2.5 h-12 px-3 rounded-xl border text-left transition-all active:scale-[0.99] ${
-                  done
-                    ? "border-primary/40 bg-brand-subtle/30"
-                    : blocked
-                      ? "border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5"
-                      : isActive
-                        ? "border-border bg-card"
-                        : "border-border bg-card opacity-80"
-                } ${!isActive ? "cursor-default" : ""}`}
+      {isPending ? (
+        <div className="px-4 pb-4 text-caption text-text-tertiary">尚未开始，到时间后开放填写</div>
+      ) : (
+        <>
+          {pickupCode && (
+            <div className="px-4 pb-2">
+              <Link
+                to="/m/pickup/$id"
+                params={{ id: pickupCode }}
+                className={`flex items-center justify-between px-3 h-10 rounded-lg text-body-sm ${
+                  pickupDone
+                    ? "bg-surface-subtle text-text-secondary"
+                    : "bg-[var(--state-warning,#FFF7E6)] text-[#8A5A0A]"
+                }`}
+                style={
+                  !pickupDone
+                    ? { backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }
+                    : undefined
+                }
               >
-                {done ? (
-                  <CheckSquare className="h-4 w-4 text-primary shrink-0" />
-                ) : blocked ? (
-                  <AlertTriangle className="h-4 w-4 text-[var(--state-danger)] shrink-0" />
-                ) : isActive ? (
-                  <Square className="h-4 w-4 text-text-tertiary shrink-0" />
-                ) : null}
-                <span
-                  className={`flex-1 min-w-0 truncate font-mono text-body ${
-                    done ? "text-foreground" : isActive ? "text-foreground" : "text-text-tertiary"
-                  }`}
-                >
-                  {it.title}
+                <span className="inline-flex items-center gap-1.5">
+                  <PackagePlus className="h-3.5 w-3.5" />
+                  {pickupDone ? "已领物" : "需领物"} · {pickupCode}
                 </span>
-                {isActive && !done && (
-                  <span
-                    role="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      update(it.id, { status: blocked ? "pending" : "blocked" });
-                    }}
-                    className={`text-caption px-2 py-1 rounded-md ${
-                      blocked
-                        ? "text-[var(--state-danger)] font-medium"
-                        : "text-text-tertiary active:bg-surface-subtle"
-                    }`}
-                  >
-                    {blocked ? "已标记无法执行" : "无法执行"}
-                  </span>
-                )}
-              </button>
-            </li>
-          );
-        })}
+                <ChevronRight className="h-4 w-4 opacity-70" />
+              </Link>
+            </div>
+          )}
 
-        {/* Note card */}
-        {isActive && (
-          <li>
-            {noteEditing || !dayNote ? (
-              <div
-                className={`rounded-xl border ${
-                  dayNote ? "border-primary/40 bg-brand-subtle/20" : "border-border bg-card"
-                } px-3 py-2.5`}
-              >
-                <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-1">
-                  <FileText className="h-3 w-3" /> 备注（选填）
-                </div>
-                <textarea
-                  value={dayNote}
-                  onChange={(e) => setDayNote(e.target.value)}
-                  onBlur={() => setNoteEditing(false)}
-                  autoFocus={noteEditing}
-                  placeholder="填写本日执行备注"
-                  className="w-full min-h-[44px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none"
-                />
+          <div className="px-4 pb-3">
+            <div className="rounded-lg bg-surface-subtle px-3 py-2.5">
+              <div className="text-caption text-text-tertiary mb-0.5">本日统一执行动作</div>
+              <div className="text-body-sm leading-relaxed text-foreground">
+                氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setNoteEditing(true)}
-                className="w-full text-left rounded-xl border border-primary/40 bg-brand-subtle/20 px-3 py-2.5"
-              >
-                <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-0.5">
-                  <FileText className="h-3 w-3" /> 备注（选填）
+            </div>
+          </div>
+
+          <ul className="px-4 pb-3 space-y-2">
+            {items.map((it) => {
+              const done = it.status === "done";
+              const blocked = it.status === "blocked";
+              return (
+                <li key={it.id}>
+                  <button
+                    type="button"
+                    onClick={() => toggleDone(it.id, it.status)}
+                    disabled={!isActive}
+                    className={`w-full flex items-center gap-2.5 h-12 px-3 rounded-xl border text-left transition-all active:scale-[0.99] ${
+                      done
+                        ? "border-primary/40 bg-brand-subtle/30"
+                        : blocked
+                          ? "border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5"
+                          : isActive
+                            ? "border-border bg-card"
+                            : "border-border bg-card opacity-80"
+                    } ${!isActive ? "cursor-default" : ""}`}
+                  >
+                    {done ? (
+                      <CheckSquare className="h-4 w-4 text-primary shrink-0" />
+                    ) : blocked ? (
+                      <AlertTriangle className="h-4 w-4 text-[var(--state-danger)] shrink-0" />
+                    ) : isActive ? (
+                      <Square className="h-4 w-4 text-text-tertiary shrink-0" />
+                    ) : null}
+                    <span
+                      className={`flex-1 min-w-0 truncate font-mono text-body ${
+                        done ? "text-foreground" : isActive ? "text-foreground" : "text-text-tertiary"
+                      }`}
+                    >
+                      {it.title}
+                    </span>
+                    {isActive && !done && (
+                      <span
+                        role="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          update(it.id, { status: blocked ? "pending" : "blocked" });
+                        }}
+                        className={`text-caption px-2 py-1 rounded-md ${
+                          blocked
+                            ? "text-[var(--state-danger)] font-medium"
+                            : "text-text-tertiary active:bg-surface-subtle"
+                        }`}
+                      >
+                        {blocked ? "已标记无法执行" : "无法执行"}
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+
+            {isActive ? (
+              <li>
+                {noteEditing || !dayNote ? (
+                  <div
+                    className={`rounded-xl border ${
+                      dayNote ? "border-primary/40 bg-brand-subtle/20" : "border-border bg-card"
+                    } px-3 py-2.5`}
+                  >
+                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-1">
+                      <FileText className="h-3 w-3" /> 备注（选填）
+                    </div>
+                    <textarea
+                      value={dayNote}
+                      onChange={(e) => setDayNote(e.target.value)}
+                      onBlur={() => setNoteEditing(false)}
+                      autoFocus={noteEditing}
+                      placeholder="填写本日执行备注"
+                      className="w-full min-h-[44px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none"
+                    />
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setNoteEditing(true)}
+                    className="w-full text-left rounded-xl border border-primary/40 bg-brand-subtle/20 px-3 py-2.5"
+                  >
+                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-0.5">
+                      <FileText className="h-3 w-3" /> 备注（选填）
+                    </div>
+                    <div className="text-body-sm text-foreground">{dayNote}</div>
+                  </button>
+                )}
+              </li>
+            ) : isDone && dayNote ? (
+              <li>
+                <div className="rounded-xl border border-border bg-surface-subtle px-3 py-2.5">
+                  <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-0.5">
+                    <FileText className="h-3 w-3" /> 备注
+                  </div>
+                  <div className="text-body-sm text-foreground">{dayNote}</div>
                 </div>
-                <div className="text-body-sm text-foreground">{dayNote}</div>
-              </button>
-            )}
-          </li>
-        )}
-      </ul>
+              </li>
+            ) : null}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
