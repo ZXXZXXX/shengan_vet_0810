@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Building2, Plus, Search, MapPin, Users, Beef, MoreHorizontal, Trash2 } from "lucide-react";
+import { Building2, Plus, Search, MoreHorizontal, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/archive/farm")({
   head: () => ({ meta: [{ title: "牛场信息 — 奇点智牧" }] }),
@@ -32,36 +32,36 @@ function FarmPage() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        <Card className="border-border bg-card overflow-hidden">
+          <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
+            <div className="grid grid-cols-7 gap-4 flex-1 min-w-0">
+              <div>编号</div>
+              <div>牛场名称</div>
+              <div>所在地区</div>
+              <div>面积</div>
+              <div>负责人</div>
+              <div>存栏 / 牛舍</div>
+              <div>状态</div>
+            </div>
+            <div className="w-[140px] text-right shrink-0">功能</div>
+          </div>
           {farms.map((f) => (
-            <Card key={f.id} className="border-border bg-card p-5 hover:border-primary/40 transition-colors">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="h-10 w-10 rounded-lg bg-brand-subtle flex items-center justify-center">
-                    <Building2 className="h-4 w-4 text-primary" strokeWidth={1.75} />
-                  </div>
-                  <div>
-                    <div className="text-card-title text-foreground">{f.name}</div>
-                    <div className="text-caption text-text-tertiary font-mono">{f.id}</div>
-                  </div>
+            <div key={f.id} className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
+              <div className="grid grid-cols-7 gap-4 flex-1 min-w-0">
+                <div className="font-mono text-body text-foreground truncate">{f.id}</div>
+                <div className="flex items-center gap-2 text-body text-foreground truncate">
+                  <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <span className="truncate">{f.name}</span>
                 </div>
-                <span className={`tag ${f.status === "运营中" ? "tag-success" : "tag-warning"}`}>{f.status}</span>
-              </div>
-              <div className="space-y-2 text-body-sm">
-                <div className="flex items-center gap-2 text-text-secondary"><MapPin className="h-3.5 w-3.5 text-text-tertiary" /> {f.region} · {f.area}</div>
-                <div className="flex items-center gap-2 text-text-secondary"><Users className="h-3.5 w-3.5 text-text-tertiary" /> 负责人：{f.manager}</div>
-              </div>
-              <div className="mt-4 pt-3 border-t border-border grid grid-cols-2 gap-2">
-                <div>
-                  <div className="text-caption text-text-tertiary">存栏</div>
-                  <div className="flex items-baseline gap-1 mt-0.5"><Beef className="h-3.5 w-3.5 text-primary" /><span className="tabular-nums text-section-title text-foreground">{f.stock}</span><span className="text-caption text-text-tertiary">头</span></div>
-                </div>
-                <div>
-                  <div className="text-caption text-text-tertiary">牛舍</div>
-                  <div className="flex items-baseline gap-1 mt-0.5"><span className="tabular-nums text-section-title text-foreground">{f.barns}</span><span className="text-caption text-text-tertiary">个</span></div>
+                <div className="text-body-sm text-text-secondary truncate">{f.region}</div>
+                <div className="text-body-sm text-text-secondary truncate">{f.area}</div>
+                <div className="text-body-sm text-text-secondary truncate">{f.manager}</div>
+                <div className="text-body-sm text-text-secondary truncate">{f.stock} 头 / {f.barns} 个</div>
+                <div className="truncate">
+                  <span className={`tag ${f.status === "运营中" ? "tag-success" : "tag-warning"}`}>{f.status}</span>
                 </div>
               </div>
-              <div className="mt-4 pt-3 border-t border-border flex justify-end items-center gap-0.5">
+              <div className="w-[140px] shrink-0 flex items-center justify-end gap-0.5">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button>
                 <DropdownMenu>
@@ -77,10 +77,9 @@ function FarmPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-            </Card>
-
+            </div>
           ))}
-        </div>
+        </Card>
       </main>
     </>
   );
