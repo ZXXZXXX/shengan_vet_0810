@@ -39,72 +39,47 @@ type Msg = {
   link?: string;
   unread?: boolean;
   urgent?: boolean;
+  /** 自定义右下角文本，覆盖默认分类标签 */
+  rightText?: string;
+  /** 自定义右下角文本色调 */
+  rightTone?: "default" | "danger";
 };
 
 const MSGS: Msg[] = [
   {
     id: "n1",
     cat: "approval",
-    title: "待您审批：处方申请 RX-2381",
+    title: "待审批：处方申请 RX-2381",
     desc: "兽医助理 王芳 提交了 #A2381 的退烧处方申请，已等待 35 分钟。",
     time: "5 分钟前",
     ts: 5,
     link: "/m/health/A2381",
     unread: true,
-    urgent: true,
+    rightText: "！请前往PC端审批",
+    rightTone: "danger",
   },
   {
     id: "n2",
     cat: "task",
-    title: "工作催办：3 号牛舍体温复测",
-    desc: "工作 T-1042 已超期 20 分钟未开始执行，请尽快处理。",
+    title: "待执行：3 号牛舍体温复测",
+    desc: "工作 T-1042 已逾期 20 分钟未开始执行，请尽快处理。",
     time: "12 分钟前",
     ts: 12,
     link: "/m/workspace",
     unread: true,
-    urgent: true,
   },
   {
     id: "n3",
-    cat: "result",
-    title: "审批通过：退烧治疗药品可领取",
-    desc: "您提交的 WO-2381 处方申请已通过，请前往中央药房 A 区货架 03 出示二维码领取药品。",
-    time: "1 小时前",
-    ts: 60,
-    link: "/m/pickup/PK-2381",
-    unread: true,
-  },
-  {
-    id: "n3b",
-    cat: "result",
-    title: "审批通过：损耗补领 LS-1029",
-    desc: "口蹄疫疫苗 A 型 × 8 支 已通过补领审批，请前往冷链库 #3 冷柜领取。",
-    time: "1 小时前",
-    ts: 62,
-    link: "/m/pickup/PK-1029",
-    unread: true,
-  },
-  {
-    id: "n4",
     cat: "task",
-    title: "新工作：修蹄工作 T-1056",
-    desc: "为您指派 2 号舍 4 头牛只的修蹄工作，计划今日 15:00 前完成。",
+    title: "待执行：疾病治疗 T-1056",
+    desc: "「兽医」王医生为您指派 2 号舍 4 头牛只的疾病治疗工作，计划今日 15:00 开始执行。",
     time: "2 小时前",
     ts: 120,
     link: "/m/workspace",
     unread: true,
   },
   {
-    id: "n5",
-    cat: "result",
-    title: "审批驳回：药品领用 DS-0421",
-    desc: "您的领药申请被驳回，原因：库存紧张，请改用替代药品。",
-    time: "3 小时前",
-    ts: 180,
-    link: "/m/workspace",
-  },
-  {
-    id: "n6",
+    id: "n4",
     cat: "permission",
     title: "角色权限变更",
     desc: "您的角色已由「兽医助理」调整为「兽医」，新权限即时生效。",
@@ -113,16 +88,7 @@ const MSGS: Msg[] = [
     link: "/m/me",
   },
   {
-    id: "n7",
-    cat: "approval",
-    title: "待您审批：免疫计划调整",
-    desc: "兽医 刘洋 提交了 3 号舍口蹄疫加强免疫计划，等待您批准。",
-    time: "昨天 16:05",
-    ts: 60 * 22,
-    link: "/m/workspace",
-  },
-  {
-    id: "n8",
+    id: "n5",
     cat: "permission",
     title: "牧场关联变更",
     desc: "您已被加入「2 号牧场（生产域）」，可在切换牧场中查看。",
@@ -273,11 +239,23 @@ function NotificationsPage() {
                         催办
                       </span>
                     )}
-                    <span
-                      className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
-                    >
-                      {Meta.label}
-                    </span>
+                    {m.rightText ? (
+                      <span
+                        className={`ml-auto text-caption ${
+                          m.rightTone === "danger"
+                            ? "text-[var(--state-danger)]"
+                            : "text-text-tertiary"
+                        }`}
+                      >
+                        {m.rightText}
+                      </span>
+                    ) : (
+                      <span
+                        className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
+                      >
+                        {Meta.label}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
