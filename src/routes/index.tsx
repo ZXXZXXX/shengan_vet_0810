@@ -95,20 +95,30 @@ const requestTypeMeta: Record<RequestType, { label: string; tone: string }> = {
   loss: { label: "药品损耗", tone: "danger" },
 };
 
-const todos = [
-  { title: "复查疑似乳房炎处理结果", owner: "李兽医", due: "今天 18:00" },
-  { title: "审批 8 月饲料采购单", owner: "我", due: "明天" },
-  { title: "确认新员工权限范围", owner: "我", due: "明天" },
-  { title: "巡检 2 号牛舍水质", owner: "王巡检", due: "本周" },
+type NotifTone = "info" | "success" | "warning" | "danger";
+type Notif = {
+  icon: typeof Bell;
+  title: string;
+  desc: string;
+  time: string;
+  tone: NotifTone;
+};
+
+const notifications: Notif[] = [
+  { icon: UserPlus, title: "3 位新账户已加入", desc: "李巡检、周饲养、王兽医已完成入职审核", time: "10 分钟前", tone: "info" },
+  { icon: ArrowDownToLine, title: "仓库入库登记", desc: "驱虫剂 120 盒、采血管 500 支已入库", time: "32 分钟前", tone: "success" },
+  { icon: ArrowUpFromLine, title: "仓库出库登记", desc: "3 号牛舍领用抗生素 8 支、生理盐水 4 瓶", time: "1 小时前", tone: "info" },
+  { icon: PackageMinus, title: "库存变更提醒", desc: "疫苗 A 余量降至安全库存以下（剩 12 支）", time: "今日 09:40", tone: "warning" },
+  { icon: PackageMinus, title: "库存盘点差异", desc: "5 号牛舍消毒液盘点差异 -2 桶，待复核", time: "今日 08:55", tone: "danger" },
 ];
 
-const units = [
-  { name: "1 号牛舍", count: 320, status: "正常", tone: "success" },
-  { name: "2 号牛舍", count: 312, status: "正常", tone: "success" },
-  { name: "3 号牛舍", count: 298, status: "关注", tone: "warning" },
-  { name: "犊牛舍 A", count: 84, status: "正常", tone: "success" },
-  { name: "隔离区", count: 6, status: "处理中", tone: "danger" },
-];
+const notifToneColor: Record<NotifTone, string> = {
+  info: "var(--effect-ai-cyan)",
+  success: "var(--state-success)",
+  warning: "var(--state-warning)",
+  danger: "var(--state-danger)",
+};
+
 
 function TrendIcon({ trend }: { trend: string }) {
   if (trend === "up") return <TrendingUp className="h-3 w-3 text-[var(--state-success)]" />;
