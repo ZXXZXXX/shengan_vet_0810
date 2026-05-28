@@ -608,6 +608,7 @@ function ChecklistDay({
   });
   const [dayNote, setDayNote] = useState(initialNote);
   const [noteEditing, setNoteEditing] = useState(false);
+  const [reasons, setReasons] = useState<Record<string, string>>({});
 
   const total = items.length;
   const doneCount = items.filter((i) => i.status === "done").length;
