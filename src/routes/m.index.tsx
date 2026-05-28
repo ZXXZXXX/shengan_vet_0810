@@ -33,7 +33,7 @@ import {
 
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, roleLabel, canViewOperations, canVisit } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations, canVisit, type Role } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { PackageCheck, QrCode } from "lucide-react";
@@ -143,48 +143,19 @@ function MHomePage() {
       </section>
 
       {/* ============ 今日工作 ============ */}
-      <section className="px-4 mt-5">
+      <section className="px-4 mt-5 mb-4">
         <SectionTitle title="今日工作" />
         <div className="grid grid-cols-3 gap-2">
           <TaskOverviewCard to="/m/respond" icon={Inbox} tone="warning" label="待响应" value="6" />
           <TaskOverviewCard to="/m/pickup" icon={PackageCheck} tone="info" label="待领物" value={String(pendingPickups.length)} />
           <TaskOverviewCard to="/m/health" search={{ tab: "执行中" }} icon={PlayCircle} tone="brand" label="执行中" value="4" />
         </div>
+
+        <TodayTaskList role={role} />
       </section>
 
-      {/* ============ 风险提醒 ============ */}
-      <section className="px-4 mt-5 mb-4">
-        <SectionTitle title="风险提醒" />
-        {risks.length === 0 ? (
-          <div className="rounded-xl bg-card border border-border">
-            <EmptyState
-              icon={HeartPulse}
-              size="sm"
-              title="暂无风险提醒"
-              desc="当前牧场各项指标正常"
-            />
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {risks.map((r) => (
-              <Link
-                key={r.title}
-                to={r.to}
-                className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
-              >
-                <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[r.tone]}`}>
-                  <r.icon className="h-4 w-4" strokeWidth={1.75} />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-body text-foreground truncate">{r.title}</div>
-                  <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
-                </div>
-                <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+
+
 
 
       {/* 现场上报 类型选择 */}
@@ -237,17 +208,131 @@ function MHomePage() {
 }
 
 // ---------------- 数据 ----------------
-const risks: Array<{
-  title: string;
-  detail: string;
-  tone: keyof typeof colorMap;
-  icon: typeof AlertTriangle;
-  to: string;
-}> = [
-  { title: "工单逾期提醒", detail: "WO-2298 乳房炎复诊 · 已超 1h", tone: "danger", icon: TimerReset, to: "/m/health/HF-0702" },
-  { title: "牛只异常风险", detail: "#A2324 采食量下降 18% · 已连续 2 日", tone: "warning", icon: AlertCircle, to: "/m/animals" },
-  { title: "库存风险", detail: "广谱驱虫药余量 8% · 建议补货", tone: "alert", icon: AlertTriangle, to: "/m/" },
+type HomeTask = {
+  id: string;
+  target: string;
+  conclusion: string;
+  type: string; // 工单类型
+  status: "待诊断" | "进行中";
+};
+
+const homeTasks: HomeTask[] = [
+  // 疾病治疗 · 待诊断
+  { id: "WO-2381", target: "#A2381", conclusion: "疑似乳房炎急性发作", type: "疾病治疗", status: "待诊断" },
+  { id: "WO-2382", target: "#A2270", conclusion: "持续高烧待诊", type: "疾病治疗", status: "待诊断" },
+  { id: "WO-2383", target: "#A2156", conclusion: "酮病初筛阳性", type: "疾病治疗", status: "待诊断" },
+  { id: "WO-2384", target: "#A2298", conclusion: "乳房炎复诊评估", type: "疾病治疗", status: "待诊断" },
+  { id: "WO-2385", target: "#A2188", conclusion: "产后子宫炎跟进", type: "疾病治疗", status: "待诊断" },
+  { id: "WO-2386", target: "#A2102", conclusion: "蹄部脓肿诊断", type: "疾病治疗", status: "待诊断" },
+  { id: "WO-2387", target: "#A2250", conclusion: "腹泻 3 天待诊", type: "疾病治疗", status: "待诊断" },
+  // 疾病治疗 · 进行中
+  { id: "WO-2298", target: "#A2298", conclusion: "乳房炎复诊处置", type: "疾病治疗", status: "进行中" },
+  { id: "WO-2299", target: "#A2270", conclusion: "蹄叶炎复发治疗", type: "疾病治疗", status: "进行中" },
+  { id: "WO-2300", target: "#A2188", conclusion: "子宫炎第 2 日疗程", type: "疾病治疗", status: "进行中" },
+  { id: "WO-2301", target: "#A2156", conclusion: "肺炎抗生素处置", type: "疾病治疗", status: "进行中" },
+  { id: "WO-2302", target: "#A2102", conclusion: "蹄部脓肿排脓", type: "疾病治疗", status: "进行中" },
+  { id: "WO-2303", target: "#A2233", conclusion: "酮病补液+葡萄糖", type: "疾病治疗", status: "进行中" },
+  // 疫苗免疫 · 进行中
+  { id: "YM-1041", target: "犊牛舍 A · 84 头", conclusion: "口蹄疫加强免疫", type: "疫苗免疫", status: "进行中" },
+  { id: "YM-1042", target: "2 号牛舍 · 56 头", conclusion: "布病强免疫", type: "疫苗免疫", status: "进行中" },
+  { id: "YM-1043", target: "1 号牛舍 · 48 头", conclusion: "牛流行热免疫", type: "疫苗免疫", status: "进行中" },
+  { id: "YM-1044", target: "3 号牛舍 · 62 头", conclusion: "炭疽芽孢苗免疫", type: "疫苗免疫", status: "进行中" },
+  { id: "YM-1045", target: "犊牛舍 B · 40 头", conclusion: "副伤寒免疫批次", type: "疫苗免疫", status: "进行中" },
+  { id: "YM-1046", target: "#A2120", conclusion: "漏针补免", type: "疫苗免疫", status: "进行中" },
+  { id: "YM-1047", target: "全场", conclusion: "结核检疫排查", type: "疫苗免疫", status: "进行中" },
+  // 修蹄 · 进行中
+  { id: "HF-0702", target: "#A2150", conclusion: "右后蹄趾间皮炎", type: "修蹄", status: "进行中" },
+  { id: "HF-0703", target: "1 号牛舍 · 32 头", conclusion: "批次修蹄 第 1 日", type: "修蹄", status: "进行中" },
+  { id: "HF-0704", target: "#A2188", conclusion: "异常步态修蹄", type: "修蹄", status: "进行中" },
+  { id: "HF-0705", target: "#A2298", conclusion: "蹄底溃疡处置", type: "修蹄", status: "进行中" },
+  { id: "HF-0706", target: "3 号牛舍 · 24 头", conclusion: "干奶前修蹄", type: "修蹄", status: "进行中" },
+  { id: "HF-0707", target: "#A2210", conclusion: "复查修蹄效果", type: "修蹄", status: "进行中" },
+  { id: "HF-0708", target: "犊牛舍 A", conclusion: "蹄部清洁与浴蹄", type: "修蹄", status: "进行中" },
 ];
+
+type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
+const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
+  vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
+  vet_assistant: { status: "进行中", type: "疾病治疗", label: "执行中 · 疾病治疗" },
+  hoof_trimmer: { status: "进行中", type: "修蹄", label: "执行中 · 修蹄" },
+};
+
+function TodayTaskList({ role }: { role: Role }) {
+  // admin / manager 默认看 待诊断 · 疾病治疗
+  const filter: RoleFilter =
+    roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
+  const matched = homeTasks.filter(
+    (t) => t.status === filter.status && t.type === filter.type,
+  );
+  const visible = matched.slice(0, 6);
+  const remaining = Math.max(0, matched.length - visible.length);
+
+  const tabParam = filter.status === "进行中" ? "执行中" : "待诊断";
+  const typeIcon =
+    filter.type === "修蹄" ? Footprints : filter.type === "疫苗免疫" ? Syringe : Pill;
+  const TIcon = typeIcon;
+
+  if (visible.length === 0) {
+    return (
+      <div className="mt-3 rounded-xl bg-card border border-border">
+        <EmptyState
+          icon={Inbox}
+          size="sm"
+          title="今日暂无工单"
+          desc={`暂无${filter.label}相关工单`}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 space-y-2">
+      <div className="flex items-center text-caption text-text-tertiary">
+        <span>{filter.label}</span>
+        <span className="mx-1">·</span>
+        <span className="text-text-secondary tabular-nums">{matched.length} 项</span>
+      </div>
+      {visible.map((t) => (
+        <Link
+          key={t.id}
+          to="/m/health/$id"
+          params={{ id: t.id }}
+          className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
+        >
+          <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
+            <TIcon className="h-4 w-4" strokeWidth={1.75} />
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+              <span className="font-mono">{t.id}</span>
+              <span>·</span>
+              <span>{t.type}</span>
+            </div>
+            <div className="text-body text-foreground truncate mt-0.5">
+              <span className="text-text-secondary">{t.target}</span>
+              <span className="text-text-tertiary"> · </span>
+              {t.conclusion}
+            </div>
+          </div>
+          <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+        </Link>
+      ))}
+      <Link
+        to="/m/health"
+        search={{ tab: tabParam, type: filter.type } as never}
+        className="flex items-center justify-center gap-1 h-10 rounded-xl bg-card border border-border text-body-sm text-primary active:bg-surface-subtle"
+      >
+        查看更多{remaining > 0 ? ` (还有 ${remaining} 项)` : ""}
+        <ChevronRight className="h-3.5 w-3.5" />
+      </Link>
+    </div>
+  );
+}
+
+
+
+
+
 
 
 
