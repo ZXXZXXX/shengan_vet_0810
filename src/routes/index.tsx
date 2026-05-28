@@ -24,9 +24,13 @@ import {
   TrendingDown,
   Minus,
   ChevronRight,
-  CheckCircle2,
-  Activity,
+  Bell,
+  UserPlus,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  PackageMinus,
 } from "lucide-react";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
