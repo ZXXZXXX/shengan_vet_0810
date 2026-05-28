@@ -466,21 +466,22 @@ function buildDayItems(day: number, tags: string[]): ExecItem[] {
 }
 
 // === 执行记录（详情页只读摘要） ===
+type DayPhase = "done" | "active" | "pending";
 type DaySummary = {
   day: number;
   date: string;
   action: string;
   pickup: boolean;
-  done: boolean;
+  phase: DayPhase;
 };
 
 function getExecSummary(status: StatusKey): DaySummary[] {
   const allDone = status === "已完成";
   const action = "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录";
   return [
-    { day: 1, date: "05/12", action, pickup: true, done: true },
-    { day: 2, date: "05/13", action, pickup: true, done: allDone },
-    { day: 3, date: "05/14", action, pickup: true, done: allDone },
+    { day: 1, date: "05/12", action, pickup: true, phase: "done" },
+    { day: 2, date: "05/13", action, pickup: true, phase: allDone ? "done" : "active" },
+    { day: 3, date: "05/14", action, pickup: true, phase: allDone ? "done" : "pending" },
   ];
 }
 
@@ -498,33 +499,41 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
   const needPickup = Boolean(pickupCode);
   return (
     <>
-      {days.map((d) => (
-        <div key={d.day} className="rounded-2xl bg-card border border-border p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <DayDot active={false} done={d.done} />
-              <span className={`text-body font-medium ${d.done ? "text-foreground" : "text-text-tertiary"}`}>
-                第 {d.day} 天
+      {days.map((d) => {
+        const isDone = d.phase === "done";
+        const isActive = d.phase === "active";
+        const statusLabel = isDone ? "已完成" : isActive ? "进行中" : "未开始";
+        const statusClass = isDone || isActive ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary";
+        const pickupDone = needPickup && isDone;
+        return (
+          <div key={d.day} className="rounded-2xl bg-card border border-border p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <DayDot active={isActive} done={isDone} />
+                <span className={`text-body font-medium ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
+                  第 {d.day} 天
+                </span>
+                <span className="text-caption text-text-tertiary font-mono">{d.date}</span>
+              </div>
+              <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${statusClass}`}>
+                {statusLabel}
               </span>
-              <span className="text-caption text-text-tertiary font-mono">{d.date}</span>
             </div>
-            <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${d.done ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
-              {d.done ? "已完成" : "未完成"}
-            </span>
+            <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
+              <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
+              <div className="text-body-sm leading-relaxed text-foreground">{d.action}</div>
+            </div>
+            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+              <PackagePlus className="h-3.5 w-3.5" />
+              <span>领物</span>
+              <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full ${pickupDone ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
+                {!needPickup ? "无需" : pickupDone ? "已领" : "未领"}
+              </span>
+            </div>
           </div>
-          <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
-            <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
-            <div className="text-body-sm leading-relaxed text-foreground">{d.action}</div>
-          </div>
-          <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-            <PackagePlus className="h-3.5 w-3.5" />
-            <span>领物</span>
-            <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full ${needPickup && d.done ? "bg-brand-subtle text-primary" : needPickup ? "bg-surface-subtle text-text-tertiary" : "bg-surface-subtle text-text-tertiary"}`}>
-              {!needPickup ? "无需" : d.done ? "已领" : "未领"}
-            </span>
-          </div>
-        </div>
-      ))}
+        );
+      })}
+
 
       <div className="rounded-xl bg-card border border-border p-4">
         <div className="flex items-center justify-between mb-2">
