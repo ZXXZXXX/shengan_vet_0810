@@ -176,6 +176,92 @@ function AnimalDetailPage() {
             );
           })()}
         </section>
+
+        {/* 个体用药记录 */}
+        <section className="px-4 mt-5">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-card-title text-foreground">用药记录</h3>
+            <span className="text-caption text-text-tertiary">近 90 天</span>
+          </div>
+          {(() => {
+            const meds = [
+              {
+                id: "M-0518-1",
+                date: "2026-05-18",
+                drug: "氟尼辛葡甲胺注射液",
+                dose: "2ml / 次 · 肌肉注射",
+                course: "共 3 天 · 第 1 天",
+                operator: "李雨晴",
+                orderId: "WO-2026-0518",
+                withdrawal: 3,
+              },
+              {
+                id: "M-0518-2",
+                date: "2026-05-18",
+                drug: "头孢噻呋钠",
+                dose: "1g / 次 · 肌肉注射",
+                course: "共 3 天 · 第 1 天",
+                operator: "李雨晴",
+                orderId: "WO-2026-0518",
+                withdrawal: 4,
+              },
+              {
+                id: "M-0421",
+                date: "2026-04-21",
+                drug: "伊维菌素注射液",
+                dose: "1ml / 50kg · 皮下注射",
+                course: "单次驱虫",
+                operator: "周凯",
+                orderId: "DW-2026-0421",
+                withdrawal: 0,
+              },
+            ];
+            return (
+              <ul className="space-y-2">
+                {meds.map((m) => (
+                  <li
+                    key={m.id}
+                    className="rounded-xl border border-border bg-card p-3"
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center shrink-0">
+                        <Pill className="h-4 w-4" />
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="text-body-sm text-foreground truncate">
+                            {m.drug}
+                          </div>
+                          <span className="text-caption text-text-tertiary font-mono shrink-0">
+                            {m.date}
+                          </span>
+                        </div>
+                        <div className="text-caption text-text-tertiary mt-0.5 truncate">
+                          {m.dose} · {m.course}
+                        </div>
+                        <div className="flex items-center justify-between mt-1.5">
+                          <div className="text-caption text-text-tertiary">
+                            操作人 {m.operator} ·{" "}
+                            <span className="font-mono">{m.orderId}</span>
+                          </div>
+                          {m.withdrawal > 0 ? (
+                            <span className="inline-flex items-center h-5 px-2 rounded-full text-caption bg-[#FFE4E1] text-[#D9534F]">
+                              休药 {m.withdrawal} 天
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center h-5 px-2 rounded-full text-caption bg-surface-subtle text-text-tertiary">
+                              无休药期
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            );
+          })()}
+        </section>
       </div>
 
       {/* 底部固定：疾病上报入口 */}
