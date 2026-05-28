@@ -84,28 +84,58 @@ function MHomePage() {
       {/* 牧场切换（全局数据） */}
       <FarmSwitcher />
 
-      {/* 顶部欢迎 —— 草原图文样式 */}
+      {/* 顶部欢迎 —— 渐变信息面板 */}
       <header className="relative overflow-hidden text-white">
-        <img
-          src={grasslandHero}
-          alt="牧场草原清晨景色"
-          width={1920}
-          height={1080}
-          className="absolute inset-0 w-full h-full object-cover"
+        {/* 基础渐变：品牌绿 → 浅青灰 */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in oklab, var(--brand) 92%, #0b3d2e) 0%, color-mix(in oklab, var(--brand) 70%, #ffffff) 55%, #b7c8c5 100%)",
+          }}
         />
-        {/* 渐变蒙层：上轻下重，保证文字可读 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/35 to-black/70" />
+        {/* 线性牧场纹理：细横线 + 远处地平起伏 */}
+        <svg
+          aria-hidden
+          className="absolute inset-0 w-full h-full opacity-[0.18] mix-blend-overlay"
+          preserveAspectRatio="none"
+          viewBox="0 0 400 200"
+        >
+          <defs>
+            <pattern id="ph-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+              <path d="M0 24H24" stroke="white" strokeWidth="0.4" />
+              <path d="M24 0V24" stroke="white" strokeWidth="0.25" />
+            </pattern>
+          </defs>
+          <rect width="400" height="200" fill="url(#ph-grid)" />
+          {/* 远山/牧场起伏线 */}
+          <path d="M0 150 Q60 132 120 142 T240 138 T400 146 L400 200 L0 200 Z" fill="white" fillOpacity="0.06" />
+          <path d="M0 165 Q80 150 160 158 T320 156 T400 162" stroke="white" strokeOpacity="0.35" strokeWidth="0.6" fill="none" />
+          <path d="M0 178 Q100 168 200 172 T400 174" stroke="white" strokeOpacity="0.25" strokeWidth="0.5" fill="none" />
+        </svg>
+        {/* 坐标点 */}
+        <svg aria-hidden className="absolute inset-0 w-full h-full opacity-60" preserveAspectRatio="none" viewBox="0 0 400 200">
+          {[
+            [42, 38], [88, 64], [150, 30], [212, 70], [276, 44], [330, 78], [364, 36],
+            [60, 110], [128, 96], [196, 118], [258, 102], [322, 124], [376, 108],
+          ].map(([x, y], i) => (
+            <g key={i}>
+              <circle cx={x} cy={y} r="1.6" fill="white" fillOpacity="0.85" />
+              <circle cx={x} cy={y} r="4" fill="white" fillOpacity="0.12" />
+            </g>
+          ))}
+        </svg>
         {/* 底部柔和过渡到页面背景 */}
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
+        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
 
         <div className="relative px-4 pt-4 pb-7">
           <div className="flex items-start justify-between">
             <div className="min-w-0">
-              <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
-                <span className="text-[11px] text-white/90">{roleLabel[role]}</span>
+              <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25">
+                <span className="text-[11px] text-white/95">{roleLabel[role]}</span>
               </div>
               <div className="text-section-title mt-2 drop-shadow-sm">李师傅</div>
-              <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
+              <div className="text-caption text-white/90 mt-0.5 inline-flex items-center gap-1 font-mono">
                 <MapPin className="h-3 w-3" />
                 {farm.name} · {farm.region}
               </div>
@@ -113,7 +143,7 @@ function MHomePage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setReportOpen(true)}
-                className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.35)] active:scale-[.97] transition-transform"
+                className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] active:scale-[.97] transition-transform"
               >
                 <Camera className="h-4 w-4" />
                 现场上报
@@ -121,7 +151,7 @@ function MHomePage() {
             </div>
           </div>
 
-          <div className="mt-5 flex items-center gap-3 text-caption text-white/90">
+          <div className="mt-5 flex items-center gap-3 text-caption text-white/95 tabular-nums">
             <span className="inline-flex items-center gap-1"><CloudSun className="h-3.5 w-3.5" />晴转多云</span>
             <span className="h-3 w-px bg-white/30" />
             <span className="inline-flex items-center gap-1"><Thermometer className="h-3.5 w-3.5" />18 ~ 26℃</span>
@@ -130,6 +160,8 @@ function MHomePage() {
           </div>
         </div>
       </header>
+
+
 
 
       {/* ============ 牧场摘要 ============ */}
