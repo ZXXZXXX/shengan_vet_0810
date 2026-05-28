@@ -804,7 +804,7 @@ function EvidenceSection({
           {media.map((m) => (
             <div
               key={`${m.type}-${m.id}`}
-              className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center"
+              className="relative aspect-square rounded-xl bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center"
             >
               {m.type === "video" && <Video className="h-5 w-5 text-text-tertiary" />}
               <button
@@ -813,15 +813,15 @@ function EvidenceSection({
                     ? setPhotos((prev) => prev.filter((x) => x !== m.id))
                     : setVideos((prev) => prev.filter((x) => x !== m.id))
                 }
-                className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/80 text-background inline-flex items-center justify-center"
+                className="absolute -top-1.5 -right-1.5 h-6 w-6 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
               >
-                <X className="h-3 w-3" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
           {remaining > 0 && (
-            <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
-              <ImagePlus className="h-5 w-5" />
+            <label className="aspect-square rounded-xl border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-surface-subtle transition-colors">
+              <ImagePlus className="h-6 w-6" />
               <span className="text-caption">拍摄 / 选择</span>
               <input
                 type="file"
