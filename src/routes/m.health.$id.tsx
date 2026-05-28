@@ -72,7 +72,7 @@ function TaskDetailPage() {
   const role = useRole();
 
   const search = Route.useSearch();
-  // 默认 tab：进行中工单（已有执行记录）直接定位到执行记录；有诊断记录优先诊断；否则上报
+  // 默认 tab：进行中工单（已有执行内容）直接定位到执行任务；有诊断记录优先诊断；否则上报
   const currentStatus = statusById[id] ??
     (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断");
   const hasDiagnosis = currentStatus !== "待诊断";
@@ -162,7 +162,7 @@ function TaskDetailPage() {
             {[
               { key: "report", label: "上报记录" },
               { key: "review", label: "诊断记录" },
-              { key: "execute", label: "执行记录" },
+              { key: "execute", label: "执行任务" },
             ].map((t) => (
               <button
                 key={t.key}
@@ -452,7 +452,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
   );
 }
 
-// === 执行记录 ===
+// === 执行任务 ===
 type ItemStatus = "pending" | "done" | "blocked";
 type ExecItem = {
   id: string;
@@ -483,7 +483,7 @@ function buildDayItems(day: number, _tags: string[]): ExecItem[] {
   ];
 }
 
-// === 执行记录（详情页只读摘要） ===
+// === 执行任务（详情页只读摘要） ===
 type DayPhase = "done" | "active" | "pending";
 type DaySummary = {
   day: number;
@@ -546,7 +546,7 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
               <div className="flex items-center gap-2">
                 <DayDot active={isActive} done={isDone} />
                 <span className={`text-body font-medium ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
-                  执行记录 {String(d.day).padStart(2, "0")}
+                  执行任务{String(d.day).padStart(2, "0")}
                 </span>
                 <span className="text-caption text-text-tertiary font-mono" suppressHydrationWarning>
                   {isDone ? d.date : d.date.split(' ')[0]}
@@ -797,7 +797,7 @@ function ChecklistDay({
         <div className="flex items-center gap-2">
           <DayDot active={isActive} done={dayDone} />
           <span className={`text-body font-medium ${isPending ? "text-text-tertiary" : "text-foreground"}`}>
-            执行记录{String(day).padStart(2, "0")}
+            执行任务{String(day).padStart(2, "0")}
           </span>
           <span className="text-caption text-text-tertiary font-mono">{date} 13:08</span>
         </div>
