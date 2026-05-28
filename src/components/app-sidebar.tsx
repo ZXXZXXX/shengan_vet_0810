@@ -38,9 +38,7 @@ const groups: NavGroup[] = [
   {
     title: "首页",
     icon: LayoutDashboard,
-    children: [
-      { title: "运营看板", url: "/" },
-    ],
+    url: "/",
   },
   {
     title: "基础档案",
