@@ -181,11 +181,11 @@ function MePage() {
 }
 
 function Brief({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-white/15 backdrop-blur border border-white/20 py-2">
+    <div className="rounded-lg bg-white/20 backdrop-blur-md border border-white/30 py-2">
       <div className="text-section-title tabular-nums">{value}</div>
-      <div className="text-caption opacity-85 mt-0.5">{label}</div>
+      <div className="text-caption opacity-95 mt-0.5">{label}</div>
     </div>
+
   );
 }
 
