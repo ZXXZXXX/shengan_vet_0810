@@ -90,10 +90,13 @@ function MHomePage() {
           src={grasslandHero}
           alt=""
           aria-hidden
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover scale-125 translate-y-6 origin-top"
         />
+        {/* 顶部加深，保证文字在深色区域可读 */}
+        <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-black/25 to-transparent" />
         {/* 底部柔和过渡到页面背景 */}
-        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
+        <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
+
 
 
         <div className="relative px-4 pt-4 pb-7">
