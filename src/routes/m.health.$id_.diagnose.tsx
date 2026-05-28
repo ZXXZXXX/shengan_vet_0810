@@ -256,7 +256,7 @@ function DiagnosePage() {
   };
 
   return (
-    <MobileShell title="诊断记录" back={{ to: `/m/health/${id}` }} hideTabBar>
+    <MobileShell title="诊断记录" back hideTabBar>
       <div className="pb-28">
         {/* 工单号 */}
         <div className="px-4 pt-3 pb-2 flex items-center justify-between gap-2">
