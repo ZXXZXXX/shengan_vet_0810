@@ -187,40 +187,15 @@ function TaskDetailPage() {
                   响应
                 </button>
               </div>
-            ) : editing ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setHasFilled(true);
-                    setRecordComplete(true);
-                    setEditing(false);
-                    toast.success("已保存");
-                  }}
-                  className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
-                >
-                  保存
-                </button>
-                <button
-                  onClick={() => {
-                    if (!recordComplete) {
-                      toast.error("提交失败，记录不完整");
-                      return;
-                    }
-                    toast.success("提交成功");
-                    navigate({ to: "/m/health" });
-                  }}
-                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-                >
-                  <Send className="h-4 w-4" /> 提交记录
-                </button>
-              </div>
             ) : (
-              <button
-                onClick={() => setEditing(true)}
+              <Link
+                to="/m/health/$id/execute"
+                params={{ id: o.id }}
                 className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >
                 <PlayCircle className="h-4 w-4" />
-                {hasFilled ? "继续执行" : "开始执行"}
+                开始执行
+
               </button>
             )}
           </div>
