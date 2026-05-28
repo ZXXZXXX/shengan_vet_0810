@@ -49,51 +49,87 @@ const kpis = [
   { label: "待办工作", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "alerts" as const },
 ];
 
-type RequestType = "health" | "loss";
+type WorkOrderType = "disease" | "vaccine" | "deworm" | "hoof" | "postpartum" | "drying" | "general";
 type PendingRequest = {
   id: string;
-  type: RequestType;
-  title: string;
-  desc: string;
+  type: WorkOrderType;
+  target: string;
+  targetKind: "cattle" | "barn" | "batch";
   applicant: string;
+  applicantRole: string;
   time: string;
+  symptoms: string[];
   detail: string;
+};
+
+const workOrderTypeMeta: Record<WorkOrderType, { label: string; tone: "warning" | "danger" | "info" | "success" | "muted" }> = {
+  disease: { label: "疾病诊疗", tone: "danger" },
+  vaccine: { label: "免疫接种", tone: "info" },
+  deworm: { label: "驱虫", tone: "warning" },
+  hoof: { label: "修蹄", tone: "muted" },
+  postpartum: { label: "产后护理", tone: "success" },
+  drying: { label: "干奶", tone: "info" },
+  general: { label: "常规处置", tone: "muted" },
 };
 
 const pendingRequests: PendingRequest[] = [
   {
-    id: "REQ-2381",
-    type: "health",
-    title: "3 号牛舍体温异常处置申请",
-    desc: "申请对牛只 #A2381 启动隔离观察并使用抗生素",
+    id: "WO-2381",
+    type: "disease",
+    target: "#A2381",
+    targetKind: "cattle",
     applicant: "李兽医",
+    applicantRole: "兽医",
     time: "8 分钟前",
+    symptoms: ["高热", "食欲不振", "呼吸急促"],
     detail: "牛只 #A2381 持续 2 小时体温高于 40℃，建议转入隔离区并安排血常规检测，预计耗材：抗生素 1 支、采血管 2 支。",
   },
   {
-    id: "REQ-2379",
-    type: "health",
-    title: "免疫工作延期申请",
-    desc: "5 头待免疫牛只因发情期申请延后 3 天",
+    id: "WO-2380",
+    type: "disease",
+    target: "3 号牛舍",
+    targetKind: "barn",
+    applicant: "王巡检",
+    applicantRole: "巡检员",
+    time: "32 分钟前",
+    symptoms: ["乳房肿胀", "产奶下降"],
+    detail: "3 号牛舍 4 头泌乳牛出现疑似乳房炎症状，申请兽医介入并启动抗生素治疗流程。",
+  },
+  {
+    id: "WO-2379",
+    type: "vaccine",
+    target: "B-免疫批次 0512",
+    targetKind: "batch",
     applicant: "赵兽医",
+    applicantRole: "兽医",
     time: "1 小时前",
+    symptoms: ["发情期"],
     detail: "5 头待免疫牛只目前处于发情期，按规程不宜立即免疫。申请将本批免疫计划由 5/12 顺延至 5/15 执行。",
   },
   {
-    id: "REQ-2377",
-    type: "loss",
-    title: "药品损耗确认申请",
-    desc: "5 号牛舍驱虫剂破损 3 盒，申请确认为正常损耗",
-    applicant: "孙库管",
+    id: "WO-2376",
+    type: "hoof",
+    target: "#A2105",
+    targetKind: "cattle",
+    applicant: "孙助理",
+    applicantRole: "兽医助理",
     time: "今日 09:12",
-    detail: "5 号牛舍在搬运过程中发现驱虫剂包装破损 3 盒，已拍照留档。申请确认为正常损耗并核销库存。",
+    symptoms: ["跛行", "蹄底溃疡"],
+    detail: "牛只 #A2105 出现明显跛行，蹄部肉眼可见溃疡，申请安排修蹄并外敷消炎药。",
+  },
+  {
+    id: "WO-2374",
+    type: "postpartum",
+    target: "#A2418",
+    targetKind: "cattle",
+    applicant: "周饲养",
+    applicantRole: "饲养员",
+    time: "今日 08:30",
+    symptoms: ["产后无力", "体温偏低"],
+    detail: "产后母牛 #A2418 站立困难，体温 37.8℃，申请兽医到场评估并补充能量制剂。",
   },
 ];
 
-const requestTypeMeta: Record<RequestType, { label: string; tone: string }> = {
-  health: { label: "健康防护", tone: "warning" },
-  loss: { label: "药品损耗", tone: "danger" },
-};
 
 type NotifTone = "info" | "success" | "warning" | "danger";
 type Notif = {
