@@ -545,7 +545,7 @@ function DiagnosePage() {
                     onClick={() => { setRecordSec(0); setRecording(true); }}
                     className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
                   >
-                    <Mic className="h-3.5 w-3.5" /> 按下开始录音
+                    <Mic className="h-3.5 w-3.5" /> 点击开始录音
                   </button>
                 )}
               </div>
