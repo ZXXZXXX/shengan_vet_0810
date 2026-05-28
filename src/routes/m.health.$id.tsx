@@ -527,20 +527,6 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
     <>
-      {hasUnpicked && (
-        <button
-          type="button"
-          onClick={() => setPickupOpen(true)}
-          className="w-full flex items-center justify-between px-3 h-11 rounded-xl text-body-sm"
-          style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
-        >
-          <span className="inline-flex items-center gap-1.5">
-            <PackagePlus className="h-4 w-4" />
-            需领取药品 / 物品 · 点击查看清单与领物码
-          </span>
-          <ChevronRight className="h-4 w-4 opacity-70" />
-        </button>
-      )}
 
       <Section title="基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
