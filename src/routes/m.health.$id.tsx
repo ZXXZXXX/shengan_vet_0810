@@ -92,6 +92,12 @@ function TaskDetailPage() {
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
   const isPlatformImmune = id === "YM-2501";
+  const platformAction: string | undefined = isPlatformImmune
+    ? "注射免疫药物（口蹄疫疫苗）"
+    : isHoof
+      ? "修蹄护理：削蹄、检查蹄底、必要时贴蹄垫"
+      : undefined;
+  const isPlatformIssued = Boolean(platformAction);
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
 
   // 单对象工单（仅一只牛）：WO-2298、HF-* 等
