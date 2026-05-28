@@ -529,7 +529,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 
-export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = false }: { status: StatusKey; pickupCode: string | null; tags: string[]; isPlatformImmune?: boolean }) {
+export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
@@ -540,8 +540,11 @@ export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = fa
     );
   }
   void tags;
-  const days: DaySummary[] = isPlatformImmune
-    ? [{ day: 1, date: "2026-05-28 09:00", action: "按批次注射口蹄疫疫苗，扫码核验药品", pickup: true, phase: "active" }]
+  const isPlatformIssued = Boolean(platformAction);
+  const platformPhase: DayPhase = status === "已完成" ? "done" : "active";
+  const platformDate = status === "已完成" ? "2026-05-12 10:00" : "2026-05-28 09:00";
+  const days: DaySummary[] = platformAction
+    ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
     : getExecSummary(status);
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
@@ -550,7 +553,7 @@ export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = fa
 
       <Section title="基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-        <Field label="开始执行时间" value={isPlatformImmune ? "2026-05-28 09:00" : "2026-05-12 13:08"} />
+        <Field label="开始执行时间" value={isPlatformIssued ? platformDate : "2026-05-12 13:08"} />
       </Section>
 
 
