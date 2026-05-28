@@ -297,7 +297,15 @@ function ReportPage() {
             {/* 上报对象 */}
             <Section title="上报对象" required hint="可一次性选择多只牛或多个牛舍">
               {lockTarget ? (
-                <div className="space-y-2">
+                <div
+                  className="space-y-2"
+                  onClick={(e) => {
+                    if (editingTarget && (e.target as HTMLElement).tagName !== "INPUT") {
+                      updateTarget(editingTarget, editingValue);
+                      setEditingTarget(null);
+                    }
+                  }}
+                >
                   {targets.map((t) => {
                     const isEditing = editingTarget === t;
                     const canDelete = targets.length > 1;
@@ -322,19 +330,11 @@ function ReportPage() {
                                 }
                               }}
                               className="font-mono flex-1 min-w-0 h-8 px-2 rounded-md bg-card border border-border text-body"
+                              onClick={(e) => e.stopPropagation()}
                             />
                             {lockBarn && (
                               <span className="font-mono text-text-tertiary shrink-0">· {barn}</span>
                             )}
-                            <button
-                              onClick={() => {
-                                updateTarget(t, editingValue);
-                                setEditingTarget(null);
-                              }}
-                              className="h-8 px-2 rounded-md bg-primary text-primary-foreground text-caption shrink-0"
-                            >
-                              确定
-                            </button>
                           </>
                         ) : (
                           <>
@@ -342,7 +342,8 @@ function ReportPage() {
                               {`#${t}${lockBarn ? ` · ${barn}` : ""}`}
                             </span>
                             <button
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setEditingTarget(t);
                                 setEditingValue(t);
                               }}
@@ -353,7 +354,10 @@ function ReportPage() {
                             </button>
                             {canDelete && (
                               <button
-                                onClick={() => removeTarget(t)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeTarget(t);
+                                }}
                                 className="h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
                                 aria-label="删除"
                               >
