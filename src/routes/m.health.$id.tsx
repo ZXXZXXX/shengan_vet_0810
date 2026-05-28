@@ -435,15 +435,35 @@ type ExecItem = {
   title: string;
   desc: string;
   status: ItemStatus;
+  needMed: boolean;
+  scanCode?: string;
 };
 
-function buildDayItems(day: number, tags: string[]): ExecItem[] {
-  return tags.map((tag, i) => ({
-    id: `d${day}-${i + 1}`,
-    title: tag,
-    desc: "",
-    status: "pending" as ItemStatus,
-  }));
+// 根据处方拆解每日任务：每种药品 = 一次任务（需扫码核验），加上不需用药的常规任务（如测温）
+function buildDayItems(day: number, _tags: string[]): ExecItem[] {
+  return [
+    {
+      id: `d${day}-t1`,
+      title: "氟尼辛葡甲胺注射液",
+      desc: "2ml / 次 · 肌肉注射",
+      status: "pending",
+      needMed: true,
+    },
+    {
+      id: `d${day}-t2`,
+      title: "头孢噻呋钠",
+      desc: "1g / 次 · 肌肉注射",
+      status: "pending",
+      needMed: true,
+    },
+    {
+      id: `d${day}-t3`,
+      title: "测温并记录",
+      desc: "记录直肠温度",
+      status: "pending",
+      needMed: false,
+    },
+  ];
 }
 
 // === 执行记录（详情页只读摘要） ===
