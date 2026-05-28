@@ -54,6 +54,13 @@ const seed: Disease[] = [
   { id: "DZ-005", name: "酮病", cat: "代谢疾病", severity: "中", symptoms: ["食欲下降", "产奶量骤减", "酮味"], prevent: "围产期能量平衡、监测血酮" },
 ];
 
+function severityTagClass(s: string) {
+  if (s === "高") return "tag-danger";
+  if (s === "中-高") return "tag-warning";
+  if (s === "中") return "tag-warning";
+  return "tag-muted";
+}
+
 function DiseaseKBPage() {
   const [list, setList] = useState<Disease[]>(seed);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -96,7 +103,7 @@ function DiseaseKBPage() {
       const one = list.find((d) => d.id === Array.from(selected)[0]);
       if (one) setEditing({ ...one });
     } else {
-      toast.info("批量编辑仅支持单条，多条请逐条编辑或使用批量删除");
+      toast.info("批量编辑仅支持单条,多条请逐条编辑或使用批量删除");
     }
   };
 
@@ -146,82 +153,85 @@ function DiseaseKBPage() {
           </div>
         )}
 
-        <div className="flex items-center justify-between px-1">
-          <label className="flex items-center gap-2 text-body-sm text-text-secondary cursor-pointer">
+        <Card className="border-border bg-card overflow-hidden">
+          <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <Checkbox ref={headerCheckRef} checked={allChecked} onCheckedChange={toggleAll} aria-label="全选" />
-            全选（共 {list.length} 条）
-          </label>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+              <div>编号</div>
+              <div>名称</div>
+              <div>分类</div>
+              <div>严重程度</div>
+              <div className="col-span-1">典型症状</div>
+            </div>
+            <div className="w-[160px] text-right shrink-0">功能</div>
+          </div>
           {list.map((d) => {
             const checked = selected.has(d.id);
             return (
-              <Card
+              <div
                 key={d.id}
-                className={`group relative flex flex-col border-border bg-card p-5 transition-all hover:border-primary/40 hover:shadow-[0_4px_16px_-8px_color-mix(in_oklab,var(--primary)_25%,transparent)] ${checked ? "border-primary/60 bg-brand-subtle/40" : ""}`}
+                className={`flex items-center gap-4 px-6 py-3 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
               >
-                <div className="absolute top-4 left-4">
-                  <Checkbox checked={checked} onCheckedChange={() => toggleOne(d.id)} aria-label={`选择 ${d.name}`} />
+                <Checkbox checked={checked} onCheckedChange={() => toggleOne(d.id)} aria-label={`选择 ${d.name}`} />
+                <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+                  <div className="font-mono text-body text-foreground truncate">{d.id}</div>
+                  <div className="flex items-center gap-1.5 text-body text-foreground truncate">
+                    <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <span className="truncate">{d.name}</span>
+                  </div>
+                  <div className="text-body-sm text-text-secondary truncate">{d.cat}</div>
+                  <div className="truncate"><span className={`tag ${severityTagClass(d.severity)}`}>{d.severity}</span></div>
+                  <div className="flex flex-wrap gap-1 min-w-0">
+                    {d.symptoms.slice(0, 3).map((s) => (
+                      <span key={s} className="tag tag-muted">{s}</span>
+                    ))}
+                    {d.symptoms.length > 3 && (
+                      <span className="tag tag-muted">+{d.symptoms.length - 3}</span>
+                    )}
+                  </div>
                 </div>
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-[160px] shrink-0 flex justify-end items-center gap-0.5">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                    onClick={() => setViewing(d)}
+                  >
+                    查看
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
+                    onClick={() => setEditing({ ...d })}
+                  >
+                    编辑
+                  </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-text-secondary" aria-label="更多操作">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-text-secondary hover:bg-surface-subtle hover:text-foreground"
+                        aria-label="更多操作"
+                      >
                         <MoreHorizontal className="h-3.5 w-3.5" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-32">
-                      <DropdownMenuItem className="text-[var(--state-danger)] focus:text-[var(--state-danger)]" onClick={() => setPendingDelete([d.id])}>
+                      <DropdownMenuItem
+                        className="text-[var(--state-danger)] focus:text-[var(--state-danger)]"
+                        onClick={() => setPendingDelete([d.id])}
+                      >
                         <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-
-                <div className="pl-8 pr-8">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-caption text-text-tertiary">{d.id}</span>
-                    <span className={`tag ${d.severity === "高" ? "tag-danger" : d.severity === "中" ? "tag-warning" : "tag-muted"}`}>{d.severity}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle text-primary shrink-0">
-                      <BookOpen className="h-4 w-4" strokeWidth={1.75} />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-card-title text-foreground truncate">{d.name}</div>
-                      <div className="text-caption text-text-tertiary truncate">{d.cat}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 space-y-2.5">
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-1">典型症状</div>
-                    <div className="flex flex-wrap gap-1">
-                      {d.symptoms.map((s) => (
-                        <span key={s} className="tag tag-muted">{s}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-0.5">防控要点</div>
-                    <div className="text-body-sm text-text-secondary line-clamp-2">{d.prevent}</div>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-border flex items-center justify-end gap-1">
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground" onClick={() => setViewing(d)}>
-                    查看
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary" onClick={() => setEditing({ ...d })}>
-                    编辑
-                  </Button>
-                </div>
-              </Card>
+              </div>
             );
           })}
-        </div>
+        </Card>
       </main>
 
       <Sheet open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
@@ -307,7 +317,7 @@ function DiseaseKBPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>确认删除</AlertDialogTitle>
             <AlertDialogDescription>
-              将删除 {pendingDelete?.length ?? 0} 条疾病词条，删除后不可恢复。
+              将删除 {pendingDelete?.length ?? 0} 条疾病词条,删除后不可恢复。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
