@@ -263,11 +263,21 @@ function ReportPage() {
     setTimeout(() => navigate({ to: "/m/health" }), 900);
   };
 
-  // 同牛舍其他牛只（mock 数据）
-  const sameBarnSuggestions = useMemo(
-    () => ["A2382", "A2383", "A2384", "A2390", "A2401"].filter((x) => !targets.includes(x)),
+  // 同牛舍其他牛只（mock 数据，规模 30+ 头，需搜索/扫码添加）
+  const sameBarnPool = useMemo(
+    () =>
+      Array.from({ length: 36 }, (_, i) => `A${2382 + i}`).filter(
+        (x) => !targets.includes(x)
+      ),
     [targets]
   );
+  const [addQuery, setAddQuery] = useState("");
+  const [showAddPanel, setShowAddPanel] = useState(false);
+  const addMatches = useMemo(() => {
+    const kw = addQuery.trim().toLowerCase();
+    const base = kw ? sameBarnPool.filter((x) => x.toLowerCase().includes(kw)) : sameBarnPool;
+    return base.slice(0, 8);
+  }, [addQuery, sameBarnPool]);
   const primaryTarget = search.target ?? targets[0];
 
   return (
@@ -282,7 +292,7 @@ function ReportPage() {
                 <div className="space-y-2">
                   {targets.map((t) => {
                     const isPrimary = t === primaryTarget;
-                    const label = isPrimary && lockBarn ? `#${t} · ${barn}` : `#${t}`;
+                    const label = lockBarn ? `#${t} · ${barn}` : `#${t}`;
                     return (
                       <div
                         key={t}
@@ -300,22 +310,71 @@ function ReportPage() {
                       </div>
                     );
                   })}
-                  {lockBarn && sameBarnSuggestions.length > 0 && (
-                    <div>
-                      <div className="text-caption text-text-tertiary mb-1.5">追加上报同牛舍其他牛只</div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {sameBarnSuggestions.map((s) => (
-                          <button
-                            key={s}
-                            onClick={() => addTarget(s)}
-                            className="h-7 px-2.5 rounded-full bg-card border border-border text-caption text-text-secondary inline-flex items-center gap-1"
-                          >
-                            <Plus className="h-3 w-3" />
-                            {s}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                  {lockBarn && (
+                    <>
+                      {!showAddPanel ? (
+                        <button
+                          onClick={() => setShowAddPanel(true)}
+                          className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
+                        >
+                          <Plus className="h-4 w-4" />
+                          追加同牛舍其他牛只
+                        </button>
+                      ) : (
+                        <div className="rounded-lg border border-border bg-card p-2 space-y-2">
+                          <div className="flex gap-2">
+                            <div className="flex-1 relative">
+                              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                              <input
+                                autoFocus
+                                value={addQuery}
+                                onChange={(e) => setAddQuery(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" && addQuery.trim()) {
+                                    e.preventDefault();
+                                    addTarget(addQuery.trim());
+                                    setAddQuery("");
+                                  }
+                                }}
+                                placeholder="输入牛只编号搜索"
+                                className="w-full h-9 pl-8 pr-2 rounded-md bg-surface-subtle border border-border text-body-sm"
+                              />
+                            </div>
+                            <button className="h-9 px-2.5 rounded-md bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
+                              <ScanLine className="h-4 w-4" /> 扫码
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowAddPanel(false);
+                                setAddQuery("");
+                              }}
+                              className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {addMatches.length === 0 ? (
+                              <span className="text-caption text-text-tertiary px-1 py-1">无匹配结果</span>
+                            ) : (
+                              addMatches.map((s) => (
+                                <button
+                                  key={s}
+                                  onClick={() => addTarget(s)}
+                                  className="h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 font-mono"
+                                >
+                                  <Plus className="h-3 w-3" />
+                                  {s}
+                                </button>
+                              ))
+                            )}
+                          </div>
+                          <div className="text-caption text-text-tertiary">
+                            该牛舍共 {sameBarnPool.length + targets.length} 头，按编号搜索或扫码添加
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               ) : (
