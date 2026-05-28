@@ -964,11 +964,14 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <div className="flex items-baseline gap-2 mb-2">
-        <div className="text-body-sm text-text-secondary">
-          {title}
-          {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
+    <div className="rounded-2xl bg-card border border-border p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+      <div className="flex items-baseline gap-2 mb-2.5">
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block w-0.5 h-3.5 rounded-full bg-primary" />
+          <div className="text-body-sm font-medium text-foreground">
+            {title}
+            {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
+          </div>
         </div>
         {hint && <div className="text-caption text-text-tertiary">{hint}</div>}
       </div>
