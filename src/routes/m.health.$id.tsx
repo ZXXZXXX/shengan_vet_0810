@@ -390,13 +390,13 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", days: "3 天" },
                 { name: "头孢噻呋钠", spec: "1g / 支", use: "肌肉注射", dose: "1g / 次", days: "3 天" },
               ].map((m) => (
-                <li key={m.name} className="px-1 py-2">
-                  <div className="flex items-center justify-between">
-                    <div className="text-body-sm text-foreground">{m.name}</div>
-                    <span className="text-caption text-text-tertiary">{m.days}</span>
-                  </div>
-                  <div className="text-caption text-text-tertiary mt-0.5">
-                    {m.spec} · {m.use} · {m.dose}
+                <li key={m.name} className="px-1 py-3 space-y-1.5">
+                  <div className="text-body-sm font-medium text-foreground">{m.name}</div>
+                  <div className="grid grid-cols-2 gap-y-1 gap-x-3">
+                    <Field label="规格" value={m.spec} />
+                    <Field label="给药方式" value={m.use} />
+                    <Field label="单次剂量" value={m.dose} />
+                    <Field label="疗程" value={m.days} />
                   </div>
                 </li>
               ))}
