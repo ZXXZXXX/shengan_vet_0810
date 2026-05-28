@@ -16,6 +16,8 @@ import {
   Camera,
   Video,
   PlayCircle,
+  Mic,
+  Square,
   UserPlus,
   User,
 } from "lucide-react";
