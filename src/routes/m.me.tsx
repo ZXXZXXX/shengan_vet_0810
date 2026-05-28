@@ -147,7 +147,7 @@ function MenuItem({
   badge,
   to,
 }: {
-  icon: typeof Bell;
+  icon: typeof HelpCircle;
   label: string;
   badge?: string;
   to?: string;
