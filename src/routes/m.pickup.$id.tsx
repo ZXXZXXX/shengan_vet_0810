@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import {
   CheckCircle2,
   Warehouse,
@@ -6,26 +6,13 @@ import {
   PackageCheck,
   QrCode,
   AlertTriangle,
-  ScanLine,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
-  claimPickup,
   getPickup,
   qrMatrix,
   useClaimed,
 } from "@/lib/pickup-store";
-import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/m/pickup/$id")({
   head: () => ({ meta: [{ title: "药品器材领取 · 奇点智牧" }] }),
@@ -34,9 +21,7 @@ export const Route = createFileRoute("/m/pickup/$id")({
 
 function PickupDetailPage() {
   const { id } = useParams({ from: "/m/pickup/$id" });
-  const navigate = useNavigate();
   const claimed = useClaimed();
-  const [confirm, setConfirm] = useState(false);
   const pickup = getPickup(id);
   const isClaimed = claimed.includes(id);
 
@@ -54,7 +39,7 @@ function PickupDetailPage() {
 
   return (
     <MobileShell title="药品器材领取" back hideTabBar>
-      <div className="px-4 pt-3 pb-28 space-y-3">
+      <div className="px-4 pt-3 pb-6 space-y-3">
         {/* 状态卡 */}
         <div
           className={`rounded-xl p-4 border ${
@@ -205,47 +190,6 @@ function PickupDetailPage() {
         </div>
 
       </div>
-
-      {/* 底部操作 */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-        {isClaimed ? (
-          <button
-            onClick={() => navigate({ to: "/m" })}
-            className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body"
-          >
-            返回工作台
-          </button>
-        ) : (
-          <button
-            onClick={() => setConfirm(true)}
-            className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-          >
-            <ScanLine className="h-4 w-4" /> 模拟核销（演示）
-          </button>
-        )}
-      </div>
-
-      <AlertDialog open={confirm} onOpenChange={setConfirm}>
-        <AlertDialogContent className="!max-w-[400px]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>确认核销该领取单?</AlertDialogTitle>
-            <AlertDialogDescription>
-              核销后二维码将失效，本领取单将从待办列表移除并转为「已完成」。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                claimPickup(pickup.id);
-                setConfirm(false);
-              }}
-            >
-              确认核销
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </MobileShell>
   );
 }
