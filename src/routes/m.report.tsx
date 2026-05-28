@@ -295,7 +295,7 @@ function ReportPage() {
           <>
 
             {/* 上报对象 */}
-            <Section title="上报对象" required hint="可一次性选择多只对象上报">
+            <Section title="上报对象" required hint="可一次性选择多只牛或多个牛舍">
               {lockTarget ? (
                 <div
                   className="space-y-2"
