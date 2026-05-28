@@ -114,6 +114,22 @@ function DiagnosePage() {
 
   // 终止工单
   const [confirmTerminate, setConfirmTerminate] = useState(false);
+  const [termNeedTransfer, setTermNeedTransfer] = useState<boolean | null>(null);
+  const [termTransferBarn, setTermTransferBarn] = useState("");
+  const [termTransferQ, setTermTransferQ] = useState("");
+  const lastTransferBarn = typeof window !== "undefined"
+    ? window.localStorage.getItem("lastTransferBarn") || ""
+    : "";
+  const allBarns = useMemo(() => Array.from({ length: 8 }, (_, i) => `${i + 1} 号牛舍`), []);
+  const termBarnMatches = useMemo(() => {
+    const kw = termTransferQ.trim();
+    const pool = allBarns;
+    const list = kw ? pool.filter((b) => b.includes(kw)) : pool;
+    if (lastTransferBarn && !kw) {
+      return [lastTransferBarn, ...list.filter((b) => b !== lastTransferBarn)].slice(0, 6);
+    }
+    return list.slice(0, 6);
+  }, [allBarns, termTransferQ, lastTransferBarn]);
 
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
