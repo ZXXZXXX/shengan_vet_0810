@@ -93,7 +93,7 @@ export type ReviewConclusion = {
   conclusionNote: string;
 };
 
-type WorkStatus = "待诊断" | "待响应" | "执行中" | "已驳回" | "已完成";
+type WorkStatus = "待诊断" | "待响应" | "执行中" | "已完成";
 
 export type MaterialItem = {
   id: string;
