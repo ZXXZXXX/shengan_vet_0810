@@ -5,6 +5,7 @@ import {
   LogOut,
   RefreshCw,
   ClipboardList,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
