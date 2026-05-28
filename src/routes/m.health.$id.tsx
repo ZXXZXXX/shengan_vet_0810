@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   PlayCircle,
   Camera,
-  Send,
+  
   Mic,
   Video,
   FileText,
