@@ -123,10 +123,10 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="none" className="border-r border-border bg-card">
-      <SidebarHeader className="border-b border-border bg-card">
-        <div className="flex items-center px-2 py-3">
+      <SidebarHeader className="h-[110px] border-b border-border bg-card p-0">
+        <div className="flex h-full items-center px-4">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-subtle">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-subtle">
               <span className="text-card-title text-primary font-semibold leading-none">奇</span>
             </div>
             <div className="flex flex-col leading-tight">
