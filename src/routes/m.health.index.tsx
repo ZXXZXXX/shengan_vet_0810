@@ -87,7 +87,7 @@ const tabs: { key: Status | "全部" | "执行中"; label: string }[] = [
   { key: "待诊断", label: "待诊断" },
   { key: "执行中", label: "执行中" },
   { key: "已完成", label: "已完成" },
-  { key: "已驳回", label: "已驳回" },
+  
   { key: "已终止", label: "已终止" },
 ];
 
