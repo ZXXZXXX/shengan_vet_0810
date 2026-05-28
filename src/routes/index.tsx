@@ -263,7 +263,7 @@ function HomePage() {
   };
 
 
-  const handleApprove = () => {
+  const handleVisit = () => {
     if (!activeRequest) return;
     toast.success(`已通过：${workOrderTypeMeta[activeRequest.type].label} · ${activeRequest.target}`);
     setActiveRequest(null);
@@ -322,7 +322,7 @@ function HomePage() {
                 早上好，场长张磊
               </h2>
               <p className="text-body text-white/85 mt-1.5">
-                今日整体运行稳定，<span className="text-white font-medium">4 项</span> 申请待审批 ·
+                今日整体运行稳定，<span className="text-white font-medium">4 项</span> 申请待出诊 ·
                 <span className="text-white font-medium"> 37 项</span> 待办，请及时处理
               </p>
 
@@ -624,7 +624,7 @@ function HomePage() {
                 </Button>
                 <Button
                   className="h-9 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                  onClick={handleApprove}
+                  onClick={handleVisit}
                 >
                   通过
                 </Button>
