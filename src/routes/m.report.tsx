@@ -582,29 +582,17 @@ function ReportPage() {
             </Section>
 
 
-            {/* 工作类型 */}
-            <Section title="工作类型" required>
-              <div className="grid grid-cols-4 gap-2">
-                {healthWorkTypes.map((t) => {
-                  const active = workType === t;
-                  return (
-                    <button
-                      key={t}
-                      onClick={() => setWorkType(t)}
-                      className={`h-12 rounded-xl border text-body-sm font-medium transition-all active:scale-[0.97] ${
-                        active
-                          ? "bg-primary border-primary text-primary-foreground shadow-[0_2px_8px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
-                          : "bg-card border-border text-text-secondary"
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
+            {/* 工单类型：固定为疾病治疗 */}
+            <Section title="工单类型">
+              <div className="h-11 px-3 rounded-xl bg-surface-subtle border border-border inline-flex items-center text-body-sm text-foreground">
+                疾病治疗
               </div>
             </Section>
 
-            {workType !== "" && (
+            {(
+              <></>
+            )}
+            {true && (
               <>
                 {/* 标签字段（按工作类型显示） */}
                 {cfg?.tags && (
