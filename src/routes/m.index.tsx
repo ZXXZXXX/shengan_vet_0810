@@ -203,14 +203,13 @@ function MHomePage() {
 const risks: Array<{
   title: string;
   detail: string;
-  count: string;
   tone: keyof typeof colorMap;
   icon: typeof AlertTriangle;
   to: string;
 }> = [
-  { title: "工单逾期提醒", detail: "WO-2298 乳房炎复诊 · 已超 1h", count: "2 项", tone: "danger", icon: TimerReset, to: "/m/health/HF-0702" },
-  { title: "牛只异常风险", detail: "#A2324 采食量下降 18% · 已连续 2 日", count: "3 项", tone: "warning", icon: AlertCircle, to: "/m/animals" },
-  { title: "库存风险", detail: "广谱驱虫药余量 8% · 建议补货", count: "5 项", tone: "alert", icon: AlertTriangle, to: "/m/" },
+  { title: "工单逾期提醒", detail: "WO-2298 乳房炎复诊 · 已超 1h", tone: "danger", icon: TimerReset, to: "/m/health/HF-0702" },
+  { title: "牛只异常风险", detail: "#A2324 采食量下降 18% · 已连续 2 日", tone: "warning", icon: AlertCircle, to: "/m/animals" },
+  { title: "库存风险", detail: "广谱驱虫药余量 8% · 建议补货", tone: "alert", icon: AlertTriangle, to: "/m/" },
 ];
 
 
