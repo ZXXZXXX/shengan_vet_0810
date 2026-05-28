@@ -387,10 +387,10 @@ function ReportPage() {
                   </div>
                 )}
                 {targets.length === 0 || showAddPanel ? (
-                  <div className="rounded-lg border border-border bg-card p-2 space-y-2">
+                  <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
                     <div className="flex gap-2">
                       <div className="flex-1 relative">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
                         <input
                           autoFocus
                           value={addQuery}
@@ -403,10 +403,10 @@ function ReportPage() {
                             }
                           }}
                           placeholder={targets.length === 0 ? "输入牛只编号回车添加" : "输入牛只编号搜索"}
-                          className="w-full h-9 pl-8 pr-2 rounded-md bg-surface-subtle border border-border text-body-sm"
+                          className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
                         />
                       </div>
-                      <button className="h-9 px-2.5 rounded-md bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
+                      <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium active:scale-[0.97] transition-transform">
                         <ScanLine className="h-4 w-4" /> 扫码
                       </button>
                       {targets.length > 0 && (
@@ -415,7 +415,7 @@ function ReportPage() {
                             setShowAddPanel(false);
                             setAddQuery("");
                           }}
-                          className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                          className="h-11 w-11 inline-flex items-center justify-center rounded-lg text-text-tertiary active:bg-surface-subtle"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -431,7 +431,7 @@ function ReportPage() {
                               <button
                                 key={s}
                                 onClick={() => addTarget(s)}
-                                className="h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 font-mono"
+                                className="h-8 px-3 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 font-mono active:scale-[0.96]"
                               >
                                 <Plus className="h-3 w-3" />
                                 {s}
@@ -453,7 +453,7 @@ function ReportPage() {
                 ) : (
                   <button
                     onClick={() => setShowAddPanel(true)}
-                    className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
+                    className="w-full h-11 rounded-xl border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
                   >
                     <Plus className="h-4 w-4" />
                     追加同牛舍其他牛只
