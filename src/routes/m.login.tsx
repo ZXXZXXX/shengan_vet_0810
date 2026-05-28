@@ -32,20 +32,12 @@ function MLoginPage() {
     return () => clearTimeout(t);
   }, [countdown]);
 
-  const isBound = () =>
-    typeof window !== "undefined" && localStorage.getItem(BOUND_KEY) === "1";
-
   const onWeComLogin = () => {
     if (!agreed) {
       toast.error("请先勾选并同意服务协议");
       return;
     }
-    if (isBound()) {
-      setStep("loading");
-      setTimeout(() => navigate({ to: "/m" }), 600);
-      return;
-    }
-    // 首次企微登录 → 需绑定手机号
+    // 登录、绑定手机号、设置密码均为必须流程，不区分是否已绑定
     setStep("binding");
   };
 
@@ -111,7 +103,7 @@ function MLoginPage() {
               </button>
               <h1 className="text-page-title text-foreground tracking-tight">验证手机号</h1>
               <p className="text-body text-text-secondary mt-1">
-                首次使用企业微信登录，请先验证手机号
+                请验证手机号以继续登录
               </p>
               <div className="mt-3 flex items-center gap-1.5 text-caption text-text-tertiary">
                 <span className="h-1.5 w-6 rounded-full bg-primary" />
