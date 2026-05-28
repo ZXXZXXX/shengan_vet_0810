@@ -964,8 +964,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-card border border-border p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-      <div className="flex items-baseline gap-2 mb-2.5">
+    <div>
+      <div className="flex items-baseline gap-2 mb-2 px-0.5">
         <div className="flex items-center gap-1.5">
           <span className="inline-block w-0.5 h-3.5 rounded-full bg-primary" />
           <div className="text-body-sm font-medium text-foreground">
