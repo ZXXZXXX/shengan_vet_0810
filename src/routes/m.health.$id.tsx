@@ -606,7 +606,7 @@ function ChecklistDay({
           return (
             <li
               key={it.id}
-              className={`rounded-lg border ${
+              className={`rounded-xl border transition-colors ${
                 it.status === "done"
                   ? "border-primary/30 bg-brand-subtle/40"
                   : it.status === "blocked"
@@ -614,9 +614,9 @@ function ChecklistDay({
                     : "border-border bg-bg"
               }`}
             >
-              <div className="flex items-start gap-2 px-3 py-2.5">
+              <div className="flex items-center gap-2 px-3 py-2.5">
                 {!itemPending && (
-                  <div className="mt-0.5">
+                  <div>
                     {it.status === "done" ? (
                       <CheckSquare className="h-4 w-4 text-primary" />
                     ) : (
@@ -625,36 +625,36 @@ function ChecklistDay({
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className={`text-body-sm truncate ${itemPending ? "text-text-secondary" : "text-foreground"}`}>
+                  <div className={`text-body truncate font-mono ${itemPending ? "text-text-secondary" : "text-foreground"}`}>
                     {it.title}
                   </div>
                 </div>
-
-                {!isPending && !dayLocked && (
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => update(it.id, { status: "done" })}
-                      className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
-                        it.status === "done"
-                          ? "bg-primary text-primary-foreground"
-                          : "border border-border text-text-secondary"
-                      }`}
-                    >
-                      <CheckCircle2 className="h-3 w-3" /> 已执行
-                    </button>
-                    <button
-                      onClick={() => update(it.id, { status: "blocked" })}
-                      className={`h-7 px-2 rounded-md text-caption inline-flex items-center gap-1 ${
-                        it.status === "blocked"
-                          ? "bg-[var(--state-danger)] text-white"
-                          : "border border-border text-text-secondary"
-                      }`}
-                    >
-                      <AlertTriangle className="h-3 w-3" /> 无法执行
-                    </button>
-                  </div>
-                )}
               </div>
+
+              {!isPending && !dayLocked && (
+                <div className="grid grid-cols-2 gap-2 px-3 pb-3">
+                  <button
+                    onClick={() => update(it.id, { status: "done" })}
+                    className={`h-10 rounded-lg text-body-sm font-medium inline-flex items-center justify-center gap-1 active:scale-[0.97] transition-all ${
+                      it.status === "done"
+                        ? "bg-primary text-primary-foreground shadow-[0_2px_6px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
+                        : "border border-border bg-card text-text-secondary"
+                    }`}
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5" /> 已执行
+                  </button>
+                  <button
+                    onClick={() => update(it.id, { status: "blocked" })}
+                    className={`h-10 rounded-lg text-body-sm font-medium inline-flex items-center justify-center gap-1 active:scale-[0.97] transition-all ${
+                      it.status === "blocked"
+                        ? "bg-[var(--state-danger)] text-white shadow-[0_2px_6px_-2px_color-mix(in_oklab,var(--state-danger)_50%,transparent)]"
+                        : "border border-border bg-card text-text-secondary"
+                    }`}
+                  >
+                    <AlertTriangle className="h-3.5 w-3.5" /> 无法执行
+                  </button>
+                </div>
+              )}
             </li>
           );
         })}

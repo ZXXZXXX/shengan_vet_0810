@@ -304,7 +304,7 @@ function ReportPage() {
 
   return (
     <MobileShell title="现场上报" back hideTabBar>
-      <div className="px-4 pt-3 pb-28 space-y-3">
+      <div className="px-4 pt-3 pb-28 space-y-5">
         {kind === "health" ? (
           <>
 
@@ -326,7 +326,7 @@ function ReportPage() {
                   return (
                     <div
                       key={t}
-                      className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground gap-2"
+                      className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
                     >
                       {isEditing ? (
                         <>
@@ -343,10 +343,10 @@ function ReportPage() {
                                 setEditingTarget(null);
                               }
                             }}
-                            className="font-mono flex-1 min-w-0 h-8 px-2 rounded-md bg-card border border-border text-body"
+                            className="font-mono flex-1 min-w-0 h-9 px-2 rounded-md bg-surface-subtle border border-border text-body"
                             onClick={(e) => e.stopPropagation()}
                           />
-                          <span className="font-mono text-text-tertiary shrink-0">· {tBarn}</span>
+                          <span className="font-mono text-text-tertiary shrink-0 text-caption">· {tBarn}</span>
                         </>
                       ) : (
                         <>
@@ -359,10 +359,10 @@ function ReportPage() {
                               setEditingTarget(t);
                               setEditingValue(t);
                             }}
-                            className="ml-auto h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
                             aria-label="编辑"
                           >
-                            <Pencil className="h-3.5 w-3.5" />
+                            <Pencil className="h-4 w-4" />
                           </button>
                           {canDelete && (
                             <button
@@ -370,7 +370,7 @@ function ReportPage() {
                                 e.stopPropagation();
                                 removeTarget(t);
                               }}
-                              className="h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                              className="h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
                               aria-label="删除"
                             >
                               <X className="h-4 w-4" />
@@ -387,10 +387,10 @@ function ReportPage() {
                   </div>
                 )}
                 {targets.length === 0 || showAddPanel ? (
-                  <div className="rounded-lg border border-border bg-card p-2 space-y-2">
+                  <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
                     <div className="flex gap-2">
                       <div className="flex-1 relative">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
                         <input
                           autoFocus
                           value={addQuery}
@@ -403,10 +403,10 @@ function ReportPage() {
                             }
                           }}
                           placeholder={targets.length === 0 ? "输入牛只编号回车添加" : "输入牛只编号搜索"}
-                          className="w-full h-9 pl-8 pr-2 rounded-md bg-surface-subtle border border-border text-body-sm"
+                          className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
                         />
                       </div>
-                      <button className="h-9 px-2.5 rounded-md bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
+                      <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium active:scale-[0.97] transition-transform">
                         <ScanLine className="h-4 w-4" /> 扫码
                       </button>
                       {targets.length > 0 && (
@@ -415,7 +415,7 @@ function ReportPage() {
                             setShowAddPanel(false);
                             setAddQuery("");
                           }}
-                          className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                          className="h-11 w-11 inline-flex items-center justify-center rounded-lg text-text-tertiary active:bg-surface-subtle"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -431,7 +431,7 @@ function ReportPage() {
                               <button
                                 key={s}
                                 onClick={() => addTarget(s)}
-                                className="h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 font-mono"
+                                className="h-8 px-3 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 font-mono active:scale-[0.96]"
                               >
                                 <Plus className="h-3 w-3" />
                                 {s}
@@ -453,7 +453,7 @@ function ReportPage() {
                 ) : (
                   <button
                     onClick={() => setShowAddPanel(true)}
-                    className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
+                    className="w-full h-11 rounded-xl border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
                   >
                     <Plus className="h-4 w-4" />
                     追加同牛舍其他牛只
@@ -472,9 +472,9 @@ function ReportPage() {
                     <button
                       key={t}
                       onClick={() => setWorkType(t)}
-                      className={`h-10 rounded-lg border text-body-sm transition-colors ${
+                      className={`h-12 rounded-xl border text-body-sm font-medium transition-all active:scale-[0.97] ${
                         active
-                          ? "bg-brand-subtle border-primary/30 text-primary"
+                          ? "bg-primary border-primary text-primary-foreground shadow-[0_2px_8px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
                           : "bg-card border-border text-text-secondary"
                       }`}
                     >
@@ -502,15 +502,15 @@ function ReportPage() {
                         <button
                           key={t}
                           onClick={() => toggleSymptom(t)}
-                          className={`h-8 px-3 rounded-full text-body-sm transition-colors inline-flex items-center gap-1 ${
+                          className={`h-9 px-3.5 rounded-full text-body-sm transition-all active:scale-[0.96] inline-flex items-center gap-1 ${
                             active
-                              ? "bg-primary text-primary-foreground"
+                              ? "bg-primary text-primary-foreground shadow-[0_2px_6px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
                               : isOther
                               ? "bg-card border border-dashed border-border text-text-secondary"
                               : "bg-card border border-border text-text-secondary"
                           }`}
                         >
-                          {isOther && <Plus className="h-3 w-3" />}
+                          {isOther && <Plus className="h-3.5 w-3.5" />}
                           {t}
                         </button>
                       );
@@ -554,7 +554,7 @@ function ReportPage() {
                       onChange={(e) => setNote(e.target.value)}
                       placeholder={cfg.note.placeholder}
                       rows={3}
-                      className="w-full p-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary resize-none"
+                      className="w-full p-3 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary resize-none leading-relaxed"
                     />
                     <div className="text-right text-caption text-text-tertiary mt-1">{note.length} / 200</div>
                   </Section>
@@ -686,18 +686,18 @@ function ReportPage() {
       </div>
 
       {/* 底部提交 */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-        <div className="flex items-center gap-2">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card/95 backdrop-blur border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_16px_-8px_rgba(15,23,42,0.08)]">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => setShowDraftDialog(true)}
-            className="h-12 px-4 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center active:bg-surface-subtle"
+            className="h-12 px-4 rounded-xl border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center active:bg-surface-subtle active:scale-[0.98] transition-transform"
           >
             存草稿
           </button>
           <button
             disabled={!canSubmit || submitted}
             onClick={submit}
-            className="flex-1 h-12 rounded-lg bg-primary text-primary-foreground text-body disabled:opacity-50 transition-opacity"
+            className="flex-1 h-12 rounded-xl bg-primary text-primary-foreground text-body font-medium disabled:opacity-50 active:scale-[0.98] transition-all shadow-[0_4px_12px_-4px_color-mix(in_oklab,var(--primary)_55%,transparent)] disabled:shadow-none"
           >
             {submitted ? "已提交,工作已生成" : "提交上报"}
           </button>
@@ -804,7 +804,7 @@ function EvidenceSection({
           {media.map((m) => (
             <div
               key={`${m.type}-${m.id}`}
-              className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center"
+              className="relative aspect-square rounded-xl bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center"
             >
               {m.type === "video" && <Video className="h-5 w-5 text-text-tertiary" />}
               <button
@@ -813,15 +813,15 @@ function EvidenceSection({
                     ? setPhotos((prev) => prev.filter((x) => x !== m.id))
                     : setVideos((prev) => prev.filter((x) => x !== m.id))
                 }
-                className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/80 text-background inline-flex items-center justify-center"
+                className="absolute -top-1.5 -right-1.5 h-6 w-6 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
               >
-                <X className="h-3 w-3" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
           {remaining > 0 && (
-            <label className="aspect-square rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer">
-              <ImagePlus className="h-5 w-5" />
+            <label className="aspect-square rounded-xl border border-dashed border-border bg-card flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-surface-subtle transition-colors">
+              <ImagePlus className="h-6 w-6" />
               <span className="text-caption">拍摄 / 选择</span>
               <input
                 type="file"
@@ -847,7 +847,7 @@ function EvidenceSection({
         {voiceSecs === null ? (
           <button
             onClick={onVoiceToggle}
-            className={`w-full h-12 rounded-lg border inline-flex items-center justify-center gap-2 text-body-sm transition-colors ${
+            className={`w-full h-12 rounded-xl border inline-flex items-center justify-center gap-2 text-body-sm active:scale-[0.98] transition-all ${
               recording
                 ? "border-[var(--state-danger)]/40 bg-[var(--state-danger)]/8 text-[var(--state-danger)]"
                 : "border-border bg-card text-text-secondary"
@@ -857,7 +857,7 @@ function EvidenceSection({
             {recording ? "录音中…点击结束" : "按下开始录音"}
           </button>
         ) : (
-          <div className="flex items-center gap-2 h-12 px-3 rounded-lg bg-brand-subtle border border-primary/20">
+          <div className="flex items-center gap-2 h-12 px-3 rounded-xl bg-brand-subtle border border-primary/20">
             <Mic className="h-4 w-4 text-primary" />
             <div className="flex-1 h-1.5 rounded-full bg-primary/20 overflow-hidden">
               <div className="h-full w-1/2 bg-primary" />
@@ -865,7 +865,7 @@ function EvidenceSection({
             <span className="text-caption text-primary font-mono">00:{String(voiceSecs).padStart(2, "0")}</span>
             <button
               onClick={() => setVoiceSecs(null)}
-              className="h-7 w-7 rounded-full bg-card border border-border inline-flex items-center justify-center text-text-tertiary"
+              className="h-8 w-8 rounded-full bg-card border border-border inline-flex items-center justify-center text-text-tertiary active:bg-surface-subtle"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -879,7 +879,7 @@ function EvidenceSection({
           onChange={(e) => setDesc(e.target.value)}
           placeholder="请补充关键信息（必填）"
           rows={3}
-          className="w-full p-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary resize-none"
+          className="w-full p-3 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary resize-none leading-relaxed"
         />
         <div className="text-right text-caption text-text-tertiary mt-1">{desc.length} / 200</div>
       </Section>
@@ -904,17 +904,17 @@ function HandlerDropdown({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full h-12 px-3 rounded-lg border border-border bg-card flex items-center justify-between"
+        className="w-full h-12 px-3.5 rounded-xl border border-border bg-card flex items-center justify-between active:bg-surface-subtle transition-colors"
       >
         <span className="inline-flex items-center gap-1.5">
-          <UserCheck className={`h-3.5 w-3.5 ${selected ? "text-primary" : "text-text-tertiary"}`} />
+          <UserCheck className={`h-4 w-4 ${selected ? "text-primary" : "text-text-tertiary"}`} />
           {selected ? (
             <>
-              <span className="text-body-sm text-foreground">{selected.name}</span>
+              <span className="text-body text-foreground font-medium">{selected.name}</span>
               <span className="text-caption text-text-tertiary">· {selected.role}</span>
             </>
           ) : (
-            <span className="text-body-sm text-text-tertiary">点击选择处理人</span>
+            <span className="text-body text-text-tertiary">点击选择处理人</span>
           )}
         </span>
         <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform ${open ? "rotate-180" : ""}`} />
@@ -922,7 +922,7 @@ function HandlerDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute z-20 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg overflow-hidden">
+          <div className="absolute z-20 left-0 right-0 mt-1 rounded-xl border border-border bg-card shadow-lg overflow-hidden">
             {options.map((o) => {
               const active = o.id === value;
               return (
@@ -965,10 +965,13 @@ function Section({
 }) {
   return (
     <div>
-      <div className="flex items-baseline gap-2 mb-2">
-        <div className="text-body-sm text-text-secondary">
-          {title}
-          {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
+      <div className="flex items-baseline gap-2 mb-2 px-0.5">
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block w-0.5 h-3.5 rounded-full bg-primary" />
+          <div className="text-body-sm font-medium text-foreground">
+            {title}
+            {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
+          </div>
         </div>
         {hint && <div className="text-caption text-text-tertiary">{hint}</div>}
       </div>
