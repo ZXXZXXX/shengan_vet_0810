@@ -54,38 +54,38 @@ const diseaseLibrary: Disease[] = [
     name: "支气管肺炎",
     symptoms: ["高烧", "咳嗽", "鼻液", "呼吸急促", "食欲下降"],
     rx: [
-      { id: "r1", name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", days: "3 天" },
-      { id: "r2", name: "头孢噻呋钠", spec: "1g / 支", use: "肌肉注射", dose: "1g / 次", days: "3 天" },
+      { id: "r1", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "3" },
+      { id: "r2", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1g", days: "3" },
     ],
   },
   {
     name: "急性乳房炎",
     symptoms: ["高烧", "乳房红肿", "产奶骤降", "食欲下降"],
     rx: [
-      { id: "r1", name: "头孢噻呋钠", spec: "1g / 支", use: "乳房灌注", dose: "1g / 次", days: "3 天" },
-      { id: "r2", name: "氟尼辛葡甲胺", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", days: "2 天" },
+      { id: "r1", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1g", days: "3" },
+      { id: "r2", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "2" },
     ],
   },
   {
     name: "瘤胃酸中毒",
     symptoms: ["食欲下降", "反刍减少", "腹泻", "脱水"],
     rx: [
-      { id: "r1", name: "碳酸氢钠", spec: "500g", use: "口服", dose: "200g / 次", days: "2 天" },
-      { id: "r2", name: "复合维生素 B", spec: "100ml", use: "肌肉注射", dose: "10ml / 次", days: "3 天" },
+      { id: "r1", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200g", days: "2" },
+      { id: "r2", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10ml", days: "3" },
     ],
   },
   {
     name: "酮病",
     symptoms: ["食欲下降", "产奶骤降", "精神萎靡"],
     rx: [
-      { id: "r1", name: "50% 葡萄糖", spec: "500ml", use: "静脉注射", dose: "500ml / 次", days: "2 天" },
+      { id: "r1", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500ml", days: "2" },
     ],
   },
   {
     name: "犊牛腹泻症",
     symptoms: ["腹泻", "脱水", "精神萎靡"],
     rx: [
-      { id: "r1", name: "口服补液盐", spec: "100g / 包", use: "口服", dose: "1 包 / 次", days: "3 天" },
+      { id: "r1", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1 包", days: "3" },
     ],
   },
 ];
@@ -93,11 +93,38 @@ const diseaseLibrary: Disease[] = [
 type Prescription = {
   id: string;
   name: string;
+  maker: string;
   spec: string;
   use: string;
   dose: string;
   days: string;
 };
+
+// 药品库（用于编辑弹层中搜索匹配）
+type DrugItem = { name: string; maker: string; spec: string };
+const drugLibrary: DrugItem[] = [
+  { name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶" },
+  { name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支" },
+  { name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋" },
+  { name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶" },
+  { name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶" },
+  { name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包" },
+  { name: "青霉素钠", maker: "华北制药", spec: "80 万 IU / 支" },
+  { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶" },
+  { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支" },
+  { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支" },
+];
+
+// 使用方式枚举
+const useMethods = [
+  "肌肉注射",
+  "静脉注射",
+  "皮下注射",
+  "乳房灌注",
+  "口服",
+  "灌服",
+  "外用涂抹",
+];
 
 const executorPool = ["李雨晴", "张师傅", "王师傅", "刘师傅", "赵师傅", "陈师傅"];
 
