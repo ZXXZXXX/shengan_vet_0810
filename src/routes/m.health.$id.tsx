@@ -516,6 +516,11 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
   const needPickup = Boolean(pickupCode);
   return (
     <>
+      <Section title="基础信息">
+        <Field label="执行人" value={<PersonChip name="李雨晴" />} />
+        <Field label="开始执行时间" value="2026-05-12 13:08" />
+      </Section>
+
       {days.map((d) => {
         const isDone = d.phase === "done";
         const isActive = d.phase === "active";
