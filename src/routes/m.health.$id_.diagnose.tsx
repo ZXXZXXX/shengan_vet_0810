@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   Activity,
@@ -16,6 +16,8 @@ import {
   Camera,
   Video,
   PlayCircle,
+  Mic,
+  Square,
   UserPlus,
   User,
 } from "lucide-react";
@@ -139,8 +141,33 @@ function DiagnosePage() {
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
   const [videos, setVideos] = useState<string[]>([]);
+  const [audios, setAudios] = useState<{ id: string; duration: number }[]>([]);
   const [note, setNote] = useState("");
   const [showMediaPicker, setShowMediaPicker] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recordSec, setRecordSec] = useState(0);
+
+  useEffect(() => {
+    if (!recording) return;
+    const t = setInterval(() => setRecordSec((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [recording]);
+
+  const startRecord = () => {
+    setShowMediaPicker(false);
+    setRecordSec(0);
+    setRecording(true);
+  };
+  const stopRecord = () => {
+    if (recordSec > 0) {
+      setAudios((prev) => [...prev, { id: `a${Date.now()}`, duration: recordSec }]);
+    }
+    setRecording(false);
+    setRecordSec(0);
+  };
+  const fmtSec = (n: number) => `${Math.floor(n / 60).toString().padStart(2, "0")}:${(n % 60).toString().padStart(2, "0")}`;
+
+
 
   // 指派执行人
   const [executor, setExecutor] = useState("");
@@ -476,6 +503,56 @@ function DiagnosePage() {
               </div>
             </div>
 
+            {/* 录音 */}
+            <div className="mt-3">
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Mic className="h-3 w-3" /> 录音 · {audios.length} 条
+              </div>
+              <div className="space-y-2">
+                {audios.map((a, i) => (
+                  <div
+                    key={a.id}
+                    className="flex items-center gap-2 h-10 px-3 rounded-lg bg-surface-subtle border border-border"
+                  >
+                    <PlayCircle className="h-4 w-4 text-primary" />
+                    <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
+                      <div className="h-full w-1/3 bg-primary/40" />
+                    </div>
+                    <span className="text-caption text-text-tertiary tabular-nums">{fmtSec(a.duration)}</span>
+                    <button
+                      onClick={() => setAudios((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
+                      aria-label="删除录音"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                {recording ? (
+                  <button
+                    onClick={stopRecord}
+                    className="w-full h-10 px-3 rounded-lg bg-[var(--state-danger)]/10 border border-[var(--state-danger)]/40 text-[var(--state-danger)] text-body-sm inline-flex items-center justify-center gap-2"
+                  >
+                    <span className="relative inline-flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--state-danger)] opacity-60 animate-ping" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--state-danger)]" />
+                    </span>
+                    正在录音 {fmtSec(recordSec)}
+                    <Square className="h-3.5 w-3.5 ml-1" /> 点击结束
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { setRecordSec(0); setRecording(true); }}
+                    className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
+                  >
+                    <Mic className="h-3.5 w-3.5" /> 按下开始录音
+                  </button>
+                )}
+              </div>
+            </div>
+
+
+
             {/* 文字描述 */}
             <div className="mt-3">
               <div className="text-caption text-text-tertiary mb-2">文字描述</div>
@@ -689,7 +766,7 @@ function DiagnosePage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-section-title text-foreground">添加现场记录</div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => { setPhotos((prev) => [...prev, `p${Date.now()}`]); setShowMediaPicker(false); }}
                 className="flex flex-col items-center justify-center gap-2 h-24 rounded-xl border border-border bg-surface-subtle text-text-secondary"
@@ -703,6 +780,13 @@ function DiagnosePage() {
               >
                 <Video className="h-6 w-6" />
                 <span className="text-body-sm">拍视频</span>
+              </button>
+              <button
+                onClick={startRecord}
+                className="flex flex-col items-center justify-center gap-2 h-24 rounded-xl border border-border bg-surface-subtle text-text-secondary"
+              >
+                <Mic className="h-6 w-6" />
+                <span className="text-body-sm">录音</span>
               </button>
             </div>
             <button
