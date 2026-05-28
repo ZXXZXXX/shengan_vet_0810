@@ -131,6 +131,16 @@ const diseaseKB: { name: string; symptoms: string[]; plan: { rx: string; drugs: 
   },
 ];
 
+// 根据牛只编号查询所属牛舍（mock）
+function barnOfCattle(id: string): string {
+  const n = parseInt(id.replace(/\D/g, ""), 10);
+  if (!isNaN(n)) {
+    const idx = (Math.floor(n / 100) % 8) + 1;
+    return `${idx} 号牛舍`;
+  }
+  return "未知牛舍";
+}
+
 function ReportPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
@@ -138,13 +148,17 @@ function ReportPage() {
   // 健康类工作：内部角色（兽医/场长/兽医助理/管理员）与外部专项执行人员（如修蹄工）均可上报
   const canReportHealth = true;
 
-  const lockTarget = !!search.lock && !!search.target;
-  const lockBarn = !!search.lock && !!search.barn;
   const [kind] = useState<ReportKind>("health");
 
   const [targets, setTargets] = useState<string[]>(search.target ? [search.target] : []);
-  const [target, setTarget] = useState("");
-  const [barn] = useState(search.barn ?? "");
+  // 牛舍信息：优先使用 URL 锁定值，否则按首个牛只编号自动获取
+  const barn = useMemo(() => {
+    if (search.barn) return search.barn;
+    if (targets.length > 0) return barnOfCattle(targets[0]);
+    return "";
+  }, [search.barn, targets]);
+  const lockBarn = !!barn;
+
   const addTarget = (v: string) => {
     const t = v.trim();
     if (!t) return;
