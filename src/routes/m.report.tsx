@@ -151,6 +151,13 @@ function ReportPage() {
     setTarget("");
   };
   const removeTarget = (t: string) => setTargets((prev) => prev.filter((x) => x !== t));
+  const updateTarget = (oldVal: string, newVal: string) => {
+    const v = newVal.trim();
+    if (!v) return;
+    setTargets((prev) => prev.map((x) => (x === oldVal ? v : x)));
+  };
+  const [editingTarget, setEditingTarget] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState("");
   const [desc, setDesc] = useState("");
   const [photos, setPhotos] = useState<number[]>([1, 2]);
   const [videos, setVideos] = useState<number[]>([]);
