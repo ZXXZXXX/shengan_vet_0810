@@ -5,13 +5,13 @@ import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
 import { ActiveDayExecute } from "./m.health.$id";
 
-export const Route = createFileRoute("/m/health/$id/execute")({
+export const Route = createFileRoute("/m/health/$id_/execute")({
   head: () => ({ meta: [{ title: "执行记录 · 奇点智牧" }] }),
   component: ExecuteRecordPage,
 });
 
 function ExecuteRecordPage() {
-  const { id } = useParams({ from: "/m/health/$id/execute" });
+  const { id } = useParams({ from: "/m/health/$id_/execute" });
   const role = useRole();
   const navigate = useNavigate();
 
