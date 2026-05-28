@@ -719,26 +719,19 @@ function ChecklistDay({
           )}
 
 
-          <div className="px-4 pb-3">
-            <div className="rounded-lg bg-surface-subtle px-3 py-2.5">
-              <div className="text-caption text-text-tertiary mb-0.5">本日统一执行动作</div>
-              <div className="text-body-sm leading-relaxed text-foreground">
-                氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录
-              </div>
-            </div>
+          <div className="px-4 pb-2 text-caption text-text-tertiary">
+            处方拆解的本日任务
           </div>
 
           <ul className="px-4 pb-3 space-y-2">
             {items.map((it) => {
               const done = it.status === "done";
               const blocked = it.status === "blocked";
+              const needMed = it.needMed;
               return (
                 <li key={it.id} className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => toggleDone(it.id, it.status)}
-                    disabled={!interactive}
-                    className={`w-full flex items-center gap-2.5 h-12 px-3 rounded-xl border text-left transition-all active:scale-[0.99] ${
+                  <div
+                    className={`w-full rounded-xl border px-3 py-2.5 transition-all ${
                       done
                         ? "border-primary/40 bg-brand-subtle/30"
                         : blocked
@@ -746,39 +739,74 @@ function ChecklistDay({
                           : isActive
                             ? "border-border bg-card"
                             : "border-border bg-card opacity-80"
-                    } ${!interactive ? "cursor-default" : ""}`}
+                    }`}
                   >
-                    {done ? (
-                      <CheckSquare className="h-4 w-4 text-primary shrink-0" />
-                    ) : blocked ? (
-                      <AlertTriangle className="h-4 w-4 text-[var(--state-danger)] shrink-0" />
-                    ) : isActive ? (
-                      <Square className="h-4 w-4 text-text-tertiary shrink-0" />
-                    ) : null}
-                    <span
-                      className={`flex-1 min-w-0 truncate font-mono text-body ${
-                        done ? "text-foreground" : isActive ? "text-foreground" : "text-text-tertiary"
-                      }`}
-                    >
-                      {it.title}
-                    </span>
+                    <div className="flex items-start gap-2.5">
+                      {done ? (
+                        <CheckSquare className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      ) : blocked ? (
+                        <AlertTriangle className="h-4 w-4 text-[var(--state-danger)] shrink-0 mt-0.5" />
+                      ) : (
+                        <Square className="h-4 w-4 text-text-tertiary shrink-0 mt-0.5" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-body ${done || isActive ? "text-foreground" : "text-text-tertiary"}`}>
+                          {it.title}
+                        </div>
+                        {it.desc && (
+                          <div className="text-caption text-text-tertiary mt-0.5">{it.desc}</div>
+                        )}
+                        {done && needMed && it.scanCode && (
+                          <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
+                            <ScanLine className="h-3 w-3" /> 已扫码核验 · <span className="font-mono">{it.scanCode}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                     {interactive && !done && (
-                      <span
-                        role="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          update(it.id, { status: blocked ? "pending" : "blocked" });
-                        }}
-                        className={`text-caption px-2 py-1 rounded-md ${
-                          blocked
-                            ? "text-[var(--state-danger)] font-medium"
-                            : "text-text-tertiary active:bg-surface-subtle"
-                        }`}
-                      >
-                        {blocked ? "已标记无法执行" : "无法执行"}
-                      </span>
+                      <div className="flex items-center gap-2 mt-2.5 pl-6">
+                        {needMed ? (
+                          <button
+                            type="button"
+                            onClick={() => setScanFor(it.id)}
+                            className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1.5"
+                          >
+                            <ScanLine className="h-4 w-4" /> 扫码核验用药
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => toggleDone(it.id, it.status)}
+                            className="flex-1 h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
+                          >
+                            <CheckSquare className="h-4 w-4" /> 标记完成
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => update(it.id, { status: blocked ? "pending" : "blocked" })}
+                          className={`h-9 px-3 rounded-lg text-body-sm ${
+                            blocked
+                              ? "text-[var(--state-danger)] font-medium bg-[var(--state-danger)]/10"
+                              : "text-text-tertiary border border-border"
+                          }`}
+                        >
+                          {blocked ? "已标记无法执行" : "无法执行"}
+                        </button>
+                      </div>
                     )}
-                  </button>
+                    {interactive && done && (
+                      <div className="pl-6 mt-2">
+                        <button
+                          type="button"
+                          onClick={() => update(it.id, { status: "pending", scanCode: undefined })}
+                          className="text-caption text-text-tertiary active:text-foreground"
+                        >
+                          撤销
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   {blocked && (interactive ? (
                     <div className="rounded-xl border border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5 px-3 py-2.5">
                       <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1 mb-1">
