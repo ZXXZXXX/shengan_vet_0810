@@ -388,33 +388,47 @@ const toneAccentMap: Record<string, string> = {
   success: "var(--state-success)",
   muted: "var(--text-secondary)",
 };
-
 function SummaryCard({
   icon: Icon,
   tone,
   label,
   value,
+  trend,
+  trendDir,
 }: {
   icon: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
   value: string;
+  trend?: string;
+  trendDir?: "up" | "down";
 }) {
-  const accent = toneAccentMap[tone];
+  const trendTone =
+    trendDir === "down"
+      ? "bg-[color-mix(in_srgb,var(--state-danger)_12%,transparent)] text-[var(--state-danger)]"
+      : "bg-brand-subtle text-primary";
   return (
-    <div className="relative rounded-xl bg-card border border-border p-3 overflow-hidden h-[92px]">
-      <span
-        className="pointer-events-none absolute -right-2 -bottom-2 opacity-[0.12]"
-        style={{ color: accent }}
-      >
-        <Icon className="h-20 w-20" strokeWidth={1.25} />
-      </span>
-      <div className="relative text-caption text-text-secondary">{label}</div>
-      <div className="relative mt-2 text-section-title text-foreground tabular-nums leading-none">
+    <div className="rounded-2xl bg-card border border-border/70 p-3 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-caption text-text-secondary leading-tight">{label}</span>
+        <span className={`h-7 w-7 rounded-lg flex items-center justify-center shrink-0 ${colorMap[tone]}`}>
+          <Icon className="h-3.5 w-3.5" strokeWidth={2} />
+        </span>
+      </div>
+      <div className="mt-3 text-[26px] leading-none font-semibold text-foreground tabular-nums tracking-tight">
         {value}
       </div>
+      {trend && (
+        <div className="mt-2.5">
+          <span className={`inline-flex items-center gap-0.5 h-5 px-1.5 rounded-md text-[11px] font-medium tabular-nums ${trendTone}`}>
+            {trendDir === "down" ? "↘" : "↗"} {trend}
+          </span>
+        </div>
+      )}
     </div>
   );
+}
+
 }
 
 function DataCard({
