@@ -183,53 +183,14 @@ const stockComposition = [
   { name: "其他单元", count: 1466, color: "color-mix(in oklab, var(--brand) 30%, var(--bg-surface-subtle))" },
 ];
 
-const healthStatus = [
-  { name: "健康", count: 3102, color: "var(--state-success)" },
-  { name: "观察", count: 142, color: "var(--effect-ai-cyan)" },
-  { name: "异常", count: 32, color: "var(--state-warning)" },
-  { name: "隔离", count: 10, color: "var(--state-danger)" },
-];
-
-const withdrawal = [
-  { name: "正常生产", count: 2986, color: "var(--brand)" },
-  { name: "抗生素休药期", count: 184, color: "var(--state-warning)" },
-  { name: "驱虫休药期", count: 78, color: "var(--effect-ai-purple)" },
-  { name: "其他休药", count: 38, color: "var(--effect-ai-cyan)" },
-];
-
-const ageDistribution = [
-  { name: "犊牛 (0-6月)", count: 286, color: "var(--effect-ai-cyan)" },
-  { name: "育成 (7-14月)", count: 412, color: "var(--brand)" },
-  { name: "青年 (15-24月)", count: 538, color: "color-mix(in oklab, var(--brand) 70%, var(--effect-ai-cyan))" },
-  { name: "成年泌乳 (2-5岁)", count: 1532, color: "var(--effect-ai-purple)" },
-  { name: "成年干奶", count: 386, color: "var(--state-warning)" },
-  { name: "老龄 (>5岁)", count: 132, color: "var(--text-tertiary)" },
-];
-
-type DonutSeg = { name: string; count: number; color: string };
-
-function Donut({
-  data,
-  size = 160,
-  thickness = 22,
-  centerLabel,
-  centerValue,
-  centerSub,
-}: {
-  data: DonutSeg[];
-  size?: number;
-  thickness?: number;
-  centerLabel?: string;
-  centerValue?: string;
-  centerSub?: string;
-}) {
-  const total = data.reduce((s, x) => s + x.count, 0);
-  const radius = size / 2 - 2;
-  const inner = radius - thickness;
-  const cx = size / 2;
-  const cy = size / 2;
+const StockCompositionCard = ({ ref }: { ref: React.RefObject<HTMLDivElement | null> }) => {
+  const total = stockComposition.reduce((s, x) => s + x.count, 0);
+  const radius = 70;
+  const inner = 44;
+  const cx = 90;
+  const cy = 90;
   let acc = 0;
-  const arcs = data.map((seg) => {
+  const arcs = stockComposition.map((seg) => {
     const start = (acc / total) * Math.PI * 2 - Math.PI / 2;
     acc += seg.count;
     const end = (acc / total) * Math.PI * 2 - Math.PI / 2;
@@ -243,146 +204,46 @@ function Donut({
     const xi1 = cx + inner * Math.cos(start);
     const yi1 = cy + inner * Math.sin(start);
     const d = `M ${x1} ${y1} A ${radius} ${radius} 0 ${large} 1 ${x2} ${y2} L ${xi2} ${yi2} A ${inner} ${inner} 0 ${large} 0 ${xi1} ${yi1} Z`;
-    return { d, color: seg.color };
+    return { d, color: seg.color, name: seg.name, count: seg.count };
   });
+
   return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {arcs.map((a, i) => (
-          <path key={i} d={a.d} fill={a.color} stroke="var(--bg-surface)" strokeWidth="1.5" />
-        ))}
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-        {centerLabel && <span className="text-caption text-text-tertiary">{centerLabel}</span>}
-        {centerValue && <span className="text-section-title tabular-nums text-foreground leading-tight">{centerValue}</span>}
-        {centerSub && <span className="text-caption text-text-tertiary tabular-nums mt-0.5">{centerSub}</span>}
+    <Card ref={ref} className="border-border bg-card scroll-mt-20">
+      <div className="p-6 pb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Beef className="h-4 w-4 text-primary" strokeWidth={1.75} />
+          <h3 className="text-card-title text-foreground">存栏构成</h3>
+          <span className="tag tag-muted">共 {total.toLocaleString()} 头</span>
+        </div>
       </div>
-    </div>
-  );
-}
-
-function DonutLegend({ data, total }: { data: DonutSeg[]; total: number }) {
-  return (
-    <div className="flex-1 min-w-[180px] flex flex-col justify-center gap-2">
-      {data.map((s) => {
-        const pct = ((s.count / total) * 100).toFixed(1);
-        return (
-          <div key={s.name} className="flex items-center gap-2.5">
-            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: s.color }} />
-            <span className="text-body-sm text-foreground flex-1 truncate">{s.name}</span>
-            <span className="text-body-sm text-text-secondary tabular-nums">{s.count.toLocaleString()}</span>
-            <span className="text-caption text-text-tertiary tabular-nums w-12 text-right">{pct}%</span>
+      <div className="px-6 pb-6 flex items-center gap-8 flex-wrap">
+        <div className="relative">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            {arcs.map((a, i) => (
+              <path key={i} d={a.d} fill={a.color} stroke="var(--bg-surface)" strokeWidth="1.5" />
+            ))}
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-caption text-text-tertiary">存栏总数</span>
+            <span className="text-section-title tabular-nums text-foreground">{total.toLocaleString()}</span>
+            <span className="text-caption text-text-tertiary">头</span>
           </div>
-        );
-      })}
-    </div>
-  );
-}
-
-const CattleStatsSection = ({ ref }: { ref: React.RefObject<HTMLDivElement | null> }) => {
-  const stockTotal = stockComposition.reduce((s, x) => s + x.count, 0);
-  const healthTotal = healthStatus.reduce((s, x) => s + x.count, 0);
-  const healthRate = ((healthStatus[0].count / healthTotal) * 100).toFixed(1);
-  const withdrawalTotal = withdrawal.reduce((s, x) => s + x.count, 0);
-  const inWithdrawal = withdrawalTotal - withdrawal[0].count;
-  const withdrawalPct = ((inWithdrawal / withdrawalTotal) * 100).toFixed(1);
-  const ageTotal = ageDistribution.reduce((s, x) => s + x.count, 0);
-  const ageMax = Math.max(...ageDistribution.map((a) => a.count));
-
-  return (
-    <div ref={ref} className="scroll-mt-20 space-y-4">
-      <div className="flex items-center gap-2">
-        <Beef className="h-4 w-4 text-primary" strokeWidth={1.75} />
-        <h3 className="text-card-title text-foreground">牛只信息统计</h3>
-        <span className="tag tag-muted">共 {stockTotal.toLocaleString()} 头</span>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* 健康状态 */}
-        <Card className="border-border bg-card">
-          <div className="p-6 pb-3 flex items-start justify-between">
-            <div>
-              <h4 className="text-card-title text-foreground">牛群健康状态概览</h4>
-              <p className="text-caption text-text-tertiary mt-1">实时同步 · 共 {healthTotal.toLocaleString()} 头</p>
-            </div>
-            <span className="inline-flex items-center gap-1 text-caption tabular-nums" style={{ color: "var(--state-success)" }}>
-              <TrendingUp className="h-3 w-3" /> 0.4%
-            </span>
-          </div>
-          <div className="px-6 pb-6 pt-2 border-t border-border flex items-center gap-6 flex-wrap">
-            <Donut data={healthStatus} centerLabel="健康率" centerValue={`${healthRate}%`} />
-            <DonutLegend data={healthStatus} total={healthTotal} />
-          </div>
-        </Card>
-
-        {/* 休药期 */}
-        <Card className="border-border bg-card">
-          <div className="p-6 pb-3 flex items-start justify-between">
-            <div>
-              <h4 className="text-card-title text-foreground">休药期分布</h4>
-              <p className="text-caption text-text-tertiary mt-1">用于产奶/出栏合规追踪</p>
-            </div>
-            <span className="tag tag-warning">休药 {inWithdrawal.toLocaleString()} 头</span>
-          </div>
-          <div className="px-6 pb-6 pt-2 border-t border-border flex items-center gap-6 flex-wrap">
-            <Donut
-              data={withdrawal}
-              centerLabel="休药占比"
-              centerValue={`${withdrawalPct}%`}
-              centerSub={`${inWithdrawal} / ${withdrawalTotal}`}
-            />
-            <DonutLegend data={withdrawal} total={withdrawalTotal} />
-          </div>
-        </Card>
-
-        {/* 年龄分布 */}
-        <Card className="border-border bg-card">
-          <div className="p-6 pb-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-card-title text-foreground">年龄分布</h4>
-                <p className="text-caption text-text-tertiary mt-1">按生长阶段统计存栏结构</p>
+        </div>
+        <div className="flex-1 min-w-[240px] grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {stockComposition.map((s) => {
+            const pct = ((s.count / total) * 100).toFixed(1);
+            return (
+              <div key={s.name} className="flex items-center gap-2 py-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: s.color }} />
+                <span className="text-body-sm text-foreground flex-1">{s.name}</span>
+                <span className="text-body-sm text-text-secondary tabular-nums">{s.count.toLocaleString()}</span>
+                <span className="text-caption text-text-tertiary tabular-nums w-12 text-right">{pct}%</span>
               </div>
-              <span className="text-caption text-text-tertiary tabular-nums">共 {ageTotal.toLocaleString()} 头</span>
-            </div>
-          </div>
-          <div className="px-6 pb-6 pt-3 border-t border-border space-y-3">
-            {ageDistribution.map((a) => {
-              const pct = ((a.count / ageTotal) * 100).toFixed(1);
-              const barPct = (a.count / ageMax) * 100;
-              return (
-                <div key={a.name}>
-                  <div className="flex items-center justify-between text-body-sm mb-1">
-                    <span className="text-foreground">{a.name}</span>
-                    <span className="text-text-secondary tabular-nums">
-                      {a.count.toLocaleString()} 头 · {pct}%
-                    </span>
-                  </div>
-                  <div className="h-2 rounded-full bg-surface-subtle overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: a.color }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-
-        {/* 存栏构成 by 牛舍 */}
-        <Card className="border-border bg-card">
-          <div className="p-6 pb-3 flex items-start justify-between">
-            <div>
-              <h4 className="text-card-title text-foreground">存栏构成（牛舍）</h4>
-              <p className="text-caption text-text-tertiary mt-1">各单元分布占比</p>
-            </div>
-            <span className="text-caption text-text-tertiary tabular-nums">{stockComposition.length} 个单元</span>
-          </div>
-          <div className="px-6 pb-6 pt-2 border-t border-border flex items-center gap-6 flex-wrap">
-            <Donut data={stockComposition} centerLabel="存栏总数" centerValue={stockTotal.toLocaleString()} centerSub="头" />
-            <DonutLegend data={stockComposition} total={stockTotal} />
-          </div>
-        </Card>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
@@ -643,7 +504,7 @@ function HomePage() {
 
 
         {/* 存栏构成 */}
-        <CattleStatsSection ref={stockRef} />
+        <StockCompositionCard ref={stockRef} />
 
         {/* 仓库物资概览 */}
         <Card ref={warehouseRef} className="border-border bg-card scroll-mt-20">
