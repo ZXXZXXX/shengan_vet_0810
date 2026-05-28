@@ -38,10 +38,10 @@ export const Route = createFileRoute("/m/health/$id")({
   component: TaskDetailPage,
 });
 
-type StatusKey = "待出诊" | "进行中" | "已完成" | "已驳回" | "已终止";
+type StatusKey = "待诊断" | "进行中" | "已完成" | "已驳回" | "已终止";
 
 const statusMap: Record<StatusKey, { tag: string; icon: typeof PlayCircle; color: string }> = {
-  待出诊: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
+  待诊断: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
   进行中: { tag: "tag tag-success", icon: PlayCircle, color: "text-[#2F7A3A]" },
   已驳回: { tag: "tag tag-danger", icon: AlertTriangle, color: "text-[var(--state-danger)]" },
   已完成: { tag: "tag tag-muted", icon: CheckCircle2, color: "text-text-secondary" },
@@ -84,12 +84,12 @@ function TaskDetailPage() {
     barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : "3 号牛舍",
     target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : "3 只",
     type: isLoss ? "物资损耗" : isHoof ? "修蹄" : "疾病治疗",
-    status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待出诊") as StatusKey,
+    status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断") as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
     needPickup: !isLoss,
     pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
-    flow: "陈晓东 上报 → 王医生 出诊 → 李雨晴 执行",
+    flow: "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
   };
   const s = statusMap[o.status];
   const Icon = s.icon;
@@ -124,7 +124,7 @@ function TaskDetailPage() {
           <div className="px-4 flex gap-1">
             {[
               { key: "report", label: "上报记录" },
-              { key: "review", label: "出诊记录" },
+              { key: "review", label: "诊断记录" },
               { key: "execute", label: "执行记录" },
             ].map((t) => (
               <button
@@ -153,7 +153,7 @@ function TaskDetailPage() {
       {/* === 3. 底部操作区 === */}
       {(() => {
         const isResponder = canVisit(role) || canExecute(role);
-        const showRespond = isResponder && o.status === "待出诊";
+        const showRespond = isResponder && o.status === "待诊断";
         const showExec = canExecute(role) && o.status === "进行中";
         if (!showRespond && !showExec) return null;
         return (
@@ -312,23 +312,23 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
   );
 }
 
-// === 出诊记录 ===
+// === 诊断记录 ===
 function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
-  if (status === "待出诊") {
+  if (status === "待诊断") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
         <ClipboardList className="h-6 w-6 text-text-tertiary mx-auto mb-2" />
-        <div className="text-body-sm text-text-tertiary">尚未出诊</div>
+        <div className="text-body-sm text-text-tertiary">尚未诊断</div>
       </div>
     );
   }
   return (
     <>
-      <Section title="出诊基础信息">
-        <Field label="出诊人" value={<PersonChip name="王医生" />} />
-        <Field label="出诊时间" value="2026-05-20 10:15" />
+      <Section title="诊断基础信息">
+        <Field label="诊断人" value={<PersonChip name="王医生" />} />
+        <Field label="诊断时间" value="2026-05-20 10:15" />
         <Field
-          label="出诊结果"
+          label="诊断结果"
           value={
             status === "已驳回" ? (
               <span className="tag tag-danger">已驳回</span>
@@ -453,7 +453,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
-  if (status === "待出诊" || status === "已驳回") {
+  if (status === "待诊断" || status === "已驳回") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
         <PlayCircle className="h-6 w-6 text-text-tertiary mx-auto mb-2" />
