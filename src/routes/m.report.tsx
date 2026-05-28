@@ -263,46 +263,60 @@ function ReportPage() {
     setTimeout(() => navigate({ to: "/m/health" }), 900);
   };
 
+  // 同牛舍其他牛只（mock 数据）
+  const sameBarnSuggestions = useMemo(
+    () => ["A2382", "A2383", "A2384", "A2390", "A2401"].filter((x) => !targets.includes(x)),
+    [targets]
+  );
+  const primaryTarget = search.target ?? targets[0];
+
   return (
-    <MobileShell
-      title="现场上报"
-      back
-      hideTabBar
-      right={
-        <Link
-          to="/m/drafts"
-          className="h-7 px-2 rounded-md text-caption text-text-secondary hover:text-primary inline-flex items-center"
-        >
-          草稿箱
-        </Link>
-      }
-    >
+    <MobileShell title="现场上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-3">
         {kind === "health" ? (
           <>
 
-            {/* 处理对象 */}
-            <Section title="执行对象" required hint="可一次性选择多只牛或多个牛舍">
+            {/* 上报对象 */}
+            <Section title="上报对象" required hint="可一次性选择多只牛或多个牛舍">
               {lockTarget ? (
                 <div className="space-y-2">
-                  <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
-                    <span className="font-mono">#{targets[0] ?? search.target}</span>
-                    <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
-                      <Lock className="h-3 w-3" /> 已锁定
-                    </span>
-                  </div>
-                  {lockBarn && (
-                    <div className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground">
-                      <span className="text-body-sm text-text-tertiary mr-2">牛舍</span>
-                      <span>{barn}</span>
-                      <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
-                        <Lock className="h-3 w-3" /> 已锁定
-                      </span>
+                  {targets.map((t) => {
+                    const isPrimary = t === primaryTarget;
+                    const label = isPrimary && lockBarn ? `#${t} · ${barn}` : `#${t}`;
+                    return (
+                      <div
+                        key={t}
+                        className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground"
+                      >
+                        <span className="font-mono truncate">{label}</span>
+                        {!isPrimary && (
+                          <button
+                            onClick={() => removeTarget(t)}
+                            className="ml-auto h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {lockBarn && sameBarnSuggestions.length > 0 && (
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-1.5">追加上报同牛舍其他牛只</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {sameBarnSuggestions.map((s) => (
+                          <button
+                            key={s}
+                            onClick={() => addTarget(s)}
+                            className="h-7 px-2.5 rounded-full bg-card border border-border text-caption text-text-secondary inline-flex items-center gap-1"
+                          >
+                            <Plus className="h-3 w-3" />
+                            {s}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
-                  <div className="text-caption text-text-tertiary">
-                    由扫码进入,信息已自动填写,不可编辑
-                  </div>
                 </div>
               ) : (
                 <div className="space-y-2">
