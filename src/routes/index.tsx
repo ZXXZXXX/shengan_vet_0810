@@ -643,7 +643,7 @@ function HomePage() {
 
 
         {/* 存栏构成 */}
-        <StockCompositionCard ref={stockRef} />
+        <CattleStatsSection ref={stockRef} />
 
         {/* 仓库物资概览 */}
         <Card ref={warehouseRef} className="border-border bg-card scroll-mt-20">
