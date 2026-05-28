@@ -523,7 +523,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 
-export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
+export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = false }: { status: StatusKey; pickupCode: string | null; tags: string[]; isPlatformImmune?: boolean }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
@@ -534,7 +534,9 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
     );
   }
   void tags;
-  const days = getExecSummary(status);
+  const days: DaySummary[] = isPlatformImmune
+    ? [{ day: 1, date: "2026-05-28 09:00", action: "按批次注射口蹄疫疫苗，扫码核验药品", pickup: true, phase: "active" }]
+    : getExecSummary(status);
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
