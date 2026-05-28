@@ -439,9 +439,34 @@ function DiagnosePage() {
           <Send className="h-4 w-4" /> 提交诊断
         </button>
       </div>
+
+      {/* 终止工单确认 */}
+      <AlertDialog open={confirmTerminate} onOpenChange={setConfirmTerminate}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认终止工单？</AlertDialogTitle>
+            <AlertDialogDescription>
+              确认牛只一切正常、无需用药后，将直接终止该工单，不再进入执行环节。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                toast.success("工单已终止");
+                navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+              }}
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+            >
+              确认终止
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MobileShell>
   );
 }
+
 
 function Section({
   title,
