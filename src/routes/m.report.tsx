@@ -298,13 +298,14 @@ function ReportPage() {
   };
 
   const canSubmit =
-    targets.length > 0 &&
+    (barnMode ? barns.length > 0 : targets.length > 0) &&
     workType !== "" &&
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
     handlerId !== "" &&
     desc.trim().length > 0 &&
     evidenceReady;
+
 
 
   const submit = () => {
