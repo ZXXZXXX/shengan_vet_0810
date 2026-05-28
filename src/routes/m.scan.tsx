@@ -22,7 +22,7 @@ function ScanPage() {
       {/* 顶部 */}
       <header className="h-12 px-4 flex items-center gap-2 text-white/90">
         <button
-          onClick={() => navigate({ to: "/m" })}
+          onClick={() => window.history.back()}
           className="-ml-1 h-8 w-8 inline-flex items-center justify-center rounded-full bg-white/10"
         >
           <X className="h-4 w-4" />
