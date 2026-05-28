@@ -557,7 +557,7 @@ function ChecklistDay({
     dayStatusText = "进行中";
   } else {
     dayStatusTag = "bg-surface-subtle text-text-tertiary";
-    dayStatusText = "待执行";
+    dayStatusText = "未开始";
   }
 
   const update = (id: string, patch: Partial<ExecItem>) =>
