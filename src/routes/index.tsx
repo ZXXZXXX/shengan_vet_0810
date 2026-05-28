@@ -24,9 +24,13 @@ import {
   TrendingDown,
   Minus,
   ChevronRight,
-  CheckCircle2,
-  Activity,
+  Bell,
+  UserPlus,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  PackageMinus,
 } from "lucide-react";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -42,7 +46,7 @@ const kpis = [
   { label: "存栏总数", value: "2,486", unit: "头", trend: "up", delta: "+1.2%", icon: Beef, anchor: "stock" as const },
   { label: "仓库物资", value: "186", unit: "类", trend: "down", delta: "-3 类临期", icon: Package, anchor: "warehouse" as const },
   { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope, anchor: "alerts" as const },
-  { label: "待办工作", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "todos" as const },
+  { label: "待办工作", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "alerts" as const },
 ];
 
 type RequestType = "health" | "loss";
@@ -91,20 +95,30 @@ const requestTypeMeta: Record<RequestType, { label: string; tone: string }> = {
   loss: { label: "药品损耗", tone: "danger" },
 };
 
-const todos = [
-  { title: "复查疑似乳房炎处理结果", owner: "李兽医", due: "今天 18:00" },
-  { title: "审批 8 月饲料采购单", owner: "我", due: "明天" },
-  { title: "确认新员工权限范围", owner: "我", due: "明天" },
-  { title: "巡检 2 号牛舍水质", owner: "王巡检", due: "本周" },
+type NotifTone = "info" | "success" | "warning" | "danger";
+type Notif = {
+  icon: typeof Bell;
+  title: string;
+  desc: string;
+  time: string;
+  tone: NotifTone;
+};
+
+const notifications: Notif[] = [
+  { icon: UserPlus, title: "3 位新账户已加入", desc: "李巡检、周饲养、王兽医已完成入职审核", time: "10 分钟前", tone: "info" },
+  { icon: ArrowDownToLine, title: "仓库入库登记", desc: "驱虫剂 120 盒、采血管 500 支已入库", time: "32 分钟前", tone: "success" },
+  { icon: ArrowUpFromLine, title: "仓库出库登记", desc: "3 号牛舍领用抗生素 8 支、生理盐水 4 瓶", time: "1 小时前", tone: "info" },
+  { icon: PackageMinus, title: "库存变更提醒", desc: "疫苗 A 余量降至安全库存以下（剩 12 支）", time: "今日 09:40", tone: "warning" },
+  { icon: PackageMinus, title: "库存盘点差异", desc: "5 号牛舍消毒液盘点差异 -2 桶，待复核", time: "今日 08:55", tone: "danger" },
 ];
 
-const units = [
-  { name: "1 号牛舍", count: 320, status: "正常", tone: "success" },
-  { name: "2 号牛舍", count: 312, status: "正常", tone: "success" },
-  { name: "3 号牛舍", count: 298, status: "关注", tone: "warning" },
-  { name: "犊牛舍 A", count: 84, status: "正常", tone: "success" },
-  { name: "隔离区", count: 6, status: "处理中", tone: "danger" },
-];
+const notifToneColor: Record<NotifTone, string> = {
+  info: "var(--effect-ai-cyan)",
+  success: "var(--state-success)",
+  warning: "var(--state-warning)",
+  danger: "var(--state-danger)",
+};
+
 
 function TrendIcon({ trend }: { trend: string }) {
   if (trend === "up") return <TrendingUp className="h-3 w-3 text-[var(--state-success)]" />;
@@ -203,16 +217,15 @@ function HomePage() {
   const stockRef = useRef<HTMLDivElement | null>(null);
   const warehouseRef = useRef<HTMLDivElement | null>(null);
   const alertsRef = useRef<HTMLDivElement | null>(null);
-  const todosRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollToAnchor = (anchor?: "stock" | "warehouse" | "alerts" | "todos") => {
+  const scrollToAnchor = (anchor?: "stock" | "warehouse" | "alerts") => {
     const el =
       anchor === "stock" ? stockRef.current :
       anchor === "warehouse" ? warehouseRef.current :
-      anchor === "alerts" ? alertsRef.current :
-      anchor === "todos" ? todosRef.current : null;
+      anchor === "alerts" ? alertsRef.current : null;
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
 
   const handleApprove = () => {
     if (!activeRequest) return;
@@ -361,14 +374,14 @@ function HomePage() {
           })}
         </div>
 
-        {/* Alerts + Units */}
+        {/* 待办工作 + 消息提醒 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card ref={alertsRef} className="lg:col-span-2 border-border bg-card scroll-mt-20">
             <div className="flex items-center justify-between p-6 pb-4">
               <div className="flex items-center gap-2">
                 <Inbox className="h-4 w-4 text-primary" strokeWidth={1.75} />
-                <h3 className="text-card-title text-foreground">待处理申请</h3>
-                <span className="tag tag-muted">{pendingRequests.length} 条</span>
+                <h3 className="text-card-title text-foreground">待办工作</h3>
+                <span className="tag tag-muted">{pendingRequests.length} 条待审工单</span>
               </div>
               <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
                 查看全部 <ChevronRight className="h-3 w-3 ml-0.5" />
@@ -401,28 +414,39 @@ function HomePage() {
           </Card>
 
           <Card className="border-border bg-card">
-            <div className="p-6 pb-4 flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary" strokeWidth={1.75} />
-              <h3 className="text-card-title text-foreground">生产单元状态</h3>
+            <div className="p-6 pb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4 text-primary" strokeWidth={1.75} />
+                <h3 className="text-card-title text-foreground">消息提醒</h3>
+                <span className="tag tag-muted">{notifications.length} 条</span>
+              </div>
+              <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
+                全部 <ChevronRight className="h-3 w-3 ml-0.5" />
+              </Button>
             </div>
-            <div className="px-6 pb-6 space-y-2.5">
-              {units.map((u) => (
-                <div key={u.name} className="flex items-center gap-3 py-1.5">
-                  <span className={`h-1.5 w-1.5 rounded-full ${
-                    u.tone === "success" ? "bg-[var(--state-success)]" :
-                    u.tone === "warning" ? "bg-[var(--state-warning)]" :
-                    "bg-[var(--state-danger)]"
-                  }`} />
-                  <span className="flex-1 text-body text-foreground">{u.name}</span>
-                  <span className="text-body-sm text-text-tertiary tabular-nums">{u.count} 头</span>
-                  <span className={`tag tag-${u.tone === "success" ? "success" : u.tone === "warning" ? "warning" : "danger"}`}>
-                    {u.status}
-                  </span>
-                </div>
-              ))}
+            <div className="divide-y divide-border">
+              {notifications.map((n, i) => {
+                const c = notifToneColor[n.tone];
+                return (
+                  <div key={i} className="flex items-start gap-3 px-6 py-3">
+                    <div
+                      className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                      style={{ background: `color-mix(in oklab, ${c} 14%, transparent)`, color: c }}
+                    >
+                      <n.icon className="h-4 w-4" strokeWidth={1.75} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-body-sm text-foreground truncate">{n.title}</p>
+                      <p className="text-caption text-text-tertiary truncate mt-0.5">{n.desc}</p>
+                    </div>
+                    <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap mt-0.5">{n.time}</span>
+                  </div>
+                );
+              })}
             </div>
           </Card>
         </div>
+
 
         {/* 存栏构成 */}
         <StockCompositionCard ref={stockRef} />
@@ -472,34 +496,6 @@ function HomePage() {
                 </div>
               );
             })}
-          </div>
-        </Card>
-
-        {/* Todos */}
-        <Card ref={todosRef} className="border-border bg-card scroll-mt-20">
-          <div className="p-6 pb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ClipboardList className="h-4 w-4 text-primary" strokeWidth={1.75} />
-              <h3 className="text-card-title text-foreground">待办事项</h3>
-              <span className="tag tag-muted">{todos.length} 项</span>
-            </div>
-            <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
-              查看全部 <ChevronRight className="h-3 w-3 ml-0.5" />
-            </Button>
-          </div>
-          <div className="divide-y divide-border">
-            {todos.map((t, i) => (
-              <div key={i} className="flex items-center gap-3 px-6 py-3.5">
-                <div className="h-7 w-7 rounded-md border border-border bg-card flex items-center justify-center">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-text-tertiary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-body text-foreground">{t.title}</p>
-                  <p className="text-caption text-text-tertiary mt-0.5">负责人 · {t.owner}</p>
-                </div>
-                <span className="tag tag-outline tabular-nums">{t.due}</span>
-              </div>
-            ))}
           </div>
         </Card>
       </main>
