@@ -54,38 +54,38 @@ const diseaseLibrary: Disease[] = [
     name: "支气管肺炎",
     symptoms: ["高烧", "咳嗽", "鼻液", "呼吸急促", "食欲下降"],
     rx: [
-      { id: "r1", name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", days: "3 天" },
-      { id: "r2", name: "头孢噻呋钠", spec: "1g / 支", use: "肌肉注射", dose: "1g / 次", days: "3 天" },
+      { id: "r1", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "3" },
+      { id: "r2", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1g", days: "3" },
     ],
   },
   {
     name: "急性乳房炎",
     symptoms: ["高烧", "乳房红肿", "产奶骤降", "食欲下降"],
     rx: [
-      { id: "r1", name: "头孢噻呋钠", spec: "1g / 支", use: "乳房灌注", dose: "1g / 次", days: "3 天" },
-      { id: "r2", name: "氟尼辛葡甲胺", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", days: "2 天" },
+      { id: "r1", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1g", days: "3" },
+      { id: "r2", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "2" },
     ],
   },
   {
     name: "瘤胃酸中毒",
     symptoms: ["食欲下降", "反刍减少", "腹泻", "脱水"],
     rx: [
-      { id: "r1", name: "碳酸氢钠", spec: "500g", use: "口服", dose: "200g / 次", days: "2 天" },
-      { id: "r2", name: "复合维生素 B", spec: "100ml", use: "肌肉注射", dose: "10ml / 次", days: "3 天" },
+      { id: "r1", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200g", days: "2" },
+      { id: "r2", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10ml", days: "3" },
     ],
   },
   {
     name: "酮病",
     symptoms: ["食欲下降", "产奶骤降", "精神萎靡"],
     rx: [
-      { id: "r1", name: "50% 葡萄糖", spec: "500ml", use: "静脉注射", dose: "500ml / 次", days: "2 天" },
+      { id: "r1", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500ml", days: "2" },
     ],
   },
   {
     name: "犊牛腹泻症",
     symptoms: ["腹泻", "脱水", "精神萎靡"],
     rx: [
-      { id: "r1", name: "口服补液盐", spec: "100g / 包", use: "口服", dose: "1 包 / 次", days: "3 天" },
+      { id: "r1", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1 包", days: "3" },
     ],
   },
 ];
@@ -93,11 +93,38 @@ const diseaseLibrary: Disease[] = [
 type Prescription = {
   id: string;
   name: string;
+  maker: string;
   spec: string;
   use: string;
   dose: string;
   days: string;
 };
+
+// 药品库（用于编辑弹层中搜索匹配）
+type DrugItem = { name: string; maker: string; spec: string };
+const drugLibrary: DrugItem[] = [
+  { name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶" },
+  { name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支" },
+  { name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋" },
+  { name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶" },
+  { name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶" },
+  { name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包" },
+  { name: "青霉素钠", maker: "华北制药", spec: "80 万 IU / 支" },
+  { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶" },
+  { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支" },
+  { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支" },
+];
+
+// 使用方式枚举
+const useMethods = [
+  "肌肉注射",
+  "静脉注射",
+  "皮下注射",
+  "乳房灌注",
+  "口服",
+  "灌服",
+  "外用涂抹",
+];
 
 const executorPool = ["李雨晴", "张师傅", "王师傅", "刘师傅", "赵师傅", "陈师傅"];
 
@@ -410,10 +437,13 @@ function DiagnosePage() {
                       <div className="min-w-0">
                         <div className="text-body text-foreground inline-flex items-center gap-1.5">
                           <Pill className="h-3.5 w-3.5 text-primary" />
-                          {r.name}
+                          {r.name || "未填写药品"}
+                          {r.maker && (
+                            <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                          )}
                         </div>
                         <div className="text-caption text-text-tertiary mt-1">
-                          {r.spec} · {r.use} · {r.dose} · {r.days}
+                          {[r.spec, r.use, r.dose && `${r.dose} / 次`, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
                         </div>
                       </div>
                       <div className="flex items-center gap-0.5 shrink-0">
@@ -443,14 +473,15 @@ function DiagnosePage() {
                 setEditingRx({
                   id: nextId,
                   name: "",
+                  maker: "",
                   spec: "",
                   use: "肌肉注射",
                   dose: "",
-                  days: "3 天",
+                  days: "3",
                 });
                 setRxList((prev) => [
                   ...prev,
-                  { id: nextId, name: "", spec: "", use: "肌肉注射", dose: "", days: "3 天" },
+                  { id: nextId, name: "", maker: "", spec: "", use: "肌肉注射", dose: "", days: "3" },
                 ]);
               }}
               className="mt-2 w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
@@ -600,33 +631,12 @@ function DiagnosePage() {
 
       {/* 编辑处方弹层 */}
       {editingRx && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setEditingRx(null)}>
-          <div
-            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-3"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-section-title text-foreground">编辑药品</div>
-            <Input label="药品名称" value={editingRx.name} onChange={(v) => setEditingRx({ ...editingRx, name: v })} />
-            <Input label="规格" value={editingRx.spec} onChange={(v) => setEditingRx({ ...editingRx, spec: v })} />
-            <Input label="给药方式" value={editingRx.use} onChange={(v) => setEditingRx({ ...editingRx, use: v })} />
-            <Input label="单次剂量" value={editingRx.dose} onChange={(v) => setEditingRx({ ...editingRx, dose: v })} />
-            <Input label="疗程" value={editingRx.days} onChange={(v) => setEditingRx({ ...editingRx, days: v })} />
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => setEditingRx(null)}
-                className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
-              >
-                取消
-              </button>
-              <button
-                onClick={saveRxEdit}
-                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
-              >
-                保存
-              </button>
-            </div>
-          </div>
-        </div>
+        <DrugEditor
+          value={editingRx}
+          onChange={setEditingRx}
+          onCancel={() => setEditingRx(null)}
+          onSave={saveRxEdit}
+        />
       )}
 
       {/* 底部提交按钮 */}
@@ -886,5 +896,151 @@ function Input({
         className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
       />
     </label>
+  );
+}
+
+function DrugEditor({
+  value,
+  onChange,
+  onCancel,
+  onSave,
+}: {
+  value: Prescription;
+  onChange: (v: Prescription) => void;
+  onCancel: () => void;
+  onSave: () => void;
+}) {
+  const [query, setQuery] = useState(value.name);
+  const [focused, setFocused] = useState(false);
+  const matches = useMemo(() => {
+    const kw = query.trim().toLowerCase();
+    if (!kw) return drugLibrary.slice(0, 6);
+    return drugLibrary.filter((d) => d.name.toLowerCase().includes(kw)).slice(0, 6);
+  }, [query]);
+  const matched = drugLibrary.find((d) => d.name === value.name);
+
+  const pickDrug = (d: DrugItem) => {
+    onChange({ ...value, name: d.name, maker: d.maker, spec: d.spec });
+    setQuery(d.name);
+    setFocused(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={onCancel}>
+      <div
+        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-4 max-h-[85vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="text-section-title text-foreground">编辑药品</div>
+
+        {/* 药品搜索 */}
+        <div className="space-y-1">
+          <span className="text-caption text-text-tertiary">药品名称</span>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+            <input
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setFocused(true);
+                onChange({ ...value, name: e.target.value, maker: "", spec: "" });
+              }}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setTimeout(() => setFocused(false), 150)}
+              placeholder="输入药品名称搜索"
+              className="h-10 w-full pl-9 pr-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+            />
+            {focused && matches.length > 0 && (
+              <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-60 overflow-auto">
+                {matches.map((d) => (
+                  <button
+                    key={d.name}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => pickDrug(d)}
+                    className="w-full text-left px-3 py-2.5 hover:bg-surface-subtle border-b border-border last:border-b-0"
+                  >
+                    <div className="text-body-sm text-foreground">{d.name}</div>
+                    <div className="text-caption text-text-tertiary mt-0.5">
+                      {d.maker} · {d.spec}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {matched && (
+            <div className="rounded-md bg-brand-subtle border border-primary/15 px-2.5 py-1.5 text-caption text-text-secondary mt-1.5">
+              <span className="text-primary font-medium">{matched.maker}</span>
+              <span className="mx-1.5 text-text-tertiary">·</span>
+              规格 {matched.spec}
+            </div>
+          )}
+        </div>
+
+        {/* 使用方式 */}
+        <div className="space-y-1.5">
+          <span className="text-caption text-text-tertiary">使用方式</span>
+          <div className="flex flex-wrap gap-1.5">
+            {useMethods.map((m) => {
+              const active = value.use === m;
+              return (
+                <button
+                  key={m}
+                  onClick={() => onChange({ ...value, use: m })}
+                  className={`h-8 px-3 rounded-full text-caption transition-colors ${
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-white border border-border text-text-secondary"
+                  }`}
+                >
+                  {m}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 用量 / 用药天数 */}
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block space-y-1">
+            <span className="text-caption text-text-tertiary">单次用量</span>
+            <input
+              value={value.dose}
+              onChange={(e) => onChange({ ...value, dose: e.target.value })}
+              placeholder="如 2ml"
+              className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block space-y-1">
+            <span className="text-caption text-text-tertiary">用药天数</span>
+            <div className="relative">
+              <input
+                value={value.days}
+                onChange={(e) => onChange({ ...value, days: e.target.value })}
+                inputMode="numeric"
+                placeholder="如 3"
+                className="h-10 w-full pl-3 pr-9 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">天</span>
+            </div>
+          </label>
+        </div>
+
+        <div className="flex gap-2 pt-2">
+          <button
+            onClick={onCancel}
+            className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
+          >
+            取消
+          </button>
+          <button
+            onClick={onSave}
+            className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+          >
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
