@@ -73,19 +73,10 @@ function PickupDetailPage() {
           <div className="mt-2 text-section-title text-foreground">
             {pickup.title}
           </div>
-        </div>
-
-        {/* 领取信息 */}
-        <div className="rounded-xl bg-card border border-border divide-y divide-border">
-          <Row
-            label="领取地点"
-            value={
-              <span className="text-body text-foreground inline-flex items-center gap-1.5">
-                <Warehouse className="h-3.5 w-3.5 text-primary" />
-                {pickup.warehouse}
-              </span>
-            }
-          />
+          <div className="mt-2 inline-flex items-center gap-1.5 text-body text-foreground">
+            <Warehouse className="h-3.5 w-3.5 text-primary" />
+            {pickup.warehouse}
+          </div>
         </div>
 
         {/* 物品清单 */}
@@ -194,11 +185,3 @@ function PickupDetailPage() {
   );
 }
 
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between px-4 py-3 gap-3">
-      <span className="text-caption text-text-tertiary shrink-0">{label}</span>
-      <div className="min-w-0 text-right">{value}</div>
-    </div>
-  );
-}
