@@ -184,10 +184,11 @@ function DiagnosePage() {
 
   const pickDisease = (d: (typeof rankedDiseases)[number]) => {
     setDisease(d.name);
+    setDiseaseQuery(d.name);
     setRxList(d.rx.map((r) => ({ ...r })));
-    setShowDiseasePicker(false);
-    setDiseaseQuery("");
+    setDiseaseFocused(false);
   };
+
 
   const removeRx = (rxId: string) =>
     setRxList((prev) => prev.filter((r) => r.id !== rxId));
