@@ -594,7 +594,8 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
             </div>
             <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
               <PackagePlus className="h-3.5 w-3.5" />
-              <span>领物</span>
+              <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full text-caption font-medium ${pickupDone ? "tag-success" : "tag-muted"}`}>
+
               <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full ${pickupDone ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
                 {!needPickup ? "无需" : pickupDone ? "已领" : "未领"}
               </span>
