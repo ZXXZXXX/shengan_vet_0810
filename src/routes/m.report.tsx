@@ -1104,11 +1104,7 @@ function Section({
           {title}
           {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
         </div>
-        {hint ? (
-          <div className="text-caption text-text-tertiary text-right">{hint}</div>
-        ) : !required ? (
-          <div className="text-caption text-text-tertiary">可选</div>
-        ) : null}
+        {hint && <div className="text-caption text-text-tertiary text-right">{hint}</div>}
       </div>
       {children}
     </div>
