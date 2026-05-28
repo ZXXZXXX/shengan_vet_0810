@@ -65,6 +65,7 @@ const statusById: Record<string, StatusKey> = {
   "LS-1029": "待诊断",
   "LS-1011": "已完成",
   "YM-2042": "已终止",
+  "YM-2501": "进行中",
 };
 
 function TaskDetailPage() {
