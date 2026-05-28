@@ -75,6 +75,7 @@ function MHomePage() {
   const claimed = useClaimed();
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
   const farm = useFarm();
+  const [reportOpen, setReportOpen] = useState(false);
 
 
 
@@ -111,13 +112,13 @@ function MHomePage() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <Link
-                to="/m/report"
+              <button
+                onClick={() => setReportOpen(true)}
                 className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.35)] active:scale-[.97] transition-transform"
               >
                 <Camera className="h-4 w-4" />
                 现场上报
-              </Link>
+              </button>
               <Link
                 to="/m/notifications"
                 className="relative h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/20"
