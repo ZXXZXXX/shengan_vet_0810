@@ -617,7 +617,6 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
             <Field label="终止原因" value="牛只死亡，停止后续治疗" />
             <Field label="是否转栏" value="否" />
             <Field label="终止时间" value="2026-05-13 18:24" />
-            <Field label="操作人" value={<PersonChip name="李雨晴" />} />
           </div>
         </div>
       ) : isPlatformIssued ? null : (
