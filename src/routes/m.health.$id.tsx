@@ -856,7 +856,7 @@ function ChecklistDay({
                   to="/m/pickup/$id"
                   params={{ id: pickupCode }}
                   className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
-                  style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
+                  style={{ backgroundColor: "#FFF5DF", color: "#F9B855" }}
                 >
                   <span className="inline-flex items-center gap-1.5">
                     <PackagePlus className="h-3.5 w-3.5" />
