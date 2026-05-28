@@ -374,14 +374,14 @@ function HomePage() {
           })}
         </div>
 
-        {/* Alerts + Units */}
+        {/* 待办工作 + 消息提醒 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card ref={alertsRef} className="lg:col-span-2 border-border bg-card scroll-mt-20">
             <div className="flex items-center justify-between p-6 pb-4">
               <div className="flex items-center gap-2">
                 <Inbox className="h-4 w-4 text-primary" strokeWidth={1.75} />
-                <h3 className="text-card-title text-foreground">待处理申请</h3>
-                <span className="tag tag-muted">{pendingRequests.length} 条</span>
+                <h3 className="text-card-title text-foreground">待办工作</h3>
+                <span className="tag tag-muted">{pendingRequests.length} 条待审工单</span>
               </div>
               <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
                 查看全部 <ChevronRight className="h-3 w-3 ml-0.5" />
@@ -414,28 +414,39 @@ function HomePage() {
           </Card>
 
           <Card className="border-border bg-card">
-            <div className="p-6 pb-4 flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary" strokeWidth={1.75} />
-              <h3 className="text-card-title text-foreground">生产单元状态</h3>
+            <div className="p-6 pb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4 text-primary" strokeWidth={1.75} />
+                <h3 className="text-card-title text-foreground">消息提醒</h3>
+                <span className="tag tag-muted">{notifications.length} 条</span>
+              </div>
+              <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
+                全部 <ChevronRight className="h-3 w-3 ml-0.5" />
+              </Button>
             </div>
-            <div className="px-6 pb-6 space-y-2.5">
-              {units.map((u) => (
-                <div key={u.name} className="flex items-center gap-3 py-1.5">
-                  <span className={`h-1.5 w-1.5 rounded-full ${
-                    u.tone === "success" ? "bg-[var(--state-success)]" :
-                    u.tone === "warning" ? "bg-[var(--state-warning)]" :
-                    "bg-[var(--state-danger)]"
-                  }`} />
-                  <span className="flex-1 text-body text-foreground">{u.name}</span>
-                  <span className="text-body-sm text-text-tertiary tabular-nums">{u.count} 头</span>
-                  <span className={`tag tag-${u.tone === "success" ? "success" : u.tone === "warning" ? "warning" : "danger"}`}>
-                    {u.status}
-                  </span>
-                </div>
-              ))}
+            <div className="divide-y divide-border">
+              {notifications.map((n, i) => {
+                const c = notifToneColor[n.tone];
+                return (
+                  <div key={i} className="flex items-start gap-3 px-6 py-3">
+                    <div
+                      className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                      style={{ background: `color-mix(in oklab, ${c} 14%, transparent)`, color: c }}
+                    >
+                      <n.icon className="h-4 w-4" strokeWidth={1.75} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-body-sm text-foreground truncate">{n.title}</p>
+                      <p className="text-caption text-text-tertiary truncate mt-0.5">{n.desc}</p>
+                    </div>
+                    <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap mt-0.5">{n.time}</span>
+                  </div>
+                );
+              })}
             </div>
           </Card>
         </div>
+
 
         {/* 存栏构成 */}
         <StockCompositionCard ref={stockRef} />
