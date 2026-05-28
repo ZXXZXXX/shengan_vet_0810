@@ -172,7 +172,7 @@ function DiseaseKBPage() {
                 className={`flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
               >
                 <Checkbox checked={checked} onCheckedChange={() => toggleOne(d.id)} aria-label={`选择 ${d.name}`} />
-                <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 flex-1 min-w-0">
                   <div className="font-mono text-body text-foreground truncate">{d.id}</div>
                   <div className="flex items-center gap-1.5 text-body text-foreground truncate">
                     <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -181,11 +181,11 @@ function DiseaseKBPage() {
                   <div className="text-body-sm text-text-secondary truncate">{d.cat}</div>
                   <div className="truncate"><span className={`tag ${severityTagClass(d.severity)}`}>{d.severity}</span></div>
                   <div className="flex items-center gap-1 min-w-0 overflow-hidden">
-                    {d.symptoms.slice(0, 2).map((s) => (
+                    {d.symptoms.slice(0, 3).map((s) => (
                       <span key={s} className="tag tag-muted whitespace-nowrap">{s}</span>
                     ))}
-                    {d.symptoms.length > 2 && (
-                      <span className="tag tag-muted whitespace-nowrap">+{d.symptoms.length - 2}</span>
+                    {d.symptoms.length > 3 && (
+                      <span className="tag tag-muted whitespace-nowrap">+{d.symptoms.length - 3}</span>
                     )}
                   </div>
                 </div>
