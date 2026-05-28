@@ -32,7 +32,7 @@ function ExecuteRecordPage() {
   return (
     <MobileShell
       title="执行记录"
-      back={{ to: "/m/health/$id" as string }}
+      back={{ to: `/m/health/${id}` }}
       hideTabBar
     >
       <div className="pb-28">
