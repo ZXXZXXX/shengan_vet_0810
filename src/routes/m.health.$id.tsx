@@ -52,6 +52,19 @@ function cleanName(n: string) {
   return n.replace(/^(内部|外部)·/, "");
 }
 
+// 按工单号映射状态，确保每种状态都有详情页可看
+const statusById: Record<string, StatusKey> = {
+  "WO-2381": "待诊断",
+  "WO-2298": "进行中",
+  "WO-2401": "进行中",
+  "WO-2324": "已终止",
+  "HF-0702": "进行中",
+  "HF-0688": "已完成",
+  "LS-1029": "待诊断",
+  "LS-1011": "已完成",
+  "YM-2042": "已终止",
+};
+
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
