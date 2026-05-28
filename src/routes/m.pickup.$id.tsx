@@ -88,9 +88,6 @@ function PickupDetailPage() {
           <div className="mt-2 text-section-title text-foreground">
             {pickup.title}
           </div>
-          <div className="text-caption text-text-tertiary mt-1">
-            关联 {pickup.source} · {pickup.barn} · 诊断通过 {pickup.approvedAt}
-          </div>
         </div>
 
         {/* 领取信息 */}
@@ -101,19 +98,6 @@ function PickupDetailPage() {
               <span className="text-body text-foreground inline-flex items-center gap-1.5">
                 <Warehouse className="h-3.5 w-3.5 text-primary" />
                 {pickup.warehouse}
-              </span>
-            }
-          />
-          <Row
-            label="诊断人"
-            value={<span className="text-body text-foreground">{pickup.visitor}</span>}
-          />
-          <Row
-            label="使用牛舍"
-            value={
-              <span className="text-body text-foreground inline-flex items-center gap-1">
-                <Home className="h-3.5 w-3.5 text-text-tertiary" />
-                {pickup.barn}
               </span>
             }
           />
