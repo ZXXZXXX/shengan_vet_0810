@@ -229,7 +229,7 @@ function TaskListPage() {
                   if (o.status === "待诊断") {
                     metaTimeLabel = "上报";
                     metaTime = o.reportedAt ?? o.createdAt;
-                    metaPersonLabel = "上报人";
+                    metaPersonLabel = "上报";
                     metaPersonName = o.proposer ?? "—";
                   } else if (o.status === "进行中" || o.status === "已完成") {
                     metaTimeLabel = "执行";
