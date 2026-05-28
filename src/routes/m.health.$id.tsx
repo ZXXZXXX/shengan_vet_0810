@@ -52,12 +52,29 @@ function cleanName(n: string) {
   return n.replace(/^(内部|外部)·/, "");
 }
 
+// 按工单号映射状态，确保每种状态都有详情页可看
+const statusById: Record<string, StatusKey> = {
+  "WO-2381": "待诊断",
+  "WO-2298": "进行中",
+  "WO-2401": "进行中",
+  "WO-2324": "已终止",
+  "HF-0702": "进行中",
+  "HF-0688": "已完成",
+  "LS-1029": "待诊断",
+  "LS-1011": "已完成",
+  "YM-2042": "已终止",
+};
+
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
-  
+
   const search = Route.useSearch();
-  const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? "report");
+  // 根据工单状态判断默认 tab：有诊断记录优先展示诊断记录，否则展示上报记录
+  const hasDiagnosis = (statusById[id] ??
+    (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断")) !== "待诊断";
+  const defaultTab: "report" | "review" | "execute" = hasDiagnosis ? "review" : "report";
+  const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   
 
   
@@ -78,18 +95,6 @@ function TaskDetailPage() {
   const earTag = singleEar ?? (isHoof ? "#A2150" : "#A2381");
   const execTags: string[] = isSingle ? [earTag] : ["#A2381", "#A2382", "#A2383"];
 
-  // 按工单号映射状态，确保每种状态都有详情页可看
-  const statusById: Record<string, StatusKey> = {
-    "WO-2381": "待诊断",
-    "WO-2298": "进行中",
-    "WO-2401": "进行中",
-    "WO-2324": "已终止",
-    "HF-0702": "进行中",
-    "HF-0688": "已完成",
-    "LS-1029": "待诊断",
-    "LS-1011": "已完成",
-    "YM-2042": "已终止",
-  };
   const fallbackStatus: StatusKey =
     role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断";
   const o = {
