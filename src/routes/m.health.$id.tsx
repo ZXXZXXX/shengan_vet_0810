@@ -435,19 +435,6 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
             </ul>
           </Section>
 
-          <Section title="物资 / 药品需求">
-            <ul className="divide-y divide-border -mx-1">
-              {[
-                { name: "一次性注射器", qty: "8 支" },
-                { name: "消毒酒精棉", qty: "1 盒" },
-              ].map((m) => (
-                <li key={m.name} className="px-1 py-2 flex items-center justify-between">
-                  <span className="text-body-sm text-foreground">{m.name}</span>
-                  <span className="font-mono text-body-sm text-text-secondary">× {m.qty}</span>
-                </li>
-              ))}
-            </ul>
-          </Section>
 
           <Section title="执行安排">
             <Field label="计划开始时间" value="今日 13:00 起，共 3 天" />
