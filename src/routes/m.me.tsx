@@ -43,7 +43,7 @@ function MePage() {
           src={meHero}
           alt=""
           aria-hidden
-          className="absolute inset-0 w-full h-full object-cover scale-125 origin-top blur-sm"
+          className="absolute inset-0 w-full h-full object-cover scale-125 origin-top blur-[2px]"
         />
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative flex items-center gap-3">
