@@ -92,10 +92,8 @@ function TaskDetailPage() {
   const s = statusMap[o.status];
   const Icon = s.icon;
 
-  // 进行中 的编辑/查看 + 是否曾填写过
-  const [editing, setEditing] = useState(false);
-  const [hasFilled, setHasFilled] = useState(false);
-  const [recordComplete, setRecordComplete] = useState(false);
+
+
 
 
 
