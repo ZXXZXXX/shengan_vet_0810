@@ -38,21 +38,21 @@ function MePage() {
   return (
     <MobileShell>
       {/* 个人信息卡 */}
-      <header className="px-4 pt-12 pb-6 text-primary-foreground relative overflow-hidden">
+      <header className="px-4 pt-12 pb-6 text-primary-foreground relative overflow-hidden [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]">
         <img
           src={meHero}
           alt=""
           aria-hidden
           className="absolute inset-0 w-full h-full object-cover scale-125 origin-top blur-[1px]"
         />
-        <div className="absolute inset-0 bg-black/5" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-black/45" />
         <div className="relative flex items-center gap-3">
-          <div className="h-14 w-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-section-title">
+          <div className="h-14 w-14 rounded-full bg-white/25 backdrop-blur-md border border-white/30 flex items-center justify-center text-section-title">
             李
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-section-title">李师傅</div>
-            <div className="text-caption opacity-85 mt-0.5">
+            <div className="text-caption opacity-95 mt-0.5">
               工号 W-1024 · 1 号牧场 · {roleLabel[role]}
             </div>
           </div>
@@ -63,6 +63,7 @@ function MePage() {
           <Brief label="上报事件" value="8" />
         </div>
       </header>
+
 
       <section className="px-4 mt-5 space-y-2">
         <MenuItem icon={ClipboardList} label="草稿箱" to="/m/drafts" />
@@ -181,12 +182,13 @@ function MePage() {
 
 function Brief({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-white/15 backdrop-blur border border-white/20 py-2">
+    <div className="rounded-lg bg-white/20 backdrop-blur-md border border-white/30 py-2">
       <div className="text-section-title tabular-nums">{value}</div>
-      <div className="text-caption opacity-85 mt-0.5">{label}</div>
+      <div className="text-caption opacity-95 mt-0.5">{label}</div>
     </div>
   );
 }
+
 
 function MenuItem({
   icon: Icon,
