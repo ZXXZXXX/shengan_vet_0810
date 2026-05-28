@@ -326,7 +326,7 @@ function ReportPage() {
                   return (
                     <div
                       key={t}
-                      className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground gap-2"
+                      className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
                     >
                       {isEditing ? (
                         <>
@@ -343,10 +343,10 @@ function ReportPage() {
                                 setEditingTarget(null);
                               }
                             }}
-                            className="font-mono flex-1 min-w-0 h-8 px-2 rounded-md bg-card border border-border text-body"
+                            className="font-mono flex-1 min-w-0 h-9 px-2 rounded-md bg-surface-subtle border border-border text-body"
                             onClick={(e) => e.stopPropagation()}
                           />
-                          <span className="font-mono text-text-tertiary shrink-0">· {tBarn}</span>
+                          <span className="font-mono text-text-tertiary shrink-0 text-caption">· {tBarn}</span>
                         </>
                       ) : (
                         <>
@@ -359,10 +359,10 @@ function ReportPage() {
                               setEditingTarget(t);
                               setEditingValue(t);
                             }}
-                            className="ml-auto h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
                             aria-label="编辑"
                           >
-                            <Pencil className="h-3.5 w-3.5" />
+                            <Pencil className="h-4 w-4" />
                           </button>
                           {canDelete && (
                             <button
@@ -370,7 +370,7 @@ function ReportPage() {
                                 e.stopPropagation();
                                 removeTarget(t);
                               }}
-                              className="h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                              className="h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
                               aria-label="删除"
                             >
                               <X className="h-4 w-4" />
