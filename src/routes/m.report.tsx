@@ -163,8 +163,8 @@ function ReportPage() {
     const t = v.trim();
     if (!t) return;
     setTargets((prev) => (prev.includes(t) ? prev : [...prev, t]));
-    setTarget("");
   };
+
   const removeTarget = (t: string) => setTargets((prev) => prev.filter((x) => x !== t));
   const updateTarget = (oldVal: string, newVal: string) => {
     const v = newVal.trim();
