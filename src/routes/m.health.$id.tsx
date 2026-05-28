@@ -546,7 +546,7 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
               <div className="flex items-center gap-2">
                 <DayDot active={isActive} done={isDone} />
                 <span className={`text-body font-medium ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
-                  执行记录 {String(d.day).padStart(2, "0")}
+                  执行任务{String(d.day).padStart(2, "0")}
                 </span>
                 <span className="text-caption text-text-tertiary font-mono" suppressHydrationWarning>
                   {isDone ? d.date : d.date.split(' ')[0]}
