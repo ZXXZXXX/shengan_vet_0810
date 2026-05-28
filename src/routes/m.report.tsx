@@ -847,7 +847,7 @@ function EvidenceSection({
         {voiceSecs === null ? (
           <button
             onClick={onVoiceToggle}
-            className={`w-full h-12 rounded-lg border inline-flex items-center justify-center gap-2 text-body-sm transition-colors ${
+            className={`w-full h-12 rounded-xl border inline-flex items-center justify-center gap-2 text-body-sm active:scale-[0.98] transition-all ${
               recording
                 ? "border-[var(--state-danger)]/40 bg-[var(--state-danger)]/8 text-[var(--state-danger)]"
                 : "border-border bg-card text-text-secondary"
@@ -857,7 +857,7 @@ function EvidenceSection({
             {recording ? "录音中…点击结束" : "按下开始录音"}
           </button>
         ) : (
-          <div className="flex items-center gap-2 h-12 px-3 rounded-lg bg-brand-subtle border border-primary/20">
+          <div className="flex items-center gap-2 h-12 px-3 rounded-xl bg-brand-subtle border border-primary/20">
             <Mic className="h-4 w-4 text-primary" />
             <div className="flex-1 h-1.5 rounded-full bg-primary/20 overflow-hidden">
               <div className="h-full w-1/2 bg-primary" />
@@ -865,7 +865,7 @@ function EvidenceSection({
             <span className="text-caption text-primary font-mono">00:{String(voiceSecs).padStart(2, "0")}</span>
             <button
               onClick={() => setVoiceSecs(null)}
-              className="h-7 w-7 rounded-full bg-card border border-border inline-flex items-center justify-center text-text-tertiary"
+              className="h-8 w-8 rounded-full bg-card border border-border inline-flex items-center justify-center text-text-tertiary active:bg-surface-subtle"
             >
               <X className="h-3.5 w-3.5" />
             </button>
