@@ -544,7 +544,7 @@ export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = fa
 
       <Section title="基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-        <Field label="开始执行时间" value="2026-05-12 13:08" />
+        <Field label="开始执行时间" value={isPlatformImmune ? "2026-05-28 09:00" : "2026-05-12 13:08"} />
       </Section>
 
 
