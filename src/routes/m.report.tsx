@@ -472,9 +472,9 @@ function ReportPage() {
                     <button
                       key={t}
                       onClick={() => setWorkType(t)}
-                      className={`h-10 rounded-lg border text-body-sm transition-colors ${
+                      className={`h-12 rounded-xl border text-body-sm font-medium transition-all active:scale-[0.97] ${
                         active
-                          ? "bg-brand-subtle border-primary/30 text-primary"
+                          ? "bg-primary border-primary text-primary-foreground shadow-[0_2px_8px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
                           : "bg-card border-border text-text-secondary"
                       }`}
                     >
