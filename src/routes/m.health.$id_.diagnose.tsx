@@ -898,3 +898,149 @@ function Input({
     </label>
   );
 }
+
+function DrugEditor({
+  value,
+  onChange,
+  onCancel,
+  onSave,
+}: {
+  value: Prescription;
+  onChange: (v: Prescription) => void;
+  onCancel: () => void;
+  onSave: () => void;
+}) {
+  const [query, setQuery] = useState(value.name);
+  const [focused, setFocused] = useState(false);
+  const matches = useMemo(() => {
+    const kw = query.trim().toLowerCase();
+    if (!kw) return drugLibrary.slice(0, 6);
+    return drugLibrary.filter((d) => d.name.toLowerCase().includes(kw)).slice(0, 6);
+  }, [query]);
+  const matched = drugLibrary.find((d) => d.name === value.name);
+
+  const pickDrug = (d: DrugItem) => {
+    onChange({ ...value, name: d.name, maker: d.maker, spec: d.spec });
+    setQuery(d.name);
+    setFocused(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={onCancel}>
+      <div
+        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-4 max-h-[85vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="text-section-title text-foreground">编辑药品</div>
+
+        {/* 药品搜索 */}
+        <div className="space-y-1">
+          <span className="text-caption text-text-tertiary">药品名称</span>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+            <input
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setFocused(true);
+                onChange({ ...value, name: e.target.value, maker: "", spec: "" });
+              }}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setTimeout(() => setFocused(false), 150)}
+              placeholder="输入药品名称搜索"
+              className="h-10 w-full pl-9 pr-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+            />
+            {focused && matches.length > 0 && (
+              <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-60 overflow-auto">
+                {matches.map((d) => (
+                  <button
+                    key={d.name}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => pickDrug(d)}
+                    className="w-full text-left px-3 py-2.5 hover:bg-surface-subtle border-b border-border last:border-b-0"
+                  >
+                    <div className="text-body-sm text-foreground">{d.name}</div>
+                    <div className="text-caption text-text-tertiary mt-0.5">
+                      {d.maker} · {d.spec}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {matched && (
+            <div className="rounded-md bg-brand-subtle border border-primary/15 px-2.5 py-1.5 text-caption text-text-secondary mt-1.5">
+              <span className="text-primary font-medium">{matched.maker}</span>
+              <span className="mx-1.5 text-text-tertiary">·</span>
+              规格 {matched.spec}
+            </div>
+          )}
+        </div>
+
+        {/* 使用方式 */}
+        <div className="space-y-1.5">
+          <span className="text-caption text-text-tertiary">使用方式</span>
+          <div className="flex flex-wrap gap-1.5">
+            {useMethods.map((m) => {
+              const active = value.use === m;
+              return (
+                <button
+                  key={m}
+                  onClick={() => onChange({ ...value, use: m })}
+                  className={`h-8 px-3 rounded-full text-caption transition-colors ${
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-white border border-border text-text-secondary"
+                  }`}
+                >
+                  {m}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 用量 / 用药天数 */}
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block space-y-1">
+            <span className="text-caption text-text-tertiary">单次用量</span>
+            <input
+              value={value.dose}
+              onChange={(e) => onChange({ ...value, dose: e.target.value })}
+              placeholder="如 2ml"
+              className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block space-y-1">
+            <span className="text-caption text-text-tertiary">用药天数</span>
+            <div className="relative">
+              <input
+                value={value.days}
+                onChange={(e) => onChange({ ...value, days: e.target.value })}
+                inputMode="numeric"
+                placeholder="如 3"
+                className="h-10 w-full pl-3 pr-9 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">天</span>
+            </div>
+          </label>
+        </div>
+
+        <div className="flex gap-2 pt-2">
+          <button
+            onClick={onCancel}
+            className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
+          >
+            取消
+          </button>
+          <button
+            onClick={onSave}
+            className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+          >
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
