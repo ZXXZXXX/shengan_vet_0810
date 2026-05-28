@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/m/health/$id_/diagnose")({
-  head: () => ({ meta: [{ title: "诊断填写 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "诊断记录 · 奇点智牧" }] }),
   component: DiagnosePage,
 });
 
@@ -215,7 +215,7 @@ function DiagnosePage() {
   };
 
   return (
-    <MobileShell title="开始诊断" back={{ to: `/m/health/${id}` }} hideTabBar>
+    <MobileShell title="诊断记录" back={{ to: `/m/health/${id}` }} hideTabBar>
       <div className="pb-28">
         {/* 工单号 */}
         <div className="px-4 pt-3 pb-2 flex items-center justify-between gap-2">
@@ -230,6 +230,13 @@ function DiagnosePage() {
           </button>
         </div>
 
+        {/* 顶部提示 */}
+        <div className="px-4 pt-2 pb-1">
+          <div className="flex items-center gap-1.5 text-caption text-primary">
+            <Sparkles className="h-3 w-3" />
+            已自动将上报信息填写至下方，方便编辑更改
+          </div>
+        </div>
 
         <div className="px-4 space-y-3">
           {/* === 症状 === */}
