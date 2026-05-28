@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, canApprove } from "@/lib/mobile-role";
+import { useRole, canVisit } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
 type HealthSearch = { tab?: string };
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/m/health/")({
 
 
 
-type Status = "待审批" | "进行中" | "已驳回" | "已完成" | "已终止";
+type Status = "待出诊" | "进行中" | "已驳回" | "已完成" | "已终止";
 type Kind = "健康" | "损耗" | "修蹄" | "领取";
 
 type Scope = { type: "single"; ear: string } | { type: "batch"; label: string };
@@ -42,7 +42,7 @@ type Task = {
   event: string;
   proposer: string;
   who: string;
-  approver?: string;
+  visitor?: string;
   status: Status;
   createdAt: string;
   reportedAt?: string;
@@ -67,22 +67,22 @@ type Task = {
 };
 
 const tasks: Task[] = [
-  { id: "WO-2381", target: "#A2381", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "持续高烧 2 小时", proposer: "陈晓东", who: "李雨晴", approver: "王主管", status: "待审批", createdAt: "今日 10:30", reportedAt: "今日 09:20", scope: { type: "single", ear: "#A2381" }, conclusion: "疑似乳房炎急性发作", desc: "持续高烧 2 小时，需复查体温与乳样", needPickup: true, symptoms: ["体温升高", "采食下降", "反刍减少"] },
-  { id: "WO-2298", target: "#A2298", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", approver: "王主管", status: "进行中", createdAt: "今日 14:20", executedAt: "今日 14:20", scope: { type: "single", ear: "#A2298" }, conclusion: "乳房炎复诊", desc: "复查体温与乳样", needPickup: true, symptoms: ["乳房红肿"] },
-  { id: "WO-2401", target: "犊牛舍 A", barn: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", approver: "王主管", status: "进行中", createdAt: "明日 09:00", executedAt: "明日 09:00", scope: { type: "batch", label: "32 头" }, conclusion: "口蹄疫加强免疫", desc: "犊牛批次 B-07", needPickup: true, symptoms: [] },
-  { id: "WO-2324", target: "#A2324", barn: "5 号牛舍", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", approver: "王主管", status: "已驳回", createdAt: "前日 18:42", reviewedAt: "前日 19:10", scope: { type: "single", ear: "#A2324" }, conclusion: "采食量持续下降", desc: "精神沉郁，需复查", needPickup: false, symptoms: ["采食下降", "精神沉郁"] },
-  { id: "HF-0702", target: "#A2150", barn: "2 号牛舍", kind: "修蹄", type: "修蹄", event: "右后蹄趾间皮炎", proposer: "周凯", who: "外部·张师傅", approver: "王主管", status: "进行中", createdAt: "今日 07:30", executedAt: "今日 07:30", scope: { type: "single", ear: "#A2150" }, conclusion: "右后蹄趾间皮炎", desc: "削蹄并贴蹄垫", needPickup: false },
-  { id: "HF-0688", target: "#A2270", barn: "3 号牛舍", kind: "修蹄", type: "修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", approver: "王主管", status: "已完成", createdAt: "5 月 12 日", executedAt: "5 月 12 日 10:00", scope: { type: "single", ear: "#A2270" }, conclusion: "蹄底溃疡", desc: "削蹄并贴蹄垫", needPickup: false },
-  { id: "LS-1029", target: "口蹄疫疫苗 A 型", barn: "2 号牛舍", kind: "损耗", type: "物资损耗", event: "冷链断电", proposer: "孙明", who: "李雨晴", approver: "王主管", status: "待审批", createdAt: "今日 08:20", reportedAt: "今日 08:20", scope: { type: "batch", label: "8 支" }, conclusion: "冷链断电导致失效", needPickup: false, item: "口蹄疫疫苗 A 型", qty: "8 支", reapply: { name: "口蹄疫疫苗 A 型", qty: "8 支" } },
-  { id: "LS-1011", target: "营养补充剂", barn: "5 号牛舍", kind: "损耗", type: "物资损耗", event: "外箱破损渗漏", proposer: "孙明", who: "孙明", approver: "王主管", status: "已完成", createdAt: "5 月 15 日", executedAt: "5 月 15 日 14:00", scope: { type: "batch", label: "2 罐" }, conclusion: "外箱破损渗漏", needPickup: false, item: "营养补充剂", qty: "2 罐" },
+  { id: "WO-2381", target: "#A2381", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "持续高烧 2 小时", proposer: "陈晓东", who: "李雨晴", visitor: "王主管", status: "待出诊", createdAt: "今日 10:30", reportedAt: "今日 09:20", scope: { type: "single", ear: "#A2381" }, conclusion: "疑似乳房炎急性发作", desc: "持续高烧 2 小时，需复查体温与乳样", needPickup: true, symptoms: ["体温升高", "采食下降", "反刍减少"] },
+  { id: "WO-2298", target: "#A2298", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", visitor: "王主管", status: "进行中", createdAt: "今日 14:20", executedAt: "今日 14:20", scope: { type: "single", ear: "#A2298" }, conclusion: "乳房炎复诊", desc: "复查体温与乳样", needPickup: true, symptoms: ["乳房红肿"] },
+  { id: "WO-2401", target: "犊牛舍 A", barn: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", visitor: "王主管", status: "进行中", createdAt: "明日 09:00", executedAt: "明日 09:00", scope: { type: "batch", label: "32 头" }, conclusion: "口蹄疫加强免疫", desc: "犊牛批次 B-07", needPickup: true, symptoms: [] },
+  { id: "WO-2324", target: "#A2324", barn: "5 号牛舍", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", visitor: "王主管", status: "已驳回", createdAt: "前日 18:42", reviewedAt: "前日 19:10", scope: { type: "single", ear: "#A2324" }, conclusion: "采食量持续下降", desc: "精神沉郁，需复查", needPickup: false, symptoms: ["采食下降", "精神沉郁"] },
+  { id: "HF-0702", target: "#A2150", barn: "2 号牛舍", kind: "修蹄", type: "修蹄", event: "右后蹄趾间皮炎", proposer: "周凯", who: "外部·张师傅", visitor: "王主管", status: "进行中", createdAt: "今日 07:30", executedAt: "今日 07:30", scope: { type: "single", ear: "#A2150" }, conclusion: "右后蹄趾间皮炎", desc: "削蹄并贴蹄垫", needPickup: false },
+  { id: "HF-0688", target: "#A2270", barn: "3 号牛舍", kind: "修蹄", type: "修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", visitor: "王主管", status: "已完成", createdAt: "5 月 12 日", executedAt: "5 月 12 日 10:00", scope: { type: "single", ear: "#A2270" }, conclusion: "蹄底溃疡", desc: "削蹄并贴蹄垫", needPickup: false },
+  { id: "LS-1029", target: "口蹄疫疫苗 A 型", barn: "2 号牛舍", kind: "损耗", type: "物资损耗", event: "冷链断电", proposer: "孙明", who: "李雨晴", visitor: "王主管", status: "待出诊", createdAt: "今日 08:20", reportedAt: "今日 08:20", scope: { type: "batch", label: "8 支" }, conclusion: "冷链断电导致失效", needPickup: false, item: "口蹄疫疫苗 A 型", qty: "8 支", reapply: { name: "口蹄疫疫苗 A 型", qty: "8 支" } },
+  { id: "LS-1011", target: "营养补充剂", barn: "5 号牛舍", kind: "损耗", type: "物资损耗", event: "外箱破损渗漏", proposer: "孙明", who: "孙明", visitor: "王主管", status: "已完成", createdAt: "5 月 15 日", executedAt: "5 月 15 日 14:00", scope: { type: "batch", label: "2 罐" }, conclusion: "外箱破损渗漏", needPickup: false, item: "营养补充剂", qty: "2 罐" },
   // 已终止示例
-  { id: "YM-2042", target: "24 头牛", barn: "1 号牛舍", kind: "健康", type: "疫苗", event: "疫苗补免", proposer: "周凯", who: "周凯", approver: "王医生", status: "已终止", createdAt: "今日 10:20", terminatedAt: "今日 10:20", scope: { type: "batch", label: "24 头牛" }, conclusion: "疫苗补免", desc: "计划调整，暂不执行", needPickup: false },
+  { id: "YM-2042", target: "24 头牛", barn: "1 号牛舍", kind: "健康", type: "疫苗", event: "疫苗补免", proposer: "周凯", who: "周凯", visitor: "王医生", status: "已终止", createdAt: "今日 10:20", terminatedAt: "今日 10:20", scope: { type: "batch", label: "24 头牛" }, conclusion: "疫苗补免", desc: "计划调整，暂不执行", needPickup: false },
 ];
 
 // 进行中对执行人即“执行中”
 const tabs: { key: Status | "全部" | "执行中"; label: string }[] = [
   { key: "全部", label: "全部" },
-  { key: "待审批", label: "待审批" },
+  { key: "待出诊", label: "待出诊" },
   { key: "执行中", label: "执行中" },
   { key: "已完成", label: "已完成" },
   { key: "已驳回", label: "已驳回" },
@@ -91,7 +91,7 @@ const tabs: { key: Status | "全部" | "执行中"; label: string }[] = [
 
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
-  待审批: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
+  待出诊: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
   进行中: { tag: "tag tag-success", icon: PlayCircle, color: "text-[#2F7A3A]" },
   已驳回: { tag: "tag tag-danger", icon: AlertTriangle, color: "text-[var(--state-danger)]" },
   已完成: { tag: "tag tag-muted", icon: CheckCircle2, color: "text-text-secondary" },
@@ -114,13 +114,13 @@ function cleanName(name: string) {
 
 function TaskListPage() {
   const role = useRole();
-  const isApprover = canApprove(role);
+  const isVisitor = canVisit(role);
   const claimed = useClaimed();
   const search = Route.useSearch();
   const initialTab: (typeof tabs)[number]["key"] = search.tab === "执行中"
     ? "执行中"
-    : isApprover
-      ? "待审批"
+    : isVisitor
+      ? "待出诊"
       : "全部";
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(initialTab);
   const [q, setQ] = useState("");
@@ -222,40 +222,40 @@ function TaskListPage() {
                   const Icon = s.icon;
                   const KIcon = kindIcon[o.kind];
                   const isPickup = o.kind === "领取";
-                  const canApproveThis = isApprover && o.status === "待审批";
-                  const canExecuteThis = !isApprover && o.status === "进行中";
+                  const canVisitThis = isVisitor && o.status === "待出诊";
+                  const canExecuteThis = !isVisitor && o.status === "进行中";
 
                   // 统一 Footer 元信息：左侧时间·人员
                   let metaTimeLabel = "";
                   let metaTime = "";
                   let metaPersonLabel = "";
                   let metaPersonName = "";
-                  if (o.status === "待审批") {
+                  if (o.status === "待出诊") {
                     metaTimeLabel = "上报";
                     metaTime = o.reportedAt ?? o.createdAt;
-                    metaPersonLabel = "审核";
-                    metaPersonName = o.approver ?? "—";
+                    metaPersonLabel = "出诊";
+                    metaPersonName = o.visitor ?? "—";
                   } else if (o.status === "进行中" || o.status === "已完成") {
                     metaTimeLabel = "执行";
                     metaTime = o.executedAt ?? o.createdAt;
                     metaPersonLabel = "执行";
                     metaPersonName = o.who;
                   } else if (o.status === "已驳回") {
-                    metaTimeLabel = "审核";
+                    metaTimeLabel = "出诊";
                     metaTime = o.reviewedAt ?? o.createdAt;
-                    metaPersonLabel = "审核";
-                    metaPersonName = o.approver ?? "—";
+                    metaPersonLabel = "出诊";
+                    metaPersonName = o.visitor ?? "—";
                   } else if (o.status === "已终止") {
                     metaTimeLabel = "终止";
                     metaTime = o.terminatedAt ?? o.createdAt;
-                    metaPersonLabel = "审核";
-                    metaPersonName = o.approver ?? "—";
+                    metaPersonLabel = "出诊";
+                    metaPersonName = o.visitor ?? "—";
                   }
 
                   const ctaText = isPickup
                     ? (o.status === "已完成" ? "查看清单" : "领取")
-                    : canApproveThis
-                      ? "前往 PC 审批"
+                    : canVisitThis
+                      ? "前往 PC 出诊"
                       : canExecuteThis
                         ? "执行"
                         : "查看";

@@ -122,9 +122,9 @@ function PickupListPage() {
                 <span className="mx-1.5">·</span>
                 <span className="inline-flex items-center gap-1">
                   <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
-                    {p.approver.charAt(0)}
+                    {p.visitor.charAt(0)}
                   </span>
-                  <span className="text-text-secondary">{p.approver}</span>
+                  <span className="text-text-secondary">{p.visitor}</span>
                 </span>
                 <span className="ml-auto inline-flex items-center gap-0.5 text-text-secondary">
                   详情 <ChevronRight className="h-3.5 w-3.5" />

@@ -49,8 +49,8 @@ export const roleGroup: Record<Role, "internal" | "external"> = {
   hoof_trimmer: "external",
 };
 
-// 权限：审批 vs 执行
-export function canApprove(r: Role) {
+// 权限：出诊 vs 执行
+export function canVisit(r: Role) {
   return r === "admin" || r === "vet" || r === "manager";
 }
 export function canExecute(r: Role) {

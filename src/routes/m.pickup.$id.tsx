@@ -90,7 +90,7 @@ function PickupDetailPage() {
             {pickup.title}
           </div>
           <div className="text-caption text-text-tertiary mt-1">
-            关联 {pickup.source} · {pickup.barn} · 审批通过 {pickup.approvedAt}
+            关联 {pickup.source} · {pickup.barn} · 出诊通过 {pickup.approvedAt}
           </div>
         </div>
 
@@ -106,8 +106,8 @@ function PickupDetailPage() {
             }
           />
           <Row
-            label="审批人"
-            value={<span className="text-body text-foreground">{pickup.approver}</span>}
+            label="出诊人"
+            value={<span className="text-body text-foreground">{pickup.visitor}</span>}
           />
           <Row
             label="使用牛舍"
