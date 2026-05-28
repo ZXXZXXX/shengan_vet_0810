@@ -425,29 +425,48 @@ function HomePage() {
             </div>
             <div className="divide-y divide-border">
               {pendingRequests.map((r) => {
-                const meta = requestTypeMeta[r.type];
+                const meta = workOrderTypeMeta[r.type];
+                const targetIcon = r.targetKind === "cattle" ? "牛只" : r.targetKind === "barn" ? "牛舍" : "批次";
                 return (
                   <button
                     key={r.id}
                     type="button"
                     onClick={() => setActiveRequest(r)}
-                    className="w-full text-left px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors"
+                    className="w-full text-left px-6 py-3.5 hover:bg-surface-subtle transition-colors"
                   >
-                    <span className={`tag ${r.type === "health" ? "tag-warning" : "tag-danger"}`}>
-                      {meta.label}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-body text-foreground truncate">{r.title}</p>
-                      <p className="text-caption text-text-tertiary truncate mt-0.5">
-                        提出者 · {r.applicant} · {r.desc}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <span className={`tag tag-${meta.tone}`}>{meta.label}</span>
+                      <span className="text-body text-foreground font-medium tabular-nums">{r.target}</span>
+                      <span className="text-caption text-text-tertiary">· {targetIcon}</span>
+                      <span className="ml-auto text-caption text-text-tertiary tabular-nums whitespace-nowrap">{r.time}</span>
                     </div>
-                    <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap">{r.time}</span>
+                    <div className="mt-1.5 flex items-center gap-2 text-caption text-text-tertiary">
+                      <span>工单 {r.id}</span>
+                      <span>·</span>
+                      <span>{r.applicantRole} {r.applicant}</span>
+                    </div>
+                    {r.symptoms.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {r.symptoms.map((s) => (
+                          <span
+                            key={s}
+                            className="inline-flex items-center h-[22px] px-2 rounded-md text-caption tabular-nums"
+                            style={{
+                              background: "color-mix(in oklab, var(--state-warning) 12%, transparent)",
+                              color: "#A35A00",
+                            }}
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </button>
                 );
               })}
             </div>
           </Card>
+
 
           <Card className="border-border bg-card">
             <div className="p-6 pb-4 flex items-center justify-between">
