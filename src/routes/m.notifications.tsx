@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import {
   CheckCheck,
   ClipboardList,
-  AlertTriangle,
   Settings2,
   Megaphone,
   Clock,
@@ -37,7 +36,6 @@ type Msg = {
   ts: number;
   link?: string;
   unread?: boolean;
-  urgent?: boolean;
 };
 
 const MSGS: Msg[] = [
@@ -51,7 +49,6 @@ const MSGS: Msg[] = [
     ts: 5,
     link: "/m/health/A2381/diagnose",
     unread: true,
-    urgent: true,
   },
   {
     id: "n2",
@@ -156,38 +153,20 @@ const META: Record<
   },
 };
 
-const TABS: { key: "all" | Cat; label: string }[] = [
-  { key: "all", label: "全部" },
-  { key: "system", label: "系统类" },
-  { key: "workorder", label: "工单类" },
-  { key: "platform", label: "平台类" },
-];
-
 function NotificationsPage() {
   const navigate = useNavigate();
   const [msgs, setMsgs] = useState<Msg[]>(MSGS);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [tab, setTab] = useState<"all" | Cat>("all");
 
   const filtered = useMemo(
-    () =>
-      [...msgs]
-        .filter((m) => tab === "all" || m.cat === tab)
-        .sort((a, b) => a.ts - b.ts),
-    [msgs, tab],
+    () => [...msgs].sort((a, b) => a.ts - b.ts),
+    [msgs],
   );
   const unreadCount = msgs.filter((m) => m.unread).length;
   const current = openId ? msgs.find((m) => m.id === openId) ?? null : null;
 
-  const countByCat = (c: Cat) =>
-    msgs.filter((m) => m.cat === c && m.unread).length;
-
   const markAllRead = () =>
-    setMsgs(
-      msgs.map((m) =>
-        tab === "all" || m.cat === tab ? { ...m, unread: false } : m,
-      ),
-    );
+    setMsgs(msgs.map((m) => ({ ...m, unread: false })));
   const markRead = (id: string) =>
     setMsgs((prev) =>
       prev.map((m) => (m.id === id ? { ...m, unread: false } : m)),
@@ -227,37 +206,6 @@ function NotificationsPage() {
             <CheckCheck className="h-3.5 w-3.5" />
             全部已读
           </button>
-        </div>
-        {/* 分类 Tabs */}
-        <div className="flex items-center gap-1 px-3 pb-2 overflow-x-auto">
-          {TABS.map((t) => {
-            const active = tab === t.key;
-            const n = t.key === "all" ? unreadCount : countByCat(t.key);
-            return (
-              <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
-                className={`h-7 px-3 inline-flex items-center gap-1 rounded-full text-caption whitespace-nowrap border transition-colors ${
-                  active
-                    ? "bg-brand-subtle border-primary/30 text-primary font-medium"
-                    : "bg-card border-border text-text-secondary"
-                }`}
-              >
-                {t.label}
-                {n > 0 && (
-                  <span
-                    className={`min-w-[16px] h-4 px-1 rounded-full text-[10px] inline-flex items-center justify-center ${
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-[var(--state-danger)]/15 text-[var(--state-danger)]"
-                    }`}
-                  >
-                    {n}
-                  </span>
-                )}
-              </button>
-            );
-          })}
         </div>
       </header>
 
@@ -313,12 +261,6 @@ function NotificationsPage() {
                       <Clock className="h-3 w-3" />
                       {m.time}
                     </span>
-                    {m.urgent && (
-                      <span className="inline-flex items-center gap-1 text-caption text-[var(--state-danger)]">
-                        <AlertTriangle className="h-3 w-3" />
-                        催办
-                      </span>
-                    )}
                     <span
                       className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
                     >
@@ -352,12 +294,6 @@ function NotificationsPage() {
                   >
                     {META[current.cat].label}
                   </span>
-                  {current.urgent && (
-                    <span className="inline-flex items-center gap-1 text-caption text-[var(--state-danger)]">
-                      <AlertTriangle className="h-3 w-3" />
-                      催办
-                    </span>
-                  )}
                 </div>
                 <DialogTitle className="text-left text-base mt-2">
                   {current.title}
@@ -391,4 +327,5 @@ function NotificationsPage() {
     </MobileShell>
   );
 }
+
 
