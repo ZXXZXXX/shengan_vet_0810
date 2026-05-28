@@ -904,17 +904,17 @@ function HandlerDropdown({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full h-12 px-3 rounded-lg border border-border bg-card flex items-center justify-between"
+        className="w-full h-12 px-3.5 rounded-xl border border-border bg-card flex items-center justify-between active:bg-surface-subtle transition-colors"
       >
         <span className="inline-flex items-center gap-1.5">
-          <UserCheck className={`h-3.5 w-3.5 ${selected ? "text-primary" : "text-text-tertiary"}`} />
+          <UserCheck className={`h-4 w-4 ${selected ? "text-primary" : "text-text-tertiary"}`} />
           {selected ? (
             <>
-              <span className="text-body-sm text-foreground">{selected.name}</span>
+              <span className="text-body text-foreground font-medium">{selected.name}</span>
               <span className="text-caption text-text-tertiary">· {selected.role}</span>
             </>
           ) : (
-            <span className="text-body-sm text-text-tertiary">点击选择处理人</span>
+            <span className="text-body text-text-tertiary">点击选择处理人</span>
           )}
         </span>
         <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform ${open ? "rotate-180" : ""}`} />
@@ -922,7 +922,7 @@ function HandlerDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute z-20 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg overflow-hidden">
+          <div className="absolute z-20 left-0 right-0 mt-1 rounded-xl border border-border bg-card shadow-lg overflow-hidden">
             {options.map((o) => {
               const active = o.id === value;
               return (
