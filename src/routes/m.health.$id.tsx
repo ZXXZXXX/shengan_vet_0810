@@ -503,11 +503,18 @@ export function ExecuteTab({ status, pickupCode, tags, readOnly = false }: { sta
 
       <div className="rounded-xl bg-card border border-border p-4">
         <div className="flex items-center justify-between mb-2">
-          <div className="text-body-sm font-medium text-foreground inline-flex items-center gap-1.5">
-            <CheckCircle2 className="h-4 w-4 text-primary" /> 复查 / 验收
+          <div className={`text-body-sm font-medium inline-flex items-center gap-1.5 ${status === "已完成" ? "text-foreground" : "text-text-tertiary"}`}>
+            {status === "已完成" ? (
+              <CheckCircle2 className="h-4 w-4 text-primary" />
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
+                <circle cx="8" cy="8" r="7" fill="none" stroke="var(--text-tertiary)" strokeWidth="1.2" strokeDasharray="2 2" />
+              </svg>
+            )}
+            复查 / 验收
           </div>
-          <span className={status === "已完成" ? "tag tag-success" : "tag tag-muted"}>
-            {status === "已完成" ? "已完成" : "待执行"}
+          <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${status === "已完成" ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
+            {status === "已完成" ? "已完成" : "未开始"}
           </span>
         </div>
         <div className="text-caption text-text-tertiary">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
