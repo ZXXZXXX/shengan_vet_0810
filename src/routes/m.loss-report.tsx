@@ -83,7 +83,7 @@ function LossReportPage() {
   };
 
   return (
-    <MobileShell title="损耗上报" back={{ to: "/m" }} hideTabBar>
+    <MobileShell title="损耗上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-5">
         {/* 损耗阶段 */}
         <Section title="损耗阶段" required>
