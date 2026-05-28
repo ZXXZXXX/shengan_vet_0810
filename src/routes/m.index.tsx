@@ -37,7 +37,7 @@ import { useRole, roleLabel, canViewOperations, canVisit, type Role } from "@/li
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { PackageCheck, QrCode } from "lucide-react";
-import grasslandHero from "@/assets/grassland-hero.jpg";
+import grasslandHero from "@/assets/grassland-hero.png";
 
 
 export const Route = createFileRoute("/m/")({
