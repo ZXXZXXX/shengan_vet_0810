@@ -224,7 +224,7 @@ const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; t
   { key: "待诊断", label: "待诊断", icon: ClipboardList, tone: "warning" },
   { key: "待响应", label: "待响应", icon: PlayCircle, tone: "pending" },
   { key: "执行中", label: "执行中", icon: PlayCircle, tone: "info" },
-  { key: "已驳回", label: "已驳回", icon: AlertTriangle, tone: "danger" },
+  
   { key: "已完成", label: "已完成", icon: CheckCircle2, tone: "success" },
   { key: "已终止", label: "已终止", icon: Ban, tone: "muted" },
 ];
