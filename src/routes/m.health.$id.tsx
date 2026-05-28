@@ -55,9 +55,13 @@ function cleanName(n: string) {
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
-  
+
   const search = Route.useSearch();
-  const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? "report");
+  // 根据工单状态判断默认 tab：有诊断记录优先展示诊断记录，否则展示上报记录
+  const hasDiagnosis = (statusById[id] ??
+    (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断")) !== "待诊断";
+  const defaultTab: "report" | "review" | "execute" = hasDiagnosis ? "review" : "report";
+  const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   
 
   
