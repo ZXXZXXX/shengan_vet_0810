@@ -501,16 +501,17 @@ function getExecSummary(status: StatusKey): DaySummary[] {
   const action = "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录";
   if (terminated) {
     return [
-      { day: 1, date: "05/12", action, pickup: true, phase: "done" },
-      { day: 2, date: "05/13", action, pickup: true, phase: "done" },
+      { day: 1, date: "2026-05-12 13:08", action, pickup: true, phase: "done" },
+      { day: 2, date: "2026-05-13 13:22", action, pickup: true, phase: "done" },
     ];
   }
   return [
-    { day: 1, date: "05/12", action, pickup: true, phase: "done" },
-    { day: 2, date: "05/13", action, pickup: true, phase: allDone ? "done" : "active" },
-    { day: 3, date: "05/14", action, pickup: true, phase: allDone ? "done" : "pending" },
+    { day: 1, date: "2026-05-12 13:08", action, pickup: true, phase: "done" },
+    { day: 2, date: "2026-05-13 13:22", action, pickup: true, phase: allDone ? "done" : "active" },
+    { day: 3, date: "2026-05-14 13:15", action, pickup: true, phase: allDone ? "done" : "pending" },
   ];
 }
+
 
 export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
   const [pickupOpen, setPickupOpen] = useState(false);
@@ -561,10 +562,11 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
               <div className="flex items-center gap-2">
                 <DayDot active={isActive} done={isDone} />
                 <span className={`text-body font-medium ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
-                  第 {d.day} 天
+                  执行记录 {String(d.day).padStart(2, "0")}
                 </span>
                 <span className="text-caption text-text-tertiary font-mono">{d.date}</span>
               </div>
+
               <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${statusClass}`}>
                 {statusLabel}
               </span>
