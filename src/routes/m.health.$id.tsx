@@ -13,13 +13,9 @@ import {
   FileText,
   PackagePlus,
   ChevronRight,
-  Clock,
-  User,
-  MapPin,
   Stethoscope,
   CheckSquare,
   Square,
-  
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canApprove, canExecute } from "@/lib/mobile-role";
