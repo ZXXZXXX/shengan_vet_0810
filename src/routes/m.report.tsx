@@ -4,7 +4,7 @@ import {
   Camera,
   ScanLine,
   X,
-  Lock,
+  
   Mic,
   Video,
   Search,
