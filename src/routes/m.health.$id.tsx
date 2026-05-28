@@ -800,13 +800,13 @@ function ChecklistDay({
   let dayStatusTag: string;
   let dayStatusText: string;
   if (isDone || dayDone) {
-    dayStatusTag = "tag tag-success";
+    dayStatusTag = "bg-brand-subtle text-primary";
     dayStatusText = "已完成";
   } else if (isActive) {
-    dayStatusTag = "tag tag-info";
+    dayStatusTag = "bg-brand-subtle text-primary";
     dayStatusText = "进行中";
   } else {
-    dayStatusTag = "tag tag-muted";
+    dayStatusTag = "bg-surface-subtle text-text-tertiary";
     dayStatusText = "未开始";
   }
 
@@ -832,7 +832,7 @@ function ChecklistDay({
           </span>
           <span className="text-caption text-text-tertiary font-mono">{date} 13:08</span>
         </div>
-        <span className={dayStatusTag}>
+        <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${dayStatusTag}`}>
           {dayStatusText}
         </span>
       </div>
@@ -856,7 +856,7 @@ function ChecklistDay({
                   to="/m/pickup/$id"
                   params={{ id: pickupCode }}
                   className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
-                  style={{ backgroundColor: "#FFF5DF", color: "#F9B855" }}
+                  style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
                 >
                   <span className="inline-flex items-center gap-1.5">
                     <PackagePlus className="h-3.5 w-3.5" />
