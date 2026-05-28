@@ -491,10 +491,7 @@ function DiagnosePage() {
         </Section>
 
         {/* === 现场记录 === */}
-          <Section
-            title="现场记录"
-            extra={<span className="text-caption text-text-tertiary">可选</span>}
-          >
+          <Section title="现场记录">
             {/* 照片 / 视频 */}
             <div>
               <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
@@ -586,7 +583,7 @@ function DiagnosePage() {
 
             {/* 文字描述 */}
             <div className="mt-3">
-              <div className="text-caption text-text-tertiary mb-2">文字描述</div>
+              <div className="text-caption text-text-tertiary mb-2">文字描述<span className="text-[var(--state-danger)] ml-0.5">*</span></div>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
