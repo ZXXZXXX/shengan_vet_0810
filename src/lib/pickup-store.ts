@@ -14,7 +14,7 @@ export type Pickup = {
   source: string; // 关联工作/损耗单
   barn: string;
   approvedAt: string;
-  approver: string;
+  visitor: string;
   warehouse: string;
   items: PickupItem[];
   result?: PickupResult; // 历史结果状态
@@ -29,7 +29,7 @@ export const PICKUPS: Pickup[] = [
     source: "WO-2381",
     barn: "3 号牛舍",
     approvedAt: "今日 09:42",
-    approver: "张磊（场长）",
+    visitor: "张磊（场长）",
     warehouse: "中央药房 · A 区货架 03",
     items: [
       { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶" },
@@ -43,7 +43,7 @@ export const PICKUPS: Pickup[] = [
     source: "LS-1029",
     barn: "2 号牛舍",
     approvedAt: "今日 10:15",
-    approver: "刘洋（兽医）",
+    visitor: "刘洋（兽医）",
     warehouse: "冷链库 · 冷柜 #3",
     items: [
       { name: "口蹄疫疫苗 A 型", spec: "10ml / 支", qty: "8 支" },
@@ -60,7 +60,7 @@ export const PICKUP_HISTORY: Pickup[] = [
     source: "WO-2103",
     barn: "1 号牛舍",
     approvedAt: "昨日 14:20",
-    approver: "王芳（兽医）",
+    visitor: "王芳（兽医）",
     warehouse: "中央药房 · B 区货架 01",
     items: [
       { name: "钙注射液", spec: "500ml / 瓶", qty: "1 瓶" },
@@ -75,7 +75,7 @@ export const PICKUP_HISTORY: Pickup[] = [
     source: "WO-2098",
     barn: "4 号牛舍",
     approvedAt: "昨日 09:10",
-    approver: "张磊（场长）",
+    visitor: "张磊（场长）",
     warehouse: "中央药房 · A 区货架 05",
     items: [
       { name: "蹄浴液", spec: "5L / 桶", qty: "1 桶" },
@@ -90,7 +90,7 @@ export const PICKUP_HISTORY: Pickup[] = [
     source: "WO-2085",
     barn: "2 号牛舍",
     approvedAt: "05-24 16:00",
-    approver: "刘洋（兽医）",
+    visitor: "刘洋（兽医）",
     warehouse: "中央药房 · C 区货架 02",
     items: [
       { name: "伊维菌素", spec: "50ml / 瓶", qty: "2 瓶" },
@@ -105,7 +105,7 @@ export const PICKUP_HISTORY: Pickup[] = [
     source: "LS-2072",
     barn: "3 号牛舍",
     approvedAt: "05-23 08:30",
-    approver: "王芳（兽医）",
+    visitor: "王芳（兽医）",
     warehouse: "冷链库 · 冷柜 #2",
     items: [
       { name: "保温运输袋", spec: "大号", qty: "1 个" },

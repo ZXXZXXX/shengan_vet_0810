@@ -35,7 +35,7 @@ type RespondCard = {
   execLabel: string;
   needPickup: boolean;
   pickupNote?: string;
-  approver: string;
+  visitor: string;
   approvedAt: string;
   /** ISO 时间字符串，用于发布时间排序 */
   approvedAtISO: string;
@@ -55,7 +55,7 @@ const initialCards: RespondCard[] = [
     execLabel: "今日 10:30",
     needPickup: true,
     pickupNote: "需领取：头孢噻呋钠 × 4 支",
-    approver: "陈晓东",
+    visitor: "陈晓东",
     approvedAt: "今日 09:12",
     approvedAtISO: "2026-05-25T09:12:00",
   },
@@ -70,7 +70,7 @@ const initialCards: RespondCard[] = [
     execAt: "2026-05-25T11:00:00",
     execLabel: "今日 11:00",
     needPickup: false,
-    approver: "李雨晴",
+    visitor: "李雨晴",
     approvedAt: "今日 09:40",
     approvedAtISO: "2026-05-25T09:40:00",
   },
@@ -85,7 +85,7 @@ const initialCards: RespondCard[] = [
     execAt: "2026-05-25T13:30:00",
     execLabel: "今日 13:30",
     needPickup: false,
-    approver: "孙明",
+    visitor: "孙明",
     approvedAt: "今日 08:45",
     approvedAtISO: "2026-05-25T08:45:00",
   },
@@ -101,7 +101,7 @@ const initialCards: RespondCard[] = [
     execLabel: "明日 09:00",
     needPickup: true,
     pickupNote: "需领取：免疫器械包 × 1",
-    approver: "周凯",
+    visitor: "周凯",
     approvedAt: "昨日 17:20",
     approvedAtISO: "2026-05-24T17:20:00",
   },
@@ -116,7 +116,7 @@ const initialCards: RespondCard[] = [
     execAt: "2026-05-26T14:00:00",
     execLabel: "明日 14:00",
     needPickup: false,
-    approver: "周凯",
+    visitor: "周凯",
     approvedAt: "今日 08:10",
     approvedAtISO: "2026-05-25T08:10:00",
   },
@@ -254,9 +254,9 @@ function RespondListPage() {
               <span>·</span>
               <span className="inline-flex items-center gap-1">
                 <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
-                  {c.approver.charAt(0)}
+                  {c.visitor.charAt(0)}
                 </span>
-                审核 <span className="text-text-secondary">{c.approver}</span>
+                出诊 <span className="text-text-secondary">{c.visitor}</span>
               </span>
               <span>·</span>
               <span className={c.needPickup ? "text-primary font-medium inline-flex items-center gap-0.5" : "text-text-tertiary inline-flex items-center gap-0.5"}>
