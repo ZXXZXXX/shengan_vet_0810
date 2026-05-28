@@ -173,6 +173,19 @@
     box-shadow: 0 0 0 1px var(--brand) !important;
   }
 
+  /* Mobile scope: cursor is enough, no extra focus border */
+  .m-scope input:focus,
+  .m-scope input:focus-visible,
+  .m-scope textarea:focus,
+  .m-scope textarea:focus-visible,
+  .m-scope select:focus,
+  .m-scope select:focus-visible,
+  .m-scope [data-slot="input"]:focus,
+  .m-scope [data-slot="input"]:focus-visible {
+    border-color: inherit !important;
+    box-shadow: none !important;
+  }
+
 }
 
 @layer utilities {
