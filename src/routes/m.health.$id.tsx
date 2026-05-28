@@ -65,12 +65,23 @@ function TaskDetailPage() {
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
 
+  // 单对象工单（仅一只牛）：WO-2298、HF-* 等
+  const singleEarMap: Record<string, string> = {
+    "WO-2298": "#A2298",
+    "HF-0702": "#A2150",
+    "HF-0688": "#A2270",
+  };
+  const singleEar = singleEarMap[id];
+  const isSingle = isHoof || Boolean(singleEar);
+  const earTag = singleEar ?? (isHoof ? "#A2150" : "#A2381");
+  const execTags: string[] = isSingle ? [earTag] : ["#A2381", "#A2382", "#A2383"];
+
   const o = {
     id,
     farm: "奇点示范牧场",
-    barn: isLoss ? "2 号牛舍" : "3 号牛舍",
-    target: isLoss ? "口蹄疫疫苗 A 型" : "3只",
-    type: isLoss ? "物资损耗" : "疾病治疗",
+    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : "3 号牛舍",
+    target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : "3 只",
+    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : "疾病治疗",
     status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待审批") as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
@@ -148,7 +159,7 @@ function TaskDetailPage() {
         <div className="px-4 pt-3 space-y-3">
           {tab === "report" && <ReportTab isLoss={isLoss} />}
           {tab === "review" && <ReviewTab isLoss={isLoss} status={o.status} />}
-          {tab === "execute" && <ExecuteTab status={o.status} pickupCode={o.pickupCode} />}
+          {tab === "execute" && <ExecuteTab status={o.status} pickupCode={o.pickupCode} tags={execTags} />}
         </div>
       </div>
 
@@ -469,8 +480,7 @@ type ExecItem = {
   status: ItemStatus;
 };
 
-function buildDayItems(day: number): ExecItem[] {
-  const tags = ["#A2381", "#A2382", "#A2383"];
+function buildDayItems(day: number, tags: string[]): ExecItem[] {
   return tags.map((tag, i) => ({
     id: `d${day}-${i + 1}`,
     title: tag,
@@ -479,7 +489,7 @@ function buildDayItems(day: number): ExecItem[] {
   }));
 }
 
-function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: string | null }) {
+function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
   if (status === "待审批" || status === "已驳回") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -488,18 +498,23 @@ function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: str
       </div>
     );
   }
+  const singleObject = tags.length === 1;
   return (
     <>
       <Section title="执行基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
         <Field label="开始执行时间" value="今日 13:08" />
+        <Field label="执行对象" value={singleObject ? tags[0] : `${tags.length} 只`} />
       </Section>
 
-      <div className="text-caption text-text-tertiary px-1">执行 Checklist · 勾选执行对象并记录执行情况</div>
+      <div className="text-caption text-text-tertiary px-1">
+        执行 Checklist · {singleObject ? "记录每日执行情况" : "勾选执行对象并记录执行情况"}
+      </div>
 
-      <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} initialAllDone initialNote="无特殊情况" isActive />
-      <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
-      <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
+      <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} initialAllDone initialNote="无特殊情况" isActive />
+      <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
+      <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
+
 
       <div className="rounded-xl bg-card border border-border p-4">
         <div className="flex items-center justify-between mb-2">
@@ -520,6 +535,7 @@ function ChecklistDay({
   day,
   date,
   pickupCode,
+  tags,
   initialAllDone = false,
   initialNote = "",
   isActive = false,
@@ -527,12 +543,13 @@ function ChecklistDay({
   day: number;
   date: string;
   pickupCode: string | null;
+  tags: string[];
   initialAllDone?: boolean;
   initialNote?: string;
   isActive?: boolean;
 }) {
   const [items, setItems] = useState<ExecItem[]>(() => {
-    const base = buildDayItems(day);
+    const base = buildDayItems(day, tags);
     if (initialAllDone) return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
     return base;
   });
