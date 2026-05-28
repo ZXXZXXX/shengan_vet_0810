@@ -110,7 +110,8 @@ function DiagnosePage() {
   // 疾病
   const [disease, setDisease] = useState<string>("");
   const [diseaseQuery, setDiseaseQuery] = useState("");
-  const [showDiseasePicker, setShowDiseasePicker] = useState(false);
+  const [diseaseFocused, setDiseaseFocused] = useState(false);
+
 
   // 处方（默认按选中疾病载入，可编辑）
   const [rxList, setRxList] = useState<Prescription[]>([]);
