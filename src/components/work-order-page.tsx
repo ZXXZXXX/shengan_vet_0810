@@ -587,7 +587,7 @@ export function WorkOrderPage({
       case "action": {
         const st = effectiveStatus(o);
         const exec = effectiveExecutor(o);
-        // 终止：已通过审核后、未完成前 → 执行中 / 待响应
+        // 终止：已通过出诊后、未完成前 → 执行中 / 待响应
         const canTerminate = st === "执行中" || st === "待响应";
         // 转派 / 释放：已指定或已响应但未完成 → 有执行人且为 执行中/待响应
         const canTransfer = (st === "执行中" || st === "待响应") && !!exec;
@@ -1356,7 +1356,7 @@ export function WorkOrderPage({
 
 
 
-              {/* 查看态：仅展示固定的审核 / 响应人元数据 */}
+              {/* 查看态：仅展示固定的出诊 / 响应人元数据 */}
               {(detail.status !== "待出诊" || mode === "view") && (
                 <section className="space-y-3">
                   <SectionHeader icon={<ClipboardList className="h-3.5 w-3.5" />} title="出诊与执行记录" />
