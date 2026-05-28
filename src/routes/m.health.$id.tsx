@@ -260,6 +260,16 @@ function PersonChip({ name }: { name: string }) {
 }
 
 // === 上报记录 ===
+function EmptyTab({ label }: { label: string }) {
+  return (
+    <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
+      <ClipboardList className="h-6 w-6 text-text-tertiary mx-auto mb-2" />
+      <div className="text-body-sm text-text-tertiary">{label}</div>
+    </div>
+  );
+}
+
+// === 上报记录 ===
 function ReportTab({ isLoss }: { isLoss: boolean }) {
   return (
     <>
