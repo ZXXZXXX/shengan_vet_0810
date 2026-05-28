@@ -200,8 +200,9 @@ function ReportPage() {
   const [showDraftDialog, setShowDraftDialog] = useState(false);
 
   // 健康
-  const [workType, setWorkType] = useState<WorkType | "">("");
-  const cfg = workType ? workTypeConfig[workType] : null;
+  // 仅支持疾病治疗类型工单
+  const [workType] = useState<WorkType>("疾病治疗");
+  const cfg = workTypeConfig[workType];
   const [symptomTags, setSymptomTags] = useState<string[]>([]);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [customSymptom, setCustomSymptom] = useState("");
