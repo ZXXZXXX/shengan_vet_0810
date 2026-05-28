@@ -11,7 +11,7 @@ export const Route = createFileRoute("/m/health/$id_/execute")({
 });
 
 function ExecuteRecordPage() {
-  const { id } = useParams({ from: "/m/health/$id/execute" });
+  const { id } = useParams({ from: "/m/health/$id_/execute" });
   const role = useRole();
   const navigate = useNavigate();
 
