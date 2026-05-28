@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/m/health/$id_/diagnose")({
-  head: () => ({ meta: [{ title: "诊断填写 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "诊断记录 · 奇点智牧" }] }),
   component: DiagnosePage,
 });
 
