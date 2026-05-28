@@ -1092,27 +1092,15 @@ function ChecklistDay({
 }
 
 function DayDot({ active, done }: { active: boolean; done: boolean }) {
-  // 已完成：绿色实心带勾；进行中：绿色实心圆；待执行：虚线空心圆
-  if (done) {
-    return (
-      <span className="h-4 w-4 rounded-full bg-primary inline-flex items-center justify-center">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <path d="M2 5.2L4 7.2L8 3" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </span>
-    );
-  }
-  if (active) {
-    return <span className="h-4 w-4 rounded-full inline-block" style={{ backgroundColor: "#22ACEB" }} />;
-  }
-
-
+  // 统一虚线圆环，颜色与右侧标签对应：已完成=绿，进行中=蓝，待执行=灰
+  const color = done ? "#23A969" : active ? "#22ACEB" : "var(--text-tertiary)";
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
-      <circle cx="8" cy="8" r="7" fill="none" stroke="var(--text-tertiary)" strokeWidth="1.2" strokeDasharray="2 2" />
+      <circle cx="8" cy="8" r="7" fill="none" stroke={color} strokeWidth="1.2" strokeDasharray="2 2" />
     </svg>
   );
 }
+
 
 
 
