@@ -285,12 +285,11 @@ function TodayTaskList({ role }: { role: Role }) {
     (t) => t.status === filter.status && t.type === filter.type,
   );
   const visible = matched.slice(0, 6);
-  const remaining = Math.max(0, matched.length - visible.length);
 
-  const tabParam = filter.status === "进行中" ? "执行中" : "待诊断";
   const typeIcon =
     filter.type === "修蹄" ? Footprints : filter.type === "疫苗免疫" ? Syringe : Pill;
   const TIcon = typeIcon;
+
 
   if (visible.length === 0) {
     return (
