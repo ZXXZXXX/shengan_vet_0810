@@ -480,8 +480,7 @@ type ExecItem = {
   status: ItemStatus;
 };
 
-function buildDayItems(day: number): ExecItem[] {
-  const tags = ["#A2381", "#A2382", "#A2383"];
+function buildDayItems(day: number, tags: string[]): ExecItem[] {
   return tags.map((tag, i) => ({
     id: `d${day}-${i + 1}`,
     title: tag,
@@ -490,7 +489,7 @@ function buildDayItems(day: number): ExecItem[] {
   }));
 }
 
-function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: string | null }) {
+function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
   if (status === "待审批" || status === "已驳回") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -499,18 +498,23 @@ function ExecuteTab({ status, pickupCode }: { status: StatusKey; pickupCode: str
       </div>
     );
   }
+  const singleObject = tags.length === 1;
   return (
     <>
       <Section title="执行基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
         <Field label="开始执行时间" value="今日 13:08" />
+        <Field label="执行对象" value={singleObject ? tags[0] : `${tags.length} 只`} />
       </Section>
 
-      <div className="text-caption text-text-tertiary px-1">执行 Checklist · 勾选执行对象并记录执行情况</div>
+      <div className="text-caption text-text-tertiary px-1">
+        执行 Checklist · {singleObject ? "记录每日执行情况" : "勾选执行对象并记录执行情况"}
+      </div>
 
-      <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} initialAllDone initialNote="无特殊情况" isActive />
-      <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
-      <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
+      <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} initialAllDone initialNote="无特殊情况" isActive />
+      <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
+      <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
+
 
       <div className="rounded-xl bg-card border border-border p-4">
         <div className="flex items-center justify-between mb-2">
