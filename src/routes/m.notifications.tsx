@@ -151,17 +151,10 @@ function NotificationsPage() {
   };
 
   return (
-    <MobileShell hideTabBar>
+    <MobileShell>
       {/* 头部 */}
       <header className="sticky top-0 z-30 bg-card border-b border-border">
-        <div className="flex h-12 items-center px-2 pt-1">
-          <button
-            onClick={() => navigate({ to: "/m" })}
-            className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-secondary active:bg-surface-subtle"
-            aria-label="返回"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
+        <div className="flex h-12 items-center px-3 pt-1">
           <div className="flex-1 text-body font-medium text-foreground">
             消息通知
             {unreadCount > 0 && (
