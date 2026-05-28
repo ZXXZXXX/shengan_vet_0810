@@ -123,7 +123,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="none" className="border-r border-border bg-card">
-      <SidebarHeader className="h-[110px] border-b border-border bg-card p-0">
+      <SidebarHeader className="h-[88px] border-b border-border bg-card p-0">
         <div className="flex h-full items-center px-4">
           <Link to="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-subtle">
