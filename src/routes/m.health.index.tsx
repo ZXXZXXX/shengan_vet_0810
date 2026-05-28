@@ -256,7 +256,7 @@ function TaskListPage() {
                   const ctaText = isPickup
                     ? (o.status === "已完成" ? "查看清单" : "领取")
                     : canVisitThis
-                      ? "前往 PC 诊断"
+                      ? "诊断"
                       : canExecuteThis
                         ? "执行"
                         : "查看";
