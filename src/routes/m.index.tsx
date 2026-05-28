@@ -186,9 +186,6 @@ function MHomePage() {
                   <div className="text-body text-foreground truncate">{r.title}</div>
                   <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
                 </div>
-                <span className={`text-caption ${toneTextMap[r.tone] ?? "text-text-tertiary"} shrink-0`}>
-                  {r.count}
-                </span>
                 <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
               </Link>
             ))}
