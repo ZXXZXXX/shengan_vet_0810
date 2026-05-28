@@ -285,24 +285,27 @@ function TaskListPage() {
 
                       {/* Footer 区：时间·人员 + 操作 */}
                       <div className="flex items-center text-caption text-text-tertiary pt-2 border-t border-border/60 h-9">
-                        <span className="truncate">
-                          {metaTimeLabel} <span className="text-text-secondary">{metaTime}</span>
-                          <span className="mx-1.5">·</span>
-                          <span className="inline-flex items-center gap-1 align-middle">
-                            {metaPersonLabel}
-                            <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
+                        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                          <span className="shrink-0">
+                            {metaTimeLabel} <span className="text-text-secondary">{metaTime}</span>
+                          </span>
+                          <span className="text-text-tertiary/60">·</span>
+                          <span className="flex items-center gap-1 min-w-0">
+                            <span className="shrink-0">{metaPersonLabel}</span>
+                            <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center shrink-0">
                               {cleanName(metaPersonName).charAt(0)}
                             </span>
-                            <span className="text-text-secondary">{cleanName(metaPersonName)}</span>
+                            <span className="text-text-secondary truncate">{cleanName(metaPersonName)}</span>
                           </span>
-                        </span>
-                        <span className={`ml-auto inline-flex items-center gap-0.5 shrink-0 pl-2 ${
+                        </div>
+                        <span className={`ml-2 inline-flex items-center gap-0.5 shrink-0 ${
                           canExecuteThis || (isPickup && o.status === "进行中") ? "text-primary font-medium" : "text-text-secondary"
                         }`}>
                           {ctaText}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
                       </div>
+
                     </div>
                   );
                   const cls = `block rounded-xl bg-card border p-4 active:bg-surface-subtle ${
