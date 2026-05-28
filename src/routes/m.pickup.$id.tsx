@@ -3,7 +3,6 @@ import {
   CheckCircle2,
   Warehouse,
   ClipboardList,
-  Home,
   PackageCheck,
   QrCode,
   AlertTriangle,
