@@ -313,6 +313,7 @@ function TodayTaskList({ role }: { role: Role }) {
               <span className="font-mono">{t.id}</span>
               <span>·</span>
               <span>{t.type}</span>
+              <span className="ml-auto">{formatTimeAgo(t.minutesAgo)}</span>
             </div>
             <div className="text-body text-foreground truncate mt-0.5">
               <span className="text-text-secondary">{t.target}</span>
