@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useParams, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import {
   CheckCircle2,
   Warehouse,
@@ -221,13 +221,6 @@ function PickupDetailPage() {
           )}
         </div>
 
-        <Link
-          to="/m/health/$id"
-          params={{ id: pickup.source }}
-          className="block text-center text-caption text-primary"
-        >
-          查看关联工作 {pickup.source} →
-        </Link>
       </div>
 
       {/* 底部操作 */}
