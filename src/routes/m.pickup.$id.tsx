@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useParams, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import {
   CheckCircle2,
   Warehouse,
