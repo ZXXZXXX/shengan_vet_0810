@@ -458,7 +458,14 @@ type DaySummary = {
 
 function getExecSummary(status: StatusKey): DaySummary[] {
   const allDone = status === "已完成";
+  const terminated = status === "已终止";
   const action = "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录";
+  if (terminated) {
+    return [
+      { day: 1, date: "05/12", action, pickup: true, phase: "done" },
+      { day: 2, date: "05/13", action, pickup: true, phase: "done" },
+    ];
+  }
   return [
     { day: 1, date: "05/12", action, pickup: true, phase: "done" },
     { day: 2, date: "05/13", action, pickup: true, phase: allDone ? "done" : "active" },
