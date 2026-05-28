@@ -338,7 +338,97 @@ function ReportPage() {
           <>
 
             {/* 上报对象 */}
-            <Section title="上报对象" required hint="可一次性上报多个对象">
+            <Section
+              title="上报对象"
+              required
+              hint={barnMode ? "可一次性上报多个牛舍" : "可一次性上报多个对象"}
+            >
+              {barnMode ? (
+                <div className="space-y-2">
+                  {barns.map((b) => {
+                    const canDelete = barns.length > 1;
+                    return (
+                      <div
+                        key={b}
+                        className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
+                      >
+                        <span className="truncate">{b}</span>
+                        {canDelete && (
+                          <button
+                            onClick={() => removeBarn(b)}
+                            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+                            aria-label="删除"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                  <div className="text-caption text-text-tertiary">
+                    至少保留 1 个牛舍
+                  </div>
+                  {showBarnAdd ? (
+                    <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
+                      <div className="flex gap-2">
+                        <div className="flex-1 relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                          <input
+                            autoFocus
+                            value={barnAddQuery}
+                            onChange={(e) => setBarnAddQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && barnAddQuery.trim()) {
+                                e.preventDefault();
+                                addBarn(barnAddQuery.trim());
+                                setBarnAddQuery("");
+                              }
+                            }}
+                            placeholder="输入牛舍编号搜索或回车添加"
+                            className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
+                          />
+                        </div>
+                        <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium active:scale-[0.97] transition-transform">
+                          <ScanLine className="h-4 w-4" /> 扫码
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowBarnAdd(false);
+                            setBarnAddQuery("");
+                          }}
+                          className="h-11 w-11 inline-flex items-center justify-center rounded-lg text-text-tertiary active:bg-surface-subtle"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {barnMatches.length === 0 ? (
+                          <span className="text-caption text-text-tertiary px-1 py-1">无匹配结果</span>
+                        ) : (
+                          barnMatches.map((s) => (
+                            <button
+                              key={s}
+                              onClick={() => addBarn(s)}
+                              className="h-8 px-3 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 active:scale-[0.96]"
+                            >
+                              <Plus className="h-3 w-3" />
+                              {s}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowBarnAdd(true)}
+                      className="w-full h-11 rounded-xl border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
+                    >
+                      <Plus className="h-4 w-4" />
+                      追加其他牛舍
+                    </button>
+                  )}
+                </div>
+              ) : (
               <div
                 className="space-y-2"
                 onClick={(e) => {
@@ -489,8 +579,10 @@ function ReportPage() {
                   </button>
                 )}
               </div>
+              )}
 
             </Section>
+
 
             {/* 工作类型 */}
             <Section title="工作类型" required>
