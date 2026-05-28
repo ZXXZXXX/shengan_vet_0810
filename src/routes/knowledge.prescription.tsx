@@ -228,7 +228,7 @@ function PrescriptionPage() {
             return (
               <div
                 key={r.id}
-                className={`flex items-center gap-4 px-6 py-3 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
+                className={`flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
               >
                 <Checkbox checked={checked} onCheckedChange={() => toggleOne(r.id)} aria-label={`选择 ${r.name}`} />
                 <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
