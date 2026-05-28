@@ -607,10 +607,11 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
         <div className="rounded-xl bg-card border border-border p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="text-body-sm font-medium inline-flex items-center gap-1.5 text-foreground">
-              <AlertTriangle className="h-4 w-4 text-text-secondary" />
+              <AlertTriangle className="h-4 w-4 text-[#EF4445]" />
               工单终止
             </div>
-            <span className="tag tag-muted">已终止</span>
+            <span className="tag tag-danger">已终止</span>
+
           </div>
           <div className="space-y-2">
             <Field label="终止原因" value="牛只死亡，停止后续治疗" />
