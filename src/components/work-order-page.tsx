@@ -553,8 +553,9 @@ export function WorkOrderPage({
       case "status": {
         const st = effectiveStatus(o);
         if (st === "已终止") {
-          return <span className="tag tag-muted">已终止</span>;
+          return <span className="tag tag-danger">已终止</span>;
         }
+
         return (
           <span className={toneStyles[statusList.find((s) => s.key === st)!.tone].tag}>
             {st}
