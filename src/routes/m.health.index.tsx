@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Plus,
   Search,
   ClipboardList,
   AlertTriangle,
