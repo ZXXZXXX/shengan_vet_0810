@@ -513,6 +513,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
+  const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -524,12 +525,29 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
   void tags;
   const days = getExecSummary(status);
   const needPickup = Boolean(pickupCode);
+  const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
     <>
+      {hasUnpicked && (
+        <button
+          type="button"
+          onClick={() => setPickupOpen(true)}
+          className="w-full flex items-center justify-between px-3 h-11 rounded-xl text-body-sm"
+          style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <PackagePlus className="h-4 w-4" />
+            需领取药品 / 物品 · 点击查看清单与领物码
+          </span>
+          <ChevronRight className="h-4 w-4 opacity-70" />
+        </button>
+      )}
+
       <Section title="基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
         <Field label="开始执行时间" value="2026-05-12 13:08" />
       </Section>
+
 
       {days.map((d) => {
         const isDone = d.phase === "done";
