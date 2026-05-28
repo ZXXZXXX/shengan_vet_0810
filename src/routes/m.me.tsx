@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
+import meHero from "@/assets/me-hero.png";
 
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
@@ -37,8 +38,14 @@ function MePage() {
   return (
     <MobileShell>
       {/* 个人信息卡 */}
-      <header className="px-4 pt-12 pb-6 bg-gradient-to-br from-primary to-[var(--brand-strong,var(--brand))] text-primary-foreground relative overflow-hidden">
-        <div className="absolute -top-12 -right-12 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
+      <header className="px-4 pt-12 pb-6 text-primary-foreground relative overflow-hidden">
+        <img
+          src={meHero}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover scale-125 origin-top"
+        />
+        <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/20 to-transparent" />
         <div className="relative flex items-center gap-3">
           <div className="h-14 w-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-section-title">
             李
