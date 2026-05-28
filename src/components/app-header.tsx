@@ -42,7 +42,7 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
   const showFarmSwitcher = pathname === "/" || pathname.startsWith("/production");
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card">
-      <div className="flex h-14 items-center gap-3 px-6">
+      <div className="flex h-11 items-center gap-3 px-6">
         {breadcrumb && breadcrumb.length > 0 && (
           <nav className="text-body-sm text-text-tertiary flex items-center gap-1.5">
             {breadcrumb.map((b, i) => (
@@ -150,7 +150,7 @@ export function AppHeader({ title, breadcrumb }: AppHeaderProps) {
       </div>
 
       {title && (
-        <div className="px-6 pb-4 pt-1">
+        <div className="px-6 pb-2.5 pt-0">
           <h1 className="text-page-title text-foreground">{title}</h1>
         </div>
       )}
