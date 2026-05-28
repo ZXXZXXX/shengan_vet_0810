@@ -8,6 +8,7 @@ import {
   LogOut,
   RefreshCw,
   ClipboardList,
+  Inbox,
 } from "lucide-react";
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
@@ -59,6 +60,7 @@ function MePage() {
       <section className="px-4 mt-5 space-y-2">
         <MenuItem icon={Bell} label="消息通知" badge="3" />
         <MenuItem icon={ClipboardList} label="草稿箱" to="/m/drafts" />
+        <MenuItem icon={Inbox} label="空状态系列" to="/m/empty-states" />
         <MenuItem icon={ShieldCheck} label="账号与安全" />
         <MenuItem icon={Settings} label="偏好设置" />
         <MenuItem icon={HelpCircle} label="帮助与反馈" />
