@@ -12,8 +12,19 @@ import {
   Trash2,
   Sparkles,
   CheckCircle2,
+  Ban,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/m/health/$id_/diagnose")({
   head: () => ({ meta: [{ title: "诊断填写 · 奇点智牧" }] }),
@@ -98,6 +109,9 @@ function DiagnosePage() {
   const [rxList, setRxList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
 
+  // 终止工单
+  const [confirmTerminate, setConfirmTerminate] = useState(false);
+
   // 按匹配症状数排序的候选疾病
   const rankedDiseases = useMemo(() => {
     const kw = diseaseQuery.trim().toLowerCase();
@@ -165,11 +179,18 @@ function DiagnosePage() {
     <MobileShell title="开始诊断" back={{ to: `/m/health/${id}` }} hideTabBar>
       <div className="pb-28">
         {/* 工单号 */}
-        <div className="px-4 pt-3 pb-2">
+        <div className="px-4 pt-3 pb-2 flex items-center justify-between gap-2">
           <div className="text-caption text-text-tertiary">
             工单 <span className="font-mono text-text-secondary">{id}</span>
           </div>
+          <button
+            onClick={() => setConfirmTerminate(true)}
+            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary hover:text-[var(--state-danger)] hover:border-[var(--state-danger)]/40"
+          >
+            <Ban className="h-3 w-3" /> 牛只一切正常 · 终止工单
+          </button>
         </div>
+
 
         <div className="px-4 space-y-3">
           {/* === 症状 === */}
@@ -418,9 +439,34 @@ function DiagnosePage() {
           <Send className="h-4 w-4" /> 提交诊断
         </button>
       </div>
+
+      {/* 终止工单确认 */}
+      <AlertDialog open={confirmTerminate} onOpenChange={setConfirmTerminate}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认终止工单？</AlertDialogTitle>
+            <AlertDialogDescription>
+              确认牛只一切正常、无需用药后，将直接终止该工单，不再进入执行环节。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                toast.success("工单已终止");
+                navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+              }}
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+            >
+              确认终止
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MobileShell>
   );
 }
+
 
 function Section({
   title,

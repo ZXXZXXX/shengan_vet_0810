@@ -1,6 +1,5 @@
-import { createFileRoute, useNavigate, useParams, Link } from "@tanstack/react-router";
+import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { toast } from "sonner";
 import {
   ClipboardList,
   AlertTriangle,
@@ -57,7 +56,7 @@ function cleanName(n: string) {
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
-  const navigate = useNavigate();
+  
   const search = Route.useSearch();
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? "report");
   
@@ -171,25 +170,14 @@ function TaskDetailPage() {
         return (
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
             {showRespond ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    toast("已忽视该工单");
-                    navigate({ to: "/m/health" });
-                  }}
-                  className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
-                >
-                  忽视
-                </button>
-                <Link
-                  to="/m/health/$id/diagnose"
-                  params={{ id: o.id }}
-                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-                >
-                  <Stethoscope className="h-4 w-4" />
-                  开始诊断
-                </Link>
-              </div>
+              <Link
+                to="/m/health/$id/diagnose"
+                params={{ id: o.id }}
+                className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <Stethoscope className="h-4 w-4" />
+                开始诊断
+              </Link>
             ) : (
               <Link
                 to="/m/health/$id/execute"
