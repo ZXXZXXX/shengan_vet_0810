@@ -35,7 +35,7 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "首页 — 奇点智牧" },
+      { title: "首页总览 — 奇点智牧" },
       { name: "description", content: "运营驾驶舱：核心指标、待处理申请与待办" },
     ],
   }),
@@ -282,7 +282,7 @@ function HomePage() {
 
   return (
     <>
-      <AppHeader title="运营看板" breadcrumb={["首页", "运营看板"]} />
+      <AppHeader title="首页总览" breadcrumb={["首页"]} />
       <main className="flex-1 px-6 py-6 space-y-5">
         {/* Hero greeting — 加强视觉冲击 */}
         <Card className="relative border-0 overflow-hidden text-white shadow-[0_20px_60px_-30px_color-mix(in_oklab,var(--brand)_70%,transparent)]">
