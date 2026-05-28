@@ -405,7 +405,6 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
             <Field label="备注" value="如出现严重过敏立即停药并上报。" />
           </Section>
         </>
-      )}
     </>
   );
 }
