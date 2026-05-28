@@ -179,11 +179,18 @@ function DiagnosePage() {
     <MobileShell title="开始诊断" back={{ to: `/m/health/${id}` }} hideTabBar>
       <div className="pb-28">
         {/* 工单号 */}
-        <div className="px-4 pt-3 pb-2">
+        <div className="px-4 pt-3 pb-2 flex items-center justify-between gap-2">
           <div className="text-caption text-text-tertiary">
             工单 <span className="font-mono text-text-secondary">{id}</span>
           </div>
+          <button
+            onClick={() => setConfirmTerminate(true)}
+            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary hover:text-[var(--state-danger)] hover:border-[var(--state-danger)]/40"
+          >
+            <Ban className="h-3 w-3" /> 牛只一切正常 · 终止工单
+          </button>
         </div>
+
 
         <div className="px-4 space-y-3">
           {/* === 症状 === */}
