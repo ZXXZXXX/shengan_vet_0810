@@ -367,6 +367,7 @@ function ReportTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
 
 // === 诊断记录 ===
 function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
+  const isTerminated = status === "已终止";
   if (status === "待诊断") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -378,7 +379,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
   return (
     <>
       <Section title="基础信息">
-        <Field label="诊断人" value={<PersonChip name="王医生" />} />
+        {!isTerminated && <Field label="诊断人" value={<PersonChip name="王医生" />} />}
         <Field label="诊断时间" value="2026-05-20 10:15" />
       </Section>
 
