@@ -535,6 +535,7 @@ function ChecklistDay({
   day,
   date,
   pickupCode,
+  tags,
   initialAllDone = false,
   initialNote = "",
   isActive = false,
@@ -542,12 +543,13 @@ function ChecklistDay({
   day: number;
   date: string;
   pickupCode: string | null;
+  tags: string[];
   initialAllDone?: boolean;
   initialNote?: string;
   isActive?: boolean;
 }) {
   const [items, setItems] = useState<ExecItem[]>(() => {
-    const base = buildDayItems(day);
+    const base = buildDayItems(day, tags);
     if (initialAllDone) return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
     return base;
   });
