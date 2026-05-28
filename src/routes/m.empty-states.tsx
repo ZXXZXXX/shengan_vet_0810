@@ -156,7 +156,7 @@ const scenarios: Scenario[] = [
 
 function EmptyStatesPage() {
   return (
-    <MobileShell title="空状态系列" back={{ to: "/m/me" }}>
+    <MobileShell title="空状态系列" back>
       <div className="px-4 py-4 space-y-4">
         {scenarios.map((s) => (
           <ScenarioCard key={s.title} s={s} />
