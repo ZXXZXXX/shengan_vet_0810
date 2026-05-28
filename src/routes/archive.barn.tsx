@@ -51,7 +51,7 @@ function BarnPage() {
             <div className="w-[140px] text-right shrink-0">功能</div>
           </div>
           {barns.map((b) => (
-            <div key={b.id} className="flex items-center gap-4 px-6 h-14 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
+            <div key={b.id} className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
               <div className="grid grid-cols-6 gap-4 flex-1 min-w-0">
                 <div className="font-mono text-body text-foreground truncate">{b.id}</div>
                 <div className="flex items-center gap-2 text-body text-foreground truncate"><Home className="h-3.5 w-3.5 text-primary shrink-0" /><span className="truncate">{b.name}</span></div>

@@ -552,7 +552,7 @@ function AccountPage() {
 
           </div>
           {filteredAccounts.map((a) => (
-            <div key={a.id} className={`grid gap-3 px-6 h-14 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle ${selectedIds.has(a.id) ? "bg-brand-subtle/40" : ""}`}
+            <div key={a.id} className={`grid gap-3 px-6 h-12 items-center text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle ${selectedIds.has(a.id) ? "bg-brand-subtle/40" : ""}`}
               style={{ gridTemplateColumns: cols }}>
               <div className="flex items-center">
                 <Checkbox

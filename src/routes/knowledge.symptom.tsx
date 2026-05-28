@@ -150,7 +150,7 @@ function SymptomKBPage() {
             return (
               <div
                 key={s.id}
-                className={`flex items-center gap-4 px-6 py-3 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
+                className={`flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
               >
                 <Checkbox checked={checked} onCheckedChange={() => toggleOne(s.id)} aria-label={`选择 ${s.name}`} />
                 <div className="grid grid-cols-[100px_minmax(160px,1fr)_90px_minmax(260px,2.2fr)] gap-4 flex-1 min-w-0 items-center">
@@ -162,10 +162,13 @@ function SymptomKBPage() {
                   <div className="truncate">
                     <span className={`tag ${s.urgency === "高" ? "tag-danger" : "tag-warning"}`}>{s.urgency}</span>
                   </div>
-                  <div className="flex flex-wrap gap-1 overflow-hidden">
-                    {s.related.map((r) => (
-                      <span key={r} className="tag tag-muted">{r}</span>
+                  <div className="flex items-center gap-1 min-w-0 overflow-hidden">
+                    {s.related.slice(0, 2).map((r) => (
+                      <span key={r} className="tag tag-muted whitespace-nowrap">{r}</span>
                     ))}
+                    {s.related.length > 2 && (
+                      <span className="tag tag-muted whitespace-nowrap">+{s.related.length - 2}</span>
+                    )}
                   </div>
                 </div>
                 <div className="w-[160px] shrink-0 flex justify-end items-center gap-0.5">

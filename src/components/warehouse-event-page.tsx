@@ -530,7 +530,7 @@ export function WarehouseEventPage<S extends string>({
                 filtered.map((o) => (
                   <div
                     key={o.id}
-                    className="group/row flex min-h-12 items-center text-table-cell border-b border-border last:border-0"
+                    className="group/row flex h-12 items-center text-table-cell border-b border-border last:border-0"
                   >
                     {leftCols.map((c, i) => (
                       <div
