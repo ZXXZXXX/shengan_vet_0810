@@ -339,42 +339,49 @@ export function WarehouseEventPage<S extends string>({
 
         <div className={`grid ${gridCols} gap-4`}>
           {statuses.map((s) => {
-            const tone = toneStyles[s.tone];
             const isActive = active === s.key;
+            const toneColor: Record<string, string> = {
+              warning: "var(--state-warning)",
+              info: "var(--effect-ai-cyan)",
+              danger: "var(--state-danger)",
+              success: "var(--state-success)",
+              brand: "var(--brand)",
+            };
+            const numberColor: Record<string, string> = {
+              warning: "var(--text-primary)",
+              info: "var(--effect-ai-cyan)",
+              danger: "var(--state-danger)",
+              success: "#2F7A3A",
+              brand: "var(--brand)",
+            };
+            const c = toneColor[s.tone];
+            const nc = numberColor[s.tone];
             return (
               <button key={s.key} onClick={() => setActive(s.key)} className="text-left transition-all">
                 <Card
-                  className={`p-5 flex items-center gap-4 transition-all ${
+                  className={`p-4 rounded-2xl flex items-center justify-between gap-3 transition-all bg-card ${
                     isActive
-                      ? "border-primary bg-primary text-primary-foreground shadow-elevated"
-                      : "border-border bg-card hover:border-primary/40 hover:shadow-card"
+                      ? "border-primary shadow-elevated ring-1 ring-primary"
+                      : "border-border hover:border-primary/40 hover:shadow-card"
                   }`}
                 >
-                  <div
-                    className={`h-10 w-10 rounded-md flex items-center justify-center ${
-                      isActive ? "bg-white/15" : tone.bg
-                    }`}
-                  >
-                    <s.icon
-                      className={`h-4 w-4 ${isActive ? "text-primary-foreground" : tone.text}`}
-                      strokeWidth={1.75}
-                    />
-                  </div>
-                  <div>
+                  <div className="min-w-0">
+                    <div className="text-body-sm text-text-tertiary truncate">{s.label}</div>
                     <div
-                      className={`text-section-title tabular-nums ${
-                        isActive ? "text-primary-foreground" : "text-foreground"
-                      }`}
+                      className="mt-1 tabular-nums font-semibold leading-none"
+                      style={{ fontSize: "26px", color: nc }}
                     >
                       {counts[s.key]}
                     </div>
-                    <div
-                      className={`text-caption ${
-                        isActive ? "text-primary-foreground/85" : "text-text-tertiary"
-                      }`}
-                    >
-                      {s.label}
-                    </div>
+                  </div>
+                  <div
+                    className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: `color-mix(in oklab, ${c} 14%, transparent)`,
+                      color: c,
+                    }}
+                  >
+                    <s.icon className="h-4 w-4" strokeWidth={2} />
                   </div>
                 </Card>
               </button>
