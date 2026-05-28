@@ -329,7 +329,7 @@ function ReportPage() {
   
 
   return (
-    <MobileShell title="现场上报" back hideTabBar>
+    <MobileShell title="疾病上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-5">
         {kind === "health" ? (
           <>
