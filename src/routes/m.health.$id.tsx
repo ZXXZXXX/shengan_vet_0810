@@ -340,11 +340,8 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
         />
       </Section>
 
-      {(
-        <></>
-      )}
-      {true && (
-        <>
+      <>
+
           <Section title="确认信息">
             <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
             <Field
