@@ -147,6 +147,28 @@ function DiagnosePage() {
   const [recording, setRecording] = useState(false);
   const [recordSec, setRecordSec] = useState(0);
 
+  useEffect(() => {
+    if (!recording) return;
+    const t = setInterval(() => setRecordSec((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [recording]);
+
+  const startRecord = () => {
+    setShowMediaPicker(false);
+    setRecordSec(0);
+    setRecording(true);
+  };
+  const stopRecord = () => {
+    if (recordSec > 0) {
+      setAudios((prev) => [...prev, { id: `a${Date.now()}`, duration: recordSec }]);
+    }
+    setRecording(false);
+    setRecordSec(0);
+  };
+  const fmtSec = (n: number) => `${Math.floor(n / 60).toString().padStart(2, "0")}:${(n % 60).toString().padStart(2, "0")}`;
+
+
+
   // 指派执行人
   const [executor, setExecutor] = useState("");
   const [showExecutorPicker, setShowExecutorPicker] = useState(false);
