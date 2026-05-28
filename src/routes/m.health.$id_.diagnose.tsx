@@ -491,10 +491,7 @@ function DiagnosePage() {
         </Section>
 
         {/* === 现场记录 === */}
-          <Section
-            title="现场记录"
-            extra={<span className="text-caption text-text-tertiary">可选</span>}
-          >
+          <Section title="现场记录">
             {/* 照片 / 视频 */}
             <div>
               <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
