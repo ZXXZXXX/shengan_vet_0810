@@ -3,10 +3,9 @@ import { useMemo, useState } from "react";
 import {
   CheckCheck,
   ClipboardList,
-  ShieldCheck,
   AlertTriangle,
-  UserCog,
-  CheckCircle2,
+  Settings2,
+  Megaphone,
   Clock,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
@@ -25,7 +24,8 @@ export const Route = createFileRoute("/m/notifications")({
   component: NotificationsPage,
 });
 
-type Cat = "approval" | "task" | "result" | "permission";
+/** 三大消息维度 */
+type Cat = "system" | "workorder" | "platform";
 
 type Msg = {
   id: string;
@@ -38,29 +38,26 @@ type Msg = {
   link?: string;
   unread?: boolean;
   urgent?: boolean;
-  /** 自定义右下角文本，覆盖默认分类标签 */
-  rightText?: string;
-  /** 自定义右下角文本色调 */
-  rightTone?: "default" | "danger";
 };
 
 const MSGS: Msg[] = [
+  // ===== 工单类：待执行的工单内任务、待诊断的工单 =====
   {
     id: "n1",
-    cat: "approval",
+    cat: "workorder",
     title: "待诊断：处方申请 RX-2381",
     desc: "兽医助理 王芳 提交了 #A2381 的退烧处方申请，已等待 35 分钟。",
     time: "5 分钟前",
     ts: 5,
     link: "/m/health/A2381/diagnose",
     unread: true,
-    rightText: "工作",
+    urgent: true,
   },
   {
     id: "n2",
-    cat: "task",
+    cat: "workorder",
     title: "待执行：3 号牛舍体温复测",
-    desc: "工作 T-1042 已逾期 20 分钟未开始执行，请尽快处理。",
+    desc: "工单 T-1042 已逾期 20 分钟未开始执行，请尽快处理。",
     time: "12 分钟前",
     ts: 12,
     link: "/m/",
@@ -68,7 +65,7 @@ const MSGS: Msg[] = [
   },
   {
     id: "n3",
-    cat: "task",
+    cat: "workorder",
     title: "待执行：疾病治疗 T-1056",
     desc: "「兽医」王医生为您指派 2 号舍 4 头牛只的疾病治疗工作，计划今日 15:00 开始执行。",
     time: "2 小时前",
@@ -76,23 +73,65 @@ const MSGS: Msg[] = [
     link: "/m/",
     unread: true,
   },
+
+  // ===== 平台类：免疫工单下发、修蹄工单下发等 =====
   {
-    id: "n4",
-    cat: "permission",
-    title: "角色权限变更",
+    id: "p1",
+    cat: "platform",
+    title: "免疫工单下发：口蹄疫春季加强",
+    desc: "平台已下发 IMM-0529 免疫工单，覆盖 1/3/5 号舍共 128 头牛只，计划今日 14:00 执行。",
+    time: "30 分钟前",
+    ts: 30,
+    link: "/m/",
+    unread: true,
+  },
+  {
+    id: "p2",
+    cat: "platform",
+    title: "修蹄工单下发：周度例行修蹄",
+    desc: "平台已下发 HOOF-0528 修蹄工单，涉及 2 号舍 18 头泌乳牛，计划本周内完成。",
+    time: "1 小时前",
+    ts: 60,
+    link: "/m/",
+    unread: true,
+  },
+  {
+    id: "p3",
+    cat: "platform",
+    title: "繁育工单下发：同期发情处理",
+    desc: "平台已下发 BRE-0527 繁育工单，覆盖 4 号舍 22 头空怀牛只。",
+    time: "昨天 09:10",
+    ts: 60 * 14,
+    link: "/m/",
+  },
+
+  // ===== 系统类：更新事项、权限变更、角色变更 =====
+  {
+    id: "s1",
+    cat: "system",
+    title: "角色变更通知",
     desc: "您的角色已由「兽医助理」调整为「兽医」，新权限即时生效。",
     time: "昨天 18:20",
     ts: 60 * 20,
     link: "/m/me",
+    unread: true,
   },
   {
-    id: "n5",
-    cat: "permission",
-    title: "牧场关联变更",
-    desc: "您已被加入「2 号牧场（生产域）」，可在切换牧场中查看。",
+    id: "s2",
+    cat: "system",
+    title: "权限变更通知",
+    desc: "您在「1 号牧场」的数据权限范围已扩展至全部牛舍，原仅限 1/2 号舍。",
+    time: "昨天 16:05",
+    ts: 60 * 22,
+    link: "/m/me",
+  },
+  {
+    id: "s3",
+    cat: "system",
+    title: "系统更新事项",
+    desc: "奇点智牧 v2.4.0 已发布：新增 AI 辅助诊断、优化工单流转性能，建议尽快刷新使用。",
     time: "2 天前",
     ts: 60 * 48,
-    link: "/m/me",
   },
 ];
 
@@ -100,40 +139,59 @@ const META: Record<
   Cat,
   { icon: typeof ClipboardList; tone: string; label: string }
 > = {
-  approval: {
-    icon: ShieldCheck,
-    tone: "bg-[var(--state-warning)]/15 text-[var(--state-warning)]",
-    label: "待诊断",
+  system: {
+    icon: Settings2,
+    tone: "bg-[var(--effect-ai-purple)]/15 text-[var(--effect-ai-purple)]",
+    label: "系统",
   },
-  task: {
+  workorder: {
     icon: ClipboardList,
     tone: "bg-brand-subtle text-primary",
-    label: "工作",
+    label: "工单",
   },
-  result: {
-    icon: CheckCircle2,
+  platform: {
+    icon: Megaphone,
     tone: "bg-[var(--effect-ai-cyan)]/15 text-[var(--effect-ai-cyan)]",
-    label: "结果",
-  },
-  permission: {
-    icon: UserCog,
-    tone: "bg-[var(--effect-ai-purple)]/15 text-[var(--effect-ai-purple)]",
-    label: "权限",
+    label: "平台",
   },
 };
+
+const TABS: { key: "all" | Cat; label: string }[] = [
+  { key: "all", label: "全部" },
+  { key: "system", label: "系统类" },
+  { key: "workorder", label: "工单类" },
+  { key: "platform", label: "平台类" },
+];
 
 function NotificationsPage() {
   const navigate = useNavigate();
   const [msgs, setMsgs] = useState<Msg[]>(MSGS);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [tab, setTab] = useState<"all" | Cat>("all");
 
-  const sorted = useMemo(() => [...msgs].sort((a, b) => a.ts - b.ts), [msgs]);
+  const filtered = useMemo(
+    () =>
+      [...msgs]
+        .filter((m) => tab === "all" || m.cat === tab)
+        .sort((a, b) => a.ts - b.ts),
+    [msgs, tab],
+  );
   const unreadCount = msgs.filter((m) => m.unread).length;
   const current = openId ? msgs.find((m) => m.id === openId) ?? null : null;
 
-  const markAllRead = () => setMsgs(msgs.map((m) => ({ ...m, unread: false })));
+  const countByCat = (c: Cat) =>
+    msgs.filter((m) => m.cat === c && m.unread).length;
+
+  const markAllRead = () =>
+    setMsgs(
+      msgs.map((m) =>
+        tab === "all" || m.cat === tab ? { ...m, unread: false } : m,
+      ),
+    );
   const markRead = (id: string) =>
-    setMsgs((prev) => prev.map((m) => (m.id === id ? { ...m, unread: false } : m)));
+    setMsgs((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, unread: false } : m)),
+    );
 
   const openMsg = (id: string) => {
     markRead(id);
@@ -170,17 +228,48 @@ function NotificationsPage() {
             全部已读
           </button>
         </div>
+        {/* 分类 Tabs */}
+        <div className="flex items-center gap-1 px-3 pb-2 overflow-x-auto">
+          {TABS.map((t) => {
+            const active = tab === t.key;
+            const n = t.key === "all" ? unreadCount : countByCat(t.key);
+            return (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`h-7 px-3 inline-flex items-center gap-1 rounded-full text-caption whitespace-nowrap border transition-colors ${
+                  active
+                    ? "bg-brand-subtle border-primary/30 text-primary font-medium"
+                    : "bg-card border-border text-text-secondary"
+                }`}
+              >
+                {t.label}
+                {n > 0 && (
+                  <span
+                    className={`min-w-[16px] h-4 px-1 rounded-full text-[10px] inline-flex items-center justify-center ${
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-[var(--state-danger)]/15 text-[var(--state-danger)]"
+                    }`}
+                  >
+                    {n}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </header>
 
       {/* 消息列表 */}
       <section className="px-3 py-3 space-y-2">
-        {sorted.length === 0 && (
+        {filtered.length === 0 && (
           <div className="text-center py-16 text-caption text-text-tertiary">
             暂无消息
           </div>
         )}
 
-        {sorted.map((m) => {
+        {filtered.map((m) => {
           const Meta = META[m.cat];
           const Icon = Meta.icon;
           return (
@@ -230,23 +319,11 @@ function NotificationsPage() {
                         催办
                       </span>
                     )}
-                    {m.rightText ? (
-                      <span
-                        className={`ml-auto text-caption ${
-                          m.rightTone === "danger"
-                            ? "text-[var(--state-danger)]"
-                            : "text-text-tertiary"
-                        }`}
-                      >
-                        {m.rightText}
-                      </span>
-                    ) : (
-                      <span
-                        className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
-                      >
-                        {Meta.label}
-                      </span>
-                    )}
+                    <span
+                      className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
+                    >
+                      {Meta.label}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -314,3 +391,4 @@ function NotificationsPage() {
     </MobileShell>
   );
 }
+
