@@ -85,9 +85,8 @@ function MLoginPage() {
     localStorage.setItem(BOUND_KEY, "1");
     localStorage.setItem(PHONE_KEY, phone);
     localStorage.setItem(PASSWORD_KEY, pwd);
-    setStep("loading");
     toast.success("账号设置成功");
-    setTimeout(() => navigate({ to: "/m" }), 600);
+    navigate({ to: "/m" });
   };
 
   return (
