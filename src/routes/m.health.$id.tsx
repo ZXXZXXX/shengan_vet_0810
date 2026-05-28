@@ -879,6 +879,39 @@ function ChecklistDay({
 
         </>
       )}
+
+      {scanFor && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex flex-col" onClick={() => setScanFor(null)}>
+          <div className="flex items-center justify-between px-4 h-14 text-white">
+            <span className="text-body font-medium">扫描药品包装二维码</span>
+            <button onClick={() => setScanFor(null)} className="h-9 w-9 inline-flex items-center justify-center">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="flex-1 flex items-center justify-center px-8" onClick={(e) => e.stopPropagation()}>
+            <div className="relative w-full aspect-square max-w-[280px] rounded-2xl border-2 border-white/60">
+              <ScanLine className="absolute inset-0 m-auto h-16 w-16 text-white/40" />
+              <div className="absolute -top-px left-0 right-0 h-0.5 bg-primary animate-pulse" />
+            </div>
+          </div>
+          <div className="px-6 pb-10 space-y-3" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center text-caption text-white/70">
+              将二维码放入框内，识别后自动完成核验
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const code = `MED-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+                update(scanFor, { status: "done", scanCode: code });
+                setScanFor(null);
+              }}
+              className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+            >
+              <ScanLine className="h-4 w-4" /> 模拟扫码成功
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
