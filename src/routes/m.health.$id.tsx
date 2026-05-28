@@ -162,7 +162,7 @@ function TaskDetailPage() {
             {[
               { key: "report", label: "上报记录" },
               { key: "review", label: "诊断记录" },
-              { key: "execute", label: "执行记录" },
+              { key: "execute", label: "执行任务" },
             ].map((t) => (
               <button
                 key={t.key}
