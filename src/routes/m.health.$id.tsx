@@ -189,7 +189,7 @@ function TaskDetailPage() {
         </div>
 
         <div className="px-4 pt-3 space-y-3">
-          {tab === "report" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无上报记录" /> : <ReportTab isLoss={isLoss} />)}
+          {tab === "report" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无上报记录" /> : <ReportTab isLoss={isLoss} status={o.status} />)}
           {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} />)}
           {tab === "execute" && <ExecuteSummary status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} />}
         </div>
@@ -276,11 +276,12 @@ function EmptyTab({ label }: { label: string }) {
 }
 
 // === 上报记录 ===
-function ReportTab({ isLoss }: { isLoss: boolean }) {
+function ReportTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
+  const isTerminated = status === "已终止";
   return (
     <>
       <Section title="基础信息">
-        <Field label="上报人" value={<PersonChip name="陈晓东" />} />
+        {!isTerminated && <Field label="上报人" value={<PersonChip name="陈晓东" />} />}
         <Field label="上报时间" value="2026-05-20 09:08" />
       </Section>
 
@@ -366,6 +367,7 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
 
 // === 诊断记录 ===
 function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
+  const isTerminated = status === "已终止";
   if (status === "待诊断") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -377,7 +379,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
   return (
     <>
       <Section title="基础信息">
-        <Field label="诊断人" value={<PersonChip name="王医生" />} />
+        {!isTerminated && <Field label="诊断人" value={<PersonChip name="王医生" />} />}
         <Field label="诊断时间" value="2026-05-20 10:15" />
       </Section>
 
@@ -461,7 +463,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
 
 
           <Section title="执行安排">
-            <Field label="指定执行人" value={<PersonChip name="李雨晴" />} />
+            {!isTerminated && <Field label="指定执行人" value={<PersonChip name="李雨晴" />} />}
             <Field label="复查 / 验收" value="第 4 天复测体温与采食情况" />
             <Field label="备注" value="如出现严重过敏立即停药并上报。" />
           </Section>
@@ -615,7 +617,6 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
             <Field label="终止原因" value="牛只死亡，停止后续治疗" />
             <Field label="是否转栏" value="否" />
             <Field label="终止时间" value="2026-05-13 18:24" />
-            <Field label="操作人" value={<PersonChip name="李雨晴" />} />
           </div>
         </div>
       ) : isPlatformIssued ? null : (
