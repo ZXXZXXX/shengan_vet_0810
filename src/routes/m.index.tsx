@@ -117,18 +117,18 @@ function MHomePage() {
           </defs>
 
           {/* 光圈太阳 */}
-          <circle cx="320" cy="118" r="72" fill="url(#m-sun)" />
-          <circle cx="320" cy="118" r="13" fill="#FFFFFF" fillOpacity="0.9" />
-          <circle cx="320" cy="118" r="21" fill="none" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="0.8" />
-          <circle cx="320" cy="118" r="32" fill="none" stroke="#FFFFFF" strokeOpacity="0.2" strokeWidth="0.6" />
+          <circle cx="320" cy="78" r="72" fill="url(#m-sun)" />
+          <circle cx="320" cy="78" r="13" fill="#FFFFFF" fillOpacity="0.9" />
+          <circle cx="320" cy="78" r="21" fill="none" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="0.8" />
+          <circle cx="320" cy="78" r="32" fill="none" stroke="#FFFFFF" strokeOpacity="0.2" strokeWidth="0.6" />
 
           {/* 草原远景阴影起伏 */}
           <path
-            d="M0 168 C 60 150, 110 175, 170 160 C 230 145, 290 178, 350 165 C 395 156, 420 170, 440 162 L440 220 L0 220 Z"
+            d="M0 148 C 60 130, 110 155, 170 140 C 230 125, 290 158, 350 145 C 395 136, 420 150, 440 142 L440 220 L0 220 Z"
             fill="url(#m-grass)"
           />
           <path
-            d="M0 188 C 70 172, 140 196, 220 184 C 300 172, 370 200, 440 188 L440 220 L0 220 Z"
+            d="M0 168 C 70 152, 140 176, 220 164 C 300 152, 370 180, 440 168 L440 220 L0 220 Z"
             fill="#063D24"
             fillOpacity="0.18"
           />
