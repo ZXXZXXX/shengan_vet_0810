@@ -124,10 +124,6 @@ function TaskDetailPage() {
             />
           </div>
 
-          <div className="rounded-lg bg-surface-subtle px-3 py-2 text-caption text-text-secondary">
-            <span className="text-text-tertiary">流转：</span>
-            {o.flow}
-          </div>
         </div>
 
         {/* === 2. Tab === */}
