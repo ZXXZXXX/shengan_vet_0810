@@ -50,7 +50,7 @@ const colorMap: Record<string, string> = {
   warning: "bg-[var(--state-warning)]/25 text-[var(--state-alert)]",
   alert: "bg-[var(--state-warning)]/25 text-[var(--state-alert)]",
   danger: "bg-[var(--state-danger)]/12 text-[var(--state-danger)]",
-  info: "bg-[var(--effect-ai-cyan)]/15 text-[var(--effect-ai-cyan)]",
+  info: "bg-[#E6F7FE] text-[#22ACEB]",
   purple: "bg-[var(--effect-ai-purple)]/15 text-[var(--effect-ai-purple)]",
   success: "bg-[var(--state-success)]/15 text-[var(--state-success)]",
   muted: "bg-surface-subtle text-text-secondary",
