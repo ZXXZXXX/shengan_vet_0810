@@ -5,8 +5,10 @@ import {
   LogOut,
   RefreshCw,
   ClipboardList,
+  ShieldCheck,
   X,
 } from "lucide-react";
+
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
 import { Role, roleLabel, roleGroup, setRole, useRole } from "@/lib/mobile-role";
@@ -57,8 +59,10 @@ function MePage() {
 
       <section className="px-4 mt-5 space-y-2">
         <MenuItem icon={ClipboardList} label="草稿箱" to="/m/drafts" />
+        <MenuItem icon={ShieldCheck} label="账号安全" to="/m/account-security" />
         <MenuItem icon={HelpCircle} label="帮助与反馈" />
       </section>
+
 
       {/* 退出 */}
       <section className="px-4 mt-5">

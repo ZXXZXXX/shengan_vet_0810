@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ShieldCheck, ArrowLeft, Phone, KeyRound, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, ArrowLeft, Phone, KeyRound, CheckCircle2, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -10,8 +10,10 @@ export const Route = createFileRoute("/m/login")({
 });
 
 const BOUND_KEY = "mp:wecom_bound";
+const PHONE_KEY = "mp:bound_phone";
+const PASSWORD_KEY = "mp:account_password";
 
-type Step = "idle" | "binding" | "loading";
+type Step = "idle" | "binding" | "password" | "loading";
 
 function MLoginPage() {
   const navigate = useNavigate();
@@ -20,6 +22,9 @@ function MLoginPage() {
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [countdown, setCountdown] = useState(0);
+  const [pwd, setPwd] = useState("");
+  const [pwd2, setPwd2] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -53,7 +58,7 @@ function MLoginPage() {
     toast.success("验证码已发送");
   };
 
-  const confirmBind = () => {
+  const verifyPhone = () => {
     if (!/^1\d{10}$/.test(phone)) {
       toast.error("请输入正确的手机号");
       return;
@@ -62,9 +67,26 @@ function MLoginPage() {
       toast.error("请输入验证码");
       return;
     }
+    setStep("password");
+  };
+
+  const isPwdStrong = (v: string) =>
+    v.length >= 8 && /[A-Za-z]/.test(v) && /\d/.test(v);
+
+  const confirmPassword = () => {
+    if (!isPwdStrong(pwd)) {
+      toast.error("密码至少 8 位，且包含字母和数字");
+      return;
+    }
+    if (pwd !== pwd2) {
+      toast.error("两次输入的密码不一致");
+      return;
+    }
     localStorage.setItem(BOUND_KEY, "1");
+    localStorage.setItem(PHONE_KEY, phone);
+    localStorage.setItem(PASSWORD_KEY, pwd);
     setStep("loading");
-    toast.success("企微已绑定账户");
+    toast.success("账号设置成功");
     setTimeout(() => navigate({ to: "/m" }), 600);
   };
 
@@ -88,10 +110,33 @@ function MLoginPage() {
               >
                 <ArrowLeft className="h-4 w-4" /> 返回
               </button>
-              <h1 className="text-page-title text-foreground tracking-tight">绑定手机号</h1>
+              <h1 className="text-page-title text-foreground tracking-tight">验证手机号</h1>
               <p className="text-body text-text-secondary mt-1">
-                首次使用企业微信登录，需验证手机号以绑定您的账户
+                首次使用企业微信登录，请先验证手机号
               </p>
+              <div className="mt-3 flex items-center gap-1.5 text-caption text-text-tertiary">
+                <span className="h-1.5 w-6 rounded-full bg-primary" />
+                <span className="h-1.5 w-6 rounded-full bg-border" />
+                <span className="ml-1">第 1 / 2 步</span>
+              </div>
+            </>
+          ) : step === "password" ? (
+            <>
+              <button
+                onClick={() => setStep("binding")}
+                className="inline-flex items-center gap-1 text-body-sm text-text-tertiary mb-3"
+              >
+                <ArrowLeft className="h-4 w-4" /> 返回
+              </button>
+              <h1 className="text-page-title text-foreground tracking-tight">设置账号密码</h1>
+              <p className="text-body text-text-secondary mt-1">
+                将作为后续登录、修改信息等场景的账号凭证
+              </p>
+              <div className="mt-3 flex items-center gap-1.5 text-caption text-text-tertiary">
+                <span className="h-1.5 w-6 rounded-full bg-primary" />
+                <span className="h-1.5 w-6 rounded-full bg-primary" />
+                <span className="ml-1">第 2 / 2 步</span>
+              </div>
             </>
           ) : (
             <>
@@ -142,7 +187,48 @@ function MLoginPage() {
             <div className="rounded-lg bg-brand-subtle/60 px-3 py-2 flex items-start gap-2">
               <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
               <span className="text-caption text-text-secondary leading-relaxed">
-                绑定后下次可直接使用企业微信一键登录，无需重复验证。
+                手机号绑定后不可更改，将作为账号唯一标识
+              </span>
+            </div>
+          </div>
+        ) : step === "password" ? (
+          <div className="flex-1 px-6 space-y-4">
+            <div className="rounded-xl bg-card border border-border p-1.5">
+              <div className="flex items-center gap-2 h-12 px-3">
+                <Lock className="h-4 w-4 text-text-tertiary" />
+                <input
+                  type={showPwd ? "text" : "password"}
+                  maxLength={32}
+                  placeholder="设置登录密码（8-32 位，含字母与数字）"
+                  value={pwd}
+                  onChange={(e) => setPwd(e.target.value)}
+                  className="flex-1 bg-transparent outline-none text-body text-foreground placeholder:text-text-tertiary"
+                />
+                <button
+                  onClick={() => setShowPwd((v) => !v)}
+                  className="text-text-tertiary"
+                  aria-label="显示密码"
+                >
+                  {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <div className="h-px bg-border mx-3" />
+              <div className="flex items-center gap-2 h-12 px-3">
+                <Lock className="h-4 w-4 text-text-tertiary" />
+                <input
+                  type={showPwd ? "text" : "password"}
+                  maxLength={32}
+                  placeholder="再次输入密码"
+                  value={pwd2}
+                  onChange={(e) => setPwd2(e.target.value)}
+                  className="flex-1 bg-transparent outline-none text-body text-foreground placeholder:text-text-tertiary"
+                />
+              </div>
+            </div>
+            <div className="rounded-lg bg-brand-subtle/60 px-3 py-2 flex items-start gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+              <span className="text-caption text-text-secondary leading-relaxed">
+                密码用于账号安全验证，可在「我的 → 账号安全」中随时重设
               </span>
             </div>
           </div>
@@ -164,10 +250,17 @@ function MLoginPage() {
         <div className="px-6 pb-10 space-y-4">
           {step === "binding" ? (
             <Button
-              onClick={confirmBind}
+              onClick={verifyPhone}
               className="w-full h-12 text-body bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              确认绑定并登录
+              下一步：设置密码
+            </Button>
+          ) : step === "password" ? (
+            <Button
+              onClick={confirmPassword}
+              className="w-full h-12 text-body bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              完成并进入首页
             </Button>
           ) : (
             <>
