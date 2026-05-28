@@ -148,18 +148,6 @@ function TaskDetailPage() {
               <span>{o.barn}</span>
             </span>
           </div>
-          {o.status === "已终止" && (
-            <div className="space-y-1 pt-1">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-caption text-text-tertiary">终止原因</span>
-                <span className="text-body-sm text-foreground">牛只死亡，停止后续治疗</span>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-caption text-text-tertiary">终止日期</span>
-                <span className="text-body-sm text-foreground">2026-05-13 18:24</span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* === 2. Tab === */}
