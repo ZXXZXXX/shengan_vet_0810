@@ -511,9 +511,19 @@ function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCod
         执行 Checklist · {singleObject ? "记录每日执行情况" : "勾选执行对象并记录执行情况"}
       </div>
 
-      <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} initialAllDone initialNote="无特殊情况" isActive />
-      <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
-      <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} initialAllDone={status === "已完成"} isActive={status === "已完成"} />
+      {(() => {
+        const allDone = status === "已完成";
+        const day1State: DayState = "done";
+        const day2State: DayState = allDone ? "done" : "active";
+        const day3State: DayState = allDone ? "done" : "pending";
+        return (
+          <>
+            <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} dayState={day1State} initialNote="精神略沉郁，已测温 39.8℃" />
+            <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} dayState={day2State} initialNote={allDone ? "体温回落至 39.1℃，采食正常" : ""} />
+            <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} dayState={day3State} initialNote={allDone ? "体温 38.6℃，恢复良好" : ""} />
+          </>
+        );
+      })()}
 
 
       <div className="rounded-xl bg-card border border-border p-4">
