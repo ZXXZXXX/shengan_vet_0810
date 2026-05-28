@@ -32,20 +32,12 @@ function MLoginPage() {
     return () => clearTimeout(t);
   }, [countdown]);
 
-  const isBound = () =>
-    typeof window !== "undefined" && localStorage.getItem(BOUND_KEY) === "1";
-
   const onWeComLogin = () => {
     if (!agreed) {
       toast.error("请先勾选并同意服务协议");
       return;
     }
-    if (isBound()) {
-      setStep("loading");
-      setTimeout(() => navigate({ to: "/m" }), 600);
-      return;
-    }
-    // 首次企微登录 → 需绑定手机号
+    // 登录、绑定手机号、设置密码均为必须流程，不区分是否已绑定
     setStep("binding");
   };
 
