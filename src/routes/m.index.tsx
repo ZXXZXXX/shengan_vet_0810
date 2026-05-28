@@ -405,7 +405,7 @@ function SummaryCard({
   const trendTone =
     trendDir === "down"
       ? "bg-[color-mix(in_srgb,var(--state-danger)_12%,transparent)] text-[var(--state-danger)]"
-      : "bg-brand-subtle text-primary";
+      : colorMap[tone];
   return (
     <div className="rounded-2xl bg-card border border-border/70 p-3 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
       <div className="flex items-start justify-between gap-2">
