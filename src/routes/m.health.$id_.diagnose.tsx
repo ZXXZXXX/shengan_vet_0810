@@ -583,7 +583,7 @@ function DiagnosePage() {
 
             {/* 文字描述 */}
             <div className="mt-3">
-              <div className="text-caption text-text-tertiary mb-2">文字描述</div>
+              <div className="text-caption text-text-tertiary mb-2">文字描述<span className="text-[var(--state-danger)] ml-0.5">*</span></div>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
