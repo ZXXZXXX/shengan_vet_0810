@@ -21,7 +21,7 @@ import { toast } from "sonner";
 type ReportSearch = { target?: string; barn?: string; lock?: number };
 
 export const Route = createFileRoute("/m/report")({
-  head: () => ({ meta: [{ title: "现场上报 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "疾病上报 · 奇点智牧" }] }),
   validateSearch: (s: Record<string, unknown>): ReportSearch => ({
     target: typeof s.target === "string" ? s.target : undefined,
     barn: typeof s.barn === "string" ? s.barn : undefined,
