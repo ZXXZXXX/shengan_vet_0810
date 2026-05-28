@@ -13,6 +13,9 @@ import {
   Sparkles,
   CheckCircle2,
   Ban,
+  Camera,
+  Video,
+  PlayCircle,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
