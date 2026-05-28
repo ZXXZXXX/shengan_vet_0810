@@ -554,7 +554,7 @@ function ReportPage() {
                       onChange={(e) => setNote(e.target.value)}
                       placeholder={cfg.note.placeholder}
                       rows={3}
-                      className="w-full p-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary resize-none"
+                      className="w-full p-3 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary resize-none leading-relaxed"
                     />
                     <div className="text-right text-caption text-text-tertiary mt-1">{note.length} / 200</div>
                   </Section>
