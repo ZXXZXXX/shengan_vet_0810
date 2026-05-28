@@ -60,7 +60,10 @@ function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"report" | "review" | "execute">("report");
+  const search = Route.useSearch();
+  const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? "report");
+  
+
   
 
   // mock data
@@ -156,7 +159,7 @@ function TaskDetailPage() {
         <div className="px-4 pt-3 space-y-3">
           {tab === "report" && <ReportTab isLoss={isLoss} />}
           {tab === "review" && <ReviewTab isLoss={isLoss} status={o.status} />}
-          {tab === "execute" && <ExecuteTab status={o.status} pickupCode={o.pickupCode} tags={execTags} readOnly />}
+          {tab === "execute" && <ExecuteSummary status={o.status} pickupCode={o.pickupCode} tags={execTags} />}
         </div>
       </div>
 
@@ -462,7 +465,26 @@ function buildDayItems(day: number, tags: string[]): ExecItem[] {
   }));
 }
 
-export function ExecuteTab({ status, pickupCode, tags, readOnly = false }: { status: StatusKey; pickupCode: string | null; tags: string[]; readOnly?: boolean }) {
+// === 执行记录（详情页只读摘要） ===
+type DaySummary = {
+  day: number;
+  date: string;
+  action: string;
+  pickup: boolean;
+  done: boolean;
+};
+
+function getExecSummary(status: StatusKey): DaySummary[] {
+  const allDone = status === "已完成";
+  const action = "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录";
+  return [
+    { day: 1, date: "05/12", action, pickup: true, done: true },
+    { day: 2, date: "05/13", action, pickup: true, done: allDone },
+    { day: 3, date: "05/14", action, pickup: true, done: allDone },
+  ];
+}
+
+export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
   if (status === "待审批" || status === "已驳回") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -471,34 +493,38 @@ export function ExecuteTab({ status, pickupCode, tags, readOnly = false }: { sta
       </div>
     );
   }
-  const singleObject = tags.length === 1;
+  void tags;
+  const days = getExecSummary(status);
+  const needPickup = Boolean(pickupCode);
   return (
     <>
-      <Section title="执行基础信息">
-        <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-        <Field label="开始执行时间" value="今日 13:08" />
-        <Field label="执行对象" value={singleObject ? tags[0] : `${tags.length} 只`} />
-      </Section>
-
-      <div className="text-caption text-text-tertiary px-1">
-        执行 Checklist · {singleObject ? "记录每日执行情况" : "勾选执行对象并记录执行情况"}
-      </div>
-
-      {(() => {
-        const allDone = status === "已完成";
-        const day1State: DayState = "done";
-        const day2State: DayState = allDone ? "done" : "active";
-        const day3State: DayState = allDone ? "done" : "pending";
-        return (
-          <>
-            <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} dayState={day1State} initialNote="精神略沉郁，已测温 39.8℃" readOnly={readOnly} />
-            <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} dayState={day2State} initialNote={allDone ? "体温回落至 39.1℃，采食正常" : ""} readOnly={readOnly} />
-            <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} dayState={day3State} initialNote={allDone ? "体温 38.6℃，恢复良好" : ""} readOnly={readOnly} />
-          </>
-        );
-      })()}
-
-
+      {days.map((d) => (
+        <div key={d.day} className="rounded-2xl bg-card border border-border p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <DayDot active={false} done={d.done} />
+              <span className={`text-body font-medium ${d.done ? "text-foreground" : "text-text-tertiary"}`}>
+                第 {d.day} 天
+              </span>
+              <span className="text-caption text-text-tertiary font-mono">{d.date}</span>
+            </div>
+            <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${d.done ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
+              {d.done ? "已完成" : "未完成"}
+            </span>
+          </div>
+          <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
+            <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
+            <div className="text-body-sm leading-relaxed text-foreground">{d.action}</div>
+          </div>
+          <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+            <PackagePlus className="h-3.5 w-3.5" />
+            <span>领物</span>
+            <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full ${needPickup && d.done ? "bg-brand-subtle text-primary" : needPickup ? "bg-surface-subtle text-text-tertiary" : "bg-surface-subtle text-text-tertiary"}`}>
+              {!needPickup ? "无需" : d.done ? "已领" : "未领"}
+            </span>
+          </div>
+        </div>
+      ))}
 
       <div className="rounded-xl bg-card border border-border p-4">
         <div className="flex items-center justify-between mb-2">
@@ -521,6 +547,26 @@ export function ExecuteTab({ status, pickupCode, tags, readOnly = false }: { sta
     </>
   );
 }
+
+// === 执行页：仅显示当前进行中的当天 checklist ===
+export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13" }: { pickupCode: string | null; tags: string[]; day?: number; date?: string }) {
+  return (
+    <>
+      <Section title="执行基础信息">
+        <Field label="执行人" value={<PersonChip name="李雨晴" />} />
+        <Field label="开始执行时间" value="今日 13:08" />
+        <Field label="执行对象" value={tags.length === 1 ? tags[0] : `${tags.length} 只`} />
+      </Section>
+
+      <div className="text-caption text-text-tertiary px-1">
+        勾选完成本日动作，可选填执行纪要
+      </div>
+
+      <ChecklistDay day={day} date={date} pickupCode={pickupCode} tags={tags} dayState="active" initialNote="" />
+    </>
+  );
+}
+
 
 type DayState = "done" | "active" | "pending";
 
