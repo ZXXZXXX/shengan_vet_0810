@@ -260,6 +260,14 @@ function getTaskCount(role: Role) {
   ).length;
 }
 
+function formatTimeAgo(minutes: number) {
+  if (minutes < 60) return `${minutes}分钟前`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}小时前`;
+  const days = Math.floor(hours / 24);
+  return `${days}天前`;
+}
+
 function TodayTaskList({ role }: { role: Role }) {
   // admin / manager 默认看 待诊断 · 疾病治疗
   const filter: RoleFilter =
