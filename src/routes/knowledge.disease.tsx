@@ -56,7 +56,6 @@ const seed: Disease[] = [
 
 function severityTagClass(s: string) {
   if (s === "高") return "tag-danger";
-  if (s === "中-高") return "tag-warning";
   if (s === "中") return "tag-warning";
   return "tag-muted";
 }
