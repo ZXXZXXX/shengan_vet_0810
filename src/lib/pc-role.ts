@@ -34,12 +34,12 @@ export function usePcRole(): PcRole {
 
 export const pcRoleLabel: Record<PcRole, string> = {
   admin: "超级管理员",
-  manager: "场长（可出诊）",
-  vet: "兽医（可出诊）",
+  manager: "场长（可诊断）",
+  vet: "兽医（可诊断）",
   assistant: "兽医助理（仅查看）",
 };
 
-/** 是否拥有"出诊（确认/驳回）"权限 */
+/** 是否拥有"诊断（确认/驳回）"权限 */
 export function canExamine(r: PcRole): boolean {
   return r === "admin" || r === "vet" || r === "manager";
 }

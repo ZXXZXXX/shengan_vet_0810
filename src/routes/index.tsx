@@ -141,7 +141,7 @@ type Notif = {
 };
 
 const notifications: Notif[] = [
-  { icon: UserPlus, title: "3 位新账户已加入", desc: "李巡检、周饲养、王兽医已完成入职出诊", time: "10 分钟前", tone: "info" },
+  { icon: UserPlus, title: "3 位新账户已加入", desc: "李巡检、周饲养、王兽医已完成入职诊断", time: "10 分钟前", tone: "info" },
   { icon: ArrowDownToLine, title: "仓库入库登记", desc: "驱虫剂 120 盒、采血管 500 支已入库", time: "32 分钟前", tone: "success" },
   { icon: ArrowUpFromLine, title: "仓库出库登记", desc: "3 号牛舍领用抗生素 8 支、生理盐水 4 瓶", time: "1 小时前", tone: "info" },
   { icon: PackageMinus, title: "库存变更提醒", desc: "疫苗 A 余量降至安全库存以下（剩 12 支）", time: "今日 09:40", tone: "warning" },
@@ -322,7 +322,7 @@ function HomePage() {
                 早上好，场长张磊
               </h2>
               <p className="text-body text-white/85 mt-1.5">
-                今日整体运行稳定，<span className="text-white font-medium">4 项</span> 申请待出诊 ·
+                今日整体运行稳定，<span className="text-white font-medium">4 项</span> 申请待诊断 ·
                 <span className="text-white font-medium"> 37 项</span> 待办，请及时处理
               </p>
 
