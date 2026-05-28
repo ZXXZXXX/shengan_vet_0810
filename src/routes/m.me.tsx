@@ -45,7 +45,7 @@ function MePage() {
           aria-hidden
           className="absolute inset-0 w-full h-full object-cover scale-125 origin-top blur-[1px]"
         />
-        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute inset-0 bg-black/5" />
         <div className="relative flex items-center gap-3">
           <div className="h-14 w-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-section-title">
             李

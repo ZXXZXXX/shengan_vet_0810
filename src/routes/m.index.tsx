@@ -93,7 +93,7 @@ function MHomePage() {
           className="absolute inset-0 w-full h-full object-cover scale-125 origin-top blur-[1px]"
         />
         {/* 暗色遮罩，保证文字可读 */}
-        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute inset-0 bg-black/5" />
         {/* 底部柔和过渡到页面背景 */}
         <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
 
