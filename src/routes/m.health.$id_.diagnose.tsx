@@ -109,6 +109,9 @@ function DiagnosePage() {
   const [rxList, setRxList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
 
+  // 终止工单
+  const [confirmTerminate, setConfirmTerminate] = useState(false);
+
   // 按匹配症状数排序的候选疾病
   const rankedDiseases = useMemo(() => {
     const kw = diseaseQuery.trim().toLowerCase();
