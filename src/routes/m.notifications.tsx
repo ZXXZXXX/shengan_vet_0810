@@ -65,7 +65,7 @@ const MSGS: Msg[] = [
     desc: "工作 T-1042 已逾期 20 分钟未开始执行，请尽快处理。",
     time: "12 分钟前",
     ts: 12,
-    link: "/m/workspace",
+    link: "/m/",
     unread: true,
   },
   {
@@ -75,7 +75,7 @@ const MSGS: Msg[] = [
     desc: "「兽医」王医生为您指派 2 号舍 4 头牛只的疾病治疗工作，计划今日 15:00 开始执行。",
     time: "2 小时前",
     ts: 120,
-    link: "/m/workspace",
+    link: "/m/",
     unread: true,
   },
   {
