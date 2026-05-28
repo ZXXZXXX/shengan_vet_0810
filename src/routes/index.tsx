@@ -297,16 +297,28 @@ function HomePage() {
           </div>
         </Card>
 
-        {/* KPI grid — 渐变描边 + 大数字 */}
+        {/* KPI grid — 简洁卡片样式 */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {kpis.map((k, i) => {
             const tones = [
               "var(--brand)",
               "var(--effect-ai-cyan)",
-              "var(--state-warning)",
+              "var(--state-danger)",
               "var(--effect-ai-purple)",
             ];
             const tone = tones[i % tones.length];
+            const isUp = k.trend === "up";
+            const isDown = k.trend === "down";
+            const chipBg = isUp
+              ? "color-mix(in oklab, var(--state-success) 18%, transparent)"
+              : isDown
+              ? "color-mix(in oklab, var(--state-danger) 14%, transparent)"
+              : "var(--bg-surface-subtle)";
+            const chipColor = isUp
+              ? "#2F7A3A"
+              : isDown
+              ? "#B23A3A"
+              : "var(--text-secondary)";
             return (
               <Card
                 key={k.label}
@@ -314,45 +326,35 @@ function HomePage() {
                 role={k.anchor ? "button" : undefined}
                 tabIndex={k.anchor ? 0 : undefined}
                 onKeyDown={k.anchor ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); scrollToAnchor(k.anchor); } } : undefined}
-                className={`relative border-border bg-card p-6 overflow-hidden group transition-all ${k.anchor ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)]" : "hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_color-mix(in_oklab,var(--brand)_50%,transparent)]"}`}
+                className={`relative border-border bg-card p-5 rounded-2xl shadow-card transition-all ${k.anchor ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-elevated" : ""}`}
               >
-                {/* 顶部彩条 */}
-                <div
-                  className="absolute inset-x-0 top-0 h-[3px]"
-                  style={{ background: `linear-gradient(90deg, ${tone}, transparent)` }}
-                />
-                {/* 角落光晕 */}
-                <div
-                  className="absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity blur-2xl"
-                  style={{ background: `color-mix(in oklab, ${tone} 30%, transparent)` }}
-                />
-                <div className="relative flex items-start justify-between">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-body-sm text-text-tertiary">{k.label}</p>
                   <div
-                    className="h-10 w-10 rounded-lg flex items-center justify-center"
+                    className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
                     style={{
                       background: `color-mix(in oklab, ${tone} 14%, transparent)`,
                       color: tone,
                     }}
                   >
-                    <k.icon className="h-4.5 w-4.5" strokeWidth={1.75} />
-                  </div>
-                  <div className="flex items-center gap-1 text-caption text-text-tertiary">
-                    <TrendIcon trend={k.trend} />
-                    <span className="tabular-nums">{k.delta}</span>
+                    <k.icon className="h-4 w-4" strokeWidth={2} />
                   </div>
                 </div>
-                <div className="relative mt-5">
-                  <p className="text-body-sm text-text-tertiary">{k.label}</p>
-                  <div className="flex items-baseline gap-1 mt-1">
-                    <span
-                      className="tabular-nums font-semibold leading-none"
-                      style={{ fontSize: "32px", color: tone }}
-                    >
-                      {k.value}
-                    </span>
-                    <span className="text-caption text-text-tertiary">{k.unit}</span>
-                  </div>
-                  <p className="text-caption text-text-tertiary mt-2">较昨日</p>
+                <div className="mt-2 flex items-baseline gap-1.5">
+                  <span className="tabular-nums font-semibold leading-none text-foreground" style={{ fontSize: "28px" }}>
+                    {k.value}
+                  </span>
+                  <span className="text-body-sm text-text-tertiary">{k.unit}</span>
+                </div>
+                <div className="mt-4 flex items-center gap-2">
+                  <span
+                    className="inline-flex items-center gap-0.5 h-[22px] px-1.5 rounded-md text-caption font-medium tabular-nums"
+                    style={{ background: chipBg, color: chipColor }}
+                  >
+                    <TrendIcon trend={k.trend} />
+                    {k.delta}
+                  </span>
+                  <span className="text-caption text-text-tertiary">vs 昨日</span>
                 </div>
               </Card>
             );
