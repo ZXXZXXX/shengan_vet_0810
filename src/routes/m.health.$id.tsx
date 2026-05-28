@@ -501,16 +501,17 @@ function getExecSummary(status: StatusKey): DaySummary[] {
   const action = "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录";
   if (terminated) {
     return [
-      { day: 1, date: "05/12", action, pickup: true, phase: "done" },
-      { day: 2, date: "05/13", action, pickup: true, phase: "done" },
+      { day: 1, date: "2026-05-12 13:08", action, pickup: true, phase: "done" },
+      { day: 2, date: "2026-05-13 13:22", action, pickup: true, phase: "done" },
     ];
   }
   return [
-    { day: 1, date: "05/12", action, pickup: true, phase: "done" },
-    { day: 2, date: "05/13", action, pickup: true, phase: allDone ? "done" : "active" },
-    { day: 3, date: "05/14", action, pickup: true, phase: allDone ? "done" : "pending" },
+    { day: 1, date: "2026-05-12 13:08", action, pickup: true, phase: "done" },
+    { day: 2, date: "2026-05-13 13:22", action, pickup: true, phase: allDone ? "done" : "active" },
+    { day: 3, date: "2026-05-14 13:15", action, pickup: true, phase: allDone ? "done" : "pending" },
   ];
 }
+
 
 export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
   const [pickupOpen, setPickupOpen] = useState(false);
