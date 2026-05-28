@@ -92,6 +92,12 @@ function TaskDetailPage() {
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
   const isPlatformImmune = id === "YM-2501";
+  const platformAction: string | undefined = isPlatformImmune
+    ? "注射免疫药物（口蹄疫疫苗）"
+    : isHoof
+      ? "修蹄护理：削蹄、检查蹄底、必要时贴蹄垫"
+      : undefined;
+  const isPlatformIssued = Boolean(platformAction);
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
 
   // 单对象工单（仅一只牛）：WO-2298、HF-* 等
@@ -118,7 +124,7 @@ function TaskDetailPage() {
     plannedAt: "今日 13:00",
     needPickup: !isLoss,
     pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
-    flow: isPlatformImmune ? "平台下发 → 李雨晴 执行" : "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
+    flow: isPlatformIssued ? "平台下发 → " + (isHoof ? "张师傅" : "李雨晴") + " 执行" : "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
   };
   const s = statusMap[o.status];
   const Icon = s.icon;
@@ -183,9 +189,9 @@ function TaskDetailPage() {
         </div>
 
         <div className="px-4 pt-3 space-y-3">
-          {tab === "report" && (isPlatformImmune ? <EmptyTab label="平台下发工单，无上报记录" /> : <ReportTab isLoss={isLoss} />)}
-          {tab === "review" && (isPlatformImmune ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} />)}
-          {tab === "execute" && <ExecuteSummary status={o.status} pickupCode={o.pickupCode} tags={execTags} isPlatformImmune={isPlatformImmune} />}
+          {tab === "report" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无上报记录" /> : <ReportTab isLoss={isLoss} />)}
+          {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} />)}
+          {tab === "execute" && <ExecuteSummary status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} />}
         </div>
       </div>
 
@@ -523,7 +529,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 
-export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = false }: { status: StatusKey; pickupCode: string | null; tags: string[]; isPlatformImmune?: boolean }) {
+export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
@@ -534,8 +540,11 @@ export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = fa
     );
   }
   void tags;
-  const days: DaySummary[] = isPlatformImmune
-    ? [{ day: 1, date: "2026-05-28 09:00", action: "按批次注射口蹄疫疫苗，扫码核验药品", pickup: true, phase: "active" }]
+  const isPlatformIssued = Boolean(platformAction);
+  const platformPhase: DayPhase = status === "已完成" ? "done" : "active";
+  const platformDate = status === "已完成" ? "2026-05-12 10:00" : "2026-05-28 09:00";
+  const days: DaySummary[] = platformAction
+    ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
     : getExecSummary(status);
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
@@ -544,7 +553,7 @@ export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = fa
 
       <Section title="基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-        <Field label="开始执行时间" value={isPlatformImmune ? "2026-05-28 09:00" : "2026-05-12 13:08"} />
+        <Field label="开始执行时间" value={isPlatformIssued ? platformDate : "2026-05-12 13:08"} />
       </Section>
 
 
@@ -603,7 +612,7 @@ export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = fa
             <Field label="操作人" value={<PersonChip name="李雨晴" />} />
           </div>
         </div>
-      ) : isPlatformImmune ? null : (
+      ) : isPlatformIssued ? null : (
         <div className="rounded-2xl bg-card border border-border p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
