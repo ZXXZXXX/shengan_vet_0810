@@ -275,7 +275,7 @@ function HomePage() {
       toast.error("请填写不通过原因");
       return;
     }
-    toast.success(`已驳回：${activeRequest.title}`);
+    toast.success(`已驳回：${workOrderTypeMeta[activeRequest.type].label} · ${activeRequest.target}`);
     setActiveRequest(null);
     setRejectReason("");
   };
