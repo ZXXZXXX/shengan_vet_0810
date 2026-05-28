@@ -131,6 +131,16 @@ const diseaseKB: { name: string; symptoms: string[]; plan: { rx: string; drugs: 
   },
 ];
 
+// 根据牛只编号查询所属牛舍（mock）
+function barnOfCattle(id: string): string {
+  const n = parseInt(id.replace(/\D/g, ""), 10);
+  if (!isNaN(n)) {
+    const idx = (Math.floor(n / 100) % 8) + 1;
+    return `${idx} 号牛舍`;
+  }
+  return "未知牛舍";
+}
+
 function ReportPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
@@ -138,19 +148,23 @@ function ReportPage() {
   // 健康类工作：内部角色（兽医/场长/兽医助理/管理员）与外部专项执行人员（如修蹄工）均可上报
   const canReportHealth = true;
 
-  const lockTarget = !!search.lock && !!search.target;
-  const lockBarn = !!search.lock && !!search.barn;
   const [kind] = useState<ReportKind>("health");
 
   const [targets, setTargets] = useState<string[]>(search.target ? [search.target] : []);
-  const [target, setTarget] = useState("");
-  const [barn] = useState(search.barn ?? "");
+  // 牛舍信息：优先使用 URL 锁定值，否则按首个牛只编号自动获取
+  const barn = useMemo(() => {
+    if (search.barn) return search.barn;
+    if (targets.length > 0) return barnOfCattle(targets[0]);
+    return "";
+  }, [search.barn, targets]);
+  const lockBarn = !!barn;
+
   const addTarget = (v: string) => {
     const t = v.trim();
     if (!t) return;
     setTargets((prev) => (prev.includes(t) ? prev : [...prev, t]));
-    setTarget("");
   };
+
   const removeTarget = (t: string) => setTargets((prev) => prev.filter((x) => x !== t));
   const updateTarget = (oldVal: string, newVal: string) => {
     const v = newVal.trim();
@@ -296,209 +310,157 @@ function ReportPage() {
 
             {/* 上报对象 */}
             <Section title="上报对象" required hint="可一次性上报多个对象">
-              {lockTarget ? (
-                <div
-                  className="space-y-2"
-                  onClick={(e) => {
-                    if (editingTarget && (e.target as HTMLElement).tagName !== "INPUT") {
-                      updateTarget(editingTarget, editingValue);
-                      setEditingTarget(null);
-                    }
-                  }}
-                >
-                  {targets.map((t) => {
-                    const isEditing = editingTarget === t;
-                    const canDelete = targets.length > 1;
-                    return (
-                      <div
-                        key={t}
-                        className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground gap-2"
-                      >
-                        {isEditing ? (
-                          <>
-                            <span className="font-mono text-text-tertiary">#</span>
-                            <input
-                              autoFocus
-                              value={editingValue}
-                              onChange={(e) => setEditingValue(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  updateTarget(t, editingValue);
-                                  setEditingTarget(null);
-                                } else if (e.key === "Escape") {
-                                  setEditingTarget(null);
-                                }
-                              }}
-                              className="font-mono flex-1 min-w-0 h-8 px-2 rounded-md bg-card border border-border text-body"
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            {lockBarn && (
-                              <span className="font-mono text-text-tertiary shrink-0">· {barn}</span>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            <span className="font-mono truncate">
-                              {`#${t}${lockBarn ? ` · ${barn}` : ""}`}
-                            </span>
+              <div
+                className="space-y-2"
+                onClick={(e) => {
+                  if (editingTarget && (e.target as HTMLElement).tagName !== "INPUT") {
+                    updateTarget(editingTarget, editingValue);
+                    setEditingTarget(null);
+                  }
+                }}
+              >
+                {targets.map((t) => {
+                  const isEditing = editingTarget === t;
+                  const canDelete = targets.length > 1;
+                  const tBarn = search.barn ?? barnOfCattle(t);
+                  return (
+                    <div
+                      key={t}
+                      className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground gap-2"
+                    >
+                      {isEditing ? (
+                        <>
+                          <span className="font-mono text-text-tertiary">#</span>
+                          <input
+                            autoFocus
+                            value={editingValue}
+                            onChange={(e) => setEditingValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                updateTarget(t, editingValue);
+                                setEditingTarget(null);
+                              } else if (e.key === "Escape") {
+                                setEditingTarget(null);
+                              }
+                            }}
+                            className="font-mono flex-1 min-w-0 h-8 px-2 rounded-md bg-card border border-border text-body"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <span className="font-mono text-text-tertiary shrink-0">· {tBarn}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-mono truncate">
+                            {`#${t} · ${tBarn}`}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingTarget(t);
+                              setEditingValue(t);
+                            }}
+                            className="ml-auto h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                            aria-label="编辑"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          {canDelete && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setEditingTarget(t);
-                                setEditingValue(t);
+                                removeTarget(t);
                               }}
-                              className="ml-auto h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
-                              aria-label="编辑"
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </button>
-                            {canDelete && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  removeTarget(t);
-                                }}
-                                className="h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
-                                aria-label="删除"
-                              >
-                                <X className="h-4 w-4" />
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    );
-                  })}
-                  <div className="text-caption text-text-tertiary">
-                    至少保留 1 项；牛舍信息不可更改
-                  </div>
-                  {lockBarn && (
-                    <>
-                      {!showAddPanel ? (
-                        <button
-                          onClick={() => setShowAddPanel(true)}
-                          className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
-                        >
-                          <Plus className="h-4 w-4" />
-                          追加同牛舍其他牛只
-                        </button>
-                      ) : (
-                        <div className="rounded-lg border border-border bg-card p-2 space-y-2">
-                          <div className="flex gap-2">
-                            <div className="flex-1 relative">
-                              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
-                              <input
-                                autoFocus
-                                value={addQuery}
-                                onChange={(e) => setAddQuery(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter" && addQuery.trim()) {
-                                    e.preventDefault();
-                                    addTarget(addQuery.trim());
-                                    setAddQuery("");
-                                  }
-                                }}
-                                placeholder="输入牛只编号搜索"
-                                className="w-full h-9 pl-8 pr-2 rounded-md bg-surface-subtle border border-border text-body-sm"
-                              />
-                            </div>
-                            <button className="h-9 px-2.5 rounded-md bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
-                              <ScanLine className="h-4 w-4" /> 扫码
-                            </button>
-                            <button
-                              onClick={() => {
-                                setShowAddPanel(false);
-                                setAddQuery("");
-                              }}
-                              className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                              className="h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                              aria-label="删除"
                             >
                               <X className="h-4 w-4" />
                             </button>
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {addMatches.length === 0 ? (
-                              <span className="text-caption text-text-tertiary px-1 py-1">无匹配结果</span>
-                            ) : (
-                              addMatches.map((s) => (
-                                <button
-                                  key={s}
-                                  onClick={() => addTarget(s)}
-                                  className="h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 font-mono"
-                                >
-                                  <Plus className="h-3 w-3" />
-                                  {s}
-                                </button>
-                              ))
-                            )}
-                          </div>
-                          <div className="text-caption text-text-tertiary">
-                            该牛舍共 {sameBarnPool.length + targets.length} 头，按编号搜索或扫码添加
-                          </div>
-                        </div>
+                          )}
+                        </>
                       )}
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <input
-                      value={target}
-                      onChange={(e) => setTarget(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          addTarget(target);
-                        }
-                      }}
-                      placeholder="输入牛只编号或牛舍后回车添加，可多选"
-                      className="flex-1 h-12 px-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
-                    />
-                    <button
-                      onClick={() => addTarget(target)}
-                      disabled={!target.trim()}
-                      className="h-12 px-3 rounded-lg bg-primary text-primary-foreground text-body-sm disabled:opacity-40"
-                    >
-                      添加
-                    </button>
-                    <button className="h-12 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
-                      <ScanLine className="h-4 w-4" /> 扫码
-                    </button>
-                  </div>
-                  {targets.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 p-2 rounded-lg bg-surface-subtle border border-border">
-                      {targets.map((t) => (
-                        <span
-                          key={t}
-                          className="inline-flex items-center gap-1 h-7 pl-2.5 pr-1 rounded-full bg-card border border-border text-caption text-foreground"
-                        >
-                          {t}
-                          <button
-                            onClick={() => removeTarget(t)}
-                            className="h-5 w-5 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </span>
-                      ))}
-                      <span className="ml-auto self-center text-caption text-text-tertiary">
-                        共 {targets.length} 项
-                      </span>
                     </div>
-                  )}
-                  <div className="flex flex-wrap gap-1.5">
-                    {["3 号牛舍", "犊牛舍 A", "批量·待挤奶群"].map((q) => (
-                      <button
-                        key={q}
-                        onClick={() => addTarget(q)}
-                        className="h-7 px-2.5 rounded-full bg-card border border-border text-caption text-text-secondary"
-                      >
-                        + {q}
-                      </button>
-                    ))}
+                  );
+                })}
+                {targets.length > 0 && (
+                  <div className="text-caption text-text-tertiary">
+                    至少保留 1 项；牛舍信息根据牛只编号自动获取，不可更改
                   </div>
-                </div>
-              )}
+                )}
+                {targets.length === 0 || showAddPanel ? (
+                  <div className="rounded-lg border border-border bg-card p-2 space-y-2">
+                    <div className="flex gap-2">
+                      <div className="flex-1 relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                        <input
+                          autoFocus
+                          value={addQuery}
+                          onChange={(e) => setAddQuery(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && addQuery.trim()) {
+                              e.preventDefault();
+                              addTarget(addQuery.trim());
+                              setAddQuery("");
+                            }
+                          }}
+                          placeholder={targets.length === 0 ? "输入牛只编号回车添加" : "输入牛只编号搜索"}
+                          className="w-full h-9 pl-8 pr-2 rounded-md bg-surface-subtle border border-border text-body-sm"
+                        />
+                      </div>
+                      <button className="h-9 px-2.5 rounded-md bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
+                        <ScanLine className="h-4 w-4" /> 扫码
+                      </button>
+                      {targets.length > 0 && (
+                        <button
+                          onClick={() => {
+                            setShowAddPanel(false);
+                            setAddQuery("");
+                          }}
+                          className="h-9 w-9 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                    {targets.length > 0 && lockBarn && (
+                      <>
+                        <div className="flex flex-wrap gap-1.5">
+                          {addMatches.length === 0 ? (
+                            <span className="text-caption text-text-tertiary px-1 py-1">无匹配结果</span>
+                          ) : (
+                            addMatches.map((s) => (
+                              <button
+                                key={s}
+                                onClick={() => addTarget(s)}
+                                className="h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 font-mono"
+                              >
+                                <Plus className="h-3 w-3" />
+                                {s}
+                              </button>
+                            ))
+                          )}
+                        </div>
+                        <div className="text-caption text-text-tertiary">
+                          {barn} 共 {sameBarnPool.length + targets.length} 头，按编号搜索或扫码添加
+                        </div>
+                      </>
+                    )}
+                    {targets.length === 0 && (
+                      <div className="text-caption text-text-tertiary">
+                        输入牛只编号后，将自动获取所属牛舍信息
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowAddPanel(true)}
+                    className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
+                  >
+                    <Plus className="h-4 w-4" />
+                    追加同牛舍其他牛只
+                  </button>
+                )}
+              </div>
+
             </Section>
 
             {/* 工作类型 */}
