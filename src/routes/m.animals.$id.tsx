@@ -102,23 +102,23 @@ function AnimalDetailPage() {
         {/* 状态标签 */}
         <section className="px-4 mt-3 flex flex-wrap gap-2">
           <span
-            className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption border ${
+            className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm font-medium border ${
               a.treating
-                ? "bg-[var(--state-warning)]/10 text-[var(--state-warning)] border-[var(--state-warning)]/30"
+                ? "bg-[#FFF7D6] text-[#B8860B] border-[#F5D76E]"
                 : "bg-surface-subtle text-text-tertiary border-border"
             }`}
           >
-            <Pill className="h-3 w-3" />
+            <Pill className="h-3.5 w-3.5" />
             {a.treating ? "治疗中" : "未治疗"}
           </span>
           <span
-            className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption border ${
+            className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm font-medium border ${
               a.withdrawalDays > 0
-                ? "bg-[var(--state-danger)]/10 text-[var(--state-danger)] border-[var(--state-danger)]/30"
+                ? "bg-[#FFE4E1] text-[#D9534F] border-[#F5B7B1]"
                 : "bg-surface-subtle text-text-tertiary border-border"
             }`}
           >
-            <Clock className="h-3 w-3" />
+            <Clock className="h-3.5 w-3.5" />
             {a.withdrawalDays > 0
               ? `休药期 · 剩 ${a.withdrawalDays} 天`
               : "非休药期"}
