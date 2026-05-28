@@ -5,8 +5,10 @@ import {
   LogOut,
   RefreshCw,
   ClipboardList,
+  ShieldCheck,
   X,
 } from "lucide-react";
+
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
 import { Role, roleLabel, roleGroup, setRole, useRole } from "@/lib/mobile-role";
