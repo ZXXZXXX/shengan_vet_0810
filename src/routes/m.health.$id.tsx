@@ -352,19 +352,9 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
   }
   return (
     <>
-      <Section title="诊断基础信息">
+      <Section title="基础信息">
         <Field label="诊断人" value={<PersonChip name="王医生" />} />
         <Field label="诊断时间" value="2026-05-20 10:15" />
-        <Field
-          label="诊断结果"
-          value={
-            status === "已终止" ? (
-              <span className="tag tag-muted">已终止</span>
-            ) : (
-              <span className="tag tag-success">通过</span>
-            )
-          }
-        />
       </Section>
 
       <>
@@ -372,7 +362,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
           <Section title="确认信息">
             <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
             <Field
-              label="确认标签"
+              label="标签"
               value={
                 <div className="flex flex-wrap gap-1 justify-end">
                   {(isLoss ? ["冷链异常"] : ["呼吸道感染", "需隔离"]).map((t) => (
@@ -384,7 +374,18 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
               }
             />
             <Field label="诊断结论" value={isLoss ? "疫苗失效，作损耗处理" : "支气管肺炎（早期）"} />
+            <Field
+              label="诊断结果"
+              value={
+                status === "已终止" ? (
+                  <span className="tag tag-muted">已终止</span>
+                ) : (
+                  <span className="tag tag-success">通过</span>
+                )
+              }
+            />
           </Section>
+
 
           <Section title="具体描述">
             <p className="text-body-sm text-text-secondary leading-relaxed">
