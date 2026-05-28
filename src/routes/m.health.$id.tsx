@@ -78,13 +78,27 @@ function TaskDetailPage() {
   const earTag = singleEar ?? (isHoof ? "#A2150" : "#A2381");
   const execTags: string[] = isSingle ? [earTag] : ["#A2381", "#A2382", "#A2383"];
 
+  // 按工单号映射状态，确保每种状态都有详情页可看
+  const statusById: Record<string, StatusKey> = {
+    "WO-2381": "待诊断",
+    "WO-2298": "进行中",
+    "WO-2401": "进行中",
+    "WO-2324": "已终止",
+    "HF-0702": "进行中",
+    "HF-0688": "已完成",
+    "LS-1029": "待诊断",
+    "LS-1011": "已完成",
+    "YM-2042": "已终止",
+  };
+  const fallbackStatus: StatusKey =
+    role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断";
   const o = {
     id,
     farm: "奇点示范牧场",
     barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : "3 号牛舍",
     target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : "3 只",
     type: isLoss ? "物资损耗" : isHoof ? "修蹄" : "疾病治疗",
-    status: (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断") as StatusKey,
+    status: (statusById[id] ?? fallbackStatus) as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
     needPickup: !isLoss,
