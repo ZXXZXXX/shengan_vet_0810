@@ -354,14 +354,37 @@ function TodayTaskList({ role }: { role: Role }) {
 
 
 // ---------------- 子组件 ----------------
-function SectionTitle({ title, hint }: { title: string; hint?: string }) {
+function SectionTitle({
+  title,
+  hint,
+  to,
+  search,
+}: {
+  title: string;
+  hint?: string;
+  to?: string;
+  search?: Record<string, unknown>;
+}) {
   return (
     <div className="flex items-center justify-between mb-2">
       <h3 className="text-card-title text-foreground">{title}</h3>
-      {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
+      {hint &&
+        (to ? (
+          <Link
+            to={to as never}
+            search={search as never}
+            className="inline-flex items-center gap-0.5 text-caption text-text-tertiary active:opacity-70"
+          >
+            {hint}
+            <ChevronRight className="h-3 w-3" />
+          </Link>
+        ) : (
+          <span className="text-caption text-text-tertiary">{hint}</span>
+        ))}
     </div>
   );
 }
+
 
 const toneAccentMap: Record<string, string> = {
   brand: "var(--brand)",
