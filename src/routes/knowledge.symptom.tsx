@@ -162,10 +162,13 @@ function SymptomKBPage() {
                   <div className="truncate">
                     <span className={`tag ${s.urgency === "高" ? "tag-danger" : "tag-warning"}`}>{s.urgency}</span>
                   </div>
-                  <div className="flex flex-wrap gap-1 overflow-hidden">
-                    {s.related.map((r) => (
-                      <span key={r} className="tag tag-muted">{r}</span>
+                  <div className="flex items-center gap-1 min-w-0 overflow-hidden">
+                    {s.related.slice(0, 2).map((r) => (
+                      <span key={r} className="tag tag-muted whitespace-nowrap">{r}</span>
                     ))}
+                    {s.related.length > 2 && (
+                      <span className="tag tag-muted whitespace-nowrap">+{s.related.length - 2}</span>
+                    )}
                   </div>
                 </div>
                 <div className="w-[160px] shrink-0 flex justify-end items-center gap-0.5">

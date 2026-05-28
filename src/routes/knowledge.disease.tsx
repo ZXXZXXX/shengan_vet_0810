@@ -181,12 +181,12 @@ function DiseaseKBPage() {
                   </div>
                   <div className="text-body-sm text-text-secondary truncate">{d.cat}</div>
                   <div className="truncate"><span className={`tag ${severityTagClass(d.severity)}`}>{d.severity}</span></div>
-                  <div className="flex flex-wrap gap-1 min-w-0">
-                    {d.symptoms.slice(0, 3).map((s) => (
-                      <span key={s} className="tag tag-muted">{s}</span>
+                  <div className="flex items-center gap-1 min-w-0 overflow-hidden">
+                    {d.symptoms.slice(0, 2).map((s) => (
+                      <span key={s} className="tag tag-muted whitespace-nowrap">{s}</span>
                     ))}
-                    {d.symptoms.length > 3 && (
-                      <span className="tag tag-muted">+{d.symptoms.length - 3}</span>
+                    {d.symptoms.length > 2 && (
+                      <span className="tag tag-muted whitespace-nowrap">+{d.symptoms.length - 2}</span>
                     )}
                   </div>
                 </div>
