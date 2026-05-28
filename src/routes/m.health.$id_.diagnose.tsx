@@ -553,7 +553,7 @@ function DiagnosePage() {
           </AlertDialogHeader>
 
           <div className="space-y-3 py-1">
-            <div className="text-body-sm text-text-secondary">是否转栏？</div>
+            <div className="text-body-sm text-text-secondary">是否转栏</div>
             <div className="flex gap-2">
               {[
                 { v: false, label: "不转栏" },
