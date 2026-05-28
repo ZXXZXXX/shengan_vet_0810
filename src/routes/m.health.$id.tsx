@@ -255,12 +255,15 @@ function PersonChip({ name }: { name: string }) {
 function ReportTab({ isLoss }: { isLoss: boolean }) {
   return (
     <>
-      <Section title="上报基础信息">
+      <Section title="基础信息">
         <Field label="上报人" value={<PersonChip name="陈晓东" />} />
         <Field label="上报时间" value="2026-05-20 09:08" />
-        <Field label="原始工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
+      </Section>
+
+      <Section title="确认信息">
+        <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
         <Field
-          label="原始标签"
+          label="标签"
           value={
             <div className="flex flex-wrap gap-1 justify-end">
               {(isLoss ? ["冷链异常", "疫苗"] : ["高烧", "食欲下降", "反刍减少"]).map((t) => (
@@ -271,6 +274,17 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
             </div>
           }
         />
+        {!isLoss && (
+          <Field
+            label="疑似疾病"
+            value={
+              <div className="flex flex-wrap gap-1 justify-end">
+                <span className="tag tag-warning">呼吸道感染</span>
+                <span className="tag tag-muted">符合症状 2 项</span>
+              </div>
+            }
+          />
+        )}
       </Section>
 
       <Section title="具体描述">
@@ -314,25 +328,17 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
         </div>
       </Section>
 
-      {!isLoss && (
-        <Section title="上报疑似疾病">
-          <div className="flex flex-wrap gap-1">
-            <span className="tag tag-warning">疑似 呼吸道感染</span>
-            <span className="tag tag-muted">符合症状 2项</span>
-          </div>
-        </Section>
-      )}
-
-      <Section title="系统推荐 · 治疗方案">
+      <Section title="治疗方案">
         <p className="text-body-sm text-text-secondary leading-relaxed">
           {isLoss
-            ? "建议：登记损耗 8 支 → 触发库存补申请（口蹄疫疫苗 A 型 × 8 支）。"
-            : "建议方案：氟尼辛葡甲胺 2ml IM × 3 天 + 头孢噻呋钠 1g IM × 3 天，隔离观察并每日测温。"}
+            ? "系统推荐：登记损耗 8 支 → 触发库存补申请（口蹄疫疫苗 A 型 × 8 支）。"
+            : "系统推荐：氟尼辛葡甲胺 2ml IM × 3 天 + 头孢噻呋钠 1g IM × 3 天，隔离观察并每日测温。"}
         </p>
       </Section>
     </>
   );
 }
+
 
 // === 诊断记录 ===
 function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
@@ -346,19 +352,9 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
   }
   return (
     <>
-      <Section title="诊断基础信息">
+      <Section title="基础信息">
         <Field label="诊断人" value={<PersonChip name="王医生" />} />
         <Field label="诊断时间" value="2026-05-20 10:15" />
-        <Field
-          label="诊断结果"
-          value={
-            status === "已终止" ? (
-              <span className="tag tag-muted">已终止</span>
-            ) : (
-              <span className="tag tag-success">通过</span>
-            )
-          }
-        />
       </Section>
 
       <>
@@ -366,7 +362,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
           <Section title="确认信息">
             <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
             <Field
-              label="确认标签"
+              label="标签"
               value={
                 <div className="flex flex-wrap gap-1 justify-end">
                   {(isLoss ? ["冷链异常"] : ["呼吸道感染", "需隔离"]).map((t) => (
@@ -378,7 +374,18 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
               }
             />
             <Field label="诊断结论" value={isLoss ? "疫苗失效，作损耗处理" : "支气管肺炎（早期）"} />
+            <Field
+              label="诊断结果"
+              value={
+                status === "已终止" ? (
+                  <span className="tag tag-muted">已终止</span>
+                ) : (
+                  <span className="tag tag-success">通过</span>
+                )
+              }
+            />
           </Section>
+
 
           <Section title="具体描述">
             <p className="text-body-sm text-text-secondary leading-relaxed">
@@ -509,6 +516,11 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
   const needPickup = Boolean(pickupCode);
   return (
     <>
+      <Section title="基础信息">
+        <Field label="执行人" value={<PersonChip name="李雨晴" />} />
+        <Field label="开始执行时间" value="2026-05-12 13:08" />
+      </Section>
+
       {days.map((d) => {
         const isDone = d.phase === "done";
         const isActive = d.phase === "active";
@@ -589,11 +601,11 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
 export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13" }: { pickupCode: string | null; tags: string[]; day?: number; date?: string }) {
   return (
     <>
-      <Section title="执行基础信息">
+      <Section title="基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
         <Field label="开始执行时间" value="今日 13:08" />
-        <Field label="执行对象" value={tags.length === 1 ? tags[0] : `${tags.length} 只`} />
       </Section>
+
 
       <div className="text-caption text-text-tertiary px-1">
         勾选完成本日动作，可选填执行纪要
