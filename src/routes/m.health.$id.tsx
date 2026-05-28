@@ -36,6 +36,9 @@ import {
 
 export const Route = createFileRoute("/m/health/$id")({
   head: () => ({ meta: [{ title: "工单详情 · 奇点智牧" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    tab: (s.tab as "report" | "review" | "execute" | undefined) ?? undefined,
+  }),
   component: TaskDetailPage,
 });
 
