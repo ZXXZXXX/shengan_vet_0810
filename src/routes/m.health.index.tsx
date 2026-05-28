@@ -93,12 +93,12 @@ const tabs: { key: Status | "全部" | "执行中"; label: string }[] = [
 
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
-  待诊断: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#B4730A]" },
-  进行中: { tag: "tag tag-info", icon: PlayCircle, color: "text-[#0369A1]" },
-
-  已完成: { tag: "tag tag-muted", icon: CheckCircle2, color: "text-text-secondary" },
-  已终止: { tag: "tag tag-danger", icon: AlertTriangle, color: "text-[#B23A3A]" },
+  待诊断: { tag: "tag tag-warning", icon: ClipboardList, color: "" },
+  进行中: { tag: "tag tag-info", icon: PlayCircle, color: "" },
+  已完成: { tag: "tag tag-success", icon: CheckCircle2, color: "" },
+  已终止: { tag: "tag tag-danger", icon: AlertTriangle, color: "" },
 };
+
 
 
 const kindIcon: Record<Kind, typeof Stethoscope> = {
