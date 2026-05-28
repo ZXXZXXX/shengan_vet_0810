@@ -72,10 +72,16 @@ function TaskDetailPage() {
   const role = useRole();
 
   const search = Route.useSearch();
-  // 根据工单状态判断默认 tab：有诊断记录优先展示诊断记录，否则展示上报记录
-  const hasDiagnosis = (statusById[id] ??
-    (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断")) !== "待诊断";
-  const defaultTab: "report" | "review" | "execute" = hasDiagnosis ? "review" : "report";
+  // 默认 tab：进行中工单（已有执行记录）直接定位到执行记录；有诊断记录优先诊断；否则上报
+  const currentStatus = statusById[id] ??
+    (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断");
+  const hasDiagnosis = currentStatus !== "待诊断";
+  const hasExecution = currentStatus === "进行中";
+  const defaultTab: "report" | "review" | "execute" = hasExecution
+    ? "execute"
+    : hasDiagnosis
+      ? "review"
+      : "report";
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   
 
@@ -563,7 +569,7 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
                 <span className={`text-body font-medium ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
                   执行记录 {String(d.day).padStart(2, "0")}
                 </span>
-                <span className="text-caption text-text-tertiary font-mono">{d.date}</span>
+                <span className="text-caption text-text-tertiary font-mono">{isDone || isActive ? d.date : "-"}</span>
               </div>
 
               <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${statusClass}`}>
