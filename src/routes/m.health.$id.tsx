@@ -39,12 +39,11 @@ export const Route = createFileRoute("/m/health/$id")({
   component: TaskDetailPage,
 });
 
-type StatusKey = "待诊断" | "进行中" | "已完成" | "已驳回" | "已终止";
+type StatusKey = "待诊断" | "进行中" | "已完成" | "已终止";
 
 const statusMap: Record<StatusKey, { tag: string; icon: typeof PlayCircle; color: string }> = {
   待诊断: { tag: "tag tag-warning", icon: ClipboardList, color: "text-[#8A5A0A]" },
   进行中: { tag: "tag tag-success", icon: PlayCircle, color: "text-[#2F7A3A]" },
-  已驳回: { tag: "tag tag-danger", icon: AlertTriangle, color: "text-[var(--state-danger)]" },
   已完成: { tag: "tag tag-muted", icon: CheckCircle2, color: "text-text-secondary" },
   已终止: { tag: "tag tag-muted", icon: AlertTriangle, color: "text-text-secondary" },
 };
@@ -332,22 +331,17 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
         <Field
           label="诊断结果"
           value={
-            status === "已驳回" ? (
-              <span className="tag tag-danger">已驳回</span>
-            ) : status === "已终止" ? (
+            status === "已终止" ? (
               <span className="tag tag-muted">已终止</span>
             ) : (
               <span className="tag tag-success">通过</span>
             )
           }
         />
-        {status === "已驳回" && (
-          <Field label="驳回理由" value="证据不充分，请补充体温记录与历史病历。" />
-        )}
       </Section>
 
-      {status !== "已驳回" && (
-        <>
+      <>
+
           <Section title="确认信息">
             <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
             <Field
@@ -411,7 +405,6 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
             <Field label="备注" value="如出现严重过敏立即停药并上报。" />
           </Section>
         </>
-      )}
     </>
   );
 }
@@ -455,7 +448,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
-  if (status === "待诊断" || status === "已驳回") {
+  if (status === "待诊断") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
         <PlayCircle className="h-6 w-6 text-text-tertiary mx-auto mb-2" />

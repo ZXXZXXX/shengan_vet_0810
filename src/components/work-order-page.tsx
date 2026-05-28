@@ -93,7 +93,7 @@ export type ReviewConclusion = {
   conclusionNote: string;
 };
 
-type WorkStatus = "待诊断" | "待响应" | "执行中" | "已驳回" | "已完成";
+type WorkStatus = "待诊断" | "待响应" | "执行中" | "已完成";
 
 export type MaterialItem = {
   id: string;
@@ -224,7 +224,7 @@ const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; t
   { key: "待诊断", label: "待诊断", icon: ClipboardList, tone: "warning" },
   { key: "待响应", label: "待响应", icon: PlayCircle, tone: "pending" },
   { key: "执行中", label: "执行中", icon: PlayCircle, tone: "info" },
-  { key: "已驳回", label: "已驳回", icon: AlertTriangle, tone: "danger" },
+  
   { key: "已完成", label: "已完成", icon: CheckCircle2, tone: "success" },
   { key: "已终止", label: "已终止", icon: Ban, tone: "muted" },
 ];
@@ -2125,7 +2125,7 @@ function pick<T>(arr: T[], i: number): T { return arr[i % arr.length]; }
 
 /**
  * 生成 15 条 mock 工单：
- * - 状态按 [待诊断, 执行中, 已完成, 已驳回] 循环
+ * - 状态按 [待诊断, 待响应, 执行中, 已完成] 循环
  * - 提出时间从今天起向前递推（覆盖今天 / 7天 / 30天 / 更早）
  * - 工单编号 = 类型拼音首字母 + 月日 + 当日该类下序号（两位数字）
  */
@@ -2133,7 +2133,7 @@ export function makeOrders(
   prefix: string,
   events: { target: string; event: string; desc: string }[],
 ): WorkOrder[] {
-  const statuses: WorkStatus[] = ["待诊断", "待响应", "执行中", "已完成", "已驳回"];
+  const statuses: WorkStatus[] = ["待诊断", "待响应", "执行中", "已完成"];
   const now = new Date();
   // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
   const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
