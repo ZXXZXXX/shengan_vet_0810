@@ -448,7 +448,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
-  if (status === "待诊断" || status === "已驳回") {
+  if (status === "待诊断") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
         <PlayCircle className="h-6 w-6 text-text-tertiary mx-auto mb-2" />
