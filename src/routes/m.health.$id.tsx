@@ -800,13 +800,13 @@ function ChecklistDay({
   let dayStatusTag: string;
   let dayStatusText: string;
   if (isDone || dayDone) {
-    dayStatusTag = "bg-brand-subtle text-primary";
+    dayStatusTag = "tag tag-success";
     dayStatusText = "已完成";
   } else if (isActive) {
-    dayStatusTag = "bg-brand-subtle text-primary";
+    dayStatusTag = "tag tag-info";
     dayStatusText = "进行中";
   } else {
-    dayStatusTag = "bg-surface-subtle text-text-tertiary";
+    dayStatusTag = "tag tag-muted";
     dayStatusText = "未开始";
   }
 
