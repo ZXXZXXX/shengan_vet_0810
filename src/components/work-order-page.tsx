@@ -1030,6 +1030,7 @@ export function WorkOrderPage({
                 {/* 字段网格 */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
                   <Field label="上报工单类型" value={title} />
+                  <Field label="所属牧场" value="奇点示范牧场" />
                   <Field label={isLoss ? "关联牛舍" : "上报对象"} value={detail.target} />
                   <Field label="提出事件" value={detail.event ?? "—"} />
                   <FieldNode
