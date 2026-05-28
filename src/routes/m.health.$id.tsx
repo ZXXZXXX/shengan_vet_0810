@@ -541,20 +541,25 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
   }
   void tags;
   const isPlatformIssued = Boolean(platformAction);
+  const isTerminated = status === "已终止";
   const platformPhase: DayPhase = status === "已完成" ? "done" : "active";
   const platformDate = status === "已完成" ? "2026-05-12 10:00" : "2026-05-28 09:00";
-  const days: DaySummary[] = platformAction
-    ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
-    : getExecSummary(status);
+  const days: DaySummary[] = isTerminated
+    ? []
+    : platformAction
+      ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
+      : getExecSummary(status);
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
     <>
 
-      <Section title="基础信息">
-        <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-        <Field label="开始执行时间" value={isPlatformIssued ? platformDate : "2026-05-12 13:08"} />
-      </Section>
+      {!isTerminated && (
+        <Section title="基础信息">
+          <Field label="执行人" value={<PersonChip name="李雨晴" />} />
+          <Field label="开始执行时间" value={isPlatformIssued ? platformDate : "2026-05-12 13:08"} />
+        </Section>
+      )}
 
 
       {days.map((d) => {
@@ -594,6 +599,7 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
           </div>
         );
       })}
+
 
 
       {status === "已终止" ? (
