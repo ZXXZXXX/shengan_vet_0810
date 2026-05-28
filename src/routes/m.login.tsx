@@ -37,7 +37,7 @@ function MLoginPage() {
     }
     if (isBound()) {
       setStep("loading");
-      setTimeout(() => navigate({ to: "/m/workspace" }), 600);
+      setTimeout(() => navigate({ to: "/m" }), 600);
       return;
     }
     // 首次企微登录 → 需绑定手机号
@@ -65,7 +65,7 @@ function MLoginPage() {
     localStorage.setItem(BOUND_KEY, "1");
     setStep("loading");
     toast.success("企微已绑定账户");
-    setTimeout(() => navigate({ to: "/m/workspace" }), 600);
+    setTimeout(() => navigate({ to: "/m" }), 600);
   };
 
   return (
