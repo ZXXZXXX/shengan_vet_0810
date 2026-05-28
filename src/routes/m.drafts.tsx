@@ -130,14 +130,6 @@ function DraftsPage() {
           icon={FileEdit}
           title="暂无草稿"
           desc="在现场上报中点击「存草稿」即可保存未完成的工单"
-          action={
-            <Link
-              to="/m/report"
-              className="h-9 px-4 rounded-full bg-primary text-primary-foreground text-body-sm inline-flex items-center"
-            >
-              去现场上报
-            </Link>
-          }
         />
       ) : (
         <div className={`px-4 pt-3 space-y-4 ${selectMode ? "pb-24" : "pb-4"}`}>
