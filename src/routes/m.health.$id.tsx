@@ -523,24 +523,42 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
       })}
 
 
-      <div className="rounded-xl bg-card border border-border p-4">
-        <div className="flex items-center justify-between mb-2">
-          <div className={`text-body-sm font-medium inline-flex items-center gap-1.5 ${status === "已完成" ? "text-foreground" : "text-text-tertiary"}`}>
-            {status === "已完成" ? (
-              <CheckCircle2 className="h-4 w-4 text-primary" />
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
-                <circle cx="8" cy="8" r="7" fill="none" stroke="var(--text-tertiary)" strokeWidth="1.2" strokeDasharray="2 2" />
-              </svg>
-            )}
-            复查 / 验收
+      {status === "已终止" ? (
+        <div className="rounded-xl bg-card border border-border p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-body-sm font-medium inline-flex items-center gap-1.5 text-foreground">
+              <AlertTriangle className="h-4 w-4 text-text-secondary" />
+              工单终止
+            </div>
+            <span className="tag tag-muted">已终止</span>
           </div>
-          <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${status === "已完成" ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
-            {status === "已完成" ? "已完成" : "未开始"}
-          </span>
+          <div className="space-y-2">
+            <Field label="终止原因" value="牛只死亡，停止后续治疗" />
+            <Field label="是否转栏" value="否" />
+            <Field label="终止时间" value="2026-05-13 18:24" />
+            <Field label="操作人" value={<PersonChip name="李雨晴" />} />
+          </div>
         </div>
-        <div className="text-caption text-text-tertiary">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
-      </div>
+      ) : (
+        <div className="rounded-xl bg-card border border-border p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className={`text-body-sm font-medium inline-flex items-center gap-1.5 ${status === "已完成" ? "text-foreground" : "text-text-tertiary"}`}>
+              {status === "已完成" ? (
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
+                  <circle cx="8" cy="8" r="7" fill="none" stroke="var(--text-tertiary)" strokeWidth="1.2" strokeDasharray="2 2" />
+                </svg>
+              )}
+              复查 / 验收
+            </div>
+            <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${status === "已完成" ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
+              {status === "已完成" ? "已完成" : "未开始"}
+            </span>
+          </div>
+          <div className="text-caption text-text-tertiary">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
+        </div>
+      )}
     </>
   );
 }
