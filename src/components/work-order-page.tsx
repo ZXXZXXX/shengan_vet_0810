@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePcRole, setPcRole, canReview, pcRoleLabel, type PcRole } from "@/lib/pc-role";
+import { usePcRole, setPcRole, canExamine, pcRoleLabel, type PcRole } from "@/lib/pc-role";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -627,7 +627,7 @@ export function WorkOrderPage({
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null;
-        if (canReview(role) && o.status === "待出诊") {
+        if (canExamine(role) && o.status === "待出诊") {
           return (
             <div className="inline-flex items-center gap-0.5">
               <Button
@@ -1166,7 +1166,7 @@ export function WorkOrderPage({
               </section>
 
               {/* ============ 二、出诊结论（处理态） ============ */}
-              {!isLoss && canReview(role) && detail.status === "待出诊" && mode === "process" && (
+              {!isLoss && canExamine(role) && detail.status === "待出诊" && mode === "process" && (
                 <section className="space-y-3">
                   <SectionHeader icon={<ClipboardCheck className="h-3.5 w-3.5" />} title="出诊结论" hint="以专业视角，根据线索重新确认类型、标签与结论" tone="brand" />
                   <div className="rounded-md border border-primary/30 bg-brand-subtle/30 p-4 space-y-4">
@@ -1305,7 +1305,7 @@ export function WorkOrderPage({
               )}
 
               {/* ============ 三、执行计划（处理态） ============ */}
-              {!isLoss && canReview(role) && detail.status === "待出诊" && mode === "process" && (
+              {!isLoss && canExamine(role) && detail.status === "待出诊" && mode === "process" && (
                 <section className="space-y-3">
                   <SectionHeader
                     icon={<Stethoscope className="h-3.5 w-3.5" />}
@@ -1330,7 +1330,7 @@ export function WorkOrderPage({
               )}
 
               {/* ============ 四、指派执行人（处理态） ============ */}
-              {!isLoss && canReview(role) && detail.status === "待出诊" && mode === "process" && (
+              {!isLoss && canExamine(role) && detail.status === "待出诊" && mode === "process" && (
                 <section className="space-y-3">
                   <SectionHeader icon={<UserPlus className="h-3.5 w-3.5" />} title="指派执行人" hint="选填" />
                   <div className="rounded-md border border-border bg-card p-4">
@@ -1374,7 +1374,7 @@ export function WorkOrderPage({
           })()}
           </div>
 
-          {detail && canReview(role) && detail.status === "待出诊" && (
+          {detail && canExamine(role) && detail.status === "待出诊" && (
             <SheetFooter className="px-6 py-3 border-t border-border bg-card gap-2">
               {mode === "view" ? (
                 <Button
