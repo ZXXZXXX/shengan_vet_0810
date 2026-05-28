@@ -827,12 +827,6 @@ function DiagnosePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <button
-                onClick={() => { setExecutor(""); setShowExecutorPicker(false); setExecutorQuery(""); }}
-                className={`w-full h-10 rounded-lg border text-body-sm inline-flex items-center justify-center gap-1.5 ${executor === "" ? "border-primary bg-brand-subtle text-primary" : "border-border bg-surface-subtle text-text-secondary"}`}
-              >
-                不指派，进入待响应池
-              </button>
               {executorMatches.map((name) => (
                 <button
                   key={name}
