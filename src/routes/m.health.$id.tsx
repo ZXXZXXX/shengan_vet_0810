@@ -643,7 +643,7 @@ function ChecklistDay({
                   <button
                     type="button"
                     onClick={() => toggleDone(it.id, it.status)}
-                    disabled={!isActive}
+                    disabled={!interactive}
                     className={`w-full flex items-center gap-2.5 h-12 px-3 rounded-xl border text-left transition-all active:scale-[0.99] ${
                       done
                         ? "border-primary/40 bg-brand-subtle/30"
@@ -652,7 +652,7 @@ function ChecklistDay({
                           : isActive
                             ? "border-border bg-card"
                             : "border-border bg-card opacity-80"
-                    } ${!isActive ? "cursor-default" : ""}`}
+                    } ${!interactive ? "cursor-default" : ""}`}
                   >
                     {done ? (
                       <CheckSquare className="h-4 w-4 text-primary shrink-0" />
@@ -668,7 +668,7 @@ function ChecklistDay({
                     >
                       {it.title}
                     </span>
-                    {isActive && !done && (
+                    {interactive && !done && (
                       <span
                         role="button"
                         onClick={(e) => {
@@ -689,7 +689,7 @@ function ChecklistDay({
               );
             })}
 
-            {isActive ? (
+            {interactive ? (
               <li>
                 {noteEditing || !dayNote ? (
                   <div
@@ -722,7 +722,7 @@ function ChecklistDay({
                   </button>
                 )}
               </li>
-            ) : isDone && dayNote ? (
+            ) : (isDone || (isActive && readOnly)) && dayNote ? (
               <li>
                 <div className="rounded-xl border border-border bg-surface-subtle px-3 py-2.5">
                   <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-0.5">
@@ -733,6 +733,7 @@ function ChecklistDay({
               </li>
             ) : null}
           </ul>
+
         </>
       )}
     </div>
