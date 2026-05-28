@@ -114,14 +114,7 @@ function MHomePage() {
               <stop offset="0%" stopColor="#063D24" stopOpacity="0.22" />
               <stop offset="100%" stopColor="#063D24" stopOpacity="0" />
             </linearGradient>
-            {/* 牧场透视网格线 */}
-            <pattern id="m-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M0 0H40M0 0V40" stroke="#FFFFFF" strokeOpacity="0.08" strokeWidth="0.6" />
-            </pattern>
           </defs>
-
-          {/* 顶层网格纹理（数字感） */}
-          <rect width="440" height="220" fill="url(#m-grid)" />
 
           {/* 光圈太阳 */}
           <circle cx="320" cy="118" r="72" fill="url(#m-sun)" />
