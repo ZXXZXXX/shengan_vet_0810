@@ -525,6 +525,7 @@ function ChecklistDay({
   tags,
   dayState,
   initialNote = "",
+  readOnly = false,
 }: {
   day: number;
   date: string;
@@ -532,10 +533,12 @@ function ChecklistDay({
   tags: string[];
   dayState: DayState;
   initialNote?: string;
+  readOnly?: boolean;
 }) {
   const isActive = dayState === "active";
   const isDone = dayState === "done";
   const isPending = dayState === "pending";
+  const interactive = isActive && !readOnly;
 
   const [items, setItems] = useState<ExecItem[]>(() => {
     const base = buildDayItems(day, tags);
@@ -570,11 +573,12 @@ function ChecklistDay({
     setItems((arr) => arr.map((it) => (it.id === id ? { ...it, ...patch } : it)));
 
   const toggleDone = (id: string, current: ItemStatus) => {
-    if (!isActive) return;
+    if (!interactive) return;
     update(id, { status: current === "done" ? "pending" : "done" });
   };
 
   const pickupDone = isActive && dayDone;
+
 
   return (
     <div className="rounded-2xl bg-card border border-border overflow-hidden">
