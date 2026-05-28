@@ -114,7 +114,7 @@ function MobileTabBar() {
           <Link
             to="/m/scan"
             aria-label="扫码"
-            className="-mt-5 h-14 w-14 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center shadow-[0_8px_20px_-6px_color-mix(in_oklab,var(--primary)_55%,transparent)] ring-4 ring-card active:scale-95 transition-transform"
+            className="-mt-5 h-14 w-14 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center shadow-[0_12px_32px_-4px_color-mix(in_oklab,var(--primary)_55%,transparent),0_4px_10px_-2px_color-mix(in_oklab,var(--primary)_40%,transparent)] ring-4 ring-card active:scale-95 transition-transform"
           >
             <ScanLine className="h-6 w-6" strokeWidth={2} />
           </Link>
