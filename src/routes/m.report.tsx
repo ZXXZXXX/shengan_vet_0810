@@ -502,15 +502,15 @@ function ReportPage() {
                         <button
                           key={t}
                           onClick={() => toggleSymptom(t)}
-                          className={`h-8 px-3 rounded-full text-body-sm transition-colors inline-flex items-center gap-1 ${
+                          className={`h-9 px-3.5 rounded-full text-body-sm transition-all active:scale-[0.96] inline-flex items-center gap-1 ${
                             active
-                              ? "bg-primary text-primary-foreground"
+                              ? "bg-primary text-primary-foreground shadow-[0_2px_6px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
                               : isOther
                               ? "bg-card border border-dashed border-border text-text-secondary"
                               : "bg-card border border-border text-text-secondary"
                           }`}
                         >
-                          {isOther && <Plus className="h-3 w-3" />}
+                          {isOther && <Plus className="h-3.5 w-3.5" />}
                           {t}
                         </button>
                       );
