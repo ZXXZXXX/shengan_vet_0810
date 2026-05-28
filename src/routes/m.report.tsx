@@ -286,7 +286,7 @@ function ReportPage() {
     const base = kw ? sameBarnPool.filter((x) => x.toLowerCase().includes(kw)) : sameBarnPool;
     return base.slice(0, 8);
   }, [addQuery, sameBarnPool]);
-  const primaryTarget = search.target ?? targets[0];
+  
 
   return (
     <MobileShell title="现场上报" back hideTabBar>
