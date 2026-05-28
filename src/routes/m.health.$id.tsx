@@ -571,21 +571,22 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
         const pickupDone = needPickup && isDone;
         return (
           <div key={d.day} className="rounded-2xl bg-card border border-border p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between mb-2 min-h-6">
+              <div className="flex items-center gap-2 leading-6">
                 <DayDot active={isActive} done={isDone} />
-                <span className={`text-body font-medium ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
+                <span className={`text-body font-medium leading-6 ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
                   执行任务{String(d.day).padStart(2, "0")}
                 </span>
-                <span className="text-caption text-text-tertiary font-mono" suppressHydrationWarning>
+                <span className="text-caption text-text-tertiary font-mono leading-6" suppressHydrationWarning>
                   {isDone ? d.date : d.date.split(' ')[0]}
                 </span>
               </div>
 
-              <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${statusClass}`}>
+              <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium leading-none ${statusClass}`}>
                 {statusLabel}
               </span>
             </div>
+
             <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
               <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
               <div className="text-body-sm leading-relaxed text-foreground">{d.action}</div>
