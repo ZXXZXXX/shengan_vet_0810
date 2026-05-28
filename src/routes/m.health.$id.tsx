@@ -60,7 +60,10 @@ function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
   const role = useRole();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"report" | "review" | "execute">("report");
+  const search = Route.useSearch();
+  const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? "report");
+  
+
   
 
   // mock data
