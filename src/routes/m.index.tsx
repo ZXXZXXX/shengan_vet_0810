@@ -90,7 +90,7 @@ function MHomePage() {
           src={grasslandHero}
           alt=""
           aria-hidden
-          className="absolute inset-0 w-full h-full object-cover scale-125 translate-y-6 origin-top"
+          className="absolute inset-0 w-full h-full object-cover scale-150 translate-y-10 origin-center"
         />
         {/* 顶部加深，保证文字在深色区域可读 */}
         <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-black/25 to-transparent" />
@@ -99,7 +99,7 @@ function MHomePage() {
 
 
 
-        <div className="relative px-4 pt-4 pb-7">
+        <div className="relative px-4 pt-8 pb-10">
           <div className="flex items-start justify-between">
             <div className="min-w-0">
               <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25">
