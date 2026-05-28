@@ -480,13 +480,6 @@ function buildDayItems(day: number, _tags: string[]): ExecItem[] {
       status: "pending",
       needMed: true,
     },
-    {
-      id: `d${day}-t3`,
-      title: "测温并记录",
-      desc: "记录直肠温度",
-      status: "pending",
-      needMed: false,
-    },
   ];
 }
 
