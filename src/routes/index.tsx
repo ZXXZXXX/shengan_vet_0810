@@ -49,51 +49,87 @@ const kpis = [
   { label: "待办工作", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "alerts" as const },
 ];
 
-type RequestType = "health" | "loss";
+type WorkOrderType = "disease" | "vaccine" | "deworm" | "hoof" | "postpartum" | "drying" | "general";
 type PendingRequest = {
   id: string;
-  type: RequestType;
-  title: string;
-  desc: string;
+  type: WorkOrderType;
+  target: string;
+  targetKind: "cattle" | "barn" | "batch";
   applicant: string;
+  applicantRole: string;
   time: string;
+  symptoms: string[];
   detail: string;
+};
+
+const workOrderTypeMeta: Record<WorkOrderType, { label: string; tone: "warning" | "danger" | "info" | "success" | "muted" }> = {
+  disease: { label: "疾病诊疗", tone: "danger" },
+  vaccine: { label: "免疫接种", tone: "info" },
+  deworm: { label: "驱虫", tone: "warning" },
+  hoof: { label: "修蹄", tone: "muted" },
+  postpartum: { label: "产后护理", tone: "success" },
+  drying: { label: "干奶", tone: "info" },
+  general: { label: "常规处置", tone: "muted" },
 };
 
 const pendingRequests: PendingRequest[] = [
   {
-    id: "REQ-2381",
-    type: "health",
-    title: "3 号牛舍体温异常处置申请",
-    desc: "申请对牛只 #A2381 启动隔离观察并使用抗生素",
+    id: "WO-2381",
+    type: "disease",
+    target: "#A2381",
+    targetKind: "cattle",
     applicant: "李兽医",
+    applicantRole: "兽医",
     time: "8 分钟前",
+    symptoms: ["高热", "食欲不振", "呼吸急促"],
     detail: "牛只 #A2381 持续 2 小时体温高于 40℃，建议转入隔离区并安排血常规检测，预计耗材：抗生素 1 支、采血管 2 支。",
   },
   {
-    id: "REQ-2379",
-    type: "health",
-    title: "免疫工作延期申请",
-    desc: "5 头待免疫牛只因发情期申请延后 3 天",
+    id: "WO-2380",
+    type: "disease",
+    target: "3 号牛舍",
+    targetKind: "barn",
+    applicant: "王巡检",
+    applicantRole: "巡检员",
+    time: "32 分钟前",
+    symptoms: ["乳房肿胀", "产奶下降"],
+    detail: "3 号牛舍 4 头泌乳牛出现疑似乳房炎症状，申请兽医介入并启动抗生素治疗流程。",
+  },
+  {
+    id: "WO-2379",
+    type: "vaccine",
+    target: "B-免疫批次 0512",
+    targetKind: "batch",
     applicant: "赵兽医",
+    applicantRole: "兽医",
     time: "1 小时前",
+    symptoms: ["发情期"],
     detail: "5 头待免疫牛只目前处于发情期，按规程不宜立即免疫。申请将本批免疫计划由 5/12 顺延至 5/15 执行。",
   },
   {
-    id: "REQ-2377",
-    type: "loss",
-    title: "药品损耗确认申请",
-    desc: "5 号牛舍驱虫剂破损 3 盒，申请确认为正常损耗",
-    applicant: "孙库管",
+    id: "WO-2376",
+    type: "hoof",
+    target: "#A2105",
+    targetKind: "cattle",
+    applicant: "孙助理",
+    applicantRole: "兽医助理",
     time: "今日 09:12",
-    detail: "5 号牛舍在搬运过程中发现驱虫剂包装破损 3 盒，已拍照留档。申请确认为正常损耗并核销库存。",
+    symptoms: ["跛行", "蹄底溃疡"],
+    detail: "牛只 #A2105 出现明显跛行，蹄部肉眼可见溃疡，申请安排修蹄并外敷消炎药。",
+  },
+  {
+    id: "WO-2374",
+    type: "postpartum",
+    target: "#A2418",
+    targetKind: "cattle",
+    applicant: "周饲养",
+    applicantRole: "饲养员",
+    time: "今日 08:30",
+    symptoms: ["产后无力", "体温偏低"],
+    detail: "产后母牛 #A2418 站立困难，体温 37.8℃，申请兽医到场评估并补充能量制剂。",
   },
 ];
 
-const requestTypeMeta: Record<RequestType, { label: string; tone: string }> = {
-  health: { label: "健康防护", tone: "warning" },
-  loss: { label: "药品损耗", tone: "danger" },
-};
 
 type NotifTone = "info" | "success" | "warning" | "danger";
 type Notif = {
@@ -229,7 +265,7 @@ function HomePage() {
 
   const handleApprove = () => {
     if (!activeRequest) return;
-    toast.success(`已通过：${activeRequest.title}`);
+    toast.success(`已通过：${workOrderTypeMeta[activeRequest.type].label} · ${activeRequest.target}`);
     setActiveRequest(null);
     setRejectReason("");
   };
@@ -239,7 +275,7 @@ function HomePage() {
       toast.error("请填写不通过原因");
       return;
     }
-    toast.success(`已驳回：${activeRequest.title}`);
+    toast.success(`已驳回：${workOrderTypeMeta[activeRequest.type].label} · ${activeRequest.target}`);
     setActiveRequest(null);
     setRejectReason("");
   };
@@ -389,29 +425,48 @@ function HomePage() {
             </div>
             <div className="divide-y divide-border">
               {pendingRequests.map((r) => {
-                const meta = requestTypeMeta[r.type];
+                const meta = workOrderTypeMeta[r.type];
+                const targetIcon = r.targetKind === "cattle" ? "牛只" : r.targetKind === "barn" ? "牛舍" : "批次";
                 return (
                   <button
                     key={r.id}
                     type="button"
                     onClick={() => setActiveRequest(r)}
-                    className="w-full text-left px-6 py-3.5 flex items-center gap-4 hover:bg-surface-subtle transition-colors"
+                    className="w-full text-left px-6 py-3.5 hover:bg-surface-subtle transition-colors"
                   >
-                    <span className={`tag ${r.type === "health" ? "tag-warning" : "tag-danger"}`}>
-                      {meta.label}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-body text-foreground truncate">{r.title}</p>
-                      <p className="text-caption text-text-tertiary truncate mt-0.5">
-                        提出者 · {r.applicant} · {r.desc}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <span className={`tag tag-${meta.tone}`}>{meta.label}</span>
+                      <span className="text-body text-foreground font-medium tabular-nums">{r.target}</span>
+                      <span className="text-caption text-text-tertiary">· {targetIcon}</span>
+                      <span className="ml-auto text-caption text-text-tertiary tabular-nums whitespace-nowrap">{r.time}</span>
                     </div>
-                    <span className="text-caption text-text-tertiary tabular-nums whitespace-nowrap">{r.time}</span>
+                    <div className="mt-1.5 flex items-center gap-2 text-caption text-text-tertiary">
+                      <span>工单 {r.id}</span>
+                      <span>·</span>
+                      <span>{r.applicantRole} {r.applicant}</span>
+                    </div>
+                    {r.symptoms.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {r.symptoms.map((s) => (
+                          <span
+                            key={s}
+                            className="inline-flex items-center h-[22px] px-2 rounded-md text-caption tabular-nums"
+                            style={{
+                              background: "color-mix(in oklab, var(--state-warning) 12%, transparent)",
+                              color: "#A35A00",
+                            }}
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </button>
                 );
               })}
             </div>
           </Card>
+
 
           <Card className="border-border bg-card">
             <div className="p-6 pb-4 flex items-center justify-between">
@@ -514,22 +569,44 @@ function HomePage() {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`tag ${activeRequest.type === "health" ? "tag-warning" : "tag-danger"}`}>
-                    {requestTypeMeta[activeRequest.type].label}
+                  <span className={`tag tag-${workOrderTypeMeta[activeRequest.type].tone}`}>
+                    {workOrderTypeMeta[activeRequest.type].label}
                   </span>
                   <span className="text-caption text-text-tertiary tabular-nums">{activeRequest.id}</span>
                 </div>
-                <DialogTitle className="text-card-title">{activeRequest.title}</DialogTitle>
+                <DialogTitle className="text-card-title">
+                  {workOrderTypeMeta[activeRequest.type].label} · {activeRequest.target}
+                </DialogTitle>
                 <DialogDescription className="text-body-sm text-text-secondary">
-                  提出者 {activeRequest.applicant} · {activeRequest.time}
+                  提出者 {activeRequest.applicantRole} {activeRequest.applicant} · {activeRequest.time}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-3 py-1">
+                {activeRequest.symptoms.length > 0 && (
+                  <div>
+                    <p className="text-caption text-text-tertiary mb-1.5">症状标签</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {activeRequest.symptoms.map((s) => (
+                        <span
+                          key={s}
+                          className="inline-flex items-center h-[24px] px-2 rounded-md text-caption"
+                          style={{
+                            background: "color-mix(in oklab, var(--state-warning) 12%, transparent)",
+                            color: "#A35A00",
+                          }}
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="rounded-md bg-surface-subtle border border-border p-3">
                   <p className="text-caption text-text-tertiary mb-1">申请详情</p>
                   <p className="text-body-sm text-foreground leading-relaxed">{activeRequest.detail}</p>
                 </div>
+
                 <div>
                   <label className="text-caption text-text-tertiary">不通过原因（驳回时必填）</label>
                   <Textarea
