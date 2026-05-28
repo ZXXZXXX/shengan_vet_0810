@@ -1098,16 +1098,13 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <div className="flex items-baseline gap-2 mb-2 px-0.5">
-        <div className="flex items-center gap-1.5">
-          <span className="inline-block w-0.5 h-3.5 rounded-full bg-primary" />
-          <div className="text-body-sm font-medium text-foreground">
-            {title}
-            {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
-          </div>
+    <div className="rounded-xl bg-card border border-border p-4">
+      <div className="flex items-center justify-between mb-3 gap-2">
+        <div className="text-card-title text-foreground">
+          {title}
+          {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
         </div>
-        {hint && <div className="text-caption text-text-tertiary">{hint}</div>}
+        {hint && <div className="text-caption text-text-tertiary text-right">{hint}</div>}
       </div>
       {children}
     </div>
