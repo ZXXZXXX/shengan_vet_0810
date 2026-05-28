@@ -1,4 +1,4 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Home, ClipboardList, Bell, User, ScanLine } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -46,12 +46,28 @@ function MobileTopBar({
   back?: { to: string; label?: string } | true;
   right?: ReactNode;
 }) {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const goParent = () => {
+    if (typeof back === "object" && back?.to) {
+      navigate({ to: back.to });
+      return;
+    }
+    // 返回上一级路由（按路径层级），最低落到 /m
+    const segments = pathname.replace(/\/+$/, "").split("/").filter(Boolean);
+    if (segments.length <= 1) {
+      navigate({ to: "/m" });
+      return;
+    }
+    const parent = "/" + segments.slice(0, -1).join("/");
+    navigate({ to: parent || "/m" });
+  };
   return (
     <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border">
       <div className="h-12 px-4 flex items-center gap-2">
         {back ? (
           <button
-            onClick={() => window.history.back()}
+            onClick={goParent}
             className="-ml-1 h-8 px-2 inline-flex items-center text-body-sm text-text-secondary hover:text-primary"
           >
             ‹ 返回
