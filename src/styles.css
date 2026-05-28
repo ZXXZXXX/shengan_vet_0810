@@ -216,29 +216,30 @@
   .text-text-secondary { color: var(--text-secondary); }
   .text-text-tertiary { color: var(--text-tertiary); }
 
-  /* Unified tag — flat, no shadow, 3-4 chars */
+  /* Unified tag — soft pastel, matching hue text */
   .tag {
     display: inline-flex;
     align-items: center;
     height: 22px;
-    padding: 0 8px;
-    border-radius: 4px;
+    padding: 0 10px;
+    border-radius: 8px;
     font-size: 12px;
     line-height: 20px;
-    font-weight: 400;
+    font-weight: 500;
     border: 0;
     box-shadow: none;
     white-space: nowrap;
   }
-  /* Tag text always uses the same hue family as the background */
-  .tag-success  { background-color: color-mix(in srgb, var(--state-success) 22%, transparent); color: #2F7A3A; }
-  .tag-warning  { background-color: color-mix(in srgb, var(--state-warning) 45%, transparent); color: #8A5A0A; }
-  .tag-danger   { background-color: color-mix(in srgb, var(--state-danger) 14%, transparent);  color: #B23A3A; }
-  .tag-info     { background-color: color-mix(in srgb, #0EA5E9 14%, transparent); color: #0369A1; }
+  /* 正常 / 处理中 / 待处理 / 异常 — pastel palette per spec */
+  .tag-success  { background-color: #DFF3E2; color: #3A9D55; }
+  .tag-info     { background-color: #D4ECF4; color: #3A93B5; }
+  .tag-warning  { background-color: #FCE4C8; color: #C2823A; }
+  .tag-danger   { background-color: #FBD9D2; color: #C95445; }
 
   .tag-muted    { background-color: var(--bg-surface-subtle); color: var(--text-secondary); }
   .tag-brand    { background-color: var(--brand-subtle); color: var(--brand); }
   .tag-outline  { background-color: transparent; color: var(--text-secondary); box-shadow: inset 0 0 0 1px var(--border-default); }
+
 
   .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -286,12 +287,13 @@
   --state-info:    #0EA5E9;
 
   --sidebar-hover: #F0F2F4;
-}
-.m-scope .tag-success { background-color: color-mix(in srgb, #00A85A 14%, transparent); color: #00794A; }
-.m-scope .tag-warning { background-color: color-mix(in srgb, #F59E0B 18%, transparent); color: #B4730A; }
-.m-scope .tag-danger  { background-color: color-mix(in srgb, #EF4444 14%, transparent); color: #B23A3A; }
-.m-scope .tag-info    { background-color: color-mix(in srgb, #0EA5E9 14%, transparent); color: #0369A1; }
+.m-scope .tag-success { background-color: #DFF3E2; color: #3A9D55; }
+.m-scope .tag-warning { background-color: #FCE4C8; color: #C2823A; }
+.m-scope .tag-danger  { background-color: #FBD9D2; color: #C95445; }
+.m-scope .tag-info    { background-color: #D4ECF4; color: #3A93B5; }
 .m-scope .tag-muted   { background-color: #F0F2F4; color: #475569; }
+.m-scope .tag-brand   { background-color: #E6F8EC; color: #00A85A; }
+
 .m-scope .tag-brand   { background-color: #E6F8EC; color: #00A85A; }
 
 .m-scope .text-page-title    { font-size: 22px; line-height: 32px; font-weight: 500; }

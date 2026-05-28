@@ -232,7 +232,8 @@ const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; t
 const toneStyles: Record<string, { bg: string; text: string; tag: string }> = {
   warning: { bg: "bg-[var(--state-warning)]/10", text: "text-[var(--state-warning)]", tag: "tag tag-warning" },
   pending: { bg: "bg-surface-subtle", text: "text-text-secondary", tag: "tag tag-muted" },
-  info: { bg: "bg-brand-subtle", text: "text-primary", tag: "tag tag-brand" },
+  info: { bg: "bg-[var(--state-info)]/10", text: "text-[var(--state-info)]", tag: "tag tag-info" },
+
   danger: { bg: "bg-[var(--state-danger)]/10", text: "text-[var(--state-danger)]", tag: "tag tag-danger" },
   success: { bg: "bg-[var(--state-success)]/10", text: "text-[var(--state-success)]", tag: "tag tag-success" },
   muted: { bg: "bg-surface-subtle", text: "text-text-tertiary", tag: "tag tag-muted" },
