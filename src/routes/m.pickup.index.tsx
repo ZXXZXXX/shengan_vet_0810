@@ -73,7 +73,7 @@ function PickupListPage() {
   };
 
   return (
-    <MobileShell title="待领物" back={{ to: "/m/" }}>
+    <MobileShell title="待领物" back>
       <div className="px-4 pt-3">
         <div className="rounded-lg bg-surface-subtle border border-border px-3 py-2 text-caption text-text-tertiary inline-flex items-start gap-1.5 w-full">
           <MapPin className="h-3 w-3 text-primary shrink-0 mt-0.5" />

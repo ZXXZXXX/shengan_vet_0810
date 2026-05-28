@@ -171,7 +171,7 @@ function RespondListPage() {
   };
 
   return (
-    <MobileShell title="待响应" back={{ to: "/m/" }}>
+    <MobileShell title="待响应" back>
       {/* 搜索 */}
       <div className="px-4 pt-3">
         <div className="relative">

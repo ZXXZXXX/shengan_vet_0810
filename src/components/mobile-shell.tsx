@@ -50,12 +50,12 @@ function MobileTopBar({
     <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border">
       <div className="h-12 px-4 flex items-center gap-2">
         {back ? (
-          <Link
-            to={typeof back === "object" ? back.to : "/m"}
+          <button
+            onClick={() => window.history.back()}
             className="-ml-1 h-8 px-2 inline-flex items-center text-body-sm text-text-secondary hover:text-primary"
           >
             ‹ 返回
-          </Link>
+          </button>
         ) : (
           <span className="w-12" />
         )}
