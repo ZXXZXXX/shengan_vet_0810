@@ -143,48 +143,19 @@ function MHomePage() {
       </section>
 
       {/* ============ 今日工作 ============ */}
-      <section className="px-4 mt-5">
+      <section className="px-4 mt-5 mb-4">
         <SectionTitle title="今日工作" />
         <div className="grid grid-cols-3 gap-2">
           <TaskOverviewCard to="/m/respond" icon={Inbox} tone="warning" label="待响应" value="6" />
           <TaskOverviewCard to="/m/pickup" icon={PackageCheck} tone="info" label="待领物" value={String(pendingPickups.length)} />
           <TaskOverviewCard to="/m/health" search={{ tab: "执行中" }} icon={PlayCircle} tone="brand" label="执行中" value="4" />
         </div>
+
+        <TodayTaskList role={role} />
       </section>
 
-      {/* ============ 风险提醒 ============ */}
-      <section className="px-4 mt-5 mb-4">
-        <SectionTitle title="风险提醒" />
-        {risks.length === 0 ? (
-          <div className="rounded-xl bg-card border border-border">
-            <EmptyState
-              icon={HeartPulse}
-              size="sm"
-              title="暂无风险提醒"
-              desc="当前牧场各项指标正常"
-            />
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {risks.map((r) => (
-              <Link
-                key={r.title}
-                to={r.to}
-                className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
-              >
-                <span className={`h-9 w-9 rounded-lg flex items-center justify-center ${colorMap[r.tone]}`}>
-                  <r.icon className="h-4 w-4" strokeWidth={1.75} />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-body text-foreground truncate">{r.title}</div>
-                  <div className="text-caption text-text-tertiary mt-0.5 truncate">{r.detail}</div>
-                </div>
-                <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+
+
 
 
       {/* 现场上报 类型选择 */}
