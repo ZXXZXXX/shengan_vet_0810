@@ -135,6 +135,7 @@ function DiagnosePage() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [videos, setVideos] = useState<string[]>([]);
   const [note, setNote] = useState("");
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
 
   // 按匹配症状数排序的候选疾病
   const rankedDiseases = useMemo(() => {
