@@ -642,6 +642,40 @@ function DiagnosePage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* 添加媒体选择弹层 */}
+      {showMediaPicker && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setShowMediaPicker(false)}>
+          <div
+            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-section-title text-foreground">添加现场记录</div>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => { setPhotos((prev) => [...prev, `p${Date.now()}`]); setShowMediaPicker(false); }}
+                className="flex flex-col items-center justify-center gap-2 h-24 rounded-xl border border-border bg-surface-subtle text-text-secondary"
+              >
+                <Camera className="h-6 w-6" />
+                <span className="text-body-sm">拍照</span>
+              </button>
+              <button
+                onClick={() => { setVideos((prev) => [...prev, `v${Date.now()}`]); setShowMediaPicker(false); }}
+                className="flex flex-col items-center justify-center gap-2 h-24 rounded-xl border border-border bg-surface-subtle text-text-secondary"
+              >
+                <Video className="h-6 w-6" />
+                <span className="text-body-sm">拍视频</span>
+              </button>
+            </div>
+            <button
+              onClick={() => setShowMediaPicker(false)}
+              className="w-full h-10 rounded-lg border border-border text-body-sm text-text-secondary"
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      )}
     </MobileShell>
   );
 }
