@@ -196,26 +196,6 @@ function TaskDetailPage() {
   );
 }
 
-function SumRow({
-  icon: I,
-  label,
-  value,
-}: {
-  icon: typeof Clock;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-start gap-1.5 min-w-0">
-      <I className="h-3.5 w-3.5 text-text-tertiary shrink-0 mt-0.5" />
-      <div className="min-w-0">
-        <div className="text-text-tertiary">{label}</div>
-        <div className="text-body-sm text-foreground truncate">{value}</div>
-      </div>
-    </div>
-  );
-}
-
 function Section({ title, children, extra }: { title: string; children: React.ReactNode; extra?: React.ReactNode }) {
   return (
     <div className="rounded-xl bg-card border border-border p-4">
