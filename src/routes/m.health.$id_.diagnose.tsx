@@ -1,0 +1,464 @@
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import {
+  Activity,
+  Search,
+  Plus,
+  X,
+  Send,
+  Pill,
+  Pencil,
+  Trash2,
+  Sparkles,
+  CheckCircle2,
+} from "lucide-react";
+import { MobileShell } from "@/components/mobile-shell";
+
+export const Route = createFileRoute("/m/health/$id_/diagnose")({
+  head: () => ({ meta: [{ title: "诊断填写 · 奇点智牧" }] }),
+  component: DiagnosePage,
+});
+
+// 上报时的症状（带入）
+const reportedSymptoms = ["高烧", "食欲下降", "反刍减少"];
+
+// 候选症状词库
+const symptomLibrary = [
+  "高烧", "食欲下降", "反刍减少", "咳嗽", "鼻液", "呼吸急促",
+  "乳房红肿", "产奶骤降", "跛行", "腹泻", "脱水", "精神萎靡",
+];
+
+// 疾病库（关联症状）
+type Disease = { name: string; symptoms: string[]; rx: Prescription[] };
+const diseaseLibrary: Disease[] = [
+  {
+    name: "支气管肺炎",
+    symptoms: ["高烧", "咳嗽", "鼻液", "呼吸急促", "食欲下降"],
+    rx: [
+      { id: "r1", name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", days: "3 天" },
+      { id: "r2", name: "头孢噻呋钠", spec: "1g / 支", use: "肌肉注射", dose: "1g / 次", days: "3 天" },
+    ],
+  },
+  {
+    name: "急性乳房炎",
+    symptoms: ["高烧", "乳房红肿", "产奶骤降", "食欲下降"],
+    rx: [
+      { id: "r1", name: "头孢噻呋钠", spec: "1g / 支", use: "乳房灌注", dose: "1g / 次", days: "3 天" },
+      { id: "r2", name: "氟尼辛葡甲胺", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", days: "2 天" },
+    ],
+  },
+  {
+    name: "瘤胃酸中毒",
+    symptoms: ["食欲下降", "反刍减少", "腹泻", "脱水"],
+    rx: [
+      { id: "r1", name: "碳酸氢钠", spec: "500g", use: "口服", dose: "200g / 次", days: "2 天" },
+      { id: "r2", name: "复合维生素 B", spec: "100ml", use: "肌肉注射", dose: "10ml / 次", days: "3 天" },
+    ],
+  },
+  {
+    name: "酮病",
+    symptoms: ["食欲下降", "产奶骤降", "精神萎靡"],
+    rx: [
+      { id: "r1", name: "50% 葡萄糖", spec: "500ml", use: "静脉注射", dose: "500ml / 次", days: "2 天" },
+    ],
+  },
+  {
+    name: "犊牛腹泻症",
+    symptoms: ["腹泻", "脱水", "精神萎靡"],
+    rx: [
+      { id: "r1", name: "口服补液盐", spec: "100g / 包", use: "口服", dose: "1 包 / 次", days: "3 天" },
+    ],
+  },
+];
+
+type Prescription = {
+  id: string;
+  name: string;
+  spec: string;
+  use: string;
+  dose: string;
+  days: string;
+};
+
+function DiagnosePage() {
+  const { id } = useParams({ from: "/m/health/$id_/diagnose" });
+  const navigate = useNavigate();
+
+  // 症状（带入上报症状，可加减）
+  const [symptoms, setSymptoms] = useState<string[]>(reportedSymptoms);
+  const [symptomInput, setSymptomInput] = useState("");
+
+  // 疾病
+  const [disease, setDisease] = useState<string>("");
+  const [diseaseQuery, setDiseaseQuery] = useState("");
+  const [showDiseasePicker, setShowDiseasePicker] = useState(false);
+
+  // 处方（默认按选中疾病载入，可编辑）
+  const [rxList, setRxList] = useState<Prescription[]>([]);
+  const [editingRx, setEditingRx] = useState<Prescription | null>(null);
+
+  // 按匹配症状数排序的候选疾病
+  const rankedDiseases = useMemo(() => {
+    const kw = diseaseQuery.trim().toLowerCase();
+    return diseaseLibrary
+      .map((d) => ({
+        ...d,
+        matched: d.symptoms.filter((s) => symptoms.includes(s)).length,
+      }))
+      .filter((d) => !kw || d.name.toLowerCase().includes(kw))
+      .sort((a, b) => b.matched - a.matched);
+  }, [diseaseQuery, symptoms]);
+
+  // 候选症状（去除已选）
+  const symptomSuggestions = useMemo(() => {
+    const kw = symptomInput.trim().toLowerCase();
+    return symptomLibrary
+      .filter((s) => !symptoms.includes(s))
+      .filter((s) => !kw || s.toLowerCase().includes(kw))
+      .slice(0, 8);
+  }, [symptomInput, symptoms]);
+
+  const addSymptom = (s: string) => {
+    if (!s || symptoms.includes(s)) return;
+    setSymptoms((prev) => [...prev, s]);
+    setSymptomInput("");
+  };
+
+  const removeSymptom = (s: string) =>
+    setSymptoms((prev) => prev.filter((x) => x !== s));
+
+  const pickDisease = (d: (typeof rankedDiseases)[number]) => {
+    setDisease(d.name);
+    setRxList(d.rx.map((r) => ({ ...r })));
+    setShowDiseasePicker(false);
+    setDiseaseQuery("");
+  };
+
+  const removeRx = (rxId: string) =>
+    setRxList((prev) => prev.filter((r) => r.id !== rxId));
+
+  const saveRxEdit = () => {
+    if (!editingRx) return;
+    setRxList((prev) => prev.map((r) => (r.id === editingRx.id ? editingRx : r)));
+    setEditingRx(null);
+  };
+
+  const submit = () => {
+    if (symptoms.length === 0) {
+      toast.error("请至少填写一个症状");
+      return;
+    }
+    if (!disease) {
+      toast.error("请选择疾病");
+      return;
+    }
+    if (rxList.length === 0) {
+      toast.error("处方不能为空");
+      return;
+    }
+    toast.success("诊断已提交");
+    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+  };
+
+  return (
+    <MobileShell title="开始诊断" back={{ to: `/m/health/${id}` }} hideTabBar>
+      <div className="pb-28">
+        {/* 工单号 */}
+        <div className="px-4 pt-3 pb-2">
+          <div className="text-caption text-text-tertiary">
+            工单 <span className="font-mono text-text-secondary">{id}</span>
+          </div>
+        </div>
+
+        <div className="px-4 space-y-3">
+          {/* === 症状 === */}
+          <Section
+            title="症状"
+            extra={<span className="text-caption text-text-tertiary">{symptoms.length} 个</span>}
+          >
+            <div className="flex flex-wrap gap-1.5">
+              {symptoms.map((s) => (
+                <span
+                  key={s}
+                  className="inline-flex items-center gap-1 h-7 pl-2.5 pr-1.5 rounded-full bg-brand-subtle text-primary text-body-sm"
+                >
+                  <Activity className="h-3 w-3" />
+                  {s}
+                  <button
+                    onClick={() => removeSymptom(s)}
+                    className="h-4 w-4 inline-flex items-center justify-center rounded-full hover:bg-primary/10"
+                    aria-label={`移除 ${s}`}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+              {symptoms.length === 0 && (
+                <span className="text-caption text-text-tertiary">尚未填写症状</span>
+              )}
+            </div>
+
+            <div className="mt-3 space-y-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                <input
+                  value={symptomInput}
+                  onChange={(e) => setSymptomInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addSymptom(symptomInput.trim());
+                    }
+                  }}
+                  placeholder="输入并回车添加，或从下方选择"
+                  className="h-10 w-full pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                />
+              </div>
+              {symptomSuggestions.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {symptomSuggestions.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => addSymptom(s)}
+                      className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-body-sm text-text-secondary hover:border-primary hover:text-primary"
+                    >
+                      <Plus className="h-3 w-3" />
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Section>
+
+          {/* === 疾病名称 === */}
+          <Section
+            title="疾病名称"
+            extra={
+              <span className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                <Sparkles className="h-3 w-3 text-primary" />
+                按症状匹配排序
+              </span>
+            }
+          >
+            {disease ? (
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-brand-subtle text-primary text-body">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  {disease}
+                </span>
+                <button
+                  onClick={() => setShowDiseasePicker(true)}
+                  className="text-body-sm text-text-tertiary underline"
+                >
+                  更换
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowDiseasePicker(true)}
+                className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
+              >
+                <Search className="h-3.5 w-3.5" /> 选择疾病
+              </button>
+            )}
+
+            {showDiseasePicker && (
+              <div className="mt-3 space-y-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                  <input
+                    value={diseaseQuery}
+                    onChange={(e) => setDiseaseQuery(e.target.value)}
+                    autoFocus
+                    placeholder="搜索疾病名称"
+                    className="h-10 w-full pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden bg-card">
+                  {rankedDiseases.map((d) => (
+                    <li key={d.name}>
+                      <button
+                        onClick={() => pickDisease(d)}
+                        className="w-full px-3 py-2.5 flex items-center justify-between gap-2 hover:bg-surface-subtle text-left"
+                      >
+                        <div className="min-w-0">
+                          <div className="text-body text-foreground truncate">{d.name}</div>
+                          <div className="text-caption text-text-tertiary truncate">
+                            关联症状：{d.symptoms.join("、")}
+                          </div>
+                        </div>
+                        <span
+                          className={`shrink-0 tag ${d.matched > 0 ? "tag-brand" : "tag-muted"}`}
+                        >
+                          匹配 {d.matched}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                  {rankedDiseases.length === 0 && (
+                    <li className="px-3 py-4 text-center text-caption text-text-tertiary">
+                      无匹配疾病
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
+          </Section>
+
+          {/* === 处方 === */}
+          <Section
+            title="处方"
+            extra={<span className="text-caption text-text-tertiary">{rxList.length} 项</span>}
+          >
+            {rxList.length === 0 ? (
+              <div className="text-caption text-text-tertiary text-center py-4">
+                选择疾病后将自动载入推荐处方，可逐项调整
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {rxList.map((r) => (
+                  <li
+                    key={r.id}
+                    className="rounded-lg border border-border bg-surface-subtle p-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-body text-foreground inline-flex items-center gap-1.5">
+                          <Pill className="h-3.5 w-3.5 text-primary" />
+                          {r.name}
+                        </div>
+                        <div className="text-caption text-text-tertiary mt-1">
+                          {r.spec} · {r.use} · {r.dose} · {r.days}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <button
+                          onClick={() => setEditingRx({ ...r })}
+                          className="h-7 w-7 inline-flex items-center justify-center rounded-md text-primary hover:bg-brand-subtle"
+                          aria-label="编辑"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => removeRx(r.id)}
+                          className="h-7 w-7 inline-flex items-center justify-center rounded-md text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
+                          aria-label="删除"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button
+              onClick={() => {
+                const nextId = `r${Date.now()}`;
+                setEditingRx({
+                  id: nextId,
+                  name: "",
+                  spec: "",
+                  use: "肌肉注射",
+                  dose: "",
+                  days: "3 天",
+                });
+                setRxList((prev) => [
+                  ...prev,
+                  { id: nextId, name: "", spec: "", use: "肌肉注射", dose: "", days: "3 天" },
+                ]);
+              }}
+              className="mt-2 w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+            >
+              <Plus className="h-3.5 w-3.5" /> 新增药品
+            </button>
+          </Section>
+        </div>
+      </div>
+
+      {/* 编辑处方弹层 */}
+      {editingRx && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setEditingRx(null)}>
+          <div
+            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-section-title text-foreground">编辑药品</div>
+            <Input label="药品名称" value={editingRx.name} onChange={(v) => setEditingRx({ ...editingRx, name: v })} />
+            <Input label="规格" value={editingRx.spec} onChange={(v) => setEditingRx({ ...editingRx, spec: v })} />
+            <Input label="给药方式" value={editingRx.use} onChange={(v) => setEditingRx({ ...editingRx, use: v })} />
+            <Input label="单次剂量" value={editingRx.dose} onChange={(v) => setEditingRx({ ...editingRx, dose: v })} />
+            <Input label="疗程" value={editingRx.days} onChange={(v) => setEditingRx({ ...editingRx, days: v })} />
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setEditingRx(null)}
+                className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
+              >
+                取消
+              </button>
+              <button
+                onClick={saveRxEdit}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                保存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 底部提交按钮 */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        <button
+          onClick={submit}
+          className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+        >
+          <Send className="h-4 w-4" /> 提交诊断
+        </button>
+      </div>
+    </MobileShell>
+  );
+}
+
+function Section({
+  title,
+  children,
+  extra,
+}: {
+  title: string;
+  children: React.ReactNode;
+  extra?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl bg-card border border-border p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-card-title text-foreground">{title}</div>
+        {extra}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Input({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="block space-y-1">
+      <span className="text-caption text-text-tertiary">{label}</span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-10 w-full px-3 rounded-lg bg-surface-subtle border border-border text-body-sm focus:outline-none focus:border-primary"
+      />
+    </label>
+  );
+}

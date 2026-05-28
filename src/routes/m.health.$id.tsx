@@ -181,12 +181,14 @@ function TaskDetailPage() {
                 >
                   忽视
                 </button>
-                <button
-                  onClick={() => navigate({ to: "/m/respond" })}
-                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body"
+                <Link
+                  to="/m/health/$id/diagnose"
+                  params={{ id: o.id }}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
                 >
-                  响应
-                </button>
+                  <Stethoscope className="h-4 w-4" />
+                  开始诊断
+                </Link>
               </div>
             ) : (
               <Link
