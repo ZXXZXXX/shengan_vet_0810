@@ -361,7 +361,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
 
           <Section title="疾病信息">
             <Field
-              label="标签"
+              label="症状标签"
               value={
                 <div className="flex flex-wrap gap-1 justify-end">
                   {(isLoss ? ["冷链异常"] : ["呼吸道感染", "需隔离"]).map((t) => (
