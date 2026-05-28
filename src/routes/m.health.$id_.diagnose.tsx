@@ -427,14 +427,14 @@ function DiagnosePage() {
             title="现场记录"
             extra={<span className="text-caption text-text-tertiary">可选</span>}
           >
-            {/* 照片 */}
+            {/* 照片 / 视频 */}
             <div>
               <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                <Camera className="h-3 w-3" /> 照片 · {photos.length} 张
+                <Camera className="h-3 w-3" /> 照片 / 视频 · {photos.length + videos.length} 条
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {photos.map((_, i) => (
-                  <div key={i} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                  <div key={`p-${i}`} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
                     <button
                       onClick={() => setPhotos((prev) => prev.filter((_, idx) => idx !== i))}
                       className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
@@ -444,24 +444,8 @@ function DiagnosePage() {
                     </button>
                   </div>
                 ))}
-                <button
-                  onClick={() => setPhotos((prev) => [...prev, `p${Date.now()}`])}
-                  className="aspect-square rounded-lg border border-dashed border-border bg-surface-subtle text-text-tertiary inline-flex flex-col items-center justify-center gap-0.5"
-                >
-                  <Camera className="h-4 w-4" />
-                  <span className="text-[10px]">拍照</span>
-                </button>
-              </div>
-            </div>
-
-            {/* 视频 */}
-            <div className="mt-3">
-              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                <Video className="h-3 w-3" /> 视频 · {videos.length} 段
-              </div>
-              <div className="grid grid-cols-4 gap-2">
                 {videos.map((_, i) => (
-                  <div key={i} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center">
+                  <div key={`v-${i}`} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center">
                     <PlayCircle className="h-5 w-5 text-text-tertiary" />
                     <button
                       onClick={() => setVideos((prev) => prev.filter((_, idx) => idx !== i))}
@@ -473,11 +457,11 @@ function DiagnosePage() {
                   </div>
                 ))}
                 <button
-                  onClick={() => setVideos((prev) => [...prev, `v${Date.now()}`])}
+                  onClick={() => setShowMediaPicker(true)}
                   className="aspect-square rounded-lg border border-dashed border-border bg-surface-subtle text-text-tertiary inline-flex flex-col items-center justify-center gap-0.5"
                 >
-                  <Video className="h-4 w-4" />
-                  <span className="text-[10px]">拍视频</span>
+                  <Camera className="h-4 w-4" />
+                  <span className="text-[10px]">添加</span>
                 </button>
               </div>
             </div>
