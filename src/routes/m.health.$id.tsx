@@ -1103,7 +1103,9 @@ function DayDot({ active, done }: { active: boolean; done: boolean }) {
     );
   }
   if (active) {
-    return <span className="h-4 w-4 rounded-full bg-primary inline-block" />;
+    return <span className="h-4 w-4 rounded-full inline-block" style={{ backgroundColor: "#22ACEB" }} />;
+  }
+
   }
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
