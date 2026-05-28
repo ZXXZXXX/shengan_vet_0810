@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
+import meHero from "@/assets/me-hero.png";
 
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
