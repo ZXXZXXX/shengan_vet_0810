@@ -429,7 +429,7 @@ function SummaryCard({
   );
 }
 
-}
+
 
 function DataCard({
   icon: Icon,
