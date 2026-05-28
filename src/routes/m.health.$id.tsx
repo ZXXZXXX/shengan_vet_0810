@@ -577,7 +577,7 @@ function ChecklistDay({
     update(id, { status: current === "done" ? "pending" : "done" });
   };
 
-  const pickupDone = isActive && dayDone;
+  const pickupDone = isDone || (isActive && dayDone);
 
 
   return (
@@ -602,28 +602,31 @@ function ChecklistDay({
         <>
           {pickupCode && (
             <div className="px-4 pb-2">
-              <Link
-                to="/m/pickup/$id"
-                params={{ id: pickupCode }}
-                className={`flex items-center justify-between px-3 h-10 rounded-lg text-body-sm ${
-                  pickupDone
-                    ? "bg-surface-subtle text-text-secondary"
-                    : "bg-[var(--state-warning,#FFF7E6)] text-[#8A5A0A]"
-                }`}
-                style={
-                  !pickupDone
-                    ? { backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }
-                    : undefined
-                }
-              >
-                <span className="inline-flex items-center gap-1.5">
-                  <PackagePlus className="h-3.5 w-3.5" />
-                  {pickupDone ? "已领物" : "需领物"} · {pickupCode}
-                </span>
-                <ChevronRight className="h-4 w-4 opacity-70" />
-              </Link>
+              {pickupDone ? (
+                <div className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm bg-surface-subtle text-text-secondary">
+                  <span className="inline-flex items-center gap-1.5">
+                    <PackagePlus className="h-3.5 w-3.5" />
+                    已领物 · {pickupCode}
+                  </span>
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                </div>
+              ) : (
+                <Link
+                  to="/m/pickup/$id"
+                  params={{ id: pickupCode }}
+                  className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
+                  style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <PackagePlus className="h-3.5 w-3.5" />
+                    需领物 · 点击前往领物码 {pickupCode}
+                  </span>
+                  <ChevronRight className="h-4 w-4 opacity-70" />
+                </Link>
+              )}
             </div>
           )}
+
 
           <div className="px-4 pb-3">
             <div className="rounded-lg bg-surface-subtle px-3 py-2.5">
