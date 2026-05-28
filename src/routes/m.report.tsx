@@ -298,25 +298,75 @@ function ReportPage() {
               {lockTarget ? (
                 <div className="space-y-2">
                   {targets.map((t) => {
-                    const isPrimary = t === primaryTarget;
-                    const label = lockBarn ? `#${t} · ${barn}` : `#${t}`;
+                    const isEditing = editingTarget === t;
+                    const canDelete = targets.length > 1;
                     return (
                       <div
                         key={t}
-                        className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground"
+                        className="flex items-center h-12 px-3 rounded-lg bg-surface-subtle border border-border text-body text-foreground gap-2"
                       >
-                        <span className="font-mono truncate">{label}</span>
-                        {!isPrimary && (
-                          <button
-                            onClick={() => removeTarget(t)}
-                            className="ml-auto h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
+                        {isEditing ? (
+                          <>
+                            <span className="font-mono text-text-tertiary">#</span>
+                            <input
+                              autoFocus
+                              value={editingValue}
+                              onChange={(e) => setEditingValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  updateTarget(t, editingValue);
+                                  setEditingTarget(null);
+                                } else if (e.key === "Escape") {
+                                  setEditingTarget(null);
+                                }
+                              }}
+                              className="font-mono flex-1 min-w-0 h-8 px-2 rounded-md bg-card border border-border text-body"
+                            />
+                            {lockBarn && (
+                              <span className="font-mono text-text-tertiary shrink-0">· {barn}</span>
+                            )}
+                            <button
+                              onClick={() => {
+                                updateTarget(t, editingValue);
+                                setEditingTarget(null);
+                              }}
+                              className="h-8 px-2 rounded-md bg-primary text-primary-foreground text-caption shrink-0"
+                            >
+                              确定
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span className="font-mono truncate">
+                              {`#${t}${lockBarn ? ` · ${barn}` : ""}`}
+                            </span>
+                            <button
+                              onClick={() => {
+                                setEditingTarget(t);
+                                setEditingValue(t);
+                              }}
+                              className="ml-auto h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                              aria-label="编辑"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                            {canDelete && (
+                              <button
+                                onClick={() => removeTarget(t)}
+                                className="h-7 w-7 inline-flex items-center justify-center rounded-full text-text-tertiary hover:text-foreground"
+                                aria-label="删除"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            )}
+                          </>
                         )}
                       </div>
                     );
                   })}
+                  <div className="text-caption text-text-tertiary">
+                    至少保留 1 项；牛舍信息不可更改
+                  </div>
                   {lockBarn && (
                     <>
                       {!showAddPanel ? (
