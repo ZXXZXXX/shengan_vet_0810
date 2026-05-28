@@ -17,6 +17,8 @@ import {
   Square,
   MapPin,
   Warehouse,
+  ScanLine,
+  X,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canVisit, canExecute } from "@/lib/mobile-role";
@@ -435,15 +437,35 @@ type ExecItem = {
   title: string;
   desc: string;
   status: ItemStatus;
+  needMed: boolean;
+  scanCode?: string;
 };
 
-function buildDayItems(day: number, tags: string[]): ExecItem[] {
-  return tags.map((tag, i) => ({
-    id: `d${day}-${i + 1}`,
-    title: tag,
-    desc: "",
-    status: "pending" as ItemStatus,
-  }));
+// 根据处方拆解每日任务：每种药品 = 一次任务（需扫码核验），加上不需用药的常规任务（如测温）
+function buildDayItems(day: number, _tags: string[]): ExecItem[] {
+  return [
+    {
+      id: `d${day}-t1`,
+      title: "氟尼辛葡甲胺注射液",
+      desc: "2ml / 次 · 肌肉注射",
+      status: "pending",
+      needMed: true,
+    },
+    {
+      id: `d${day}-t2`,
+      title: "头孢噻呋钠",
+      desc: "1g / 次 · 肌肉注射",
+      status: "pending",
+      needMed: true,
+    },
+    {
+      id: `d${day}-t3`,
+      title: "测温并记录",
+      desc: "记录直肠温度",
+      status: "pending",
+      needMed: false,
+    },
+  ];
 }
 
 // === 执行记录（详情页只读摘要） ===
@@ -615,6 +637,7 @@ function ChecklistDay({
   const [dayNote, setDayNote] = useState(initialNote);
   const [noteEditing, setNoteEditing] = useState(false);
   const [reasons, setReasons] = useState<Record<string, string>>({});
+  const [scanFor, setScanFor] = useState<string | null>(null);
 
   const total = items.length;
   const doneCount = items.filter((i) => i.status === "done").length;
@@ -696,26 +719,19 @@ function ChecklistDay({
           )}
 
 
-          <div className="px-4 pb-3">
-            <div className="rounded-lg bg-surface-subtle px-3 py-2.5">
-              <div className="text-caption text-text-tertiary mb-0.5">本日统一执行动作</div>
-              <div className="text-body-sm leading-relaxed text-foreground">
-                氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录
-              </div>
-            </div>
+          <div className="px-4 pb-2 text-caption text-text-tertiary">
+            处方拆解的本日任务
           </div>
 
           <ul className="px-4 pb-3 space-y-2">
             {items.map((it) => {
               const done = it.status === "done";
               const blocked = it.status === "blocked";
+              const needMed = it.needMed;
               return (
                 <li key={it.id} className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => toggleDone(it.id, it.status)}
-                    disabled={!interactive}
-                    className={`w-full flex items-center gap-2.5 h-12 px-3 rounded-xl border text-left transition-all active:scale-[0.99] ${
+                  <div
+                    className={`w-full rounded-xl border px-3 py-2.5 transition-all ${
                       done
                         ? "border-primary/40 bg-brand-subtle/30"
                         : blocked
@@ -723,39 +739,74 @@ function ChecklistDay({
                           : isActive
                             ? "border-border bg-card"
                             : "border-border bg-card opacity-80"
-                    } ${!interactive ? "cursor-default" : ""}`}
+                    }`}
                   >
-                    {done ? (
-                      <CheckSquare className="h-4 w-4 text-primary shrink-0" />
-                    ) : blocked ? (
-                      <AlertTriangle className="h-4 w-4 text-[var(--state-danger)] shrink-0" />
-                    ) : isActive ? (
-                      <Square className="h-4 w-4 text-text-tertiary shrink-0" />
-                    ) : null}
-                    <span
-                      className={`flex-1 min-w-0 truncate font-mono text-body ${
-                        done ? "text-foreground" : isActive ? "text-foreground" : "text-text-tertiary"
-                      }`}
-                    >
-                      {it.title}
-                    </span>
+                    <div className="flex items-start gap-2.5">
+                      {done ? (
+                        <CheckSquare className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      ) : blocked ? (
+                        <AlertTriangle className="h-4 w-4 text-[var(--state-danger)] shrink-0 mt-0.5" />
+                      ) : (
+                        <Square className="h-4 w-4 text-text-tertiary shrink-0 mt-0.5" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-body ${done || isActive ? "text-foreground" : "text-text-tertiary"}`}>
+                          {it.title}
+                        </div>
+                        {it.desc && (
+                          <div className="text-caption text-text-tertiary mt-0.5">{it.desc}</div>
+                        )}
+                        {done && needMed && it.scanCode && (
+                          <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
+                            <ScanLine className="h-3 w-3" /> 已扫码核验 · <span className="font-mono">{it.scanCode}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                     {interactive && !done && (
-                      <span
-                        role="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          update(it.id, { status: blocked ? "pending" : "blocked" });
-                        }}
-                        className={`text-caption px-2 py-1 rounded-md ${
-                          blocked
-                            ? "text-[var(--state-danger)] font-medium"
-                            : "text-text-tertiary active:bg-surface-subtle"
-                        }`}
-                      >
-                        {blocked ? "已标记无法执行" : "无法执行"}
-                      </span>
+                      <div className="flex items-center gap-2 mt-2.5 pl-6">
+                        {needMed ? (
+                          <button
+                            type="button"
+                            onClick={() => setScanFor(it.id)}
+                            className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1.5"
+                          >
+                            <ScanLine className="h-4 w-4" /> 扫码核验用药
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => toggleDone(it.id, it.status)}
+                            className="flex-1 h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
+                          >
+                            <CheckSquare className="h-4 w-4" /> 标记完成
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => update(it.id, { status: blocked ? "pending" : "blocked" })}
+                          className={`h-9 px-3 rounded-lg text-body-sm ${
+                            blocked
+                              ? "text-[var(--state-danger)] font-medium bg-[var(--state-danger)]/10"
+                              : "text-text-tertiary border border-border"
+                          }`}
+                        >
+                          {blocked ? "已标记无法执行" : "无法执行"}
+                        </button>
+                      </div>
                     )}
-                  </button>
+                    {interactive && done && (
+                      <div className="pl-6 mt-2">
+                        <button
+                          type="button"
+                          onClick={() => update(it.id, { status: "pending", scanCode: undefined })}
+                          className="text-caption text-text-tertiary active:text-foreground"
+                        >
+                          撤销
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   {blocked && (interactive ? (
                     <div className="rounded-xl border border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5 px-3 py-2.5">
                       <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1 mb-1">
@@ -827,6 +878,39 @@ function ChecklistDay({
           </ul>
 
         </>
+      )}
+
+      {scanFor && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex flex-col" onClick={() => setScanFor(null)}>
+          <div className="flex items-center justify-between px-4 h-14 text-white">
+            <span className="text-body font-medium">扫描药品包装二维码</span>
+            <button onClick={() => setScanFor(null)} className="h-9 w-9 inline-flex items-center justify-center">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="flex-1 flex items-center justify-center px-8" onClick={(e) => e.stopPropagation()}>
+            <div className="relative w-full aspect-square max-w-[280px] rounded-2xl border-2 border-white/60">
+              <ScanLine className="absolute inset-0 m-auto h-16 w-16 text-white/40" />
+              <div className="absolute -top-px left-0 right-0 h-0.5 bg-primary animate-pulse" />
+            </div>
+          </div>
+          <div className="px-6 pb-10 space-y-3" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center text-caption text-white/70">
+              将二维码放入框内，识别后自动完成核验
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const code = `MED-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+                update(scanFor, { status: "done", scanCode: code });
+                setScanFor(null);
+              }}
+              className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+            >
+              <ScanLine className="h-4 w-4" /> 模拟扫码成功
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
