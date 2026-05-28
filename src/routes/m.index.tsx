@@ -86,70 +86,15 @@ function MHomePage() {
 
       {/* 顶部欢迎 —— 渐变信息面板 */}
       <header className="relative overflow-hidden text-white">
-        {/* 主渐变：品牌绿 → 浅青灰 */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(135deg, #00A85A 0%, #1FB877 38%, #6FBFA8 72%, #B8CBC9 100%)",
-          }}
-        />
-        {/* 数字化纹理：SVG 线条（牧场栅格） + 阴影草原 + 光圈太阳 */}
-        <svg
-          className="absolute inset-0 w-full h-full"
-          viewBox="0 0 440 220"
-          preserveAspectRatio="none"
+        <img
+          src={grasslandHero}
+          alt=""
           aria-hidden
-        >
-          <defs>
-            {/* 太阳光圈 */}
-            <radialGradient id="m-sun" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.85" />
-              <stop offset="35%" stopColor="#FFF6CC" stopOpacity="0.35" />
-              <stop offset="70%" stopColor="#FFFFFF" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-            </radialGradient>
-            {/* 草原阴影 */}
-            <linearGradient id="m-grass" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#063D24" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#063D24" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-
-          {/* 光圈太阳 */}
-          <circle cx="320" cy="78" r="72" fill="url(#m-sun)" />
-          <circle cx="320" cy="78" r="13" fill="#FFFFFF" fillOpacity="0.9" />
-          <circle cx="320" cy="78" r="21" fill="none" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="0.8" />
-          <circle cx="320" cy="78" r="32" fill="none" stroke="#FFFFFF" strokeOpacity="0.2" strokeWidth="0.6" />
-
-          {/* 草原远景阴影起伏 */}
-          <path
-            d="M0 148 C 60 130, 110 155, 170 140 C 230 125, 290 158, 350 145 C 395 136, 420 150, 440 142 L440 220 L0 220 Z"
-            fill="url(#m-grass)"
-          />
-          <path
-            d="M0 168 C 70 152, 140 176, 220 164 C 300 152, 370 180, 440 168 L440 220 L0 220 Z"
-            fill="#063D24"
-            fillOpacity="0.18"
-          />
-
-          {/* 透视牧场线条（数字化栅格） */}
-          <g stroke="#FFFFFF" strokeOpacity="0.28" strokeWidth="0.7" fill="none">
-            <path d="M-40 220 L210 130" />
-            <path d="M80 220 L218 130" />
-            <path d="M200 220 L226 130" />
-            <path d="M320 220 L234 130" />
-            <path d="M480 220 L242 130" />
-          </g>
-          <g stroke="#FFFFFF" strokeOpacity="0.22" strokeWidth="0.6" fill="none">
-            <path d="M0 150 Q 220 144 440 150" />
-            <path d="M-20 170 Q 220 162 460 170" />
-            <path d="M-40 192 Q 220 184 480 192" />
-          </g>
-        </svg>
-
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         {/* 底部柔和过渡到页面背景 */}
         <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
+
 
         <div className="relative px-4 pt-4 pb-7">
           <div className="flex items-start justify-between">

@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import grasslandHero from "@/assets/grassland-hero.png";
+
 import {
   Inbox,
   ArrowUpRight,
@@ -286,28 +288,14 @@ function HomePage() {
       <main className="flex-1 px-6 py-6 space-y-5">
         {/* Hero greeting — 加强视觉冲击 */}
         <Card className="relative border-0 overflow-hidden text-white shadow-[0_20px_60px_-30px_color-mix(in_oklab,var(--brand)_70%,transparent)]">
-          {/* 背景渐变 */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(120deg, var(--brand) 0%, color-mix(in oklab, var(--brand) 75%, var(--effect-ai-cyan) 25%) 55%, color-mix(in oklab, var(--effect-ai-purple) 65%, var(--brand) 35%) 100%)",
-            }}
+          {/* 背景图 */}
+          <img
+            src={grasslandHero}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 w-full h-full object-cover"
           />
-          {/* 网格纹理 */}
-          <div
-            className="absolute inset-0 opacity-[0.18]"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.6) 1px, transparent 1px)",
-              backgroundSize: "44px 44px",
-              maskImage:
-                "radial-gradient(ellipse 70% 80% at 80% 30%, black 30%, transparent 80%)",
-            }}
-          />
-          {/* 光晕 */}
-          <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-white/25 blur-3xl" />
-          <div className="absolute -bottom-32 left-[20%] h-72 w-72 rounded-full bg-[var(--effect-ai-cyan)]/40 blur-3xl" />
+
 
           <div className="relative p-7 flex items-center justify-between gap-6 flex-wrap">
             <div className="max-w-[640px]">
