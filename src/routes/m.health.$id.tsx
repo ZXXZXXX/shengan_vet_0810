@@ -886,6 +886,11 @@ function ChecklistDay({
                             <ScanLine className="h-3 w-3" /> 已扫码核验 · <span className="font-mono">{it.scanCode}</span>
                           </div>
                         )}
+                        {done && !needMed && it.title.includes("测温") && temps[it.id] && (
+                          <div className="text-caption text-primary mt-1">
+                            体温：<span className="font-mono">{temps[it.id]} ℃</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                     {interactive && !done && (
