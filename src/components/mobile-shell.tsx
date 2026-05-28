@@ -110,15 +110,23 @@ function MobileTabBar() {
       <div className="grid grid-cols-5 h-16 relative">
         {leftTabs.map(renderTab)}
         {/* 中央扫码按钮 */}
-        <div className="flex items-start justify-center">
+        {/* 中央扫码按钮 */}
+        <div className="flex items-start justify-center relative">
+          {/* 柔和漫射光晕阴影 */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-8 h-10 w-24 rounded-[50%] blur-2xl opacity-70"
+            style={{ background: "radial-gradient(ellipse at center, color-mix(in oklab, var(--primary) 55%, transparent) 0%, transparent 70%)" }}
+          />
           <Link
             to="/m/scan"
             aria-label="扫码"
-            className="-mt-5 h-14 w-14 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center shadow-[0_12px_32px_-4px_color-mix(in_oklab,var(--primary)_55%,transparent),0_4px_10px_-2px_color-mix(in_oklab,var(--primary)_40%,transparent)] ring-4 ring-card active:scale-95 transition-transform"
+            className="relative -mt-5 h-14 w-14 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center ring-4 ring-card active:scale-95 transition-transform"
           >
             <ScanLine className="h-6 w-6" strokeWidth={2} />
           </Link>
         </div>
+
         {rightTabs.map(renderTab)}
       </div>
     </nav>
