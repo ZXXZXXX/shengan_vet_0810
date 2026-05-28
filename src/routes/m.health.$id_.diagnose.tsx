@@ -432,34 +432,6 @@ function DiagnosePage() {
           </button>
         </Section>
 
-        {/* === 指派执行人 === */}
-        <Section
-          title="指派执行人"
-          extra={<span className="text-caption text-text-tertiary">可选</span>}
-        >
-          {executor ? (
-            <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-brand-subtle text-primary text-body">
-                <User className="h-3.5 w-3.5" />
-                {executor}
-              </span>
-              <button
-                onClick={() => setShowExecutorPicker(true)}
-                className="text-body-sm text-text-tertiary underline"
-              >
-                更换
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setShowExecutorPicker(true)}
-              className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
-            >
-              <UserPlus className="h-3.5 w-3.5" /> 选择执行人（可选）
-            </button>
-          )}
-        </Section>
-
         {/* === 现场记录 === */}
           <Section
             title="现场记录"
@@ -517,6 +489,34 @@ function DiagnosePage() {
               />
               <div className="text-caption text-text-tertiary text-right mt-1">{note.length} / 500</div>
             </div>
+          </Section>
+
+          {/* === 指派执行人 === */}
+          <Section
+            title="指派执行人"
+            extra={<span className="text-caption text-text-tertiary">可选</span>}
+          >
+            {executor ? (
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-brand-subtle text-primary text-body">
+                  <User className="h-3.5 w-3.5" />
+                  {executor}
+                </span>
+                <button
+                  onClick={() => setShowExecutorPicker(true)}
+                  className="text-body-sm text-text-tertiary underline"
+                >
+                  更换
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowExecutorPicker(true)}
+                className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
+              >
+                <UserPlus className="h-3.5 w-3.5" /> 选择执行人（可选）
+              </button>
+            )}
           </Section>
         </div>
       </div>
