@@ -47,8 +47,6 @@ function MePage() {
         />
         <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/20 to-transparent" />
         <div className="relative flex items-center gap-3">
-
-        <div className="relative flex items-center gap-3">
           <div className="h-14 w-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-section-title">
             李
           </div>
