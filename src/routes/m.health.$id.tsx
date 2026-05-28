@@ -196,7 +196,8 @@ function TaskDetailPage() {
                 <PlayCircle className="h-4 w-4" />
                 开始执行
 
-              </button>
+              </Link>
+
             )}
           </div>
         );
