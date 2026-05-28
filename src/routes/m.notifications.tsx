@@ -52,10 +52,9 @@ const MSGS: Msg[] = [
     desc: "兽医助理 王芳 提交了 #A2381 的退烧处方申请，已等待 35 分钟。",
     time: "5 分钟前",
     ts: 5,
-    link: "/m/health/A2381",
+    link: "/m/health/A2381/diagnose",
     unread: true,
-    rightText: "！请前往PC端诊断",
-    rightTone: "danger",
+    rightText: "工作",
   },
   {
     id: "n2",
