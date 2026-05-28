@@ -12,8 +12,19 @@ import {
   Trash2,
   Sparkles,
   CheckCircle2,
+  Ban,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/m/health/$id_/diagnose")({
   head: () => ({ meta: [{ title: "诊断填写 · 奇点智牧" }] }),
