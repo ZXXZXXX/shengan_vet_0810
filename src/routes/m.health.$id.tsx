@@ -65,6 +65,7 @@ const statusById: Record<string, StatusKey> = {
   "LS-1029": "待诊断",
   "LS-1011": "已完成",
   "YM-2042": "已终止",
+  "YM-2501": "进行中",
 };
 
 function TaskDetailPage() {
@@ -90,6 +91,7 @@ function TaskDetailPage() {
   // mock data
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
+  const isPlatformImmune = id === "YM-2501";
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
 
   // 单对象工单（仅一只牛）：WO-2298、HF-* 等
@@ -108,15 +110,15 @@ function TaskDetailPage() {
   const o = {
     id,
     farm: "奇点示范牧场",
-    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : "3 号牛舍",
-    target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : "3 只",
-    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : "疾病治疗",
+    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : isPlatformImmune ? "1 号牛舍" : "3 号牛舍",
+    target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : isPlatformImmune ? "24 头" : "3 只",
+    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : isPlatformImmune ? "免疫" : "疾病治疗",
     status: (statusById[id] ?? fallbackStatus) as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
     needPickup: !isLoss,
     pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
-    flow: "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
+    flow: isPlatformImmune ? "平台下发 → 李雨晴 执行" : "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
   };
   const s = statusMap[o.status];
   const Icon = s.icon;
@@ -142,7 +144,7 @@ function TaskDetailPage() {
           <div className="flex items-center gap-1.5 text-caption">
             <Stethoscope className="h-3.5 w-3.5 text-text-tertiary" />
             <span className="text-text-tertiary">执行对象</span>
-            <span className="text-body-sm text-foreground">{isSingle ? earTag : `${execTags.length} 只`}</span>
+            <span className="text-body-sm text-foreground">{isSingle ? earTag : isPlatformImmune ? o.target : `${execTags.length} 只`}</span>
           </div>
           <div className="flex items-center gap-3 text-caption text-text-tertiary">
             <span className="flex items-center gap-1">
@@ -181,9 +183,9 @@ function TaskDetailPage() {
         </div>
 
         <div className="px-4 pt-3 space-y-3">
-          {tab === "report" && <ReportTab isLoss={isLoss} />}
-          {tab === "review" && <ReviewTab isLoss={isLoss} status={o.status} />}
-          {tab === "execute" && <ExecuteSummary status={o.status} pickupCode={o.pickupCode} tags={execTags} />}
+          {tab === "report" && (isPlatformImmune ? <EmptyTab label="平台下发工单，无上报记录" /> : <ReportTab isLoss={isLoss} />)}
+          {tab === "review" && (isPlatformImmune ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} />)}
+          {tab === "execute" && <ExecuteSummary status={o.status} pickupCode={o.pickupCode} tags={execTags} isPlatformImmune={isPlatformImmune} />}
         </div>
       </div>
 
@@ -254,6 +256,16 @@ function PersonChip({ name }: { name: string }) {
       </span>
       <span className="text-body-sm text-foreground">{n}</span>
     </span>
+  );
+}
+
+// === 上报记录 ===
+function EmptyTab({ label }: { label: string }) {
+  return (
+    <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
+      <ClipboardList className="h-6 w-6 text-text-tertiary mx-auto mb-2" />
+      <div className="text-body-sm text-text-tertiary">{label}</div>
+    </div>
   );
 }
 
@@ -511,7 +523,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 
-export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
+export function ExecuteSummary({ status, pickupCode, tags, isPlatformImmune = false }: { status: StatusKey; pickupCode: string | null; tags: string[]; isPlatformImmune?: boolean }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
@@ -522,7 +534,9 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
     );
   }
   void tags;
-  const days = getExecSummary(status);
+  const days: DaySummary[] = isPlatformImmune
+    ? [{ day: 1, date: "2026-05-28 09:00", action: "按批次注射口蹄疫疫苗，扫码核验药品", pickup: true, phase: "active" }]
+    : getExecSummary(status);
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
@@ -530,7 +544,7 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
 
       <Section title="基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-        <Field label="开始执行时间" value="2026-05-12 13:08" />
+        <Field label="开始执行时间" value={isPlatformImmune ? "2026-05-28 09:00" : "2026-05-12 13:08"} />
       </Section>
 
 
@@ -589,7 +603,7 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
             <Field label="操作人" value={<PersonChip name="李雨晴" />} />
           </div>
         </div>
-      ) : (
+      ) : isPlatformImmune ? null : (
         <div className="rounded-2xl bg-card border border-border p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
