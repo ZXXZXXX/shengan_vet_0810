@@ -142,11 +142,10 @@ function MHomePage() {
         </div>
       </section>
 
-      {/* ============ 今日工作 ============ */}
+      {/* ============ 工作任务 ============ */}
       <section className="px-4 mt-5 mb-4">
-        <SectionTitle title="今日工作" />
+        <SectionTitle title="工作任务" hint={`共计 ${getTaskCount(role)} 项`} />
         <TodayTaskList role={role} />
-
       </section>
 
 
@@ -252,6 +251,14 @@ const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
   hoof_trimmer: { status: "进行中", type: "修蹄", label: "执行中 · 修蹄" },
 };
 
+function getTaskCount(role: Role) {
+  const filter: RoleFilter =
+    roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
+  return homeTasks.filter(
+    (t) => t.status === filter.status && t.type === filter.type,
+  ).length;
+}
+
 function TodayTaskList({ role }: { role: Role }) {
   // admin / manager 默认看 待诊断 · 疾病治疗
   const filter: RoleFilter =
@@ -282,11 +289,6 @@ function TodayTaskList({ role }: { role: Role }) {
 
   return (
     <div className="mt-3 space-y-2">
-      <div className="flex items-center text-caption text-text-tertiary">
-        <span>{filter.label}</span>
-        <span className="mx-1">·</span>
-        <span className="text-text-secondary tabular-nums">{matched.length} 项</span>
-      </div>
       {visible.map((t) => (
         <Link
           key={t.id}
