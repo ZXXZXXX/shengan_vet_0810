@@ -15,6 +15,7 @@ import {
   Check,
   ImagePlus,
   ChevronDown,
+  Pencil,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
