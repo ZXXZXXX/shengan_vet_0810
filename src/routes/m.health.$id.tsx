@@ -373,16 +373,6 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
               }
             />
             <Field label="诊断结论" value={isLoss ? "疫苗失效，作损耗处理" : "支气管肺炎（早期）"} />
-            <Field
-              label="诊断结果"
-              value={
-                status === "已终止" ? (
-                  <span className="tag tag-muted">已终止</span>
-                ) : (
-                  <span className="tag tag-success">通过</span>
-                )
-              }
-            />
           </Section>
 
 
