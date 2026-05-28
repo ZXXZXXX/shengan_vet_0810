@@ -437,10 +437,13 @@ function DiagnosePage() {
                       <div className="min-w-0">
                         <div className="text-body text-foreground inline-flex items-center gap-1.5">
                           <Pill className="h-3.5 w-3.5 text-primary" />
-                          {r.name}
+                          {r.name || "未填写药品"}
+                          {r.maker && (
+                            <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                          )}
                         </div>
                         <div className="text-caption text-text-tertiary mt-1">
-                          {r.spec} · {r.use} · {r.dose} · {r.days}
+                          {[r.spec, r.use, r.dose && `${r.dose} / 次`, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
                         </div>
                       </div>
                       <div className="flex items-center gap-0.5 shrink-0">
