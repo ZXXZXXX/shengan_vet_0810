@@ -17,6 +17,8 @@ import {
   Square,
   MapPin,
   Warehouse,
+  ScanLine,
+  X,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, canVisit, canExecute } from "@/lib/mobile-role";
