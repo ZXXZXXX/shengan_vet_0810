@@ -832,7 +832,7 @@ function ChecklistDay({
           </span>
           <span className="text-caption text-text-tertiary font-mono">{date} 13:08</span>
         </div>
-        <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${dayStatusTag}`}>
+        <span className={dayStatusTag}>
           {dayStatusText}
         </span>
       </div>
