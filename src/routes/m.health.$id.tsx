@@ -91,6 +91,7 @@ function TaskDetailPage() {
   // mock data
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
+  const isPlatformImmune = id === "YM-2501";
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
 
   // 单对象工单（仅一只牛）：WO-2298、HF-* 等
@@ -109,15 +110,15 @@ function TaskDetailPage() {
   const o = {
     id,
     farm: "奇点示范牧场",
-    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : "3 号牛舍",
-    target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : "3 只",
-    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : "疾病治疗",
+    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : isPlatformImmune ? "1 号牛舍" : "3 号牛舍",
+    target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : isPlatformImmune ? "24 头" : "3 只",
+    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : isPlatformImmune ? "免疫" : "疾病治疗",
     status: (statusById[id] ?? fallbackStatus) as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
     needPickup: !isLoss,
     pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
-    flow: "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
+    flow: isPlatformImmune ? "平台下发 → 李雨晴 执行" : "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
   };
   const s = statusMap[o.status];
   const Icon = s.icon;
