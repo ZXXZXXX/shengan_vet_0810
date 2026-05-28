@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   PlayCircle,
   Camera,
-  Send,
+  
   Mic,
   Video,
   FileText,
@@ -92,10 +92,8 @@ function TaskDetailPage() {
   const s = statusMap[o.status];
   const Icon = s.icon;
 
-  // 进行中 的编辑/查看 + 是否曾填写过
-  const [editing, setEditing] = useState(false);
-  const [hasFilled, setHasFilled] = useState(false);
-  const [recordComplete, setRecordComplete] = useState(false);
+
+
 
 
 
@@ -159,7 +157,7 @@ function TaskDetailPage() {
         <div className="px-4 pt-3 space-y-3">
           {tab === "report" && <ReportTab isLoss={isLoss} />}
           {tab === "review" && <ReviewTab isLoss={isLoss} status={o.status} />}
-          {tab === "execute" && <ExecuteTab status={o.status} pickupCode={o.pickupCode} tags={execTags} />}
+          {tab === "execute" && <ExecuteTab status={o.status} pickupCode={o.pickupCode} tags={execTags} readOnly />}
         </div>
       </div>
 
@@ -189,41 +187,17 @@ function TaskDetailPage() {
                   响应
                 </button>
               </div>
-            ) : editing ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setHasFilled(true);
-                    setRecordComplete(true);
-                    setEditing(false);
-                    toast.success("已保存");
-                  }}
-                  className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
-                >
-                  保存
-                </button>
-                <button
-                  onClick={() => {
-                    if (!recordComplete) {
-                      toast.error("提交失败，记录不完整");
-                      return;
-                    }
-                    toast.success("提交成功");
-                    navigate({ to: "/m/health" });
-                  }}
-                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-                >
-                  <Send className="h-4 w-4" /> 提交记录
-                </button>
-              </div>
             ) : (
-              <button
-                onClick={() => setEditing(true)}
+              <Link
+                to="/m/health/$id/execute"
+                params={{ id: o.id }}
                 className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >
                 <PlayCircle className="h-4 w-4" />
-                {hasFilled ? "继续执行" : "开始执行"}
-              </button>
+                开始执行
+
+              </Link>
+
             )}
           </div>
         );
@@ -489,7 +463,7 @@ function buildDayItems(day: number, tags: string[]): ExecItem[] {
   }));
 }
 
-function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCode: string | null; tags: string[] }) {
+export function ExecuteTab({ status, pickupCode, tags, readOnly = false }: { status: StatusKey; pickupCode: string | null; tags: string[]; readOnly?: boolean }) {
   if (status === "待审批" || status === "已驳回") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -518,12 +492,13 @@ function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCod
         const day3State: DayState = allDone ? "done" : "pending";
         return (
           <>
-            <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} dayState={day1State} initialNote="精神略沉郁，已测温 39.8℃" />
-            <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} dayState={day2State} initialNote={allDone ? "体温回落至 39.1℃，采食正常" : ""} />
-            <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} dayState={day3State} initialNote={allDone ? "体温 38.6℃，恢复良好" : ""} />
+            <ChecklistDay day={1} date="05/12" pickupCode={pickupCode} tags={tags} dayState={day1State} initialNote="精神略沉郁，已测温 39.8℃" readOnly={readOnly} />
+            <ChecklistDay day={2} date="05/13" pickupCode={pickupCode} tags={tags} dayState={day2State} initialNote={allDone ? "体温回落至 39.1℃，采食正常" : ""} readOnly={readOnly} />
+            <ChecklistDay day={3} date="05/14" pickupCode={pickupCode} tags={tags} dayState={day3State} initialNote={allDone ? "体温 38.6℃，恢复良好" : ""} readOnly={readOnly} />
           </>
         );
       })()}
+
 
 
       <div className="rounded-xl bg-card border border-border p-4">
@@ -550,6 +525,7 @@ function ChecklistDay({
   tags,
   dayState,
   initialNote = "",
+  readOnly = false,
 }: {
   day: number;
   date: string;
@@ -557,10 +533,12 @@ function ChecklistDay({
   tags: string[];
   dayState: DayState;
   initialNote?: string;
+  readOnly?: boolean;
 }) {
   const isActive = dayState === "active";
   const isDone = dayState === "done";
   const isPending = dayState === "pending";
+  const interactive = isActive && !readOnly;
 
   const [items, setItems] = useState<ExecItem[]>(() => {
     const base = buildDayItems(day, tags);
@@ -595,11 +573,12 @@ function ChecklistDay({
     setItems((arr) => arr.map((it) => (it.id === id ? { ...it, ...patch } : it)));
 
   const toggleDone = (id: string, current: ItemStatus) => {
-    if (!isActive) return;
+    if (!interactive) return;
     update(id, { status: current === "done" ? "pending" : "done" });
   };
 
   const pickupDone = isActive && dayDone;
+
 
   return (
     <div className="rounded-2xl bg-card border border-border overflow-hidden">
@@ -664,7 +643,7 @@ function ChecklistDay({
                   <button
                     type="button"
                     onClick={() => toggleDone(it.id, it.status)}
-                    disabled={!isActive}
+                    disabled={!interactive}
                     className={`w-full flex items-center gap-2.5 h-12 px-3 rounded-xl border text-left transition-all active:scale-[0.99] ${
                       done
                         ? "border-primary/40 bg-brand-subtle/30"
@@ -673,7 +652,7 @@ function ChecklistDay({
                           : isActive
                             ? "border-border bg-card"
                             : "border-border bg-card opacity-80"
-                    } ${!isActive ? "cursor-default" : ""}`}
+                    } ${!interactive ? "cursor-default" : ""}`}
                   >
                     {done ? (
                       <CheckSquare className="h-4 w-4 text-primary shrink-0" />
@@ -689,7 +668,7 @@ function ChecklistDay({
                     >
                       {it.title}
                     </span>
-                    {isActive && !done && (
+                    {interactive && !done && (
                       <span
                         role="button"
                         onClick={(e) => {
@@ -710,7 +689,7 @@ function ChecklistDay({
               );
             })}
 
-            {isActive ? (
+            {interactive ? (
               <li>
                 {noteEditing || !dayNote ? (
                   <div
@@ -743,7 +722,7 @@ function ChecklistDay({
                   </button>
                 )}
               </li>
-            ) : isDone && dayNote ? (
+            ) : (isDone || (isActive && readOnly)) && dayNote ? (
               <li>
                 <div className="rounded-xl border border-border bg-surface-subtle px-3 py-2.5">
                   <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-0.5">
@@ -754,6 +733,7 @@ function ChecklistDay({
               </li>
             ) : null}
           </ul>
+
         </>
       )}
     </div>
