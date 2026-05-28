@@ -118,13 +118,6 @@ function MHomePage() {
                 <Camera className="h-4 w-4" />
                 现场上报
               </button>
-              <Link
-                to="/m/notifications"
-                className="relative h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/20"
-              >
-                <Bell className="h-4 w-4" />
-                <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[var(--state-danger)]" />
-              </Link>
             </div>
           </div>
 
