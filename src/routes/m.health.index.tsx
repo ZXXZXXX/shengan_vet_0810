@@ -19,11 +19,13 @@ import { EmptyState } from "@/components/empty-state";
 import { useRole, canVisit } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
-type HealthSearch = { tab?: string };
+type HealthSearch = { tab?: string; type?: string };
 export const Route = createFileRoute("/m/health/")({
   head: () => ({ meta: [{ title: "工单列表 · 奇点智牧" }] }),
-  validateSearch: (s: Record<string, unknown>): HealthSearch =>
-    typeof s.tab === "string" ? { tab: s.tab } : {},
+  validateSearch: (s: Record<string, unknown>): HealthSearch => ({
+    ...(typeof s.tab === "string" ? { tab: s.tab } : {}),
+    ...(typeof s.type === "string" ? { type: s.type } : {}),
+  }),
   component: TaskListPage,
 });
 
@@ -124,12 +126,16 @@ function TaskListPage() {
       : "全部";
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(initialTab);
   const [q, setQ] = useState("");
+  const typeFilter = search.type;
 
   // 列表仅展示工单卡片：排除领取（取物）和损耗（物资）
   let list: Task[] = tasks.filter((t) => t.kind !== "损耗");
   void claimed;
   void PICKUPS;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
+  if (typeFilter) {
+    list = list.filter((o) => o.type === typeFilter || (typeFilter === "疫苗免疫" && o.type === "免疫"));
+  }
   if (tab === "执行中") list = list.filter((o) => o.status === "进行中");
   else if (tab !== "全部") list = list.filter((o) => o.status === tab);
 
