@@ -541,26 +541,30 @@ function ExecuteTab({ status, pickupCode, tags }: { status: StatusKey; pickupCod
   );
 }
 
+type DayState = "done" | "active" | "pending";
+
 function ChecklistDay({
   day,
   date,
   pickupCode,
   tags,
-  initialAllDone = false,
+  dayState,
   initialNote = "",
-  isActive = false,
 }: {
   day: number;
   date: string;
   pickupCode: string | null;
   tags: string[];
-  initialAllDone?: boolean;
+  dayState: DayState;
   initialNote?: string;
-  isActive?: boolean;
 }) {
+  const isActive = dayState === "active";
+  const isDone = dayState === "done";
+  const isPending = dayState === "pending";
+
   const [items, setItems] = useState<ExecItem[]>(() => {
     const base = buildDayItems(day, tags);
-    if (initialAllDone) return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
+    if (isDone) return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
     return base;
   });
   const [dayNote, setDayNote] = useState(initialNote);
@@ -571,12 +575,12 @@ function ChecklistDay({
   const blockedCount = items.filter((i) => i.status === "blocked").length;
   const settled = doneCount + blockedCount;
   const allSettled = settled === total;
-  const dayDone = allSettled && blockedCount === 0;
+  const dayDone = isDone || (isActive && allSettled && blockedCount === 0);
 
   // 状态标签
   let dayStatusTag: string;
   let dayStatusText: string;
-  if (dayDone) {
+  if (isDone || dayDone) {
     dayStatusTag = "bg-brand-subtle text-primary";
     dayStatusText = "已完成";
   } else if (isActive) {
