@@ -66,6 +66,7 @@ import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
 import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
 import { Route as MHealthIdExecuteRouteImport } from './routes/m.health.$id_.execute'
+import { Route as MHealthIdDiagnoseRouteImport } from './routes/m.health.$id_.diagnose'
 
 const WorkspaceRoute = WorkspaceRouteImport.update({
   id: '/workspace',
@@ -352,6 +353,11 @@ const MHealthIdExecuteRoute = MHealthIdExecuteRouteImport.update({
   path: '/health/$id/execute',
   getParentRoute: () => MRoute,
 } as any)
+const MHealthIdDiagnoseRoute = MHealthIdDiagnoseRouteImport.update({
+  id: '/health/$id_/diagnose',
+  path: '/health/$id/diagnose',
+  getParentRoute: () => MRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -410,6 +416,7 @@ export interface FileRoutesByFullPath {
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/pickup/': typeof MPickupIndexRoute
+  '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRoute
 }
 export interface FileRoutesByTo {
@@ -464,6 +471,7 @@ export interface FileRoutesByTo {
   '/m/animals': typeof MAnimalsIndexRoute
   '/m/health': typeof MHealthIndexRoute
   '/m/pickup': typeof MPickupIndexRoute
+  '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRoute
 }
 export interface FileRoutesById {
@@ -524,6 +532,7 @@ export interface FileRoutesById {
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/pickup/': typeof MPickupIndexRoute
+  '/m/health/$id_/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id_/execute': typeof MHealthIdExecuteRoute
 }
 export interface FileRouteTypes {
@@ -585,6 +594,7 @@ export interface FileRouteTypes {
     | '/m/animals/'
     | '/m/health/'
     | '/m/pickup/'
+    | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -639,6 +649,7 @@ export interface FileRouteTypes {
     | '/m/animals'
     | '/m/health'
     | '/m/pickup'
+    | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
   id:
     | '__root__'
@@ -698,6 +709,7 @@ export interface FileRouteTypes {
     | '/m/animals/'
     | '/m/health/'
     | '/m/pickup/'
+    | '/m/health/$id_/diagnose'
     | '/m/health/$id_/execute'
   fileRoutesById: FileRoutesById
 }
@@ -1116,6 +1128,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MHealthIdExecuteRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/health/$id_/diagnose': {
+      id: '/m/health/$id_/diagnose'
+      path: '/health/$id/diagnose'
+      fullPath: '/m/health/$id/diagnose'
+      preLoaderRoute: typeof MHealthIdDiagnoseRouteImport
+      parentRoute: typeof MRoute
+    }
   }
 }
 
@@ -1169,6 +1188,7 @@ interface MRouteChildren {
   MAnimalsIndexRoute: typeof MAnimalsIndexRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
   MPickupIndexRoute: typeof MPickupIndexRoute
+  MHealthIdDiagnoseRoute: typeof MHealthIdDiagnoseRoute
   MHealthIdExecuteRoute: typeof MHealthIdExecuteRoute
 }
 
@@ -1191,6 +1211,7 @@ const MRouteChildren: MRouteChildren = {
   MAnimalsIndexRoute: MAnimalsIndexRoute,
   MHealthIndexRoute: MHealthIndexRoute,
   MPickupIndexRoute: MPickupIndexRoute,
+  MHealthIdDiagnoseRoute: MHealthIdDiagnoseRoute,
   MHealthIdExecuteRoute: MHealthIdExecuteRoute,
 }
 
