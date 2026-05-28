@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Plus,
   Search,
   ClipboardList,
   AlertTriangle,
@@ -154,17 +153,7 @@ function TaskListPage() {
   }
 
   return (
-    <MobileShell
-      title="工单列表"
-      right={
-        <Link
-          to="/m/report"
-          className="h-7 w-7 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center"
-        >
-          <Plus className="h-4 w-4" />
-        </Link>
-      }
-    >
+    <MobileShell title="工单列表">
       {/* 搜索 */}
       <div className="px-4 pt-3">
         <div className="relative">
