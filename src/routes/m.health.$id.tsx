@@ -802,9 +802,9 @@ function ChecklistDay({
         <div className="flex items-center gap-2">
           <DayDot active={isActive} done={dayDone} />
           <span className={`text-body font-medium ${isPending ? "text-text-tertiary" : "text-foreground"}`}>
-            第 {day} 天执行
+            执行记录{String(day).padStart(2, "0")}
           </span>
-          <span className="text-caption text-text-tertiary font-mono">{date}</span>
+          <span className="text-caption text-text-tertiary font-mono">{date} 13:08</span>
         </div>
         <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${dayStatusTag}`}>
           {dayStatusText}
