@@ -631,33 +631,12 @@ function DiagnosePage() {
 
       {/* 编辑处方弹层 */}
       {editingRx && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setEditingRx(null)}>
-          <div
-            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-3"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-section-title text-foreground">编辑药品</div>
-            <Input label="药品名称" value={editingRx.name} onChange={(v) => setEditingRx({ ...editingRx, name: v })} />
-            <Input label="规格" value={editingRx.spec} onChange={(v) => setEditingRx({ ...editingRx, spec: v })} />
-            <Input label="给药方式" value={editingRx.use} onChange={(v) => setEditingRx({ ...editingRx, use: v })} />
-            <Input label="单次剂量" value={editingRx.dose} onChange={(v) => setEditingRx({ ...editingRx, dose: v })} />
-            <Input label="疗程" value={editingRx.days} onChange={(v) => setEditingRx({ ...editingRx, days: v })} />
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => setEditingRx(null)}
-                className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
-              >
-                取消
-              </button>
-              <button
-                onClick={saveRxEdit}
-                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
-              >
-                保存
-              </button>
-            </div>
-          </div>
-        </div>
+        <DrugEditor
+          value={editingRx}
+          onChange={setEditingRx}
+          onCancel={() => setEditingRx(null)}
+          onSave={saveRxEdit}
+        />
       )}
 
       {/* 底部提交按钮 */}
