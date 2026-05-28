@@ -185,11 +185,3 @@ function PickupDetailPage() {
   );
 }
 
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between px-4 py-3 gap-3">
-      <span className="text-caption text-text-tertiary shrink-0">{label}</span>
-      <div className="min-w-0 text-right">{value}</div>
-    </div>
-  );
-}
