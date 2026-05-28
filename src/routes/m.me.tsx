@@ -194,9 +194,6 @@ function Brief({ label, value }: { label: string; value: string }) {
   );
 }
 
-    </div>
-  );
-}
 
 
 function MenuItem({
