@@ -148,9 +148,10 @@ const META: Record<
   },
   platform: {
     icon: Megaphone,
-    tone: "bg-[var(--effect-ai-cyan)]/15 text-[var(--effect-ai-cyan)]",
+    tone: "bg-[#E6F7FE] text-[#22ACEB]",
     label: "平台",
   },
+
 };
 
 function NotificationsPage() {
