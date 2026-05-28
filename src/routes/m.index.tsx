@@ -144,9 +144,18 @@ function MHomePage() {
 
       {/* ============ 工作任务 ============ */}
       <section className="px-4 mt-5 mb-4">
-        <SectionTitle title="工作任务" hint={`共计 ${getTaskCount(role)} 项`} />
+        <SectionTitle
+          title="工作任务"
+          hint={`共计 ${getTaskCount(role)} 项`}
+          to="/m/health"
+          search={{
+            tab: (roleFilterMap[role]?.status ?? "待诊断") === "进行中" ? "执行中" : "待诊断",
+            type: roleFilterMap[role]?.type ?? "疾病治疗",
+          }}
+        />
         <TodayTaskList role={role} />
       </section>
+
 
 
 
@@ -276,12 +285,11 @@ function TodayTaskList({ role }: { role: Role }) {
     (t) => t.status === filter.status && t.type === filter.type,
   );
   const visible = matched.slice(0, 6);
-  const remaining = Math.max(0, matched.length - visible.length);
 
-  const tabParam = filter.status === "进行中" ? "执行中" : "待诊断";
   const typeIcon =
     filter.type === "修蹄" ? Footprints : filter.type === "疫苗免疫" ? Syringe : Pill;
   const TIcon = typeIcon;
+
 
   if (visible.length === 0) {
     return (
@@ -324,17 +332,10 @@ function TodayTaskList({ role }: { role: Role }) {
           <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
         </Link>
       ))}
-      <Link
-        to="/m/health"
-        search={{ tab: tabParam, type: filter.type } as never}
-        className="flex items-center justify-center gap-1 h-10 rounded-xl bg-card border border-border text-body-sm text-primary active:bg-surface-subtle"
-      >
-        查看更多{remaining > 0 ? ` (还有 ${remaining} 项)` : ""}
-        <ChevronRight className="h-3.5 w-3.5" />
-      </Link>
     </div>
   );
 }
+
 
 
 
@@ -345,14 +346,37 @@ function TodayTaskList({ role }: { role: Role }) {
 
 
 // ---------------- 子组件 ----------------
-function SectionTitle({ title, hint }: { title: string; hint?: string }) {
+function SectionTitle({
+  title,
+  hint,
+  to,
+  search,
+}: {
+  title: string;
+  hint?: string;
+  to?: string;
+  search?: Record<string, unknown>;
+}) {
   return (
     <div className="flex items-center justify-between mb-2">
       <h3 className="text-card-title text-foreground">{title}</h3>
-      {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
+      {hint &&
+        (to ? (
+          <Link
+            to={to as never}
+            search={search as never}
+            className="inline-flex items-center gap-0.5 text-caption text-text-tertiary active:opacity-70"
+          >
+            {hint}
+            <ChevronRight className="h-3 w-3" />
+          </Link>
+        ) : (
+          <span className="text-caption text-text-tertiary">{hint}</span>
+        ))}
     </div>
   );
 }
+
 
 const toneAccentMap: Record<string, string> = {
   brand: "var(--brand)",
