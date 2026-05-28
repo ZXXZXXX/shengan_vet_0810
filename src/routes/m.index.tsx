@@ -136,7 +136,7 @@ function MHomePage() {
         <SectionTitle title="牧场摘要" />
         <div className="grid grid-cols-3 gap-2">
           <SummaryCard icon={MapPin} tone="brand" label="牛只总数" value="1,284" trend="1.8%" trendDir="up" />
-          <SummaryCard icon={HeartPulse} tone="success" label="健康率" value="96.8%" trend="0.6%" trendDir="up" />
+          <SummaryCard icon={HeartPulse} tone="info" label="健康率" value="96.8%" trend="0.6%" trendDir="up" />
           <SummaryCard icon={AlertTriangle} tone="danger" label="异常数" value="18" trend="8.3%" trendDir="down" />
         </div>
       </section>
