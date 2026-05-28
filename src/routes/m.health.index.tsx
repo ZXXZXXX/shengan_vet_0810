@@ -246,11 +246,6 @@ function TaskListPage() {
                     metaTime = o.executedAt ?? o.createdAt;
                     metaPersonLabel = "执行";
                     metaPersonName = o.who;
-                  } else if (o.status === "已驳回") {
-                    metaTimeLabel = "诊断";
-                    metaTime = o.reviewedAt ?? o.createdAt;
-                    metaPersonLabel = "诊断";
-                    metaPersonName = o.visitor ?? "—";
                   } else if (o.status === "已终止") {
                     metaTimeLabel = "终止";
                     metaTime = o.terminatedAt ?? o.createdAt;
