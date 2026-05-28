@@ -159,7 +159,7 @@ function TaskDetailPage() {
         <div className="px-4 pt-3 space-y-3">
           {tab === "report" && <ReportTab isLoss={isLoss} />}
           {tab === "review" && <ReviewTab isLoss={isLoss} status={o.status} />}
-          {tab === "execute" && <ExecuteTab status={o.status} pickupCode={o.pickupCode} tags={execTags} readOnly />}
+          {tab === "execute" && <ExecuteSummary status={o.status} pickupCode={o.pickupCode} tags={execTags} />}
         </div>
       </div>
 
