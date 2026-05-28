@@ -49,6 +49,7 @@ import { Route as MReportRouteImport } from './routes/m.report'
 import { Route as MNotificationsRouteImport } from './routes/m.notifications'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLoginRouteImport } from './routes/m.login'
+import { Route as MEmptyStatesRouteImport } from './routes/m.empty-states'
 import { Route as MDraftsRouteImport } from './routes/m.drafts'
 import { Route as KnowledgeSymptomRouteImport } from './routes/knowledge.symptom'
 import { Route as KnowledgePrescriptionRouteImport } from './routes/knowledge.prescription'
@@ -264,6 +265,11 @@ const MLoginRoute = MLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => MRoute,
 } as any)
+const MEmptyStatesRoute = MEmptyStatesRouteImport.update({
+  id: '/empty-states',
+  path: '/empty-states',
+  getParentRoute: () => MRoute,
+} as any)
 const MDraftsRoute = MDraftsRouteImport.update({
   id: '/drafts',
   path: '/drafts',
@@ -354,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/drafts': typeof MDraftsRoute
+  '/m/empty-states': typeof MEmptyStatesRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
@@ -405,6 +412,7 @@ export interface FileRoutesByTo {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/drafts': typeof MDraftsRoute
+  '/m/empty-states': typeof MEmptyStatesRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
@@ -462,6 +470,7 @@ export interface FileRoutesById {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/drafts': typeof MDraftsRoute
+  '/m/empty-states': typeof MEmptyStatesRoute
   '/m/login': typeof MLoginRoute
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
@@ -520,6 +529,7 @@ export interface FileRouteTypes {
     | '/knowledge/prescription'
     | '/knowledge/symptom'
     | '/m/drafts'
+    | '/m/empty-states'
     | '/m/login'
     | '/m/me'
     | '/m/notifications'
@@ -571,6 +581,7 @@ export interface FileRouteTypes {
     | '/knowledge/prescription'
     | '/knowledge/symptom'
     | '/m/drafts'
+    | '/m/empty-states'
     | '/m/login'
     | '/m/me'
     | '/m/notifications'
@@ -627,6 +638,7 @@ export interface FileRouteTypes {
     | '/knowledge/prescription'
     | '/knowledge/symptom'
     | '/m/drafts'
+    | '/m/empty-states'
     | '/m/login'
     | '/m/me'
     | '/m/notifications'
@@ -961,6 +973,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MLoginRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/empty-states': {
+      id: '/m/empty-states'
+      path: '/empty-states'
+      fullPath: '/m/empty-states'
+      preLoaderRoute: typeof MEmptyStatesRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/drafts': {
       id: '/m/drafts'
       path: '/drafts'
@@ -1095,6 +1114,7 @@ const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
 
 interface MRouteChildren {
   MDraftsRoute: typeof MDraftsRoute
+  MEmptyStatesRoute: typeof MEmptyStatesRoute
   MLoginRoute: typeof MLoginRoute
   MMeRoute: typeof MMeRoute
   MNotificationsRoute: typeof MNotificationsRoute
@@ -1114,6 +1134,7 @@ interface MRouteChildren {
 
 const MRouteChildren: MRouteChildren = {
   MDraftsRoute: MDraftsRoute,
+  MEmptyStatesRoute: MEmptyStatesRoute,
   MLoginRoute: MLoginRoute,
   MMeRoute: MMeRoute,
   MNotificationsRoute: MNotificationsRoute,
