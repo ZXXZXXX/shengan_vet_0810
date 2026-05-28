@@ -150,7 +150,13 @@ function ReportPage() {
 
   const [kind] = useState<ReportKind>("health");
 
+  // 上报模式：扫到牛舍且无指定牛只 → 以牛舍为上报对象（可多选）
+  const barnMode = !!search.barn && !search.target;
+
   const [targets, setTargets] = useState<string[]>(search.target ? [search.target] : []);
+  const [barns, setBarns] = useState<string[]>(
+    barnMode && search.barn ? [search.barn] : []
+  );
   // 牛舍信息：优先使用 URL 锁定值，否则按首个牛只编号自动获取
   const barn = useMemo(() => {
     if (search.barn) return search.barn;
@@ -171,6 +177,28 @@ function ReportPage() {
     if (!v) return;
     setTargets((prev) => prev.map((x) => (x === oldVal ? v : x)));
   };
+
+  // 牛舍多选（barnMode）
+  const allBarns = useMemo(
+    () => Array.from({ length: 8 }, (_, i) => `${i + 1} 号牛舍`),
+    []
+  );
+  const addBarn = (v: string) => {
+    const t = v.trim();
+    if (!t) return;
+    setBarns((prev) => (prev.includes(t) ? prev : [...prev, t]));
+  };
+  const removeBarn = (t: string) => {
+    setBarns((prev) => (prev.length <= 1 ? prev : prev.filter((x) => x !== t)));
+  };
+  const [barnAddQuery, setBarnAddQuery] = useState("");
+  const [showBarnAdd, setShowBarnAdd] = useState(false);
+  const barnMatches = useMemo(() => {
+    const kw = barnAddQuery.trim();
+    const pool = allBarns.filter((b) => !barns.includes(b));
+    return (kw ? pool.filter((b) => b.includes(kw)) : pool).slice(0, 8);
+  }, [allBarns, barns, barnAddQuery]);
+
   const [editingTarget, setEditingTarget] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
   const [desc, setDesc] = useState("");
