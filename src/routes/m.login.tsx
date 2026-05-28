@@ -103,7 +103,7 @@ function MLoginPage() {
               </button>
               <h1 className="text-page-title text-foreground tracking-tight">验证手机号</h1>
               <p className="text-body text-text-secondary mt-1">
-                首次使用企业微信登录，请先验证手机号
+                请验证手机号以继续登录
               </p>
               <div className="mt-3 flex items-center gap-1.5 text-caption text-text-tertiary">
                 <span className="h-1.5 w-6 rounded-full bg-primary" />
