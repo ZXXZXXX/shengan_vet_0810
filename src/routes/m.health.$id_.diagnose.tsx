@@ -16,6 +16,8 @@ import {
   Camera,
   Video,
   PlayCircle,
+  UserPlus,
+  User,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
@@ -95,6 +97,8 @@ type Prescription = {
   days: string;
 };
 
+const executorPool = ["李雨晴", "张师傅", "王师傅", "刘师傅", "赵师傅", "陈师傅"];
+
 function DiagnosePage() {
   const { id } = useParams({ from: "/m/health/$id_/diagnose" });
   const navigate = useNavigate();
@@ -136,6 +140,16 @@ function DiagnosePage() {
   const [videos, setVideos] = useState<string[]>([]);
   const [note, setNote] = useState("");
   const [showMediaPicker, setShowMediaPicker] = useState(false);
+
+  // 指派执行人
+  const [executor, setExecutor] = useState("");
+  const [showExecutorPicker, setShowExecutorPicker] = useState(false);
+  const [executorQuery, setExecutorQuery] = useState("");
+  const executorMatches = useMemo(() => {
+    const kw = executorQuery.trim();
+    const list = kw ? executorPool.filter((n) => n.includes(kw)) : executorPool;
+    return list.slice(0, 8);
+  }, [executorQuery]);
 
   // 按匹配症状数排序的候选疾病
   const rankedDiseases = useMemo(() => {
@@ -419,10 +433,38 @@ function DiagnosePage() {
               className="mt-2 w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
             >
               <Plus className="h-3.5 w-3.5" /> 新增药品
-            </button>
-          </Section>
+          </button>
+        </Section>
 
-          {/* === 现场记录 === */}
+        {/* === 指派执行人 === */}
+        <Section
+          title="指派执行人"
+          extra={<span className="text-caption text-text-tertiary">可选</span>}
+        >
+          {executor ? (
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-brand-subtle text-primary text-body">
+                <User className="h-3.5 w-3.5" />
+                {executor}
+              </span>
+              <button
+                onClick={() => setShowExecutorPicker(true)}
+                className="text-body-sm text-text-tertiary underline"
+              >
+                更换
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowExecutorPicker(true)}
+              className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
+            >
+              <UserPlus className="h-3.5 w-3.5" /> 选择执行人（可选）
+            </button>
+          )}
+        </Section>
+
+        {/* === 现场记录 === */}
           <Section
             title="现场记录"
             extra={<span className="text-caption text-text-tertiary">可选</span>}
@@ -669,6 +711,51 @@ function DiagnosePage() {
             </div>
             <button
               onClick={() => setShowMediaPicker(false)}
+              className="w-full h-10 rounded-lg border border-border text-body-sm text-text-secondary"
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 选择执行人弹层 */}
+      {showExecutorPicker && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setShowExecutorPicker(false)}>
+          <div
+            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-section-title text-foreground">选择执行人</div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+              <input
+                value={executorQuery}
+                onChange={(e) => setExecutorQuery(e.target.value)}
+                placeholder="搜索姓名"
+                className="h-10 w-full pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <button
+                onClick={() => { setExecutor(""); setShowExecutorPicker(false); setExecutorQuery(""); }}
+                className={`w-full h-10 rounded-lg border text-body-sm inline-flex items-center justify-center gap-1.5 ${executor === "" ? "border-primary bg-brand-subtle text-primary" : "border-border bg-surface-subtle text-text-secondary"}`}
+              >
+                不指派，进入待响应池
+              </button>
+              {executorMatches.map((name) => (
+                <button
+                  key={name}
+                  onClick={() => { setExecutor(name); setShowExecutorPicker(false); setExecutorQuery(""); }}
+                  className={`w-full h-10 rounded-lg border text-body-sm inline-flex items-center justify-center gap-1.5 ${executor === name ? "border-primary bg-brand-subtle text-primary" : "border-border bg-surface-subtle text-text-secondary"}`}
+                >
+                  <User className="h-3.5 w-3.5" />
+                  {name}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => { setShowExecutorPicker(false); setExecutorQuery(""); }}
               className="w-full h-10 rounded-lg border border-border text-body-sm text-text-secondary"
             >
               取消
