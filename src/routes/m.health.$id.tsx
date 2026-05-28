@@ -72,7 +72,7 @@ function TaskDetailPage() {
   const role = useRole();
 
   const search = Route.useSearch();
-  // 默认 tab：进行中工单（已有执行记录）直接定位到执行记录；有诊断记录优先诊断；否则上报
+  // 默认 tab：进行中工单（已有执行记录）直接定位到执行任务；有诊断记录优先诊断；否则上报
   const currentStatus = statusById[id] ??
     (role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断");
   const hasDiagnosis = currentStatus !== "待诊断";
