@@ -48,13 +48,13 @@ const MSGS: Msg[] = [
   {
     id: "n1",
     cat: "approval",
-    title: "待审批：处方申请 RX-2381",
+    title: "待出诊：处方申请 RX-2381",
     desc: "兽医助理 王芳 提交了 #A2381 的退烧处方申请，已等待 35 分钟。",
     time: "5 分钟前",
     ts: 5,
     link: "/m/health/A2381",
     unread: true,
-    rightText: "！请前往PC端审批",
+    rightText: "！请前往PC端出诊",
     rightTone: "danger",
   },
   {
@@ -104,7 +104,7 @@ const META: Record<
   approval: {
     icon: ShieldCheck,
     tone: "bg-[var(--state-warning)]/15 text-[var(--state-warning)]",
-    label: "待审批",
+    label: "待出诊",
   },
   task: {
     icon: ClipboardList,
