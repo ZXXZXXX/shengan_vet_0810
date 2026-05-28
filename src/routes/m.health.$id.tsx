@@ -569,7 +569,7 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
                 <span className={`text-body font-medium ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
                   执行记录 {String(d.day).padStart(2, "0")}
                 </span>
-                <span className="text-caption text-text-tertiary font-mono">{d.date}</span>
+                <span className="text-caption text-text-tertiary font-mono">{isDone || isActive ? d.date : "-"}</span>
               </div>
 
               <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${statusClass}`}>
