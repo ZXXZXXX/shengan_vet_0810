@@ -267,16 +267,16 @@
   --brand-subtle: #E6F8EC;
   --brand-soft: #E6F8EC;
 
-  --bg-page: #F3F8FB;
+  --bg-page: #F7F9FA;
   --bg-surface: #FFFFFF;
-  --bg-surface-subtle: #EEF3F6;
+  --bg-surface-subtle: #F0F2F4;
 
   --text-primary: #0F172A;
   --text-secondary: #334155;
   --text-tertiary: #64748B;
 
-  --border-default: #E2E8EC;
-  --border-strong: #CBD5DC;
+  --border-default: #E6E9EC;
+  --border-strong: #CED4DA;
   --border-focus: #00A85A;
 
   --state-success: #00A85A;
@@ -285,13 +285,13 @@
   --state-danger:  #EF4444;
   --state-info:    #0EA5E9;
 
-  --sidebar-hover: #EEF3F6;
+  --sidebar-hover: #F0F2F4;
 }
 .m-scope .tag-success { background-color: color-mix(in srgb, #00A85A 14%, transparent); color: #00794A; }
 .m-scope .tag-warning { background-color: color-mix(in srgb, #F59E0B 18%, transparent); color: #B4730A; }
 .m-scope .tag-danger  { background-color: color-mix(in srgb, #EF4444 14%, transparent); color: #B23A3A; }
 .m-scope .tag-info    { background-color: color-mix(in srgb, #0EA5E9 14%, transparent); color: #0369A1; }
-.m-scope .tag-muted   { background-color: #EEF3F6; color: #475569; }
+.m-scope .tag-muted   { background-color: #F0F2F4; color: #475569; }
 .m-scope .tag-brand   { background-color: #E6F8EC; color: #00A85A; }
 
 .m-scope .text-page-title    { font-size: 22px; line-height: 32px; font-weight: 500; }
