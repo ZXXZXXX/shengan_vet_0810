@@ -124,10 +124,10 @@ function MHomePage() {
           <rect width="440" height="220" fill="url(#m-grid)" />
 
           {/* 光圈太阳 */}
-          <circle cx="350" cy="58" r="80" fill="url(#m-sun)" />
-          <circle cx="350" cy="58" r="14" fill="#FFFFFF" fillOpacity="0.9" />
-          <circle cx="350" cy="58" r="22" fill="none" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="0.8" />
-          <circle cx="350" cy="58" r="34" fill="none" stroke="#FFFFFF" strokeOpacity="0.2" strokeWidth="0.6" />
+          <circle cx="320" cy="118" r="72" fill="url(#m-sun)" />
+          <circle cx="320" cy="118" r="13" fill="#FFFFFF" fillOpacity="0.9" />
+          <circle cx="320" cy="118" r="21" fill="none" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="0.8" />
+          <circle cx="320" cy="118" r="32" fill="none" stroke="#FFFFFF" strokeOpacity="0.2" strokeWidth="0.6" />
 
           {/* 草原远景阴影起伏 */}
           <path
