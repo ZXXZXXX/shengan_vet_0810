@@ -766,7 +766,7 @@ function DiagnosePage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-section-title text-foreground">添加现场记录</div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => { setPhotos((prev) => [...prev, `p${Date.now()}`]); setShowMediaPicker(false); }}
                 className="flex flex-col items-center justify-center gap-2 h-24 rounded-xl border border-border bg-surface-subtle text-text-secondary"
@@ -780,6 +780,13 @@ function DiagnosePage() {
               >
                 <Video className="h-6 w-6" />
                 <span className="text-body-sm">拍视频</span>
+              </button>
+              <button
+                onClick={startRecord}
+                className="flex flex-col items-center justify-center gap-2 h-24 rounded-xl border border-border bg-surface-subtle text-text-secondary"
+              >
+                <Mic className="h-6 w-6" />
+                <span className="text-body-sm">录音</span>
               </button>
             </div>
             <button
