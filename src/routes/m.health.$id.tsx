@@ -117,7 +117,17 @@ function TaskDetailPage() {
           <div className="flex items-center gap-1.5 text-caption">
             <Stethoscope className="h-3.5 w-3.5 text-text-tertiary" />
             <span className="text-text-tertiary">执行对象</span>
-            <span className="text-body-sm text-foreground">{earTag}</span>
+            <span className="text-body-sm text-foreground">{isSingle ? earTag : `${execTags.length} 只`}</span>
+          </div>
+          <div className="flex items-center gap-3 text-caption text-text-tertiary">
+            <span className="flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5" />
+              <span>{o.farm}</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <Warehouse className="h-3.5 w-3.5" />
+              <span>{o.barn}</span>
+            </span>
           </div>
         </div>
 
