@@ -567,7 +567,8 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
         const isDone = d.phase === "done";
         const isActive = d.phase === "active";
         const statusLabel = isDone ? "已完成" : isActive ? "进行中" : "未开始";
-        const statusClass = isDone || isActive ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary";
+        const statusClass = isDone ? "tag-success" : isActive ? "tag-info" : "tag-muted";
+
         const pickupDone = needPickup && isDone;
         return (
           <div key={d.day} className="rounded-2xl bg-card border border-border p-4">
