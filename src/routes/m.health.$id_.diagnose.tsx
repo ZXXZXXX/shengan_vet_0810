@@ -404,6 +404,81 @@ function DiagnosePage() {
               <Plus className="h-3.5 w-3.5" /> 新增药品
             </button>
           </Section>
+
+          {/* === 现场记录 === */}
+          <Section
+            title="现场记录"
+            extra={<span className="text-caption text-text-tertiary">可选</span>}
+          >
+            {/* 照片 */}
+            <div>
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Camera className="h-3 w-3" /> 照片 · {photos.length} 张
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {photos.map((_, i) => (
+                  <div key={i} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                    <button
+                      onClick={() => setPhotos((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
+                      aria-label="删除照片"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => setPhotos((prev) => [...prev, `p${Date.now()}`])}
+                  className="aspect-square rounded-lg border border-dashed border-border bg-surface-subtle text-text-tertiary inline-flex flex-col items-center justify-center gap-0.5"
+                >
+                  <Camera className="h-4 w-4" />
+                  <span className="text-[10px]">拍照</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 视频 */}
+            <div className="mt-3">
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Video className="h-3 w-3" /> 视频 · {videos.length} 段
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {videos.map((_, i) => (
+                  <div key={i} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center">
+                    <PlayCircle className="h-5 w-5 text-text-tertiary" />
+                    <button
+                      onClick={() => setVideos((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
+                      aria-label="删除视频"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => setVideos((prev) => [...prev, `v${Date.now()}`])}
+                  className="aspect-square rounded-lg border border-dashed border-border bg-surface-subtle text-text-tertiary inline-flex flex-col items-center justify-center gap-0.5"
+                >
+                  <Video className="h-4 w-4" />
+                  <span className="text-[10px]">拍视频</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 文字描述 */}
+            <div className="mt-3">
+              <div className="text-caption text-text-tertiary mb-2">文字描述</div>
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                maxLength={500}
+                rows={3}
+                placeholder="补充体征、用药反应、隔离建议等"
+                className="w-full px-3 py-2 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+              />
+              <div className="text-caption text-text-tertiary text-right mt-1">{note.length} / 500</div>
+            </div>
+          </Section>
         </div>
       </div>
 
