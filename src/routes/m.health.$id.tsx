@@ -596,11 +596,11 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
 export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13" }: { pickupCode: string | null; tags: string[]; day?: number; date?: string }) {
   return (
     <>
-      <Section title="执行基础信息">
+      <Section title="基础信息">
         <Field label="执行人" value={<PersonChip name="李雨晴" />} />
         <Field label="开始执行时间" value="今日 13:08" />
-        <Field label="执行对象" value={tags.length === 1 ? tags[0] : `${tags.length} 只`} />
       </Section>
+
 
       <div className="text-caption text-text-tertiary px-1">
         勾选完成本日动作，可选填执行纪要
