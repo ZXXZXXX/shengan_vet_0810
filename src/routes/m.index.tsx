@@ -113,8 +113,45 @@ function MHomePage() {
           <path d="M0 165 Q80 150 160 158 T320 156 T400 162" stroke="white" strokeOpacity="0.35" strokeWidth="0.6" fill="none" />
           <path d="M0 178 Q100 168 200 172 T400 174" stroke="white" strokeOpacity="0.25" strokeWidth="0.5" fill="none" />
         </svg>
+
+        {/* 右侧大光圈 */}
+        <div
+          aria-hidden
+          className="absolute -top-16 -right-20 h-64 w-64 rounded-full pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(closest-side, color-mix(in oklab, #d8f5b8 70%, transparent) 0%, color-mix(in oklab, #d8f5b8 30%, transparent) 45%, transparent 75%)",
+            filter: "blur(2px)",
+          }}
+        />
+        {/* 左下小光圈 */}
+        <div
+          aria-hidden
+          className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(closest-side, color-mix(in oklab, #ffffff 35%, transparent) 0%, transparent 70%)",
+          }}
+        />
+
+        {/* 装饰 sparkle / 十字星 */}
+        <svg aria-hidden className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 400 200">
+          {[
+            { x: 300, y: 36, s: 5 },
+            { x: 340, y: 70, s: 3.5 },
+            { x: 270, y: 92, s: 2.5 },
+            { x: 372, y: 118, s: 3 },
+            { x: 230, y: 24, s: 2 },
+          ].map((p, i) => (
+            <g key={i} stroke="white" strokeOpacity="0.85" strokeWidth="0.8" strokeLinecap="round">
+              <line x1={p.x - p.s} y1={p.y} x2={p.x + p.s} y2={p.y} />
+              <line x1={p.x} y1={p.y - p.s} x2={p.x} y2={p.y + p.s} />
+            </g>
+          ))}
+        </svg>
+
         {/* 坐标点 */}
-        <svg aria-hidden className="absolute inset-0 w-full h-full opacity-60" preserveAspectRatio="none" viewBox="0 0 400 200">
+        <svg aria-hidden className="absolute inset-0 w-full h-full opacity-60 pointer-events-none" preserveAspectRatio="none" viewBox="0 0 400 200">
           {[
             [42, 38], [88, 64], [150, 30], [212, 70], [276, 44], [330, 78], [364, 36],
             [60, 110], [128, 96], [196, 118], [258, 102], [322, 124], [376, 108],
@@ -125,8 +162,21 @@ function MHomePage() {
             </g>
           ))}
         </svg>
+
+        {/* 底部弧形阴影/地平 */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-16 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(120% 100% at 50% 100%, color-mix(in oklab, #0b3d2e 35%, transparent) 0%, transparent 60%)",
+          }}
+        />
+        {/* 顶部细高光 */}
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-white/40" />
         {/* 底部柔和过渡到页面背景 */}
         <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
+
 
         <div className="relative px-4 pt-4 pb-7">
           <div className="flex items-start justify-between">
