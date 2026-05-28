@@ -262,16 +262,21 @@ function TaskListPage() {
 
                   const commonInner = (
                     <div className="flex flex-col gap-2">
-                      {/* Header 区：状态 + 编号·类型 */}
+                      {/* Header 区：编号·类型 + 状态 */}
                       <div className="flex items-center gap-1.5 text-body-sm h-5">
-                        <span className={`${s.tag} inline-flex items-center gap-1`}>
-                          <Icon className="h-3 w-3" />
-                          {isPickup && o.status === "进行中" ? "待领取" : o.status === "进行中" ? "执行中" : o.status}
-                        </span>
-                        <span className="font-mono text-text-tertiary text-caption ml-auto">{o.id}</span>
+                        <span className="font-mono text-text-tertiary text-caption">{o.id}</span>
                         <span className="text-text-tertiary">·</span>
                         <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
                           <KIcon className="h-3 w-3" />{o.type}
+                        </span>
+                        {o.status === "进行中" && !isPickup && (
+                          <span className="text-caption text-text-tertiary">
+                            · {o.needPickup ? "需领物" : "无需领物"}
+                          </span>
+                        )}
+                        <span className={`${s.tag} inline-flex items-center gap-1 ml-auto`}>
+                          <Icon className="h-3 w-3" />
+                          {isPickup && o.status === "进行中" ? "待领取" : o.status === "进行中" ? "执行中" : o.status}
                         </span>
                       </div>
 
@@ -299,16 +304,10 @@ function TaskListPage() {
                             </span>
                             <span className="text-text-secondary">{cleanName(metaPersonName)}</span>
                           </span>
-                          {o.status === "进行中" && !isPickup && (
-                            <>
-                              <span className="mx-1.5">·</span>
-                              <span className={o.needPickup ? "text-primary font-medium" : "text-text-tertiary"}>
-                                {o.needPickup ? "需领物" : "无需领物"}
-                              </span>
-                            </>
-                          )}
                         </span>
-                        <span className="ml-auto inline-flex items-center gap-0.5 text-text-secondary shrink-0 pl-2">
+                        <span className={`ml-auto inline-flex items-center gap-0.5 shrink-0 pl-2 ${
+                          canExecuteThis || (isPickup && o.status === "进行中") ? "text-primary font-medium" : "text-text-secondary"
+                        }`}>
                           {ctaText}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
