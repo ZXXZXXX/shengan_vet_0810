@@ -44,10 +44,10 @@ type Disease = {
 };
 
 const CAT_OPTIONS = ["繁殖系统", "蹄部疾病", "消化系统", "传染病", "代谢疾病", "呼吸系统", "其他"];
-const SEVERITY_OPTIONS = ["低", "中", "中-高", "高"];
+const SEVERITY_OPTIONS = ["低", "中", "高"];
 
 const seed: Disease[] = [
-  { id: "DZ-001", name: "乳房炎", cat: "繁殖系统", severity: "中-高", symptoms: ["乳房红肿", "热痛", "乳汁异常"], prevent: "挤奶卫生、乳头药浴" },
+  { id: "DZ-001", name: "乳房炎", cat: "繁殖系统", severity: "高", symptoms: ["乳房红肿", "热痛", "乳汁异常"], prevent: "挤奶卫生、乳头药浴" },
   { id: "DZ-002", name: "蹄叶炎", cat: "蹄部疾病", severity: "中", symptoms: ["跛行", "蹄部发热", "行走困难"], prevent: "定期修蹄、地面保持干燥" },
   { id: "DZ-003", name: "瘤胃酸中毒", cat: "消化系统", severity: "高", symptoms: ["食欲减退", "腹泻", "瘤胃运动减弱"], prevent: "饲料过渡渐进、平衡精粗比" },
   { id: "DZ-004", name: "口蹄疫", cat: "传染病", severity: "高", symptoms: ["口腔水疱", "蹄部水疱", "乳房水疱", "溃烂"], prevent: "强制免疫、隔离消毒" },
@@ -56,7 +56,6 @@ const seed: Disease[] = [
 
 function severityTagClass(s: string) {
   if (s === "高") return "tag-danger";
-  if (s === "中-高") return "tag-warning";
   if (s === "中") return "tag-warning";
   return "tag-muted";
 }
@@ -156,12 +155,12 @@ function DiseaseKBPage() {
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <Checkbox ref={headerCheckRef} checked={allChecked} onCheckedChange={toggleAll} aria-label="全选" />
-            <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 flex-1 min-w-0">
               <div>编号</div>
               <div>名称</div>
               <div>分类</div>
               <div>严重程度</div>
-              <div className="col-span-1">典型症状</div>
+              <div>典型症状</div>
             </div>
             <div className="w-[160px] text-right shrink-0">功能</div>
           </div>
@@ -173,7 +172,7 @@ function DiseaseKBPage() {
                 className={`flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
               >
                 <Checkbox checked={checked} onCheckedChange={() => toggleOne(d.id)} aria-label={`选择 ${d.name}`} />
-                <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
+                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 flex-1 min-w-0">
                   <div className="font-mono text-body text-foreground truncate">{d.id}</div>
                   <div className="flex items-center gap-1.5 text-body text-foreground truncate">
                     <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -182,11 +181,11 @@ function DiseaseKBPage() {
                   <div className="text-body-sm text-text-secondary truncate">{d.cat}</div>
                   <div className="truncate"><span className={`tag ${severityTagClass(d.severity)}`}>{d.severity}</span></div>
                   <div className="flex items-center gap-1 min-w-0 overflow-hidden">
-                    {d.symptoms.slice(0, 2).map((s) => (
+                    {d.symptoms.slice(0, 3).map((s) => (
                       <span key={s} className="tag tag-muted whitespace-nowrap">{s}</span>
                     ))}
-                    {d.symptoms.length > 2 && (
-                      <span className="tag tag-muted whitespace-nowrap">+{d.symptoms.length - 2}</span>
+                    {d.symptoms.length > 3 && (
+                      <span className="tag tag-muted whitespace-nowrap">+{d.symptoms.length - 3}</span>
                     )}
                   </div>
                 </div>
