@@ -37,32 +37,38 @@ function MePage() {
 
   return (
     <MobileShell>
-      {/* 个人信息卡 */}
-      <header className="px-4 pt-12 pb-6 text-primary-foreground relative overflow-hidden [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]">
+      {/* 顶部装饰图（仅作背景，不承载文字） */}
+      <div className="relative h-32 overflow-hidden">
         <img
           src={meHero}
           alt=""
           aria-hidden
-          className="absolute inset-0 w-full h-full object-cover scale-125 origin-top blur-[1px]"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-black/45" />
-        <div className="relative flex items-center gap-3">
-          <div className="h-14 w-14 rounded-full bg-white/25 backdrop-blur-md border border-white/30 flex items-center justify-center text-section-title">
-            李
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-section-title">李师傅</div>
-            <div className="text-caption opacity-95 mt-0.5">
-              工号 W-1024 · 1 号牧场 · {roleLabel[role]}
+      </div>
+
+      {/* 个人信息卡（上浮覆盖图底部） */}
+      <section className="px-4 -mt-10 relative">
+        <div className="rounded-2xl bg-card border border-border shadow-[0_4px_16px_-8px_rgba(0,0,0,0.12)] p-4">
+          <div className="flex items-center gap-3">
+            <div className="h-14 w-14 rounded-full bg-brand-subtle text-primary flex items-center justify-center text-section-title font-medium">
+              李
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-section-title text-foreground">李师傅</div>
+              <div className="text-caption text-text-secondary mt-0.5">
+                工号 W-1024 · 1 号牧场 · {roleLabel[role]}
+              </div>
             </div>
           </div>
+          <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+            <Brief label="本月工作" value="42" />
+            <Brief label="按时完成" value="96%" />
+            <Brief label="上报事件" value="8" />
+          </div>
         </div>
-        <div className="relative mt-4 grid grid-cols-3 gap-3 text-center">
-          <Brief label="本月工作" value="42" />
-          <Brief label="按时完成" value="96%" />
-          <Brief label="上报事件" value="8" />
-        </div>
-      </header>
+      </section>
+
 
 
       <section className="px-4 mt-5 space-y-2">
