@@ -4,17 +4,14 @@ import {
   Camera,
   ScanLine,
   X,
-  
   Mic,
   Video,
   Search,
   Plus,
-  UserCheck,
   Sparkles,
   FileText,
   Check,
   ImagePlus,
-  ChevronDown,
   Pencil,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
@@ -94,13 +91,6 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
   },
 };
 
-// 具备处方权的处理人（admin / 兽医 / 场长）
-const prescriptionHandlers = [
-  { id: "u-li", name: "李雨晴", role: "兽医" },
-  { id: "u-chen", name: "陈晓东", role: "兽医" },
-  { id: "u-wang", name: "王建国", role: "场长" },
-  { id: "u-zhao", name: "赵兽医", role: "兽医" },
-];
 
 // 疾病知识库 + 自动治疗方案
 const diseaseKB: { name: string; symptoms: string[]; plan: { rx: string; drugs: string[]; duration: string } }[] = [
@@ -217,7 +207,6 @@ function ReportPage() {
   const [customSymptom, setCustomSymptom] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [note, setNote] = useState("");
-  const [handlerId, setHandlerId] = useState<string>("");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>("");
@@ -311,7 +300,6 @@ function ReportPage() {
     workType !== "" &&
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
-    handlerId !== "" &&
     desc.trim().length > 0 &&
     evidenceReady;
 
@@ -901,14 +889,6 @@ function ReportPage() {
                   )}
                 </Section>
 
-                {/* 处理人（放在最后，下拉展开选择） */}
-                <Section title="处理人" required hint="仅可选择具备处方权的角色">
-                  <HandlerDropdown
-                    value={handlerId}
-                    onChange={setHandlerId}
-                    options={prescriptionHandlers}
-                  />
-                </Section>
               </>
             )}
           </>
@@ -960,7 +940,6 @@ function ReportPage() {
                     symptoms,
                     customSymptom,
                     note,
-                    handlerId,
                     suspectedDisease,
                     desc,
                     photos,
@@ -1116,70 +1095,6 @@ function EvidenceSection({
       </Section>
 
     </>
-  );
-}
-
-function HandlerDropdown({
-  value,
-  onChange,
-  options,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  options: { id: string; name: string; role: string }[];
-}) {
-  const [open, setOpen] = useState(false);
-  const selected = options.find((o) => o.id === value);
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="w-full h-12 px-3.5 rounded-xl border border-border bg-card flex items-center justify-between active:bg-surface-subtle transition-colors"
-      >
-        <span className="inline-flex items-center gap-1.5">
-          <UserCheck className={`h-4 w-4 ${selected ? "text-primary" : "text-text-tertiary"}`} />
-          {selected ? (
-            <>
-              <span className="text-body text-foreground font-medium">{selected.name}</span>
-              <span className="text-caption text-text-tertiary">· {selected.role}</span>
-            </>
-          ) : (
-            <span className="text-body text-text-tertiary">点击选择处理人</span>
-          )}
-        </span>
-        <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute z-20 left-0 right-0 mt-1 rounded-xl border border-border bg-card shadow-lg overflow-hidden">
-            {options.map((o) => {
-              const active = o.id === value;
-              return (
-                <button
-                  key={o.id}
-                  type="button"
-                  onClick={() => {
-                    onChange(o.id);
-                    setOpen(false);
-                  }}
-                  className={`w-full px-3 h-12 flex items-center justify-between text-left border-b border-border last:border-b-0 ${
-                    active ? "bg-brand-subtle" : "hover:bg-surface-subtle"
-                  }`}
-                >
-                  <div>
-                    <div className={`text-body-sm ${active ? "text-primary" : "text-foreground"}`}>{o.name}</div>
-                    <div className="text-caption text-text-tertiary mt-0.5">{o.role}</div>
-                  </div>
-                  {active && <Check className="h-4 w-4 text-primary" />}
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
-    </div>
   );
 }
 
