@@ -145,13 +145,8 @@ function MHomePage() {
       {/* ============ 今日工作 ============ */}
       <section className="px-4 mt-5 mb-4">
         <SectionTitle title="今日工作" />
-        <div className="grid grid-cols-3 gap-2">
-          <TaskOverviewCard to="/m/respond" icon={Inbox} tone="warning" label="待响应" value="6" />
-          <TaskOverviewCard to="/m/pickup" icon={PackageCheck} tone="info" label="待领物" value={String(pendingPickups.length)} />
-          <TaskOverviewCard to="/m/health" search={{ tab: "执行中" }} icon={PlayCircle} tone="brand" label="执行中" value="4" />
-        </div>
-
         <TodayTaskList role={role} />
+
       </section>
 
 
