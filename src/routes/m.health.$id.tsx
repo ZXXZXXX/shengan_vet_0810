@@ -621,7 +621,90 @@ export function ExecuteSummary({ status, pickupCode, tags }: { status: StatusKey
           <div className="text-caption text-text-tertiary">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
         </div>
       )}
+
+      {pickupOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center"
+          onClick={() => setPickupOpen(false)}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border">
+              <div className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                <PackagePlus className="h-4 w-4 text-primary" />
+                领物清单
+              </div>
+              <button
+                type="button"
+                onClick={() => setPickupOpen(false)}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <div className="rounded-xl bg-surface-subtle border border-border p-4 flex flex-col items-center">
+                <div className="h-36 w-36 bg-white rounded-lg border border-border flex items-center justify-center mb-2">
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <rect x="0" y="0" width="120" height="120" fill="white" />
+                    {Array.from({ length: 144 }).map((_, i) => {
+                      const x = (i % 12) * 10;
+                      const y = Math.floor(i / 12) * 10;
+                      const fill = (i * 7 + 3) % 3 === 0 ? "#0F172A" : "white";
+                      return <rect key={i} x={x} y={y} width="10" height="10" fill={fill} />;
+                    })}
+                    <rect x="0" y="0" width="30" height="30" fill="white" />
+                    <rect x="0" y="0" width="30" height="30" fill="none" stroke="#0F172A" strokeWidth="6" />
+                    <rect x="90" y="0" width="30" height="30" fill="white" />
+                    <rect x="90" y="0" width="30" height="30" fill="none" stroke="#0F172A" strokeWidth="6" />
+                    <rect x="0" y="90" width="30" height="30" fill="white" />
+                    <rect x="0" y="90" width="30" height="30" fill="none" stroke="#0F172A" strokeWidth="6" />
+                  </svg>
+                </div>
+                <div className="font-mono text-body-sm text-foreground">{pickupCode}</div>
+                <div className="text-caption text-text-tertiary mt-1">向库管出示二维码核销领药</div>
+              </div>
+
+              <div className="rounded-xl border border-border p-4">
+                <div className="text-caption text-text-tertiary mb-2">药品</div>
+                <ul className="divide-y divide-border -mx-1">
+                  {[
+                    { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "1 瓶" },
+                    { name: "头孢噻呋钠", spec: "1g / 支", qty: "3 支" },
+                  ].map((m) => (
+                    <li key={m.name} className="px-1 py-2.5 flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-body-sm text-foreground">{m.name}</div>
+                        <div className="text-caption text-text-tertiary mt-0.5">{m.spec}</div>
+                      </div>
+                      <span className="font-mono text-body-sm text-text-secondary shrink-0">× {m.qty}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="rounded-xl border border-border p-4">
+                <div className="text-caption text-text-tertiary mb-2">物品</div>
+                <ul className="divide-y divide-border -mx-1">
+                  {[
+                    { name: "一次性注射器", qty: "8 支" },
+                    { name: "消毒酒精棉", qty: "1 盒" },
+                  ].map((m) => (
+                    <li key={m.name} className="px-1 py-2.5 flex items-center justify-between">
+                      <span className="text-body-sm text-foreground">{m.name}</span>
+                      <span className="font-mono text-body-sm text-text-secondary">× {m.qty}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
+
   );
 }
 
