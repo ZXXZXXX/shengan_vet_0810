@@ -148,22 +148,7 @@ function DiagnosePage() {
 
   // 终止工单
   const [confirmTerminate, setConfirmTerminate] = useState(false);
-  const [termNeedTransfer, setTermNeedTransfer] = useState<boolean | null>(null);
-  const [termTransferBarn, setTermTransferBarn] = useState("");
-  const [termTransferQ, setTermTransferQ] = useState("");
-  const lastTransferBarn = typeof window !== "undefined"
-    ? window.localStorage.getItem("lastTransferBarn") || ""
-    : "";
-  const allBarns = useMemo(() => Array.from({ length: 8 }, (_, i) => `${i + 1} 号牛舍`), []);
-  const termBarnMatches = useMemo(() => {
-    const kw = termTransferQ.trim();
-    const pool = allBarns;
-    const list = kw ? pool.filter((b) => b.includes(kw)) : pool;
-    if (lastTransferBarn && !kw) {
-      return [lastTransferBarn, ...list.filter((b) => b !== lastTransferBarn)].slice(0, 6);
-    }
-    return list.slice(0, 6);
-  }, [allBarns, termTransferQ, lastTransferBarn]);
+  const [termReason, setTermReason] = useState("");
 
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
@@ -282,7 +267,7 @@ function DiagnosePage() {
             onClick={() => setConfirmTerminate(true)}
             className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary hover:text-[var(--state-danger)] hover:border-[var(--state-danger)]/40"
           >
-            <Ban className="h-3 w-3" /> 牛只一切正常 · 终止工单
+            <Ban className="h-3 w-3" /> 终止
           </button>
         </div>
 
@@ -649,112 +634,29 @@ function DiagnosePage() {
       {/* 终止工单确认 */}
       <AlertDialog open={confirmTerminate} onOpenChange={(o) => {
         setConfirmTerminate(o);
-        if (!o) { setTermNeedTransfer(null); setTermTransferBarn(""); setTermTransferQ(""); }
+        if (!o) setTermReason("");
       }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认终止工单？</AlertDialogTitle>
-            <AlertDialogDescription>
-              确认牛只一切正常、无需用药后，将直接终止该工单，不再进入执行环节。
-            </AlertDialogDescription>
+            <AlertDialogTitle>终止工单</AlertDialogTitle>
           </AlertDialogHeader>
 
           <div className="space-y-3 py-1">
-            <div className="text-body-sm text-text-secondary">是否转栏</div>
-            <div className="flex gap-2">
-              {[
-                { v: false, label: "不转栏" },
-                { v: true, label: "需转栏" },
-              ].map((o) => {
-                const active = termNeedTransfer === o.v;
-                return (
-                  <button
-                    key={o.label}
-                    onClick={() => {
-                      setTermNeedTransfer(o.v);
-                      if (!o.v) { setTermTransferBarn(""); setTermTransferQ(""); }
-                    }}
-                    className={`flex-1 h-9 rounded-lg border text-body-sm ${
-                      active
-                        ? "border-primary bg-brand-subtle text-primary"
-                        : "border-border bg-surface-subtle text-text-secondary"
-                    }`}
-                  >
-                    {o.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {termNeedTransfer === true && (
-              <div className="space-y-2">
-                {termTransferBarn ? (
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-brand-subtle text-primary text-body-sm">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      转入 {termTransferBarn}
-                    </span>
-                    <button
-                      onClick={() => { setTermTransferBarn(""); setTermTransferQ(""); }}
-                      className="text-body-sm text-text-tertiary underline"
-                    >
-                      更换
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
-                      <input
-                        value={termTransferQ}
-                        onChange={(e) => setTermTransferQ(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && termTransferQ.trim()) {
-                            e.preventDefault();
-                            const v = termTransferQ.trim();
-                            setTermTransferBarn(v);
-                            if (typeof window !== "undefined") window.localStorage.setItem("lastTransferBarn", v);
-                          }
-                        }}
-                        placeholder="搜索或输入栏编号"
-                        className="h-10 w-full pl-9 pr-3 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-                      />
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {termBarnMatches.map((b) => (
-                        <button
-                          key={b}
-                          onClick={() => {
-                            setTermTransferBarn(b);
-                            if (typeof window !== "undefined") window.localStorage.setItem("lastTransferBarn", b);
-                          }}
-                          className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-body-sm text-text-secondary hover:border-primary hover:text-primary"
-                        >
-                          {b}
-                          {b === lastTransferBarn && (
-                            <span className="text-[10px] text-text-tertiary">上次</span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
+            <textarea
+              value={termReason}
+              onChange={(e) => setTermReason(e.target.value)}
+              placeholder="请输入终止原因"
+              className="h-24 w-full rounded-lg bg-white border border-border p-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+            />
           </div>
 
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
-              disabled={termNeedTransfer === null || (termNeedTransfer === true && !termTransferBarn)}
+              disabled={!termReason.trim()}
               onClick={() => {
-                if (termNeedTransfer === null) return;
-                if (termNeedTransfer && !termTransferBarn) return;
-                toast.success(
-                  termNeedTransfer
-                    ? `工单已终止，已转入 ${termTransferBarn}`
-                    : "工单已终止"
-                );
+                if (!termReason.trim()) return;
+                toast.success("工单已终止");
                 navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
               }}
               className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white disabled:opacity-50"
