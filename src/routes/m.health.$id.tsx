@@ -331,21 +331,19 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
         <Field
           label="诊断结果"
           value={
-            status === "已驳回" ? (
-              <span className="tag tag-danger">已驳回</span>
-            ) : status === "已终止" ? (
+            status === "已终止" ? (
               <span className="tag tag-muted">已终止</span>
             ) : (
               <span className="tag tag-success">通过</span>
             )
           }
         />
-        {status === "已驳回" && (
-          <Field label="驳回理由" value="证据不充分，请补充体温记录与历史病历。" />
-        )}
       </Section>
 
-      {status !== "已驳回" && (
+      {(
+        <></>
+      )}
+      {true && (
         <>
           <Section title="确认信息">
             <Field label="工单类型" value={<span className="tag tag-muted">{isLoss ? "物资损耗" : "疾病治疗"}</span>} />
