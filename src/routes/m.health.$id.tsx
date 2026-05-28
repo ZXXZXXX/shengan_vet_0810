@@ -452,7 +452,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
   );
 }
 
-// === 执行记录 ===
+// === 执行任务 ===
 type ItemStatus = "pending" | "done" | "blocked";
 type ExecItem = {
   id: string;
