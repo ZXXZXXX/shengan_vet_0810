@@ -239,11 +239,23 @@ function NotificationsPage() {
                         催办
                       </span>
                     )}
-                    <span
-                      className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
-                    >
-                      {Meta.label}
-                    </span>
+                    {m.rightText ? (
+                      <span
+                        className={`ml-auto text-caption ${
+                          m.rightTone === "danger"
+                            ? "text-[var(--state-danger)]"
+                            : "text-text-tertiary"
+                        }`}
+                      >
+                        {m.rightText}
+                      </span>
+                    ) : (
+                      <span
+                        className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
+                      >
+                        {Meta.label}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
