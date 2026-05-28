@@ -383,6 +383,39 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
             </p>
           </Section>
 
+          <Section title="证据材料">
+            <div>
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Camera className="h-3 w-3" /> 照片 · 2 张
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[0, 1].map((i) => (
+                  <div
+                    key={i}
+                    className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border"
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Video className="h-3 w-3" /> 视频 · 1 段
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center">
+                  <PlayCircle className="h-6 w-6 text-text-tertiary" />
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 px-3 h-10 rounded-lg bg-surface-subtle border border-border">
+              <Mic className="h-4 w-4 text-primary" />
+              <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
+                <div className="h-full w-2/3 bg-primary/60" />
+              </div>
+              <span className="font-mono text-caption text-text-secondary">00:28</span>
+            </div>
+          </Section>
+
           <Section title="治疗方案 / 执行方案">
             <ul className="divide-y divide-border -mx-1">
               {[
