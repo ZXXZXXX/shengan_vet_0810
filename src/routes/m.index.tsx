@@ -84,25 +84,85 @@ function MHomePage() {
       {/* 牧场切换（全局数据） */}
       <FarmSwitcher />
 
-      {/* 顶部欢迎 —— 草原图文样式 */}
+      {/* 顶部欢迎 —— 渐变信息面板 */}
       <header className="relative overflow-hidden text-white">
-        <img
-          src={grasslandHero}
-          alt="牧场草原清晨景色"
-          width={1920}
-          height={1080}
-          className="absolute inset-0 w-full h-full object-cover"
+        {/* 主渐变：品牌绿 → 浅青灰 */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(135deg, #00A85A 0%, #1FB877 38%, #6FBFA8 72%, #B8CBC9 100%)",
+          }}
         />
-        {/* 渐变蒙层：上轻下重，保证文字可读 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/35 to-black/70" />
+        {/* 数字化纹理：SVG 线条（牧场栅格） + 阴影草原 + 光圈太阳 */}
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 440 220"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <defs>
+            {/* 太阳光圈 */}
+            <radialGradient id="m-sun" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.85" />
+              <stop offset="35%" stopColor="#FFF6CC" stopOpacity="0.35" />
+              <stop offset="70%" stopColor="#FFFFFF" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+            </radialGradient>
+            {/* 草原阴影 */}
+            <linearGradient id="m-grass" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#063D24" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#063D24" stopOpacity="0" />
+            </linearGradient>
+            {/* 牧场透视网格线 */}
+            <pattern id="m-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M0 0H40M0 0V40" stroke="#FFFFFF" strokeOpacity="0.08" strokeWidth="0.6" />
+            </pattern>
+          </defs>
+
+          {/* 顶层网格纹理（数字感） */}
+          <rect width="440" height="220" fill="url(#m-grid)" />
+
+          {/* 光圈太阳 */}
+          <circle cx="350" cy="58" r="80" fill="url(#m-sun)" />
+          <circle cx="350" cy="58" r="14" fill="#FFFFFF" fillOpacity="0.9" />
+          <circle cx="350" cy="58" r="22" fill="none" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="0.8" />
+          <circle cx="350" cy="58" r="34" fill="none" stroke="#FFFFFF" strokeOpacity="0.2" strokeWidth="0.6" />
+
+          {/* 草原远景阴影起伏 */}
+          <path
+            d="M0 168 C 60 150, 110 175, 170 160 C 230 145, 290 178, 350 165 C 395 156, 420 170, 440 162 L440 220 L0 220 Z"
+            fill="url(#m-grass)"
+          />
+          <path
+            d="M0 188 C 70 172, 140 196, 220 184 C 300 172, 370 200, 440 188 L440 220 L0 220 Z"
+            fill="#063D24"
+            fillOpacity="0.18"
+          />
+
+          {/* 透视牧场线条（数字化栅格） */}
+          <g stroke="#FFFFFF" strokeOpacity="0.28" strokeWidth="0.7" fill="none">
+            <path d="M-40 220 L210 130" />
+            <path d="M80 220 L218 130" />
+            <path d="M200 220 L226 130" />
+            <path d="M320 220 L234 130" />
+            <path d="M480 220 L242 130" />
+          </g>
+          <g stroke="#FFFFFF" strokeOpacity="0.22" strokeWidth="0.6" fill="none">
+            <path d="M0 150 Q 220 144 440 150" />
+            <path d="M-20 170 Q 220 162 460 170" />
+            <path d="M-40 192 Q 220 184 480 192" />
+          </g>
+        </svg>
+
         {/* 底部柔和过渡到页面背景 */}
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
+        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[var(--bg-page)]" />
 
         <div className="relative px-4 pt-4 pb-7">
           <div className="flex items-start justify-between">
             <div className="min-w-0">
-              <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
-                <span className="text-[11px] text-white/90">{roleLabel[role]}</span>
+              <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25">
+                <span className="text-[11px] text-white/95">{roleLabel[role]}</span>
               </div>
               <div className="text-section-title mt-2 drop-shadow-sm">李师傅</div>
               <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
@@ -113,7 +173,7 @@ function MHomePage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setReportOpen(true)}
-                className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.35)] active:scale-[.97] transition-transform"
+                className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] active:scale-[.97] transition-transform"
               >
                 <Camera className="h-4 w-4" />
                 现场上报
@@ -130,6 +190,7 @@ function MHomePage() {
           </div>
         </div>
       </header>
+
 
 
       {/* ============ 牧场摘要 ============ */}
