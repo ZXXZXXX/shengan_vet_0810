@@ -948,8 +948,8 @@ function ReportPage() {
               </button>
               <button
                 onClick={() => {
-                  const draft = {
-                    id: `DR-${Date.now().toString().slice(-6)}`,
+                  const draftRecord = {
+                    id: draftId ?? `DR-${Date.now().toString().slice(-6)}`,
                     target: targets.join("、"),
                     targets,
                     workType,
@@ -965,15 +965,19 @@ function ReportPage() {
                   };
                   try {
                     const raw = localStorage.getItem("report:drafts");
-                    const list = raw ? JSON.parse(raw) : [];
-                    list.unshift(draft);
+                    const list: any[] = raw ? JSON.parse(raw) : [];
+                    const idx = list.findIndex((x) => x.id === draftRecord.id);
+                    if (idx >= 0) list.splice(idx, 1);
+                    list.unshift(draftRecord);
                     localStorage.setItem("report:drafts", JSON.stringify(list));
                   } catch {
-                    localStorage.setItem("report:drafts", JSON.stringify([draft]));
+                    localStorage.setItem("report:drafts", JSON.stringify([draftRecord]));
                   }
                   setShowDraftDialog(false);
                   toast.success("草稿已保存");
                   setTimeout(() => navigate({ to: "/m/drafts" }), 400);
+                }}
+
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center"
               >
