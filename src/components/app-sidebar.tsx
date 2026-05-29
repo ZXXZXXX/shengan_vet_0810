@@ -50,7 +50,7 @@ const groups: NavGroup[] = [
     ],
   },
   {
-    title: "健康管理",
+    title: "工单管理",
     icon: Stethoscope,
     children: [
       { title: "疾病治疗", url: "/production/disease" },
