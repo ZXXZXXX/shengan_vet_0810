@@ -44,12 +44,13 @@ function DrugKBMobile() {
   const [kw, setKw] = useState("");
   const [active, setActive] = useState<Drug | null>(null);
 
-
+  const topOut = useMemo(() => [...DRUGS].sort((a, b) => b.out7d - a.out7d).slice(0, 5), []);
   const list = useMemo(() => {
     const k = kw.trim();
     if (!k) return DRUGS;
     return DRUGS.filter((d) => d.name.includes(k) || d.cat.includes(k) || d.maker.includes(k));
   }, [kw]);
+
 
   if (!hasPermission) {
     return (
@@ -82,7 +83,36 @@ function DrugKBMobile() {
 
 
         <section>
-          <h3 className="text-card-title text-foreground mb-2">全部药品 · {list.length}</h3>
+          <div className="flex items-center gap-1.5 mb-2">
+            <TrendingUp className="h-3.5 w-3.5 text-primary" />
+            <h3 className="text-card-title text-foreground">近期出库较多</h3>
+          </div>
+          <div className="rounded-2xl bg-card border border-border divide-y divide-border overflow-hidden">
+            {topOut.map((d) => (
+              <button
+                key={d.id}
+                onClick={() => setActive(d)}
+                className="w-full flex items-center gap-3 px-4 py-3 active:bg-surface-subtle text-left"
+              >
+                <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
+                  <Pill className="h-4 w-4" strokeWidth={1.75} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-body text-foreground truncate">{d.name}</div>
+                  <div className="text-caption text-text-tertiary truncate">{d.spec}</div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="text-body text-foreground tabular-nums">{d.out7d}</div>
+                  <div className="text-[10px] text-text-tertiary">近7天出库{d.unit}</div>
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h3 className="text-card-title text-foreground mb-2">目前库存 · {list.length}</h3>
           <div className="space-y-2">
             {list.map((d) => (
               <button
