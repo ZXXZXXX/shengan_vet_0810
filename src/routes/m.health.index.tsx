@@ -137,6 +137,8 @@ function TaskListPage() {
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (role === "immunizer") list = list.filter((t) => t.type === "免疫");
   if (role === "vet_assistant") list = list.filter((t) => t.type === "疾病治疗" || t.type === "产后护理");
+  if (role === "vet") list = list.filter((t) => t.type === "疾病治疗");
+
   if (typeFilter) {
     list = list.filter((o) => o.type === typeFilter || (typeFilter === "疫苗免疫" && o.type === "免疫"));
   }
