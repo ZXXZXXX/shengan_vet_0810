@@ -665,9 +665,7 @@ function KBShortcut({
   );
 }
 
-    </Link>
-  );
-}
+
 
 
 
