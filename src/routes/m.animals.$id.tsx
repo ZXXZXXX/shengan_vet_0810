@@ -267,6 +267,7 @@ function MedicationHistory() {
       </div>
 
       {groups.length === 0 ? (
+      {groups.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
           近 30 天无用药记录
         </div>
@@ -279,43 +280,30 @@ function MedicationHistory() {
                 <span className="text-caption text-text-tertiary">· {items.length} 条</span>
                 <span className="flex-1 h-px bg-border" />
               </div>
-              <ul className="space-y-2">
-                {items.map((m) => (
-                  <li key={m.id} className="rounded-xl border border-border bg-card p-3">
-                    <div className="flex items-start gap-2.5">
-                      <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center shrink-0">
-                        <Pill className="h-4 w-4" />
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-body-sm text-foreground truncate">{m.drug}</div>
-                        <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                          {m.dose} · {m.course}
-                        </div>
-                        <div className="flex items-center justify-between mt-1.5">
-                          <div className="text-caption text-text-tertiary">
-                            操作人 {m.operator} ·{" "}
-                            <span className="font-mono">{m.orderId}</span>
-                          </div>
-                          {m.withdrawal > 0 ? (
-                            <span className="inline-flex items-center h-5 px-2 rounded-full text-caption bg-[#FFE4E1] text-[#D9534F]">
-                              休药 {m.withdrawal} 天
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center h-5 px-2 rounded-full text-caption bg-surface-subtle text-text-tertiary">
-                              无休药期
-                            </span>
-                          )}
-                        </div>
+              <div className="border border-border rounded-lg overflow-hidden">
+                {items.map((m, idx) => (
+                  <div
+                    key={m.id}
+                    className={`flex items-center px-3 py-2.5 ${
+                      idx !== items.length - 1 ? "border-b border-border" : ""
+                    }`}
+                  >
+                    <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
+                      <div className="text-body-sm text-foreground truncate">{m.drug}</div>
+                      <div className="text-caption text-text-tertiary truncate text-center">
+                        {m.manufacturer}
+                      </div>
+                      <div className="text-caption text-text-secondary truncate text-right">
+                        {m.dose}
                       </div>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
         </div>
       )}
-
       {hasMore && (
         <button
           onClick={() => setExpanded((v) => !v)}
