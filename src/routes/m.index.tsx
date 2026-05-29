@@ -25,7 +25,7 @@ import {
 
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
+import { useRole, roleLabel, canViewOperations, canVisit, type Role } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { QrCode } from "lucide-react";
