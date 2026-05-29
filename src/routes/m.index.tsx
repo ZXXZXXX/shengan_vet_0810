@@ -128,7 +128,7 @@ function MHomePage() {
 
 
 
-      <section className="px-4 mt-3">
+      <section className="px-4 mt-2">
 
         <SectionTitle title="牧场摘要" />
         <div className="grid grid-cols-3 gap-2">
