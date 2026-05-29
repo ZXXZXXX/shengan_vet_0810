@@ -416,7 +416,7 @@ function SectionTitle({
 
 
 const toneAccentMap: Record<string, string> = {
-  brand: "#1EA867",
+  brand: "#F04849",
   warning: "var(--state-warning)",
   danger: "var(--state-danger)",
   info: "#F6A11D",
