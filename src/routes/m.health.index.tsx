@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, canVisit } from "@/lib/mobile-role";
+import { useRole, canVisit, canDiagnose, canExecute } from "@/lib/mobile-role";
+
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
 type HealthSearch = { tab?: string; type?: string };
