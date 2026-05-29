@@ -620,7 +620,8 @@ function KBShortcut({
     >
       {/* 文件夹后片 */}
       <div
-        className="absolute inset-x-0 bottom-0 top-2.5 rounded-[14px]"
+        className="absolute inset-x-0 bottom-0 top-2.5 rounded-tr-[14px] rounded-b-[14px]"
+
         style={{
           background: `linear-gradient(160deg, color-mix(in oklab, ${accent} 92%, #fff) 0%, ${accent} 55%, color-mix(in oklab, ${accent} 82%, #000) 100%)`,
           boxShadow: `0 10px 22px -12px color-mix(in oklab, ${accent} 70%, transparent)`,
