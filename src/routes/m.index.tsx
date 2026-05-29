@@ -731,6 +731,7 @@ function FarmSwitcher() {
             const active = f.id === currentId;
             return (
               <button
+                key={f.id}
                 onClick={() => {
                   setOpen(false);
                   if (f.id === currentId) return;
