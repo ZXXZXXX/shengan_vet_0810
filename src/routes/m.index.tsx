@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from "react";
 import {
   Camera,
   Beef,
-  AlertTriangle,
   ChevronRight,
   ChevronDown,
   MapPin,
