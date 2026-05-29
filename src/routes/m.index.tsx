@@ -130,7 +130,6 @@ function MHomePage() {
 
       <section className="px-4 mt-3">
 
-      <section className="px-4 mt-5">
         <SectionTitle title="牧场摘要" />
         <div className="grid grid-cols-3 gap-2">
           <SummaryCard icon={MapPin} tone="brand" label="牛只总数" value="1,284" trend="1.8%" trendDir="up" />
