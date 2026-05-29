@@ -120,23 +120,29 @@ function MHomePage() {
           {/* 牧场摘要：跟随当前牧场切换联动 */}
           <div className="mt-3 grid grid-cols-3 gap-2">
             {[
-              { label: "牛只总数", value: "1,284", trend: "1.8%", up: true },
-              { label: "健康率", value: "96.8%", trend: "0.6%", up: true },
-              { label: "异常数", value: "18", trend: "8.3%", up: false },
+              { label: "牛只总数", value: "1,284", trend: "1.8%", up: true, Icon: MapPin, iconBg: "bg-[var(--state-success)]/15", iconFg: "text-[var(--state-success)]", trendBg: "bg-[var(--state-success)]/15", trendFg: "text-[var(--state-success)]" },
+              { label: "健康率", value: "96.8%", trend: "0.6%", up: true, Icon: HeartPulse, iconBg: "bg-[#E6F7FE]", iconFg: "text-[#22ACEB]", trendBg: "bg-[#E6F7FE]", trendFg: "text-[#22ACEB]" },
+              { label: "异常数", value: "18", trend: "8.3%", up: false, Icon: AlertTriangle, iconBg: "bg-[var(--state-danger)]/12", iconFg: "text-[var(--state-danger)]", trendBg: "bg-[var(--state-danger)]/12", trendFg: "text-[var(--state-danger)]" },
             ].map((s) => (
               <div
                 key={s.label}
-                className="rounded-lg bg-white px-2.5 py-2 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.15)]"
+                className="rounded-xl bg-white px-2.5 py-2 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.15)]"
               >
-                <div className="text-[11px] text-text-secondary">{s.label}</div>
-                <div className="text-[18px] leading-tight font-semibold text-foreground tabular-nums mt-0.5">{s.value}</div>
-                <div className={`mt-0.5 inline-flex items-center gap-0.5 text-[10px] tabular-nums ${s.up ? "text-[var(--state-success)]" : "text-[var(--state-danger)]"}`}>
-                  {s.up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                <div className="flex items-start justify-between">
+                  <div className="text-[11px] text-text-secondary">{s.label}</div>
+                  <span className={`h-5 w-5 rounded-md inline-flex items-center justify-center ${s.iconBg} ${s.iconFg}`}>
+                    <s.Icon className="h-3 w-3" strokeWidth={2} />
+                  </span>
+                </div>
+                <div className="text-[20px] leading-tight font-semibold text-foreground tabular-nums mt-1">{s.value}</div>
+                <div className={`mt-1 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] tabular-nums ${s.trendBg} ${s.trendFg}`}>
+                  {s.up ? <ArrowUpRight className="h-2.5 w-2.5" /> : <ArrowDownRight className="h-2.5 w-2.5" />}
                   {s.trend}
                 </div>
               </div>
             ))}
           </div>
+
         </div>
 
       </header>
