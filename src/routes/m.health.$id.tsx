@@ -131,7 +131,6 @@ function TaskDetailPage() {
     pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
     flow: isPlatformIssued ? "平台下发 → " + (isHoof ? "张师傅" : "李雨晴") + " 执行" : "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
   };
-  };
   const s = statusMap[o.status];
   const Icon = s.icon;
 
