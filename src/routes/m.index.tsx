@@ -116,27 +116,31 @@ function MHomePage() {
             </div>
           </div>
 
-          <div className="mt-5 flex items-center gap-3 text-caption text-white/90">
-            <span className="inline-flex items-center gap-1"><CloudSun className="h-3.5 w-3.5" />晴转多云</span>
-            <span className="h-3 w-px bg-white/30" />
-            <span className="inline-flex items-center gap-1"><Thermometer className="h-3.5 w-3.5" />18 ~ 26℃</span>
-            <span className="h-3 w-px bg-white/30" />
-            <span className="inline-flex items-center gap-1"><Wind className="h-3.5 w-3.5" />东南风 2 级</span>
+          {/* 牧场摘要：跟随当前牧场切换联动 */}
+          <div className="mt-5 grid grid-cols-3 gap-2">
+            {[
+              { label: "牛只总数", value: "1,284", trend: "1.8%", up: true },
+              { label: "健康率", value: "96.8%", trend: "0.6%", up: true },
+              { label: "异常数", value: "18", trend: "8.3%", up: false },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="rounded-xl bg-white/15 backdrop-blur-sm border border-white/25 px-2.5 py-2"
+              >
+                <div className="text-[11px] text-white/85">{s.label}</div>
+                <div className="text-[20px] leading-tight font-semibold mt-0.5 drop-shadow-sm">{s.value}</div>
+                <div className="mt-0.5 inline-flex items-center gap-0.5 text-[10px] text-white/90">
+                  {s.up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                  {s.trend}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </header>
 
-
-
       <section className="px-4 mt-2">
 
-        <SectionTitle title="牧场摘要" />
-        <div className="grid grid-cols-3 gap-2">
-          <SummaryCard icon={MapPin} tone="brand" label="牛只总数" value="1,284" trend="1.8%" trendDir="up" />
-          <SummaryCard icon={HeartPulse} tone="info" label="健康率" value="96.8%" trend="0.6%" trendDir="up" />
-          <SummaryCard icon={AlertTriangle} tone="danger" label="异常数" value="18" trend="8.3%" trendDir="down" />
-        </div>
-      </section>
 
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
