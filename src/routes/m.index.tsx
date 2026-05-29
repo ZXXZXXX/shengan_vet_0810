@@ -285,7 +285,6 @@ const homeTasks: HomeTask[] = [
 ];
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
-type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
 const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
   manager: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
   vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
