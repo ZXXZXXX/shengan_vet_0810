@@ -282,11 +282,6 @@ function TodayTaskList({ role }: { role: Role }) {
   );
   const visible = matched.slice(0, 6);
 
-  const typeIcon =
-    filter.type === "修蹄" ? Footprints : filter.type === "疫苗免疫" ? Syringe : Pill;
-  const TIcon = typeIcon;
-
-
   if (visible.length === 0) {
     return (
       <div className="mt-3 rounded-xl bg-card border border-border">
