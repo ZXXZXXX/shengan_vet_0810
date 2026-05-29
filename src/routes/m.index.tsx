@@ -598,7 +598,11 @@ function TaskOverviewCard({
         <div className="text-section-title text-foreground tabular-nums mt-0.5">{value}</div>
       </div>
     </Link>
+  );
+}
+
 function KBShortcut({
+
   to,
   icon: Icon,
   tone,
