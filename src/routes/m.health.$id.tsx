@@ -93,11 +93,14 @@ function TaskDetailPage() {
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
   const isPlatformImmune = id === "YM-2501";
+  const isPlatformPostpartum = id.startsWith("PP");
   const platformAction: string | undefined = isPlatformImmune
     ? "注射免疫药物（口蹄疫疫苗）"
-    : isHoof
-      ? "修蹄护理：削蹄、检查蹄底、必要时贴蹄垫"
-      : undefined;
+    : isPlatformPostpartum
+      ? "产后修护：复查恶露与体温，补充营养"
+      : isHoof
+        ? "修蹄护理：削蹄、检查蹄底、必要时贴蹄垫"
+        : undefined;
   const isPlatformIssued = Boolean(platformAction);
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
 
@@ -106,6 +109,7 @@ function TaskDetailPage() {
     "WO-2298": "#A2298",
     "HF-0702": "#A2150",
     "HF-0688": "#A2270",
+    "PP-2501": "#A2710",
   };
   const singleEar = singleEarMap[id];
   const isSingle = isHoof || Boolean(singleEar);
@@ -117,15 +121,16 @@ function TaskDetailPage() {
   const o = {
     id,
     farm: "奇点示范牧场",
-    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : isPlatformImmune ? "1 号牛舍" : "3 号牛舍",
+    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : isPlatformImmune ? "1 号牛舍" : isPlatformPostpartum ? "产房 1 号" : "3 号牛舍",
     target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : isPlatformImmune ? "24 头" : "3 只",
-    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : isPlatformImmune ? "免疫" : "疾病治疗",
+    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : isPlatformImmune ? "免疫" : isPlatformPostpartum ? "产后护理" : "疾病治疗",
     status: (statusById[id] ?? fallbackStatus) as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
     needPickup: !isLoss,
     pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
     flow: isPlatformIssued ? "平台下发 → " + (isHoof ? "张师傅" : "李雨晴") + " 执行" : "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
+  };
   };
   const s = statusMap[o.status];
   const Icon = s.icon;
