@@ -320,9 +320,10 @@ function TaskListPage() {
                     isPickup && o.status === "进行中" ? "border-primary/30" : "border-border"
                   }`;
                   return isPickup ? (
-                    <Link key={o.id} to="/m/pickup/$id" params={{ id: o.id }} className={cls}>
+                    <Link key={o.id} to="/m/health/$id_/execute/$pickupId" params={{ id: o.source ?? o.id, pickupId: o.id }} className={cls}>
                       {commonInner}
                     </Link>
+
                   ) : (
                     <Link key={o.id} to="/m/health/$id" params={{ id: o.id }} className={cls}>
                       {commonInner}
