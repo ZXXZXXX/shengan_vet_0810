@@ -130,8 +130,10 @@ function RespondListPage() {
     if (role === "immunizer") return c.kind === "免疫";
     if (role === "vet_assistant")
       return c.kind === "疾病治疗" || c.kind === "产后护理";
+    if (role === "vet") return c.kind === "疾病治疗";
     return true;
   };
+
 
   const [cards, setCards] = useState<RespondCard[]>(initialCards);
   const [q, setQ] = useState("");
