@@ -114,7 +114,6 @@ function SymptomKBMobile() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-body text-foreground truncate">{s.name}</span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${urgencyTone(s.urgency)}`}>{s.urgency}</span>
                   </div>
                   <div className="text-caption text-text-tertiary mt-0.5 line-clamp-1">{s.desc}</div>
                 </div>
@@ -156,7 +155,6 @@ function SymptomDetailSheet({ item, onClose }: { item: Symptom; onClose: () => v
         </div>
 
         <div className="flex items-center gap-2 mb-3">
-          <span className={`text-[11px] px-1.5 py-0.5 rounded-md font-medium ${urgencyTone(item.urgency)}`}>紧急 · {item.urgency}</span>
           <span className="text-caption text-text-tertiary">近 7 天 {item.recent7d} 头次</span>
         </div>
 
