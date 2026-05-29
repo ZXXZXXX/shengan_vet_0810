@@ -18,7 +18,7 @@ import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
-type ReportSearch = { target?: string; barn?: string; lock?: number };
+type ReportSearch = { target?: string; barn?: string; lock?: number; draftId?: string };
 
 export const Route = createFileRoute("/m/report")({
   head: () => ({ meta: [{ title: "疾病上报 · 奇点智牧" }] }),
@@ -26,9 +26,11 @@ export const Route = createFileRoute("/m/report")({
     target: typeof s.target === "string" ? s.target : undefined,
     barn: typeof s.barn === "string" ? s.barn : undefined,
     lock: s.lock ? 1 : undefined,
+    draftId: typeof s.draftId === "string" ? s.draftId : undefined,
   }),
   component: ReportPage,
 });
+
 
 type ReportKind = "health";
 
