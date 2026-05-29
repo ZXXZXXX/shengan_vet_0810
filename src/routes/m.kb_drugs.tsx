@@ -1,6 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Pill, Search, TrendingUp, ChevronRight, X, Boxes } from "lucide-react";
+import { Pill, Search, TrendingUp, ChevronRight, X, Boxes, Lock } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useFarm } from "@/lib/farm-store";
 import { canViewOperations, useRole } from "@/lib/mobile-role";
@@ -40,9 +40,7 @@ function stockTone(stock: number) {
 
 function DrugKBMobile() {
   const role = useRole();
-  if (!canViewOperations(role)) {
-    throw redirect({ to: "/m" });
-  }
+  const hasPermission = canViewOperations(role);
   const farm = useFarm();
   const [kw, setKw] = useState("");
   const [active, setActive] = useState<Drug | null>(null);
@@ -53,6 +51,22 @@ function DrugKBMobile() {
     if (!k) return DRUGS;
     return DRUGS.filter((d) => d.name.includes(k) || d.cat.includes(k) || d.maker.includes(k));
   }, [kw]);
+
+  if (!hasPermission) {
+    return (
+      <MobileShell title="药品库" back hideTabBar>
+        <div className="flex flex-col items-center justify-center px-6 pt-20 pb-16 text-center">
+          <div className="h-16 w-16 rounded-full bg-surface-subtle text-text-tertiary inline-flex items-center justify-center mb-3">
+            <Lock className="h-7 w-7" strokeWidth={1.5} />
+          </div>
+          <div className="text-body text-foreground">无权限查看</div>
+          <div className="text-caption text-text-tertiary mt-1 max-w-[260px]">
+            仅管理员和场长可查看药品库数据
+          </div>
+        </div>
+      </MobileShell>
+    );
+  }
 
   return (
     <MobileShell title="药品库" back hideTabBar>
