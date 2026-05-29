@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Camera,
   Beef,
   AlertTriangle,
   ChevronRight,
+  ChevronDown,
   MapPin,
   HeartPulse,
   CloudSun,
@@ -14,6 +15,11 @@ import {
   Pill,
   Syringe,
   Footprints,
+  Stethoscope,
+  PackageX,
+  ArrowUpRight,
+  TrendingUp,
+  Check,
   Baby,
 } from "lucide-react";
 
