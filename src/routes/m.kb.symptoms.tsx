@@ -1,0 +1,188 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { Activity, Search, TrendingUp, ChevronRight, X } from "lucide-react";
+import { MobileShell } from "@/components/mobile-shell";
+import { useFarm } from "@/lib/farm-store";
+
+export const Route = createFileRoute("/m/kb/symptoms")({
+  head: () => ({ meta: [{ title: "症状库 · 奇点智牧" }] }),
+  component: SymptomKBMobile,
+});
+
+type Symptom = {
+  id: string;
+  name: string;
+  urgency: "高" | "中" | "低";
+  desc: string;
+  related: string[]; // 常见于
+  recent7d: number; // 近 7 天出现头次
+};
+
+const SYMPTOMS: Symptom[] = [
+  { id: "SY-01", name: "持续高烧", urgency: "高", desc: "直肠温度持续 ≥ 40.0℃ 超过 12 小时,常伴随精神沉郁、采食减少、呼吸加快。", related: ["乳房炎", "呼吸道疾病", "口蹄疫"], recent7d: 14 },
+  { id: "SY-04", name: "乳房红肿", urgency: "高", desc: "一个或多个乳区肿胀、发热、触痛,乳汁出现絮状物或血色。", related: ["乳房炎"], recent7d: 11 },
+  { id: "SY-06", name: "产奶量骤降", urgency: "高", desc: "24 小时内单产下降 ≥ 20%,且无饲喂、应激等明显诱因。", related: ["乳房炎", "酮病"], recent7d: 9 },
+  { id: "SY-02", name: "跛行", urgency: "中", desc: "行走时步态不稳、患肢负重明显减少,严重者三脚站立。", related: ["蹄叶炎", "关节炎", "趾间皮炎"], recent7d: 8 },
+  { id: "SY-05", name: "腹泻", urgency: "中", desc: "粪便稀薄、水样或含黏液血丝,排便次数增加。", related: ["瘤胃酸中毒", "犊牛腹泻"], recent7d: 6 },
+  { id: "SY-03", name: "食欲减退", urgency: "中", desc: "连续两餐采食量低于平均值 30%,反刍次数减少。", related: ["瘤胃酸中毒", "酮病"], recent7d: 5 },
+  { id: "SY-07", name: "口腔水疱", urgency: "高", desc: "唇、舌、齿龈出现水疱或破溃,流涎增多。", related: ["口蹄疫"], recent7d: 2 },
+  { id: "SY-08", name: "体温偏低", urgency: "中", desc: "直肠温度 < 37.5℃,常见于围产期产后瘫痪。", related: ["产后瘫痪", "酮病"], recent7d: 1 },
+];
+
+function urgencyTone(u: string) {
+  if (u === "高") return "bg-[var(--state-danger)]/12 text-[var(--state-danger)]";
+  if (u === "中") return "bg-[var(--state-warning)]/20 text-[var(--state-alert)]";
+  return "bg-surface-subtle text-text-secondary";
+}
+
+function SymptomKBMobile() {
+  const farm = useFarm();
+  const [kw, setKw] = useState("");
+  const [active, setActive] = useState<Symptom | null>(null);
+
+  const top = useMemo(() => [...SYMPTOMS].sort((a, b) => b.recent7d - a.recent7d).slice(0, 5), []);
+  const list = useMemo(() => {
+    const k = kw.trim();
+    if (!k) return SYMPTOMS;
+    return SYMPTOMS.filter((s) => s.name.includes(k) || s.related.some((r) => r.includes(k)));
+  }, [kw]);
+
+  return (
+    <MobileShell title="症状库" back hideTabBar>
+      <div className="px-4 pt-3 pb-4 space-y-4">
+        {/* 搜索 */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+          <input
+            value={kw}
+            onChange={(e) => setKw(e.target.value)}
+            placeholder="搜索症状 / 关联疾病"
+            className="w-full h-10 pl-9 pr-3 rounded-xl bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+          />
+        </div>
+
+        {/* 近 7 天 TOP */}
+        <section>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5">
+              <TrendingUp className="h-3.5 w-3.5 text-primary" />
+              <h3 className="text-card-title text-foreground">近 7 天高发症状</h3>
+            </div>
+            <span className="text-caption text-text-tertiary">{farm.name}</span>
+          </div>
+          <div className="rounded-2xl bg-card border border-border divide-y divide-border overflow-hidden">
+            {top.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => setActive(s)}
+                className="w-full flex items-center gap-3 px-4 py-3 active:bg-surface-subtle text-left"
+              >
+                <span
+                  className={`h-6 w-6 rounded-md inline-flex items-center justify-center text-[12px] font-semibold tabular-nums ${
+                    i === 0
+                      ? "bg-[var(--state-danger)]/12 text-[var(--state-danger)]"
+                      : i === 1
+                      ? "bg-[var(--state-warning)]/25 text-[var(--state-alert)]"
+                      : i === 2
+                      ? "bg-brand-subtle text-primary"
+                      : "bg-surface-subtle text-text-secondary"
+                  }`}
+                >
+                  {i + 1}
+                </span>
+                <span className="flex-1 text-body text-foreground truncate">{s.name}</span>
+                <span className="text-caption text-text-tertiary tabular-nums">{s.recent7d} 头次</span>
+                <ChevronRight className="h-3.5 w-3.5 text-text-tertiary" />
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* 全部症状 */}
+        <section>
+          <h3 className="text-card-title text-foreground mb-2">全部症状 · {list.length}</h3>
+          <div className="space-y-2">
+            {list.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setActive(s)}
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle text-left"
+              >
+                <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
+                  <Activity className="h-4 w-4" strokeWidth={1.75} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-body text-foreground truncate">{s.name}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${urgencyTone(s.urgency)}`}>{s.urgency}</span>
+                  </div>
+                  <div className="text-caption text-text-tertiary mt-0.5 line-clamp-1">{s.desc}</div>
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+              </button>
+            ))}
+            {list.length === 0 && (
+              <div className="text-center text-caption text-text-tertiary py-8">未找到匹配的症状</div>
+            )}
+          </div>
+        </section>
+      </div>
+
+      {active && <SymptomDetailSheet item={active} onClose={() => setActive(null)} />}
+    </MobileShell>
+  );
+}
+
+function SymptomDetailSheet({ item, onClose }: { item: Symptom; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={onClose}>
+      <div
+        className="w-full max-w-[440px] bg-card rounded-t-2xl p-4 pb-[calc(env(safe-area-inset-bottom)+16px)] max-h-[80vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="h-10 w-10 rounded-xl bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
+              <Activity className="h-5 w-5" strokeWidth={1.75} />
+            </span>
+            <div className="min-w-0">
+              <div className="text-card-title text-foreground truncate">{item.name}</div>
+              <div className="text-caption text-text-tertiary font-mono">{item.id}</div>
+            </div>
+          </div>
+          <button onClick={onClose} className="h-8 w-8 rounded-md text-text-tertiary active:bg-surface-subtle inline-flex items-center justify-center">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 mb-3">
+          <span className={`text-[11px] px-1.5 py-0.5 rounded-md font-medium ${urgencyTone(item.urgency)}`}>紧急 · {item.urgency}</span>
+          <span className="text-caption text-text-tertiary">近 7 天 {item.recent7d} 头次</span>
+        </div>
+
+        <Section label="典型表现">
+          <p className="text-body-sm text-text-secondary leading-relaxed">{item.desc}</p>
+        </Section>
+
+        <Section label="常见于">
+          <div className="flex flex-wrap gap-1.5">
+            {item.related.map((r) => (
+              <span key={r} className="text-body-sm px-2 py-1 rounded-md bg-surface-subtle text-text-secondary">
+                {r}
+              </span>
+            ))}
+          </div>
+        </Section>
+      </div>
+    </div>
+  );
+}
+
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="mt-4">
+      <div className="text-caption text-text-tertiary mb-1.5">{label}</div>
+      {children}
+    </div>
+  );
+}
