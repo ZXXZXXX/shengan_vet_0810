@@ -145,7 +145,8 @@ function MHomePage() {
 
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-3">
+          <SectionTitle title="速查与近况" />
+
           <SectionTitle title="速查与近况" hint="近 7 天" />
           <div className="grid grid-cols-3 gap-2.5">
             <KBShortcut
