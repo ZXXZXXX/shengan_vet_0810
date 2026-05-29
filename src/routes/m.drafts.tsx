@@ -34,15 +34,13 @@ type Draft = {
   savedAt: string;
 };
 
-function formatTime(iso: string) {
+function formatDate(iso: string) {
   try {
     const d = new Date(iso);
-    const now = new Date();
-    const sameDay = d.toDateString() === now.toDateString();
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mm = String(d.getMinutes()).padStart(2, "0");
-    if (sameDay) return `今日 ${hh}:${mm}`;
-    return `${d.getMonth() + 1} 月 ${d.getDate()} 日 ${hh}:${mm}`;
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   } catch {
     return iso;
   }
@@ -163,60 +161,33 @@ function DraftsPage() {
 
                 <div className="space-y-2.5 mt-1">
                   {items.map((d) => {
-                    const conclusion =
-                      d.suspectedDisease ||
-                      (d.symptoms && d.symptoms.length > 0 ? d.symptoms.join("、") : null) ||
-                      d.note ||
-                      "未填写结论";
                     const isChecked = selected.has(d.id);
 
                     const inner = (
                       <div className="flex flex-col gap-2 flex-1 min-w-0">
                         {/* Header */}
                         <div className="flex items-center gap-1.5 text-body-sm h-5">
-                          <span className="tag tag-muted inline-flex items-center gap-1">
-                            <FileEdit className="h-3 w-3" />
-                            草稿
+                          <span className="font-mono text-text-tertiary text-caption">{d.id}</span>
+                          <span className="text-text-tertiary">·</span>
+                          <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                            <Stethoscope className="h-3 w-3" />
+                            {d.workType || "未指定类型"}
                           </span>
-                          <span className="font-mono text-text-tertiary text-caption ml-auto">{d.id}</span>
-                          {d.workType && (
-                            <>
-                              <span className="text-text-tertiary">·</span>
-                              <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
-                                <Stethoscope className="h-3 w-3" />
-                                {d.workType}
-                              </span>
-                            </>
-                          )}
                         </div>
 
                         {/* Title */}
                         <div className="text-card-title text-foreground truncate h-[26px] leading-[26px]">
                           {d.target ? `单只 ${d.target}` : "未指定对象"}
-                          <span className="text-text-tertiary"> · </span>
-                          {conclusion}
                         </div>
 
                         {/* Desc */}
                         <div className="text-body-sm text-text-secondary truncate h-[22px] leading-[22px]">
-                          {d.desc || <span className="text-text-tertiary/0">·</span>}
+                          {d.desc || d.suspectedDisease || (d.symptoms?.length ? d.symptoms.join("、") : null) || "-"}
                         </div>
 
                         {/* Footer */}
                         <div className="flex items-center text-caption text-text-tertiary pt-2 border-t border-border/60 h-9">
-                          <span className="truncate">
-                            保存 <span className="text-text-secondary">{formatTime(d.savedAt)}</span>
-                            {(d.photos?.length || d.videos?.length || d.voiceSecs) ? (
-                              <>
-                                <span className="mx-1.5">·</span>
-                                <span className="text-text-secondary">
-                                  {d.photos?.length ? `${d.photos.length} 图` : ""}
-                                  {d.videos?.length ? ` ${d.videos.length} 视频` : ""}
-                                  {d.voiceSecs ? ` 录音 ${d.voiceSecs}s` : ""}
-                                </span>
-                              </>
-                            ) : null}
-                          </span>
+                          <span>{formatDate(d.savedAt)}</span>
                           <span className="ml-auto inline-flex items-center gap-0.5 text-text-secondary shrink-0 pl-2">
                             {selectMode ? (isChecked ? "已选" : "选择") : "继续编辑"}
                             {!selectMode && <ChevronRight className="h-3.5 w-3.5" />}
@@ -225,10 +196,9 @@ function DraftsPage() {
                       </div>
                     );
 
-                    const cls = `flex items-start gap-3 rounded-xl bg-card border p-4 active:bg-surface-subtle ${
+                    const cls = `${selectMode ? "flex items-start gap-3" : "block"} rounded-xl bg-card border p-4 active:bg-surface-subtle ${
                       selectMode && isChecked ? "border-primary/60 bg-brand-subtle/40" : "border-border"
                     }`;
-
                     if (selectMode) {
                       return (
                         <button
