@@ -14,7 +14,7 @@ import {
   useClaimed,
 } from "@/lib/pickup-store";
 
-export const Route = createFileRoute("/m/pickup/$id")({
+export const Route = createFileRoute("/m/health/$id_/execute/$pickupId")({
   head: () => ({ meta: [{ title: "药品器材领取 · 奇点智牧" }] }),
   component: PickupDetailPage,
 });
