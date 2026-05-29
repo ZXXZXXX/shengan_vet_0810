@@ -72,6 +72,7 @@ const tasks: Task[] = [
   { id: "WO-2298", target: "#A2298", barn: "3 号牛舍", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", proposer: "李雨晴", who: "李雨晴", visitor: "王主管", status: "进行中", createdAt: "2025-05-28", executedAt: "2025-05-28", scope: { type: "single", ear: "#A2298" }, conclusion: "乳房炎复诊", desc: "复查体温与乳样", needPickup: true, symptoms: ["乳房红肿"] },
   { id: "WO-2401", target: "犊牛舍 A", barn: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", visitor: "王主管", status: "进行中", createdAt: "2025-05-29", executedAt: "2025-05-29", scope: { type: "batch", label: "32 头" }, conclusion: "口蹄疫加强免疫", desc: "犊牛批次 B-07", needPickup: true, symptoms: [] },
   { id: "YM-2501", target: "成母牛群", barn: "1 号牛舍", kind: "健康", type: "免疫", event: "口蹄疫常规免疫（平台下发）", proposer: "平台下发", who: "李雨晴", visitor: "—", status: "进行中", createdAt: "2025-05-28", executedAt: "2025-05-28", scope: { type: "batch", label: "24 头" }, conclusion: "口蹄疫常规免疫", desc: "平台统一下发的免疫计划，按批次注射免疫药物", needPickup: true, symptoms: [] },
+  { id: "PP-2501", target: "#A2710", barn: "产房 1 号", kind: "健康", type: "产后护理", event: "产后 3 天复查（平台下发）", proposer: "平台下发", who: "周凯", visitor: "—", status: "进行中", createdAt: "2025-05-28", executedAt: "2025-05-28", scope: { type: "single", ear: "#A2710" }, conclusion: "产后复查", desc: "平台下发的产后修护计划，复查恶露与体温并补充营养", needPickup: true, symptoms: [] },
   { id: "WO-2324", target: "#A2324", barn: "5 号牛舍", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", visitor: "王主管", status: "已终止", createdAt: "2025-05-26", terminatedAt: "2025-05-26", scope: { type: "single", ear: "#A2324" }, conclusion: "采食量持续下降", desc: "精神沉郁，需复查", needPickup: false, symptoms: ["采食下降", "精神沉郁"] },
   { id: "HF-0702", target: "#A2150", barn: "2 号牛舍", kind: "修蹄", type: "修蹄", event: "右后蹄趾间皮炎", proposer: "周凯", who: "外部·张师傅", visitor: "王主管", status: "进行中", createdAt: "2025-05-28", executedAt: "2025-05-28", scope: { type: "single", ear: "#A2150" }, conclusion: "右后蹄趾间皮炎", desc: "削蹄并贴蹄垫", needPickup: false },
   { id: "HF-0688", target: "#A2270", barn: "3 号牛舍", kind: "修蹄", type: "修蹄", event: "蹄底溃疡处理", proposer: "周凯", who: "外部·张师傅", visitor: "王主管", status: "已完成", createdAt: "2025-05-12", executedAt: "2025-05-12", scope: { type: "single", ear: "#A2270" }, conclusion: "蹄底溃疡", desc: "削蹄并贴蹄垫", needPickup: false },
@@ -135,7 +136,7 @@ function TaskListPage() {
   void PICKUPS;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (role === "immunizer") list = list.filter((t) => t.type === "免疫");
-  if (role === "vet_assistant") list = list.filter((t) => t.type !== "免疫" && t.kind !== "修蹄");
+  if (role === "vet_assistant") list = list.filter((t) => t.type === "疾病治疗" || t.type === "产后护理");
   if (typeFilter) {
     list = list.filter((o) => o.type === typeFilter || (typeFilter === "疫苗免疫" && o.type === "免疫"));
   }
