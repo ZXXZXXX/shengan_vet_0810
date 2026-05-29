@@ -142,45 +142,40 @@ function MHomePage() {
       {roleGroup[role] === "internal" && (
         <section className="px-4 mt-3">
           <SectionTitle title="速查与近况" hint="近 7 天" />
-          <div className="space-y-2">
-            <KBShortcut
+          <div className="grid grid-cols-3 gap-2.5">
+            <KBFolder
               to="/m/kb/symptoms"
               icon={Activity}
               tone="info"
               label="症状库"
               desc="具体描述 · 关联疾病"
               trendLabel="高发"
-              trendName="持续高烧"
-              trendValue="14"
-              trendUnit="头次"
+              items={["持续高烧 14", "采食下降 11", "跛行 7"]}
             />
-            <KBShortcut
+            <KBFolder
               to="/m/kb/diseases"
               icon={BookMarked}
               tone="brand"
               label="疾病库"
-              desc="典型表现 · 常用处方"
+              desc="典型表现 · 处方"
               trendLabel="高发"
-              trendName="乳房炎"
-              trendValue="9"
-              trendUnit="头次"
+              items={["乳房炎 9", "蹄病 6", "子宫炎 4"]}
             />
             {canViewOperations(role) && (
-              <KBShortcut
+              <KBFolder
                 to="/m/kb/drugs"
                 icon={Pill}
                 tone="purple"
                 label="药品库"
-                desc="规格 · 库存 · 出库"
+                desc="规格 · 库存"
                 trendLabel="出库 TOP"
-                trendName="头孢噻呋钠注射液"
-                trendValue="24"
-                trendUnit="盒"
+                items={["头孢噻呋 24", "氟尼辛 18", "缩宫素 12"]}
               />
             )}
           </div>
         </section>
       )}
+
 
 
 
@@ -601,17 +596,14 @@ function TaskOverviewCard({
   );
 }
 
-function KBShortcut({
-
+function KBFolder({
   to,
   icon: Icon,
   tone,
   label,
   desc,
   trendLabel,
-  trendName,
-  trendValue,
-  trendUnit,
+  items,
 }: {
   to: string;
   icon: typeof Beef;
@@ -619,55 +611,75 @@ function KBShortcut({
   label: string;
   desc: string;
   trendLabel: string;
-  trendName: string;
-  trendValue: string;
-  trendUnit: string;
+  items: string[];
 }) {
   const accent = toneAccentMap[tone];
   return (
     <Link
       to={to}
-      className="relative flex items-center gap-3 rounded-2xl bg-card border border-border p-3 active:bg-surface-subtle overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(120deg, color-mix(in oklab, ${accent} 9%, transparent) 0%, color-mix(in oklab, ${accent} 0%, transparent) 60%)`,
-      }}
+      className="group relative flex flex-col rounded-2xl bg-card border border-border overflow-hidden active:scale-[0.98] transition-transform"
+      style={{ boxShadow: `0 8px 20px -16px ${accent}` }}
     >
-      <span
-        className={`h-10 w-10 rounded-xl inline-flex items-center justify-center shrink-0 ${colorMap[tone]}`}
-        style={{ boxShadow: `0 6px 14px -10px ${accent}` }}
+      {/* 文件夹上部:露出的"卡片"代表趋势条目 */}
+      <div
+        className="relative h-[88px] px-2.5 pt-2.5"
+        style={{
+          background: `linear-gradient(160deg, color-mix(in oklab, ${accent} 14%, transparent), color-mix(in oklab, ${accent} 4%, transparent))`,
+        }}
       >
-        <Icon className="h-[18px] w-[18px]" strokeWidth={1.9} />
-      </span>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5">
-          <span className="text-body font-medium text-foreground">{label}</span>
+        <div className="absolute inset-x-2.5 top-2.5 bottom-0 flex flex-col gap-[3px]">
+          {items.slice(0, 3).map((it, i) => (
+            <div
+              key={i}
+              className="rounded-t-md bg-card border border-border border-b-0 px-1.5 pt-1 text-[10px] text-foreground/80 truncate shadow-sm"
+              style={{
+                marginLeft: `${i * 4}px`,
+                marginRight: `${i * 4}px`,
+                opacity: 1 - i * 0.18,
+                height: i === 0 ? 26 : 14,
+              }}
+            >
+              {i === 0 && (
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="h-2.5 w-2.5 shrink-0" style={{ color: accent }} />
+                  <span className="text-[9px] text-text-tertiary">{trendLabel}</span>
+                </div>
+              )}
+              {i === 0 ? (
+                <div className="text-[10px] font-medium truncate leading-tight">{it}</div>
+              ) : (
+                <span className="truncate">{it}</span>
+              )}
+            </div>
+          ))}
         </div>
-        <div className="text-[11px] text-text-tertiary mt-0.5 truncate">{desc}</div>
       </div>
 
-      <div className="shrink-0 flex flex-col items-end gap-0.5 pl-2 border-l border-border/70 ml-1 max-w-[44%]">
-        <div className="inline-flex items-center gap-1 text-[10px] text-text-tertiary">
-          <TrendingUp className="h-3 w-3" style={{ color: accent }} />
-          <span>近 7 天{trendLabel}</span>
-        </div>
-        <div className="flex items-baseline gap-1 max-w-full">
-          <span className="text-[13px] text-foreground truncate max-w-[120px]">{trendName}</span>
-          <span className="text-body font-semibold tabular-nums" style={{ color: accent }}>
-            {trendValue}
+      {/* 文件夹前面板 */}
+      <div
+        className="relative px-2.5 pt-2 pb-2.5"
+        style={{
+          background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 88%, white) 0%, ${accent} 100%)`,
+        }}
+      >
+        {/* 折角 */}
+        <div
+          className="absolute -top-1.5 left-3 h-3 w-10 rounded-t-md"
+          style={{ background: `color-mix(in oklab, ${accent} 88%, white)` }}
+        />
+        <div className="relative flex items-center justify-between">
+          <div className="min-w-0">
+            <div className="text-[13px] font-semibold text-white truncate leading-tight">{label}</div>
+            <div className="text-[9.5px] text-white/75 truncate mt-0.5">{desc}</div>
+          </div>
+          <span className="h-6 w-6 rounded-full bg-white/22 inline-flex items-center justify-center shrink-0">
+            <Icon className="h-3.5 w-3.5 text-white" strokeWidth={2} />
           </span>
-          <span className="text-[10px] text-text-tertiary">{trendUnit}</span>
         </div>
       </div>
-
-      <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0 ml-0.5" />
     </Link>
   );
 }
-
-
-
-
 
 // ---------------- 牧场切换 ----------------
 function FarmSwitcher() {
