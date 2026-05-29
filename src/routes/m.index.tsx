@@ -285,7 +285,9 @@ const homeTasks: HomeTask[] = [
 ];
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
+type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
 const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
+  manager: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
   vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
   vet_assistant: { status: "进行中", type: "疾病治疗", label: "执行中 · 疾病治疗" },
   immunizer: { status: "进行中", type: "疫苗免疫", label: "执行中 · 疫苗免疫" },
@@ -293,7 +295,8 @@ const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
 };
 
 function getTaskCount(role: Role) {
-  if (role === "admin" || role === "manager") return 0;
+  if (role === "admin") return 0;
+
   const filter: RoleFilter =
     roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
   return homeTasks.filter(
