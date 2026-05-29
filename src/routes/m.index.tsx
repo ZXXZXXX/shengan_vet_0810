@@ -600,7 +600,7 @@ function TaskOverviewCard({
 }
 
 function KBShortcut({
-function KBShortcut({
+
   to,
   icon: Icon,
   tone,
