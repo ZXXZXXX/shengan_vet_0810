@@ -978,7 +978,7 @@ function ReportPage() {
                   setTimeout(() => navigate({ to: "/m/drafts" }), 400);
                 }}
 
-                }}
+
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center"
               >
                 确认保存
