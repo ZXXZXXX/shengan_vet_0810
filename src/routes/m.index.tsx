@@ -596,11 +596,6 @@ function TaskOverviewCard({
   );
 }
 
-function KBShortcut({
-
-  to,
-  icon: Icon,
-  tone,
 function KBFolder({
   to,
   icon: Icon,
