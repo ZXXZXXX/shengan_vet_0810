@@ -20,9 +20,11 @@ export const Route = createFileRoute("/m/health/$id_/execute/$pickupId")({
 });
 
 function PickupDetailPage() {
-  const { id } = useParams({ from: "/m/pickup/$id" });
+  const { pickupId } = useParams({ from: "/m/health/$id_/execute/$pickupId" });
+  const id = pickupId;
   const claimed = useClaimed();
   const pickup = getPickup(id);
+
   const isClaimed = claimed.includes(id);
 
   if (!pickup) {
