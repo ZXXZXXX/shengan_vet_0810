@@ -202,9 +202,10 @@ function TaskDetailPage() {
       </div>
 
       {/* === 3. 底部操作区 === */}
-      {(() => {
         const isResponder = canVisit(role) || canExecute(role);
-        const showRespond = isResponder && o.status === "待诊断";
+        const showRespond = canDiagnose(role, o.type) && o.status === "待诊断";
+        const showExec = canExecute(role) && o.status === "进行中";
+
         const showExec = canExecute(role) && o.status === "进行中";
         if (!showRespond && !showExec) return null;
         return (
