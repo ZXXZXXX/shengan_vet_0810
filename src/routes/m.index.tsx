@@ -142,45 +142,40 @@ function MHomePage() {
       {roleGroup[role] === "internal" && (
         <section className="px-4 mt-3">
           <SectionTitle title="速查与近况" hint="近 7 天" />
-          <div className="space-y-2">
-            <KBShortcut
+          <div className="grid grid-cols-3 gap-2.5">
+            <KBFolder
               to="/m/kb/symptoms"
               icon={Activity}
               tone="info"
               label="症状库"
               desc="具体描述 · 关联疾病"
               trendLabel="高发"
-              trendName="持续高烧"
-              trendValue="14"
-              trendUnit="头次"
+              items={["持续高烧 14", "采食下降 11", "跛行 7"]}
             />
-            <KBShortcut
+            <KBFolder
               to="/m/kb/diseases"
               icon={BookMarked}
               tone="brand"
               label="疾病库"
-              desc="典型表现 · 常用处方"
+              desc="典型表现 · 处方"
               trendLabel="高发"
-              trendName="乳房炎"
-              trendValue="9"
-              trendUnit="头次"
+              items={["乳房炎 9", "蹄病 6", "子宫炎 4"]}
             />
             {canViewOperations(role) && (
-              <KBShortcut
+              <KBFolder
                 to="/m/kb/drugs"
                 icon={Pill}
                 tone="purple"
                 label="药品库"
-                desc="规格 · 库存 · 出库"
+                desc="规格 · 库存"
                 trendLabel="出库 TOP"
-                trendName="头孢噻呋钠注射液"
-                trendValue="24"
-                trendUnit="盒"
+                items={["头孢噻呋 24", "氟尼辛 18", "缩宫素 12"]}
               />
             )}
           </div>
         </section>
       )}
+
 
 
 
