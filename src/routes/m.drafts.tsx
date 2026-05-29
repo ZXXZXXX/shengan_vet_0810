@@ -228,9 +228,10 @@ function DraftsPage() {
                         onClick={() =>
                           navigate({
                             to: "/m/report",
-                            search: d.target ? { target: d.target } : {},
+                            search: { ...(d.target ? { target: d.target } : {}), draftId: d.id },
                           })
                         }
+
                         className={cls + " w-full text-left"}
                       >
                         {inner}
