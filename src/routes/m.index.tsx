@@ -141,16 +141,47 @@ function MHomePage() {
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
         <section className="px-4 mt-3">
-          <SectionTitle title="速查与近况" />
-          <div className={`grid ${canViewOperations(role) ? "grid-cols-3" : "grid-cols-2"} gap-2`}>
-            <KBShortcut to="/m/kb/symptoms" icon={Activity} tone="info" label="症状库" desc="具体描述 · 关联疾病" />
-            <KBShortcut to="/m/kb/diseases" icon={BookMarked} tone="brand" label="疾病库" desc="典型表现 · 常用处方" />
+          <SectionTitle title="速查与近况" hint="近 7 天" />
+          <div className="space-y-2">
+            <KBShortcut
+              to="/m/kb/symptoms"
+              icon={Activity}
+              tone="info"
+              label="症状库"
+              desc="具体描述 · 关联疾病"
+              trendLabel="高发"
+              trendName="持续高烧"
+              trendValue="14"
+              trendUnit="头次"
+            />
+            <KBShortcut
+              to="/m/kb/diseases"
+              icon={BookMarked}
+              tone="brand"
+              label="疾病库"
+              desc="典型表现 · 常用处方"
+              trendLabel="高发"
+              trendName="乳房炎"
+              trendValue="9"
+              trendUnit="头次"
+            />
             {canViewOperations(role) && (
-              <KBShortcut to="/m/kb/drugs" icon={Pill} tone="purple" label="药品库" desc="库存 · 出库 TOP" />
+              <KBShortcut
+                to="/m/kb/drugs"
+                icon={Pill}
+                tone="purple"
+                label="药品库"
+                desc="规格 · 库存 · 出库"
+                trendLabel="出库 TOP"
+                trendName="头孢噻呋钠注射液"
+                trendValue="24"
+                trendUnit="盒"
+              />
             )}
           </div>
         </section>
       )}
+
 
 
 
