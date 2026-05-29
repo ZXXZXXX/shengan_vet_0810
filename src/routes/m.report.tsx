@@ -253,22 +253,18 @@ function ReportPage() {
     ? localStorage.getItem("mp:lastTransferBarn") ?? ""
     : "";
 
-  // 切换工作类型时重置标签集
+  // 初始化标签集（workType 当前不可切换，仅保留预设；草稿预填的 symptoms/note 不会被重置）
   useEffect(() => {
     if (cfg?.tags) {
-      setSymptomTags([...cfg.tags.presets, "其他"]);
+      const extras = (draft?.symptoms ?? []).filter(
+        (s: string) => !cfg.tags!.presets.includes(s)
+      );
+      setSymptomTags([...cfg.tags.presets, ...extras, "其他"]);
     } else {
       setSymptomTags([]);
     }
-    setSymptoms([]);
-    setShowCustomInput(false);
-    setCustomSymptom("");
-    setNote("");
-    if (!cfg?.allowDisease) {
-      setSuspectedDisease("");
-      setDiseaseQ("");
-    }
   }, [workType]);
+
 
 
   // 是否完成"线索上传"——之后才显示疑似疾病
