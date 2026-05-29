@@ -668,19 +668,20 @@ function KBShortcut({
           style={{ background: "rgba(255,255,255,0.55)" }}
         />
         <div className="relative h-full px-2.5 pt-1.5 pb-2 flex flex-col justify-between text-white">
-          <div className="flex items-start justify-between gap-1">
-            <div className="text-[13px] font-semibold leading-tight drop-shadow-sm">{label}</div>
-            <span className="shrink-0 inline-flex items-center gap-0.5 px-1 h-[15px] rounded-full bg-white/25 backdrop-blur-sm text-[9.5px] font-semibold tabular-nums">
-              <TrendingUp className="h-2 w-2" />
-              {trendValue}
-            </span>
-          </div>
+          <div className="text-[13px] font-semibold leading-tight drop-shadow-sm">{label}</div>
           <div className="flex items-center gap-1 text-[10px] text-white/90 leading-none">
             <span className="shrink-0 opacity-80">{trendLabel}</span>
-            <span className="truncate font-medium">{trendName}</span>
+            <span className="inline-flex items-center gap-1 pl-1.5 pr-1 h-[16px] rounded-full bg-white/25 backdrop-blur-sm font-medium max-w-full">
+              <span className="truncate max-w-[5em]">{trendName}</span>
+              <span className="shrink-0 inline-flex items-center gap-0.5 tabular-nums font-semibold">
+                <TrendingUp className="h-2 w-2" />
+                {trendValue}
+              </span>
+            </span>
             <span className="shrink-0 opacity-80 tabular-nums">{trendUnit}</span>
           </div>
         </div>
+
       </div>
     </Link>
   );
