@@ -128,7 +128,7 @@ function MHomePage() {
 
 
 
-      <section className="px-4 mt-3">
+      <section className="px-4 mt-2">
 
         <SectionTitle title="牧场摘要" />
         <div className="grid grid-cols-3 gap-2">
@@ -140,7 +140,7 @@ function MHomePage() {
 
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-5">
+        <section className="px-4 mt-3">
           <SectionTitle title="速查与近况" />
           <div className={`grid ${canViewOperations(role) ? "grid-cols-3" : "grid-cols-2"} gap-2`}>
             <KBShortcut to="/m/kb/symptoms" icon={Activity} tone="info" label="症状库" desc="具体描述 · 关联疾病" />
@@ -155,7 +155,7 @@ function MHomePage() {
 
 
       {/* ============ 工作任务 ============ */}
-      <section className="px-4 mt-5 mb-4">
+      <section className="px-4 mt-3 mb-4">
         <SectionTitle
           title="工作任务"
           hint={`共计 ${getTaskCount(role)} 项`}
