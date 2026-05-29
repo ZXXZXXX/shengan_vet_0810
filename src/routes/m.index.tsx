@@ -663,13 +663,11 @@ function KBShortcut({
         />
         <div className="relative h-full px-2.5 pt-1.5 pb-2 flex flex-col justify-between text-white">
           <div className="text-[13px] font-semibold leading-tight drop-shadow-sm">{label}</div>
-          <div className="flex items-center gap-1.5 text-[10px] text-white/90 leading-none">
-            <span className="inline-flex items-center gap-1 pl-1.5 pr-1.5 h-[16px] rounded-full bg-white/25 backdrop-blur-sm font-medium max-w-full">
-              <span className="truncate max-w-[5em]">{trendName}</span>
-              <span className="shrink-0 inline-flex items-center gap-0.5 tabular-nums font-semibold">
-                <TrendingUp className="h-2 w-2" />
-                {trendValue}
-              </span>
+          <div className="flex items-center justify-between text-[10px] text-white/90 leading-none">
+            <span className="truncate max-w-[7em] font-medium">{trendName}</span>
+            <span className="shrink-0 inline-flex items-center gap-0.5 tabular-nums font-semibold">
+              <TrendingUp className="h-2 w-2" />
+              {trendValue}
             </span>
           </div>
         </div>
