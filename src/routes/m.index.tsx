@@ -148,30 +148,24 @@ function MHomePage() {
               icon={Activity}
               tone="info"
               label="症状库"
-              trendLabel="高发"
               trendName="持续高烧"
               trendValue="14"
-              trendUnit="头次"
             />
             <KBShortcut
               to="/m/kb_diseases"
               icon={BookMarked}
               tone="brand"
               label="疾病库"
-              trendLabel="高发"
               trendName="乳房炎"
               trendValue="9"
-              trendUnit="头次"
             />
             <KBShortcut
               to="/m/kb_drugs"
               icon={Pill}
               tone="purple"
               label="药品库"
-              trendLabel="出库 TOP"
               trendName="头孢噻呋钠"
               trendValue="24"
-              trendUnit="盒"
             />
           </div>
 
@@ -601,19 +595,15 @@ function KBShortcut({
   to,
   tone,
   label,
-  trendLabel,
   trendName,
   trendValue,
-  trendUnit,
 }: {
   to: string;
   icon?: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
-  trendLabel: string;
   trendName: string;
   trendValue: string;
-  trendUnit: string;
 }) {
   const accent = toneAccentMap[tone];
   return (
@@ -669,16 +659,14 @@ function KBShortcut({
         />
         <div className="relative h-full px-2.5 pt-1.5 pb-2 flex flex-col justify-between text-white">
           <div className="text-[13px] font-semibold leading-tight drop-shadow-sm">{label}</div>
-          <div className="flex items-center gap-1 text-[10px] text-white/90 leading-none">
-            <span className="shrink-0 opacity-80">{trendLabel}</span>
-            <span className="inline-flex items-center gap-1 pl-1.5 pr-1 h-[16px] rounded-full bg-white/25 backdrop-blur-sm font-medium max-w-full">
+          <div className="flex items-center gap-1.5 text-[10px] text-white/90 leading-none">
+            <span className="inline-flex items-center gap-1 pl-1.5 pr-1.5 h-[16px] rounded-full bg-white/25 backdrop-blur-sm font-medium max-w-full">
               <span className="truncate max-w-[5em]">{trendName}</span>
               <span className="shrink-0 inline-flex items-center gap-0.5 tabular-nums font-semibold">
                 <TrendingUp className="h-2 w-2" />
                 {trendValue}
               </span>
             </span>
-            <span className="shrink-0 opacity-80 tabular-nums">{trendUnit}</span>
           </div>
         </div>
 
