@@ -40,9 +40,7 @@ function stockTone(stock: number) {
 
 function DrugKBMobile() {
   const role = useRole();
-  if (!canViewOperations(role)) {
-    throw redirect({ to: "/m" });
-  }
+  const hasPermission = canViewOperations(role);
   const farm = useFarm();
   const [kw, setKw] = useState("");
   const [active, setActive] = useState<Drug | null>(null);
