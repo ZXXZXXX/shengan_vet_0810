@@ -624,12 +624,14 @@ function KBShortcut({
         style={{
           background: `linear-gradient(160deg, color-mix(in oklab, ${accent} 92%, #fff) 0%, ${accent} 55%, color-mix(in oklab, ${accent} 82%, #000) 100%)`,
           boxShadow: `0 10px 22px -12px color-mix(in oklab, ${accent} 70%, transparent)`,
-        }}
-      />
       {/* 顶部 tab */}
       <div
-        className="absolute left-2.5 top-0 h-3.5 w-[42%] rounded-t-[8px]"
+        className="absolute left-0 top-0 h-3.5 w-[42%] rounded-tl-[14px] rounded-tr-[8px]"
         style={{
+          background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 88%, #fff) 0%, ${accent} 100%)`,
+        }}
+      />
+
           background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 88%, #fff) 0%, ${accent} 100%)`,
         }}
       />
