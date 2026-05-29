@@ -293,6 +293,7 @@ const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
 };
 
 function getTaskCount(role: Role) {
+  if (role === "admin" || role === "manager") return 0;
   const filter: RoleFilter =
     roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
   return homeTasks.filter(
@@ -316,7 +317,18 @@ const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: string }> 
 };
 
 function TodayTaskList({ role }: { role: Role }) {
-  // admin / manager 默认看 待诊断 · 疾病治疗
+  if (role === "admin" || role === "manager") {
+    return (
+      <div className="mt-3 rounded-xl bg-card border border-border">
+        <EmptyState
+          icon={Inbox}
+          size="sm"
+          title="暂无任务"
+          desc="管理员身份无工作任务"
+        />
+      </div>
+    );
+  }
   const filter: RoleFilter =
     roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
   const matched = homeTasks.filter(
