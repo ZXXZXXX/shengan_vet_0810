@@ -293,6 +293,7 @@ const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
 };
 
 function getTaskCount(role: Role) {
+  if (role === "admin" || role === "manager") return 0;
   const filter: RoleFilter =
     roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
   return homeTasks.filter(
