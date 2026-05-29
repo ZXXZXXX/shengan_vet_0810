@@ -25,7 +25,7 @@ import {
 
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, roleLabel, roleGroup, canViewOperations, canVisit, type Role } from "@/lib/mobile-role";
+import { useRole, roleLabel, roleGroup, canVisit, type Role } from "@/lib/mobile-role";
 
 import { Activity, BookMarked } from "lucide-react";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
@@ -142,7 +142,7 @@ function MHomePage() {
       {roleGroup[role] === "internal" && (
         <section className="px-4 mt-3">
           <SectionTitle title="速查与近况" hint="近 7 天" />
-          <div className={`grid gap-2.5 ${canViewOperations(role) ? "grid-cols-3" : "grid-cols-2"}`}>
+          <div className="grid grid-cols-3 gap-2.5">
             <KBShortcut
               to="/m/kb_symptoms"
               icon={Activity}
@@ -163,18 +163,16 @@ function MHomePage() {
               trendValue="9"
               trendUnit="头次"
             />
-            {canViewOperations(role) && (
-              <KBShortcut
-                to="/m/kb_drugs"
-                icon={Pill}
-                tone="purple"
-                label="药品库"
-                trendLabel="出库 TOP"
-                trendName="头孢噻呋钠"
-                trendValue="24"
-                trendUnit="盒"
-              />
-            )}
+            <KBShortcut
+              to="/m/kb_drugs"
+              icon={Pill}
+              tone="purple"
+              label="药品库"
+              trendLabel="出库 TOP"
+              trendName="头孢噻呋钠"
+              trendValue="24"
+              trendUnit="盒"
+            />
           </div>
 
         </section>

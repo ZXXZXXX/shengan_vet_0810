@@ -1,6 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Pill, Search, TrendingUp, ChevronRight, X, Boxes } from "lucide-react";
+import { Pill, Search, TrendingUp, ChevronRight, X, Boxes, Lock } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useFarm } from "@/lib/farm-store";
 import { canViewOperations, useRole } from "@/lib/mobile-role";
