@@ -6,7 +6,6 @@ import {
   ChevronRight,
   ChevronDown,
   MapPin,
-  HeartPulse,
   CloudSun,
   Wind,
   Thermometer,
