@@ -319,7 +319,7 @@ const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: string }> 
 };
 
 function TodayTaskList({ role }: { role: Role }) {
-  if (role === "admin" || role === "manager") {
+  if (role === "admin") {
     return (
       <div className="mt-3 rounded-xl bg-card border border-border">
         <EmptyState
@@ -327,10 +327,10 @@ function TodayTaskList({ role }: { role: Role }) {
           size="sm"
           title="暂无任务"
         />
-
       </div>
     );
   }
+
   const filter: RoleFilter =
     roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
   const matched = homeTasks.filter(
