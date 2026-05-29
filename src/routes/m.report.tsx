@@ -133,6 +133,20 @@ function barnOfCattle(id: string): string {
   return "未知牛舍";
 }
 
+function loadDraft(draftId?: string, target?: string): any | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem("report:drafts");
+    if (!raw) return null;
+    const list = JSON.parse(raw) as any[];
+    if (draftId) return list.find((x) => x.id === draftId) ?? null;
+    if (target) return list.find((x) => x.target === target) ?? null;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function ReportPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
@@ -140,12 +154,27 @@ function ReportPage() {
   // 健康类工作：内部角色（兽医/场长/兽医助理/管理员）与外部专项执行人员（如修蹄工）均可上报
   const canReportHealth = true;
 
+  // 草稿预填：从 localStorage 读取，保证编辑页与上报页排版/字段完全一致
+  const draft = useMemo(
+    () => loadDraft(search.draftId, search.target),
+    [search.draftId, search.target]
+  );
+  const draftId = draft?.id as string | undefined;
+
   const [kind] = useState<ReportKind>("health");
 
   // 上报模式：扫到牛舍且无指定牛只 → 以牛舍为上报对象（可多选）
   const barnMode = !!search.barn && !search.target;
 
-  const [targets, setTargets] = useState<string[]>(search.target ? [search.target] : []);
+  const [targets, setTargets] = useState<string[]>(
+    draft?.targets?.length
+      ? draft.targets
+      : draft?.target
+      ? String(draft.target).split("、").filter(Boolean)
+      : search.target
+      ? [search.target]
+      : []
+  );
   const [barns, setBarns] = useState<string[]>(
     barnMode && search.barn ? [search.barn] : []
   );
@@ -193,10 +222,10 @@ function ReportPage() {
 
   const [editingTarget, setEditingTarget] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
-  const [desc, setDesc] = useState("");
-  const [photos, setPhotos] = useState<number[]>([1, 2]);
-  const [videos, setVideos] = useState<number[]>([]);
-  const [voiceSecs, setVoiceSecs] = useState<number | null>(null);
+  const [desc, setDesc] = useState<string>(draft?.desc ?? "");
+  const [photos, setPhotos] = useState<number[]>(draft?.photos ?? [1, 2]);
+  const [videos, setVideos] = useState<number[]>(draft?.videos ?? []);
+  const [voiceSecs, setVoiceSecs] = useState<number | null>(draft?.voiceSecs ?? null);
   const [recording, setRecording] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showDraftDialog, setShowDraftDialog] = useState(false);
@@ -206,13 +235,14 @@ function ReportPage() {
   const [workType] = useState<WorkType>("疾病治疗");
   const cfg = workTypeConfig[workType];
   const [symptomTags, setSymptomTags] = useState<string[]>([]);
-  const [symptoms, setSymptoms] = useState<string[]>([]);
-  const [customSymptom, setCustomSymptom] = useState("");
+  const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
+  const [customSymptom, setCustomSymptom] = useState<string>(draft?.customSymptom ?? "");
   const [showCustomInput, setShowCustomInput] = useState(false);
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState<string>(draft?.note ?? "");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
-  const [suspectedDisease, setSuspectedDisease] = useState<string>("");
+  const [suspectedDisease, setSuspectedDisease] = useState<string>(draft?.suspectedDisease ?? "");
+
 
   // 是否转栏
   const [needTransfer, setNeedTransfer] = useState(false);
