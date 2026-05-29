@@ -745,23 +745,14 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
 }
 
 // === 执行页：仅显示当前进行中的当天 checklist ===
-export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13" }: { pickupCode: string | null; tags: string[]; day?: number; date?: string }) {
+export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13", workOrderId }: { pickupCode: string | null; tags: string[]; day?: number; date?: string; workOrderId: string }) {
   return (
-    <>
-      <Section title="基础信息">
-        <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-        <Field label="开始执行时间" value="今日 13:08" />
-      </Section>
-
-
-      <div className="text-caption text-text-tertiary px-1">
-        勾选完成本日动作，可选填执行纪要
-      </div>
-
-      <ChecklistDay day={day} date={date} pickupCode={pickupCode} tags={tags} dayState="active" initialNote="" />
-    </>
+    <div>
+      <ChecklistDay day={day} date={date} pickupCode={pickupCode} tags={tags} dayState="active" initialNote="" workOrderId={workOrderId} />
+    </div>
   );
 }
+
 
 
 type DayState = "done" | "active" | "pending";
@@ -774,6 +765,7 @@ function ChecklistDay({
   dayState,
   initialNote = "",
   readOnly = false,
+  workOrderId,
 }: {
   day: number;
   date: string;
@@ -782,7 +774,9 @@ function ChecklistDay({
   dayState: DayState;
   initialNote?: string;
   readOnly?: boolean;
+  workOrderId?: string;
 }) {
+
   const isActive = dayState === "active";
   const isDone = dayState === "done";
   const isPending = dayState === "pending";
@@ -863,8 +857,9 @@ function ChecklistDay({
                 </div>
               ) : (
                 <Link
-                  to="/m/pickup/$id"
-                  params={{ id: pickupCode }}
+                  to="/m/health/$id_/execute/$pickupId"
+                  params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
+
                   className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
                   style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
                 >

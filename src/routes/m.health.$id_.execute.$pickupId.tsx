@@ -14,15 +14,17 @@ import {
   useClaimed,
 } from "@/lib/pickup-store";
 
-export const Route = createFileRoute("/m/pickup/$id")({
+export const Route = createFileRoute("/m/health/$id_/execute/$pickupId")({
   head: () => ({ meta: [{ title: "药品器材领取 · 奇点智牧" }] }),
   component: PickupDetailPage,
 });
 
 function PickupDetailPage() {
-  const { id } = useParams({ from: "/m/pickup/$id" });
+  const { pickupId } = useParams({ from: "/m/health/$id_/execute/$pickupId" });
+  const id = pickupId;
   const claimed = useClaimed();
   const pickup = getPickup(id);
+
   const isClaimed = claimed.includes(id);
 
   if (!pickup) {
