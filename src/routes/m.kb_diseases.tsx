@@ -4,7 +4,7 @@ import { Stethoscope, Search, TrendingUp, ChevronRight, X } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useFarm } from "@/lib/farm-store";
 
-export const Route = createFileRoute("/m/kb/diseases")({
+export const Route = createFileRoute("/m/kb_diseases")({
   head: () => ({ meta: [{ title: "疾病库 · 奇点智牧" }] }),
   component: DiseaseKBMobile,
 });

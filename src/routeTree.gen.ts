@@ -49,6 +49,9 @@ import { Route as MNotificationsRouteImport } from './routes/m.notifications'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLossReportRouteImport } from './routes/m.loss-report'
 import { Route as MLoginRouteImport } from './routes/m.login'
+import { Route as MKb_symptomsRouteImport } from './routes/m.kb_symptoms'
+import { Route as MKb_drugsRouteImport } from './routes/m.kb_drugs'
+import { Route as MKb_diseasesRouteImport } from './routes/m.kb_diseases'
 import { Route as MEmptyStatesRouteImport } from './routes/m.empty-states'
 import { Route as MDraftsRouteImport } from './routes/m.drafts'
 import { Route as MAccountSecurityRouteImport } from './routes/m.account-security'
@@ -62,9 +65,6 @@ import { Route as MPickupIndexRouteImport } from './routes/m.pickup.index'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
 import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
 import { Route as MPickupIdRouteImport } from './routes/m.pickup.$id'
-import { Route as MKbSymptomsRouteImport } from './routes/m.kb.symptoms'
-import { Route as MKbDrugsRouteImport } from './routes/m.kb.drugs'
-import { Route as MKbDiseasesRouteImport } from './routes/m.kb.diseases'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
 import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
@@ -271,6 +271,21 @@ const MLoginRoute = MLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => MRoute,
 } as any)
+const MKb_symptomsRoute = MKb_symptomsRouteImport.update({
+  id: '/kb_symptoms',
+  path: '/kb_symptoms',
+  getParentRoute: () => MRoute,
+} as any)
+const MKb_drugsRoute = MKb_drugsRouteImport.update({
+  id: '/kb_drugs',
+  path: '/kb_drugs',
+  getParentRoute: () => MRoute,
+} as any)
+const MKb_diseasesRoute = MKb_diseasesRouteImport.update({
+  id: '/kb_diseases',
+  path: '/kb_diseases',
+  getParentRoute: () => MRoute,
+} as any)
 const MEmptyStatesRoute = MEmptyStatesRouteImport.update({
   id: '/empty-states',
   path: '/empty-states',
@@ -336,21 +351,6 @@ const MPickupIdRoute = MPickupIdRouteImport.update({
   path: '/pickup/$id',
   getParentRoute: () => MRoute,
 } as any)
-const MKbSymptomsRoute = MKbSymptomsRouteImport.update({
-  id: '/kb/symptoms',
-  path: '/kb/symptoms',
-  getParentRoute: () => MRoute,
-} as any)
-const MKbDrugsRoute = MKbDrugsRouteImport.update({
-  id: '/kb/drugs',
-  path: '/kb/drugs',
-  getParentRoute: () => MRoute,
-} as any)
-const MKbDiseasesRoute = MKbDiseasesRouteImport.update({
-  id: '/kb/diseases',
-  path: '/kb/diseases',
-  getParentRoute: () => MRoute,
-} as any)
 const MHealthIdRoute = MHealthIdRouteImport.update({
   id: '/health/$id',
   path: '/health/$id',
@@ -398,6 +398,9 @@ export interface FileRoutesByFullPath {
   '/m/account-security': typeof MAccountSecurityRoute
   '/m/drafts': typeof MDraftsRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/kb_diseases': typeof MKb_diseasesRoute
+  '/m/kb_drugs': typeof MKb_drugsRoute
+  '/m/kb_symptoms': typeof MKb_symptomsRoute
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
@@ -430,9 +433,6 @@ export interface FileRoutesByFullPath {
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/kb/diseases': typeof MKbDiseasesRoute
-  '/m/kb/drugs': typeof MKbDrugsRoute
-  '/m/kb/symptoms': typeof MKbSymptomsRoute
   '/m/pickup/$id': typeof MPickupIdRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
@@ -456,6 +456,9 @@ export interface FileRoutesByTo {
   '/m/account-security': typeof MAccountSecurityRoute
   '/m/drafts': typeof MDraftsRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/kb_diseases': typeof MKb_diseasesRoute
+  '/m/kb_drugs': typeof MKb_drugsRoute
+  '/m/kb_symptoms': typeof MKb_symptomsRoute
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
@@ -488,9 +491,6 @@ export interface FileRoutesByTo {
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/kb/diseases': typeof MKbDiseasesRoute
-  '/m/kb/drugs': typeof MKbDrugsRoute
-  '/m/kb/symptoms': typeof MKbSymptomsRoute
   '/m/pickup/$id': typeof MPickupIdRoute
   '/m/animals': typeof MAnimalsIndexRoute
   '/m/health': typeof MHealthIndexRoute
@@ -520,6 +520,9 @@ export interface FileRoutesById {
   '/m/account-security': typeof MAccountSecurityRoute
   '/m/drafts': typeof MDraftsRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/kb_diseases': typeof MKb_diseasesRoute
+  '/m/kb_drugs': typeof MKb_drugsRoute
+  '/m/kb_symptoms': typeof MKb_symptomsRoute
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
@@ -552,9 +555,6 @@ export interface FileRoutesById {
   '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/kb/diseases': typeof MKbDiseasesRoute
-  '/m/kb/drugs': typeof MKbDrugsRoute
-  '/m/kb/symptoms': typeof MKbSymptomsRoute
   '/m/pickup/$id': typeof MPickupIdRoute
   '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
@@ -585,6 +585,9 @@ export interface FileRouteTypes {
     | '/m/account-security'
     | '/m/drafts'
     | '/m/empty-states'
+    | '/m/kb_diseases'
+    | '/m/kb_drugs'
+    | '/m/kb_symptoms'
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
@@ -617,9 +620,6 @@ export interface FileRouteTypes {
     | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
-    | '/m/kb/diseases'
-    | '/m/kb/drugs'
-    | '/m/kb/symptoms'
     | '/m/pickup/$id'
     | '/m/animals/'
     | '/m/health/'
@@ -643,6 +643,9 @@ export interface FileRouteTypes {
     | '/m/account-security'
     | '/m/drafts'
     | '/m/empty-states'
+    | '/m/kb_diseases'
+    | '/m/kb_drugs'
+    | '/m/kb_symptoms'
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
@@ -675,9 +678,6 @@ export interface FileRouteTypes {
     | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
-    | '/m/kb/diseases'
-    | '/m/kb/drugs'
-    | '/m/kb/symptoms'
     | '/m/pickup/$id'
     | '/m/animals'
     | '/m/health'
@@ -706,6 +706,9 @@ export interface FileRouteTypes {
     | '/m/account-security'
     | '/m/drafts'
     | '/m/empty-states'
+    | '/m/kb_diseases'
+    | '/m/kb_drugs'
+    | '/m/kb_symptoms'
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
@@ -738,9 +741,6 @@ export interface FileRouteTypes {
     | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
-    | '/m/kb/diseases'
-    | '/m/kb/drugs'
-    | '/m/kb/symptoms'
     | '/m/pickup/$id'
     | '/m/animals/'
     | '/m/health/'
@@ -1045,6 +1045,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MLoginRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/kb_symptoms': {
+      id: '/m/kb_symptoms'
+      path: '/kb_symptoms'
+      fullPath: '/m/kb_symptoms'
+      preLoaderRoute: typeof MKb_symptomsRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/kb_drugs': {
+      id: '/m/kb_drugs'
+      path: '/kb_drugs'
+      fullPath: '/m/kb_drugs'
+      preLoaderRoute: typeof MKb_drugsRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/kb_diseases': {
+      id: '/m/kb_diseases'
+      path: '/kb_diseases'
+      fullPath: '/m/kb_diseases'
+      preLoaderRoute: typeof MKb_diseasesRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/empty-states': {
       id: '/m/empty-states'
       path: '/empty-states'
@@ -1136,27 +1157,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MPickupIdRouteImport
       parentRoute: typeof MRoute
     }
-    '/m/kb/symptoms': {
-      id: '/m/kb/symptoms'
-      path: '/kb/symptoms'
-      fullPath: '/m/kb/symptoms'
-      preLoaderRoute: typeof MKbSymptomsRouteImport
-      parentRoute: typeof MRoute
-    }
-    '/m/kb/drugs': {
-      id: '/m/kb/drugs'
-      path: '/kb/drugs'
-      fullPath: '/m/kb/drugs'
-      preLoaderRoute: typeof MKbDrugsRouteImport
-      parentRoute: typeof MRoute
-    }
-    '/m/kb/diseases': {
-      id: '/m/kb/diseases'
-      path: '/kb/diseases'
-      fullPath: '/m/kb/diseases'
-      preLoaderRoute: typeof MKbDiseasesRouteImport
-      parentRoute: typeof MRoute
-    }
     '/m/health/$id': {
       id: '/m/health/$id'
       path: '/health/$id'
@@ -1230,6 +1230,9 @@ interface MRouteChildren {
   MAccountSecurityRoute: typeof MAccountSecurityRoute
   MDraftsRoute: typeof MDraftsRoute
   MEmptyStatesRoute: typeof MEmptyStatesRoute
+  MKb_diseasesRoute: typeof MKb_diseasesRoute
+  MKb_drugsRoute: typeof MKb_drugsRoute
+  MKb_symptomsRoute: typeof MKb_symptomsRoute
   MLoginRoute: typeof MLoginRoute
   MLossReportRoute: typeof MLossReportRoute
   MMeRoute: typeof MMeRoute
@@ -1241,9 +1244,6 @@ interface MRouteChildren {
   MAnimalsIdRoute: typeof MAnimalsIdRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
-  MKbDiseasesRoute: typeof MKbDiseasesRoute
-  MKbDrugsRoute: typeof MKbDrugsRoute
-  MKbSymptomsRoute: typeof MKbSymptomsRoute
   MPickupIdRoute: typeof MPickupIdRoute
   MAnimalsIndexRoute: typeof MAnimalsIndexRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
@@ -1256,6 +1256,9 @@ const MRouteChildren: MRouteChildren = {
   MAccountSecurityRoute: MAccountSecurityRoute,
   MDraftsRoute: MDraftsRoute,
   MEmptyStatesRoute: MEmptyStatesRoute,
+  MKb_diseasesRoute: MKb_diseasesRoute,
+  MKb_drugsRoute: MKb_drugsRoute,
+  MKb_symptomsRoute: MKb_symptomsRoute,
   MLoginRoute: MLoginRoute,
   MLossReportRoute: MLossReportRoute,
   MMeRoute: MMeRoute,
@@ -1267,9 +1270,6 @@ const MRouteChildren: MRouteChildren = {
   MAnimalsIdRoute: MAnimalsIdRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
-  MKbDiseasesRoute: MKbDiseasesRoute,
-  MKbDrugsRoute: MKbDrugsRoute,
-  MKbSymptomsRoute: MKbSymptomsRoute,
   MPickupIdRoute: MPickupIdRoute,
   MAnimalsIndexRoute: MAnimalsIndexRoute,
   MHealthIndexRoute: MHealthIndexRoute,
@@ -1378,3 +1378,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -144,7 +144,7 @@ function MHomePage() {
           <SectionTitle title="速查与近况" hint="近 7 天" />
           <div className="space-y-2">
             <KBShortcut
-              to="/m/kb/symptoms"
+              to="/m/kb_symptoms"
               icon={Activity}
               tone="info"
               label="症状库"
@@ -155,7 +155,7 @@ function MHomePage() {
               trendUnit="头次"
             />
             <KBShortcut
-              to="/m/kb/diseases"
+              to="/m/kb_diseases"
               icon={BookMarked}
               tone="brand"
               label="疾病库"
@@ -167,7 +167,7 @@ function MHomePage() {
             />
             {canViewOperations(role) && (
               <KBShortcut
-                to="/m/kb/drugs"
+                to="/m/kb_drugs"
                 icon={Pill}
                 tone="purple"
                 label="药品库"

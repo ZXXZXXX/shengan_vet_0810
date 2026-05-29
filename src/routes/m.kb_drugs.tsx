@@ -5,7 +5,7 @@ import { MobileShell } from "@/components/mobile-shell";
 import { useFarm } from "@/lib/farm-store";
 import { canViewOperations, useRole } from "@/lib/mobile-role";
 
-export const Route = createFileRoute("/m/kb/drugs")({
+export const Route = createFileRoute("/m/kb_drugs")({
   head: () => ({ meta: [{ title: "药品库 · 奇点智牧" }] }),
   component: DrugKBMobile,
 });
