@@ -761,6 +761,7 @@ function FarmSwitcher() {
             );
           })}
         </div>
+      )}
       {switching && (
         <div className="fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm flex items-center justify-center">
           <div className="h-28 w-28 rounded-2xl bg-card shadow-2xl flex flex-col items-center justify-center gap-3">
