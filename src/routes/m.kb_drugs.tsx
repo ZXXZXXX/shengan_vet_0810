@@ -85,7 +85,8 @@ function DrugKBMobile() {
         <section>
           <div className="flex items-center gap-1.5 mb-2">
             <TrendingUp className="h-3.5 w-3.5 text-primary" />
-            <h3 className="text-card-title text-foreground">近期出库较多</h3>
+            <h3 className="text-card-title text-foreground">近7天出库较多</h3>
+
           </div>
           <div className="rounded-2xl bg-card border border-border divide-y divide-border overflow-hidden">
             {topOut.map((d) => (
