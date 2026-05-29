@@ -34,15 +34,13 @@ type Draft = {
   savedAt: string;
 };
 
-function formatTime(iso: string) {
+function formatDate(iso: string) {
   try {
     const d = new Date(iso);
-    const now = new Date();
-    const sameDay = d.toDateString() === now.toDateString();
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mm = String(d.getMinutes()).padStart(2, "0");
-    if (sameDay) return `今日 ${hh}:${mm}`;
-    return `${d.getMonth() + 1} 月 ${d.getDate()} 日 ${hh}:${mm}`;
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   } catch {
     return iso;
   }
