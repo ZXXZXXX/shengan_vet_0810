@@ -182,7 +182,6 @@ function DiseaseKBMobile() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-body text-foreground truncate">{d.name}</span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${severityTone(d.severity)}`}>{d.severity}</span>
                   </div>
                   <div className="text-caption text-text-tertiary mt-0.5 line-clamp-1">{d.cat} · {d.desc}</div>
                 </div>
@@ -226,7 +225,6 @@ function DiseaseDetailSheet({ item, onClose }: { item: Disease; onClose: () => v
         </div>
 
         <div className="flex items-center gap-2 mb-3">
-          <span className={`text-[11px] px-1.5 py-0.5 rounded-md font-medium ${severityTone(item.severity)}`}>严重 · {item.severity}</span>
           <span className="text-caption text-text-tertiary">近 7 天 {item.recent7d} 头</span>
         </div>
 
