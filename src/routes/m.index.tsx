@@ -153,7 +153,7 @@ function MHomePage() {
             <KBShortcut
               to="/m/kb_diseases"
               icon={BookMarked}
-              tone="brand"
+              tone="orange"
               label="疾病库"
               trendName="乳房炎"
               trendValue="9"
