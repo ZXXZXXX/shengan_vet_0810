@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, canVisit } from "@/lib/mobile-role";
+import { useRole, canVisit, canDiagnose, canExecute } from "@/lib/mobile-role";
+
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 
 type HealthSearch = { tab?: string; type?: string };
@@ -224,8 +225,9 @@ function TaskListPage() {
                   const Icon = s.icon;
                   const KIcon = kindIcon[o.kind];
                   const isPickup = o.kind === "领取";
-                  const canVisitThis = isVisitor && o.status === "待诊断";
-                  const canExecuteThis = !isVisitor && o.status === "进行中";
+                  const canVisitThis = canDiagnose(role, o.type) && o.status === "待诊断";
+                  const canExecuteThis = canExecute(role) && o.status === "进行中";
+
 
                   // 统一 Footer 元信息：左侧时间·人员
                   let metaTimeLabel = "";

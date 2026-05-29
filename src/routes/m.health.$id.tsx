@@ -21,7 +21,8 @@ import {
   X,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, canVisit, canExecute } from "@/lib/mobile-role";
+import { useRole, canVisit, canExecute, canDiagnose } from "@/lib/mobile-role";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -203,8 +204,10 @@ function TaskDetailPage() {
       {/* === 3. 底部操作区 === */}
       {(() => {
         const isResponder = canVisit(role) || canExecute(role);
-        const showRespond = isResponder && o.status === "待诊断";
+        void isResponder;
+        const showRespond = canDiagnose(role, o.type) && o.status === "待诊断";
         const showExec = canExecute(role) && o.status === "进行中";
+
         if (!showRespond && !showExec) return null;
         return (
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
