@@ -61,7 +61,7 @@ function DrugKBMobile() {
           </div>
           <div className="text-body text-foreground">无权限查看</div>
           <div className="text-caption text-text-tertiary mt-1 max-w-[260px]">
-            仅管理员和场长可查看药品库数据
+            请联系管理人员修改权限
           </div>
         </div>
       </MobileShell>
@@ -81,46 +81,6 @@ function DrugKBMobile() {
           />
         </div>
 
-        <section>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-3.5 w-3.5 text-primary" />
-              <h3 className="text-card-title text-foreground">近 7 天出库 TOP</h3>
-            </div>
-            <span className="text-caption text-text-tertiary">{farm.name}</span>
-          </div>
-          <div className="rounded-2xl bg-card border border-border divide-y divide-border overflow-hidden">
-            {top.map((d, i) => (
-              <button
-                key={d.id}
-                onClick={() => setActive(d)}
-                className="w-full flex items-center gap-3 px-4 py-3 active:bg-surface-subtle text-left"
-              >
-                <span
-                  className={`h-6 w-6 rounded-md inline-flex items-center justify-center text-[12px] font-semibold tabular-nums ${
-                    i === 0
-                      ? "bg-[var(--state-danger)]/12 text-[var(--state-danger)]"
-                      : i === 1
-                      ? "bg-[var(--state-warning)]/25 text-[var(--state-alert)]"
-                      : i === 2
-                      ? "bg-brand-subtle text-primary"
-                      : "bg-surface-subtle text-text-secondary"
-                  }`}
-                >
-                  {i + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-body text-foreground truncate">{d.name}</div>
-                  <div className="text-caption text-text-tertiary truncate">{d.spec}</div>
-                </div>
-                <span className="text-caption text-text-tertiary tabular-nums">
-                  出库 {d.out7d} {d.unit}
-                </span>
-                <ChevronRight className="h-3.5 w-3.5 text-text-tertiary" />
-              </button>
-            ))}
-          </div>
-        </section>
 
         <section>
           <h3 className="text-card-title text-foreground mb-2">全部药品 · {list.length}</h3>
