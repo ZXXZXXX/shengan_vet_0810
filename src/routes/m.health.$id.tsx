@@ -765,6 +765,7 @@ function ChecklistDay({
   dayState,
   initialNote = "",
   readOnly = false,
+  workOrderId,
 }: {
   day: number;
   date: string;
@@ -773,7 +774,9 @@ function ChecklistDay({
   dayState: DayState;
   initialNote?: string;
   readOnly?: boolean;
+  workOrderId?: string;
 }) {
+
   const isActive = dayState === "active";
   const isDone = dayState === "done";
   const isPending = dayState === "pending";
