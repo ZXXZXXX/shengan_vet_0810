@@ -94,13 +94,13 @@ function MHomePage() {
 
 
 
-        <div className="relative px-4 pt-8 pb-10">
+        <div className="relative px-4 pt-5 pb-6">
           <div className="flex items-start justify-between">
             <div className="min-w-0">
               <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25">
                 <span className="text-[11px] text-white/95">{roleLabel[role]}</span>
               </div>
-              <div className="text-section-title mt-2 drop-shadow-sm">李师傅</div>
+              <div className="text-[18px] leading-tight font-semibold text-white mt-1.5 drop-shadow-sm">李师傅</div>
               <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
                 <MapPin className="h-3 w-3" />
                 {farm.name} · {farm.region}
@@ -109,16 +109,16 @@ function MHomePage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setReportOpen(true)}
-                className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] active:scale-[.97] transition-transform"
+                className="h-8 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] active:scale-[.97] transition-transform"
               >
-                <Camera className="h-4 w-4" />
+                <Camera className="h-3.5 w-3.5" />
                 现场上报
               </button>
             </div>
           </div>
 
           {/* 牧场摘要：跟随当前牧场切换联动 */}
-          <div className="mt-5 grid grid-cols-3 gap-2">
+          <div className="mt-3 grid grid-cols-3 gap-2">
             {[
               { label: "牛只总数", value: "1,284", trend: "1.8%", up: true },
               { label: "健康率", value: "96.8%", trend: "0.6%", up: true },
@@ -126,11 +126,11 @@ function MHomePage() {
             ].map((s) => (
               <div
                 key={s.label}
-                className="rounded-xl bg-white/15 backdrop-blur-sm border border-white/25 px-2.5 py-2"
+                className="rounded-lg bg-white px-2.5 py-2 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.15)]"
               >
-                <div className="text-[11px] text-white/85">{s.label}</div>
-                <div className="text-[20px] leading-tight font-semibold mt-0.5 drop-shadow-sm">{s.value}</div>
-                <div className="mt-0.5 inline-flex items-center gap-0.5 text-[10px] text-white/90">
+                <div className="text-[11px] text-text-secondary">{s.label}</div>
+                <div className="text-[18px] leading-tight font-semibold text-foreground tabular-nums mt-0.5">{s.value}</div>
+                <div className={`mt-0.5 inline-flex items-center gap-0.5 text-[10px] tabular-nums ${s.up ? "text-[var(--state-success)]" : "text-[var(--state-danger)]"}`}>
                   {s.up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                   {s.trend}
                 </div>
@@ -138,6 +138,7 @@ function MHomePage() {
             ))}
           </div>
         </div>
+
       </header>
 
 
@@ -145,7 +146,8 @@ function MHomePage() {
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
         <section className="px-4 mt-3">
-          <SectionTitle title="速查与近况" hint="近 7 天" />
+          <SectionTitle title="速查与近况" />
+
           <div className="grid grid-cols-3 gap-2.5">
             <KBShortcut
               to="/m/kb_symptoms"
@@ -616,7 +618,7 @@ function KBShortcut({
       className="group relative block h-[124px] active:scale-[0.98] transition-transform"
       aria-label={label}
     >
-      {/* 文件夹后片 + 顶部 tab */}
+      {/* 文件夹后片 */}
       <div
         className="absolute inset-x-0 bottom-0 top-2.5 rounded-[14px]"
         style={{
@@ -626,11 +628,12 @@ function KBShortcut({
       />
       {/* 顶部 tab */}
       <div
-        className="absolute left-2.5 top-0 h-3.5 w-[42%] rounded-t-[8px]"
+        className="absolute left-0 top-0 h-3.5 w-[42%] rounded-tl-[14px] rounded-tr-[8px]"
         style={{
           background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 88%, #fff) 0%, ${accent} 100%)`,
         }}
       />
+
       {/* 白色"纸张"露出 */}
       <div className="absolute left-2.5 right-2.5 top-[18px] h-[38px] overflow-hidden">
         <div className="absolute left-1 right-3 top-1 h-[34px] rounded-[5px] bg-white/95 shadow-sm rotate-[-2deg]">
