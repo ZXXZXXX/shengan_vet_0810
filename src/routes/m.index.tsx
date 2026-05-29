@@ -598,39 +598,69 @@ function TaskOverviewCard({
         <div className="text-section-title text-foreground tabular-nums mt-0.5">{value}</div>
       </div>
     </Link>
-  );
-}
-
 function KBShortcut({
   to,
   icon: Icon,
   tone,
   label,
   desc,
+  trendLabel,
+  trendName,
+  trendValue,
+  trendUnit,
 }: {
   to: string;
   icon: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
   desc: string;
+  trendLabel: string;
+  trendName: string;
+  trendValue: string;
+  trendUnit: string;
 }) {
   const accent = toneAccentMap[tone];
   return (
     <Link
       to={to}
-      className="relative rounded-2xl bg-card border border-border p-3 active:bg-surface-subtle overflow-hidden"
+      className="relative flex items-center gap-3 rounded-2xl bg-card border border-border p-3 active:bg-surface-subtle overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(135deg, color-mix(in oklab, ${accent} 10%, transparent) 0%, color-mix(in oklab, ${accent} 0%, transparent) 70%)`,
+        backgroundImage: `linear-gradient(120deg, color-mix(in oklab, ${accent} 9%, transparent) 0%, color-mix(in oklab, ${accent} 0%, transparent) 60%)`,
       }}
     >
       <span
-        className={`h-9 w-9 rounded-xl inline-flex items-center justify-center ${colorMap[tone]}`}
+        className={`h-10 w-10 rounded-xl inline-flex items-center justify-center shrink-0 ${colorMap[tone]}`}
         style={{ boxShadow: `0 6px 14px -10px ${accent}` }}
       >
-        <Icon className="h-4 w-4" strokeWidth={1.9} />
+        <Icon className="h-[18px] w-[18px]" strokeWidth={1.9} />
       </span>
-      <div className="mt-2 text-body font-medium text-foreground">{label}</div>
-      <div className="text-[11px] text-text-tertiary mt-0.5 truncate">{desc}</div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="text-body font-medium text-foreground">{label}</span>
+        </div>
+        <div className="text-[11px] text-text-tertiary mt-0.5 truncate">{desc}</div>
+      </div>
+
+      <div className="shrink-0 flex flex-col items-end gap-0.5 pl-2 border-l border-border/70 ml-1 max-w-[44%]">
+        <div className="inline-flex items-center gap-1 text-[10px] text-text-tertiary">
+          <TrendingUp className="h-3 w-3" style={{ color: accent }} />
+          <span>近 7 天{trendLabel}</span>
+        </div>
+        <div className="flex items-baseline gap-1 max-w-full">
+          <span className="text-[13px] text-foreground truncate max-w-[120px]">{trendName}</span>
+          <span className="text-body font-semibold tabular-nums" style={{ color: accent }}>
+            {trendValue}
+          </span>
+          <span className="text-[10px] text-text-tertiary">{trendUnit}</span>
+        </div>
+      </div>
+
+      <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0 ml-0.5" />
+    </Link>
+  );
+}
+
     </Link>
   );
 }
