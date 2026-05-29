@@ -200,7 +200,7 @@ function TaskListPage() {
           <EmptyState
             icon={ClipboardList}
             title={`暂无${tab === "全部" ? "" : tab}工单`}
-            desc={q ? "试试更换关键词或切换状态筛选" : "新纪录会在这里显示，请下拉刷新"}
+            desc={q ? "试试更换关键词或切换状态筛选" : "新记录会在这里显示，请下拉刷新"}
           />
         )}
         {Object.entries(
