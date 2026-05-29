@@ -324,8 +324,8 @@ function TodayTaskList({ role }: { role: Role }) {
           icon={Inbox}
           size="sm"
           title="暂无任务"
-          desc="管理员身份无工作任务"
         />
+
       </div>
     );
   }
