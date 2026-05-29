@@ -139,7 +139,6 @@ function MHomePage() {
         </div>
       </header>
 
-      <section className="px-4 mt-2">
 
 
       {/* ============ 金刚区:速查与近况 ============ */}
