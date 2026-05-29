@@ -224,8 +224,9 @@ function TaskListPage() {
                   const s = statusTone[o.status];
                   const Icon = s.icon;
                   const KIcon = kindIcon[o.kind];
-                  const isPickup = o.kind === "领取";
-                  const canVisitThis = isVisitor && o.status === "待诊断";
+                  const canVisitThis = canDiagnose(role, o.type) && o.status === "待诊断";
+                  const canExecuteThis = canExecute(role) && o.status === "进行中";
+
                   const canExecuteThis = !isVisitor && o.status === "进行中";
 
                   // 统一 Footer 元信息：左侧时间·人员
