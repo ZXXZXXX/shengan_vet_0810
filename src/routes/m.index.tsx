@@ -141,7 +141,7 @@ function MHomePage() {
       <section className="px-4 mt-5">
         <SectionTitle title="知识中心" />
         <div className={`grid ${canViewOperations(role) ? "grid-cols-3" : "grid-cols-2"} gap-2`}>
-          <KBShortcut to="/m/kb/symptoms" icon={Activity} tone="info" label="症状库" desc="典型表现 · 高发排行" />
+          <KBShortcut to="/m/kb/symptoms" icon={Activity} tone="info" label="症状库" desc="典型表现 · 查看近期高发" />
           <KBShortcut to="/m/kb/diseases" icon={BookMarked} tone="brand" label="疾病库" desc="症状 · 常用处方" />
           {canViewOperations(role) && (
             <KBShortcut to="/m/kb/drugs" icon={Pill} tone="purple" label="药品库" desc="库存 · 出库 TOP" />
