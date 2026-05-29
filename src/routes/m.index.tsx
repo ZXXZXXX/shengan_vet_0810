@@ -679,6 +679,7 @@ function KBShortcut({
 // ---------------- 牧场切换 ----------------
 function FarmSwitcher() {
   const [open, setOpen] = useState(false);
+  const [switching, setSwitching] = useState(false);
   const currentId = useFarmId();
   const ref = useRef<HTMLDivElement>(null);
   const current = FARMS.find((f) => f.id === currentId) ?? FARMS[0];
@@ -732,8 +733,11 @@ function FarmSwitcher() {
               <button
                 key={f.id}
                 onClick={() => {
-                  setFarmId(f.id);
                   setOpen(false);
+                  if (f.id === currentId) return;
+                  setSwitching(true);
+                  setFarmId(f.id);
+                  window.setTimeout(() => setSwitching(false), 1000);
                 }}
                 className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
                   active ? "bg-brand-subtle/40" : ""
@@ -756,6 +760,14 @@ function FarmSwitcher() {
               </button>
             );
           })}
+        </div>
+      )}
+      {switching && (
+        <div className="fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm flex items-center justify-center">
+          <div className="h-28 w-28 rounded-2xl bg-card shadow-2xl flex flex-col items-center justify-center gap-3">
+            <span className="h-8 w-8 rounded-full border-[3px] border-primary/25 border-t-primary animate-spin" />
+            <span className="text-caption text-text-secondary">切换牧场中…</span>
+          </div>
         </div>
       )}
     </div>
