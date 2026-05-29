@@ -4,7 +4,7 @@ import { Activity, Search, TrendingUp, ChevronRight, X } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useFarm } from "@/lib/farm-store";
 
-export const Route = createFileRoute("/m/kb/symptoms")({
+export const Route = createFileRoute("/m/kb_symptoms")({
   head: () => ({ meta: [{ title: "症状库 · 奇点智牧" }] }),
   component: SymptomKBMobile,
 });
