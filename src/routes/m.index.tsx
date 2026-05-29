@@ -25,7 +25,8 @@ import {
 
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, roleLabel, canViewOperations, canVisit, type Role } from "@/lib/mobile-role";
+import { useRole, roleLabel, roleGroup, canViewOperations, canVisit, type Role } from "@/lib/mobile-role";
+
 import { Activity, BookMarked } from "lucide-react";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
