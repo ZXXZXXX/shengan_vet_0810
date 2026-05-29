@@ -54,6 +54,7 @@ import { Route as MKb_drugsRouteImport } from './routes/m.kb_drugs'
 import { Route as MKb_diseasesRouteImport } from './routes/m.kb_diseases'
 import { Route as MEmptyStatesRouteImport } from './routes/m.empty-states'
 import { Route as MDraftsRouteImport } from './routes/m.drafts'
+import { Route as MAnimalsChar123idChar125RouteImport } from './routes/m.animals-{$id}'
 import { Route as MAccountSecurityRouteImport } from './routes/m.account-security'
 import { Route as KnowledgeSymptomRouteImport } from './routes/knowledge.symptom'
 import { Route as KnowledgePrescriptionRouteImport } from './routes/knowledge.prescription'
@@ -62,10 +63,8 @@ import { Route as ArchiveFarmRouteImport } from './routes/archive.farm'
 import { Route as ArchiveCattleRouteImport } from './routes/archive.cattle'
 import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
-import { Route as MAnimalsIndexRouteImport } from './routes/m.animals.index'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
-import { Route as MAnimalsIdRouteImport } from './routes/m.animals.$id'
 import { Route as MHealthIdExecuteRouteImport } from './routes/m.health.$id_.execute'
 import { Route as MHealthIdDiagnoseRouteImport } from './routes/m.health.$id_.diagnose'
 import { Route as MHealthIdExecutePickupIdRouteImport } from './routes/m.health.$id_.execute.$pickupId'
@@ -295,6 +294,12 @@ const MDraftsRoute = MDraftsRouteImport.update({
   path: '/drafts',
   getParentRoute: () => MRoute,
 } as any)
+const MAnimalsChar123idChar125Route =
+  MAnimalsChar123idChar125RouteImport.update({
+    id: '/animals-{$id}',
+    path: '/animals-{$id}',
+    getParentRoute: () => MRoute,
+  } as any)
 const MAccountSecurityRoute = MAccountSecurityRouteImport.update({
   id: '/account-security',
   path: '/account-security',
@@ -335,11 +340,6 @@ const MHealthIndexRoute = MHealthIndexRouteImport.update({
   path: '/health/',
   getParentRoute: () => MRoute,
 } as any)
-const MAnimalsIndexRoute = MAnimalsIndexRouteImport.update({
-  id: '/animals/',
-  path: '/animals/',
-  getParentRoute: () => MRoute,
-} as any)
 const MHealthIdRoute = MHealthIdRouteImport.update({
   id: '/health/$id',
   path: '/health/$id',
@@ -348,11 +348,6 @@ const MHealthIdRoute = MHealthIdRouteImport.update({
 const MBarnsIdRoute = MBarnsIdRouteImport.update({
   id: '/barns/$id',
   path: '/barns/$id',
-  getParentRoute: () => MRoute,
-} as any)
-const MAnimalsIdRoute = MAnimalsIdRouteImport.update({
-  id: '/animals/$id',
-  path: '/animals/$id',
   getParentRoute: () => MRoute,
 } as any)
 const MHealthIdExecuteRoute = MHealthIdExecuteRouteImport.update({
@@ -391,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/account-security': typeof MAccountSecurityRoute
+  '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
   '/m/empty-states': typeof MEmptyStatesRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
@@ -425,10 +421,8 @@ export interface FileRoutesByFullPath {
   '/production/': typeof ProductionIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
-  '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRouteWithChildren
@@ -448,6 +442,7 @@ export interface FileRoutesByTo {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/account-security': typeof MAccountSecurityRoute
+  '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
   '/m/empty-states': typeof MEmptyStatesRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
@@ -482,10 +477,8 @@ export interface FileRoutesByTo {
   '/production': typeof ProductionIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/warehouse': typeof WarehouseIndexRoute
-  '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/animals': typeof MAnimalsIndexRoute
   '/m/health': typeof MHealthIndexRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRouteWithChildren
@@ -511,6 +504,7 @@ export interface FileRoutesById {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/account-security': typeof MAccountSecurityRoute
+  '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
   '/m/empty-states': typeof MEmptyStatesRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
@@ -545,10 +539,8 @@ export interface FileRoutesById {
   '/production/': typeof ProductionIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
-  '/m/animals/$id': typeof MAnimalsIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/animals/': typeof MAnimalsIndexRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/health/$id_/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id_/execute': typeof MHealthIdExecuteRouteWithChildren
@@ -575,6 +567,7 @@ export interface FileRouteTypes {
     | '/knowledge/prescription'
     | '/knowledge/symptom'
     | '/m/account-security'
+    | '/m/animals-{$id}'
     | '/m/drafts'
     | '/m/empty-states'
     | '/m/kb_diseases'
@@ -609,10 +602,8 @@ export interface FileRouteTypes {
     | '/production/'
     | '/settings/'
     | '/warehouse/'
-    | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
-    | '/m/animals/'
     | '/m/health/'
     | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
@@ -632,6 +623,7 @@ export interface FileRouteTypes {
     | '/knowledge/prescription'
     | '/knowledge/symptom'
     | '/m/account-security'
+    | '/m/animals-{$id}'
     | '/m/drafts'
     | '/m/empty-states'
     | '/m/kb_diseases'
@@ -666,10 +658,8 @@ export interface FileRouteTypes {
     | '/production'
     | '/settings'
     | '/warehouse'
-    | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
-    | '/m/animals'
     | '/m/health'
     | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
@@ -694,6 +684,7 @@ export interface FileRouteTypes {
     | '/knowledge/prescription'
     | '/knowledge/symptom'
     | '/m/account-security'
+    | '/m/animals-{$id}'
     | '/m/drafts'
     | '/m/empty-states'
     | '/m/kb_diseases'
@@ -728,10 +719,8 @@ export interface FileRouteTypes {
     | '/production/'
     | '/settings/'
     | '/warehouse/'
-    | '/m/animals/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
-    | '/m/animals/'
     | '/m/health/'
     | '/m/health/$id_/diagnose'
     | '/m/health/$id_/execute'
@@ -1069,6 +1058,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MDraftsRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/animals-{$id}': {
+      id: '/m/animals-{$id}'
+      path: '/animals-{$id}'
+      fullPath: '/m/animals-{$id}'
+      preLoaderRoute: typeof MAnimalsChar123idChar125RouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/account-security': {
       id: '/m/account-security'
       path: '/account-security'
@@ -1125,13 +1121,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MHealthIndexRouteImport
       parentRoute: typeof MRoute
     }
-    '/m/animals/': {
-      id: '/m/animals/'
-      path: '/animals'
-      fullPath: '/m/animals/'
-      preLoaderRoute: typeof MAnimalsIndexRouteImport
-      parentRoute: typeof MRoute
-    }
     '/m/health/$id': {
       id: '/m/health/$id'
       path: '/health/$id'
@@ -1144,13 +1133,6 @@ declare module '@tanstack/react-router' {
       path: '/barns/$id'
       fullPath: '/m/barns/$id'
       preLoaderRoute: typeof MBarnsIdRouteImport
-      parentRoute: typeof MRoute
-    }
-    '/m/animals/$id': {
-      id: '/m/animals/$id'
-      path: '/animals/$id'
-      fullPath: '/m/animals/$id'
-      preLoaderRoute: typeof MAnimalsIdRouteImport
       parentRoute: typeof MRoute
     }
     '/m/health/$id_/execute': {
@@ -1221,6 +1203,7 @@ const MHealthIdExecuteRouteWithChildren =
 
 interface MRouteChildren {
   MAccountSecurityRoute: typeof MAccountSecurityRoute
+  MAnimalsChar123idChar125Route: typeof MAnimalsChar123idChar125Route
   MDraftsRoute: typeof MDraftsRoute
   MEmptyStatesRoute: typeof MEmptyStatesRoute
   MKb_diseasesRoute: typeof MKb_diseasesRoute
@@ -1234,10 +1217,8 @@ interface MRouteChildren {
   MRespondRoute: typeof MRespondRoute
   MScanRoute: typeof MScanRoute
   MIndexRoute: typeof MIndexRoute
-  MAnimalsIdRoute: typeof MAnimalsIdRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
-  MAnimalsIndexRoute: typeof MAnimalsIndexRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
   MHealthIdDiagnoseRoute: typeof MHealthIdDiagnoseRoute
   MHealthIdExecuteRoute: typeof MHealthIdExecuteRouteWithChildren
@@ -1245,6 +1226,7 @@ interface MRouteChildren {
 
 const MRouteChildren: MRouteChildren = {
   MAccountSecurityRoute: MAccountSecurityRoute,
+  MAnimalsChar123idChar125Route: MAnimalsChar123idChar125Route,
   MDraftsRoute: MDraftsRoute,
   MEmptyStatesRoute: MEmptyStatesRoute,
   MKb_diseasesRoute: MKb_diseasesRoute,
@@ -1258,10 +1240,8 @@ const MRouteChildren: MRouteChildren = {
   MRespondRoute: MRespondRoute,
   MScanRoute: MScanRoute,
   MIndexRoute: MIndexRoute,
-  MAnimalsIdRoute: MAnimalsIdRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
-  MAnimalsIndexRoute: MAnimalsIndexRoute,
   MHealthIndexRoute: MHealthIndexRoute,
   MHealthIdDiagnoseRoute: MHealthIdDiagnoseRoute,
   MHealthIdExecuteRoute: MHealthIdExecuteRouteWithChildren,

@@ -13,7 +13,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { useRole, roleLabel } from "@/lib/mobile-role";
 
-export const Route = createFileRoute("/m/animals/$id")({
+export const Route = createFileRoute("/m/animals-{$id}")({
   head: () => ({ meta: [{ title: "牛只详情 · 奇点智牧" }] }),
   component: AnimalDetailPage,
 });
@@ -29,7 +29,8 @@ const roleToName: Record<string, string> = {
 };
 
 function AnimalDetailPage() {
-  const { id } = useParams({ from: "/m/animals/$id" });
+  const { id } = useParams({ from: "/m/animals-{$id}" });
+
   const role = useRole();
   const me = roleToName[role] ?? "我";
 
