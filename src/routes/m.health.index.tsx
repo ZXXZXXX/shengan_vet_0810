@@ -134,6 +134,8 @@ function TaskListPage() {
   void claimed;
   void PICKUPS;
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
+  if (role === "immunizer") list = list.filter((t) => t.type === "免疫");
+  if (role === "vet_assistant") list = list.filter((t) => t.type !== "免疫" && t.kind !== "修蹄");
   if (typeFilter) {
     list = list.filter((o) => o.type === typeFilter || (typeFilter === "疫苗免疫" && o.type === "免疫"));
   }
