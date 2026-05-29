@@ -1,42 +1,28 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   Camera,
   Beef,
   AlertTriangle,
-  AlertCircle,
   ChevronRight,
-  ChevronDown,
-  Check,
-  Stethoscope,
-  PackageMinus,
-  Warehouse,
+  MapPin,
+  HeartPulse,
   CloudSun,
   Wind,
   Thermometer,
-  MapPin,
-  Activity,
-  HeartPulse,
-  Eye,
-  ArrowUpRight,
-  TrendingUp,
   Inbox,
-  PlayCircle,
-  TimerReset,
-  PackageX,
-  CalendarClock,
-  Hourglass,
   Pill,
   Syringe,
   Footprints,
+  Baby,
 } from "lucide-react";
 
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, roleLabel, canViewOperations, canVisit, type Role } from "@/lib/mobile-role";
+import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
-import { PackageCheck, QrCode } from "lucide-react";
+import { QrCode } from "lucide-react";
 import grasslandHero from "@/assets/grassland-hero.png";
 
 
