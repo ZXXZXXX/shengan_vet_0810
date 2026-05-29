@@ -731,10 +731,12 @@ function FarmSwitcher() {
             const active = f.id === currentId;
             return (
               <button
-                key={f.id}
                 onClick={() => {
-                  setFarmId(f.id);
                   setOpen(false);
+                  if (f.id === currentId) return;
+                  setSwitching(true);
+                  setFarmId(f.id);
+                  window.setTimeout(() => setSwitching(false), 1000);
                 }}
                 className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
                   active ? "bg-brand-subtle/40" : ""
