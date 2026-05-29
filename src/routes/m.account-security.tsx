@@ -10,9 +10,8 @@ export const Route = createFileRoute("/m/account-security")({
 
 const PHONE_KEY = "mp:bound_phone";
 
-function maskPhone(p: string) {
-  if (!/^1\d{10}$/.test(p)) return p || "未绑定";
-  return `${p.slice(0, 3)} **** ${p.slice(7)}`;
+function fallbackPhone(p: string) {
+  return p || "未绑定";
 }
 
 function AccountSecurityPage() {
@@ -38,7 +37,7 @@ function AccountSecurityPage() {
             <Phone className="h-4 w-4 text-text-secondary" />
             <div className="flex-1 min-w-0">
               <div className="text-body text-foreground tabular-nums">
-                {maskPhone(phone)}
+                {fallbackPhone(phone)}
               </div>
               <div className="text-caption text-text-tertiary mt-0.5">
                 绑定手机号
