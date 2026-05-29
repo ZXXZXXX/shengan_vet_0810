@@ -148,30 +148,24 @@ function MHomePage() {
               icon={Activity}
               tone="info"
               label="症状库"
-              trendLabel="高发"
               trendName="持续高烧"
               trendValue="14"
-              trendUnit="头次"
             />
             <KBShortcut
               to="/m/kb_diseases"
               icon={BookMarked}
               tone="brand"
               label="疾病库"
-              trendLabel="高发"
               trendName="乳房炎"
               trendValue="9"
-              trendUnit="头次"
             />
             <KBShortcut
               to="/m/kb_drugs"
               icon={Pill}
               tone="purple"
               label="药品库"
-              trendLabel="出库 TOP"
               trendName="头孢噻呋钠"
               trendValue="24"
-              trendUnit="盒"
             />
           </div>
 
