@@ -598,9 +598,7 @@ function TaskOverviewCard({
 }
 
 function KBShortcut({
-
   to,
-  icon: Icon,
   tone,
   label,
   trendLabel,
@@ -609,7 +607,7 @@ function KBShortcut({
   trendUnit,
 }: {
   to: string;
-  icon: typeof Beef;
+  icon?: typeof Beef;
   tone: keyof typeof colorMap;
   label: string;
   trendLabel: string;
@@ -621,60 +619,73 @@ function KBShortcut({
   return (
     <Link
       to={to}
-      className="group relative rounded-2xl bg-card border border-border overflow-hidden active:scale-[0.985] transition-transform"
+      className="group relative block h-[124px] active:scale-[0.98] transition-transform"
+      aria-label={label}
     >
-      {/* 图示区:渐变 + 大图标 + 角标趋势数 */}
+      {/* 文件夹后片 + 顶部 tab */}
       <div
-        className="relative h-[88px] overflow-hidden"
+        className="absolute inset-x-0 bottom-0 top-2.5 rounded-[14px]"
         style={{
-          backgroundImage: `radial-gradient(120% 90% at 20% 10%, color-mix(in oklab, ${accent} 28%, transparent) 0%, color-mix(in oklab, ${accent} 6%, transparent) 55%, transparent 100%)`,
+          background: `linear-gradient(160deg, color-mix(in oklab, ${accent} 92%, #fff) 0%, ${accent} 55%, color-mix(in oklab, ${accent} 82%, #000) 100%)`,
+          boxShadow: `0 10px 22px -12px color-mix(in oklab, ${accent} 70%, transparent)`,
+        }}
+      />
+      {/* 顶部 tab */}
+      <div
+        className="absolute left-2.5 top-0 h-3.5 w-[42%] rounded-t-[8px]"
+        style={{
+          background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 88%, #fff) 0%, ${accent} 100%)`,
+        }}
+      />
+      {/* 白色"纸张"露出 */}
+      <div className="absolute left-2.5 right-2.5 top-[18px] h-[38px] overflow-hidden">
+        <div className="absolute left-1 right-3 top-1 h-[34px] rounded-[5px] bg-white/95 shadow-sm rotate-[-2deg]">
+          <div className="px-1.5 pt-1.5 space-y-[3px]">
+            <div className="h-[3px] w-[60%] rounded-full bg-black/15" />
+            <div className="h-[3px] w-[80%] rounded-full bg-black/10" />
+            <div className="h-[3px] w-[45%] rounded-full bg-black/10" />
+          </div>
+        </div>
+        <div className="absolute left-2 right-1 top-0 h-[34px] rounded-[5px] bg-white shadow-sm rotate-[1.5deg]">
+          <div className="px-1.5 pt-1.5 space-y-[3px]">
+            <div className="h-[3px] w-[55%] rounded-full bg-black/15" />
+            <div className="h-[3px] w-[75%] rounded-full bg-black/10" />
+            <div className="h-[3px] w-[40%] rounded-full bg-black/10" />
+          </div>
+        </div>
+      </div>
+      {/* 文件夹前袋 */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-[64px] rounded-[14px] rounded-tl-[6px] overflow-hidden"
+        style={{
+          background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 90%, #fff) 0%, ${accent} 100%)`,
+          boxShadow: `inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent), 0 6px 14px -8px color-mix(in oklab, ${accent} 80%, transparent)`,
         }}
       >
-        {/* 光泽 */}
+        {/* 高光 */}
         <span
-          className="absolute -top-6 -right-6 h-20 w-20 rounded-full opacity-60 blur-2xl"
-          style={{ background: `color-mix(in oklab, ${accent} 35%, transparent)` }}
+          className="absolute -top-4 -left-4 h-12 w-20 rounded-full opacity-50 blur-xl"
+          style={{ background: "rgba(255,255,255,0.55)" }}
         />
-        {/* 装饰小卡(模拟堆叠纸片) */}
-        <span
-          className="absolute right-3 top-3 h-8 w-7 rounded-[6px] bg-white/70 border border-white shadow-sm rotate-[8deg]"
-          style={{ backdropFilter: "blur(2px)" }}
-        />
-        <span
-          className="absolute right-5 top-2 h-8 w-7 rounded-[6px] bg-white/85 border border-white shadow-sm -rotate-[4deg]"
-        />
-        {/* 主图标方块 */}
-        <span
-          className="absolute left-3 bottom-3 h-11 w-11 rounded-xl inline-flex items-center justify-center text-white shadow-md"
-          style={{
-            backgroundImage: `linear-gradient(135deg, ${accent} 0%, color-mix(in oklab, ${accent} 70%, #000) 100%)`,
-            boxShadow: `0 10px 18px -10px ${accent}`,
-          }}
-        >
-          <Icon className="h-5 w-5" strokeWidth={2} />
-        </span>
-        {/* 趋势数角标 */}
-        <span
-          className="absolute right-2 bottom-2 inline-flex items-center gap-0.5 px-1.5 h-5 rounded-full bg-white/85 border border-white text-[10px] font-semibold tabular-nums"
-          style={{ color: accent }}
-        >
-          <TrendingUp className="h-2.5 w-2.5" />
-          {trendValue}
-        </span>
-      </div>
-
-      {/* 文本区 */}
-      <div className="px-3 pt-2 pb-2.5">
-        <div className="text-body-sm font-medium text-foreground leading-tight">{label}</div>
-        <div className="mt-1 flex items-center gap-1 text-[10px] text-text-tertiary">
-          <span className="shrink-0">{trendLabel}</span>
-          <span className="truncate text-foreground/80">{trendName}</span>
-          <span className="shrink-0 tabular-nums">{trendUnit}</span>
+        <div className="relative h-full px-2.5 pt-1.5 pb-2 flex flex-col justify-between text-white">
+          <div className="flex items-start justify-between gap-1">
+            <div className="text-[13px] font-semibold leading-tight drop-shadow-sm">{label}</div>
+            <span className="shrink-0 inline-flex items-center gap-0.5 px-1 h-[15px] rounded-full bg-white/25 backdrop-blur-sm text-[9.5px] font-semibold tabular-nums">
+              <TrendingUp className="h-2 w-2" />
+              {trendValue}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 text-[10px] text-white/90 leading-none">
+            <span className="shrink-0 opacity-80">{trendLabel}</span>
+            <span className="truncate font-medium">{trendName}</span>
+            <span className="shrink-0 opacity-80 tabular-nums">{trendUnit}</span>
+          </div>
         </div>
       </div>
     </Link>
   );
 }
+
 
 
 
