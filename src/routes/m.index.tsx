@@ -128,7 +128,8 @@ function MHomePage() {
 
 
 
-      {/* ============ 牧场摘要 ============ */}
+      <section className="px-4 mt-3">
+
       <section className="px-4 mt-5">
         <SectionTitle title="牧场摘要" />
         <div className="grid grid-cols-3 gap-2">
