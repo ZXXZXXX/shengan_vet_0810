@@ -1,11 +1,12 @@
 import { useSyncExternalStore } from "react";
 
-// 内部：管理员、兽医、场长、兽医助理；外部：修蹄工等
+// 内部：管理员、兽医、场长、兽医助理、免疫员；外部：修蹄工等
 export type Role =
   | "admin"
   | "vet"
   | "manager"
   | "vet_assistant"
+  | "immunizer"
   | "hoof_trimmer";
 
 const KEY = "mp:role";
@@ -38,6 +39,7 @@ export const roleLabel: Record<Role, string> = {
   vet: "兽医",
   manager: "场长",
   vet_assistant: "兽医助理",
+  immunizer: "免疫员",
   hoof_trimmer: "修蹄工",
 };
 
@@ -46,6 +48,7 @@ export const roleGroup: Record<Role, "internal" | "external"> = {
   vet: "internal",
   manager: "internal",
   vet_assistant: "internal",
+  immunizer: "internal",
   hoof_trimmer: "external",
 };
 
@@ -55,10 +58,16 @@ export function canVisit(r: Role) {
 }
 export function canExecute(r: Role) {
   return (
-    r === "admin" || r === "vet_assistant" || r === "hoof_trimmer" || r === "vet"
+    r === "admin" ||
+    r === "vet_assistant" ||
+    r === "immunizer" ||
+    r === "hoof_trimmer" ||
+    r === "vet"
   );
 }
 // 是否能查看全场/经营级数据
 export function canViewOperations(r: Role) {
   return r === "admin" || r === "manager";
+}
+
 }
