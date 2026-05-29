@@ -4,31 +4,23 @@ import {
   Camera,
   Beef,
   AlertTriangle,
-  AlertCircle,
   ChevronRight,
   ChevronDown,
-  Check,
-  Stethoscope,
-  PackageMinus,
-  Warehouse,
+  MapPin,
+  HeartPulse,
   CloudSun,
   Wind,
   Thermometer,
-  MapPin,
-  Activity,
-  HeartPulse,
-  Eye,
-  ArrowUpRight,
-  TrendingUp,
   Inbox,
-  PlayCircle,
-  TimerReset,
-  PackageX,
-  CalendarClock,
-  Hourglass,
   Pill,
   Syringe,
   Footprints,
+  Stethoscope,
+  PackageX,
+  ArrowUpRight,
+  TrendingUp,
+  Check,
+  Baby,
 } from "lucide-react";
 
 import { MobileShell } from "@/components/mobile-shell";
@@ -36,7 +28,7 @@ import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, canViewOperations, canVisit, type Role } from "@/lib/mobile-role";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
-import { PackageCheck, QrCode } from "lucide-react";
+import { QrCode } from "lucide-react";
 import grasslandHero from "@/assets/grassland-hero.png";
 
 
@@ -281,6 +273,13 @@ function formatTimeAgo(minutes: number) {
   return `${days}天前`;
 }
 
+const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: string }> = {
+  "疾病治疗": { icon: Pill, bg: "bg-brand-subtle", text: "text-primary" },
+  "疫苗免疫": { icon: Syringe, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
+  "修蹄":     { icon: Footprints, bg: "bg-[#FFF5DF]", text: "text-[#F59E0B]" },
+  "产后护理": { icon: Baby, bg: "bg-[#F3E8FF]", text: "text-[#9333EA]" },
+};
+
 function TodayTaskList({ role }: { role: Role }) {
   // admin / manager 默认看 待诊断 · 疾病治疗
   const filter: RoleFilter =
@@ -289,11 +288,6 @@ function TodayTaskList({ role }: { role: Role }) {
     (t) => t.status === filter.status && t.type === filter.type,
   );
   const visible = matched.slice(0, 6);
-
-  const typeIcon =
-    filter.type === "修蹄" ? Footprints : filter.type === "疫苗免疫" ? Syringe : Pill;
-  const TIcon = typeIcon;
-
 
   if (visible.length === 0) {
     return (
@@ -310,32 +304,36 @@ function TodayTaskList({ role }: { role: Role }) {
 
   return (
     <div className="mt-3 space-y-2">
-      {visible.map((t) => (
-        <Link
-          key={t.id}
-          to="/m/health/$id"
-          params={{ id: t.id }}
-          className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
-        >
-          <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
-            <TIcon className="h-4 w-4" strokeWidth={1.75} />
-          </span>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-              <span className="font-mono">{t.id}</span>
-              <span>·</span>
-              <span>{t.type}</span>
-              <span className="ml-auto">{formatTimeAgo(t.minutesAgo)}</span>
+      {visible.map((t) => {
+        const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
+        const Icon = meta.icon;
+        return (
+          <Link
+            key={t.id}
+            to="/m/health/$id"
+            params={{ id: t.id }}
+            className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
+          >
+            <span className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}>
+              <Icon className="h-4 w-4" strokeWidth={1.75} />
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+                <span className="font-mono">{t.id}</span>
+                <span>·</span>
+                <span>{t.type}</span>
+                <span className="ml-auto">{formatTimeAgo(t.minutesAgo)}</span>
+              </div>
+              <div className="text-body text-foreground truncate mt-0.5">
+                <span className="text-text-secondary">{t.target}</span>
+                <span className="text-text-tertiary"> · </span>
+                {t.conclusion}
+              </div>
             </div>
-            <div className="text-body text-foreground truncate mt-0.5">
-              <span className="text-text-secondary">{t.target}</span>
-              <span className="text-text-tertiary"> · </span>
-              {t.conclusion}
-            </div>
-          </div>
-          <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-        </Link>
-      ))}
+            <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+          </Link>
+        );
+      })}
     </div>
   );
 }
