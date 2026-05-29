@@ -29,7 +29,8 @@ const roleToName: Record<string, string> = {
 };
 
 function AnimalDetailPage() {
-  const { id } = useParams({ from: "/m/animals/$id" });
+  const { id } = useParams({ from: "/m/animals-{$id}" });
+
   const role = useRole();
   const me = roleToName[role] ?? "我";
 
