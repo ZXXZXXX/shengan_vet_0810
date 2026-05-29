@@ -679,6 +679,7 @@ function KBShortcut({
 // ---------------- 牧场切换 ----------------
 function FarmSwitcher() {
   const [open, setOpen] = useState(false);
+  const [switching, setSwitching] = useState(false);
   const currentId = useFarmId();
   const ref = useRef<HTMLDivElement>(null);
   const current = FARMS.find((f) => f.id === currentId) ?? FARMS[0];
