@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Pill, Search, TrendingUp, ChevronRight, X, Boxes, Lock } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useFarm } from "@/lib/farm-store";
+
 import { canViewOperations, useRole } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/kb_drugs")({
@@ -41,11 +41,10 @@ function stockTone(stock: number) {
 function DrugKBMobile() {
   const role = useRole();
   const hasPermission = canViewOperations(role);
-  const farm = useFarm();
   const [kw, setKw] = useState("");
   const [active, setActive] = useState<Drug | null>(null);
 
-  const top = useMemo(() => [...DRUGS].sort((a, b) => b.out7d - a.out7d).slice(0, 5), []);
+
   const list = useMemo(() => {
     const k = kw.trim();
     if (!k) return DRUGS;
