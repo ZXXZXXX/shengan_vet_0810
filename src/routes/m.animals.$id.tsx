@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { useState, useMemo } from "react";
 import {
   Beef,
   PlayCircle,
   ClipboardPlus,
   ChevronRight,
+  ChevronDown,
   Activity,
   Pill,
   Clock,
@@ -179,64 +181,114 @@ function AnimalDetailPage() {
         </section>
 
         {/* 个体用药记录 */}
-        <section className="px-4 mt-5">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">用药记录</h3>
-            <span className="text-caption text-text-tertiary">近 90 天</span>
-          </div>
-          {(() => {
-            const meds = [
-              {
-                id: "M-0518-1",
-                date: "2026-05-18",
-                drug: "氟尼辛葡甲胺注射液",
-                dose: "2ml / 次 · 肌肉注射",
-                course: "共 3 天 · 第 1 天",
-                operator: "李雨晴",
-                orderId: "WO-2026-0518",
-                withdrawal: 3,
-              },
-              {
-                id: "M-0518-2",
-                date: "2026-05-18",
-                drug: "头孢噻呋钠",
-                dose: "1g / 次 · 肌肉注射",
-                course: "共 3 天 · 第 1 天",
-                operator: "李雨晴",
-                orderId: "WO-2026-0518",
-                withdrawal: 4,
-              },
-              {
-                id: "M-0421",
-                date: "2026-04-21",
-                drug: "伊维菌素注射液",
-                dose: "1ml / 50kg · 皮下注射",
-                course: "单次驱虫",
-                operator: "周凯",
-                orderId: "DW-2026-0421",
-                withdrawal: 0,
-              },
-            ];
-            return (
+        <MedicationHistory />
+      </div>
+
+      {/* 底部固定：疾病上报入口 */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        <Link
+          to="/m/report"
+          search={{ target: a.id, barn: a.barn, lock: 1 } as never}
+          className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+        >
+          <ClipboardPlus className="h-4 w-4" /> 疾病上报
+        </Link>
+      </div>
+    </MobileShell>
+  );
+}
+
+function Brief({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-white/15 backdrop-blur border border-white/15 px-3 py-2">
+      <div className="text-caption opacity-85">{label}</div>
+      <div className="text-body-sm mt-0.5 truncate">{value}</div>
+    </div>
+  );
+}
+
+type MedRecord = {
+  id: string;
+  date: string;
+  drug: string;
+  dose: string;
+  course: string;
+  operator: string;
+  orderId: string;
+  withdrawal: number;
+};
+
+const ALL_MEDS: MedRecord[] = [
+  { id: "M-0518-1", date: "2026-05-18", drug: "氟尼辛葡甲胺注射液", dose: "2ml / 次 · 肌肉注射", course: "共 3 天 · 第 1 天", operator: "李雨晴", orderId: "WO-2026-0518", withdrawal: 3 },
+  { id: "M-0518-2", date: "2026-05-18", drug: "头孢噻呋钠", dose: "1g / 次 · 肌肉注射", course: "共 3 天 · 第 1 天", operator: "李雨晴", orderId: "WO-2026-0518", withdrawal: 4 },
+  { id: "M-0519-1", date: "2026-05-19", drug: "头孢噻呋钠", dose: "1g / 次 · 肌肉注射", course: "共 3 天 · 第 2 天", operator: "李雨晴", orderId: "WO-2026-0518", withdrawal: 4 },
+  { id: "M-0520-1", date: "2026-05-20", drug: "头孢噻呋钠", dose: "1g / 次 · 肌肉注射", course: "共 3 天 · 第 3 天", operator: "李雨晴", orderId: "WO-2026-0518", withdrawal: 4 },
+  { id: "M-0510-1", date: "2026-05-10", drug: "维生素 B 复合注射液", dose: "10ml · 肌肉注射", course: "单次补液", operator: "周凯", orderId: "WO-2026-0510", withdrawal: 0 },
+  { id: "M-0421", date: "2026-04-21", drug: "伊维菌素注射液", dose: "1ml / 50kg · 皮下注射", course: "单次驱虫", operator: "周凯", orderId: "DW-2026-0421", withdrawal: 0 },
+  { id: "M-0315", date: "2026-03-15", drug: "青霉素 G 钾", dose: "400 万 IU · 肌肉注射", course: "共 5 天 · 第 1 天", operator: "李雨晴", orderId: "WO-2026-0315", withdrawal: 7 },
+  { id: "M-0118", date: "2026-01-18", drug: "口蹄疫疫苗", dose: "2ml · 颈部皮下", course: "年度免疫", operator: "赵敏", orderId: "IM-2026-0118", withdrawal: 0 },
+];
+
+const TODAY = new Date("2026-05-29");
+
+function MedicationHistory() {
+  const [expanded, setExpanded] = useState(false);
+
+  const { visible, recentCount, totalCount } = useMemo(() => {
+    const cutoff = new Date(TODAY);
+    cutoff.setDate(cutoff.getDate() - 30);
+    const sorted = [...ALL_MEDS].sort((a, b) => (a.date < b.date ? 1 : -1));
+    const recent = sorted.filter((m) => new Date(m.date) >= cutoff);
+    return {
+      visible: expanded ? sorted : recent,
+      recentCount: recent.length,
+      totalCount: sorted.length,
+    };
+  }, [expanded]);
+
+  // 按日分组
+  const groups = useMemo(() => {
+    const map = new Map<string, MedRecord[]>();
+    for (const m of visible) {
+      if (!map.has(m.date)) map.set(m.date, []);
+      map.get(m.date)!.push(m);
+    }
+    return Array.from(map.entries());
+  }, [visible]);
+
+  const hasMore = totalCount > recentCount;
+
+  return (
+    <section className="px-4 mt-5">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-card-title text-foreground">用药记录</h3>
+        <span className="text-caption text-text-tertiary">
+          {expanded ? `全部 ${totalCount} 条` : `近 30 天 ${recentCount} 条`}
+        </span>
+      </div>
+
+      {groups.length === 0 ? (
+        <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
+          近 30 天无用药记录
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {groups.map(([date, items]) => (
+            <div key={date}>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="font-mono text-caption text-text-secondary">{date}</span>
+                <span className="text-caption text-text-tertiary">· {items.length} 条</span>
+                <span className="flex-1 h-px bg-border" />
+              </div>
               <ul className="space-y-2">
-                {meds.map((m) => (
-                  <li
-                    key={m.id}
-                    className="rounded-xl border border-border bg-card p-3"
-                  >
+                {items.map((m) => (
+                  <li key={m.id} className="rounded-xl border border-border bg-card p-3">
                     <div className="flex items-start gap-2.5">
                       <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center shrink-0">
                         <Pill className="h-4 w-4" />
                       </span>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="text-body-sm text-foreground truncate">
-                            {m.drug}
-                          </div>
-                          <span className="text-caption text-text-tertiary font-mono shrink-0">
-                            {m.date}
-                          </span>
-                        </div>
+                        <div className="text-body-sm text-foreground truncate">{m.drug}</div>
                         <div className="text-caption text-text-tertiary mt-0.5 truncate">
                           {m.dose} · {m.course}
                         </div>
@@ -260,30 +312,22 @@ function AnimalDetailPage() {
                   </li>
                 ))}
               </ul>
-            );
-          })()}
-        </section>
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* 底部固定：疾病上报入口 */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-        <Link
-          to="/m/report"
-          search={{ target: a.id, barn: a.barn, lock: 1 } as never}
-          className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+      {hasMore && (
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-3 w-full h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
         >
-          <ClipboardPlus className="h-4 w-4" /> 疾病上报
-        </Link>
-      </div>
-    </MobileShell>
-  );
-}
-
-function Brief({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-white/15 backdrop-blur border border-white/15 px-3 py-2">
-      <div className="text-caption opacity-85">{label}</div>
-      <div className="text-body-sm mt-0.5 truncate">{value}</div>
-    </div>
+          {expanded ? "收起" : `展开查看全部 ${totalCount} 条`}
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`}
+          />
+        </button>
+      )}
+    </section>
   );
 }
