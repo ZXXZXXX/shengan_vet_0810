@@ -566,6 +566,41 @@ function TaskOverviewCard({
   );
 }
 
+function KBShortcut({
+  to,
+  icon: Icon,
+  tone,
+  label,
+  desc,
+}: {
+  to: string;
+  icon: typeof Beef;
+  tone: keyof typeof colorMap;
+  label: string;
+  desc: string;
+}) {
+  const accent = toneAccentMap[tone];
+  return (
+    <Link
+      to={to}
+      className="relative rounded-2xl bg-card border border-border p-3 active:bg-surface-subtle overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(135deg, color-mix(in oklab, ${accent} 10%, transparent) 0%, color-mix(in oklab, ${accent} 0%, transparent) 70%)`,
+      }}
+    >
+      <span
+        className={`h-9 w-9 rounded-xl inline-flex items-center justify-center ${colorMap[tone]}`}
+        style={{ boxShadow: `0 6px 14px -10px ${accent}` }}
+      >
+        <Icon className="h-4 w-4" strokeWidth={1.9} />
+      </span>
+      <div className="mt-2 text-body font-medium text-foreground">{label}</div>
+      <div className="text-[11px] text-text-tertiary mt-0.5 truncate">{desc}</div>
+    </Link>
+  );
+}
+
+
 
 // ---------------- 牧场切换 ----------------
 function FarmSwitcher() {
