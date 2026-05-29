@@ -261,6 +261,7 @@ type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: stri
 const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
   vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
   vet_assistant: { status: "进行中", type: "疾病治疗", label: "执行中 · 疾病治疗" },
+  immunizer: { status: "进行中", type: "疫苗免疫", label: "执行中 · 疫苗免疫" },
   hoof_trimmer: { status: "进行中", type: "修蹄", label: "执行中 · 修蹄" },
 };
 
