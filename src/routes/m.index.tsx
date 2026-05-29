@@ -618,12 +618,14 @@ function KBShortcut({
       className="group relative block h-[124px] active:scale-[0.98] transition-transform"
       aria-label={label}
     >
-      {/* 文件夹后片 + 顶部 tab */}
+      {/* 文件夹后片 */}
       <div
         className="absolute inset-x-0 bottom-0 top-2.5 rounded-[14px]"
         style={{
           background: `linear-gradient(160deg, color-mix(in oklab, ${accent} 92%, #fff) 0%, ${accent} 55%, color-mix(in oklab, ${accent} 82%, #000) 100%)`,
           boxShadow: `0 10px 22px -12px color-mix(in oklab, ${accent} 70%, transparent)`,
+        }}
+      />
       {/* 顶部 tab */}
       <div
         className="absolute left-0 top-0 h-3.5 w-[42%] rounded-tl-[14px] rounded-tr-[8px]"
@@ -632,9 +634,6 @@ function KBShortcut({
         }}
       />
 
-          background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 88%, #fff) 0%, ${accent} 100%)`,
-        }}
-      />
       {/* 白色"纸张"露出 */}
       <div className="absolute left-2.5 right-2.5 top-[18px] h-[38px] overflow-hidden">
         <div className="absolute left-1 right-3 top-1 h-[34px] rounded-[5px] bg-white/95 shadow-sm rotate-[-2deg]">
