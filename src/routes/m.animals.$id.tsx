@@ -211,22 +211,21 @@ type MedRecord = {
   id: string;
   date: string;
   drug: string;
+  manufacturer: string;
   dose: string;
-  course: string;
   operator: string;
   orderId: string;
-  withdrawal: number;
 };
 
 const ALL_MEDS: MedRecord[] = [
-  { id: "M-0518-1", date: "2026-05-18", drug: "氟尼辛葡甲胺注射液", dose: "2ml / 次 · 肌肉注射", course: "共 3 天 · 第 1 天", operator: "李雨晴", orderId: "WO-2026-0518", withdrawal: 3 },
-  { id: "M-0518-2", date: "2026-05-18", drug: "头孢噻呋钠", dose: "1g / 次 · 肌肉注射", course: "共 3 天 · 第 1 天", operator: "李雨晴", orderId: "WO-2026-0518", withdrawal: 4 },
-  { id: "M-0519-1", date: "2026-05-19", drug: "头孢噻呋钠", dose: "1g / 次 · 肌肉注射", course: "共 3 天 · 第 2 天", operator: "李雨晴", orderId: "WO-2026-0518", withdrawal: 4 },
-  { id: "M-0520-1", date: "2026-05-20", drug: "头孢噻呋钠", dose: "1g / 次 · 肌肉注射", course: "共 3 天 · 第 3 天", operator: "李雨晴", orderId: "WO-2026-0518", withdrawal: 4 },
-  { id: "M-0510-1", date: "2026-05-10", drug: "维生素 B 复合注射液", dose: "10ml · 肌肉注射", course: "单次补液", operator: "周凯", orderId: "WO-2026-0510", withdrawal: 0 },
-  { id: "M-0421", date: "2026-04-21", drug: "伊维菌素注射液", dose: "1ml / 50kg · 皮下注射", course: "单次驱虫", operator: "周凯", orderId: "DW-2026-0421", withdrawal: 0 },
-  { id: "M-0315", date: "2026-03-15", drug: "青霉素 G 钾", dose: "400 万 IU · 肌肉注射", course: "共 5 天 · 第 1 天", operator: "李雨晴", orderId: "WO-2026-0315", withdrawal: 7 },
-  { id: "M-0118", date: "2026-01-18", drug: "口蹄疫疫苗", dose: "2ml · 颈部皮下", course: "年度免疫", operator: "赵敏", orderId: "IM-2026-0118", withdrawal: 0 },
+  { id: "M-0518-1", date: "2026-05-18", drug: "氟尼辛葡甲胺注射液", manufacturer: "齐鲁动保", dose: "2ml / 次 · 肌肉注射", operator: "李雨晴", orderId: "WO-2026-0518" },
+  { id: "M-0518-2", date: "2026-05-18", drug: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射", operator: "李雨晴", orderId: "WO-2026-0518" },
+  { id: "M-0519-1", date: "2026-05-19", drug: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射", operator: "李雨晴", orderId: "WO-2026-0518" },
+  { id: "M-0520-1", date: "2026-05-20", drug: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射", operator: "李雨晴", orderId: "WO-2026-0518" },
+  { id: "M-0510-1", date: "2026-05-10", drug: "维生素 B 复合注射液", manufacturer: "上海同仁", dose: "10ml · 肌肉注射", operator: "周凯", orderId: "WO-2026-0510" },
+  { id: "M-0421", date: "2026-04-21", drug: "伊维菌素注射液", manufacturer: "中牧股份", dose: "1ml / 50kg · 皮下注射", operator: "周凯", orderId: "DW-2026-0421" },
+  { id: "M-0315", date: "2026-03-15", drug: "青霉素 G 钾", manufacturer: "华北制药", dose: "400 万 IU · 肌肉注射", operator: "李雨晴", orderId: "WO-2026-0315" },
+  { id: "M-0118", date: "2026-01-18", drug: "口蹄疫疫苗", manufacturer: "中农威特", dose: "2ml · 颈部皮下", operator: "赵敏", orderId: "IM-2026-0118" },
 ];
 
 const TODAY = new Date("2026-05-29");
@@ -280,43 +279,30 @@ function MedicationHistory() {
                 <span className="text-caption text-text-tertiary">· {items.length} 条</span>
                 <span className="flex-1 h-px bg-border" />
               </div>
-              <ul className="space-y-2">
-                {items.map((m) => (
-                  <li key={m.id} className="rounded-xl border border-border bg-card p-3">
-                    <div className="flex items-start gap-2.5">
-                      <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center shrink-0">
-                        <Pill className="h-4 w-4" />
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-body-sm text-foreground truncate">{m.drug}</div>
-                        <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                          {m.dose} · {m.course}
-                        </div>
-                        <div className="flex items-center justify-between mt-1.5">
-                          <div className="text-caption text-text-tertiary">
-                            操作人 {m.operator} ·{" "}
-                            <span className="font-mono">{m.orderId}</span>
-                          </div>
-                          {m.withdrawal > 0 ? (
-                            <span className="inline-flex items-center h-5 px-2 rounded-full text-caption bg-[#FFE4E1] text-[#D9534F]">
-                              休药 {m.withdrawal} 天
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center h-5 px-2 rounded-full text-caption bg-surface-subtle text-text-tertiary">
-                              无休药期
-                            </span>
-                          )}
-                        </div>
+              <div className="border border-border rounded-lg overflow-hidden">
+                {items.map((m, idx) => (
+                  <div
+                    key={m.id}
+                    className={`flex items-center px-3 py-2.5 ${
+                      idx !== items.length - 1 ? "border-b border-border" : ""
+                    }`}
+                  >
+                    <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
+                      <div className="text-body-sm text-foreground truncate">{m.drug}</div>
+                      <div className="text-caption text-text-tertiary truncate text-center">
+                        {m.manufacturer}
+                      </div>
+                      <div className="text-caption text-text-secondary truncate text-right">
+                        {m.dose}
                       </div>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
         </div>
       )}
-
       {hasMore && (
         <button
           onClick={() => setExpanded((v) => !v)}
