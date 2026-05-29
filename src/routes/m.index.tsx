@@ -140,7 +140,7 @@ function MHomePage() {
 
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-5">
+        <section className="px-4 mt-3">
           <SectionTitle title="速查与近况" />
           <div className={`grid ${canViewOperations(role) ? "grid-cols-3" : "grid-cols-2"} gap-2`}>
             <KBShortcut to="/m/kb/symptoms" icon={Activity} tone="info" label="症状库" desc="具体描述 · 关联疾病" />
