@@ -26,6 +26,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, canViewOperations, canVisit, type Role } from "@/lib/mobile-role";
+import { Activity, BookMarked } from "lucide-react";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { QrCode } from "lucide-react";
@@ -133,6 +134,18 @@ function MHomePage() {
           <SummaryCard icon={MapPin} tone="brand" label="牛只总数" value="1,284" trend="1.8%" trendDir="up" />
           <SummaryCard icon={HeartPulse} tone="info" label="健康率" value="96.8%" trend="0.6%" trendDir="up" />
           <SummaryCard icon={AlertTriangle} tone="danger" label="异常数" value="18" trend="8.3%" trendDir="down" />
+        </div>
+      </section>
+
+      {/* ============ 金刚区:知识库 ============ */}
+      <section className="px-4 mt-5">
+        <SectionTitle title="知识中心" />
+        <div className={`grid ${canViewOperations(role) ? "grid-cols-3" : "grid-cols-2"} gap-2`}>
+          <KBShortcut to="/m/kb/symptoms" icon={Activity} tone="info" label="症状库" desc="典型表现 · 高发排行" />
+          <KBShortcut to="/m/kb/diseases" icon={BookMarked} tone="brand" label="疾病库" desc="症状 · 常用处方" />
+          {canViewOperations(role) && (
+            <KBShortcut to="/m/kb/drugs" icon={Pill} tone="purple" label="药品库" desc="库存 · 出库 TOP" />
+          )}
         </div>
       </section>
 
