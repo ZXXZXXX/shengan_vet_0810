@@ -113,7 +113,7 @@ function TaskDetailPage() {
   const execTags: string[] = isSingle ? [earTag] : ["#A2381", "#A2382", "#A2383"];
 
   const fallbackStatus: StatusKey =
-    role === "hoof_trimmer" || role === "vet_assistant" ? "进行中" : "待诊断";
+    role === "hoof_trimmer" || role === "vet_assistant" || role === "immunizer" ? "进行中" : "待诊断";
   const o = {
     id,
     farm: "奇点示范牧场",
