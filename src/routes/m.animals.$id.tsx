@@ -267,7 +267,6 @@ function MedicationHistory() {
       </div>
 
       {groups.length === 0 ? (
-      {groups.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
           近 30 天无用药记录
         </div>
