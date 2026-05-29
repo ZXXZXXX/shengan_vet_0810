@@ -161,8 +161,6 @@ function DraftsPage() {
 
                 <div className="space-y-2.5 mt-1">
                   {items.map((d) => {
-                    const conclusion =
-                      d.suspectedDisease ||
                     const isChecked = selected.has(d.id);
 
                     const inner = (
