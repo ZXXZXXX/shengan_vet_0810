@@ -76,7 +76,8 @@ function ScanPage() {
             </button>
             <button
               onClick={() =>
-                navigate({ to: "/m/animals/$id", params: { id: "A2381" } })
+                navigate({ to: "/m/animals-{$id}", params: { id: "A2381" } })
+
               }
               className="h-12 rounded-lg bg-white/10 hover:bg-white/15 text-white text-body-sm inline-flex items-center justify-center gap-1.5"
             >
