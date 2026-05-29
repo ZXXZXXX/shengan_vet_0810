@@ -127,8 +127,9 @@ function RespondListPage() {
   // 按角色过滤可响应的工单类型
   const canSee = (c: RespondCard) => {
     if (role === "hoof_trimmer") return c.kind === "修蹄";
+    if (role === "immunizer") return c.kind === "免疫";
     if (role === "vet_assistant")
-      return c.kind === "疾病治疗" || c.kind === "免疫" || c.kind === "产后护理";
+      return c.kind === "疾病治疗" || c.kind === "产后护理";
     return true;
   };
 
