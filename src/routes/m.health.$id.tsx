@@ -746,9 +746,13 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
 
 // === 执行页：仅显示当前进行中的当天 checklist ===
 export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13", workOrderId }: { pickupCode: string | null; tags: string[]; day?: number; date?: string; workOrderId: string }) {
-
+  return (
+    <div>
+      <ChecklistDay day={day} date={date} pickupCode={pickupCode} tags={tags} dayState="active" initialNote="" workOrderId={workOrderId} />
+    </div>
   );
 }
+
 
 
 type DayState = "done" | "active" | "pending";
