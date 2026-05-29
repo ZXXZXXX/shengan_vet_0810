@@ -70,4 +70,3 @@ export function canViewOperations(r: Role) {
   return r === "admin" || r === "manager";
 }
 
-}
