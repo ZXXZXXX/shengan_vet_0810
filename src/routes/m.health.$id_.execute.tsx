@@ -42,7 +42,8 @@ function ExecuteRecordPage() {
           </div>
         </div>
         <div className="px-4 space-y-3">
-          <ActiveDayExecute pickupCode={pickupCode} tags={execTags} />
+          <ActiveDayExecute pickupCode={pickupCode} tags={execTags} workOrderId={id} />
+
         </div>
       </div>
 
