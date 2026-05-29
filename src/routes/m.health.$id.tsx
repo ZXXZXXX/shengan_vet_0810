@@ -21,7 +21,8 @@ import {
   X,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, canVisit, canExecute } from "@/lib/mobile-role";
+import { useRole, canVisit, canExecute, canDiagnose } from "@/lib/mobile-role";
+
 import {
   AlertDialog,
   AlertDialogAction,
