@@ -122,8 +122,8 @@ function MHomePage() {
               { label: "异常数", value: "18" },
             ].map((s) => (
               <div key={s.label} className="text-center">
-                <div className="text-[11px] text-white/85" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{s.label}</div>
-                <div className="text-[20px] leading-tight font-semibold text-white tabular-nums mt-0.5" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{s.value}</div>
+                <div className="text-[11px] text-white/85 font-bold" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{s.label}</div>
+                <div className="text-[20px] leading-tight font-extrabold text-white tabular-nums mt-0.5" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{s.value}</div>
               </div>
             ))}
           </div>
