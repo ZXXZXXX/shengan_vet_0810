@@ -42,7 +42,8 @@ const colorMap: Record<string, string> = {
   warning: "bg-[var(--state-warning)]/25 text-[var(--state-alert)]",
   alert: "bg-[var(--state-warning)]/25 text-[var(--state-alert)]",
   danger: "bg-[var(--state-danger)]/12 text-[var(--state-danger)]",
-  info: "bg-[#E6F7FE] text-[#22ACEB]",
+  info: "bg-[#E6F7FE] text-[#15A6E9]",
+  orange: "bg-[#FEF3E2] text-[#F6A11D]",
   purple: "bg-[var(--effect-ai-purple)]/15 text-[var(--effect-ai-purple)]",
   success: "bg-[var(--state-success)]/15 text-[var(--state-success)]",
   muted: "bg-surface-subtle text-text-secondary",
@@ -53,7 +54,8 @@ const toneTextMap: Record<string, string> = {
   warning: "text-[var(--state-alert)]",
   alert: "text-[var(--state-alert)]",
   danger: "text-[var(--state-danger)]",
-  info: "text-[var(--effect-ai-cyan)]",
+  info: "text-[#15A6E9]",
+  orange: "text-[#F6A11D]",
   purple: "text-[var(--effect-ai-purple)]",
   success: "text-[var(--state-success)]",
   muted: "text-text-secondary",
@@ -151,7 +153,7 @@ function MHomePage() {
             <KBShortcut
               to="/m/kb_diseases"
               icon={BookMarked}
-              tone="brand"
+              tone="orange"
               label="疾病库"
               trendName="乳房炎"
               trendValue="9"
@@ -419,7 +421,8 @@ const toneAccentMap: Record<string, string> = {
   brand: "var(--brand)",
   warning: "var(--state-warning)",
   danger: "var(--state-danger)",
-  info: "var(--effect-ai-cyan)",
+  info: "#15A6E9",
+  orange: "#F6A11D",
   purple: "var(--effect-ai-purple)",
   success: "var(--state-success)",
   muted: "var(--text-secondary)",
