@@ -21,6 +21,7 @@ const roleToName: Record<string, string> = {
   vet: "李雨晴",
   manager: "王场长",
   vet_assistant: "周凯",
+  immunizer: "赵敏",
   hoof_trimmer: "张师傅",
 };
 
