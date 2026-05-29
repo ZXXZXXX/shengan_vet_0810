@@ -199,6 +199,7 @@ function DraftsPage() {
                     const cls = `${selectMode ? "flex items-start gap-3" : "block"} rounded-xl bg-card border p-4 active:bg-surface-subtle ${
                       selectMode && isChecked ? "border-primary/60 bg-brand-subtle/40" : "border-border"
                     }`;
+                    if (selectMode) {
                       return (
                         <button
                           key={d.id}
