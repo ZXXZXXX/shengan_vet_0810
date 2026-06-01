@@ -148,26 +148,35 @@ function AnimalDetailPage() {
                     key={o.id}
                     to="/m/health/$id"
                     params={{ id: o.id }}
-                    className="block rounded-xl border bg-card border-border p-3 flex items-center gap-3 active:bg-surface-subtle"
+                    className="block rounded-xl border bg-card border-border p-3 flex items-start gap-3 active:bg-surface-subtle"
                   >
-                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center">
+                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center shrink-0">
                       <PlayCircle className="h-4 w-4" />
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-body-sm text-foreground truncate">
+                      <div className="text-body-sm text-foreground line-clamp-2">
+                        {o.desc}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        <span className="font-mono text-caption text-text-tertiary">
                           {o.id}
                         </span>
-                        <span className="tag tag-muted">{o.kind}</span>
+                        <span className="tag tag-muted">{o.type}</span>
+                        <span
+                          className={`inline-flex items-center h-5 px-2 rounded text-caption font-medium ${
+                            o.status === "待诊断"
+                              ? "bg-[#FFF7D6] text-[#B8860B]"
+                              : "bg-[#E8F2FF] text-[#1E6FD9]"
+                          }`}
+                        >
+                          {o.status}
+                        </span>
                       </div>
-                      <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                        {o.type} · {o.event}
-                      </div>
-                      <div className="text-caption text-text-tertiary mt-0.5">
-                        负责人：{o.owner}
+                      <div className="text-caption text-text-tertiary mt-1">
+                        {o.timeLabel}：{o.time}
                       </div>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-text-tertiary" />
+                    <ChevronRight className="h-4 w-4 text-text-tertiary mt-1 shrink-0" />
                   </Link>
                 ))}
               </div>
