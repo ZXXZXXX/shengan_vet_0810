@@ -250,10 +250,9 @@ function TaskDetailPage() {
             <div className="pt-2 mt-1 border-t border-border/60 space-y-2">
               {showSummary && summary?.revisitReason && (
                 <div
-                  className="rounded-lg border p-2.5"
+                  className="rounded-lg p-2.5 border-0"
                   style={{
-                    borderColor: "color-mix(in oklab, var(--primary) 30%, transparent)",
-                    background: "color-mix(in oklab, var(--primary) 8%, transparent)",
+                    background: "color-mix(in oklab, var(--primary) 6%, transparent)",
                   }}
                 >
 
