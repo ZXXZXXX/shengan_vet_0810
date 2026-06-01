@@ -303,68 +303,6 @@ function LossReportPage() {
         </button>
       </div>
 
-      {/* 物品选择弹层 */}
-      {showItemPicker !== null && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
-          onClick={() => setShowItemPicker(null)}
-        >
-          <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl p-4 pb-[calc(env(safe-area-inset-bottom)+16px)] max-h-[70vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="flex-1 text-body font-medium">选择物品 / 药品</div>
-              <button
-                onClick={() => setShowItemPicker(null)}
-                className="h-8 w-8 inline-flex items-center justify-center text-text-tertiary"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="flex gap-2 mb-3">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary z-10" />
-                <input
-                  autoFocus
-                  value={itemQuery}
-                  onChange={(e) => setItemQuery(e.target.value)}
-                  placeholder="搜索物品编号或名称"
-                  className="w-full h-10 pl-9 pr-3 rounded-lg text-body-sm"
-                />
-              </div>
-              <button className="h-10 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
-                <ScanLine className="h-4 w-4" /> 扫码
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto -mx-2">
-              {matchedItems.length === 0 ? (
-                <div className="text-center py-12 text-caption text-text-tertiary">
-                  无匹配结果
-                </div>
-              ) : (
-                matchedItems.map((i) => (
-                  <button
-                    key={i.id}
-                    onClick={() => {
-                      setLine(showItemPicker, { itemId: i.id });
-                      setShowItemPicker(null);
-                    }}
-                    className="w-full px-3 py-3 flex items-center gap-3 text-left active:bg-surface-subtle rounded-lg"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="text-body text-foreground truncate">{i.name}</div>
-                      <div className="text-caption text-text-tertiary font-mono mt-0.5">
-                        {i.id} · 单位 {i.unit} · ¥ {i.price}/{i.unit}
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </MobileShell>
   );
 }
