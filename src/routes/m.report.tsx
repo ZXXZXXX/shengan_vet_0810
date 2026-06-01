@@ -318,21 +318,24 @@ function ReportPage() {
     [candidateOrders, relatedOrderId]
   );
 
-  // 牛只填好后探测近 7 日工单（仅一次、仅非来自旧工单）
+  // 牛只填好后探测近 7 日工单：按"首个牛只编号"为粒度，换一头牛重新触发
+  const [detectedFor, setDetectedFor] = useState<string | null>(
+    fromRevisit && targets[0] ? targets[0] : null
+  );
   useEffect(() => {
-    if (detectShown || fromRevisit || barnMode) return;
-    if (targets.length === 0) return;
+    if (fromRevisit || barnMode) return;
     const cowId = targets[0];
+    if (!cowId) return;
+    if (detectedFor === cowId) return;
     const orderId = recentDiseaseOrderOf(cowId);
-    setDetectShown(true);
+    setDetectedFor(cowId);
     if (orderId) {
       setDetectDialog({ cowId, orderId });
-    } else {
-      // 无历史工单 → 默认非复诊
+    } else if (isRevisit === null) {
       setIsRevisit(false);
       setRelatedOrderId("-");
     }
-  }, [targets, barnMode, fromRevisit, detectShown]);
+  }, [targets, barnMode, fromRevisit, detectedFor, isRevisit]);
 
   // 健康
   // 仅支持疾病治疗类型工单
