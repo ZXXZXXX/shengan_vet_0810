@@ -744,7 +744,6 @@ function ReportPage() {
                               setRelatedOrderId("-");
                               setRevisitReason("");
                               setRevisitReasonOther("");
-                              setOrderQuery("");
                             }
                           }}
                           className={`h-8 min-w-[56px] px-3 rounded-full text-body-sm transition-colors ${
@@ -768,52 +767,27 @@ function ReportPage() {
                       <div className="text-caption text-text-tertiary mb-2">
                         关联原始工单 <span className="text-[var(--state-danger)]">*</span>
                       </div>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                        <input
-                          value={orderQuery || relatedOrderId}
-                          onChange={(e) => {
-                            setOrderQuery(e.target.value);
-                            setRelatedOrderId(e.target.value);
-                            setOrderFocused(true);
-                          }}
-                          onFocus={() => setOrderFocused(true)}
-                          onBlur={() => setTimeout(() => setOrderFocused(false), 150)}
-                          placeholder="输入或选择工单编号"
-                          className="w-full h-11 pl-9 pr-3 rounded-lg bg-card border border-border text-body font-mono placeholder:text-text-tertiary placeholder:font-sans"
-                        />
-                        {orderFocused && candidateOrders.length > 0 && (
-                          <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-60 overflow-auto">
-                            {candidateOrders
-                              .filter((o) =>
-                                orderQuery ? o.toLowerCase().includes(orderQuery.toLowerCase()) : true
-                              )
-                              .map((o, idx) => {
-                                const detected =
-                                  targets[0] && recentDiseaseOrderOf(targets[0]) === o;
-                                return (
-                                  <button
-                                    key={o}
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    onClick={() => {
-                                      setRelatedOrderId(o);
-                                      setOrderQuery("");
-                                      setOrderFocused(false);
-                                    }}
-                                    className={`w-full text-left px-3 py-2.5 flex items-center justify-between gap-2 hover:bg-surface-subtle ${
-                                      idx > 0 ? "border-t border-border" : ""
-                                    }`}
-                                  >
-                                    <span className="text-body-sm font-mono text-foreground">{o}</span>
-                                    {detected && (
-                                      <span className="tag tag-muted">近 7 日</span>
-                                    )}
-                                  </button>
-                                );
-                              })}
-                          </div>
-                        )}
-                      </div>
+                      {selectedOrder ? (
+                        <div className="space-y-2">
+                          <RelatedOrderCard order={selectedOrder} selected />
+                          <button
+                            type="button"
+                            onClick={() => setOrderPickerOpen(true)}
+                            className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary active:bg-surface-subtle"
+                          >
+                            重新选择
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setOrderPickerOpen(true)}
+                          className="w-full h-11 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
+                        >
+                          <Search className="h-4 w-4" />
+                          选择关联工单
+                        </button>
+                      )}
                     </div>
 
                     <div>
