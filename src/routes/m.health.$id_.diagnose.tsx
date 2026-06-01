@@ -22,16 +22,8 @@ import {
   User,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
+
 
 export const Route = createFileRoute("/m/health/$id_/diagnose")({
   head: () => ({ meta: [{ title: "诊断记录 · 奇点智牧" }] }),
@@ -634,119 +626,151 @@ function DiagnosePage() {
         </button>
       </div>
 
-      {/* 终止工单确认 */}
-      <AlertDialog open={confirmTerminate} onOpenChange={(o) => {
-        setConfirmTerminate(o);
-        if (!o) {
-          setTermReason("");
-          setTermReasonOther("");
-          setNeedTransfer(false);
-          setTransferTo("");
-        }
-      }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>终止工单</AlertDialogTitle>
-          </AlertDialogHeader>
-
-          <div className="space-y-4 py-1">
-            <div>
-              <div className="text-caption text-text-tertiary mb-2">终止原因</div>
-              <div className="flex flex-wrap gap-1.5">
-                {["牛只健康，无需治疗", "牛只已死亡", "牛只已淘汰", "已转交其他工单", "其他"].map((r) => {
-                  const active = termReason === r;
-                  return (
-                    <button
-                      key={r}
-                      type="button"
-                      onClick={() => setTermReason(r)}
-                      className={`h-8 px-3 rounded-full text-body-sm border ${
-                        active
-                          ? "bg-brand-subtle text-primary border-primary/40"
-                          : "bg-card text-text-secondary border-border"
-                      }`}
-                    >
-                      {r}
-                    </button>
-                  );
-                })}
-              </div>
-              {termReason === "其他" && (
-                <textarea
-                  value={termReasonOther}
-                  onChange={(e) => setTermReasonOther(e.target.value)}
-                  placeholder="请输入其他终止原因"
-                  className="mt-2 h-20 w-full rounded-lg bg-white border border-border p-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
-                />
-              )}
+      {/* 终止工单确认 — M 端底部弹层 */}
+      {confirmTerminate && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          onClick={() => {
+            setConfirmTerminate(false);
+            setTermReason("");
+            setTermReasonOther("");
+            setNeedTransfer(false);
+            setTransferTo("");
+          }}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border">
+              <div className="text-body font-medium text-[var(--state-danger)]">终止工单</div>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmTerminate(false);
+                  setTermReason("");
+                  setTermReasonOther("");
+                  setNeedTransfer(false);
+                  setTransferTo("");
+                }}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
 
-            <div>
-              <label className="flex items-center gap-2 text-body-sm text-foreground">
-                <input
-                  type="checkbox"
-                  checked={needTransfer}
-                  onChange={(e) => setNeedTransfer(e.target.checked)}
-                  className="h-4 w-4 accent-[var(--primary)]"
-                />
-                需要转栏
-              </label>
-              {needTransfer && (
-                <div className="mt-2 space-y-2">
-                  <input
-                    value={transferTo}
-                    onChange={(e) => setTransferTo(e.target.value)}
-                    list="barn-options"
-                    placeholder="输入或选择转栏去向"
-                    className="h-10 w-full rounded-lg bg-white border border-border px-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-                  />
-                  <datalist id="barn-options">
-                    <option value="1 号牛舍" />
-                    <option value="2 号牛舍" />
-                    <option value="3 号牛舍" />
-                    <option value="隔离牛舍" />
-                    <option value="产房 1 号" />
-                    <option value="淘汰栏" />
-                  </datalist>
-                  <div className="flex flex-wrap gap-1.5">
-                    {["隔离牛舍", "淘汰栏", "产房 1 号"].map((b) => (
+            <div className="p-4 space-y-4">
+              <div>
+                <div className="text-caption text-text-tertiary mb-2">终止原因</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {["牛只健康，无需治疗", "牛只已死亡", "牛只已淘汰", "已转交其他工单", "其他"].map((r) => {
+                    const active = termReason === r;
+                    return (
                       <button
-                        key={b}
+                        key={r}
                         type="button"
-                        onClick={() => setTransferTo(b)}
-                        className={`h-7 px-2.5 rounded-full text-caption border ${
-                          transferTo === b
+                        onClick={() => setTermReason(r)}
+                        className={`h-8 px-3 rounded-full text-body-sm border ${
+                          active
                             ? "bg-brand-subtle text-primary border-primary/40"
                             : "bg-card text-text-secondary border-border"
                         }`}
                       >
-                        {b}
+                        {r}
                       </button>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-              )}
+                {termReason === "其他" && (
+                  <textarea
+                    value={termReasonOther}
+                    onChange={(e) => setTermReasonOther(e.target.value)}
+                    placeholder="请输入其他终止原因"
+                    className="mt-2 h-20 w-full rounded-lg bg-white border border-border p-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+                  />
+                )}
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-body-sm text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={needTransfer}
+                    onChange={(e) => setNeedTransfer(e.target.checked)}
+                    className="h-4 w-4 accent-[var(--primary)]"
+                  />
+                  需要转栏
+                </label>
+                {needTransfer && (
+                  <div className="mt-2 space-y-2">
+                    <input
+                      value={transferTo}
+                      onChange={(e) => setTransferTo(e.target.value)}
+                      list="barn-options"
+                      placeholder="输入或选择转栏去向"
+                      className="h-10 w-full rounded-lg bg-white border border-border px-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                    />
+                    <datalist id="barn-options">
+                      <option value="1 号牛舍" />
+                      <option value="2 号牛舍" />
+                      <option value="3 号牛舍" />
+                      <option value="隔离牛舍" />
+                      <option value="产房 1 号" />
+                      <option value="淘汰栏" />
+                    </datalist>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["隔离牛舍", "淘汰栏", "产房 1 号"].map((b) => (
+                        <button
+                          key={b}
+                          type="button"
+                          onClick={() => setTransferTo(b)}
+                          className={`h-7 px-2.5 rounded-full text-caption border ${
+                            transferTo === b
+                              ? "bg-brand-subtle text-primary border-primary/40"
+                              : "bg-card text-text-secondary border-border"
+                          }`}
+                        >
+                          {b}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 pt-0 pb-[calc(env(safe-area-inset-bottom)+16px)] flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmTerminate(false);
+                  setTermReason("");
+                  setTermReasonOther("");
+                  setNeedTransfer(false);
+                  setTransferTo("");
+                }}
+                className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                disabled={!termReason || (termReason === "其他" && !termReasonOther.trim()) || (needTransfer && !transferTo.trim())}
+                onClick={() => {
+                  const reason = termReason === "其他" ? termReasonOther.trim() : termReason;
+                  if (!reason) return;
+                  if (needTransfer && !transferTo.trim()) return;
+                  toast.success(needTransfer ? `工单已终止，已安排转栏至 ${transferTo}` : "工单已终止");
+                  navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+                }}
+                className="flex-1 h-11 rounded-lg bg-[var(--state-danger)] text-white text-body disabled:opacity-50"
+              >
+                确认终止
+              </button>
             </div>
           </div>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={!termReason || (termReason === "其他" && !termReasonOther.trim()) || (needTransfer && !transferTo.trim())}
-              onClick={() => {
-                const reason = termReason === "其他" ? termReasonOther.trim() : termReason;
-                if (!reason) return;
-                if (needTransfer && !transferTo.trim()) return;
-                toast.success(needTransfer ? `工单已终止，已安排转栏至 ${transferTo}` : "工单已终止");
-                navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
-              }}
-              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white disabled:opacity-50"
-            >
-              确认终止
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        </div>
+      )}
 
       {/* 添加媒体选择弹层 */}
       {showMediaPicker && (
