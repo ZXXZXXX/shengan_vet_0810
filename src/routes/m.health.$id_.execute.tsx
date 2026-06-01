@@ -21,6 +21,23 @@ function ExecuteRecordPage() {
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
 
+  type StatusKey = "待诊断" | "进行中" | "已完成" | "已终止";
+  const statusById: Record<string, StatusKey> = {
+    "WO-2381": "待诊断",
+    "WO-2298": "进行中",
+    "WO-2401": "进行中",
+    "WO-2324": "已终止",
+    "HF-0702": "进行中",
+    "HF-0688": "已完成",
+    "LS-1029": "待诊断",
+    "LS-1011": "已完成",
+    "YM-2042": "已终止",
+    "YM-2501": "进行中",
+  };
+  const fallbackStatus: StatusKey =
+    role === "hoof_trimmer" || role === "vet_assistant" || role === "immunizer" ? "进行中" : "待诊断";
+  const workStatus = statusById[id] ?? fallbackStatus;
+
   const singleEarMap: Record<string, string> = {
     "WO-2298": "#A2298",
     "HF-0702": "#A2150",
