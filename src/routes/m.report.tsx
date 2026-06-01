@@ -270,8 +270,7 @@ function ReportPage() {
     search.revisitReason ?? ""
   );
   const [revisitReasonOther, setRevisitReasonOther] = useState("");
-  const [orderQuery, setOrderQuery] = useState("");
-  const [orderFocused, setOrderFocused] = useState(false);
+  const [orderPickerOpen, setOrderPickerOpen] = useState(false);
   const [detectDialog, setDetectDialog] = useState<{
     cowId: string;
     orderId: string;
@@ -279,16 +278,39 @@ function ReportPage() {
   const [detectShown, setDetectShown] = useState(fromRevisit);
 
   // 可选关联工单候选（含近 7 日检测到的工单 + 该牛只最近的几条 mock 工单）
-  const candidateOrders = useMemo(() => {
-    const list: string[] = [];
-    const cowId = targets[0];
+  const candidateOrders = useMemo<RelatedOrder[]>(() => {
+    const cowId = targets[0] ?? "";
+    const targetLabel = cowId ? `#${cowId}` : "—";
+    const barnLabel = cowId ? barnOfCattle(cowId) : barn || "—";
     const detected = cowId ? recentDiseaseOrderOf(cowId) : null;
-    if (detected) list.push(detected);
-    ["WO-20260128", "WO-20260117", "WO-20260105", "WO-20260042"].forEach((o) => {
-      if (!list.includes(o)) list.push(o);
+    const list: RelatedOrder[] = [];
+    if (detected) {
+      list.push({
+        id: detected,
+        type: "疾病治疗",
+        conclusion: "乳房炎急性发作",
+        barn: barnLabel,
+        target: targetLabel,
+        date: "2026-05-26",
+        status: "已完成",
+        recent: true,
+      });
+    }
+    const extras: RelatedOrder[] = [
+      { id: "WO-20260128", type: "疾病治疗", conclusion: "蹄叶炎", barn: barnLabel, target: targetLabel, date: "2026-04-28", status: "已完成" },
+      { id: "WO-20260117", type: "疾病治疗", conclusion: "瘤胃酸中毒", barn: barnLabel, target: targetLabel, date: "2026-04-17", status: "已完成" },
+      { id: "WO-20260105", type: "疾病治疗", conclusion: "酮病", barn: barnLabel, target: targetLabel, date: "2026-04-05", status: "已完成" },
+    ];
+    extras.forEach((o) => {
+      if (!list.find((x) => x.id === o.id)) list.push(o);
     });
     return list;
-  }, [targets]);
+  }, [targets, barn]);
+
+  const selectedOrder = useMemo(
+    () => candidateOrders.find((o) => o.id === relatedOrderId) ?? null,
+    [candidateOrders, relatedOrderId]
+  );
 
   // 牛只填好后探测近 7 日工单（仅一次、仅非来自旧工单）
   useEffect(() => {
