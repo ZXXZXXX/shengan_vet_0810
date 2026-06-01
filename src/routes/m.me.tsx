@@ -3,16 +3,14 @@ import {
   ChevronRight,
   HelpCircle,
   LogOut,
-  RefreshCw,
   ClipboardList,
   ShieldCheck,
-  X,
 } from "lucide-react";
 import meHero from "@/assets/me-hero.png";
 
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
-import { Role, roleLabel, roleGroup, setRole, useRole } from "@/lib/mobile-role";
+import { roleLabel, useRole } from "@/lib/mobile-role";
 import {
   AlertDialog,
   AlertDialogAction,
