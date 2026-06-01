@@ -206,9 +206,11 @@ function TaskDetailPage() {
             <span className={s.tag}>{o.status}</span>
           </div>
           <div className="flex items-center gap-1.5 text-caption">
-            <Stethoscope className="h-3.5 w-3.5 text-text-tertiary" />
-            <span className="text-text-tertiary">执行对象</span>
-            <span className="text-body-sm text-foreground">{isSingle ? earTag : isPlatformImmune ? o.target : `${execTags.length} 只`}</span>
+            <Tag className="h-3.5 w-3.5 text-text-tertiary" />
+            <span className="text-text-tertiary">牛只编号</span>
+            <span className="text-body-sm text-foreground">
+              {isSingle ? earTag : isPlatformImmune ? o.target : execTags.join("、")}
+            </span>
           </div>
           <div className="flex items-center gap-3 text-caption text-text-tertiary">
             <span className="flex items-center gap-1">
@@ -220,7 +222,45 @@ function TaskDetailPage() {
               <span>{o.barn}</span>
             </span>
           </div>
+          {isDisease && (
+            <div className="pt-2 mt-1 border-t border-border/60 space-y-2">
+              <div className="flex items-center gap-1.5 text-caption">
+                <Repeat className="h-3.5 w-3.5 text-text-tertiary" />
+                <span className="text-text-tertiary">是否复诊</span>
+                <span className={`text-body-sm ${isRevisit ? "text-primary font-medium" : "text-foreground"}`}>
+                  {isRevisit ? "是" : "否"}
+                </span>
+              </div>
+              {relatedOrderId && (
+                <div className="flex items-center gap-1.5 text-caption">
+                  <Link2 className="h-3.5 w-3.5 text-text-tertiary" />
+                  <span className="text-text-tertiary">关联原始工单</span>
+                  <Link
+                    to="/m/health/$id"
+                    params={{ id: relatedOrderId }}
+                    className="font-mono text-body-sm text-primary inline-flex items-center gap-0.5"
+                  >
+                    {relatedOrderId}
+                    <ChevronRight className="h-3 w-3" />
+                  </Link>
+                </div>
+              )}
+              {showRecentRecords && (
+                <button
+                  type="button"
+                  onClick={() => setRecordsOpen(true)}
+                  className="w-full flex items-center gap-1.5 text-caption"
+                >
+                  <History className="h-3.5 w-3.5 text-text-tertiary" />
+                  <span className="text-text-tertiary">近期诊疗记录</span>
+                  <span className="text-body-sm text-foreground">{recentRecords.length} 条</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-text-tertiary ml-auto" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
+
 
         {/* === 2. Tab === */}
         <div className="sticky top-0 z-10 bg-bg border-b border-border">
