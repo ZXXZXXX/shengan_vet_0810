@@ -17,15 +17,15 @@ export const Route = createFileRoute("/m/loss-report")({
   component: LossReportPage,
 });
 
-// 物品/药品候选
+// 物品/药品候选（含参考单价，用于自动估算损耗金额）
 const ITEMS = [
-  { id: "DR-0108", name: "乳房炎抗生素 5mg", unit: "支" },
-  { id: "DR-0214", name: "口蹄疫疫苗 A 型", unit: "支" },
-  { id: "DR-0306", name: "驱虫剂 伊维菌素", unit: "瓶" },
-  { id: "DR-0412", name: "营养补充剂 复合维生素", unit: "罐" },
-  { id: "DR-0521", name: "消毒液 戊二醛", unit: "L" },
-  { id: "DR-0633", name: "葡萄糖注射液", unit: "瓶" },
-  { id: "DR-0712", name: "碳酸氢钠", unit: "袋" },
+  { id: "DR-0108", name: "乳房炎抗生素 5mg", unit: "支", price: 18 },
+  { id: "DR-0214", name: "口蹄疫疫苗 A 型", unit: "支", price: 60 },
+  { id: "DR-0306", name: "驱虫剂 伊维菌素", unit: "瓶", price: 45 },
+  { id: "DR-0412", name: "营养补充剂 复合维生素", unit: "罐", price: 88 },
+  { id: "DR-0521", name: "消毒液 戊二醛", unit: "L", price: 44 },
+  { id: "DR-0633", name: "葡萄糖注射液", unit: "瓶", price: 12 },
+  { id: "DR-0712", name: "碳酸氢钠", unit: "袋", price: 9 },
 ];
 
 const REASON_TAGS = [
@@ -39,16 +39,14 @@ const REASON_TAGS = [
   "其他",
 ];
 
-type Stage = "before" | "after";
-
 type Line = { itemId: string; qty: string };
 
 function LossReportPage() {
   const navigate = useNavigate();
 
-  const [stage, setStage] = useState<Stage>("before");
   const [lines, setLines] = useState<Line[]>([{ itemId: "", qty: "" }]);
   const [reasons, setReasons] = useState<string[]>([]);
+  const [otherReason, setOtherReason] = useState("");
   const [desc, setDesc] = useState("");
   const [photos, setPhotos] = useState<number[]>([1]);
   const [showItemPicker, setShowItemPicker] = useState<number | null>(null);
@@ -62,6 +60,15 @@ function LossReportPage() {
     return pool.slice(0, 8);
   }, [itemQuery]);
 
+  const estimatedTotal = useMemo(() => {
+    return lines.reduce((sum, l) => {
+      const item = ITEMS.find((i) => i.id === l.itemId);
+      const qty = Number(l.qty);
+      if (!item || !qty || Number.isNaN(qty)) return sum;
+      return sum + item.price * qty;
+    }, 0);
+  }, [lines]);
+
   const setLine = (idx: number, patch: Partial<Line>) =>
     setLines((prev) => prev.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
   const addLine = () => setLines((prev) => [...prev, { itemId: "", qty: "" }]);
@@ -71,10 +78,11 @@ function LossReportPage() {
   const toggleReason = (r: string) =>
     setReasons((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
 
+  const otherSelected = reasons.includes("其他");
   const canSubmit =
     lines.every((l) => l.itemId && l.qty.trim()) &&
     reasons.length > 0 &&
-    desc.trim().length > 0;
+    (!otherSelected || otherReason.trim().length > 0);
 
   const submit = () => {
     if (!canSubmit) return;
@@ -85,45 +93,17 @@ function LossReportPage() {
   return (
     <MobileShell title="损耗上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-5">
-        {/* 损耗阶段 */}
-        <Section title="损耗阶段" required>
-          <div className="grid grid-cols-2 gap-2">
-            {(
-              [
-                { v: "before", label: "出库前", hint: "库内损耗" },
-                { v: "after", label: "出库后", hint: "使用环节损耗" },
-              ] as { v: Stage; label: string; hint: string }[]
-            ).map((o) => {
-              const active = stage === o.v;
-              return (
-                <button
-                  key={o.v}
-                  onClick={() => setStage(o.v)}
-                  className={`h-16 rounded-xl border text-left px-3 transition-colors ${
-                    active
-                      ? "border-primary bg-brand-subtle text-foreground"
-                      : "border-border bg-card text-text-secondary"
-                  }`}
-                >
-                  <div className="text-body font-medium">{o.label}</div>
-                  <div className="text-caption text-text-tertiary mt-0.5">{o.hint}</div>
-                </button>
-              );
-            })}
-          </div>
-        </Section>
-
         {/* 损耗物品 */}
         <Section title="损耗物品" required hint="可一次性登记多项">
           <div className="space-y-2">
             {lines.map((l, idx) => {
               const item = ITEMS.find((i) => i.id === l.itemId);
+              const qty = Number(l.qty);
+              const lineAmount =
+                item && qty && !Number.isNaN(qty) ? item.price * qty : 0;
               const canDelete = lines.length > 1;
               return (
-                <div
-                  key={idx}
-                  className="rounded-xl bg-card border border-border p-2.5 space-y-2"
-                >
+                <div key={idx} className="space-y-2">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => {
@@ -158,10 +138,13 @@ function LossReportPage() {
                       onChange={(e) => setLine(idx, { qty: e.target.value })}
                       inputMode="decimal"
                       placeholder="损耗数量"
-                      className="flex-1 h-11 px-3 rounded-lg bg-surface-subtle border border-border text-body"
+                      className="flex-1 h-11 px-3 rounded-lg text-body"
                     />
                     <span className="text-body-sm text-text-secondary w-10 text-center">
                       {item?.unit ?? "-"}
+                    </span>
+                    <span className="text-body-sm text-text-secondary w-20 text-right tabular-nums">
+                      {lineAmount > 0 ? `¥ ${lineAmount.toFixed(2)}` : "—"}
                     </span>
                   </div>
                 </div>
@@ -174,6 +157,20 @@ function LossReportPage() {
               <Plus className="h-4 w-4" />
               追加损耗物品
             </button>
+
+            {/* 估算总金额 */}
+            <div
+              className="flex items-center justify-between rounded-xl px-3 py-2.5 mt-1"
+              style={{
+                background:
+                  "color-mix(in oklab, var(--primary) 6%, transparent)",
+              }}
+            >
+              <span className="text-body-sm text-text-secondary">估算损耗金额</span>
+              <span className="text-card-title text-primary tabular-nums">
+                ¥ {estimatedTotal.toFixed(2)}
+              </span>
+            </div>
           </div>
         </Section>
 
@@ -197,16 +194,25 @@ function LossReportPage() {
               );
             })}
           </div>
+          {otherSelected && (
+            <input
+              value={otherReason}
+              onChange={(e) => setOtherReason(e.target.value)}
+              placeholder="请填写其他损耗原因"
+              className="w-full h-11 px-3 rounded-lg text-body mt-2"
+              aria-invalid={otherReason.trim().length === 0 || undefined}
+            />
+          )}
         </Section>
 
-        {/* 情况说明 */}
-        <Section title="情况说明" required>
+        {/* 情况说明（非必填） */}
+        <Section title="情况说明" hint="选填">
           <textarea
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
-            placeholder="请简要描述损耗经过、估损金额等"
+            placeholder="可补充损耗经过、影响范围等说明"
             rows={3}
-            className="w-full rounded-xl bg-card border border-border p-3 text-body resize-none"
+            className="w-full p-3 text-body resize-none"
           />
         </Section>
 
@@ -264,13 +270,13 @@ function LossReportPage() {
             </div>
             <div className="flex gap-2 mb-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary z-10" />
                 <input
                   autoFocus
                   value={itemQuery}
                   onChange={(e) => setItemQuery(e.target.value)}
                   placeholder="搜索物品编号或名称"
-                  className="w-full h-10 pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm"
+                  className="w-full h-10 pl-9 pr-3 rounded-lg text-body-sm"
                 />
               </div>
               <button className="h-10 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
@@ -295,7 +301,7 @@ function LossReportPage() {
                     <div className="flex-1 min-w-0">
                       <div className="text-body text-foreground truncate">{i.name}</div>
                       <div className="text-caption text-text-tertiary font-mono mt-0.5">
-                        {i.id} · 单位 {i.unit}
+                        {i.id} · 单位 {i.unit} · ¥ {i.price}/{i.unit}
                       </div>
                     </div>
                   </button>
