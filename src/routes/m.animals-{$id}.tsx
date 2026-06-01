@@ -75,40 +75,41 @@ function AnimalDetailPage() {
       <div className="pb-28">
         {/* 头部：耳号 + 摘要 */}
         <div className="px-4 pt-4">
-          <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary/70 p-5 text-primary-foreground relative overflow-hidden">
-            <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+          <div className="rounded-3xl bg-gradient-to-br from-primary to-[#00823F] p-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
+            <Beef className="absolute -right-4 -bottom-4 h-32 w-32 opacity-10" strokeWidth={1} />
+
             <div className="relative flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
+              <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/15">
                 <Beef className="h-6 w-6" strokeWidth={1.75} />
               </div>
               <div className="min-w-0">
-                <div className="text-caption opacity-85">耳号</div>
-                <div className="text-section-title font-mono">#{a.id}</div>
+                <div className="text-[11px] opacity-75 font-medium">耳号</div>
+                <div className="text-section-title font-mono leading-tight">#{a.id}</div>
               </div>
               <span
-                className={`ml-auto h-8 px-3 rounded-full inline-flex items-center text-body-sm font-medium ${
+                className={`ml-auto h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
                   a.health === "异常"
                     ? "bg-[#FFE4E1] text-[#D9534F]"
                     : a.health === "观察中"
-                    ? "bg-[#FFF7D6] text-[#B8860B]"
+                    ? "bg-[#FFF7E6] text-[#B8860B]"
                     : a.health === "治疗中"
                     ? "bg-[#FFE8CC] text-[#C9621F]"
                     : "bg-[#E8F5E9] text-[#2E7D32]"
                 }`}
               >
-                <Activity className="h-3.5 w-3.5 mr-1" />
+                <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
                 {a.health}
               </span>
             </div>
 
-            <div className="relative mt-4 space-y-2">
+            <div className="relative mt-5 space-y-2">
               <Brief
-                icon={<MapPin className="h-3.5 w-3.5 opacity-85" />}
+                icon={<MapPin className="h-3 w-3 opacity-85" />}
                 label="所在位置"
                 value={`${a.farm} · ${a.barn} · ${a.pen}`}
               />
               <Brief
-                icon={<Beef className="h-3.5 w-3.5 opacity-85" />}
+                icon={<Beef className="h-3 w-3 opacity-85" />}
                 label="品种 / 性别 / 日龄"
                 value={`${a.breed} · ${a.sex} · ${a.ageDays} 日龄`}
               />
