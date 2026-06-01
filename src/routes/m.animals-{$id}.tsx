@@ -229,15 +229,17 @@ function AnimalDetailPage() {
                 })}
               </div>
               {orders.length > 1 && (
-                <button
-                  onClick={() => setOrdersExpanded((v) => !v)}
-                  className="mt-2 w-full h-9 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
-                >
-                  {ordersExpanded ? "收起" : `展开全部 ${orders.length} 个`}
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${ordersExpanded ? "rotate-180" : ""}`}
-                  />
-                </button>
+                <div className="mt-3 flex justify-center">
+                  <button
+                    onClick={() => setOrdersExpanded((v) => !v)}
+                    className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1 active:bg-primary/15 transition-colors"
+                  >
+                    {ordersExpanded ? "收起" : `展开全部 ${orders.length} 个`}
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 transition-transform ${ordersExpanded ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                </div>
               )}
             </>
           )}
@@ -245,27 +247,27 @@ function AnimalDetailPage() {
 
         {/* Tabs：用药与执行 / 转栏 */}
         <section className="px-4 mt-5">
-          <div className="flex gap-1 p-1 rounded-lg bg-surface-subtle border border-border">
-            <button
-              onClick={() => setTab("meds")}
-              className={`flex-1 h-9 rounded-md text-body-sm font-medium transition-colors ${
-                tab === "meds"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-text-tertiary"
-              }`}
-            >
-              用药与执行记录
-            </button>
-            <button
-              onClick={() => setTab("moves")}
-              className={`flex-1 h-9 rounded-md text-body-sm font-medium transition-colors ${
-                tab === "moves"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-text-tertiary"
-              }`}
-            >
-              转栏记录
-            </button>
+          <div className="flex items-center gap-6 border-b border-border">
+            {[
+              { key: "meds" as const, label: "用药与执行记录" },
+              { key: "moves" as const, label: "转栏记录" },
+            ].map((t) => {
+              const active = tab === t.key;
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
+                  className={`relative h-10 text-body-sm font-medium transition-colors ${
+                    active ? "text-foreground" : "text-text-tertiary"
+                  }`}
+                >
+                  {t.label}
+                  {active && (
+                    <span className="absolute left-1/2 -translate-x-1/2 bottom-0 h-[2px] w-6 rounded-full bg-primary" />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           <div className="mt-3">
@@ -403,15 +405,17 @@ function MedicationHistory() {
         </div>
       )}
       {hasMore && (
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          className="mt-3 w-full h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
-        >
-          {expanded ? "收起" : `展开查看全部 ${totalCount} 条`}
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`}
-          />
-        </button>
+        <div className="mt-3 flex justify-center">
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1 active:bg-primary/15 transition-colors"
+          >
+            {expanded ? "收起" : `展开全部 ${totalCount} 条`}
+            <ChevronDown
+              className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`}
+            />
+          </button>
+        </div>
       )}
     </div>
   );
