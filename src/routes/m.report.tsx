@@ -682,6 +682,91 @@ function ReportPage() {
               </div>
             </Section>
 
+            {/* 复诊关联 */}
+            {!barnMode && isRevisit !== null && (
+              <Section title="复诊信息">
+                <div className="rounded-xl border border-border bg-card divide-y divide-border">
+                  <div className="h-11 px-3 flex items-center justify-between text-body-sm">
+                    <span className="text-text-tertiary">是否复诊</span>
+                    <span
+                      className={
+                        isRevisit ? "text-primary font-medium" : "text-foreground"
+                      }
+                    >
+                      {isRevisit ? "是" : "否"}
+                    </span>
+                  </div>
+                  <div className="h-11 px-3 flex items-center justify-between text-body-sm">
+                    <span className="text-text-tertiary">关联原始工单</span>
+                    <span className="font-mono text-foreground">
+                      {relatedOrderId || "-"}
+                    </span>
+                  </div>
+                </div>
+
+                {isRevisit && (
+                  <div className="mt-3 space-y-2">
+                    <div className="text-caption text-text-tertiary">
+                      复诊原因 <span className="text-[var(--state-danger)]">*</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[...REVISIT_REASONS, "其他"].map((r) => {
+                        const active = revisitReason === r;
+                        return (
+                          <button
+                            key={r}
+                            type="button"
+                            onClick={() => setRevisitReason(r)}
+                            className={`h-8 px-3 rounded-full text-body-sm border ${
+                              active
+                                ? "bg-brand-subtle text-primary border-primary/40"
+                                : "bg-card text-text-secondary border-border"
+                            }`}
+                          >
+                            {r}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {revisitReason === "其他" && (
+                      <textarea
+                        value={revisitReasonOther}
+                        onChange={(e) => setRevisitReasonOther(e.target.value)}
+                        placeholder="请输入复诊原因"
+                        className="w-full min-h-[72px] rounded-lg border border-border bg-card px-3 py-2 text-body-sm placeholder:text-text-tertiary resize-none focus:outline-none focus:border-primary/40"
+                      />
+                    )}
+                  </div>
+                )}
+
+                {!fromRevisit && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isRevisit) {
+                        setIsRevisit(false);
+                        setRelatedOrderId("-");
+                        setRevisitReason("");
+                        setRevisitReasonOther("");
+                      } else {
+                        const cowId = targets[0];
+                        const orderId = cowId ? recentDiseaseOrderOf(cowId) : null;
+                        if (orderId) {
+                          setIsRevisit(true);
+                          setRelatedOrderId(orderId);
+                        } else {
+                          toast("未检测到该牛只近 7 日的疾病诊疗工单");
+                        }
+                      }
+                    }}
+                    className="mt-3 text-caption text-text-tertiary underline underline-offset-4"
+                  >
+                    {isRevisit ? "改为非复诊" : "标记为复诊"}
+                  </button>
+                )}
+              </Section>
+            )}
+
             {(
               <></>
             )}
