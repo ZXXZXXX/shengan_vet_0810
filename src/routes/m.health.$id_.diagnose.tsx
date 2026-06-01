@@ -22,16 +22,8 @@ import {
   User,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
+
 
 export const Route = createFileRoute("/m/health/$id_/diagnose")({
   head: () => ({ meta: [{ title: "诊断记录 · 奇点智牧" }] }),
