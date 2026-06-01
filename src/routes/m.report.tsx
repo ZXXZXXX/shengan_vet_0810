@@ -15,6 +15,11 @@ import {
   Pencil,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import {
+  RelatedOrderPicker,
+  RelatedOrderCard,
+  type RelatedOrder,
+} from "@/components/related-order-picker";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
@@ -270,8 +275,7 @@ function ReportPage() {
     search.revisitReason ?? ""
   );
   const [revisitReasonOther, setRevisitReasonOther] = useState("");
-  const [orderQuery, setOrderQuery] = useState("");
-  const [orderFocused, setOrderFocused] = useState(false);
+  const [orderPickerOpen, setOrderPickerOpen] = useState(false);
   const [detectDialog, setDetectDialog] = useState<{
     cowId: string;
     orderId: string;
@@ -279,16 +283,39 @@ function ReportPage() {
   const [detectShown, setDetectShown] = useState(fromRevisit);
 
   // 可选关联工单候选（含近 7 日检测到的工单 + 该牛只最近的几条 mock 工单）
-  const candidateOrders = useMemo(() => {
-    const list: string[] = [];
-    const cowId = targets[0];
+  const candidateOrders = useMemo<RelatedOrder[]>(() => {
+    const cowId = targets[0] ?? "";
+    const targetLabel = cowId ? `#${cowId}` : "—";
+    const barnLabel = cowId ? barnOfCattle(cowId) : barn || "—";
     const detected = cowId ? recentDiseaseOrderOf(cowId) : null;
-    if (detected) list.push(detected);
-    ["WO-20260128", "WO-20260117", "WO-20260105", "WO-20260042"].forEach((o) => {
-      if (!list.includes(o)) list.push(o);
+    const list: RelatedOrder[] = [];
+    if (detected) {
+      list.push({
+        id: detected,
+        type: "疾病治疗",
+        conclusion: "乳房炎急性发作",
+        barn: barnLabel,
+        target: targetLabel,
+        date: "2026-05-26",
+        status: "已完成",
+        recent: true,
+      });
+    }
+    const extras: RelatedOrder[] = [
+      { id: "WO-20260128", type: "疾病治疗", conclusion: "蹄叶炎", barn: barnLabel, target: targetLabel, date: "2026-04-28", status: "已完成" },
+      { id: "WO-20260117", type: "疾病治疗", conclusion: "瘤胃酸中毒", barn: barnLabel, target: targetLabel, date: "2026-04-17", status: "已完成" },
+      { id: "WO-20260105", type: "疾病治疗", conclusion: "酮病", barn: barnLabel, target: targetLabel, date: "2026-04-05", status: "已完成" },
+    ];
+    extras.forEach((o) => {
+      if (!list.find((x) => x.id === o.id)) list.push(o);
     });
     return list;
-  }, [targets]);
+  }, [targets, barn]);
+
+  const selectedOrder = useMemo(
+    () => candidateOrders.find((o) => o.id === relatedOrderId) ?? null,
+    [candidateOrders, relatedOrderId]
+  );
 
   // 牛只填好后探测近 7 日工单（仅一次、仅非来自旧工单）
   useEffect(() => {
@@ -717,7 +744,6 @@ function ReportPage() {
                               setRelatedOrderId("-");
                               setRevisitReason("");
                               setRevisitReasonOther("");
-                              setOrderQuery("");
                             }
                           }}
                           className={`h-8 min-w-[56px] px-3 rounded-full text-body-sm transition-colors ${
@@ -741,52 +767,27 @@ function ReportPage() {
                       <div className="text-caption text-text-tertiary mb-2">
                         关联原始工单 <span className="text-[var(--state-danger)]">*</span>
                       </div>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                        <input
-                          value={orderQuery || relatedOrderId}
-                          onChange={(e) => {
-                            setOrderQuery(e.target.value);
-                            setRelatedOrderId(e.target.value);
-                            setOrderFocused(true);
-                          }}
-                          onFocus={() => setOrderFocused(true)}
-                          onBlur={() => setTimeout(() => setOrderFocused(false), 150)}
-                          placeholder="输入或选择工单编号"
-                          className="w-full h-11 pl-9 pr-3 rounded-lg bg-card border border-border text-body font-mono placeholder:text-text-tertiary placeholder:font-sans"
-                        />
-                        {orderFocused && candidateOrders.length > 0 && (
-                          <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-60 overflow-auto">
-                            {candidateOrders
-                              .filter((o) =>
-                                orderQuery ? o.toLowerCase().includes(orderQuery.toLowerCase()) : true
-                              )
-                              .map((o, idx) => {
-                                const detected =
-                                  targets[0] && recentDiseaseOrderOf(targets[0]) === o;
-                                return (
-                                  <button
-                                    key={o}
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    onClick={() => {
-                                      setRelatedOrderId(o);
-                                      setOrderQuery("");
-                                      setOrderFocused(false);
-                                    }}
-                                    className={`w-full text-left px-3 py-2.5 flex items-center justify-between gap-2 hover:bg-surface-subtle ${
-                                      idx > 0 ? "border-t border-border" : ""
-                                    }`}
-                                  >
-                                    <span className="text-body-sm font-mono text-foreground">{o}</span>
-                                    {detected && (
-                                      <span className="tag tag-muted">近 7 日</span>
-                                    )}
-                                  </button>
-                                );
-                              })}
-                          </div>
-                        )}
-                      </div>
+                      {selectedOrder ? (
+                        <div className="space-y-2">
+                          <RelatedOrderCard order={selectedOrder} selected />
+                          <button
+                            type="button"
+                            onClick={() => setOrderPickerOpen(true)}
+                            className="w-full h-10 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary active:bg-surface-subtle"
+                          >
+                            重新选择
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setOrderPickerOpen(true)}
+                          className="w-full h-11 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
+                        >
+                          <Search className="h-4 w-4" />
+                          选择关联工单
+                        </button>
+                      )}
                     </div>
 
                     <div>
@@ -1142,6 +1143,14 @@ function ReportPage() {
       </div>
 
       {/* 复诊检测弹窗 */}
+      <RelatedOrderPicker
+        open={orderPickerOpen}
+        onClose={() => setOrderPickerOpen(false)}
+        orders={candidateOrders}
+        selectedId={relatedOrderId}
+        onSelect={(o) => setRelatedOrderId(o.id)}
+      />
+
       {detectDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4">
