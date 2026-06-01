@@ -103,17 +103,4 @@ function ExecuteRecordPage() {
     </MobileShell>
   );
 }
-          onClick={() => {
-            toast.success("提交成功");
-            navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
-          }}
-          className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-        >
-          <Send className="h-4 w-4" /> 提交记录
-        </button>
-      </div>
 
-      <AnomalyFeedbackSheet open={anomalyOpen} onClose={() => setAnomalyOpen(false)} />
-    </MobileShell>
-  );
-}
