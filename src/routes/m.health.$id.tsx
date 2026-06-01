@@ -87,6 +87,8 @@ function TaskDetailPage() {
       ? "review"
       : "report";
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
+  const [anomalyOpen, setAnomalyOpen] = useState(false);
+  
   
 
   
