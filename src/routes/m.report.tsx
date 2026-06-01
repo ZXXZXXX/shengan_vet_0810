@@ -281,7 +281,7 @@ function ReportPage() {
     cowId: string;
     orderId: string;
   } | null>(null);
-  const [detectShown, setDetectShown] = useState(fromRevisit);
+  
 
   // 可选关联工单候选（含近 7 日检测到的工单 + 该牛只最近的几条 mock 工单）
   const candidateOrders = useMemo<RelatedOrder[]>(() => {
