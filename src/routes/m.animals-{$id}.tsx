@@ -118,22 +118,23 @@ function AnimalDetailPage() {
         </div>
 
         {/* 状态标签 */}
-        <section className="px-4 mt-3 flex flex-wrap gap-2">
-          <span
-            className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm font-medium border ${
-              a.treating
-                ? "bg-[#FFF7D6] text-[#B8860B] border-[#F5D76E]"
-                : "bg-surface-subtle text-text-tertiary border-border"
-            }`}
-          >
-            <Pill className="h-3.5 w-3.5" />
-            {a.treating ? "治疗中" : "未治疗"}
-          </span>
-          {a.withdrawalDays > 0 && (
-            <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm font-medium border bg-[#FFE4E1] text-[#D9534F] border-[#F5B7B1]">
-              <Clock className="h-3.5 w-3.5" />
-              休药期至 {a.withdrawalUntil}（剩 {a.withdrawalDays} 天）
+        <section className="px-4 mt-3 flex gap-2">
+          <div className="flex-1 bg-[#FFFBE6] border border-[#FFE58F] rounded-lg px-3 py-2 inline-flex items-center justify-center gap-1.5">
+            <Pill className="h-3.5 w-3.5 text-[#B37D00]" />
+            <span className="text-body-sm font-medium text-[#B37D00]">
+              {a.treating ? "治疗中" : "未治疗"}
             </span>
+          </div>
+          {a.withdrawalDays > 0 && (
+            <div className="flex-[2] bg-[#FFF1F0] border border-[#FFA39E] rounded-lg px-3 py-2 inline-flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#CF1322] min-w-0">
+                <Clock className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">休药期至 {a.withdrawalUntil}</span>
+              </span>
+              <span className="ml-2 shrink-0 bg-[#FF4D4F] text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                剩 {a.withdrawalDays} 天
+              </span>
+            </div>
           )}
         </section>
 
