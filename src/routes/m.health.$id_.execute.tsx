@@ -1,9 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { useState } from "react";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { TaskFeedbackSheet } from "@/components/task-feedback-sheet";
 import { useRole } from "@/lib/mobile-role";
 import { ActiveDayExecute } from "./m.health.$id";
 
@@ -16,7 +14,6 @@ function ExecuteRecordPage() {
   const { id } = useParams({ from: "/m/health/$id_/execute" });
   const role = useRole();
   const navigate = useNavigate();
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
@@ -45,30 +42,17 @@ function ExecuteRecordPage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setFeedbackOpen(true)}
-          className="shrink-0 h-11 px-1 text-body-sm text-[var(--state-danger)] underline-offset-4 hover:underline"
-        >
-          标记未完成
-        </button>
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <button
           onClick={() => {
             toast.success("提交成功");
             navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
           }}
-          className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+          className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
         >
           <Send className="h-4 w-4" /> 提交记录
         </button>
       </div>
-
-      <TaskFeedbackSheet
-        open={feedbackOpen}
-        onClose={() => setFeedbackOpen(false)}
-        taskLabel={id}
-      />
     </MobileShell>
   );
 }
