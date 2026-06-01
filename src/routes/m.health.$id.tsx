@@ -149,12 +149,33 @@ function TaskDetailPage() {
   const s = statusMap[o.status];
   const Icon = s.icon;
 
-
-
-
+  // 复诊与关联工单 mock
+  const isDisease = o.type === "疾病治疗";
+  const isRevisit = isDisease && (id === "WO-2298" || /复诊/.test("乳房炎复诊") && id === "WO-2298");
+  const relatedOrderId: string | null = isRevisit ? "WO-2150" : null;
+  // 近期诊疗记录 mock（仅对单只疾病治疗工单展示）
+  const showRecentRecords = isDisease && isSingle;
+  const recentRecords: { id: string; date: string; conclusion: string; meds: { name: string; dose: string; route: string; days: string }[] }[] = [
+    {
+      id: "WO-2150",
+      date: "2026-04-22",
+      conclusion: "乳房炎（亚临床）",
+      meds: [
+        { name: "头孢噻呋钠", dose: "1g / 次", route: "肌肉注射", days: "3 天" },
+        { name: "氟尼辛葡甲胺", dose: "2ml / 次", route: "肌肉注射", days: "2 天" },
+      ],
+    },
+    {
+      id: "WO-2042",
+      date: "2026-02-08",
+      conclusion: "支气管炎（早期）",
+      meds: [{ name: "土霉素长效注射液", dose: "20ml / 次", route: "肌肉注射", days: "1 次" }],
+    },
+  ];
 
 
   const showAnomaly = canExecute(role) && o.status === "进行中";
+
   return (
     <MobileShell
       title="工单详情"
