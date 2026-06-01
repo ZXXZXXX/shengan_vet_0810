@@ -258,6 +258,40 @@ function ReportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [showDraftDialog, setShowDraftDialog] = useState(false);
 
+  // 复诊关联
+  const fromRevisit = !!search.revisitFrom;
+  const [isRevisit, setIsRevisit] = useState<boolean | null>(
+    fromRevisit ? true : null
+  );
+  const [relatedOrderId, setRelatedOrderId] = useState<string>(
+    search.revisitFrom ?? ""
+  );
+  const [revisitReason, setRevisitReason] = useState<string>(
+    search.revisitReason ?? ""
+  );
+  const [revisitReasonOther, setRevisitReasonOther] = useState("");
+  const [detectDialog, setDetectDialog] = useState<{
+    cowId: string;
+    orderId: string;
+  } | null>(null);
+  const [detectShown, setDetectShown] = useState(fromRevisit);
+
+  // 牛只填好后探测近 7 日工单（仅一次、仅非来自旧工单）
+  useEffect(() => {
+    if (detectShown || fromRevisit || barnMode) return;
+    if (targets.length === 0) return;
+    const cowId = targets[0];
+    const orderId = recentDiseaseOrderOf(cowId);
+    setDetectShown(true);
+    if (orderId) {
+      setDetectDialog({ cowId, orderId });
+    } else {
+      // 无历史工单 → 默认非复诊
+      setIsRevisit(false);
+      setRelatedOrderId("-");
+    }
+  }, [targets, barnMode, fromRevisit, detectShown]);
+
   // 健康
   // 仅支持疾病治疗类型工单
   const [workType] = useState<WorkType>("疾病治疗");
