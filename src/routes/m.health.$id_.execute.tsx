@@ -49,11 +49,25 @@ function ExecuteRecordPage() {
   const execTags: string[] = isSingle ? [earTag] : ["#A2381", "#A2382", "#A2383"];
   const pickupCode = isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`;
 
+  const barn = isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : "3 号牛舍";
+
   return (
     <MobileShell
       title="执行记录"
       back
       hideTabBar
+      right={
+        workStatus === "进行中" ? (
+          <button
+            type="button"
+            onClick={() => setAnomalyOpen(true)}
+            className="h-8 w-8 inline-flex items-center justify-center text-[var(--state-danger)]"
+            aria-label="异常处理"
+          >
+            <AlertTriangle className="h-4 w-4" />
+          </button>
+        ) : undefined
+      }
     >
       <div className="pb-28">
         <div className="px-4 pt-3 pb-2">
@@ -68,17 +82,27 @@ function ExecuteRecordPage() {
       </div>
 
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-2">
-        {workStatus === "进行中" && (
-          <button
-            type="button"
-            onClick={() => setAnomalyOpen(true)}
-            className="h-11 w-11 shrink-0 rounded-lg border border-border text-[var(--state-danger)] inline-flex items-center justify-center"
-            aria-label="异常反馈"
-          >
-            <AlertTriangle className="h-4 w-4" />
-          </button>
-        )}
         <button
+          onClick={() => {
+            toast.success("提交成功");
+            navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
+          }}
+          className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+        >
+          <Send className="h-4 w-4" /> 提交记录
+        </button>
+      </div>
+
+      <AnomalyFeedbackSheet
+        open={anomalyOpen}
+        onClose={() => setAnomalyOpen(false)}
+        workOrderId={id}
+        barn={barn}
+        target={isSingle ? earTag.replace(/^#/, "") : undefined}
+      />
+    </MobileShell>
+  );
+}
           onClick={() => {
             toast.success("提交成功");
             navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
