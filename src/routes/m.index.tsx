@@ -115,11 +115,10 @@ function MHomePage() {
           </div>
 
           {/* 个人工单摘要：当前牧场到目前为止 */}
-          <div className="mt-3 grid grid-cols-4 gap-2">
+          <div className="mt-3 grid grid-cols-3 gap-2">
             {[
               { label: "全部工单", value: "128" },
               { label: "已完成", value: "96" },
-              { label: "待执行", value: "18" },
               { label: "执行中", value: "14" },
             ].map((s) => (
               <div key={s.label} className="text-center">
