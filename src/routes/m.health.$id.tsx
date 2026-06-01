@@ -153,25 +153,22 @@ function TaskDetailPage() {
   const isDisease = o.type === "疾病治疗";
   const isRevisit = isDisease && (id === "WO-2298" || /复诊/.test("乳房炎复诊") && id === "WO-2298");
   const relatedOrderId: string | null = isRevisit ? "WO-2150" : null;
-  // 近期诊疗记录 mock（仅对单只疾病治疗工单展示）
-  const showRecentRecords = isDisease && isSingle;
-  const recentRecords: { id: string; date: string; conclusion: string; meds: { name: string; dose: string; route: string; days: string }[] }[] = [
-    {
-      id: "WO-2150",
-      date: "2026-04-22",
-      conclusion: "乳房炎（亚临床）",
-      meds: [
-        { name: "头孢噻呋钠", dose: "1g / 次", route: "肌肉注射", days: "3 天" },
-        { name: "氟尼辛葡甲胺", dose: "2ml / 次", route: "肌肉注射", days: "2 天" },
-      ],
-    },
-    {
-      id: "WO-2042",
-      date: "2026-02-08",
-      conclusion: "支气管炎（早期）",
-      meds: [{ name: "土霉素长效注射液", dose: "20ml / 次", route: "肌肉注射", days: "1 次" }],
-    },
-  ];
+  // 诊疗信息摘要 mock —— 取自"关联原始工单"
+  const showSummary = isDisease && isSingle && Boolean(relatedOrderId);
+  const summary = relatedOrderId
+    ? {
+        id: relatedOrderId,
+        date: "2026-04-22",
+        conclusion: "乳房炎（亚临床）",
+        prescription: "标准 3 日抗炎方案：头孢噻呋钠 + 氟尼辛葡甲胺，每日 1 次连续 3 天，配合每日测温与乳样复查。",
+        meds: [
+          { name: "头孢噻呋钠", dose: "1g / 次", route: "肌肉注射", days: "3 天", executed: "2026-04-22 ~ 2026-04-24，按计划完成" },
+          { name: "氟尼辛葡甲胺", dose: "2ml / 次", route: "肌肉注射", days: "2 天", executed: "2026-04-22 ~ 2026-04-23，按计划完成" },
+        ],
+        revisitReason: "停药 5 天后乳区再次出现红肿，体温回升至 39.4℃，疑似炎症复发，需复查并调整方案。",
+      }
+    : null;
+
 
 
   const showAnomaly = canExecute(role) && o.status === "进行中";
@@ -260,15 +257,15 @@ function TaskDetailPage() {
                   </Link>
                 </div>
               )}
-              {showRecentRecords && (
+              {showSummary && (
                 <button
                   type="button"
                   onClick={() => setRecordsOpen(true)}
                   className="w-full flex items-center gap-1.5 text-caption"
                 >
                   <History className="h-3.5 w-3.5 text-text-tertiary" />
-                  <span className="text-text-tertiary">近期诊疗记录</span>
-                  <span className="text-body-sm text-foreground">{recentRecords.length} 条</span>
+                  <span className="text-text-tertiary">诊疗信息摘要</span>
+                  <span className="text-body-sm text-primary">查看</span>
                   <ChevronRight className="h-3.5 w-3.5 text-text-tertiary ml-auto" />
                 </button>
               )}
@@ -352,30 +349,48 @@ function TaskDetailPage() {
       <Dialog open={recordsOpen} onOpenChange={setRecordsOpen}>
         <DialogContent className="max-w-[360px] rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-card-title">近期诊疗记录</DialogTitle>
+            <DialogTitle className="text-card-title">诊疗信息摘要</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 max-h-[60vh] overflow-y-auto -mx-1 px-1">
-            {recentRecords.map((r) => (
-              <div key={r.id} className="rounded-xl border border-border bg-card p-3 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-caption text-text-tertiary">{r.id}</span>
-                  <span className="text-text-tertiary text-caption">·</span>
-                  <span className="text-caption text-text-tertiary">{r.date}</span>
-                </div>
-                <div className="text-body-sm text-foreground font-medium">{r.conclusion}</div>
+          {summary && (
+            <div className="space-y-3 max-h-[65vh] overflow-y-auto -mx-1 px-1">
+              <div className="flex items-center gap-2">
+                <span className="text-caption text-text-tertiary">来源</span>
+                <span className="font-mono text-caption text-foreground">{summary.id}</span>
+                <span className="text-text-tertiary text-caption">·</span>
+                <span className="text-caption text-text-tertiary">{summary.date}</span>
+              </div>
+
+              <div className="rounded-xl border border-border bg-card p-3 space-y-1.5">
+                <div className="text-caption text-text-tertiary">诊断结论</div>
+                <div className="text-body-sm text-foreground">{summary.conclusion}</div>
+              </div>
+
+              <div className="rounded-xl border border-border bg-card p-3 space-y-1.5">
+                <div className="text-caption text-text-tertiary">处方信息</div>
+                <p className="text-body-sm text-text-secondary leading-relaxed">{summary.prescription}</p>
+              </div>
+
+              <div className="rounded-xl border border-border bg-card p-3 space-y-2">
+                <div className="text-caption text-text-tertiary">用药记录</div>
                 <div className="rounded-lg bg-surface-subtle border border-border/60 divide-y divide-border/60">
-                  {r.meds.map((m) => (
+                  {summary.meds.map((m) => (
                     <div key={m.name} className="px-2.5 py-2">
                       <div className="text-body-sm text-foreground">{m.name}</div>
                       <div className="text-caption text-text-tertiary mt-0.5">
                         {m.route} · {m.dose} · {m.days}
                       </div>
+                      <div className="text-caption text-text-tertiary mt-1">{m.executed}</div>
                     </div>
                   ))}
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="rounded-xl border border-border bg-card p-3 space-y-1.5">
+                <div className="text-caption text-text-tertiary">复诊原因</div>
+                <p className="text-body-sm text-text-secondary leading-relaxed">{summary.revisitReason}</p>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </MobileShell>
