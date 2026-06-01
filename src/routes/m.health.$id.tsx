@@ -19,6 +19,10 @@ import {
   Warehouse,
   ScanLine,
   X,
+  Repeat,
+  History,
+  Link2,
+  Tag,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { AnomalyFeedbackSheet } from "@/components/anomaly-feedback-sheet";
@@ -34,6 +38,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/m/health/$id")({
   head: () => ({ meta: [{ title: "工单详情 · 奇点智牧" }] }),
