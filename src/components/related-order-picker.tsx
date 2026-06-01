@@ -1,14 +1,15 @@
 import { useMemo, useState } from "react";
-import { X, Search, Check, Stethoscope, CheckCircle2 } from "lucide-react";
+import { X, Search, Check, Stethoscope } from "lucide-react";
 
 export type RelatedOrder = {
   id: string;
   type: string;
   conclusion: string;
-  barn: string;
   target: string;
-  date: string;
-  status: "已完成" | "已终止" | "进行中";
+  reportedAt?: string;
+  diagnosedAt?: string;
+  startedAt?: string;
+  completedAt?: string;
   recent?: boolean;
 };
 
@@ -21,14 +22,21 @@ export function RelatedOrderCard({
   selected?: boolean;
   onClick?: () => void;
 }) {
+  const times: { label: string; value?: string }[] = [
+    { label: "上报", value: order.reportedAt },
+    { label: "诊断", value: order.diagnosedAt },
+    { label: "开始执行", value: order.startedAt },
+    { label: "完成", value: order.completedAt },
+  ].filter((t) => !!t.value);
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`w-full text-left rounded-xl border p-3 transition-colors ${
+      className={`w-full text-left rounded-xl border p-3 bg-card transition-colors ${
         selected
-          ? "border-primary bg-brand-subtle"
-          : "border-border bg-card active:bg-surface-subtle"
+          ? "border-primary"
+          : "border-border active:bg-surface-subtle"
       }`}
     >
       <div className="flex items-center gap-1.5 text-caption text-text-tertiary mb-1.5">
@@ -41,27 +49,28 @@ export function RelatedOrderCard({
         {order.recent && (
           <span className="ml-auto tag tag-muted">近 7 日</span>
         )}
-        {!order.recent && (
-          <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
-            <CheckCircle2 className="h-3 w-3" />
-            {order.status}
-          </span>
-        )}
       </div>
       <div className="text-body-sm text-foreground font-medium truncate">
         <span className="font-mono text-text-secondary">{order.target}</span>
         <span className="text-text-tertiary"> · </span>
         {order.conclusion}
       </div>
-      <div className="flex items-center justify-between mt-1.5 text-caption text-text-tertiary">
-        <span>{order.barn} · {order.date}</span>
-        {selected && (
-          <span className="inline-flex items-center gap-0.5 text-primary font-medium">
-            <Check className="h-3.5 w-3.5" />
-            已选
-          </span>
-        )}
-      </div>
+      {times.length > 0 && (
+        <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-0.5 text-caption text-text-tertiary">
+          {times.map((t) => (
+            <div key={t.label} className="flex items-center gap-1 truncate">
+              <span>{t.label}</span>
+              <span className="text-text-secondary truncate">{t.value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {selected && (
+        <div className="mt-1.5 inline-flex items-center gap-0.5 text-caption text-primary font-medium">
+          <Check className="h-3.5 w-3.5" />
+          已选
+        </div>
+      )}
     </button>
   );
 }
