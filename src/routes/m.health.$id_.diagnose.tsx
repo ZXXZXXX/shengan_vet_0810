@@ -261,16 +261,16 @@ function DiagnosePage() {
   return (
     <MobileShell title="诊断记录" back hideTabBar>
       <div className="pb-28">
-        {/* 工单号 */}
-        <div className="px-4 pt-3 pb-2 flex items-center justify-between gap-2">
+        {/* 工单号（吸顶） */}
+        <div className="sticky top-12 z-20 bg-[var(--bg-page)] px-4 pt-3 pb-2 flex items-center justify-between gap-2 border-b border-border">
           <div className="text-caption text-text-tertiary">
             工单 <span className="font-mono text-text-secondary">{id}</span>
           </div>
           <button
             onClick={() => setConfirmTerminate(true)}
-            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary hover:text-[var(--state-danger)] hover:border-[var(--state-danger)]/40"
+            className="text-caption text-[var(--state-danger)] font-medium hover:underline"
           >
-            <Ban className="h-3 w-3" /> 终止
+            终止工单
           </button>
         </div>
 
