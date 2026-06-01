@@ -205,13 +205,28 @@ function TaskDetailPage() {
             </div>
             <span className={s.tag}>{o.status}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-caption">
-            <Tag className="h-3.5 w-3.5 text-text-tertiary" />
-            <span className="text-text-tertiary">牛只编号</span>
-            <span className="text-body-sm text-foreground">
-              {isSingle ? earTag : isPlatformImmune ? o.target : execTags.join("、")}
-            </span>
+          <div className="flex items-start gap-1.5 text-caption">
+            <Tag className="h-3.5 w-3.5 text-text-tertiary mt-0.5 shrink-0" />
+            <span className="text-text-tertiary shrink-0">牛只编号</span>
+            {isPlatformImmune && !isSingle ? (
+              <span className="text-body-sm text-foreground">{o.target}</span>
+            ) : (
+              <div className="flex flex-wrap gap-x-2 gap-y-1 min-w-0">
+                {(isSingle ? [earTag] : execTags).map((t) => (
+                  <Link
+                    key={t}
+                    to="/m/animals-{$id}"
+                    params={{ id: t.replace(/^#/, "") }}
+                    className="text-body-sm text-primary inline-flex items-center gap-0.5"
+                  >
+                    {t}
+                    <ChevronRight className="h-3 w-3" />
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
+
           <div className="flex items-center gap-3 text-caption text-text-tertiary">
             <span className="flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5" />
