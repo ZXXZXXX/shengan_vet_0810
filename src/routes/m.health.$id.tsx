@@ -333,6 +333,36 @@ function TaskDetailPage() {
         barn={o.barn}
         target={isSingle ? earTag.replace(/^#/, "") : undefined}
       />
+
+      <Dialog open={recordsOpen} onOpenChange={setRecordsOpen}>
+        <DialogContent className="max-w-[360px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-card-title">近期诊疗记录</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[60vh] overflow-y-auto -mx-1 px-1">
+            {recentRecords.map((r) => (
+              <div key={r.id} className="rounded-xl border border-border bg-card p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-caption text-text-tertiary">{r.id}</span>
+                  <span className="text-text-tertiary text-caption">·</span>
+                  <span className="text-caption text-text-tertiary">{r.date}</span>
+                </div>
+                <div className="text-body-sm text-foreground font-medium">{r.conclusion}</div>
+                <div className="rounded-lg bg-surface-subtle border border-border/60 divide-y divide-border/60">
+                  {r.meds.map((m) => (
+                    <div key={m.name} className="px-2.5 py-2">
+                      <div className="text-body-sm text-foreground">{m.name}</div>
+                      <div className="text-caption text-text-tertiary mt-0.5">
+                        {m.route} · {m.dose} · {m.days}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </MobileShell>
   );
 }
