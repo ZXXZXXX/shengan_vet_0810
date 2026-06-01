@@ -252,14 +252,14 @@ function TaskDetailPage() {
                 <div
                   className="rounded-lg border p-2.5"
                   style={{
-                    borderColor: "color-mix(in oklab, var(--state-warning) 35%, transparent)",
-                    background: "color-mix(in oklab, var(--state-warning) 10%, transparent)",
+                    borderColor: "color-mix(in oklab, var(--primary) 30%, transparent)",
+                    background: "color-mix(in oklab, var(--primary) 8%, transparent)",
                   }}
                 >
 
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Repeat className="h-3.5 w-3.5" style={{ color: "var(--state-warning)" }} />
-                    <span className="text-caption font-medium" style={{ color: "var(--state-warning)" }}>复诊原因</span>
+                    <Repeat className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-caption font-medium text-primary">复诊原因</span>
 
                   </div>
                   <p className="text-body-sm text-foreground leading-relaxed">
