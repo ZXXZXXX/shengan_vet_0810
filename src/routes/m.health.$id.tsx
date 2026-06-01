@@ -934,54 +934,39 @@ function ChecklistDay({
                           </div>
                         )}
                       </div>
+                      {interactive && needMed && !done && (
+                        <button
+                          type="button"
+                          onClick={() => setScanFor(it.id)}
+                          className="shrink-0 h-8 w-8 -mt-0.5 -mr-1 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center"
+                          aria-label="扫码核验用药"
+                        >
+                          <ScanLine className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
-                    {interactive && !done && (
+                    {interactive && !needMed && !done && it.title.includes("测温") && (
                       <div className="mt-2.5 pl-6 space-y-2">
-                        {!needMed && it.title.includes("测温") && (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              inputMode="decimal"
-                              step="0.1"
-                              value={temps[it.id] ?? ""}
-                              onChange={(e) => setTemps((m) => ({ ...m, [it.id]: e.target.value }))}
-                              placeholder="输入直肠温度"
-                              className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm"
-                            />
-                            <span className="text-caption text-text-tertiary">℃</span>
-                          </div>
-                        )}
                         <div className="flex items-center gap-2">
-                          {needMed ? (
-                            <button
-                              type="button"
-                              onClick={() => setScanFor(it.id)}
-                              className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1.5"
-                            >
-                              <ScanLine className="h-4 w-4" /> 扫码核验用药
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              disabled={it.title.includes("测温") && !(temps[it.id] ?? "").trim()}
-                              onClick={() => toggleDone(it.id, it.status)}
-                              className="flex-1 h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <CheckSquare className="h-4 w-4" /> 标记完成
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => update(it.id, { status: blocked ? "pending" : "blocked" })}
-                            className={`h-9 px-3 rounded-lg text-body-sm ${
-                              blocked
-                                ? "text-[var(--state-danger)] font-medium bg-[var(--state-danger)]/10"
-                                : "text-text-tertiary border border-border"
-                            }`}
-                          >
-                            {blocked ? "已标记无法执行" : "无法执行"}
-                          </button>
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            step="0.1"
+                            value={temps[it.id] ?? ""}
+                            onChange={(e) => setTemps((m) => ({ ...m, [it.id]: e.target.value }))}
+                            placeholder="输入直肠温度"
+                            className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm"
+                          />
+                          <span className="text-caption text-text-tertiary">℃</span>
                         </div>
+                        <button
+                          type="button"
+                          disabled={!(temps[it.id] ?? "").trim()}
+                          onClick={() => toggleDone(it.id, it.status)}
+                          className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <CheckSquare className="h-4 w-4" /> 标记完成
+                        </button>
                       </div>
                     )}
                     {interactive && done && (
