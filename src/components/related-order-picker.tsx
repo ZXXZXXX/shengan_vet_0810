@@ -54,14 +54,10 @@ export function RelatedOrderCard({
         <span className="text-text-tertiary"> · </span>
         {order.conclusion}
       </div>
-      {times.length > 0 && (
-        <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-0.5 text-caption text-text-tertiary">
-          {times.map((t) => (
-            <div key={t.label} className="flex items-center gap-1 truncate">
-              <span>{t.label}</span>
-              <span className="text-text-secondary truncate">{t.value}</span>
-            </div>
-          ))}
+      {timeLabel && (
+        <div className="mt-1.5 flex items-center gap-1 text-caption text-text-tertiary">
+          <span>{timeLabel.label}</span>
+          <span className="text-text-secondary">{timeLabel.value}</span>
         </div>
       )}
       {selected && (
