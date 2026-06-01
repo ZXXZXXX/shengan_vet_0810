@@ -44,19 +44,25 @@ function AnimalDetailPage() {
   const orders = [
     {
       id: "WO-2026-0518",
+      kind: "健康" as "健康" | "修蹄",
       type: "疾病治疗",
+      conclusion: "疑似乳房炎",
       desc: "持续高烧 39.6℃，食欲明显下降",
       status: "执行中" as "待诊断" | "执行中",
-      timeLabel: "开始执行时间",
       time: "2026-05-18 09:20",
+      person: "李雨晴",
+      needPickup: true,
     },
     {
       id: "WO-2026-0521",
+      kind: "修蹄" as "健康" | "修蹄",
       type: "趾间皮炎处置",
+      conclusion: "待诊断",
       desc: "右后蹄红肿，需清创修蹄",
       status: "待诊断" as "待诊断" | "执行中",
-      timeLabel: "提出时间",
       time: "2026-05-21 14:05",
+      person: "王巡栏",
+      needPickup: false,
     },
   ];
   const [ordersExpanded, setOrdersExpanded] = useState(false);
