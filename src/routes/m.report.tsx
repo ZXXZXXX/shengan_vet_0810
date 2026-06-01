@@ -270,11 +270,25 @@ function ReportPage() {
     search.revisitReason ?? ""
   );
   const [revisitReasonOther, setRevisitReasonOther] = useState("");
+  const [orderQuery, setOrderQuery] = useState("");
+  const [orderFocused, setOrderFocused] = useState(false);
   const [detectDialog, setDetectDialog] = useState<{
     cowId: string;
     orderId: string;
   } | null>(null);
   const [detectShown, setDetectShown] = useState(fromRevisit);
+
+  // 可选关联工单候选（含近 7 日检测到的工单 + 该牛只最近的几条 mock 工单）
+  const candidateOrders = useMemo(() => {
+    const list: string[] = [];
+    const cowId = targets[0];
+    const detected = cowId ? recentDiseaseOrderOf(cowId) : null;
+    if (detected) list.push(detected);
+    ["WO-20260128", "WO-20260117", "WO-20260105", "WO-20260042"].forEach((o) => {
+      if (!list.includes(o)) list.push(o);
+    });
+    return list;
+  }, [targets]);
 
   // 牛只填好后探测近 7 日工单（仅一次、仅非来自旧工单）
   useEffect(() => {
