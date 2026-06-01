@@ -266,7 +266,7 @@ function TaskDetailPage() {
                   <History className="h-3.5 w-3.5 text-text-tertiary" />
                   <span className="text-text-tertiary">诊疗信息摘要</span>
                   <span className="text-body-sm text-primary">查看</span>
-                  <ChevronRight className="h-3.5 w-3.5 text-text-tertiary ml-auto" />
+
                 </button>
               )}
             </div>
