@@ -23,7 +23,9 @@ import {
 
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
+import { RoleSwitchSheet } from "@/components/role-switch-sheet";
 import { useRole, roleLabel, roleGroup, canVisit, type Role } from "@/lib/mobile-role";
+import { ChevronsUpDown } from "lucide-react";
 
 import { Activity, BookMarked } from "lucide-react";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
