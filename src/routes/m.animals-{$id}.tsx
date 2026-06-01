@@ -5,7 +5,7 @@ import {
   PlayCircle,
   ClipboardPlus,
   ChevronDown,
-  Activity,
+  
   Pill,
   Clock,
   MapPin,
@@ -75,40 +75,41 @@ function AnimalDetailPage() {
       <div className="pb-28">
         {/* 头部：耳号 + 摘要 */}
         <div className="px-4 pt-4">
-          <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary/70 p-5 text-primary-foreground relative overflow-hidden">
-            <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+          <div className="rounded-3xl bg-gradient-to-br from-primary to-[#00823F] p-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
+            <Beef className="absolute -right-4 -bottom-4 h-32 w-32 opacity-10" strokeWidth={1} />
+
             <div className="relative flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
+              <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/15">
                 <Beef className="h-6 w-6" strokeWidth={1.75} />
               </div>
               <div className="min-w-0">
-                <div className="text-caption opacity-85">耳号</div>
-                <div className="text-section-title font-mono">#{a.id}</div>
+                <div className="text-[11px] opacity-75 font-medium">耳号</div>
+                <div className="text-section-title font-mono leading-tight">#{a.id}</div>
               </div>
               <span
-                className={`ml-auto h-8 px-3 rounded-full inline-flex items-center text-body-sm font-medium ${
+                className={`ml-auto h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
                   a.health === "异常"
                     ? "bg-[#FFE4E1] text-[#D9534F]"
                     : a.health === "观察中"
-                    ? "bg-[#FFF7D6] text-[#B8860B]"
+                    ? "bg-[#FFF7E6] text-[#B8860B]"
                     : a.health === "治疗中"
                     ? "bg-[#FFE8CC] text-[#C9621F]"
                     : "bg-[#E8F5E9] text-[#2E7D32]"
                 }`}
               >
-                <Activity className="h-3.5 w-3.5 mr-1" />
+                <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
                 {a.health}
               </span>
             </div>
 
-            <div className="relative mt-4 space-y-2">
+            <div className="relative mt-5 space-y-2">
               <Brief
-                icon={<MapPin className="h-3.5 w-3.5 opacity-85" />}
+                icon={<MapPin className="h-3 w-3 opacity-85" />}
                 label="所在位置"
                 value={`${a.farm} · ${a.barn} · ${a.pen}`}
               />
               <Brief
-                icon={<Beef className="h-3.5 w-3.5 opacity-85" />}
+                icon={<Beef className="h-3 w-3 opacity-85" />}
                 label="品种 / 性别 / 日龄"
                 value={`${a.breed} · ${a.sex} · ${a.ageDays} 日龄`}
               />
@@ -117,22 +118,23 @@ function AnimalDetailPage() {
         </div>
 
         {/* 状态标签 */}
-        <section className="px-4 mt-3 flex flex-wrap gap-2">
-          <span
-            className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm font-medium border ${
-              a.treating
-                ? "bg-[#FFF7D6] text-[#B8860B] border-[#F5D76E]"
-                : "bg-surface-subtle text-text-tertiary border-border"
-            }`}
-          >
-            <Pill className="h-3.5 w-3.5" />
-            {a.treating ? "治疗中" : "未治疗"}
-          </span>
-          {a.withdrawalDays > 0 && (
-            <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm font-medium border bg-[#FFE4E1] text-[#D9534F] border-[#F5B7B1]">
-              <Clock className="h-3.5 w-3.5" />
-              休药期至 {a.withdrawalUntil}（剩 {a.withdrawalDays} 天）
+        <section className="px-4 mt-3 flex gap-2">
+          <div className="flex-1 bg-[#FFFBE6] border border-[#FFE58F] rounded-lg px-3 py-2 inline-flex items-center justify-center gap-1.5">
+            <Pill className="h-3.5 w-3.5 text-[#B37D00]" />
+            <span className="text-body-sm font-medium text-[#B37D00]">
+              {a.treating ? "治疗中" : "未治疗"}
             </span>
+          </div>
+          {a.withdrawalDays > 0 && (
+            <div className="flex-[2] bg-[#FFF1F0] border border-[#FFA39E] rounded-lg px-3 py-2 inline-flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#CF1322] min-w-0">
+                <Clock className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">休药期至 {a.withdrawalUntil}</span>
+              </span>
+              <span className="ml-2 shrink-0 bg-[#FF4D4F] text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                剩 {a.withdrawalDays} 天
+              </span>
+            </div>
           )}
         </section>
 
@@ -273,11 +275,11 @@ function AnimalDetailPage() {
       </div>
 
       {/* 底部固定：疾病上报入口 */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card/85 backdrop-blur-lg border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
         <Link
           to="/m/report"
           search={{ target: a.id, barn: a.barn, lock: 1 } as never}
-          className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+          className="w-full h-12 rounded-2xl bg-primary text-primary-foreground text-body font-semibold inline-flex items-center justify-center gap-1.5 shadow-lg shadow-primary/30 active:scale-[0.98] transition-transform"
         >
           <ClipboardPlus className="h-4 w-4" /> 疾病上报
         </Link>
@@ -296,12 +298,12 @@ function Brief({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg bg-white/15 backdrop-blur border border-white/15 px-3 py-2">
-      <div className="text-caption opacity-85 inline-flex items-center gap-1">
+    <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-2">
+      <div className="text-[10px] opacity-75 inline-flex items-center gap-1 font-medium">
         {icon}
         {label}
       </div>
-      <div className="text-body-sm mt-0.5 truncate">{value}</div>
+      <div className="text-body-sm mt-0.5 truncate font-medium">{value}</div>
     </div>
   );
 }
