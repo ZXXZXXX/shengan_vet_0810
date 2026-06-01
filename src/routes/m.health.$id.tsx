@@ -224,54 +224,72 @@ function TaskDetailPage() {
             )}
           </div>
 
-          <div className="flex items-center gap-3 text-caption text-text-tertiary">
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5" />
-              <span>{o.farm}</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <Warehouse className="h-3.5 w-3.5" />
-              <span>{o.barn}</span>
-            </span>
-          </div>
-          {isDisease && (
-            <div className="pt-2 mt-1 border-t border-border/60 space-y-2">
-              <div className="flex items-center gap-1.5 text-caption">
-                <Repeat className="h-3.5 w-3.5 text-text-tertiary" />
-                <span className="text-text-tertiary">是否复诊</span>
+          <div className="flex items-center justify-between gap-3 text-caption text-text-tertiary">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5" />
+                <span>{o.farm}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <Warehouse className="h-3.5 w-3.5" />
+                <span>{o.barn}</span>
+              </span>
+            </div>
+            {isDisease && (
+              <span className="flex items-center gap-1 shrink-0">
+                <Repeat className="h-3.5 w-3.5" />
+                <span>是否复诊</span>
                 <span className={`text-body-sm ${isRevisit ? "text-primary font-medium" : "text-foreground"}`}>
                   {isRevisit ? "是" : "否"}
                 </span>
-              </div>
-              {relatedOrderId && (
-                <div className="flex items-center gap-1.5 text-caption">
-                  <Link2 className="h-3.5 w-3.5 text-text-tertiary" />
-                  <span className="text-text-tertiary">关联原始工单</span>
-                  <Link
-                    to="/m/health/$id"
-                    params={{ id: relatedOrderId }}
-                    className="font-mono text-body-sm text-primary inline-flex items-center gap-0.5"
-                  >
-                    {relatedOrderId}
-                    <ChevronRight className="h-3 w-3" />
-                  </Link>
-                </div>
-              )}
-              {showSummary && (
-                <button
-                  type="button"
-                  onClick={() => setRecordsOpen(true)}
-                  className="w-full flex items-center gap-1.5 text-caption"
-                >
-                  <History className="h-3.5 w-3.5 text-text-tertiary" />
-                  <span className="text-text-tertiary">诊疗信息摘要</span>
-                  <span className="text-body-sm text-primary">查看</span>
+              </span>
+            )}
+          </div>
 
-                </button>
+          {isDisease && (relatedOrderId || showSummary) && (
+            <div className="pt-2 mt-1 border-t border-border/60 space-y-2">
+              <div className="flex items-center justify-between gap-3 text-caption">
+                {relatedOrderId && (
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Link2 className="h-3.5 w-3.5 text-text-tertiary" />
+                    <span className="text-text-tertiary">关联原始工单</span>
+                    <Link
+                      to="/m/health/$id"
+                      params={{ id: relatedOrderId }}
+                      className="font-mono text-body-sm text-primary inline-flex items-center gap-0.5"
+                    >
+                      {relatedOrderId}
+                      <ChevronRight className="h-3 w-3" />
+                    </Link>
+                  </div>
+                )}
+                {showSummary && (
+                  <button
+                    type="button"
+                    onClick={() => setRecordsOpen(true)}
+                    className="flex items-center gap-1.5 shrink-0"
+                  >
+                    <History className="h-3.5 w-3.5 text-text-tertiary" />
+                    <span className="text-text-tertiary">诊疗信息摘要</span>
+                    <span className="text-body-sm text-primary">查看</span>
+                  </button>
+                )}
+              </div>
+              {showSummary && summary?.revisitReason && (
+                <div className="rounded-lg bg-surface-subtle border border-border/60 p-2.5">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Repeat className="h-3.5 w-3.5 text-text-tertiary" />
+                    <span className="text-caption text-text-tertiary">复诊原因</span>
+                  </div>
+                  <p className="text-body-sm text-text-secondary leading-relaxed">
+                    {summary.revisitReason}
+                  </p>
+                </div>
               )}
             </div>
           )}
         </div>
+
 
 
         {/* === 2. Tab === */}
@@ -385,10 +403,6 @@ function TaskDetailPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border bg-card p-3 space-y-1.5">
-                <div className="text-caption text-text-tertiary">复诊原因</div>
-                <p className="text-body-sm text-text-secondary leading-relaxed">{summary.revisitReason}</p>
-              </div>
             </div>
           )}
         </DialogContent>
