@@ -18,7 +18,14 @@ import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
-type ReportSearch = { target?: string; barn?: string; lock?: number; draftId?: string };
+type ReportSearch = {
+  target?: string;
+  barn?: string;
+  lock?: number;
+  draftId?: string;
+  revisitFrom?: string;
+  revisitReason?: string;
+};
 
 export const Route = createFileRoute("/m/report")({
   head: () => ({ meta: [{ title: "疾病上报 · 奇点智牧" }] }),
@@ -27,9 +34,30 @@ export const Route = createFileRoute("/m/report")({
     barn: typeof s.barn === "string" ? s.barn : undefined,
     lock: s.lock ? 1 : undefined,
     draftId: typeof s.draftId === "string" ? s.draftId : undefined,
+    revisitFrom: typeof s.revisitFrom === "string" ? s.revisitFrom : undefined,
+    revisitReason: typeof s.revisitReason === "string" ? s.revisitReason : undefined,
   }),
   component: ReportPage,
 });
+
+// 复诊原因预设
+const REVISIT_REASONS = [
+  "症状未缓解",
+  "症状加重",
+  "出现新症状",
+  "用药反应异常",
+  "需进一步检查",
+];
+
+// mock：根据牛只编号生成近 7 日疾病诊疗工单号
+function recentDiseaseOrderOf(cowId: string): string | null {
+  if (!cowId) return null;
+  const num = parseInt(cowId.replace(/\D/g, ""), 10);
+  if (isNaN(num)) return null;
+  // mock：编号能被 2 整除的牛只视为近 7 日有疾病诊疗工单
+  if (num % 2 !== 0) return null;
+  return `WO-2026${String(num).padStart(4, "0").slice(-4)}`;
+}
 
 
 type ReportKind = "health";
