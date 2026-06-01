@@ -345,6 +345,7 @@ function ReportPage() {
   const [note, setNote] = useState<string>(draft?.note ?? "");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
+  const [diseasePickerOpen, setDiseasePickerOpen] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>(draft?.suspectedDisease ?? "");
 
 
