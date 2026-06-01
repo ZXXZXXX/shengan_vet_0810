@@ -257,15 +257,15 @@ function TaskDetailPage() {
                   </Link>
                 </div>
               )}
-              {showRecentRecords && (
+              {showSummary && (
                 <button
                   type="button"
                   onClick={() => setRecordsOpen(true)}
                   className="w-full flex items-center gap-1.5 text-caption"
                 >
                   <History className="h-3.5 w-3.5 text-text-tertiary" />
-                  <span className="text-text-tertiary">近期诊疗记录</span>
-                  <span className="text-body-sm text-foreground">{recentRecords.length} 条</span>
+                  <span className="text-text-tertiary">诊疗信息摘要</span>
+                  <span className="text-body-sm text-primary">查看</span>
                   <ChevronRight className="h-3.5 w-3.5 text-text-tertiary ml-auto" />
                 </button>
               )}
