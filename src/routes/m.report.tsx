@@ -270,11 +270,25 @@ function ReportPage() {
     search.revisitReason ?? ""
   );
   const [revisitReasonOther, setRevisitReasonOther] = useState("");
+  const [orderQuery, setOrderQuery] = useState("");
+  const [orderFocused, setOrderFocused] = useState(false);
   const [detectDialog, setDetectDialog] = useState<{
     cowId: string;
     orderId: string;
   } | null>(null);
   const [detectShown, setDetectShown] = useState(fromRevisit);
+
+  // 可选关联工单候选（含近 7 日检测到的工单 + 该牛只最近的几条 mock 工单）
+  const candidateOrders = useMemo(() => {
+    const list: string[] = [];
+    const cowId = targets[0];
+    const detected = cowId ? recentDiseaseOrderOf(cowId) : null;
+    if (detected) list.push(detected);
+    ["WO-20260128", "WO-20260117", "WO-20260105", "WO-20260042"].forEach((o) => {
+      if (!list.includes(o)) list.push(o);
+    });
+    return list;
+  }, [targets]);
 
   // 牛只填好后探测近 7 日工单（仅一次、仅非来自旧工单）
   useEffect(() => {
@@ -675,94 +689,139 @@ function ReportPage() {
             </Section>
 
 
-            {/* 工单类型：固定为疾病治疗 */}
-            <Section title="工单类型">
-              <div className="h-11 px-3 rounded-xl bg-surface-subtle border border-border inline-flex items-center text-body-sm text-foreground">
-                疾病治疗
-              </div>
-            </Section>
-
-            {/* 复诊关联 */}
-            {!barnMode && isRevisit !== null && (
+            {/* 复诊信息：默认折叠，仅切到"是"时展开 */}
+            {!barnMode && (
               <Section title="复诊信息">
-                <div className="rounded-xl border border-border bg-card divide-y divide-border">
-                  <div className="h-11 px-3 flex items-center justify-between text-body-sm">
-                    <span className="text-text-tertiary">是否复诊</span>
-                    <span
-                      className={
-                        isRevisit ? "text-primary font-medium" : "text-foreground"
-                      }
-                    >
-                      {isRevisit ? "是" : "否"}
-                    </span>
-                  </div>
-                  <div className="h-11 px-3 flex items-center justify-between text-body-sm">
-                    <span className="text-text-tertiary">关联原始工单</span>
-                    <span className="font-mono text-foreground">
-                      {relatedOrderId || "-"}
-                    </span>
+                <div className="flex items-center justify-between">
+                  <div className="text-body-sm text-foreground">是否为复诊</div>
+                  <div className="inline-flex rounded-full border border-border bg-surface-subtle p-0.5">
+                    {[
+                      { v: false, label: "否" },
+                      { v: true, label: "是" },
+                    ].map((opt) => {
+                      const active = isRevisit === opt.v;
+                      return (
+                        <button
+                          key={opt.label}
+                          type="button"
+                          onClick={() => {
+                            if (opt.v) {
+                              setIsRevisit(true);
+                              if (!relatedOrderId || relatedOrderId === "-") {
+                                const cowId = targets[0];
+                                const detected = cowId ? recentDiseaseOrderOf(cowId) : null;
+                                setRelatedOrderId(detected ?? "");
+                              }
+                            } else {
+                              setIsRevisit(false);
+                              setRelatedOrderId("-");
+                              setRevisitReason("");
+                              setRevisitReasonOther("");
+                              setOrderQuery("");
+                            }
+                          }}
+                          className={`h-8 min-w-[56px] px-3 rounded-full text-body-sm transition-colors ${
+                            active
+                              ? opt.v
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-card text-foreground border border-border"
+                              : "text-text-tertiary"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                {isRevisit && (
-                  <div className="mt-3 space-y-2">
-                    <div className="text-caption text-text-tertiary">
-                      复诊原因 <span className="text-[var(--state-danger)]">*</span>
+                {isRevisit === true && (
+                  <div className="mt-4 space-y-4">
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-2">
+                        关联原始工单 <span className="text-[var(--state-danger)]">*</span>
+                      </div>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                        <input
+                          value={orderQuery || relatedOrderId}
+                          onChange={(e) => {
+                            setOrderQuery(e.target.value);
+                            setRelatedOrderId(e.target.value);
+                            setOrderFocused(true);
+                          }}
+                          onFocus={() => setOrderFocused(true)}
+                          onBlur={() => setTimeout(() => setOrderFocused(false), 150)}
+                          placeholder="输入或选择工单编号"
+                          className="w-full h-11 pl-9 pr-3 rounded-lg bg-card border border-border text-body font-mono placeholder:text-text-tertiary placeholder:font-sans"
+                        />
+                        {orderFocused && candidateOrders.length > 0 && (
+                          <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-60 overflow-auto">
+                            {candidateOrders
+                              .filter((o) =>
+                                orderQuery ? o.toLowerCase().includes(orderQuery.toLowerCase()) : true
+                              )
+                              .map((o, idx) => {
+                                const detected =
+                                  targets[0] && recentDiseaseOrderOf(targets[0]) === o;
+                                return (
+                                  <button
+                                    key={o}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => {
+                                      setRelatedOrderId(o);
+                                      setOrderQuery("");
+                                      setOrderFocused(false);
+                                    }}
+                                    className={`w-full text-left px-3 py-2.5 flex items-center justify-between gap-2 hover:bg-surface-subtle ${
+                                      idx > 0 ? "border-t border-border" : ""
+                                    }`}
+                                  >
+                                    <span className="text-body-sm font-mono text-foreground">{o}</span>
+                                    {detected && (
+                                      <span className="tag tag-muted">近 7 日</span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {[...REVISIT_REASONS, "其他"].map((r) => {
-                        const active = revisitReason === r;
-                        return (
-                          <button
-                            key={r}
-                            type="button"
-                            onClick={() => setRevisitReason(r)}
-                            className={`h-8 px-3 rounded-full text-body-sm border ${
-                              active
-                                ? "bg-brand-subtle text-primary border-primary/40"
-                                : "bg-card text-text-secondary border-border"
-                            }`}
-                          >
-                            {r}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {revisitReason === "其他" && (
-                      <textarea
-                        value={revisitReasonOther}
-                        onChange={(e) => setRevisitReasonOther(e.target.value)}
-                        placeholder="请输入复诊原因"
-                        className="w-full min-h-[72px] rounded-lg border border-border bg-card px-3 py-2 text-body-sm placeholder:text-text-tertiary resize-none focus:outline-none focus:border-primary/40"
-                      />
-                    )}
-                  </div>
-                )}
 
-                {!fromRevisit && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (isRevisit) {
-                        setIsRevisit(false);
-                        setRelatedOrderId("-");
-                        setRevisitReason("");
-                        setRevisitReasonOther("");
-                      } else {
-                        const cowId = targets[0];
-                        const orderId = cowId ? recentDiseaseOrderOf(cowId) : null;
-                        if (orderId) {
-                          setIsRevisit(true);
-                          setRelatedOrderId(orderId);
-                        } else {
-                          toast("未检测到该牛只近 7 日的疾病诊疗工单");
-                        }
-                      }
-                    }}
-                    className="mt-3 text-caption text-text-tertiary underline underline-offset-4"
-                  >
-                    {isRevisit ? "改为非复诊" : "标记为复诊"}
-                  </button>
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-2">
+                        复诊原因 <span className="text-[var(--state-danger)]">*</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[...REVISIT_REASONS, "其他"].map((r) => {
+                          const active = revisitReason === r;
+                          return (
+                            <button
+                              key={r}
+                              type="button"
+                              onClick={() => setRevisitReason(r)}
+                              className={`h-8 px-3 rounded-full text-body-sm border ${
+                                active
+                                  ? "bg-brand-subtle text-primary border-primary/40"
+                                  : "bg-card text-text-secondary border-border"
+                              }`}
+                            >
+                              {r}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {revisitReason === "其他" && (
+                        <textarea
+                          value={revisitReasonOther}
+                          onChange={(e) => setRevisitReasonOther(e.target.value)}
+                          placeholder="请输入复诊原因"
+                          className="mt-2 w-full min-h-[72px] rounded-lg border border-border bg-card px-3 py-2 text-body-sm placeholder:text-text-tertiary resize-none focus:outline-none focus:border-primary/40"
+                        />
+                      )}
+                    </div>
+                  </div>
                 )}
               </Section>
             )}
