@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Send } from "lucide-react";
+import { Send, AlertTriangle } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { AnomalyFeedbackSheet } from "@/components/anomaly-feedback-sheet";
 import { useRole } from "@/lib/mobile-role";
 import { ActiveDayExecute } from "./m.health.$id";
 
