@@ -153,25 +153,22 @@ function TaskDetailPage() {
   const isDisease = o.type === "疾病治疗";
   const isRevisit = isDisease && (id === "WO-2298" || /复诊/.test("乳房炎复诊") && id === "WO-2298");
   const relatedOrderId: string | null = isRevisit ? "WO-2150" : null;
-  // 近期诊疗记录 mock（仅对单只疾病治疗工单展示）
-  const showRecentRecords = isDisease && isSingle;
-  const recentRecords: { id: string; date: string; conclusion: string; meds: { name: string; dose: string; route: string; days: string }[] }[] = [
-    {
-      id: "WO-2150",
-      date: "2026-04-22",
-      conclusion: "乳房炎（亚临床）",
-      meds: [
-        { name: "头孢噻呋钠", dose: "1g / 次", route: "肌肉注射", days: "3 天" },
-        { name: "氟尼辛葡甲胺", dose: "2ml / 次", route: "肌肉注射", days: "2 天" },
-      ],
-    },
-    {
-      id: "WO-2042",
-      date: "2026-02-08",
-      conclusion: "支气管炎（早期）",
-      meds: [{ name: "土霉素长效注射液", dose: "20ml / 次", route: "肌肉注射", days: "1 次" }],
-    },
-  ];
+  // 诊疗信息摘要 mock —— 取自"关联原始工单"
+  const showSummary = isDisease && isSingle && Boolean(relatedOrderId);
+  const summary = relatedOrderId
+    ? {
+        id: relatedOrderId,
+        date: "2026-04-22",
+        conclusion: "乳房炎（亚临床）",
+        prescription: "标准 3 日抗炎方案：头孢噻呋钠 + 氟尼辛葡甲胺，每日 1 次连续 3 天，配合每日测温与乳样复查。",
+        meds: [
+          { name: "头孢噻呋钠", dose: "1g / 次", route: "肌肉注射", days: "3 天", executed: "2026-04-22 ~ 2026-04-24，按计划完成" },
+          { name: "氟尼辛葡甲胺", dose: "2ml / 次", route: "肌肉注射", days: "2 天", executed: "2026-04-22 ~ 2026-04-23，按计划完成" },
+        ],
+        revisitReason: "停药 5 天后乳区再次出现红肿，体温回升至 39.4℃，疑似炎症复发，需复查并调整方案。",
+      }
+    : null;
+
 
 
   const showAnomaly = canExecute(role) && o.status === "进行中";
