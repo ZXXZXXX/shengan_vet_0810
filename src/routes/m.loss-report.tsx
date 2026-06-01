@@ -105,33 +105,87 @@ function LossReportPage() {
               return (
                 <div key={idx} className="space-y-2">
                   <div className="flex items-center gap-2">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary z-10 pointer-events-none" />
+                      <input
+                        value={
+                          showItemPicker === idx
+                            ? itemQuery
+                            : item
+                              ? `${item.name}  ${item.id}`
+                              : ""
+                        }
+                        onFocus={() => {
+                          setShowItemPicker(idx);
+                          setItemQuery(item ? "" : "");
+                        }}
+                        onChange={(e) => {
+                          setShowItemPicker(idx);
+                          setItemQuery(e.target.value);
+                          if (item) setLine(idx, { itemId: "" });
+                        }}
+                        onBlur={() => {
+                          // delay so click on dropdown can register
+                          setTimeout(() => {
+                            setShowItemPicker((cur) => (cur === idx ? null : cur));
+                          }, 150);
+                        }}
+                        placeholder="搜索物品编号 / 名称"
+                        className="w-full h-11 pl-9 pr-3 rounded-lg text-body"
+                      />
+                      {showItemPicker === idx && (
+                        <div className="absolute left-0 right-0 top-12 z-30 bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                          {matchedItems.length === 0 ? (
+                            <div className="text-center py-6 text-caption text-text-tertiary">
+                              无匹配结果
+                            </div>
+                          ) : (
+                            matchedItems.map((i) => (
+                              <button
+                                key={i.id}
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => {
+                                  setLine(idx, { itemId: i.id });
+                                  setShowItemPicker(null);
+                                  setItemQuery("");
+                                }}
+                                className="w-full px-3 py-2.5 flex items-center gap-3 text-left active:bg-surface-subtle hover:bg-surface-subtle"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-body text-foreground truncate">
+                                    {i.name}
+                                  </div>
+                                  <div className="text-caption text-text-tertiary font-mono mt-0.5">
+                                    {i.id} · {i.unit} · ¥ {i.price}/{i.unit}
+                                  </div>
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
                     <button
                       onClick={() => {
                         setShowItemPicker(idx);
                         setItemQuery("");
+                        toast("已唤起扫码（演示）");
                       }}
-                      className="flex-1 h-11 px-3 rounded-lg bg-surface-subtle border border-border text-left text-body inline-flex items-center"
+                      className="h-11 w-11 inline-flex items-center justify-center rounded-lg bg-brand-subtle text-primary shrink-0"
+                      aria-label="扫码录入"
                     >
-                      {item ? (
-                        <span className="truncate text-foreground">
-                          {item.name}
-                          <span className="ml-2 text-caption text-text-tertiary font-mono">
-                            {item.id}
-                          </span>
-                        </span>
-                      ) : (
-                        <span className="text-text-tertiary">选择物品 / 药品</span>
-                      )}
+                      <ScanLine className="h-4 w-4" />
                     </button>
                     {canDelete && (
                       <button
                         onClick={() => removeLine(idx)}
-                        className="h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+                        className="h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle shrink-0"
                       >
                         <X className="h-4 w-4" />
                       </button>
                     )}
                   </div>
+
                   <div className="flex items-center gap-2">
                     <input
                       value={l.qty}
@@ -249,68 +303,6 @@ function LossReportPage() {
         </button>
       </div>
 
-      {/* 物品选择弹层 */}
-      {showItemPicker !== null && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
-          onClick={() => setShowItemPicker(null)}
-        >
-          <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl p-4 pb-[calc(env(safe-area-inset-bottom)+16px)] max-h-[70vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="flex-1 text-body font-medium">选择物品 / 药品</div>
-              <button
-                onClick={() => setShowItemPicker(null)}
-                className="h-8 w-8 inline-flex items-center justify-center text-text-tertiary"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="flex gap-2 mb-3">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary z-10" />
-                <input
-                  autoFocus
-                  value={itemQuery}
-                  onChange={(e) => setItemQuery(e.target.value)}
-                  placeholder="搜索物品编号或名称"
-                  className="w-full h-10 pl-9 pr-3 rounded-lg text-body-sm"
-                />
-              </div>
-              <button className="h-10 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm">
-                <ScanLine className="h-4 w-4" /> 扫码
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto -mx-2">
-              {matchedItems.length === 0 ? (
-                <div className="text-center py-12 text-caption text-text-tertiary">
-                  无匹配结果
-                </div>
-              ) : (
-                matchedItems.map((i) => (
-                  <button
-                    key={i.id}
-                    onClick={() => {
-                      setLine(showItemPicker, { itemId: i.id });
-                      setShowItemPicker(null);
-                    }}
-                    className="w-full px-3 py-3 flex items-center gap-3 text-left active:bg-surface-subtle rounded-lg"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="text-body text-foreground truncate">{i.name}</div>
-                      <div className="text-caption text-text-tertiary font-mono mt-0.5">
-                        {i.id} · 单位 {i.unit} · ¥ {i.price}/{i.unit}
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </MobileShell>
   );
 }
