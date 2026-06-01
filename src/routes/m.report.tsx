@@ -20,6 +20,7 @@ import {
   RelatedOrderCard,
   type RelatedOrder,
 } from "@/components/related-order-picker";
+import { DiseasePicker } from "@/components/disease-picker";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
@@ -344,6 +345,7 @@ function ReportPage() {
   const [note, setNote] = useState<string>(draft?.note ?? "");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
+  const [diseasePickerOpen, setDiseasePickerOpen] = useState(false);
   const [suspectedDisease, setSuspectedDisease] = useState<string>(draft?.suspectedDisease ?? "");
 
 
@@ -929,50 +931,14 @@ function ReportPage() {
                     hint="可选；选择后将从诊疗知识库自动拉取治疗方案"
                   >
                     {!suspectedDisease ? (
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                        <input
-                          value={diseaseQ}
-                          onChange={(e) => {
-                            setDiseaseQ(e.target.value);
-                            setDiseaseFocused(true);
-                          }}
-                          onFocus={() => setDiseaseFocused(true)}
-                          onBlur={() => setTimeout(() => setDiseaseFocused(false), 150)}
-                          placeholder="搜索疾病名称，或根据症状自动推荐"
-                          className="w-full h-12 pl-9 pr-3 rounded-lg bg-card border border-border text-body placeholder:text-text-tertiary"
-                        />
-                        {diseaseFocused && diseaseMatches.length > 0 && (
-                          <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-72 overflow-auto">
-                            {diseaseMatches.map((d) => {
-                              const overlap = d.symptoms.filter((s) => symptoms.includes(s));
-                              return (
-                                <button
-                                  key={d.name}
-                                  onMouseDown={(e) => e.preventDefault()}
-                                  onClick={() => {
-                                    setSuspectedDisease(d.name);
-                                    setDiseaseFocused(false);
-                                  }}
-                                  className="w-full text-left px-3 py-2.5 hover:bg-surface-subtle border-b border-border last:border-b-0"
-                                >
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-body-sm text-foreground">{d.name}</span>
-                                    {overlap.length > 0 && (
-                                      <span className="tag tag-brand">
-                                        匹配 {overlap.length} 项症状
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                                    典型症状：{d.symptoms.join("、")}
-                                  </div>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setDiseasePickerOpen(true)}
+                        className="w-full h-11 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
+                      >
+                        <Search className="h-4 w-4" />
+                        选择疑似疾病
+                      </button>
                     ) : (
                       <div className="rounded-lg border border-primary/20 bg-brand-subtle p-3 space-y-2">
                         <div className="flex items-center justify-between">
@@ -1143,6 +1109,15 @@ function ReportPage() {
       </div>
 
       {/* 复诊检测弹窗 */}
+      <DiseasePicker
+        open={diseasePickerOpen}
+        onClose={() => setDiseasePickerOpen(false)}
+        diseases={diseaseKB}
+        selectedName={suspectedDisease}
+        matchedSymptoms={symptoms}
+        onSelect={(d) => setSuspectedDisease(d.name)}
+      />
+
       <RelatedOrderPicker
         open={orderPickerOpen}
         onClose={() => setOrderPickerOpen(false)}
