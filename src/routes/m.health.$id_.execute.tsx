@@ -16,6 +16,7 @@ function ExecuteRecordPage() {
   const { id } = useParams({ from: "/m/health/$id_/execute" });
   const role = useRole();
   const navigate = useNavigate();
+  const [anomalyOpen, setAnomalyOpen] = useState(false);
 
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
