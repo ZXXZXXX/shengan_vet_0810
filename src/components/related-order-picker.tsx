@@ -22,12 +22,11 @@ export function RelatedOrderCard({
   selected?: boolean;
   onClick?: () => void;
 }) {
-  const times: { label: string; value?: string }[] = [
-    { label: "上报", value: order.reportedAt },
-    { label: "诊断", value: order.diagnosedAt },
-    { label: "开始执行", value: order.startedAt },
-    { label: "完成", value: order.completedAt },
-  ].filter((t) => !!t.value);
+  const timeLabel = order.startedAt
+    ? { label: "开始执行", value: order.startedAt }
+    : order.diagnosedAt
+    ? { label: "诊断", value: order.diagnosedAt }
+    : null;
 
   return (
     <button
