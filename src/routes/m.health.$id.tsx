@@ -248,6 +248,17 @@ function TaskDetailPage() {
 
           {isDisease && (relatedOrderId || showSummary) && (
             <div className="pt-2 mt-1 border-t border-border/60 space-y-2">
+              {showSummary && summary?.revisitReason && (
+                <div className="rounded-lg border border-[var(--state-warning)]/30 bg-[var(--state-warning)]/8 p-2.5">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Repeat className="h-3.5 w-3.5 text-[var(--state-warning)]" />
+                    <span className="text-caption text-[var(--state-warning)] font-medium">复诊原因</span>
+                  </div>
+                  <p className="text-body-sm text-foreground leading-relaxed">
+                    {summary.revisitReason}
+                  </p>
+                </div>
+              )}
               <div className="flex items-center justify-between gap-3 text-caption">
                 {relatedOrderId && (
                   <div className="flex items-center gap-1.5 min-w-0">
@@ -275,19 +286,9 @@ function TaskDetailPage() {
                   </button>
                 )}
               </div>
-              {showSummary && summary?.revisitReason && (
-                <div className="rounded-lg bg-surface-subtle border border-border/60 p-2.5">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Repeat className="h-3.5 w-3.5 text-text-tertiary" />
-                    <span className="text-caption text-text-tertiary">复诊原因</span>
-                  </div>
-                  <p className="text-body-sm text-text-secondary leading-relaxed">
-                    {summary.revisitReason}
-                  </p>
-                </div>
-              )}
             </div>
           )}
+
         </div>
 
 
