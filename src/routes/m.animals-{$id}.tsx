@@ -405,15 +405,17 @@ function MedicationHistory() {
         </div>
       )}
       {hasMore && (
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          className="mt-3 w-full h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
-        >
-          {expanded ? "收起" : `展开查看全部 ${totalCount} 条`}
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`}
-          />
-        </button>
+        <div className="mt-3 flex justify-center">
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1 active:bg-primary/15 transition-colors"
+          >
+            {expanded ? "收起" : `展开全部 ${totalCount} 条`}
+            <ChevronDown
+              className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`}
+            />
+          </button>
+        </div>
       )}
     </div>
   );
