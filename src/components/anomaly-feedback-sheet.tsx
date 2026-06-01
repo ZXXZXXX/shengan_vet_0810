@@ -72,6 +72,8 @@ export function AnomalyFeedbackSheet({
         search: {
           ...(target ? { target } : {}),
           ...(barn ? { barn } : {}),
+          ...(workOrderId ? { revisitFrom: workOrderId } : {}),
+          ...(finalReason ? { revisitReason: finalReason } : {}),
           lock: 1,
         },
       });
