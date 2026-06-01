@@ -1082,6 +1082,44 @@ function ReportPage() {
         </div>
       </div>
 
+      {/* 复诊检测弹窗 */}
+      {detectDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4">
+            <h3 className="text-card-title text-foreground">是否为复诊？</h3>
+            <p className="text-body-sm text-text-secondary">
+              监测到牛只
+              <span className="font-mono text-foreground"> #{detectDialog.cowId} </span>
+              近 7 日有疾病诊疗工单
+              <span className="font-mono text-foreground"> {detectDialog.orderId}</span>
+              ，本次是否为复诊？
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setIsRevisit(false);
+                  setRelatedOrderId("-");
+                  setDetectDialog(null);
+                }}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                否，非复诊
+              </button>
+              <button
+                onClick={() => {
+                  setIsRevisit(true);
+                  setRelatedOrderId(detectDialog.orderId);
+                  setDetectDialog(null);
+                }}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                是，复诊
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 存草稿确认弹窗 */}
       {showDraftDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
