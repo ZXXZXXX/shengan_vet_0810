@@ -31,6 +31,7 @@ function MePage() {
   const role = useRole();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [roleOpen, setRoleOpen] = useState(false);
 
   return (
