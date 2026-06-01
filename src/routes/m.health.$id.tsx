@@ -403,10 +403,6 @@ function TaskDetailPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border bg-card p-3 space-y-1.5">
-                <div className="text-caption text-text-tertiary">复诊原因</div>
-                <p className="text-body-sm text-text-secondary leading-relaxed">{summary.revisitReason}</p>
-              </div>
             </div>
           )}
         </DialogContent>
