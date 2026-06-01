@@ -37,21 +37,23 @@ function AnimalDetailPage() {
     withdrawalUntil: "2026-05-28",
   };
 
-  // mock 当前相关工单
+  // mock 当前相关工单（仅展示 待诊断 / 执行中）
   const orders = [
     {
       id: "WO-2026-0518",
-      kind: "健康",
       type: "疾病治疗",
-      event: "持续高烧 39.6℃",
-      owner: "李雨晴",
+      desc: "持续高烧 39.6℃，食欲明显下降",
+      status: "执行中" as "待诊断" | "执行中",
+      timeLabel: "开始执行时间",
+      time: "2026-05-18 09:20",
     },
     {
       id: "WO-2026-0521",
-      kind: "修蹄",
       type: "趾间皮炎处置",
-      event: "右后蹄清创修蹄",
-      owner: "张师傅",
+      desc: "右后蹄红肿，需清创修蹄",
+      status: "待诊断" as "待诊断" | "执行中",
+      timeLabel: "提出时间",
+      time: "2026-05-21 14:05",
     },
   ];
   const [ordersExpanded, setOrdersExpanded] = useState(false);
