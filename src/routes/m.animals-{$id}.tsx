@@ -10,7 +10,7 @@ import {
   Pill,
   Clock,
   MapPin,
-  ArrowRightLeft,
+  ArrowRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
@@ -37,21 +37,23 @@ function AnimalDetailPage() {
     withdrawalUntil: "2026-05-28",
   };
 
-  // mock 当前相关工单
+  // mock 当前相关工单（仅展示 待诊断 / 执行中）
   const orders = [
     {
       id: "WO-2026-0518",
-      kind: "健康",
       type: "疾病治疗",
-      event: "持续高烧 39.6℃",
-      owner: "李雨晴",
+      desc: "持续高烧 39.6℃，食欲明显下降",
+      status: "执行中" as "待诊断" | "执行中",
+      timeLabel: "开始执行时间",
+      time: "2026-05-18 09:20",
     },
     {
       id: "WO-2026-0521",
-      kind: "修蹄",
       type: "趾间皮炎处置",
-      event: "右后蹄清创修蹄",
-      owner: "张师傅",
+      desc: "右后蹄红肿，需清创修蹄",
+      status: "待诊断" as "待诊断" | "执行中",
+      timeLabel: "提出时间",
+      time: "2026-05-21 14:05",
     },
   ];
   const [ordersExpanded, setOrdersExpanded] = useState(false);
@@ -146,26 +148,35 @@ function AnimalDetailPage() {
                     key={o.id}
                     to="/m/health/$id"
                     params={{ id: o.id }}
-                    className="block rounded-xl border bg-card border-border p-3 flex items-center gap-3 active:bg-surface-subtle"
+                    className="block rounded-xl border bg-card border-border p-3 flex items-start gap-3 active:bg-surface-subtle"
                   >
-                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center">
+                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center shrink-0">
                       <PlayCircle className="h-4 w-4" />
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-body-sm text-foreground truncate">
+                      <div className="text-body-sm text-foreground line-clamp-2">
+                        {o.desc}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        <span className="font-mono text-caption text-text-tertiary">
                           {o.id}
                         </span>
-                        <span className="tag tag-muted">{o.kind}</span>
+                        <span className="tag tag-muted">{o.type}</span>
+                        <span
+                          className={`inline-flex items-center h-5 px-2 rounded text-caption font-medium ${
+                            o.status === "待诊断"
+                              ? "bg-[#FFF7D6] text-[#B8860B]"
+                              : "bg-[#E8F2FF] text-[#1E6FD9]"
+                          }`}
+                        >
+                          {o.status}
+                        </span>
                       </div>
-                      <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                        {o.type} · {o.event}
-                      </div>
-                      <div className="text-caption text-text-tertiary mt-0.5">
-                        负责人：{o.owner}
+                      <div className="text-caption text-text-tertiary mt-1">
+                        {o.timeLabel}：{o.time}
                       </div>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-text-tertiary" />
+                    <ChevronRight className="h-4 w-4 text-text-tertiary mt-1 shrink-0" />
                   </Link>
                 ))}
               </div>
@@ -395,7 +406,7 @@ function MoveHistory() {
           </div>
           <div className="flex items-center gap-2 text-body-sm text-foreground">
             <span className="flex-1 min-w-0 truncate">{m.from}</span>
-            <ArrowRightLeft className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+            <ArrowRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
             <span className="flex-1 min-w-0 truncate text-right">{m.to}</span>
           </div>
           <div className="text-caption text-text-tertiary mt-1">原因：{m.reason}</div>
