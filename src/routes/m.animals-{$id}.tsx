@@ -10,7 +10,7 @@ import {
   Pill,
   Clock,
   MapPin,
-  ArrowRightLeft,
+  ArrowRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
