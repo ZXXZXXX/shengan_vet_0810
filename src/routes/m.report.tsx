@@ -286,7 +286,6 @@ function ReportPage() {
   const candidateOrders = useMemo<RelatedOrder[]>(() => {
     const cowId = targets[0] ?? "";
     const targetLabel = cowId ? `#${cowId}` : "—";
-    const barnLabel = cowId ? barnOfCattle(cowId) : barn || "—";
     const detected = cowId ? recentDiseaseOrderOf(cowId) : null;
     const list: RelatedOrder[] = [];
     if (detected) {
@@ -294,23 +293,24 @@ function ReportPage() {
         id: detected,
         type: "疾病治疗",
         conclusion: "乳房炎急性发作",
-        barn: barnLabel,
         target: targetLabel,
-        date: "2026-05-26",
-        status: "已完成",
+        reportedAt: "2026-05-26 08:12",
+        diagnosedAt: "2026-05-26 09:30",
+        startedAt: "2026-05-26 10:05",
+        completedAt: "2026-05-26 16:40",
         recent: true,
       });
     }
     const extras: RelatedOrder[] = [
-      { id: "WO-20260128", type: "疾病治疗", conclusion: "蹄叶炎", barn: barnLabel, target: targetLabel, date: "2026-04-28", status: "已完成" },
-      { id: "WO-20260117", type: "疾病治疗", conclusion: "瘤胃酸中毒", barn: barnLabel, target: targetLabel, date: "2026-04-17", status: "已完成" },
-      { id: "WO-20260105", type: "疾病治疗", conclusion: "酮病", barn: barnLabel, target: targetLabel, date: "2026-04-05", status: "已完成" },
+      { id: "WO-20260128", type: "疾病治疗", conclusion: "蹄叶炎", target: targetLabel, reportedAt: "2026-04-28 09:10", diagnosedAt: "2026-04-28 10:20", startedAt: "2026-04-28 11:00", completedAt: "2026-04-28 17:20" },
+      { id: "WO-20260117", type: "疾病治疗", conclusion: "瘤胃酸中毒", target: targetLabel, reportedAt: "2026-04-17 07:45", diagnosedAt: "2026-04-17 08:50", startedAt: "2026-04-17 09:30", completedAt: "2026-04-17 15:10" },
+      { id: "WO-20260105", type: "疾病治疗", conclusion: "酮病", target: targetLabel, reportedAt: "2026-04-05 08:20", diagnosedAt: "2026-04-05 09:15", startedAt: "2026-04-05 10:00", completedAt: "2026-04-05 14:30" },
     ];
     extras.forEach((o) => {
       if (!list.find((x) => x.id === o.id)) list.push(o);
     });
     return list;
-  }, [targets, barn]);
+  }, [targets]);
 
   const selectedOrder = useMemo(
     () => candidateOrders.find((o) => o.id === relatedOrderId) ?? null,
