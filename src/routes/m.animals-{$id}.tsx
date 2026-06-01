@@ -9,44 +9,35 @@ import {
   Activity,
   Pill,
   Clock,
+  MapPin,
+  ArrowRightLeft,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/animals-{$id}")({
   head: () => ({ meta: [{ title: "牛只详情 · 奇点智牧" }] }),
   component: AnimalDetailPage,
 });
 
-// 模拟当前扫码人姓名（根据角色）
-const roleToName: Record<string, string> = {
-  admin: "管理员",
-  vet: "李雨晴",
-  manager: "王场长",
-  vet_assistant: "周凯",
-  immunizer: "赵敏",
-  hoof_trimmer: "张师傅",
-};
-
 function AnimalDetailPage() {
   const { id } = useParams({ from: "/m/animals-{$id}" });
-
-  const role = useRole();
-  const me = roleToName[role] ?? "我";
 
   // mock 牛只摘要
   const a = {
     id,
+    farm: "金穗一牧场",
     barn: "3 号牛舍",
+    pen: "B 区 · 12 栏",
     breed: "荷斯坦",
     sex: "母",
-    ageMonths: 40,
-    health: "观察中" as "健康" | "观察中" | "异常",
+    ageDays: 1218,
+    health: "观察中" as "健康" | "观察中" | "异常" | "治疗中",
     treating: true,
-    withdrawalDays: 3, // 0 表示无休药期
+    withdrawalDays: 3,
+    withdrawalUntil: "2026-05-28",
   };
 
-  // mock 执行中工作
+  // mock 当前相关工单
   const orders = [
     {
       id: "WO-2026-0518",
@@ -63,6 +54,10 @@ function AnimalDetailPage() {
       owner: "张师傅",
     },
   ];
+  const [ordersExpanded, setOrdersExpanded] = useState(false);
+  const visibleOrders = ordersExpanded ? orders : orders.slice(0, 1);
+
+  const [tab, setTab] = useState<"meds" | "moves">("meds");
 
   return (
     <MobileShell title={`#${a.id}`} back hideTabBar>
@@ -85,6 +80,8 @@ function AnimalDetailPage() {
                     ? "bg-[#FFE4E1] text-[#D9534F]"
                     : a.health === "观察中"
                     ? "bg-[#FFF7D6] text-[#B8860B]"
+                    : a.health === "治疗中"
+                    ? "bg-[#FFE8CC] text-[#C9621F]"
                     : "bg-[#E8F5E9] text-[#2E7D32]"
                 }`}
               >
@@ -93,11 +90,16 @@ function AnimalDetailPage() {
               </span>
             </div>
 
-            <div className="relative mt-4 grid grid-cols-2 gap-2 text-caption">
-              <Brief label="牛舍" value={a.barn} />
+            <div className="relative mt-4 space-y-2">
               <Brief
-                label="品种 / 性别 / 月龄"
-                value={`${a.breed} · ${a.sex} · ${a.ageMonths}月`}
+                icon={<MapPin className="h-3.5 w-3.5 opacity-85" />}
+                label="所在位置"
+                value={`${a.farm} · ${a.barn} · ${a.pen}`}
+              />
+              <Brief
+                icon={<Beef className="h-3.5 w-3.5 opacity-85" />}
+                label="品种 / 性别 / 日龄"
+                value={`${a.breed} · ${a.sex} · ${a.ageDays} 日龄`}
               />
             </div>
           </div>
@@ -115,41 +117,31 @@ function AnimalDetailPage() {
             <Pill className="h-3.5 w-3.5" />
             {a.treating ? "治疗中" : "未治疗"}
           </span>
-          <span
-            className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm font-medium border ${
-              a.withdrawalDays > 0
-                ? "bg-[#FFE4E1] text-[#D9534F] border-[#F5B7B1]"
-                : "bg-surface-subtle text-text-tertiary border-border"
-            }`}
-          >
-            <Clock className="h-3.5 w-3.5" />
-            {a.withdrawalDays > 0
-              ? `休药期 · 剩 ${a.withdrawalDays} 天`
-              : "非休药期"}
-          </span>
+          {a.withdrawalDays > 0 && (
+            <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm font-medium border bg-[#FFE4E1] text-[#D9534F] border-[#F5B7B1]">
+              <Clock className="h-3.5 w-3.5" />
+              休药期至 {a.withdrawalUntil}（剩 {a.withdrawalDays} 天）
+            </span>
+          )}
         </section>
 
-        {/* 执行中工作 */}
+        {/* 当前相关工单 */}
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">执行中工作</h3>
+            <h3 className="text-card-title text-foreground">当前相关工单</h3>
             <span className="text-caption text-text-tertiary">
-              当前扫码人：{me}（{roleLabel[role]}）
+              共 {orders.length} 个
             </span>
           </div>
 
-          {(() => {
-            const mineOrders = orders.filter((o) => o.owner === me);
-            if (mineOrders.length === 0) {
-              return (
-                <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
-                  <div className="text-body-sm text-text-tertiary">暂无您负责的执行中工作</div>
-                </div>
-              );
-            }
-            return (
+          {orders.length === 0 ? (
+            <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
+              <div className="text-body-sm text-text-tertiary">暂无相关工单</div>
+            </div>
+          ) : (
+            <>
               <div className="space-y-2">
-                {mineOrders.map((o) => (
+                {visibleOrders.map((o) => (
                   <Link
                     key={o.id}
                     to="/m/health/$id"
@@ -177,12 +169,50 @@ function AnimalDetailPage() {
                   </Link>
                 ))}
               </div>
-            );
-          })()}
+              {orders.length > 1 && (
+                <button
+                  onClick={() => setOrdersExpanded((v) => !v)}
+                  className="mt-2 w-full h-9 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
+                >
+                  {ordersExpanded ? "收起" : `展开全部 ${orders.length} 个`}
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${ordersExpanded ? "rotate-180" : ""}`}
+                  />
+                </button>
+              )}
+            </>
+          )}
         </section>
 
-        {/* 个体用药记录 */}
-        <MedicationHistory />
+        {/* Tabs：用药与执行 / 转栏 */}
+        <section className="px-4 mt-5">
+          <div className="flex gap-1 p-1 rounded-lg bg-surface-subtle border border-border">
+            <button
+              onClick={() => setTab("meds")}
+              className={`flex-1 h-9 rounded-md text-body-sm font-medium transition-colors ${
+                tab === "meds"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-text-tertiary"
+              }`}
+            >
+              用药与执行记录
+            </button>
+            <button
+              onClick={() => setTab("moves")}
+              className={`flex-1 h-9 rounded-md text-body-sm font-medium transition-colors ${
+                tab === "moves"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-text-tertiary"
+              }`}
+            >
+              转栏记录
+            </button>
+          </div>
+
+          <div className="mt-3">
+            {tab === "meds" ? <MedicationHistory /> : <MoveHistory />}
+          </div>
+        </section>
       </div>
 
       {/* 底部固定：疾病上报入口 */}
@@ -199,10 +229,21 @@ function AnimalDetailPage() {
   );
 }
 
-function Brief({ label, value }: { label: string; value: string }) {
+function Brief({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+}) {
   return (
     <div className="rounded-lg bg-white/15 backdrop-blur border border-white/15 px-3 py-2">
-      <div className="text-caption opacity-85">{label}</div>
+      <div className="text-caption opacity-85 inline-flex items-center gap-1">
+        {icon}
+        {label}
+      </div>
       <div className="text-body-sm mt-0.5 truncate">{value}</div>
     </div>
   );
@@ -246,7 +287,6 @@ function MedicationHistory() {
     };
   }, [expanded]);
 
-  // 按日分组
   const groups = useMemo(() => {
     const map = new Map<string, MedRecord[]>();
     for (const m of visible) {
@@ -259,9 +299,8 @@ function MedicationHistory() {
   const hasMore = totalCount > recentCount;
 
   return (
-    <section className="px-4 mt-5">
+    <div>
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-card-title text-foreground">用药记录</h3>
         <span className="text-caption text-text-tertiary">
           {expanded ? `全部 ${totalCount} 条` : `近 30 天 ${recentCount} 条`}
         </span>
@@ -315,6 +354,53 @@ function MedicationHistory() {
           />
         </button>
       )}
-    </section>
+    </div>
+  );
+}
+
+type MoveRecord = {
+  id: string;
+  date: string;
+  from: string;
+  to: string;
+  reason: string;
+  operator: string;
+};
+
+const ALL_MOVES: MoveRecord[] = [
+  { id: "MV-0518", date: "2026-05-18", from: "1 号牛舍 · A 区 05 栏", to: "3 号牛舍 · B 区 12 栏", reason: "转入隔离观察栏", operator: "李雨晴" },
+  { id: "MV-0301", date: "2026-03-01", from: "犊牛舍 · 03 栏", to: "1 号牛舍 · A 区 05 栏", reason: "体重达标，转育成", operator: "王场长" },
+  { id: "MV-0101", date: "2026-01-10", from: "产房 · 02 栏", to: "犊牛舍 · 03 栏", reason: "产后断奶转栏", operator: "周凯" },
+];
+
+function MoveHistory() {
+  if (ALL_MOVES.length === 0) {
+    return (
+      <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
+        暂无转栏记录
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-2">
+      <div className="text-caption text-text-tertiary mb-1">共 {ALL_MOVES.length} 条</div>
+      {ALL_MOVES.map((m) => (
+        <div
+          key={m.id}
+          className="rounded-xl border border-border bg-card p-3"
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="font-mono text-caption text-text-secondary">{m.date}</span>
+            <span className="text-caption text-text-tertiary">· 操作人 {m.operator}</span>
+          </div>
+          <div className="flex items-center gap-2 text-body-sm text-foreground">
+            <span className="flex-1 min-w-0 truncate">{m.from}</span>
+            <ArrowRightLeft className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+            <span className="flex-1 min-w-0 truncate text-right">{m.to}</span>
+          </div>
+          <div className="text-caption text-text-tertiary mt-1">原因：{m.reason}</div>
+        </div>
+      ))}
+    </div>
   );
 }
