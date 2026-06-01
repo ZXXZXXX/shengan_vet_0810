@@ -19,6 +19,10 @@ import {
   Warehouse,
   ScanLine,
   X,
+  Repeat,
+  History,
+  Link2,
+  Tag,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { AnomalyFeedbackSheet } from "@/components/anomaly-feedback-sheet";
@@ -34,6 +38,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/m/health/$id")({
   head: () => ({ meta: [{ title: "工单详情 · 奇点智牧" }] }),
@@ -88,6 +98,7 @@ function TaskDetailPage() {
       : "report";
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   const [anomalyOpen, setAnomalyOpen] = useState(false);
+  const [recordsOpen, setRecordsOpen] = useState(false);
   
   
 
@@ -138,12 +149,33 @@ function TaskDetailPage() {
   const s = statusMap[o.status];
   const Icon = s.icon;
 
-
-
-
+  // 复诊与关联工单 mock
+  const isDisease = o.type === "疾病治疗";
+  const isRevisit = isDisease && (id === "WO-2298" || /复诊/.test("乳房炎复诊") && id === "WO-2298");
+  const relatedOrderId: string | null = isRevisit ? "WO-2150" : null;
+  // 近期诊疗记录 mock（仅对单只疾病治疗工单展示）
+  const showRecentRecords = isDisease && isSingle;
+  const recentRecords: { id: string; date: string; conclusion: string; meds: { name: string; dose: string; route: string; days: string }[] }[] = [
+    {
+      id: "WO-2150",
+      date: "2026-04-22",
+      conclusion: "乳房炎（亚临床）",
+      meds: [
+        { name: "头孢噻呋钠", dose: "1g / 次", route: "肌肉注射", days: "3 天" },
+        { name: "氟尼辛葡甲胺", dose: "2ml / 次", route: "肌肉注射", days: "2 天" },
+      ],
+    },
+    {
+      id: "WO-2042",
+      date: "2026-02-08",
+      conclusion: "支气管炎（早期）",
+      meds: [{ name: "土霉素长效注射液", dose: "20ml / 次", route: "肌肉注射", days: "1 次" }],
+    },
+  ];
 
 
   const showAnomaly = canExecute(role) && o.status === "进行中";
+
   return (
     <MobileShell
       title="工单详情"
@@ -174,9 +206,11 @@ function TaskDetailPage() {
             <span className={s.tag}>{o.status}</span>
           </div>
           <div className="flex items-center gap-1.5 text-caption">
-            <Stethoscope className="h-3.5 w-3.5 text-text-tertiary" />
-            <span className="text-text-tertiary">执行对象</span>
-            <span className="text-body-sm text-foreground">{isSingle ? earTag : isPlatformImmune ? o.target : `${execTags.length} 只`}</span>
+            <Tag className="h-3.5 w-3.5 text-text-tertiary" />
+            <span className="text-text-tertiary">牛只编号</span>
+            <span className="text-body-sm text-foreground">
+              {isSingle ? earTag : isPlatformImmune ? o.target : execTags.join("、")}
+            </span>
           </div>
           <div className="flex items-center gap-3 text-caption text-text-tertiary">
             <span className="flex items-center gap-1">
@@ -188,7 +222,45 @@ function TaskDetailPage() {
               <span>{o.barn}</span>
             </span>
           </div>
+          {isDisease && (
+            <div className="pt-2 mt-1 border-t border-border/60 space-y-2">
+              <div className="flex items-center gap-1.5 text-caption">
+                <Repeat className="h-3.5 w-3.5 text-text-tertiary" />
+                <span className="text-text-tertiary">是否复诊</span>
+                <span className={`text-body-sm ${isRevisit ? "text-primary font-medium" : "text-foreground"}`}>
+                  {isRevisit ? "是" : "否"}
+                </span>
+              </div>
+              {relatedOrderId && (
+                <div className="flex items-center gap-1.5 text-caption">
+                  <Link2 className="h-3.5 w-3.5 text-text-tertiary" />
+                  <span className="text-text-tertiary">关联原始工单</span>
+                  <Link
+                    to="/m/health/$id"
+                    params={{ id: relatedOrderId }}
+                    className="font-mono text-body-sm text-primary inline-flex items-center gap-0.5"
+                  >
+                    {relatedOrderId}
+                    <ChevronRight className="h-3 w-3" />
+                  </Link>
+                </div>
+              )}
+              {showRecentRecords && (
+                <button
+                  type="button"
+                  onClick={() => setRecordsOpen(true)}
+                  className="w-full flex items-center gap-1.5 text-caption"
+                >
+                  <History className="h-3.5 w-3.5 text-text-tertiary" />
+                  <span className="text-text-tertiary">近期诊疗记录</span>
+                  <span className="text-body-sm text-foreground">{recentRecords.length} 条</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-text-tertiary ml-auto" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
+
 
         {/* === 2. Tab === */}
         <div className="sticky top-0 z-10 bg-bg border-b border-border">
@@ -261,6 +333,36 @@ function TaskDetailPage() {
         barn={o.barn}
         target={isSingle ? earTag.replace(/^#/, "") : undefined}
       />
+
+      <Dialog open={recordsOpen} onOpenChange={setRecordsOpen}>
+        <DialogContent className="max-w-[360px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-card-title">近期诊疗记录</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[60vh] overflow-y-auto -mx-1 px-1">
+            {recentRecords.map((r) => (
+              <div key={r.id} className="rounded-xl border border-border bg-card p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-caption text-text-tertiary">{r.id}</span>
+                  <span className="text-text-tertiary text-caption">·</span>
+                  <span className="text-caption text-text-tertiary">{r.date}</span>
+                </div>
+                <div className="text-body-sm text-foreground font-medium">{r.conclusion}</div>
+                <div className="rounded-lg bg-surface-subtle border border-border/60 divide-y divide-border/60">
+                  {r.meds.map((m) => (
+                    <div key={m.name} className="px-2.5 py-2">
+                      <div className="text-body-sm text-foreground">{m.name}</div>
+                      <div className="text-caption text-text-tertiary mt-0.5">
+                        {m.route} · {m.dose} · {m.days}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </MobileShell>
   );
 }
