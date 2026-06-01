@@ -247,6 +247,7 @@ function TaskDetailPage() {
         );
       })()}
 
+      <AnomalyFeedbackSheet open={anomalyOpen} onClose={() => setAnomalyOpen(false)} />
     </MobileShell>
   );
 }
