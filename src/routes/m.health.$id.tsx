@@ -214,14 +214,16 @@ function TaskDetailPage() {
         if (!showRespond && !showExec) return null;
         return (
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setAnomalyOpen(true)}
-              className="h-11 w-11 shrink-0 rounded-lg border border-border text-[var(--state-danger)] inline-flex items-center justify-center"
-              aria-label="异常反馈"
-            >
-              <AlertTriangle className="h-4 w-4" />
-            </button>
+            {showExec && (
+              <button
+                type="button"
+                onClick={() => setAnomalyOpen(true)}
+                className="h-11 w-11 shrink-0 rounded-lg border border-border text-[var(--state-danger)] inline-flex items-center justify-center"
+                aria-label="异常反馈"
+              >
+                <AlertTriangle className="h-4 w-4" />
+              </button>
+            )}
             {showRespond ? (
               <Link
                 to="/m/health/$id/diagnose"
