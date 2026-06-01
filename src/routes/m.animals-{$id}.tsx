@@ -395,7 +395,7 @@ function MoveHistory() {
           </div>
           <div className="flex items-center gap-2 text-body-sm text-foreground">
             <span className="flex-1 min-w-0 truncate">{m.from}</span>
-            <ArrowRightLeft className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+            <ArrowRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
             <span className="flex-1 min-w-0 truncate text-right">{m.to}</span>
           </div>
           <div className="text-caption text-text-tertiary mt-1">原因：{m.reason}</div>
