@@ -18,7 +18,14 @@ import { MobileShell } from "@/components/mobile-shell";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
-type ReportSearch = { target?: string; barn?: string; lock?: number; draftId?: string };
+type ReportSearch = {
+  target?: string;
+  barn?: string;
+  lock?: number;
+  draftId?: string;
+  revisitFrom?: string;
+  revisitReason?: string;
+};
 
 export const Route = createFileRoute("/m/report")({
   head: () => ({ meta: [{ title: "疾病上报 · 奇点智牧" }] }),
@@ -27,9 +34,30 @@ export const Route = createFileRoute("/m/report")({
     barn: typeof s.barn === "string" ? s.barn : undefined,
     lock: s.lock ? 1 : undefined,
     draftId: typeof s.draftId === "string" ? s.draftId : undefined,
+    revisitFrom: typeof s.revisitFrom === "string" ? s.revisitFrom : undefined,
+    revisitReason: typeof s.revisitReason === "string" ? s.revisitReason : undefined,
   }),
   component: ReportPage,
 });
+
+// 复诊原因预设
+const REVISIT_REASONS = [
+  "症状未缓解",
+  "症状加重",
+  "出现新症状",
+  "用药反应异常",
+  "需进一步检查",
+];
+
+// mock：根据牛只编号生成近 7 日疾病诊疗工单号
+function recentDiseaseOrderOf(cowId: string): string | null {
+  if (!cowId) return null;
+  const num = parseInt(cowId.replace(/\D/g, ""), 10);
+  if (isNaN(num)) return null;
+  // mock：编号能被 2 整除的牛只视为近 7 日有疾病诊疗工单
+  if (num % 2 !== 0) return null;
+  return `WO-2026${String(num).padStart(4, "0").slice(-4)}`;
+}
 
 
 type ReportKind = "health";
@@ -230,6 +258,40 @@ function ReportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [showDraftDialog, setShowDraftDialog] = useState(false);
 
+  // 复诊关联
+  const fromRevisit = !!search.revisitFrom;
+  const [isRevisit, setIsRevisit] = useState<boolean | null>(
+    fromRevisit ? true : null
+  );
+  const [relatedOrderId, setRelatedOrderId] = useState<string>(
+    search.revisitFrom ?? ""
+  );
+  const [revisitReason, setRevisitReason] = useState<string>(
+    search.revisitReason ?? ""
+  );
+  const [revisitReasonOther, setRevisitReasonOther] = useState("");
+  const [detectDialog, setDetectDialog] = useState<{
+    cowId: string;
+    orderId: string;
+  } | null>(null);
+  const [detectShown, setDetectShown] = useState(fromRevisit);
+
+  // 牛只填好后探测近 7 日工单（仅一次、仅非来自旧工单）
+  useEffect(() => {
+    if (detectShown || fromRevisit || barnMode) return;
+    if (targets.length === 0) return;
+    const cowId = targets[0];
+    const orderId = recentDiseaseOrderOf(cowId);
+    setDetectShown(true);
+    if (orderId) {
+      setDetectDialog({ cowId, orderId });
+    } else {
+      // 无历史工单 → 默认非复诊
+      setIsRevisit(false);
+      setRelatedOrderId("-");
+    }
+  }, [targets, barnMode, fromRevisit, detectShown]);
+
   // 健康
   // 仅支持疾病治疗类型工单
   const [workType] = useState<WorkType>("疾病治疗");
@@ -324,12 +386,16 @@ function ReportPage() {
     setRecording(true);
   };
 
+  const finalRevisitReason =
+    revisitReason === "其他" ? revisitReasonOther.trim() : revisitReason;
+
   const canSubmit =
     (barnMode ? barns.length > 0 : targets.length > 0) &&
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
     desc.trim().length > 0 &&
-    evidenceReady;
+    evidenceReady &&
+    (isRevisit !== true || finalRevisitReason.length > 0);
 
 
 
@@ -615,6 +681,91 @@ function ReportPage() {
                 疾病治疗
               </div>
             </Section>
+
+            {/* 复诊关联 */}
+            {!barnMode && isRevisit !== null && (
+              <Section title="复诊信息">
+                <div className="rounded-xl border border-border bg-card divide-y divide-border">
+                  <div className="h-11 px-3 flex items-center justify-between text-body-sm">
+                    <span className="text-text-tertiary">是否复诊</span>
+                    <span
+                      className={
+                        isRevisit ? "text-primary font-medium" : "text-foreground"
+                      }
+                    >
+                      {isRevisit ? "是" : "否"}
+                    </span>
+                  </div>
+                  <div className="h-11 px-3 flex items-center justify-between text-body-sm">
+                    <span className="text-text-tertiary">关联原始工单</span>
+                    <span className="font-mono text-foreground">
+                      {relatedOrderId || "-"}
+                    </span>
+                  </div>
+                </div>
+
+                {isRevisit && (
+                  <div className="mt-3 space-y-2">
+                    <div className="text-caption text-text-tertiary">
+                      复诊原因 <span className="text-[var(--state-danger)]">*</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[...REVISIT_REASONS, "其他"].map((r) => {
+                        const active = revisitReason === r;
+                        return (
+                          <button
+                            key={r}
+                            type="button"
+                            onClick={() => setRevisitReason(r)}
+                            className={`h-8 px-3 rounded-full text-body-sm border ${
+                              active
+                                ? "bg-brand-subtle text-primary border-primary/40"
+                                : "bg-card text-text-secondary border-border"
+                            }`}
+                          >
+                            {r}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {revisitReason === "其他" && (
+                      <textarea
+                        value={revisitReasonOther}
+                        onChange={(e) => setRevisitReasonOther(e.target.value)}
+                        placeholder="请输入复诊原因"
+                        className="w-full min-h-[72px] rounded-lg border border-border bg-card px-3 py-2 text-body-sm placeholder:text-text-tertiary resize-none focus:outline-none focus:border-primary/40"
+                      />
+                    )}
+                  </div>
+                )}
+
+                {!fromRevisit && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isRevisit) {
+                        setIsRevisit(false);
+                        setRelatedOrderId("-");
+                        setRevisitReason("");
+                        setRevisitReasonOther("");
+                      } else {
+                        const cowId = targets[0];
+                        const orderId = cowId ? recentDiseaseOrderOf(cowId) : null;
+                        if (orderId) {
+                          setIsRevisit(true);
+                          setRelatedOrderId(orderId);
+                        } else {
+                          toast("未检测到该牛只近 7 日的疾病诊疗工单");
+                        }
+                      }
+                    }}
+                    className="mt-3 text-caption text-text-tertiary underline underline-offset-4"
+                  >
+                    {isRevisit ? "改为非复诊" : "标记为复诊"}
+                  </button>
+                )}
+              </Section>
+            )}
 
             {(
               <></>
@@ -930,6 +1081,44 @@ function ReportPage() {
           </button>
         </div>
       </div>
+
+      {/* 复诊检测弹窗 */}
+      {detectDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4">
+            <h3 className="text-card-title text-foreground">是否为复诊？</h3>
+            <p className="text-body-sm text-text-secondary">
+              监测到牛只
+              <span className="font-mono text-foreground"> #{detectDialog.cowId} </span>
+              近 7 日有疾病诊疗工单
+              <span className="font-mono text-foreground"> {detectDialog.orderId}</span>
+              ，本次是否为复诊？
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setIsRevisit(false);
+                  setRelatedOrderId("-");
+                  setDetectDialog(null);
+                }}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                否，非复诊
+              </button>
+              <button
+                onClick={() => {
+                  setIsRevisit(true);
+                  setRelatedOrderId(detectDialog.orderId);
+                  setDetectDialog(null);
+                }}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                是，复诊
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 存草稿确认弹窗 */}
       {showDraftDialog && (
