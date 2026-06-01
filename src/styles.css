@@ -173,7 +173,21 @@
     box-shadow: 0 0 0 1px var(--brand) !important;
   }
 
-  /* Mobile scope: cursor is enough, no extra focus border */
+  /* Mobile scope: unified input style across all states */
+  .m-scope input,
+  .m-scope textarea,
+  .m-scope select,
+  .m-scope [data-slot="input"] {
+    background-color: var(--bg-surface-subtle) !important;
+    border: 1px solid var(--border-default) !important;
+    color: var(--text-primary, var(--color-foreground));
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .m-scope input::placeholder,
+  .m-scope textarea::placeholder {
+    color: var(--text-tertiary);
+  }
+  /* Focus: white fill + brand border */
   .m-scope input:focus,
   .m-scope input:focus-visible,
   .m-scope textarea:focus,
@@ -182,9 +196,36 @@
   .m-scope select:focus-visible,
   .m-scope [data-slot="input"]:focus,
   .m-scope [data-slot="input"]:focus-visible {
-    border-color: inherit !important;
+    background-color: var(--color-background) !important;
+    border-color: var(--brand) !important;
     box-shadow: none !important;
+    outline: none !important;
   }
+  /* Filled: white fill stays after value entered (browser handles via :not(:placeholder-shown)) */
+  .m-scope input:not(:placeholder-shown),
+  .m-scope textarea:not(:placeholder-shown) {
+    background-color: var(--color-background) !important;
+  }
+  /* Error state: add .input-error class (or aria-invalid) */
+  .m-scope input.input-error,
+  .m-scope textarea.input-error,
+  .m-scope select.input-error,
+  .m-scope [aria-invalid="true"] {
+    background-color: color-mix(in oklab, var(--state-danger) 6%, transparent) !important;
+    border-color: color-mix(in oklab, var(--state-danger) 55%, transparent) !important;
+  }
+  .m-scope input.input-error:focus,
+  .m-scope textarea.input-error:focus,
+  .m-scope [aria-invalid="true"]:focus {
+    border-color: var(--state-danger) !important;
+  }
+  .m-scope .input-error-text {
+    color: var(--state-danger);
+    font-size: 12px;
+    line-height: 20px;
+    margin-top: 4px;
+  }
+
 
 }
 
