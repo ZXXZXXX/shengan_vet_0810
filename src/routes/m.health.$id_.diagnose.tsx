@@ -149,6 +149,9 @@ function DiagnosePage() {
   // 终止工单
   const [confirmTerminate, setConfirmTerminate] = useState(false);
   const [termReason, setTermReason] = useState("");
+  const [termReasonOther, setTermReasonOther] = useState("");
+  const [needTransfer, setNeedTransfer] = useState(false);
+  const [transferTo, setTransferTo] = useState("");
 
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
