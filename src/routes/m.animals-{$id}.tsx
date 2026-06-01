@@ -5,7 +5,7 @@ import {
   PlayCircle,
   ClipboardPlus,
   ChevronDown,
-  Activity,
+  
   Pill,
   Clock,
   MapPin,
