@@ -643,7 +643,7 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
           </div>
         </div>
       ) : isPlatformIssued ? null : (
-        <div className="rounded-2xl bg-card border border-border p-4">
+        <div className={`rounded-2xl bg-card border border-border p-4 ${status !== "已完成" ? "opacity-50" : ""}`}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <DayDot active={false} done={status === "已完成"} />
