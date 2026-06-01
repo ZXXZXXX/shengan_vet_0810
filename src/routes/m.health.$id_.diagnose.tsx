@@ -637,29 +637,107 @@ function DiagnosePage() {
       {/* 终止工单确认 */}
       <AlertDialog open={confirmTerminate} onOpenChange={(o) => {
         setConfirmTerminate(o);
-        if (!o) setTermReason("");
+        if (!o) {
+          setTermReason("");
+          setTermReasonOther("");
+          setNeedTransfer(false);
+          setTransferTo("");
+        }
       }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>终止工单</AlertDialogTitle>
           </AlertDialogHeader>
 
-          <div className="space-y-3 py-1">
-            <textarea
-              value={termReason}
-              onChange={(e) => setTermReason(e.target.value)}
-              placeholder="请输入终止原因"
-              className="h-24 w-full rounded-lg bg-white border border-border p-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
-            />
+          <div className="space-y-4 py-1">
+            <div>
+              <div className="text-caption text-text-tertiary mb-2">终止原因</div>
+              <div className="flex flex-wrap gap-1.5">
+                {["牛只健康，无需治疗", "牛只已死亡", "牛只已淘汰", "已转交其他工单", "其他"].map((r) => {
+                  const active = termReason === r;
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setTermReason(r)}
+                      className={`h-8 px-3 rounded-full text-body-sm border ${
+                        active
+                          ? "bg-brand-subtle text-primary border-primary/40"
+                          : "bg-card text-text-secondary border-border"
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  );
+                })}
+              </div>
+              {termReason === "其他" && (
+                <textarea
+                  value={termReasonOther}
+                  onChange={(e) => setTermReasonOther(e.target.value)}
+                  placeholder="请输入其他终止原因"
+                  className="mt-2 h-20 w-full rounded-lg bg-white border border-border p-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+                />
+              )}
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-body-sm text-foreground">
+                <input
+                  type="checkbox"
+                  checked={needTransfer}
+                  onChange={(e) => setNeedTransfer(e.target.checked)}
+                  className="h-4 w-4 accent-[var(--primary)]"
+                />
+                需要转栏
+              </label>
+              {needTransfer && (
+                <div className="mt-2 space-y-2">
+                  <input
+                    value={transferTo}
+                    onChange={(e) => setTransferTo(e.target.value)}
+                    list="barn-options"
+                    placeholder="输入或选择转栏去向"
+                    className="h-10 w-full rounded-lg bg-white border border-border px-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                  />
+                  <datalist id="barn-options">
+                    <option value="1 号牛舍" />
+                    <option value="2 号牛舍" />
+                    <option value="3 号牛舍" />
+                    <option value="隔离牛舍" />
+                    <option value="产房 1 号" />
+                    <option value="淘汰栏" />
+                  </datalist>
+                  <div className="flex flex-wrap gap-1.5">
+                    {["隔离牛舍", "淘汰栏", "产房 1 号"].map((b) => (
+                      <button
+                        key={b}
+                        type="button"
+                        onClick={() => setTransferTo(b)}
+                        className={`h-7 px-2.5 rounded-full text-caption border ${
+                          transferTo === b
+                            ? "bg-brand-subtle text-primary border-primary/40"
+                            : "bg-card text-text-secondary border-border"
+                        }`}
+                      >
+                        {b}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
-              disabled={!termReason.trim()}
+              disabled={!termReason || (termReason === "其他" && !termReasonOther.trim()) || (needTransfer && !transferTo.trim())}
               onClick={() => {
-                if (!termReason.trim()) return;
-                toast.success("工单已终止");
+                const reason = termReason === "其他" ? termReasonOther.trim() : termReason;
+                if (!reason) return;
+                if (needTransfer && !transferTo.trim()) return;
+                toast.success(needTransfer ? `工单已终止，已安排转栏至 ${transferTo}` : "工单已终止");
                 navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
               }}
               className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white disabled:opacity-50"
