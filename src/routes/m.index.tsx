@@ -25,7 +25,7 @@ import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { RoleSwitchSheet } from "@/components/role-switch-sheet";
 import { useRole, roleLabel, roleGroup, canVisit, type Role } from "@/lib/mobile-role";
-import { ChevronsUpDown } from "lucide-react";
+
 
 import { Activity, BookMarked } from "lucide-react";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
@@ -103,7 +103,6 @@ function MHomePage() {
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 active:scale-95 transition-transform"
               >
                 <span className="text-[11px] text-white/95">{roleLabel[role]}</span>
-                <ChevronsUpDown className="h-3 w-3 text-white/85" />
               </button>
               <div className="text-[18px] leading-tight font-semibold text-white mt-1.5 drop-shadow-sm">李师傅</div>
               <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
