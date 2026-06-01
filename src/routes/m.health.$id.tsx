@@ -263,7 +263,7 @@ function TaskDetailPage() {
 
 
         {/* === 2. Tab === */}
-        <div className="sticky top-0 z-10 bg-bg border-b border-border">
+        <div className="sticky top-12 z-20 bg-card border-b border-border">
           <div className="px-4 flex gap-1">
             {[
               { key: "report", label: "上报记录" },
