@@ -298,12 +298,12 @@ function Brief({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg bg-white/15 backdrop-blur border border-white/15 px-3 py-2">
-      <div className="text-caption opacity-85 inline-flex items-center gap-1">
+    <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-2">
+      <div className="text-[10px] opacity-75 inline-flex items-center gap-1 font-medium">
         {icon}
         {label}
       </div>
-      <div className="text-body-sm mt-0.5 truncate">{value}</div>
+      <div className="text-body-sm mt-0.5 truncate font-medium">{value}</div>
     </div>
   );
 }
