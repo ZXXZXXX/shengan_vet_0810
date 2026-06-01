@@ -12,7 +12,7 @@ import {
   Trash2,
   Sparkles,
   CheckCircle2,
-  Ban,
+  
   Camera,
   Video,
   PlayCircle,
