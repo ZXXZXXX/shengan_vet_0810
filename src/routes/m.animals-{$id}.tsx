@@ -151,43 +151,80 @@ function AnimalDetailPage() {
             </div>
           ) : (
             <>
-              <div className="space-y-2">
-                {visibleOrders.map((o) => (
-                  <Link
-                    key={o.id}
-                    to="/m/health/$id"
-                    params={{ id: o.id }}
-                    className="block rounded-xl border bg-card border-border p-3 flex items-start gap-3 active:bg-surface-subtle"
-                  >
-                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center shrink-0">
-                      <PlayCircle className="h-4 w-4" />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-body-sm text-foreground line-clamp-2">
-                        {o.desc}
+              <div className="space-y-2.5">
+                {visibleOrders.map((o) => {
+                  const KIcon = o.kind === "修蹄" ? Footprints : Stethoscope;
+                  const isWait = o.status === "待诊断";
+                  const StatusIcon = isWait ? ClipboardList : PlayCircle;
+                  const tagCls = isWait ? "tag tag-warning" : "tag tag-info";
+                  const timeLabel = isWait ? "上报" : "执行";
+                  const personLabel = isWait ? "上报" : "执行";
+                  const ctaText = isWait ? "诊断" : "执行";
+                  const ctaActive = !isWait;
+                  return (
+                    <Link
+                      key={o.id}
+                      to="/m/health/$id"
+                      params={{ id: o.id }}
+                      className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
+                    >
+                      <div className="flex flex-col gap-2">
+                        {/* Header：编号·类型 + 状态 */}
+                        <div className="flex items-center gap-1.5 text-body-sm h-5">
+                          <span className="font-mono text-text-tertiary text-caption">{o.id}</span>
+                          <span className="text-text-tertiary">·</span>
+                          <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                            <KIcon className="h-3 w-3" />{o.type}
+                          </span>
+                          {!isWait && (
+                            <span className="text-caption text-text-tertiary">
+                              · {o.needPickup ? "需领物" : "无需领物"}
+                            </span>
+                          )}
+                          <span className={`${tagCls} inline-flex items-center gap-1 ml-auto`}>
+                            <StatusIcon className="h-3 w-3" />
+                            {o.status}
+                          </span>
+                        </div>
+
+                        {/* Title：对象 · 结论 */}
+                        <div className="text-card-title text-foreground truncate h-[26px] leading-[26px]">
+                          {`单只 ${a.id}`}
+                          <span className="text-text-tertiary"> · </span>
+                          {o.conclusion}
+                        </div>
+
+                        {/* Desc */}
+                        <div className="text-body-sm text-text-secondary truncate h-[22px] leading-[22px]">
+                          {o.desc || <span className="text-text-tertiary/0">·</span>}
+                        </div>
+
+                        {/* Footer：时间·人员 + 操作 */}
+                        <div className="flex items-center text-caption text-text-tertiary pt-2 border-t border-border/60 h-9">
+                          <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                            <span className="shrink-0">
+                              {timeLabel} <span className="text-text-secondary">{o.time}</span>
+                            </span>
+                            <span className="text-text-tertiary/60">·</span>
+                            <span className="flex items-center gap-1 min-w-0">
+                              <span className="shrink-0">{personLabel}</span>
+                              <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center shrink-0">
+                                {o.person.charAt(0)}
+                              </span>
+                              <span className="text-text-secondary truncate">{o.person}</span>
+                            </span>
+                          </div>
+                          <span className={`ml-2 inline-flex items-center gap-0.5 shrink-0 ${
+                            ctaActive ? "text-primary font-medium" : "text-text-secondary"
+                          }`}>
+                            {ctaText}
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        <span className="font-mono text-caption text-text-tertiary">
-                          {o.id}
-                        </span>
-                        <span className="tag tag-muted">{o.type}</span>
-                        <span
-                          className={`inline-flex items-center h-5 px-2 rounded text-caption font-medium ${
-                            o.status === "待诊断"
-                              ? "bg-[#FFF7D6] text-[#B8860B]"
-                              : "bg-[#E8F2FF] text-[#1E6FD9]"
-                          }`}
-                        >
-                          {o.status}
-                        </span>
-                      </div>
-                      <div className="text-caption text-text-tertiary mt-1">
-                        {o.timeLabel}：{o.time}
-                      </div>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-text-tertiary mt-1 shrink-0" />
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
               {orders.length > 1 && (
                 <button
