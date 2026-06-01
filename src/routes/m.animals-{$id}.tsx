@@ -4,13 +4,16 @@ import {
   Beef,
   PlayCircle,
   ClipboardPlus,
-  ChevronRight,
   ChevronDown,
   Activity,
   Pill,
   Clock,
   MapPin,
   ArrowRight,
+  ClipboardList,
+  Stethoscope,
+  Footprints,
+  ChevronRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
