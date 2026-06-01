@@ -69,6 +69,7 @@ function MHomePage() {
   const pendingPickups = PICKUPS.filter((p) => !claimed.includes(p.id));
   const farm = useFarm();
   const [reportOpen, setReportOpen] = useState(false);
+  const [roleOpen, setRoleOpen] = useState(false);
 
 
 
