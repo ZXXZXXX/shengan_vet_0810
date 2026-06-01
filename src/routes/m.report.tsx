@@ -20,6 +20,7 @@ import {
   RelatedOrderCard,
   type RelatedOrder,
 } from "@/components/related-order-picker";
+import { DiseasePicker } from "@/components/disease-picker";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
