@@ -21,6 +21,23 @@ function ExecuteRecordPage() {
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
 
+  type StatusKey = "待诊断" | "进行中" | "已完成" | "已终止";
+  const statusById: Record<string, StatusKey> = {
+    "WO-2381": "待诊断",
+    "WO-2298": "进行中",
+    "WO-2401": "进行中",
+    "WO-2324": "已终止",
+    "HF-0702": "进行中",
+    "HF-0688": "已完成",
+    "LS-1029": "待诊断",
+    "LS-1011": "已完成",
+    "YM-2042": "已终止",
+    "YM-2501": "进行中",
+  };
+  const fallbackStatus: StatusKey =
+    role === "hoof_trimmer" || role === "vet_assistant" || role === "immunizer" ? "进行中" : "待诊断";
+  const workStatus = statusById[id] ?? fallbackStatus;
+
   const singleEarMap: Record<string, string> = {
     "WO-2298": "#A2298",
     "HF-0702": "#A2150",
@@ -51,14 +68,16 @@ function ExecuteRecordPage() {
       </div>
 
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setAnomalyOpen(true)}
-          className="h-11 w-11 shrink-0 rounded-lg border border-border text-[var(--state-danger)] inline-flex items-center justify-center"
-          aria-label="异常反馈"
-        >
-          <AlertTriangle className="h-4 w-4" />
-        </button>
+        {workStatus === "进行中" && (
+          <button
+            type="button"
+            onClick={() => setAnomalyOpen(true)}
+            className="h-11 w-11 shrink-0 rounded-lg border border-border text-[var(--state-danger)] inline-flex items-center justify-center"
+            aria-label="异常反馈"
+          >
+            <AlertTriangle className="h-4 w-4" />
+          </button>
+        )}
         <button
           onClick={() => {
             toast.success("提交成功");
