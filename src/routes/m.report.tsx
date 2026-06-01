@@ -15,6 +15,11 @@ import {
   Pencil,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import {
+  RelatedOrderPicker,
+  RelatedOrderCard,
+  type RelatedOrder,
+} from "@/components/related-order-picker";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
