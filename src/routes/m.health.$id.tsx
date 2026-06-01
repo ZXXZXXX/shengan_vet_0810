@@ -21,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { AnomalyFeedbackSheet } from "@/components/anomaly-feedback-sheet";
 import { useRole, canVisit, canExecute, canDiagnose } from "@/lib/mobile-role";
 
 import {
@@ -86,6 +87,8 @@ function TaskDetailPage() {
       ? "review"
       : "report";
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
+  const [anomalyOpen, setAnomalyOpen] = useState(false);
+  
   
 
   
@@ -210,12 +213,20 @@ function TaskDetailPage() {
 
         if (!showRespond && !showExec) return null;
         return (
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setAnomalyOpen(true)}
+              className="h-11 w-11 shrink-0 rounded-lg border border-border text-[var(--state-danger)] inline-flex items-center justify-center"
+              aria-label="异常反馈"
+            >
+              <AlertTriangle className="h-4 w-4" />
+            </button>
             {showRespond ? (
               <Link
                 to="/m/health/$id/diagnose"
                 params={{ id: o.id }}
-                className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >
                 <Stethoscope className="h-4 w-4" />
                 开始诊断
@@ -224,7 +235,7 @@ function TaskDetailPage() {
               <Link
                 to="/m/health/$id/execute"
                 params={{ id: o.id }}
-                className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >
                 <PlayCircle className="h-4 w-4" />
                 开始执行
@@ -236,6 +247,7 @@ function TaskDetailPage() {
         );
       })()}
 
+      <AnomalyFeedbackSheet open={anomalyOpen} onClose={() => setAnomalyOpen(false)} />
     </MobileShell>
   );
 }
@@ -578,7 +590,7 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
 
         const pickupDone = needPickup && isDone;
         return (
-          <div key={d.day} className="rounded-2xl bg-card border border-border p-4">
+          <div key={d.day} className={`rounded-2xl bg-card border border-border p-4 ${d.phase === "pending" ? "opacity-50" : ""}`}>
             <div className="flex items-center justify-between mb-2 min-h-6">
               <div className="flex items-center gap-2 leading-6">
                 <DayDot active={isActive} done={isDone} />
@@ -631,7 +643,7 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
           </div>
         </div>
       ) : isPlatformIssued ? null : (
-        <div className="rounded-2xl bg-card border border-border p-4">
+        <div className={`rounded-2xl bg-card border border-border p-4 ${status !== "已完成" ? "opacity-50" : ""}`}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <DayDot active={false} done={status === "已完成"} />
@@ -922,54 +934,39 @@ function ChecklistDay({
                           </div>
                         )}
                       </div>
+                      {interactive && needMed && !done && (
+                        <button
+                          type="button"
+                          onClick={() => setScanFor(it.id)}
+                          className="shrink-0 h-8 w-8 -mt-0.5 -mr-1 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center"
+                          aria-label="扫码核验用药"
+                        >
+                          <ScanLine className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
-                    {interactive && !done && (
+                    {interactive && !needMed && !done && it.title.includes("测温") && (
                       <div className="mt-2.5 pl-6 space-y-2">
-                        {!needMed && it.title.includes("测温") && (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              inputMode="decimal"
-                              step="0.1"
-                              value={temps[it.id] ?? ""}
-                              onChange={(e) => setTemps((m) => ({ ...m, [it.id]: e.target.value }))}
-                              placeholder="输入直肠温度"
-                              className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm"
-                            />
-                            <span className="text-caption text-text-tertiary">℃</span>
-                          </div>
-                        )}
                         <div className="flex items-center gap-2">
-                          {needMed ? (
-                            <button
-                              type="button"
-                              onClick={() => setScanFor(it.id)}
-                              className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1.5"
-                            >
-                              <ScanLine className="h-4 w-4" /> 扫码核验用药
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              disabled={it.title.includes("测温") && !(temps[it.id] ?? "").trim()}
-                              onClick={() => toggleDone(it.id, it.status)}
-                              className="flex-1 h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <CheckSquare className="h-4 w-4" /> 标记完成
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => update(it.id, { status: blocked ? "pending" : "blocked" })}
-                            className={`h-9 px-3 rounded-lg text-body-sm ${
-                              blocked
-                                ? "text-[var(--state-danger)] font-medium bg-[var(--state-danger)]/10"
-                                : "text-text-tertiary border border-border"
-                            }`}
-                          >
-                            {blocked ? "已标记无法执行" : "无法执行"}
-                          </button>
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            step="0.1"
+                            value={temps[it.id] ?? ""}
+                            onChange={(e) => setTemps((m) => ({ ...m, [it.id]: e.target.value }))}
+                            placeholder="输入直肠温度"
+                            className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm"
+                          />
+                          <span className="text-caption text-text-tertiary">℃</span>
                         </div>
+                        <button
+                          type="button"
+                          disabled={!(temps[it.id] ?? "").trim()}
+                          onClick={() => toggleDone(it.id, it.status)}
+                          className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <CheckSquare className="h-4 w-4" /> 标记完成
+                        </button>
                       </div>
                     )}
                     {interactive && done && (
