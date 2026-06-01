@@ -386,12 +386,16 @@ function ReportPage() {
     setRecording(true);
   };
 
+  const finalRevisitReason =
+    revisitReason === "其他" ? revisitReasonOther.trim() : revisitReason;
+
   const canSubmit =
     (barnMode ? barns.length > 0 : targets.length > 0) &&
     (!cfg?.tags?.required || symptoms.length > 0) &&
     (!cfg?.note || note.trim().length > 0) &&
     desc.trim().length > 0 &&
-    evidenceReady;
+    evidenceReady &&
+    (isRevisit !== true || finalRevisitReason.length > 0);
 
 
 
