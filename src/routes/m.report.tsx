@@ -1143,6 +1143,14 @@ function ReportPage() {
       </div>
 
       {/* 复诊检测弹窗 */}
+      <RelatedOrderPicker
+        open={orderPickerOpen}
+        onClose={() => setOrderPickerOpen(false)}
+        orders={candidateOrders}
+        selectedId={relatedOrderId}
+        onSelect={(o) => setRelatedOrderId(o.id)}
+      />
+
       {detectDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4">
