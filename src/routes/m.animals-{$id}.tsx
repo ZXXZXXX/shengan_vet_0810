@@ -229,15 +229,17 @@ function AnimalDetailPage() {
                 })}
               </div>
               {orders.length > 1 && (
-                <button
-                  onClick={() => setOrdersExpanded((v) => !v)}
-                  className="mt-2 w-full h-9 rounded-lg border border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1"
-                >
-                  {ordersExpanded ? "收起" : `展开全部 ${orders.length} 个`}
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${ordersExpanded ? "rotate-180" : ""}`}
-                  />
-                </button>
+                <div className="mt-3 flex justify-center">
+                  <button
+                    onClick={() => setOrdersExpanded((v) => !v)}
+                    className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1 active:bg-primary/15 transition-colors"
+                  >
+                    {ordersExpanded ? "收起" : `展开全部 ${orders.length} 个`}
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 transition-transform ${ordersExpanded ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                </div>
               )}
             </>
           )}
