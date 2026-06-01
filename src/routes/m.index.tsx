@@ -97,9 +97,14 @@ function MHomePage() {
         <div className="relative px-4 pt-5 pb-6">
           <div className="flex items-start justify-between">
             <div className="min-w-0">
-              <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25">
+              <button
+                type="button"
+                onClick={() => setRoleOpen(true)}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 active:scale-95 transition-transform"
+              >
                 <span className="text-[11px] text-white/95">{roleLabel[role]}</span>
-              </div>
+                <ChevronsUpDown className="h-3 w-3 text-white/85" />
+              </button>
               <div className="text-[18px] leading-tight font-semibold text-white mt-1.5 drop-shadow-sm">李师傅</div>
               <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
                 <MapPin className="h-3 w-3" />
