@@ -1109,6 +1109,15 @@ function ReportPage() {
       </div>
 
       {/* 复诊检测弹窗 */}
+      <DiseasePicker
+        open={diseasePickerOpen}
+        onClose={() => setDiseasePickerOpen(false)}
+        diseases={diseaseKB}
+        selectedName={suspectedDisease}
+        matchedSymptoms={symptoms}
+        onSelect={(d) => setSuspectedDisease(d.name)}
+      />
+
       <RelatedOrderPicker
         open={orderPickerOpen}
         onClose={() => setOrderPickerOpen(false)}
