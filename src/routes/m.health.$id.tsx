@@ -590,7 +590,7 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
 
         const pickupDone = needPickup && isDone;
         return (
-          <div key={d.day} className="rounded-2xl bg-card border border-border p-4">
+          <div key={d.day} className={`rounded-2xl bg-card border border-border p-4 ${d.phase === "pending" ? "opacity-50" : ""}`}>
             <div className="flex items-center justify-between mb-2 min-h-6">
               <div className="flex items-center gap-2 leading-6">
                 <DayDot active={isActive} done={isDone} />
