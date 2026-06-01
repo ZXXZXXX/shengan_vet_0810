@@ -249,7 +249,7 @@ function AnimalDetailPage() {
         <section className="px-4 mt-5">
           <div className="flex items-center gap-6 border-b border-border">
             {[
-              { key: "meds" as const, label: "用药与执行记录" },
+              { key: "meds" as const, label: "用药记录" },
               { key: "moves" as const, label: "转栏记录" },
             ].map((t) => {
               const active = tab === t.key;
@@ -372,23 +372,24 @@ function MedicationHistory() {
           近 30 天无用药记录
         </div>
       ) : (
-        <div className="space-y-3">
-          {groups.map(([date, items]) => (
-            <div key={date}>
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="font-mono text-caption text-text-secondary">{date}</span>
-                <span className="text-caption text-text-tertiary">· {items.length} 条</span>
-                <span className="flex-1 h-px bg-border" />
-              </div>
-              <div className="border border-border rounded-lg overflow-hidden">
-                {items.map((m, idx) => (
-                  <div
-                    key={m.id}
-                    className={`flex items-center px-3 py-2.5 ${
-                      idx !== items.length - 1 ? "border-b border-border" : ""
-                    }`}
-                  >
-                    <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
+        <div className="relative pl-4">
+          {/* 垂直时间线 */}
+          <span className="absolute left-[5px] top-1.5 bottom-1.5 w-px bg-border" />
+          <div className="space-y-4">
+            {groups.map(([date, items]) => (
+              <div key={date} className="relative">
+                {/* 小圆点 */}
+                <span className="absolute -left-4 top-1.5 h-[7px] w-[7px] rounded-full bg-primary ring-2 ring-background" />
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="font-mono text-caption text-text-secondary">{date}</span>
+                  <span className="text-caption text-text-tertiary">· {items.length} 条</span>
+                </div>
+                <div className="space-y-1.5">
+                  {items.map((m) => (
+                    <div
+                      key={m.id}
+                      className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center"
+                    >
                       <div className="text-body-sm text-foreground truncate">{m.drug}</div>
                       <div className="text-caption text-text-tertiary truncate text-center">
                         {m.manufacturer}
@@ -397,11 +398,11 @@ function MedicationHistory() {
                         {m.dose}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
       {hasMore && (
