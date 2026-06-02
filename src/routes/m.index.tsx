@@ -301,14 +301,23 @@ const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
   hoof_trimmer: { status: "进行中", type: "修蹄", label: "执行中 · 修蹄" },
 };
 
+function getRoleTasks(role: Role): HomeTask[] {
+  const filter = roleFilterMap[role];
+  if (!filter) return [];
+  const base = homeTasks.filter((t) => t.status === filter.status && t.type === filter.type);
+  // 复查任务仅在兽医、场长视角下出现
+  if (role === "vet" || role === "manager") {
+    const reviews = homeTasks.filter(
+      (t) => t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "复查",
+    );
+    return [...reviews, ...base.filter((t) => diseaseTaskMeta[t.id]?.task !== "复查")];
+  }
+  return base.filter((t) => diseaseTaskMeta[t.id]?.task !== "复查");
+}
+
 function getTaskCount(role: Role) {
   if (role === "admin") return 0;
-
-  const filter: RoleFilter =
-    roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
-  return homeTasks.filter(
-    (t) => t.status === filter.status && t.type === filter.type,
-  ).length;
+  return getRoleTasks(role).length;
 }
 
 function formatTimeAgo(minutes: number) {
@@ -370,9 +379,7 @@ function TodayTaskList({ role }: { role: Role }) {
 
   const filter: RoleFilter =
     roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
-  const matched = homeTasks.filter(
-    (t) => t.status === filter.status && t.type === filter.type,
-  );
+  const matched = getRoleTasks(role);
   const visible = matched.slice(0, 6);
 
   if (visible.length === 0) {
