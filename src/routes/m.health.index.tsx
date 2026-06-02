@@ -125,10 +125,12 @@ const diseaseMeta: Record<string, { visit: "初诊" | "复诊"; diagnosis?: stri
   "WO-2298": { visit: "复诊", diagnosis: "乳房炎" },
   "WO-2420": { visit: "初诊", diagnosis: "乳房炎" },
   "WO-2430": { visit: "初诊", diagnosis: "乳房炎" },
+  "WO-2440": { visit: "初诊", diagnosis: "乳房炎" },
   "WO-2324": { visit: "初诊", suspected: "采食异常" },
 };
 const reviewTaskSet = new Set<string>(["WO-2420"]);
 const observeDaysMap: Record<string, number> = { "WO-2430": 5 };
+const obsExpiredOrders = new Set<string>(["WO-2440"]);
 
 function truncateCJK(s: string, max = 5) {
   const arr = Array.from(s);
