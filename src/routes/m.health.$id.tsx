@@ -949,12 +949,6 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
   return (
     <>
 
-      {!isTerminated && (
-        <Section title="基础信息">
-          <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-          <Field label="开始执行时间" value={isPlatformIssued ? platformDate : "2026-05-12 13:08"} />
-        </Section>
-      )}
 
 
       {days.map((d) => {
