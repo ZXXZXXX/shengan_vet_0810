@@ -1,5 +1,6 @@
-import { createFileRoute, useParams, Link } from "@tanstack/react-router";
+import { createFileRoute, useParams, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   ClipboardList,
   AlertTriangle,
@@ -101,6 +102,12 @@ function TaskDetailPage() {
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   const [anomalyOpen, setAnomalyOpen] = useState(false);
   const [recordsOpen, setRecordsOpen] = useState(false);
+  const navigate = useNavigate();
+  // 复诊工单：开始诊断决策弹窗
+  const [revisitOpen, setRevisitOpen] = useState(false);
+  const [revisitStep, setRevisitStep] = useState<"choose" | "terminate-new" | "terminate-old">("choose");
+  const [revisitReason, setRevisitReason] = useState<string>("");
+  const [revisitReasonOther, setRevisitReasonOther] = useState<string>("");
   
   
 
@@ -385,14 +392,30 @@ function TaskDetailPage() {
         return (
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-2">
             {showRespond && (
-              <Link
-                to="/m/health/$id/diagnose"
-                params={{ id: o.id }}
-                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-              >
-                <Stethoscope className="h-4 w-4" />
-                开始诊断
-              </Link>
+              isRevisit ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRevisitStep("choose");
+                    setRevisitReason("");
+                    setRevisitReasonOther("");
+                    setRevisitOpen(true);
+                  }}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+                >
+                  <Stethoscope className="h-4 w-4" />
+                  开始诊断
+                </button>
+              ) : (
+                <Link
+                  to="/m/health/$id/diagnose"
+                  params={{ id: o.id }}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+                >
+                  <Stethoscope className="h-4 w-4" />
+                  开始诊断
+                </Link>
+              )
             )}
             {showReview && (
               <Link
@@ -446,6 +469,134 @@ function TaskDetailPage() {
         barn={o.barn}
         target={isSingle ? earTag.replace(/^#/, "") : undefined}
       />
+
+      {/* === 复诊工单：开始诊断决策弹窗 === */}
+      <Dialog open={revisitOpen} onOpenChange={setRevisitOpen}>
+        <DialogContent className="max-w-[360px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-card-title">
+              {revisitStep === "choose"
+                ? "关联工单处理"
+                : revisitStep === "terminate-new"
+                  ? "终止本次复诊工单"
+                  : "终止原工单"}
+            </DialogTitle>
+          </DialogHeader>
+
+          {revisitStep === "choose" && (
+            <div className="space-y-3">
+              <div className="rounded-xl bg-brand-subtle border border-[color-mix(in_oklab,var(--primary)_18%,transparent)] p-3 text-body-sm text-foreground">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Link2 className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-caption font-medium text-primary">关联原工单</span>
+                </div>
+                <div className="font-mono text-caption text-text-secondary">
+                  {relatedOrderId} · {summary?.conclusion ?? "—"}
+                </div>
+              </div>
+              <p className="text-body-sm text-text-secondary">
+                本次为复诊工单。请先确认原工单是否需要重新诊断。
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setRevisitReason("");
+                  setRevisitReasonOther("");
+                  setRevisitStep("terminate-new");
+                }}
+                className="w-full rounded-xl border border-border bg-card p-3 text-left hover:border-primary transition"
+              >
+                <div className="text-body font-medium text-foreground mb-0.5">无需重新诊断</div>
+                <div className="text-caption text-text-tertiary">
+                  原方案继续有效，本次复诊工单直接终止
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setRevisitReason("");
+                  setRevisitReasonOther("");
+                  setRevisitStep("terminate-old");
+                }}
+                className="w-full rounded-xl border border-border bg-card p-3 text-left hover:border-primary transition"
+              >
+                <div className="text-body font-medium text-foreground mb-0.5">需重新诊断</div>
+                <div className="text-caption text-text-tertiary">
+                  原工单将被终止，随后进入新方案诊断
+                </div>
+              </button>
+            </div>
+          )}
+
+          {(revisitStep === "terminate-new" || revisitStep === "terminate-old") && (
+            <div className="space-y-3">
+              <div className="text-caption text-text-tertiary">
+                {revisitStep === "terminate-new"
+                  ? "选择终止本次复诊工单的原因"
+                  : `请选择原工单 ${relatedOrderId} 的终止原因`}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {(revisitStep === "terminate-new"
+                  ? ["症状已缓解", "无需调整方案", "误报复诊", "其他"]
+                  : ["症状反复，方案失效", "出现新症状", "用药反应异常", "需更换方案", "其他"]
+                ).map((r) => {
+                  const active = revisitReason === r;
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setRevisitReason(r)}
+                      className={`h-9 rounded-lg border text-body-sm transition ${
+                        active
+                          ? "border-primary bg-brand-subtle text-primary"
+                          : "border-border bg-card text-text-secondary"
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  );
+                })}
+              </div>
+              {revisitReason === "其他" && (
+                <textarea
+                  value={revisitReasonOther}
+                  onChange={(e) => setRevisitReasonOther(e.target.value)}
+                  placeholder="请输入其他终止原因"
+                  rows={2}
+                  className="w-full rounded-lg border border-border bg-card p-2 text-body-sm resize-none focus:outline-none focus:border-primary"
+                />
+              )}
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setRevisitStep("choose")}
+                  className="h-10 px-4 rounded-lg border border-border text-body-sm text-text-secondary"
+                >
+                  返回
+                </button>
+                <button
+                  type="button"
+                  disabled={!revisitReason || (revisitReason === "其他" && !revisitReasonOther.trim())}
+                  onClick={() => {
+                    if (revisitStep === "terminate-new") {
+                      toast.success(`本次复诊工单已终止（${o.id}）`);
+                      setRevisitOpen(false);
+                      navigate({ to: "/m/health" });
+                    } else {
+                      toast.success(`原工单 ${relatedOrderId} 已终止，进入新方案诊断`);
+                      setRevisitOpen(false);
+                      navigate({ to: "/m/health/$id/diagnose", params: { id: o.id } });
+                    }
+                  }}
+                  className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm disabled:opacity-50"
+                >
+                  {revisitStep === "terminate-new" ? "确认终止" : "终止原工单并继续诊断"}
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={recordsOpen} onOpenChange={setRecordsOpen}>
         <DialogContent className="max-w-[360px] rounded-2xl">
