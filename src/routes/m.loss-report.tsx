@@ -324,8 +324,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section>
-      <div className="flex items-baseline justify-between mb-2">
+    <section className="bg-card rounded-2xl border border-border p-4">
+      <div className="flex items-baseline justify-between mb-3">
         <h3 className="text-card-title text-foreground">
           {title}
           {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
