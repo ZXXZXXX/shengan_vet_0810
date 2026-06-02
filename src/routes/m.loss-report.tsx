@@ -203,11 +203,15 @@ function LossReportPage() {
                       placeholder="损耗数量"
                       className="flex-1 h-11 px-3 rounded-lg text-body"
                     />
-                    <span className="text-body-sm text-text-secondary w-10 text-center">
-                      {item?.unit ?? "-"}
+                    <span
+                      className={`text-body-sm w-12 text-center ${item ? "text-text-secondary" : "text-text-tertiary"}`}
+                    >
+                      {item?.unit ?? "计量单位"}
                     </span>
-                    <span className="text-body-sm text-text-secondary w-20 text-right tabular-nums">
-                      {lineAmount > 0 ? `¥ ${lineAmount.toFixed(2)}` : "—"}
+                    <span
+                      className={`text-body-sm w-20 text-right tabular-nums ${lineAmount > 0 ? "text-text-secondary" : "text-text-tertiary"}`}
+                    >
+                      {lineAmount > 0 ? `¥ ${lineAmount.toFixed(2)}` : "待估算"}
                     </span>
                   </div>
                 </div>
