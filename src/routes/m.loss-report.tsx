@@ -10,6 +10,7 @@ import {
   ImagePlus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { EvidenceSection } from "@/components/evidence-section";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/loss-report")({
