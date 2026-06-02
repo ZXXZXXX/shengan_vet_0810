@@ -112,7 +112,7 @@ function TaskDetailPage() {
   const navigate = useNavigate();
   // 复诊工单：开始诊断决策弹窗
   const [revisitOpen, setRevisitOpen] = useState(false);
-  const [revisitStep, setRevisitStep] = useState<"choose" | "terminate-new" | "terminate-old">("choose");
+  const [revisitStep, setRevisitStep] = useState<"choose" | "terminate-old">("choose");
   const [revisitReason, setRevisitReason] = useState<string>("");
   const [revisitReasonOther, setRevisitReasonOther] = useState<string>("");
   
