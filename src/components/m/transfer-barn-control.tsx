@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRightLeft, Check, Search } from "lucide-react";
+import { ArrowRightLeft, Check, Search, X } from "lucide-react";
 
 const LAST_KEY = "mp:lastTransferBarn";
 
@@ -37,7 +37,7 @@ type Props = {
 /**
  * M 端统一的"是否转栏 + 转栏去向"组件。
  * - 用开关切换是否需要转栏
- * - 输入框匹配候选；优先展示上次所选
+ * - 点击输入框打开底部 Sheet 进行搜索匹配；默认优先展示上次所选
  */
 export function TransferBarnControl({
   enabled,
@@ -49,8 +49,8 @@ export function TransferBarnControl({
   label = "是否需要转栏",
   bordered = true,
 }: Props) {
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [focused, setFocused] = useState(false);
   const [lastPicked, setLastPicked] = useState<string>("");
 
   useEffect(() => {
@@ -64,12 +64,12 @@ export function TransferBarnControl({
     [options, exclude],
   );
 
-  const matches = useMemo(() => {
+  const list = useMemo(() => {
     const kw = query.trim();
     const ordered = lastPicked && pool.includes(lastPicked)
       ? [lastPicked, ...pool.filter((b) => b !== lastPicked)]
       : pool;
-    return (kw ? ordered.filter((b) => b.includes(kw)) : ordered).slice(0, 6);
+    return kw ? ordered.filter((b) => b.includes(kw)) : ordered;
   }, [pool, lastPicked, query]);
 
   const pick = (b: string) => {
@@ -78,7 +78,7 @@ export function TransferBarnControl({
       localStorage.setItem(LAST_KEY, b);
       setLastPicked(b);
     }
-    setFocused(false);
+    setSheetOpen(false);
     setQuery("");
   };
 
@@ -88,7 +88,18 @@ export function TransferBarnControl({
     if (!next) {
       onValueChange("");
       setQuery("");
+      setSheetOpen(false);
     }
+  };
+
+  const openSheet = () => {
+    setQuery("");
+    setSheetOpen(true);
+  };
+
+  const closeSheet = () => {
+    setSheetOpen(false);
+    setQuery("");
   };
 
   const wrapperCls = bordered
@@ -121,63 +132,110 @@ export function TransferBarnControl({
 
       {enabled && (
         <div className="mt-3">
-          {value ? (
-            <div className="flex items-center justify-between gap-2 h-11 px-3 rounded-xl bg-brand-subtle border border-primary/20">
+          <button
+            type="button"
+            onClick={openSheet}
+            className="w-full h-11 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left"
+          >
+            {value ? (
               <span className="inline-flex items-center gap-1.5 text-body-sm text-primary font-medium">
                 <Check className="h-3.5 w-3.5" />
                 转入 {value}
               </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-body-sm text-text-tertiary">
+                <Search className="h-3.5 w-3.5" />
+                输入或选择转栏去向
+              </span>
+            )}
+            <span className="text-caption text-text-tertiary">
+              {value ? "更换" : "选择"}
+            </span>
+          </button>
+        </div>
+      )}
+
+      {sheetOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          onClick={closeSheet}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[85vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border shrink-0">
+              <div className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                <ArrowRightLeft className="h-4 w-4 text-primary" />
+                选择转栏去向
+              </div>
               <button
                 type="button"
-                onClick={() => {
-                  onValueChange("");
-                  setQuery("");
-                }}
-                className="text-caption text-text-tertiary"
+                onClick={closeSheet}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
               >
-                更换
+                <X className="h-4 w-4" />
               </button>
             </div>
-          ) : (
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-              <input
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setFocused(true);
-                }}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setTimeout(() => setFocused(false), 150)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && query.trim()) {
-                    e.preventDefault();
-                    pick(query.trim());
-                  }
-                }}
-                placeholder="输入或搜索转入栏编号"
-                className="w-full h-11 pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-              />
-              {focused && matches.length > 0 && (
-                <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-72 overflow-auto">
-                  {matches.map((b) => (
-                    <button
-                      key={b}
-                      type="button"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => pick(b)}
-                      className="w-full text-left px-3 py-2.5 hover:bg-surface-subtle border-b border-border last:border-b-0 flex items-center justify-between gap-2"
-                    >
-                      <span className="text-body-sm text-foreground">{b}</span>
-                      {b === lastPicked && (
-                        <span className="tag tag-muted">上次选择</span>
-                      )}
-                    </button>
-                  ))}
+
+            <div className="px-4 pt-3 shrink-0">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                <input
+                  autoFocus
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && query.trim()) {
+                      e.preventDefault();
+                      pick(query.trim());
+                    }
+                  }}
+                  placeholder="搜索或输入转入栏名称"
+                  className="w-full h-10 pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                />
+              </div>
+              {!query && lastPicked && pool.includes(lastPicked) && (
+                <div className="mt-2 text-caption text-text-tertiary">
+                  已优先展示上次选择
                 </div>
               )}
             </div>
-          )}
+
+            <div className="p-4 space-y-2 overflow-y-auto flex-1">
+              {list.length === 0 ? (
+                <div className="text-center py-12 text-body-sm text-text-tertiary">
+                  无匹配栏舍，按回车可直接使用输入值
+                </div>
+              ) : (
+                list.map((b) => {
+                  const selected = b === value;
+                  return (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => pick(b)}
+                      className={`w-full text-left rounded-xl border p-3 bg-card transition-colors flex items-center justify-between gap-2 ${
+                        selected
+                          ? "border-primary"
+                          : "border-border active:bg-surface-subtle"
+                      }`}
+                    >
+                      <span className="text-body-sm text-foreground font-medium">{b}</span>
+                      <span className="inline-flex items-center gap-2">
+                        {b === lastPicked && (
+                          <span className="tag tag-muted">上次选择</span>
+                        )}
+                        {selected && (
+                          <Check className="h-4 w-4 text-primary" />
+                        )}
+                      </span>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
