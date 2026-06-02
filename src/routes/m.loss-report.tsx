@@ -52,16 +52,8 @@ function LossReportPage() {
   const [videos, setVideos] = useState<number[]>([]);
   const [voiceSecs, setVoiceSecs] = useState<number | null>(null);
   const [recording, setRecording] = useState(false);
-  const [showItemPicker, setShowItemPicker] = useState<number | null>(null);
-  const [itemQuery, setItemQuery] = useState("");
+  const [pickerIdx, setPickerIdx] = useState<number | null>(null);
 
-  const matchedItems = useMemo(() => {
-    const kw = itemQuery.trim().toLowerCase();
-    const pool = kw
-      ? ITEMS.filter((i) => `${i.id} ${i.name}`.toLowerCase().includes(kw))
-      : ITEMS;
-    return pool.slice(0, 8);
-  }, [itemQuery]);
 
   const estimatedTotal = useMemo(() => {
     return lines.reduce((sum, l) => {
