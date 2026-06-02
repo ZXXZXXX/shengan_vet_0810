@@ -192,8 +192,9 @@ function TaskDetailPage() {
 
 
 
-  // 观察中状态（来自复查 → 继续观察）
-  const obsDays = search.obs;
+  // 观察中状态（来自复查 → 继续观察）：支持 URL 参数 或 静态 mock 映射
+  const staticObsDays = observingOrdersMap[id];
+  const obsDays = search.obs ?? staticObsDays;
   const isObserving = isDisease && typeof obsDays === "number" && obsDays > 0 && !search.obsExpired;
   const isObsExpired = isDisease && Boolean(search.obsExpired);
 
