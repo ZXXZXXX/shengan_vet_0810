@@ -148,7 +148,9 @@ function TaskDetailPage() {
     barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : isPlatformImmune ? "1 号牛舍" : isPlatformPostpartum ? "产房 1 号" : "3 号牛舍",
     target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : isPlatformImmune ? "24 头" : "3 只",
     type: isLoss ? "物资损耗" : isHoof ? "修蹄" : isPlatformImmune ? "免疫" : isPlatformPostpartum ? "产后护理" : "疾病治疗",
-    status: (statusById[id] ?? fallbackStatus) as StatusKey,
+    status: ((search.obs && !search.obsExpired) || search.obsExpired
+      ? "进行中"
+      : (statusById[id] ?? fallbackStatus)) as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
     needPickup: !isLoss,
@@ -382,11 +384,11 @@ function TaskDetailPage() {
 
       {/* === 3. 底部操作区 === */}
       {(() => {
-        const showRespond = canDiagnose(role, o.type) && o.status === "待诊断";
+        const showRespond = canDiagnose(role, o.type) && o.status === "待诊断" && !isObserving && !isObsExpired;
         const showExec = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
         const showReview = isDisease && role === "vet" && o.status === "进行中" && !isObserving && !isObsExpired;
-        const showRevisitReport = isObserving && canExecute(role);
-        const showConfirmCure = isObsExpired && canExecute(role);
+        const showRevisitReport = isObserving && role === "vet_assistant";
+        const showConfirmCure = isObsExpired && role === "vet_assistant";
 
         if (!showRespond && !showExec && !showReview && !showRevisitReport && !showConfirmCure) return null;
         return (
