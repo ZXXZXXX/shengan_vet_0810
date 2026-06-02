@@ -110,7 +110,7 @@ function TaskDetailPage() {
       ? "review"
       : "report";
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
-  const [anomalyOpen, setAnomalyOpen] = useState(false);
+  
   const [recordsOpen, setRecordsOpen] = useState(false);
   const navigate = useNavigate();
   // 复诊工单：开始诊断决策弹窗
