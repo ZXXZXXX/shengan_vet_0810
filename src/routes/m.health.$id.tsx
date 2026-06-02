@@ -925,7 +925,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 
-export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
+export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
@@ -940,11 +940,15 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
   const isTerminated = status === "已终止";
   const platformPhase: DayPhase = status === "已完成" ? "done" : "active";
   const platformDate = status === "已完成" ? "2026-05-12 10:00" : "2026-05-28 09:00";
+  // 复查任务进行中（处方已全部完成，待兽医复查）/ 已完成观察中
+  const reviewActive = id === "WO-2420";
+  const reviewDone = id === "WO-2430";
+  const allPrescriptionsDone = reviewActive || reviewDone;
   const days: DaySummary[] = isTerminated
     ? []
     : platformAction
       ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
-      : getExecSummary(status);
+      : getExecSummary(allPrescriptionsDone ? "已完成" : status);
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
