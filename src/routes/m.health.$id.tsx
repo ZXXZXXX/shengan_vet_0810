@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { AnomalyFeedbackSheet } from "@/components/anomaly-feedback-sheet";
-import { useRole, canVisit, canExecute, canDiagnose } from "@/lib/mobile-role";
+import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
 
 import {
   AlertDialog,
@@ -49,6 +49,8 @@ export const Route = createFileRoute("/m/health/$id")({
   head: () => ({ meta: [{ title: "工单详情 · 奇点智牧" }] }),
   validateSearch: (s: Record<string, unknown>) => ({
     tab: (s.tab as "report" | "review" | "execute" | undefined) ?? undefined,
+    obs: typeof s.obs === "number" ? s.obs : s.obs ? Number(s.obs) : undefined,
+    obsExpired: s.obsExpired ? 1 : undefined,
   }),
   component: TaskDetailPage,
 });
@@ -171,7 +173,12 @@ function TaskDetailPage() {
 
 
 
-  const showAnomaly = canExecute(role) && o.status === "进行中";
+  // 观察中状态（来自复查 → 继续观察）
+  const obsDays = search.obs;
+  const isObserving = isDisease && typeof obsDays === "number" && obsDays > 0 && !search.obsExpired;
+  const isObsExpired = isDisease && Boolean(search.obsExpired);
+
+  const showAnomaly = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
 
   return (
     <MobileShell
@@ -298,8 +305,40 @@ function TaskDetailPage() {
           )}
 
 
+          {(isObserving || isObsExpired) && (
+            <div
+              className={`mt-2 rounded-lg p-3 flex items-start gap-2 ${
+                isObsExpired
+                  ? "bg-[#22ACEB]/10 border border-[#22ACEB]/30"
+                  : "bg-brand-subtle"
+              }`}
+            >
+              <Repeat
+                className={`h-4 w-4 mt-0.5 shrink-0 ${
+                  isObsExpired ? "text-[#22ACEB]" : "text-primary"
+                }`}
+              />
+              <div className="flex-1 min-w-0">
+                <div
+                  className={`text-body-sm font-medium ${
+                    isObsExpired ? "text-[#22ACEB]" : "text-primary"
+                  }`}
+                >
+                  {isObsExpired
+                    ? "观察期已结束，待确认治愈"
+                    : `继续观察中 · 剩余 ${obsDays} 天`}
+                </div>
+                <div className="text-caption text-text-tertiary mt-0.5 leading-relaxed">
+                  {isObsExpired
+                    ? "观察期内未发起复诊上报，请助理确认治愈并关闭工单。"
+                    : "观察期内若发现异常，可通过健康上报发起复诊。"}
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
+
 
 
 
@@ -336,15 +375,16 @@ function TaskDetailPage() {
 
       {/* === 3. 底部操作区 === */}
       {(() => {
-        const isResponder = canVisit(role) || canExecute(role);
-        void isResponder;
         const showRespond = canDiagnose(role, o.type) && o.status === "待诊断";
-        const showExec = canExecute(role) && o.status === "进行中";
+        const showExec = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
+        const showReview = isDisease && role === "vet" && o.status === "进行中" && !isObserving && !isObsExpired;
+        const showRevisitReport = isObserving && canExecute(role);
+        const showConfirmCure = isObsExpired && canExecute(role);
 
-        if (!showRespond && !showExec) return null;
+        if (!showRespond && !showExec && !showReview && !showRevisitReport && !showConfirmCure) return null;
         return (
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-2">
-            {showRespond ? (
+            {showRespond && (
               <Link
                 to="/m/health/$id/diagnose"
                 params={{ id: o.id }}
@@ -353,7 +393,18 @@ function TaskDetailPage() {
                 <Stethoscope className="h-4 w-4" />
                 开始诊断
               </Link>
-            ) : (
+            )}
+            {showReview && (
+              <Link
+                to="/m/health/$id_/review"
+                params={{ id: o.id }}
+                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <Stethoscope className="h-4 w-4" />
+                开始复查
+              </Link>
+            )}
+            {showExec && !showReview && (
               <Link
                 to="/m/health/$id/execute"
                 params={{ id: o.id }}
@@ -363,9 +414,30 @@ function TaskDetailPage() {
                 开始执行
               </Link>
             )}
+            {showRevisitReport && (
+              <Link
+                to="/m/report"
+                search={{ target: earTag.replace(/^#/, ""), barn: o.barn, revisitFrom: o.id, lock: 1 }}
+                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <Repeat className="h-4 w-4" />
+                健康上报（复诊）
+              </Link>
+            )}
+            {showConfirmCure && (
+              <Link
+                to="/m/health/$id_/confirm-cure"
+                params={{ id: o.id }}
+                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                确认治愈
+              </Link>
+            )}
           </div>
         );
       })()}
+
 
       <AnomalyFeedbackSheet
         open={anomalyOpen}

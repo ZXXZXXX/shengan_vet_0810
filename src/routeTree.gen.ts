@@ -65,8 +65,10 @@ import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
+import { Route as MHealthIdReviewRouteImport } from './routes/m.health.$id_.review'
 import { Route as MHealthIdExecuteRouteImport } from './routes/m.health.$id_.execute'
 import { Route as MHealthIdDiagnoseRouteImport } from './routes/m.health.$id_.diagnose'
+import { Route as MHealthIdConfirmCureRouteImport } from './routes/m.health.$id_.confirm-cure'
 import { Route as MHealthIdExecutePickupIdRouteImport } from './routes/m.health.$id_.execute_.$pickupId'
 
 const WorkspaceRoute = WorkspaceRouteImport.update({
@@ -350,6 +352,11 @@ const MBarnsIdRoute = MBarnsIdRouteImport.update({
   path: '/barns/$id',
   getParentRoute: () => MRoute,
 } as any)
+const MHealthIdReviewRoute = MHealthIdReviewRouteImport.update({
+  id: '/health/$id_/review',
+  path: '/health/$id/review',
+  getParentRoute: () => MRoute,
+} as any)
 const MHealthIdExecuteRoute = MHealthIdExecuteRouteImport.update({
   id: '/health/$id_/execute',
   path: '/health/$id/execute',
@@ -358,6 +365,11 @@ const MHealthIdExecuteRoute = MHealthIdExecuteRouteImport.update({
 const MHealthIdDiagnoseRoute = MHealthIdDiagnoseRouteImport.update({
   id: '/health/$id_/diagnose',
   path: '/health/$id/diagnose',
+  getParentRoute: () => MRoute,
+} as any)
+const MHealthIdConfirmCureRoute = MHealthIdConfirmCureRouteImport.update({
+  id: '/health/$id_/confirm-cure',
+  path: '/health/$id/confirm-cure',
   getParentRoute: () => MRoute,
 } as any)
 const MHealthIdExecutePickupIdRoute =
@@ -424,8 +436,10 @@ export interface FileRoutesByFullPath {
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/': typeof MHealthIndexRoute
+  '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRoute
+  '/m/health/$id/review': typeof MHealthIdReviewRoute
   '/m/health/$id/execute/$pickupId': typeof MHealthIdExecutePickupIdRoute
 }
 export interface FileRoutesByTo {
@@ -480,8 +494,10 @@ export interface FileRoutesByTo {
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health': typeof MHealthIndexRoute
+  '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRoute
+  '/m/health/$id/review': typeof MHealthIdReviewRoute
   '/m/health/$id/execute/$pickupId': typeof MHealthIdExecutePickupIdRoute
 }
 export interface FileRoutesById {
@@ -542,8 +558,10 @@ export interface FileRoutesById {
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/': typeof MHealthIndexRoute
+  '/m/health/$id_/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id_/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id_/execute': typeof MHealthIdExecuteRoute
+  '/m/health/$id_/review': typeof MHealthIdReviewRoute
   '/m/health/$id_/execute_/$pickupId': typeof MHealthIdExecutePickupIdRoute
 }
 export interface FileRouteTypes {
@@ -605,8 +623,10 @@ export interface FileRouteTypes {
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/'
+    | '/m/health/$id/confirm-cure'
     | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
+    | '/m/health/$id/review'
     | '/m/health/$id/execute/$pickupId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -661,8 +681,10 @@ export interface FileRouteTypes {
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health'
+    | '/m/health/$id/confirm-cure'
     | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
+    | '/m/health/$id/review'
     | '/m/health/$id/execute/$pickupId'
   id:
     | '__root__'
@@ -722,8 +744,10 @@ export interface FileRouteTypes {
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/'
+    | '/m/health/$id_/confirm-cure'
     | '/m/health/$id_/diagnose'
     | '/m/health/$id_/execute'
+    | '/m/health/$id_/review'
     | '/m/health/$id_/execute_/$pickupId'
   fileRoutesById: FileRoutesById
 }
@@ -1135,6 +1159,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MBarnsIdRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/health/$id_/review': {
+      id: '/m/health/$id_/review'
+      path: '/health/$id/review'
+      fullPath: '/m/health/$id/review'
+      preLoaderRoute: typeof MHealthIdReviewRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/health/$id_/execute': {
       id: '/m/health/$id_/execute'
       path: '/health/$id/execute'
@@ -1147,6 +1178,13 @@ declare module '@tanstack/react-router' {
       path: '/health/$id/diagnose'
       fullPath: '/m/health/$id/diagnose'
       preLoaderRoute: typeof MHealthIdDiagnoseRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/health/$id_/confirm-cure': {
+      id: '/m/health/$id_/confirm-cure'
+      path: '/health/$id/confirm-cure'
+      fullPath: '/m/health/$id/confirm-cure'
+      preLoaderRoute: typeof MHealthIdConfirmCureRouteImport
       parentRoute: typeof MRoute
     }
     '/m/health/$id_/execute_/$pickupId': {
@@ -1209,8 +1247,10 @@ interface MRouteChildren {
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
+  MHealthIdConfirmCureRoute: typeof MHealthIdConfirmCureRoute
   MHealthIdDiagnoseRoute: typeof MHealthIdDiagnoseRoute
   MHealthIdExecuteRoute: typeof MHealthIdExecuteRoute
+  MHealthIdReviewRoute: typeof MHealthIdReviewRoute
   MHealthIdExecutePickupIdRoute: typeof MHealthIdExecutePickupIdRoute
 }
 
@@ -1233,8 +1273,10 @@ const MRouteChildren: MRouteChildren = {
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
   MHealthIndexRoute: MHealthIndexRoute,
+  MHealthIdConfirmCureRoute: MHealthIdConfirmCureRoute,
   MHealthIdDiagnoseRoute: MHealthIdDiagnoseRoute,
   MHealthIdExecuteRoute: MHealthIdExecuteRoute,
+  MHealthIdReviewRoute: MHealthIdReviewRoute,
   MHealthIdExecutePickupIdRoute: MHealthIdExecutePickupIdRoute,
 }
 
