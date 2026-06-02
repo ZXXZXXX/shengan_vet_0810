@@ -1,14 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
-  Search,
   ScanLine,
   X,
   Plus,
   PackageX,
+  ChevronRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EvidenceSection } from "@/components/evidence-section";
+import { DrugItemPicker } from "@/components/drug-item-picker";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/loss-report")({
