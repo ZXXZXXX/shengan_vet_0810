@@ -851,15 +851,12 @@ function FarmSwitcher() {
         </div>
       )}
       {switching && (
-        <>
-          <div className="fixed inset-0 z-[99] bg-black/5 backdrop-blur-[1px]" />
-          <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[25vh]">
-            <div className="h-28 w-28 rounded-2xl bg-card shadow-2xl flex flex-col items-center justify-center gap-3">
-              <span className="h-8 w-8 rounded-full border-[3px] border-primary/25 border-t-primary animate-spin" />
-              <span className="text-caption text-text-secondary">切换牧场中…</span>
-            </div>
+        <div className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-[2px] flex items-start justify-center pt-[25vh]">
+          <div className="h-28 w-28 rounded-2xl bg-card shadow-2xl flex flex-col items-center justify-center gap-3">
+            <span className="h-8 w-8 rounded-full border-[3px] border-primary/25 border-t-primary animate-spin" />
+            <span className="text-caption text-text-secondary">切换牧场中…</span>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
