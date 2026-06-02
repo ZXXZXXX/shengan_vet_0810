@@ -15,6 +15,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import {
   RelatedOrderPicker,
   RelatedOrderCard,
