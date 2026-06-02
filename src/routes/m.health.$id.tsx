@@ -92,7 +92,7 @@ const reviewTaskOrders = new Set<string>(["WO-2420"]);
 // 已完成复查 → 继续观察中（静态 mock：剩余天数）
 const observingOrdersMap: Record<string, number> = { "WO-2430": 5 };
 // 观察期已满 → 待助理已治愈
-const obsExpiredOrders = new Set<string>(["WO-2440"]);
+const obsExpiredOrders = new Set<string>([]);
 
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
