@@ -5,9 +5,7 @@ import {
   ScanLine,
   X,
   Plus,
-  Camera,
   PackageX,
-  ImagePlus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EvidenceSection } from "@/components/evidence-section";
