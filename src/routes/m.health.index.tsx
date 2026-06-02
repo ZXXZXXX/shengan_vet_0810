@@ -141,9 +141,9 @@ function diseaseTitleParts(o: Task) {
   const name = truncateCJK(m?.diagnosis || m?.suspected || "疾病不详");
   let task: string | null = null;
   if (o.status === "进行中") {
-    if (observeDaysMap[o.id]) task = `观察 ${observeDaysMap[o.id]} 天`;
-    else if (reviewTaskSet.has(o.id)) task = "复查任务";
-    else task = "执行任务";
+    if (observeDaysMap[o.id]) task = "观察";
+    else if (reviewTaskSet.has(o.id)) task = "复查";
+    else task = "执行";
   }
   return { visit, name, task };
 }
@@ -316,7 +316,7 @@ function TaskListPage() {
                       {/* Title 区：对象 · 初诊/复诊 · 疾病名称 · 任务 —— 单行 truncate */}
                       <div className="text-card-title text-foreground truncate h-[26px] leading-[26px]">
                         {(() => {
-                          const head = o.scope.type === "single" ? `单只 ${o.scope.ear}` : `${o.scope.label}`;
+                          const head = o.scope.type === "single" ? o.scope.ear : o.scope.label;
                           const parts = diseaseTitleParts(o);
                           if (parts) {
                             const segs = [parts.visit, parts.name];
