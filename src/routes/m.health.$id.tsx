@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { AnomalyFeedbackSheet } from "@/components/anomaly-feedback-sheet";
-import { useRole, canVisit, canExecute, canDiagnose } from "@/lib/mobile-role";
+import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
 
 import {
   AlertDialog,
