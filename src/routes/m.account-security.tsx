@@ -11,7 +11,7 @@ export const Route = createFileRoute("/m/account-security")({
 const PHONE_KEY = "mp:bound_phone";
 
 function fallbackPhone(p: string) {
-  return p || "未绑定";
+  return p || "138 8888 8888";
 }
 
 function AccountSecurityPage() {
