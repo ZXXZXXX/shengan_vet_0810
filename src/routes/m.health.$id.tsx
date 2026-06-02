@@ -186,9 +186,27 @@ function TaskDetailPage() {
         date: "2026-04-22",
         conclusion: "乳房炎（亚临床）",
         prescription: "标准 3 日抗炎方案：头孢噻呋钠 + 氟尼辛葡甲胺，每日 1 次连续 3 天，配合每日测温与乳样复查。",
-        meds: [
-          { name: "头孢噻呋钠", dose: "1g / 次", route: "肌肉注射", days: "3 天", executed: "2026-04-22 ~ 2026-04-24，按计划完成" },
-          { name: "氟尼辛葡甲胺", dose: "2ml / 次", route: "肌肉注射", days: "2 天", executed: "2026-04-22 ~ 2026-04-23，按计划完成" },
+        medGroups: [
+          {
+            date: "2026-04-24",
+            items: [
+              { name: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射" },
+            ],
+          },
+          {
+            date: "2026-04-23",
+            items: [
+              { name: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射" },
+              { name: "氟尼辛葡甲胺", manufacturer: "齐鲁动保", dose: "2ml / 次 · 肌肉注射" },
+            ],
+          },
+          {
+            date: "2026-04-22",
+            items: [
+              { name: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射" },
+              { name: "氟尼辛葡甲胺", manufacturer: "齐鲁动保", dose: "2ml / 次 · 肌肉注射" },
+            ],
+          },
         ],
         revisitReason: "停药 5 天后乳区再次出现红肿，体温回升至 39.4℃，疑似炎症复发，需复查并调整方案。",
       }
@@ -600,18 +618,37 @@ function TaskDetailPage() {
                 <p className="text-body-sm text-text-secondary leading-relaxed">{summary.prescription}</p>
               </div>
 
-              <div className="rounded-xl border border-border bg-card p-3 space-y-2">
+              <div className="rounded-xl border border-border bg-card p-3 space-y-3">
                 <div className="text-caption text-text-tertiary">用药记录</div>
-                <div className="rounded-lg bg-surface-subtle border border-border/60 divide-y divide-border/60">
-                  {summary.meds.map((m) => (
-                    <div key={m.name} className="px-2.5 py-2">
-                      <div className="text-body-sm text-foreground">{m.name}</div>
-                      <div className="text-caption text-text-tertiary mt-0.5">
-                        {m.route} · {m.dose} · {m.days}
+                <div className="relative pl-4">
+                  <span className="absolute left-[5px] top-1.5 bottom-1.5 w-px bg-border" />
+                  <div className="space-y-4">
+                    {summary.medGroups.map((g) => (
+                      <div key={g.date} className="relative">
+                        <span className="absolute -left-4 top-1.5 h-[7px] w-[7px] rounded-full bg-primary ring-2 ring-background" />
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="font-mono text-caption text-text-secondary">{g.date}</span>
+                          <span className="text-caption text-text-tertiary">· {g.items.length} 条</span>
+                        </div>
+                        <div className="space-y-1.5">
+                          {g.items.map((m) => (
+                            <div
+                              key={m.name}
+                              className="grid grid-cols-[1fr_auto_auto] gap-3 items-center"
+                            >
+                              <div className="text-body-sm text-foreground truncate">{m.name}</div>
+                              <div className="text-caption text-primary truncate text-center">
+                                {m.manufacturer}
+                              </div>
+                              <div className="text-caption text-text-secondary truncate text-right">
+                                {m.dose}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="text-caption text-text-tertiary mt-1">{m.executed}</div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
 
