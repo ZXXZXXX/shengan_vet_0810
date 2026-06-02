@@ -49,6 +49,8 @@ export const Route = createFileRoute("/m/health/$id")({
   head: () => ({ meta: [{ title: "工单详情 · 奇点智牧" }] }),
   validateSearch: (s: Record<string, unknown>) => ({
     tab: (s.tab as "report" | "review" | "execute" | undefined) ?? undefined,
+    obs: typeof s.obs === "number" ? s.obs : s.obs ? Number(s.obs) : undefined,
+    obsExpired: s.obsExpired ? 1 : undefined,
   }),
   component: TaskDetailPage,
 });
