@@ -233,7 +233,7 @@ function LossReportPage() {
                   "color-mix(in oklab, var(--primary) 6%, transparent)",
               }}
             >
-              <span className="text-body-sm text-text-secondary">估算损耗金额</span>
+              <span className="text-body-sm text-text-secondary">损耗总金额（估算）</span>
               <span className="text-card-title text-primary tabular-nums">
                 ¥ {estimatedTotal.toFixed(2)}
               </span>
