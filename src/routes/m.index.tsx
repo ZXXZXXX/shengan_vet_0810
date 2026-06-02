@@ -143,7 +143,7 @@ function MHomePage() {
 
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-3">
+        <section className="px-4 mt-[2px]">
           <SectionTitle title="速查与近况" />
 
           <div className="grid grid-cols-3 gap-2.5">
@@ -692,7 +692,7 @@ function KBShortcut({
   return (
     <Link
       to={to}
-      className="group relative block h-[114px] active:scale-[0.98] transition-transform"
+      className="group relative block h-[110px] active:scale-[0.98] transition-transform"
       aria-label={label}
     >
       {/* 文件夹后片 */}
@@ -731,7 +731,7 @@ function KBShortcut({
       </div>
       {/* 文件夹前袋 */}
       <div
-        className="absolute inset-x-0 bottom-0 h-[64px] rounded-[14px] rounded-tl-[6px] overflow-hidden"
+        className="absolute inset-x-0 bottom-0 h-[60px] rounded-[14px] rounded-tl-[6px] overflow-hidden"
         style={{
           background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 90%, #fff) 0%, ${accent} 100%)`,
           boxShadow: `inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent), 0 6px 14px -8px color-mix(in oklab, ${accent} 80%, transparent)`,
