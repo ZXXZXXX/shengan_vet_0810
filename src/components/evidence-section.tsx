@@ -44,8 +44,8 @@ export function EvidenceSection({
   const voiceCount = voiceSecs === null ? 0 : 1;
 
   return (
-    <section>
-      <div className="flex items-baseline justify-between mb-2">
+    <section className="bg-card rounded-2xl border border-border p-4">
+      <div className="flex items-baseline justify-between mb-3">
         <h3 className="text-card-title text-foreground">{title}</h3>
       </div>
       <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-2">
