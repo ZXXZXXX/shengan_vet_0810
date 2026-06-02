@@ -106,14 +106,6 @@ function MePage() {
     </MobileShell>
   );
 }
-function Brief({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-surface-subtle py-2">
-      <div className="text-section-title tabular-nums text-foreground">{value}</div>
-      <div className="text-caption text-text-tertiary mt-0.5">{label}</div>
-    </div>
-  );
-}
 
 
 
