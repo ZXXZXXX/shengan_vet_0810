@@ -265,8 +265,9 @@ function TaskListPage() {
                   const isPickup = o.kind === "领取";
                   const canVisitThis = canDiagnose(role, o.type) && o.status === "待诊断";
                   const isVetView = role === "vet" || role === "manager";
+                  const isObserving = !!observeDaysMap[o.id] && !obsExpiredOrders.has(o.id);
                   const canExecuteThis =
-                    canExecute(role) && o.status === "进行中" &&
+                    canExecute(role) && o.status === "进行中" && !isObserving &&
                     (!isVetView || reviewTaskSet.has(o.id));
 
 
