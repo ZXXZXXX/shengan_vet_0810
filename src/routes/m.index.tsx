@@ -418,13 +418,24 @@ function TodayTaskList({ role }: { role: Role }) {
                 <span className="font-mono">{t.id}</span>
                 <span>·</span>
                 <span>{t.type}</span>
-                {t.type === "疾病治疗" && diseaseTaskMeta[t.id] && (
-                  <span
-                    className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[diseaseTaskMeta[t.id].task]}`}
-                  >
-                    {diseaseTaskMeta[t.id].task}
-                  </span>
-                )}
+                {(() => {
+                  const chip: TaskChip | null =
+                    t.type === "疾病治疗"
+                      ? diseaseTaskMeta[t.id]?.task ?? null
+                      : t.status === "进行中"
+                        ? "待执行"
+                        : t.status === "待诊断"
+                          ? "待诊断"
+                          : null;
+                  if (!chip) return null;
+                  return (
+                    <span
+                      className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
+                    >
+                      {chip}
+                    </span>
+                  );
+                })()}
                 <span className="ml-auto">{formatTimeAgo(t.minutesAgo)}</span>
               </div>
               <div className="text-body text-foreground truncate mt-0.5">
