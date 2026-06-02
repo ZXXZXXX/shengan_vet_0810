@@ -32,8 +32,12 @@ type WO = {
   target: string;
   kind: "健康" | "修蹄" | "免疫";
   type: string;
-  event: string;
-  owner: string;
+  conclusion: string;
+  desc: string;
+  status: "待诊断" | "执行中";
+  time: string;
+  person: string;
+  needPickup: boolean;
 };
 
 const kindIcon = {
@@ -44,8 +48,6 @@ const kindIcon = {
 
 function BarnDetailPage() {
   const { id } = useParams({ from: "/m/barns/$id" });
-  const role = useRole();
-  const me = roleToName[role] ?? "我";
 
   // mock 牛舍基础信息
   const barn = {
@@ -56,17 +58,17 @@ function BarnDetailPage() {
     stock: 186,
   };
 
-  // mock 该牛舍内全部待执行工作（不区分负责人）
-  const all: WO[] = [
-    { id: "WO-2381", target: "#A2381", kind: "健康", type: "疾病治疗", event: "持续高烧 39.6℃", owner: "李雨晴" },
-    { id: "WO-2298", target: "#A2298", kind: "健康", type: "疾病治疗", event: "乳房炎复诊", owner: "李雨晴" },
-    { id: "HF-0702", target: "#A2150", kind: "修蹄", type: "趾间皮炎处置", event: "右后蹄清创", owner: "张师傅" },
-    { id: "HF-0688", target: "#A2270", kind: "修蹄", type: "蹄底溃疡", event: "处置 + 包蹄", owner: "张师傅" },
-    { id: "WO-2401", target: "犊牛舍 A", kind: "免疫", type: "口蹄疫加强", event: "批次免疫", owner: "周凯" },
+  // mock 该牛舍内全部相关工单
+  const orders: WO[] = [
+    { id: "WO-2026-0518", target: "#A2381", kind: "健康", type: "疾病治疗", conclusion: "疑似乳房炎", desc: "持续高烧 39.6℃，食欲明显下降", status: "执行中", time: "2026-05-18 09:20", person: "李雨晴", needPickup: true },
+    { id: "WO-2026-0521", target: "#A2298", kind: "健康", type: "疾病治疗", conclusion: "乳房炎复诊", desc: "复诊评估恢复情况", status: "执行中", time: "2026-05-21 10:15", person: "李雨晴", needPickup: false },
+    { id: "HF-2026-0702", target: "#A2150", kind: "修蹄", type: "趾间皮炎处置", conclusion: "待诊断", desc: "右后蹄红肿，需清创修蹄", status: "待诊断", time: "2026-05-21 14:05", person: "王巡栏", needPickup: false },
+    { id: "HF-2026-0688", target: "#A2270", kind: "修蹄", type: "蹄底溃疡", conclusion: "蹄底溃疡 II 度", desc: "处置 + 包蹄", status: "执行中", time: "2026-05-20 16:30", person: "张师傅", needPickup: true },
+    { id: "IM-2026-0401", target: "犊牛舍 A", kind: "免疫", type: "口蹄疫加强", conclusion: "批次免疫", desc: "口蹄疫疫苗加强针批次免疫", status: "执行中", time: "2026-05-22 08:00", person: "周凯", needPickup: true },
   ];
 
-  // 仅返回当前账号负责的工作
-  const mine = all.filter((o) => o.owner === me);
+  const [ordersExpanded, setOrdersExpanded] = useState(false);
+  const visibleOrders = ordersExpanded ? orders : orders.slice(0, 2);
 
   return (
     <MobileShell title={`牛舍 · ${barn.name}`} back hideTabBar>
@@ -95,57 +97,104 @@ function BarnDetailPage() {
           </div>
         </div>
 
-        {/* 我的待执行工作 */}
+        {/* 相关工单 */}
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">我的待执行工作</h3>
-            <span className="text-caption text-text-tertiary">
-              {me}（{roleLabel[role]}）· {mine.length} 项
-            </span>
+            <h3 className="text-card-title text-foreground">相关工单</h3>
+            <span className="text-caption text-text-tertiary">共 {orders.length} 个</span>
           </div>
 
-          {mine.length === 0 ? (
+          {orders.length === 0 ? (
             <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
-              <div className="text-body-sm text-text-tertiary">本牛舍暂无您负责的待执行工作</div>
-              <div className="text-caption text-text-tertiary mt-1">
-                可直接通过下方「疾病上报」记录异常
-              </div>
+              <div className="text-body-sm text-text-tertiary">暂无相关工单</div>
             </div>
           ) : (
-            <div className="space-y-2">
-              {mine.map((o) => {
-                const KIcon = kindIcon[o.kind];
-                return (
-                  <Link
-                    key={o.id}
-                    to="/m/health/$id"
-                    params={{ id: o.id }}
-                    className="block rounded-xl border bg-card border-border p-3 flex items-center gap-3 active:bg-surface-subtle"
+            <>
+              <div className="space-y-2.5">
+                {visibleOrders.map((o) => {
+                  const KIcon = kindIcon[o.kind];
+                  const isWait = o.status === "待诊断";
+                  const StatusIcon = isWait ? ClipboardList : PlayCircle;
+                  const tagCls = isWait ? "tag tag-warning" : "tag tag-info";
+                  const timeLabel = isWait ? "上报" : "执行";
+                  const personLabel = isWait ? "上报" : "执行";
+                  const ctaText = isWait ? "诊断" : "执行";
+                  const ctaActive = !isWait;
+                  return (
+                    <Link
+                      key={o.id}
+                      to="/m/health/$id"
+                      params={{ id: o.id }}
+                      className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
+                    >
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-1.5 text-body-sm h-5">
+                          <span className="font-mono text-text-tertiary text-caption">{o.id}</span>
+                          <span className="text-text-tertiary">·</span>
+                          <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                            <KIcon className="h-3 w-3" />{o.type}
+                          </span>
+                          {!isWait && (
+                            <span className="text-caption text-text-tertiary">
+                              · {o.needPickup ? "需领物" : "无需领物"}
+                            </span>
+                          )}
+                          <span className={`${tagCls} inline-flex items-center gap-1 ml-auto`}>
+                            <StatusIcon className="h-3 w-3" />
+                            {o.status}
+                          </span>
+                        </div>
+
+                        <div className="text-card-title text-foreground truncate h-[26px] leading-[26px]">
+                          {`单只 ${o.target.replace(/^#/, "")}`}
+                          <span className="text-text-tertiary"> · </span>
+                          {o.conclusion}
+                        </div>
+
+                        <div className="text-body-sm text-text-secondary truncate h-[22px] leading-[22px]">
+                          {o.desc || <span className="text-text-tertiary/0">·</span>}
+                        </div>
+
+                        <div className="flex items-center text-caption text-text-tertiary pt-2 border-t border-border/60 h-9">
+                          <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                            <span className="shrink-0">
+                              {timeLabel} <span className="text-text-secondary">{o.time}</span>
+                            </span>
+                            <span className="text-text-tertiary/60">·</span>
+                            <span className="flex items-center gap-1 min-w-0">
+                              <span className="shrink-0">{personLabel}</span>
+                              <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center shrink-0">
+                                {o.person.charAt(0)}
+                              </span>
+                              <span className="text-text-secondary truncate">{o.person}</span>
+                            </span>
+                          </div>
+                          <span className={`ml-2 inline-flex items-center gap-0.5 shrink-0 ${
+                            ctaActive ? "text-primary font-medium" : "text-text-secondary"
+                          }`}>
+                            {ctaText}
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+              {orders.length > 2 && (
+                <div className="mt-3 flex justify-center">
+                  <button
+                    onClick={() => setOrdersExpanded((v) => !v)}
+                    className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1 active:bg-primary/15 transition-colors"
                   >
-                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary flex items-center justify-center">
-                      <PlayCircle className="h-4 w-4" />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-body-sm text-foreground truncate">
-                          {o.id}
-                        </span>
-                        <span className="tag tag-muted inline-flex items-center gap-1">
-                          <KIcon className="h-3 w-3" /> {o.kind}
-                        </span>
-                      </div>
-                      <div className="text-body-sm text-foreground mt-1 truncate">
-                        {o.target} · {o.event}
-                      </div>
-                      <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                        {o.type}
-                      </div>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-text-tertiary" />
-                  </Link>
-                );
-              })}
-            </div>
+                    {ordersExpanded ? "收起" : `展开全部 ${orders.length} 个`}
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 transition-transform ${ordersExpanded ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </section>
       </div>
