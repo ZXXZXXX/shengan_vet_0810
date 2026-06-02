@@ -209,18 +209,6 @@ function TaskDetailPage() {
       title="工单详情"
       back
       hideTabBar
-      right={
-        showAnomaly ? (
-          <button
-            type="button"
-            onClick={() => setAnomalyOpen(true)}
-            className="h-8 w-8 inline-flex items-center justify-center text-[var(--state-danger)]"
-            aria-label="异常处理"
-          >
-            <AlertTriangle className="h-4 w-4" />
-          </button>
-        ) : undefined
-      }
     >
       <div className="pb-28">
         {/* === 1. 顶部工单摘要 === */}
