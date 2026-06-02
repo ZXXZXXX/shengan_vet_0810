@@ -403,11 +403,15 @@ function TodayTaskList({ role }: { role: Role }) {
       {visible.map((t) => {
         const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
         const Icon = meta.icon;
+        const isReview =
+          t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查";
+        const linkProps = isReview
+          ? ({ to: "/m/health/$id/review", params: { id: t.id } } as const)
+          : ({ to: "/m/health/$id", params: { id: t.id } } as const);
         return (
           <Link
             key={t.id}
-            to="/m/health/$id"
-            params={{ id: t.id }}
+            {...linkProps}
             className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
           >
             <span className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}>
