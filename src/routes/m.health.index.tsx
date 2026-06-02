@@ -297,7 +297,7 @@ function TaskListPage() {
                     : canVisitThis
                       ? "诊断"
                       : canExecuteThis
-                        ? "执行"
+                        ? (isVetView && reviewTaskSet.has(o.id) ? "复查" : "执行")
                         : "查看";
 
                   const commonInner = (
