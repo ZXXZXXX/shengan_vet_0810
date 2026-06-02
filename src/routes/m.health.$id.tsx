@@ -384,11 +384,11 @@ function TaskDetailPage() {
 
       {/* === 3. 底部操作区 === */}
       {(() => {
-        const showRespond = canDiagnose(role, o.type) && o.status === "待诊断";
+        const showRespond = canDiagnose(role, o.type) && o.status === "待诊断" && !isObserving && !isObsExpired;
         const showExec = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
         const showReview = isDisease && role === "vet" && o.status === "进行中" && !isObserving && !isObsExpired;
-        const showRevisitReport = isObserving && canExecute(role);
-        const showConfirmCure = isObsExpired && canExecute(role);
+        const showRevisitReport = isObserving && role === "vet_assistant";
+        const showConfirmCure = isObsExpired && role === "vet_assistant";
 
         if (!showRespond && !showExec && !showReview && !showRevisitReport && !showConfirmCure) return null;
         return (
