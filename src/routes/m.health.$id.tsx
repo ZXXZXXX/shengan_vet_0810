@@ -949,12 +949,6 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
   return (
     <>
 
-      {!isTerminated && (
-        <Section title="基础信息">
-          <Field label="执行人" value={<PersonChip name="李雨晴" />} />
-          <Field label="开始执行时间" value={isPlatformIssued ? platformDate : "2026-05-12 13:08"} />
-        </Section>
-      )}
 
 
       {days.map((d) => {
@@ -986,12 +980,20 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
               <div className="text-body-sm leading-relaxed text-foreground">{d.action}</div>
             </div>
-            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-              <PackagePlus className="h-3.5 w-3.5" />
-              <span>领物</span>
-              <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full text-caption font-medium ${pickupDone ? "tag-success" : "tag-muted"}`}>
-                {!needPickup ? "无需" : pickupDone ? "已领" : "未领"}
-              </span>
+            <div className="flex items-center justify-between gap-2 text-caption text-text-tertiary">
+              <div className="flex items-center gap-1.5">
+                <PackagePlus className="h-3.5 w-3.5" />
+                <span>领物</span>
+                <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full text-caption font-medium ${pickupDone ? "tag-success" : "tag-muted"}`}>
+                  {!needPickup ? "无需" : pickupDone ? "已领" : "未领"}
+                </span>
+              </div>
+              {isDone && (
+                <div className="flex items-center gap-1.5">
+                  <span>执行人</span>
+                  <PersonChip name={["李雨晴", "王建国", "张伟"][(d.day - 1) % 3]} />
+                </div>
+              )}
             </div>
 
           </div>
