@@ -1,14 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
-  Search,
   ScanLine,
   X,
   Plus,
   PackageX,
+  ChevronRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EvidenceSection } from "@/components/evidence-section";
+import { DrugItemPicker } from "@/components/drug-item-picker";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/loss-report")({
@@ -51,16 +52,8 @@ function LossReportPage() {
   const [videos, setVideos] = useState<number[]>([]);
   const [voiceSecs, setVoiceSecs] = useState<number | null>(null);
   const [recording, setRecording] = useState(false);
-  const [showItemPicker, setShowItemPicker] = useState<number | null>(null);
-  const [itemQuery, setItemQuery] = useState("");
+  const [pickerIdx, setPickerIdx] = useState<number | null>(null);
 
-  const matchedItems = useMemo(() => {
-    const kw = itemQuery.trim().toLowerCase();
-    const pool = kw
-      ? ITEMS.filter((i) => `${i.id} ${i.name}`.toLowerCase().includes(kw))
-      : ITEMS;
-    return pool.slice(0, 8);
-  }, [itemQuery]);
 
   const estimatedTotal = useMemo(() => {
     return lines.reduce((sum, l) => {
@@ -114,70 +107,34 @@ function LossReportPage() {
               return (
                 <div key={idx} className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary z-10 pointer-events-none" />
-                      <input
-                        value={
-                          showItemPicker === idx
-                            ? itemQuery
-                            : item
-                              ? `${item.name}  ${item.id}`
-                              : ""
-                        }
-                        onFocus={() => {
-                          setShowItemPicker(idx);
-                          setItemQuery(item ? "" : "");
-                        }}
-                        onChange={(e) => {
-                          setShowItemPicker(idx);
-                          setItemQuery(e.target.value);
-                          if (item) setLine(idx, { itemId: "" });
-                        }}
-                        onBlur={() => {
-                          // delay so click on dropdown can register
-                          setTimeout(() => {
-                            setShowItemPicker((cur) => (cur === idx ? null : cur));
-                          }, 150);
-                        }}
-                        placeholder="搜索物品编号 / 名称"
-                        className="w-full h-11 pl-9 pr-3 rounded-lg text-body"
-                      />
-                      {showItemPicker === idx && (
-                        <div className="absolute left-0 right-0 top-12 z-30 bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                          {matchedItems.length === 0 ? (
-                            <div className="text-center py-6 text-caption text-text-tertiary">
-                              无匹配结果
+                    <button
+                      type="button"
+                      onClick={() => setPickerIdx(idx)}
+                      className={`flex-1 h-11 px-3 rounded-lg border bg-card flex items-center gap-2 text-left ${
+                        item ? "border-border" : "border-dashed border-border"
+                      }`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        {item ? (
+                          <>
+                            <div className="text-body text-foreground truncate leading-tight">
+                              {item.name}
                             </div>
-                          ) : (
-                            matchedItems.map((i) => (
-                              <button
-                                key={i.id}
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => {
-                                  setLine(idx, { itemId: i.id });
-                                  setShowItemPicker(null);
-                                  setItemQuery("");
-                                }}
-                                className="w-full px-3 py-2.5 flex items-center gap-3 text-left active:bg-surface-subtle hover:bg-surface-subtle"
-                              >
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-body text-foreground truncate">
-                                    {i.name}
-                                  </div>
-                                  <div className="text-caption text-text-tertiary font-mono mt-0.5">
-                                    {i.id} · {i.unit} · ¥ {i.price}/{i.unit}
-                                  </div>
-                                </div>
-                              </button>
-                            ))
-                          )}
-                        </div>
-                      )}
-                    </div>
+                            <div className="text-caption text-text-tertiary font-mono leading-tight">
+                              {item.id} · ¥ {item.price}/{item.unit}
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-body text-text-tertiary">
+                            选择损耗物品 / 药品
+                          </span>
+                        )}
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
+                    </button>
                     <button
                       onClick={() => {
-                        setShowItemPicker(idx);
-                        setItemQuery("");
+                        setPickerIdx(idx);
                         toast("已唤起扫码（演示）");
                       }}
                       className="h-11 w-11 inline-flex items-center justify-center rounded-lg bg-brand-subtle text-primary shrink-0"
@@ -194,6 +151,7 @@ function LossReportPage() {
                       </button>
                     )}
                   </div>
+
 
                   <div className="flex items-center gap-2">
                     <input
@@ -311,6 +269,18 @@ function LossReportPage() {
           提交损耗上报
         </button>
       </div>
+
+      <DrugItemPicker
+        open={pickerIdx !== null}
+        onClose={() => setPickerIdx(null)}
+        items={ITEMS}
+        selectedId={
+          pickerIdx !== null ? lines[pickerIdx]?.itemId || undefined : undefined
+        }
+        onSelect={(it) => {
+          if (pickerIdx !== null) setLine(pickerIdx, { itemId: it.id });
+        }}
+      />
 
     </MobileShell>
   );
