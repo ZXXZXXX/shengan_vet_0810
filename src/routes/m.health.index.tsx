@@ -367,7 +367,7 @@ function TaskListPage() {
                           </span>
                         </div>
                         <span className={`ml-2 inline-flex items-center gap-0.5 shrink-0 ${
-                          ctaText !== "查看" && ctaText !== "查看清单" ? "text-primary font-medium" : "text-text-secondary"
+                          ctaText === "查看" ? "text-text-secondary" : "text-primary font-medium"
                         }`}>
                           {ctaText}
                           <ChevronRight className="h-3.5 w-3.5" />
