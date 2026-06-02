@@ -3,13 +3,15 @@ import {
   Home,
   PlayCircle,
   ChevronRight,
+  ChevronDown,
   ClipboardPlus,
+  ClipboardList,
   Stethoscope,
   Footprints,
   Syringe,
 } from "lucide-react";
+import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
-import { useRole, roleLabel } from "@/lib/mobile-role";
 
 export const Route = createFileRoute("/m/barns/$id")({
   head: () => ({ meta: [{ title: "牛舍详情 · 奇点智牧" }] }),
