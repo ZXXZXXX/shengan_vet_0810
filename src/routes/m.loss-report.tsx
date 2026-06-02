@@ -211,7 +211,7 @@ function LossReportPage() {
                     <span
                       className={`text-body-sm w-20 text-right tabular-nums ${lineAmount > 0 ? "text-text-secondary" : "text-text-tertiary"}`}
                     >
-                      {lineAmount > 0 ? `¥ ${lineAmount.toFixed(2)}` : "待估算"}
+                      {lineAmount > 0 ? `¥ ${lineAmount.toFixed(3)}` : "待估算"}
                     </span>
                   </div>
                 </div>
