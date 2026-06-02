@@ -91,7 +91,7 @@ const statusById: Record<string, StatusKey> = {
 const reviewTaskOrders = new Set<string>(["WO-2420"]);
 // 已完成复查 → 继续观察中（静态 mock：剩余天数）
 const observingOrdersMap: Record<string, number> = { "WO-2430": 5 };
-// 观察期已满 → 待助理确认治愈
+// 观察期已满 → 待助理已治愈
 const obsExpiredOrders = new Set<string>(["WO-2440"]);
 
 function TaskDetailPage() {
@@ -349,12 +349,12 @@ function TaskDetailPage() {
                   }`}
                 >
                   {isObsExpired
-                    ? "观察期已结束，待确认治愈"
+                    ? "观察期已结束，待已治愈"
                     : `继续观察中 · 剩余 ${obsDays} 天`}
                 </div>
                 <div className="text-caption text-text-tertiary mt-0.5 leading-relaxed">
                   {isObsExpired
-                    ? "观察期内未发起复诊上报，请助理确认治愈并关闭工单。"
+                    ? "观察期内未发起复诊上报，请助理已治愈并关闭工单。"
                     : "观察期内若发现异常，可通过健康上报发起复诊。"}
                 </div>
               </div>
@@ -468,7 +468,7 @@ function TaskDetailPage() {
                 className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                确认治愈
+                已治愈
               </Link>
             )}
           </div>
