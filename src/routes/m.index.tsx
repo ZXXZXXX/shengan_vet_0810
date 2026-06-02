@@ -308,11 +308,11 @@ function getRoleTasks(role: Role): HomeTask[] {
   // 复查任务仅在兽医、场长视角下出现
   if (role === "vet" || role === "manager") {
     const reviews = homeTasks.filter(
-      (t) => t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "复查",
+      (t) => t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查",
     );
-    return [...reviews, ...base.filter((t) => diseaseTaskMeta[t.id]?.task !== "复查")];
+    return [...reviews, ...base.filter((t) => diseaseTaskMeta[t.id]?.task !== "待复查")];
   }
-  return base.filter((t) => diseaseTaskMeta[t.id]?.task !== "复查");
+  return base.filter((t) => diseaseTaskMeta[t.id]?.task !== "待复查");
 }
 
 function getTaskCount(role: Role) {
