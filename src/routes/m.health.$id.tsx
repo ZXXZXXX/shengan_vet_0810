@@ -173,7 +173,12 @@ function TaskDetailPage() {
 
 
 
-  const showAnomaly = canExecute(role) && o.status === "进行中";
+  // 观察中状态（来自复查 → 继续观察）
+  const obsDays = search.obs;
+  const isObserving = isDisease && typeof obsDays === "number" && obsDays > 0 && !search.obsExpired;
+  const isObsExpired = isDisease && Boolean(search.obsExpired);
+
+  const showAnomaly = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
 
   return (
     <MobileShell
