@@ -352,7 +352,7 @@ const diseaseTaskMeta: Record<string, { disease: string; task: TaskChip }> = {
   "WO-2301": { disease: "肺炎", task: "待执行" },
   "WO-2302": { disease: "蹄部脓肿", task: "待执行" },
   "WO-2303": { disease: "酮病", task: "待执行" },
-  "WO-2440": { disease: "乳房炎", task: "待治愈" },
+  "WO-2440": { disease: "乳房炎", task: "待复查" },
 };
 
 // 任务类型 chip 颜色
