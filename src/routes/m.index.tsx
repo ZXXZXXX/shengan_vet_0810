@@ -274,6 +274,7 @@ const homeTasks: HomeTask[] = [
   { id: "WO-2301", target: "#A2156", conclusion: "肺炎抗生素处置", type: "疾病治疗", status: "进行中", minutesAgo: 51 },
   { id: "WO-2302", target: "#A2102", conclusion: "蹄部脓肿排脓", type: "疾病治疗", status: "进行中", minutesAgo: 67 },
   { id: "WO-2303", target: "#A2233", conclusion: "酮病补液+葡萄糖", type: "疾病治疗", status: "进行中", minutesAgo: 82 },
+  { id: "WO-2440", target: "#A2440", conclusion: "乳房炎 · 观察期满待治愈", type: "疾病治疗", status: "进行中", minutesAgo: 95 },
   // 疫苗免疫 · 进行中
   { id: "YM-1041", target: "犊牛舍 A · 84 头", conclusion: "口蹄疫加强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 5 },
   { id: "YM-1042", target: "2 号牛舍 · 56 头", conclusion: "布病强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 18 },
@@ -336,7 +337,8 @@ const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: string }> 
 };
 
 // 疾病治疗工单的疾病名称 + 任务类型（用于统一卡片文案）
-const diseaseTaskMeta: Record<string, { disease: string; task: "待诊断" | "待执行" | "待复查" }> = {
+type TaskChip = "待诊断" | "待执行" | "待复查" | "待治愈";
+const diseaseTaskMeta: Record<string, { disease: string; task: TaskChip }> = {
   "WO-2381": { disease: "乳房炎", task: "待诊断" },
   "WO-2382": { disease: "疾病不详", task: "待诊断" },
   "WO-2383": { disease: "酮病", task: "待诊断" },
@@ -350,13 +352,15 @@ const diseaseTaskMeta: Record<string, { disease: string; task: "待诊断" | "�
   "WO-2301": { disease: "肺炎", task: "待执行" },
   "WO-2302": { disease: "蹄部脓肿", task: "待执行" },
   "WO-2303": { disease: "酮病", task: "待执行" },
+  "WO-2440": { disease: "乳房炎", task: "待治愈" },
 };
 
 // 任务类型 chip 颜色
-const taskChipStyle: Record<"待诊断" | "待执行" | "待复查", string> = {
+const taskChipStyle: Record<TaskChip, string> = {
   "待诊断": "bg-brand-subtle text-primary",
   "待执行": "bg-[#E6F7FE] text-[#0EA5E9]",
   "待复查": "bg-[#FFF5DF] text-[#B45309]",
+  "待治愈": "bg-[#F3E8FF] text-[#9333EA]",
 };
 
 function truncateCJK(s: string, max = 5) {

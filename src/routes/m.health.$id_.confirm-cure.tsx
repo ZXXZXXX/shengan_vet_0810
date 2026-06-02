@@ -6,7 +6,7 @@ import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/health/$id_/confirm-cure")({
-  head: () => ({ meta: [{ title: "确认治愈 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "已治愈 · 奇点智牧" }] }),
   component: ConfirmCurePage,
 });
 
@@ -21,19 +21,19 @@ function ConfirmCurePage() {
 
   const submit = () => {
     if (!canSubmit) return;
-    toast.success(needTransfer ? `已确认治愈，转至 ${transferTo}` : "已确认治愈，工单完成");
+    toast.success(needTransfer ? `已已治愈，转至 ${transferTo}` : "已已治愈，工单完成");
     navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
   };
 
   return (
-    <MobileShell title="确认治愈" back hideTabBar>
+    <MobileShell title="已治愈" back hideTabBar>
       <div className="pb-28">
         <div className="px-4 pt-3 pb-2">
           <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
             <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
             工单 <span className="font-mono text-text-secondary">{id}</span>
             <span className="mx-1">·</span>
-            观察期满，请确认治愈
+            观察期满，请已治愈
           </div>
         </div>
 
@@ -62,7 +62,7 @@ function ConfirmCurePage() {
             canSubmit ? "bg-primary text-primary-foreground" : "bg-border text-text-tertiary"
           }`}
         >
-          <Send className="h-4 w-4" /> 确认治愈并完成工单
+          <Send className="h-4 w-4" /> 已治愈并完成工单
         </button>
       </div>
     </MobileShell>

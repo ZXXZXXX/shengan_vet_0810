@@ -77,6 +77,7 @@ const statusById: Record<string, StatusKey> = {
   "WO-2401": "进行中",
   "WO-2420": "进行中",
   "WO-2430": "进行中",
+  "WO-2440": "进行中",
   "WO-2324": "已终止",
   "HF-0702": "进行中",
   "HF-0688": "已完成",
@@ -90,6 +91,8 @@ const statusById: Record<string, StatusKey> = {
 const reviewTaskOrders = new Set<string>(["WO-2420"]);
 // 已完成复查 → 继续观察中（静态 mock：剩余天数）
 const observingOrdersMap: Record<string, number> = { "WO-2430": 5 };
+// 观察期已满 → 待助理已治愈
+const obsExpiredOrders = new Set<string>(["WO-2440"]);
 
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
@@ -141,6 +144,7 @@ function TaskDetailPage() {
     "WO-2410": "#A2410",
     "WO-2420": "#A2420",
     "WO-2430": "#A2430",
+    "WO-2440": "#A2440",
     "HF-0702": "#A2150",
     "HF-0688": "#A2270",
     "PP-2501": "#A2710",
@@ -196,7 +200,7 @@ function TaskDetailPage() {
   const staticObsDays = observingOrdersMap[id];
   const obsDays = search.obs ?? staticObsDays;
   const isObserving = isDisease && typeof obsDays === "number" && obsDays > 0 && !search.obsExpired;
-  const isObsExpired = isDisease && Boolean(search.obsExpired);
+  const isObsExpired = isDisease && (Boolean(search.obsExpired) || obsExpiredOrders.has(id));
 
   const showAnomaly = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
 
@@ -345,12 +349,12 @@ function TaskDetailPage() {
                   }`}
                 >
                   {isObsExpired
-                    ? "观察期已结束，待确认治愈"
+                    ? "观察期已结束，待已治愈"
                     : `继续观察中 · 剩余 ${obsDays} 天`}
                 </div>
                 <div className="text-caption text-text-tertiary mt-0.5 leading-relaxed">
                   {isObsExpired
-                    ? "观察期内未发起复诊上报，请助理确认治愈并关闭工单。"
+                    ? "观察期内未发起复诊上报，请助理已治愈并关闭工单。"
                     : "观察期内若发现异常，可通过健康上报发起复诊。"}
                 </div>
               </div>
@@ -464,7 +468,7 @@ function TaskDetailPage() {
                 className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                确认治愈
+                已治愈
               </Link>
             )}
           </div>
