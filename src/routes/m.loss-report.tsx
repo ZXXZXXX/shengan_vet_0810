@@ -302,8 +302,7 @@ function LossReportPage() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] z-40">
         <button
           onClick={submit}
-          disabled={!canSubmit}
-          className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-body font-medium inline-flex items-center justify-center gap-2 disabled:bg-surface-subtle disabled:text-text-tertiary"
+          className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-body font-medium inline-flex items-center justify-center gap-2"
         >
           <PackageX className="h-4 w-4" />
           提交损耗上报
