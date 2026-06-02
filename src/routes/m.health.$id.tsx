@@ -389,7 +389,7 @@ function TaskDetailPage() {
         <div className="px-4 pt-3 space-y-3">
           {tab === "report" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无上报记录" /> : <ReportTab isLoss={isLoss} />)}
           {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} />)}
-          {tab === "execute" && <ExecuteSummary status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} />}
+          {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} />}
         </div>
       </div>
 
@@ -925,7 +925,7 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 
-export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
+export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
@@ -940,11 +940,15 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
   const isTerminated = status === "已终止";
   const platformPhase: DayPhase = status === "已完成" ? "done" : "active";
   const platformDate = status === "已完成" ? "2026-05-12 10:00" : "2026-05-28 09:00";
+  // 复查任务进行中（处方已全部完成，待兽医复查）/ 已完成观察中
+  const reviewActive = id === "WO-2420";
+  const reviewDone = id === "WO-2430";
+  const allPrescriptionsDone = reviewActive || reviewDone;
   const days: DaySummary[] = isTerminated
     ? []
     : platformAction
       ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
-      : getExecSummary(status);
+      : getExecSummary(allPrescriptionsDone ? "已完成" : status);
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
@@ -1018,33 +1022,44 @@ export function ExecuteSummary({ status, pickupCode, tags, platformAction }: { s
             <Field label="操作人" value={<PersonChip name="李雨晴" />} />
           </div>
         </div>
-      ) : isPlatformIssued ? null : (
-        <div className={`rounded-2xl bg-card border border-border p-4 ${status !== "已完成" ? "opacity-50" : ""}`}>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <DayDot active={false} done={status === "已完成"} />
-              <span className={`text-body font-medium ${status === "已完成" ? "text-foreground" : "text-text-tertiary"}`}>
-                复查
-              </span>
-              <span className="text-caption text-text-tertiary font-mono" suppressHydrationWarning>
-                2026-05-16
+      ) : isPlatformIssued ? null : (() => {
+        const reviewPhase: DayPhase = reviewDone || status === "已完成" ? "done" : reviewActive ? "active" : "pending";
+        const isReviewDone = reviewPhase === "done";
+        const isReviewActive = reviewPhase === "active";
+        const reviewLabel = isReviewDone ? "已完成" : isReviewActive ? "进行中" : "未开始";
+        const reviewLabelClass = isReviewDone
+          ? "bg-brand-subtle text-primary"
+          : isReviewActive
+            ? "tag-info"
+            : "bg-surface-subtle text-text-tertiary";
+        return (
+          <div className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""}`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <DayDot active={isReviewActive} done={isReviewDone} />
+                <span className={`text-body font-medium ${isReviewDone || isReviewActive ? "text-foreground" : "text-text-tertiary"}`}>
+                  复查
+                </span>
+                <span className="text-caption text-text-tertiary font-mono" suppressHydrationWarning>
+                  2026-05-16
+                </span>
+              </div>
+              <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${reviewLabelClass}`}>
+                {reviewLabel}
               </span>
             </div>
-            <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${status === "已完成" ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
-              {status === "已完成" ? "已完成" : "未开始"}
-            </span>
+            <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
+              <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
+              <div className="text-body-sm leading-relaxed text-foreground">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
+            </div>
+            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+              <PackagePlus className="h-3.5 w-3.5" />
+              <span>领物</span>
+              <span className="ml-1 inline-flex items-center h-5 px-2 rounded-full bg-surface-subtle text-text-tertiary">无需</span>
+            </div>
           </div>
-          <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
-            <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
-            <div className="text-body-sm leading-relaxed text-foreground">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
-          </div>
-          <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-            <PackagePlus className="h-3.5 w-3.5" />
-            <span>领物</span>
-            <span className="ml-1 inline-flex items-center h-5 px-2 rounded-full bg-surface-subtle text-text-tertiary">无需</span>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {pickupOpen && (
         <div
