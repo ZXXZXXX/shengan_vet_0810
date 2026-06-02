@@ -4,12 +4,12 @@ import {
   CheckCircle2,
   Ban,
   Eye,
-  ArrowRightLeft,
   Send,
   Stethoscope,
   Lock,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
