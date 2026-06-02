@@ -26,7 +26,7 @@ import {
   Tag,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { AnomalyFeedbackSheet } from "@/components/anomaly-feedback-sheet";
+
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
 
 import {
