@@ -26,7 +26,7 @@ import {
   Tag,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { AnomalyFeedbackSheet } from "@/components/anomaly-feedback-sheet";
+
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
 
 import {
@@ -110,7 +110,7 @@ function TaskDetailPage() {
       ? "review"
       : "report";
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
-  const [anomalyOpen, setAnomalyOpen] = useState(false);
+  
   const [recordsOpen, setRecordsOpen] = useState(false);
   const navigate = useNavigate();
   // 复诊工单：开始诊断决策弹窗
@@ -202,25 +202,13 @@ function TaskDetailPage() {
   const isObserving = isDisease && typeof obsDays === "number" && obsDays > 0 && !search.obsExpired;
   const isObsExpired = isDisease && (Boolean(search.obsExpired) || obsExpiredOrders.has(id));
 
-  const showAnomaly = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
+  
 
   return (
     <MobileShell
       title="工单详情"
       back
       hideTabBar
-      right={
-        showAnomaly ? (
-          <button
-            type="button"
-            onClick={() => setAnomalyOpen(true)}
-            className="h-8 w-8 inline-flex items-center justify-center text-[var(--state-danger)]"
-            aria-label="异常处理"
-          >
-            <AlertTriangle className="h-4 w-4" />
-          </button>
-        ) : undefined
-      }
     >
       <div className="pb-28">
         {/* === 1. 顶部工单摘要 === */}
@@ -486,14 +474,6 @@ function TaskDetailPage() {
         );
       })()}
 
-
-      <AnomalyFeedbackSheet
-        open={anomalyOpen}
-        onClose={() => setAnomalyOpen(false)}
-        workOrderId={o.id}
-        barn={o.barn}
-        target={isSingle ? earTag.replace(/^#/, "") : undefined}
-      />
 
       {/* === 复诊工单：开始诊断决策弹窗 === */}
       <Dialog open={revisitOpen} onOpenChange={setRevisitOpen}>
