@@ -36,7 +36,7 @@ function ReviewPage() {
   const role = useRole();
   const navigate = useNavigate();
 
-  const isVet = role === "vet";
+  const isVet = role === "vet" || role === "manager";
 
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [abandonReason, setAbandonReason] = useState("");
