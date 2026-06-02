@@ -102,6 +102,12 @@ function TaskDetailPage() {
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   const [anomalyOpen, setAnomalyOpen] = useState(false);
   const [recordsOpen, setRecordsOpen] = useState(false);
+  const navigate = useNavigate();
+  // 复诊工单：开始诊断决策弹窗
+  const [revisitOpen, setRevisitOpen] = useState(false);
+  const [revisitStep, setRevisitStep] = useState<"choose" | "terminate-new" | "terminate-old">("choose");
+  const [revisitReason, setRevisitReason] = useState<string>("");
+  const [revisitReasonOther, setRevisitReasonOther] = useState<string>("");
   
   
 
