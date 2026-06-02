@@ -4,12 +4,12 @@ import {
   CheckCircle2,
   Ban,
   Eye,
-  ArrowRightLeft,
   Send,
   Stethoscope,
   Lock,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
@@ -30,15 +30,6 @@ const ABANDON_REASONS = [
 
 const OBSERVE_DAYS = [3, 5, 7];
 
-const ALL_BARNS = [
-  "1 号牛舍",
-  "2 号牛舍",
-  "3 号牛舍",
-  "4 号牛舍",
-  "隔离舍 A",
-  "隔离舍 B",
-  "康复舍",
-];
 
 function ReviewPage() {
   const { id } = useParams({ from: "/m/health/$id_/review" });
@@ -241,57 +232,12 @@ function ReviewPage() {
 
           {/* 转栏 */}
           {verdict && (
-            <div className="rounded-xl bg-card border border-border p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
-                  <ArrowRightLeft className="h-3.5 w-3.5" />
-                  是否需要转栏
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setNeedTransfer((v) => !v);
-                    if (needTransfer) setTransferTo("");
-                  }}
-                  className={`relative h-6 w-11 rounded-full transition-colors ${
-                    needTransfer ? "bg-primary" : "bg-border"
-                  }`}
-                  aria-pressed={needTransfer}
-                >
-                  <span
-                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
-                      needTransfer ? "left-[22px]" : "left-0.5"
-                    }`}
-                  />
-                </button>
-              </div>
-              {needTransfer && (
-                <div className="mt-2">
-                  <div className="text-caption text-text-tertiary mb-2">
-                    转栏去向 <span className="text-[var(--state-danger)]">*</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {ALL_BARNS.map((b) => {
-                      const active = transferTo === b;
-                      return (
-                        <button
-                          key={b}
-                          type="button"
-                          onClick={() => setTransferTo(b)}
-                          className={`h-8 px-3 rounded-full text-body-sm border ${
-                            active
-                              ? "bg-brand-subtle text-primary border-primary/40"
-                              : "bg-card text-text-secondary border-border"
-                          }`}
-                        >
-                          {b}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
+            <TransferBarnControl
+              enabled={needTransfer}
+              onEnabledChange={setNeedTransfer}
+              value={transferTo}
+              onValueChange={setTransferTo}
+            />
           )}
         </div>
       </div>

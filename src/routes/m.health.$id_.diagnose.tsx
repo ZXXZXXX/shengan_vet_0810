@@ -22,6 +22,7 @@ import {
   User,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 
 
 
@@ -691,65 +692,13 @@ function DiagnosePage() {
                 )}
               </div>
 
-              <div>
-                <label className="flex items-center gap-2 text-body-sm text-foreground cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={needTransfer}
-                    onChange={(e) => setNeedTransfer(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <span
-                    className={`h-5 w-5 rounded-full border inline-flex items-center justify-center transition-colors ${
-                      needTransfer
-                        ? "bg-primary border-primary text-primary-foreground"
-                        : "bg-card border-border"
-                    }`}
-                  >
-                    {needTransfer && (
-                      <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="3.5 8.5 6.8 11.5 12.5 5" />
-                      </svg>
-                    )}
-                  </span>
-                  需要转栏
-                </label>
-                {needTransfer && (
-                  <div className="mt-2 space-y-2">
-                    <input
-                      value={transferTo}
-                      onChange={(e) => setTransferTo(e.target.value)}
-                      list="barn-options"
-                      placeholder="输入或选择转栏去向"
-                      className="h-10 w-full rounded-lg bg-white border border-border px-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-                    />
-                    <datalist id="barn-options">
-                      <option value="1 号牛舍" />
-                      <option value="2 号牛舍" />
-                      <option value="3 号牛舍" />
-                      <option value="隔离牛舍" />
-                      <option value="产房 1 号" />
-                      <option value="淘汰栏" />
-                    </datalist>
-                    <div className="flex flex-wrap gap-1.5">
-                      {["隔离牛舍", "淘汰栏", "产房 1 号"].map((b) => (
-                        <button
-                          key={b}
-                          type="button"
-                          onClick={() => setTransferTo(b)}
-                          className={`h-7 px-2.5 rounded-full text-caption border ${
-                            transferTo === b
-                              ? "bg-brand-subtle text-primary border-primary/40"
-                              : "bg-card text-text-secondary border-border"
-                          }`}
-                        >
-                          {b}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <TransferBarnControl
+                enabled={needTransfer}
+                onEnabledChange={setNeedTransfer}
+                value={transferTo}
+                onValueChange={setTransferTo}
+                bordered={false}
+              />
             </div>
 
             <div className="p-4 pt-0 pb-[calc(env(safe-area-inset-bottom)+16px)] flex gap-2">
