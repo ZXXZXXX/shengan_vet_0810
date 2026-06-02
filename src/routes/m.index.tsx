@@ -274,7 +274,7 @@ const homeTasks: HomeTask[] = [
   { id: "WO-2301", target: "#A2156", conclusion: "肺炎抗生素处置", type: "疾病治疗", status: "进行中", minutesAgo: 51 },
   { id: "WO-2302", target: "#A2102", conclusion: "蹄部脓肿排脓", type: "疾病治疗", status: "进行中", minutesAgo: 67 },
   { id: "WO-2303", target: "#A2233", conclusion: "酮病补液+葡萄糖", type: "疾病治疗", status: "进行中", minutesAgo: 82 },
-  { id: "WO-2440", target: "#A2440", conclusion: "乳房炎 · 观察期满待治愈", type: "疾病治疗", status: "进行中", minutesAgo: 95 },
+  { id: "WO-2440", target: "#A2440", conclusion: "乳房炎 · 观察期满复查", type: "疾病治疗", status: "进行中", minutesAgo: 95 },
   // 疫苗免疫 · 进行中
   { id: "YM-1041", target: "犊牛舍 A · 84 头", conclusion: "口蹄疫加强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 5 },
   { id: "YM-1042", target: "2 号牛舍 · 56 头", conclusion: "布病强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 18 },
