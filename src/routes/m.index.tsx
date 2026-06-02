@@ -405,7 +405,15 @@ function TodayTaskList({ role }: { role: Role }) {
               <div className="text-body text-foreground truncate mt-0.5">
                 <span className="text-text-secondary">{t.target}</span>
                 <span className="text-text-tertiary"> · </span>
-                {t.conclusion}
+                {t.type === "疾病治疗" && diseaseTaskMeta[t.id] ? (
+                  <>
+                    {truncateCJK(diseaseTaskMeta[t.id].disease)}
+                    <span className="text-text-tertiary"> · </span>
+                    {diseaseTaskMeta[t.id].task}
+                  </>
+                ) : (
+                  t.conclusion
+                )}
               </div>
             </div>
             <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
