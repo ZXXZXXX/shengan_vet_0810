@@ -141,9 +141,9 @@ function diseaseTitleParts(o: Task) {
   const name = truncateCJK(m?.diagnosis || m?.suspected || "疾病不详");
   let task: string | null = null;
   if (o.status === "进行中") {
-    if (observeDaysMap[o.id]) task = `观察 ${observeDaysMap[o.id]} 天`;
-    else if (reviewTaskSet.has(o.id)) task = "复查任务";
-    else task = "执行任务";
+    if (observeDaysMap[o.id]) task = "观察";
+    else if (reviewTaskSet.has(o.id)) task = "复查";
+    else task = "执行";
   }
   return { visit, name, task };
 }
