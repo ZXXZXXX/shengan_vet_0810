@@ -131,6 +131,7 @@ function TaskDetailPage() {
   // 单对象工单（仅一只牛）：WO-2298、HF-* 等
   const singleEarMap: Record<string, string> = {
     "WO-2298": "#A2298",
+    "WO-2410": "#A2410",
     "HF-0702": "#A2150",
     "HF-0688": "#A2270",
     "PP-2501": "#A2710",
@@ -162,7 +163,7 @@ function TaskDetailPage() {
 
   // 复诊与关联工单 mock
   const isDisease = o.type === "疾病治疗";
-  const isRevisit = isDisease && (id === "WO-2298" || /复诊/.test("乳房炎复诊") && id === "WO-2298");
+  const isRevisit = isDisease && (id === "WO-2298" || id === "WO-2410");
   const relatedOrderId: string | null = isRevisit ? "WO-2150" : null;
   // 诊疗信息摘要 mock —— 取自"关联原始工单"
   const showSummary = isDisease && isSingle && Boolean(relatedOrderId);
