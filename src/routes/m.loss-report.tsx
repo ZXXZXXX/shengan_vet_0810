@@ -84,8 +84,15 @@ function LossReportPage() {
     reasons.length > 0 &&
     (!otherSelected || otherReason.trim().length > 0);
 
+  const [submitted, setSubmitted] = useState(false);
+  const otherInvalid = submitted && otherSelected && otherReason.trim().length === 0;
+
   const submit = () => {
-    if (!canSubmit) return;
+    setSubmitted(true);
+    if (!canSubmit) {
+      toast.error("请完善必填项");
+      return;
+    }
     toast.success("损耗上报已提交");
     setTimeout(() => navigate({ to: "/m" }), 600);
   };
