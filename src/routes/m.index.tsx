@@ -851,13 +851,14 @@ function FarmSwitcher() {
           })}
         </div>
       )}
-      {switching && (
-        <div className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-[2px] flex items-start justify-center pt-[25vh]">
+      {switching && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[2147483646] bg-black/45 backdrop-blur-[2px] flex items-start justify-center pt-[35vh] touch-none" style={{ pointerEvents: "auto" }}>
           <div className="h-28 w-28 rounded-2xl bg-card shadow-2xl flex flex-col items-center justify-center gap-3">
             <span className="h-8 w-8 rounded-full border-[3px] border-primary/25 border-t-primary animate-spin" />
             <span className="text-caption text-text-secondary">切换牧场中…</span>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
