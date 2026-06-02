@@ -692,7 +692,7 @@ function KBShortcut({
   return (
     <Link
       to={to}
-      className="group relative block h-[114px] active:scale-[0.98] transition-transform"
+      className="group relative block h-[110px] active:scale-[0.98] transition-transform"
       aria-label={label}
     >
       {/* 文件夹后片 */}
