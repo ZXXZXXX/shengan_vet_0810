@@ -313,11 +313,30 @@ function TaskListPage() {
                         </span>
                       </div>
 
-                      {/* Title 区：对象 · 结论 —— 单行 truncate */}
+                      {/* Title 区：对象 · 初诊/复诊 · 疾病名称 · 任务 —— 单行 truncate */}
                       <div className="text-card-title text-foreground truncate h-[26px] leading-[26px]">
-                        {o.scope.type === "single" ? `单只 ${o.scope.ear}` : `${o.scope.label}`}
-                        <span className="text-text-tertiary"> · </span>
-                        {o.conclusion}
+                        {(() => {
+                          const head = o.scope.type === "single" ? `单只 ${o.scope.ear}` : `${o.scope.label}`;
+                          const parts = diseaseTitleParts(o);
+                          if (parts) {
+                            const segs = [parts.visit, parts.name];
+                            if (parts.task) segs.push(parts.task);
+                            return (
+                              <>
+                                {head}
+                                <span className="text-text-tertiary"> · </span>
+                                {segs.join(" · ")}
+                              </>
+                            );
+                          }
+                          return (
+                            <>
+                              {head}
+                              <span className="text-text-tertiary"> · </span>
+                              {o.conclusion}
+                            </>
+                          );
+                        })()}
                       </div>
 
                       {/* Desc 区：描述 —— 单行 line-clamp-1，无内容占位保持高度 */}
