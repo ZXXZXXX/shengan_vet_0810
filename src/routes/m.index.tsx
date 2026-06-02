@@ -113,9 +113,9 @@ function MHomePage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setReportOpen(true)}
-                className="h-8 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] active:scale-[.97] transition-transform"
+                className="h-10 px-4 rounded-full bg-white text-primary inline-flex items-center gap-1.5 text-body-sm font-semibold shadow-[0_6px_20px_-4px_rgba(0,0,0,0.35)] ring-2 ring-white/60 active:scale-[.97] transition-transform"
               >
-                <Camera className="h-3.5 w-3.5" />
+                <Camera className="h-4 w-4" />
                 现场上报
               </button>
             </div>
