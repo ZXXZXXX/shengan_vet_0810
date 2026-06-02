@@ -375,15 +375,16 @@ function TaskDetailPage() {
 
       {/* === 3. 底部操作区 === */}
       {(() => {
-        const isResponder = canVisit(role) || canExecute(role);
-        void isResponder;
         const showRespond = canDiagnose(role, o.type) && o.status === "待诊断";
-        const showExec = canExecute(role) && o.status === "进行中";
+        const showExec = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
+        const showReview = isDisease && role === "vet" && o.status === "进行中" && !isObserving && !isObsExpired;
+        const showRevisitReport = isObserving && canExecute(role);
+        const showConfirmCure = isObsExpired && canExecute(role);
 
-        if (!showRespond && !showExec) return null;
+        if (!showRespond && !showExec && !showReview && !showRevisitReport && !showConfirmCure) return null;
         return (
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-2">
-            {showRespond ? (
+            {showRespond && (
               <Link
                 to="/m/health/$id/diagnose"
                 params={{ id: o.id }}
@@ -392,7 +393,18 @@ function TaskDetailPage() {
                 <Stethoscope className="h-4 w-4" />
                 开始诊断
               </Link>
-            ) : (
+            )}
+            {showReview && (
+              <Link
+                to="/m/health/$id_/review"
+                params={{ id: o.id }}
+                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <Stethoscope className="h-4 w-4" />
+                开始复查
+              </Link>
+            )}
+            {showExec && !showReview && (
               <Link
                 to="/m/health/$id/execute"
                 params={{ id: o.id }}
@@ -402,9 +414,30 @@ function TaskDetailPage() {
                 开始执行
               </Link>
             )}
+            {showRevisitReport && (
+              <Link
+                to="/m/report"
+                search={{ target: earTag.replace(/^#/, ""), barn: o.barn, revisitFrom: o.id, lock: 1 }}
+                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <Repeat className="h-4 w-4" />
+                健康上报（复诊）
+              </Link>
+            )}
+            {showConfirmCure && (
+              <Link
+                to="/m/health/$id_/confirm-cure"
+                params={{ id: o.id }}
+                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                确认治愈
+              </Link>
+            )}
           </div>
         );
       })()}
+
 
       <AnomalyFeedbackSheet
         open={anomalyOpen}
