@@ -5,11 +5,10 @@ import {
   ScanLine,
   X,
   Plus,
-  Camera,
   PackageX,
-  ImagePlus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { EvidenceSection } from "@/components/evidence-section";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/loss-report")({
@@ -48,7 +47,10 @@ function LossReportPage() {
   const [reasons, setReasons] = useState<string[]>([]);
   const [otherReason, setOtherReason] = useState("");
   const [desc, setDesc] = useState("");
-  const [photos, setPhotos] = useState<number[]>([1]);
+  const [photos, setPhotos] = useState<number[]>([]);
+  const [videos, setVideos] = useState<number[]>([]);
+  const [voiceSecs, setVoiceSecs] = useState<number | null>(null);
+  const [recording, setRecording] = useState(false);
   const [showItemPicker, setShowItemPicker] = useState<number | null>(null);
   const [itemQuery, setItemQuery] = useState("");
 
@@ -266,37 +268,34 @@ function LossReportPage() {
           )}
         </Section>
 
-        {/* 情况说明（非必填） */}
-        <Section title="情况说明" hint="选填">
-          <textarea
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-            placeholder="可补充损耗经过、影响范围等说明"
-            rows={3}
-            className="w-full p-3 text-body resize-none"
-          />
-        </Section>
-
-        {/* 现场照片 */}
-        <Section title="现场照片" hint="选填">
-          <div className="grid grid-cols-4 gap-2">
-            {photos.map((p) => (
-              <div
-                key={p}
-                className="aspect-square rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-tertiary"
-              >
-                <Camera className="h-5 w-5" />
-              </div>
-            ))}
-            <button
-              onClick={() => setPhotos((prev) => [...prev, prev.length + 1])}
-              className="aspect-square rounded-lg border border-dashed border-border text-text-tertiary inline-flex items-center justify-center active:bg-surface-subtle"
-            >
-              <ImagePlus className="h-5 w-5" />
-            </button>
-          </div>
-        </Section>
+        {/* 现场记录（情况说明 + 照片 / 视频 / 录音） */}
+        <EvidenceSection
+          desc={desc}
+          setDesc={setDesc}
+          photos={photos}
+          setPhotos={setPhotos}
+          videos={videos}
+          setVideos={setVideos}
+          voiceSecs={voiceSecs}
+          setVoiceSecs={setVoiceSecs}
+          recording={recording}
+          onVoiceToggle={() => {
+            if (recording) {
+              setRecording(false);
+              setVoiceSecs(8);
+            } else {
+              setRecording(true);
+              setTimeout(() => {
+                setRecording(false);
+                setVoiceSecs(8);
+              }, 1200);
+            }
+          }}
+          descRequired={false}
+          descPlaceholder="可补充损耗经过、影响范围等说明（选填）"
+        />
       </div>
+
 
       {/* 底部提交栏 */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] z-40">

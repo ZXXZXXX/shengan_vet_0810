@@ -178,7 +178,7 @@
   .m-scope textarea,
   .m-scope select,
   .m-scope [data-slot="input"] {
-    background-color: var(--color-background) !important;
+    background-color: var(--bg-surface) !important;
     border: 1px solid var(--border-default) !important;
     color: var(--text-primary, var(--color-foreground));
     transition: border-color 0.15s ease, background-color 0.15s ease;
@@ -196,7 +196,7 @@
   .m-scope select:focus-visible,
   .m-scope [data-slot="input"]:focus,
   .m-scope [data-slot="input"]:focus-visible {
-    background-color: var(--color-background) !important;
+    background-color: var(--bg-surface) !important;
     border-color: var(--brand) !important;
     box-shadow: none !important;
     outline: none !important;
@@ -204,7 +204,7 @@
   /* Filled: white fill stays after value entered (browser handles via :not(:placeholder-shown)) */
   .m-scope input:not(:placeholder-shown),
   .m-scope textarea:not(:placeholder-shown) {
-    background-color: var(--color-background) !important;
+    background-color: var(--bg-surface) !important;
   }
   /* Error state: add .input-error class (or aria-invalid) */
   .m-scope input.input-error,
