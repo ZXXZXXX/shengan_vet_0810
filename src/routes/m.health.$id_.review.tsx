@@ -30,15 +30,6 @@ const ABANDON_REASONS = [
 
 const OBSERVE_DAYS = [3, 5, 7];
 
-const ALL_BARNS = [
-  "1 号牛舍",
-  "2 号牛舍",
-  "3 号牛舍",
-  "4 号牛舍",
-  "隔离舍 A",
-  "隔离舍 B",
-  "康复舍",
-];
 
 function ReviewPage() {
   const { id } = useParams({ from: "/m/health/$id_/review" });
