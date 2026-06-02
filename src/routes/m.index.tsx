@@ -327,20 +327,28 @@ const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: string }> 
 };
 
 // 疾病治疗工单的疾病名称 + 任务类型（用于统一卡片文案）
-const diseaseTaskMeta: Record<string, { disease: string; task: string }> = {
-  "WO-2381": { disease: "乳房炎", task: "诊断任务" },
-  "WO-2382": { disease: "疾病不详", task: "诊断任务" },
-  "WO-2383": { disease: "酮病", task: "诊断任务" },
-  "WO-2384": { disease: "乳房炎", task: "诊断任务" },
-  "WO-2385": { disease: "子宫炎", task: "诊断任务" },
-  "WO-2386": { disease: "蹄部脓肿", task: "诊断任务" },
-  "WO-2387": { disease: "腹泻", task: "诊断任务" },
-  "WO-2298": { disease: "乳房炎", task: "复查任务" },
-  "WO-2299": { disease: "蹄叶炎", task: "执行任务" },
-  "WO-2300": { disease: "子宫炎", task: "执行任务" },
-  "WO-2301": { disease: "肺炎", task: "执行任务" },
-  "WO-2302": { disease: "蹄部脓肿", task: "执行任务" },
-  "WO-2303": { disease: "酮病", task: "执行任务" },
+const diseaseTaskMeta: Record<string, { disease: string; task: "诊断" | "执行" | "复查" | "转栏" }> = {
+  "WO-2381": { disease: "乳房炎", task: "诊断" },
+  "WO-2382": { disease: "疾病不详", task: "诊断" },
+  "WO-2383": { disease: "酮病", task: "诊断" },
+  "WO-2384": { disease: "乳房炎", task: "诊断" },
+  "WO-2385": { disease: "子宫炎", task: "诊断" },
+  "WO-2386": { disease: "蹄部脓肿", task: "诊断" },
+  "WO-2387": { disease: "腹泻", task: "诊断" },
+  "WO-2298": { disease: "乳房炎", task: "复查" },
+  "WO-2299": { disease: "蹄叶炎", task: "执行" },
+  "WO-2300": { disease: "子宫炎", task: "执行" },
+  "WO-2301": { disease: "肺炎", task: "转栏" },
+  "WO-2302": { disease: "蹄部脓肿", task: "执行" },
+  "WO-2303": { disease: "酮病", task: "执行" },
+};
+
+// 任务类型 chip 颜色
+const taskChipStyle: Record<"诊断" | "执行" | "复查" | "转栏", string> = {
+  "诊断": "bg-brand-subtle text-primary",
+  "执行": "bg-[#E6F7FE] text-[#0EA5E9]",
+  "复查": "bg-[#FFF5DF] text-[#B45309]",
+  "转栏": "bg-[#F3E8FF] text-[#9333EA]",
 };
 
 function truncateCJK(s: string, max = 5) {
@@ -400,20 +408,21 @@ function TodayTaskList({ role }: { role: Role }) {
                 <span className="font-mono">{t.id}</span>
                 <span>·</span>
                 <span>{t.type}</span>
+                {t.type === "疾病治疗" && diseaseTaskMeta[t.id] && (
+                  <span
+                    className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[diseaseTaskMeta[t.id].task]}`}
+                  >
+                    {diseaseTaskMeta[t.id].task}
+                  </span>
+                )}
                 <span className="ml-auto">{formatTimeAgo(t.minutesAgo)}</span>
               </div>
               <div className="text-body text-foreground truncate mt-0.5">
                 <span className="text-text-secondary">{t.target}</span>
                 <span className="text-text-tertiary"> · </span>
-                {t.type === "疾病治疗" && diseaseTaskMeta[t.id] ? (
-                  <>
-                    {truncateCJK(diseaseTaskMeta[t.id].disease)}
-                    <span className="text-text-tertiary"> · </span>
-                    {diseaseTaskMeta[t.id].task}
-                  </>
-                ) : (
-                  t.conclusion
-                )}
+                {t.type === "疾病治疗" && diseaseTaskMeta[t.id]
+                  ? truncateCJK(diseaseTaskMeta[t.id].disease)
+                  : t.conclusion}
               </div>
             </div>
             <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
