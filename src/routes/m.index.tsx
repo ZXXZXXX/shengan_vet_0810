@@ -402,15 +402,21 @@ function TodayTaskList({ role }: { role: Role }) {
         const Icon = meta.icon;
         const isReview =
           t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查";
-        const linkProps = isReview
-          ? ({ to: "/m/health/$id/review", params: { id: t.id } } as const)
-          : ({ to: "/m/health/$id", params: { id: t.id } } as const);
+        const linkCls =
+          "flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle";
         return (
-          <Link
-            key={t.id}
-            {...linkProps}
-            className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
-          >
+          <Fragment key={t.id}>
+            {isReview ? (
+              <Link to="/m/health/$id/review" params={{ id: t.id }} className={linkCls}>
+                <TaskRowBody t={t} Icon={Icon} meta={meta} />
+              </Link>
+            ) : (
+              <Link to="/m/health/$id" params={{ id: t.id }} className={linkCls}>
+                <TaskRowBody t={t} Icon={Icon} meta={meta} />
+              </Link>
+            )}
+          </Fragment>
+        );
             <span className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}>
               <Icon className="h-4 w-4" strokeWidth={1.75} />
             </span>
