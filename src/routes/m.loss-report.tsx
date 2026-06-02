@@ -261,7 +261,7 @@ function LossReportPage() {
               onChange={(e) => setOtherReason(e.target.value)}
               placeholder="请填写其他损耗原因"
               className="w-full h-11 px-3 rounded-lg text-body mt-2"
-              aria-invalid={otherReason.trim().length === 0 || undefined}
+              aria-invalid={otherInvalid || undefined}
             />
           )}
         </Section>
