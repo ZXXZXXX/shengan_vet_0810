@@ -270,6 +270,18 @@ function LossReportPage() {
         </button>
       </div>
 
+      <DrugItemPicker
+        open={pickerIdx !== null}
+        onClose={() => setPickerIdx(null)}
+        items={ITEMS}
+        selectedId={
+          pickerIdx !== null ? lines[pickerIdx]?.itemId || undefined : undefined
+        }
+        onSelect={(it) => {
+          if (pickerIdx !== null) setLine(pickerIdx, { itemId: it.id });
+        }}
+      />
+
     </MobileShell>
   );
 }
