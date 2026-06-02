@@ -48,7 +48,10 @@ function LossReportPage() {
   const [reasons, setReasons] = useState<string[]>([]);
   const [otherReason, setOtherReason] = useState("");
   const [desc, setDesc] = useState("");
-  const [photos, setPhotos] = useState<number[]>([1]);
+  const [photos, setPhotos] = useState<number[]>([]);
+  const [videos, setVideos] = useState<number[]>([]);
+  const [voiceSecs, setVoiceSecs] = useState<number | null>(null);
+  const [recording, setRecording] = useState(false);
   const [showItemPicker, setShowItemPicker] = useState<number | null>(null);
   const [itemQuery, setItemQuery] = useState("");
 
