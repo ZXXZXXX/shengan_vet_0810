@@ -204,9 +204,9 @@ function LossReportPage() {
                       className="flex-1 h-11 px-3 rounded-lg text-body"
                     />
                     <span
-                      className={`text-body-sm w-12 text-center ${item ? "text-text-secondary" : "text-text-tertiary"}`}
+                      className={`text-body-sm w-10 text-center ${item ? "text-text-secondary" : "text-text-tertiary"}`}
                     >
-                      {item?.unit ?? "计量单位"}
+                      {item?.unit ?? "单位"}
                     </span>
                     <span
                       className={`text-body-sm w-20 text-right tabular-nums ${lineAmount > 0 ? "text-text-secondary" : "text-text-tertiary"}`}
