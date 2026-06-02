@@ -396,11 +396,12 @@ function TaskDetailPage() {
       {/* === 3. 底部操作区 === */}
       {(() => {
         const showRespond = canDiagnose(role, o.type) && o.status === "待诊断" && !isObserving && !isObsExpired;
-        // 复查任务已触发：疾病类进行中工单视为已下发复查任务
-        const hasReviewTask = isDisease && o.status === "进行中" && !isObserving && !isObsExpired;
-        // 兽医视角：仅在触发复查任务时显示「开始执行」（进入复查页填写复查结论）
+        // 复查任务已触发：按工单显式标记，而非所有疾病进行中工单
+        const hasReviewTask =
+          isDisease && o.status === "进行中" && !isObserving && !isObsExpired && reviewTaskOrders.has(id);
+        // 兽医 / 场长视角：仅在触发复查任务时显示「开始执行」（进入复查页填写复查结论）
         // 助理/修蹄/免疫等执行角色：常规进行中工单显示「开始执行」，但若已触发复查任务则不显示
-        const showExecVet = role === "vet" && hasReviewTask;
+        const showExecVet = (role === "vet" || role === "manager") && hasReviewTask;
         const showExecOther =
           canExecute(role) && role !== "vet" && o.status === "进行中" && !isObserving && !isObsExpired && !hasReviewTask;
         const showExec = showExecVet || showExecOther;
