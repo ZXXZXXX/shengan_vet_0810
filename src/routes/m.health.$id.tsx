@@ -386,13 +386,18 @@ function TaskDetailPage() {
       {/* === 3. 底部操作区 === */}
       {(() => {
         const showRespond = canDiagnose(role, o.type) && o.status === "待诊断" && !isObserving && !isObsExpired;
-        // 兽医视角下，进行中工单不直接显示「开始执行」，仅在触发复查任务后由复查流程产生
-        const showExec = canExecute(role) && role !== "vet" && o.status === "进行中" && !isObserving && !isObsExpired;
-        const showReview = isDisease && role === "vet" && o.status === "进行中" && !isObserving && !isObsExpired;
+        // 复查任务已触发：疾病类进行中工单视为已下发复查任务
+        const hasReviewTask = isDisease && o.status === "进行中" && !isObserving && !isObsExpired;
+        // 兽医视角：仅在触发复查任务时显示「开始执行」（进入复查页填写复查结论）
+        // 助理/修蹄/免疫等执行角色：常规进行中工单显示「开始执行」，但若已触发复查任务则不显示
+        const showExecVet = role === "vet" && hasReviewTask;
+        const showExecOther =
+          canExecute(role) && role !== "vet" && o.status === "进行中" && !isObserving && !isObsExpired && !hasReviewTask;
+        const showExec = showExecVet || showExecOther;
         const showRevisitReport = isObserving && role === "vet_assistant";
         const showConfirmCure = isObsExpired && role === "vet_assistant";
 
-        if (!showRespond && !showExec && !showReview && !showRevisitReport && !showConfirmCure) return null;
+        if (!showRespond && !showExec && !showRevisitReport && !showConfirmCure) return null;
         return (
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-2">
             {showRespond && (
@@ -421,19 +426,9 @@ function TaskDetailPage() {
                 </Link>
               )
             )}
-            {showReview && (
+            {showExec && (
               <Link
-                to="/m/health/$id_/review"
-                params={{ id: o.id }}
-                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-              >
-                <Stethoscope className="h-4 w-4" />
-                开始复查
-              </Link>
-            )}
-            {showExec && !showReview && (
-              <Link
-                to="/m/health/$id/execute"
+                to={showExecVet ? "/m/health/$id_/review" : "/m/health/$id/execute"}
                 params={{ id: o.id }}
                 className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >
