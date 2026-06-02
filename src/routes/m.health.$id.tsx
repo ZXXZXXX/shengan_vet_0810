@@ -75,6 +75,8 @@ const statusById: Record<string, StatusKey> = {
   "WO-2381": "待诊断",
   "WO-2298": "进行中",
   "WO-2401": "进行中",
+  "WO-2420": "进行中",
+  "WO-2430": "进行中",
   "WO-2324": "已终止",
   "HF-0702": "进行中",
   "HF-0688": "已完成",
@@ -83,6 +85,11 @@ const statusById: Record<string, StatusKey> = {
   "YM-2042": "已终止",
   "YM-2501": "进行中",
 };
+
+// 已触发复查任务（处方执行完成，待兽医复查验收）的工单
+const reviewTaskOrders = new Set<string>(["WO-2420"]);
+// 已完成复查 → 继续观察中（静态 mock：剩余天数）
+const observingOrdersMap: Record<string, number> = { "WO-2430": 5 };
 
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
@@ -132,6 +139,8 @@ function TaskDetailPage() {
   const singleEarMap: Record<string, string> = {
     "WO-2298": "#A2298",
     "WO-2410": "#A2410",
+    "WO-2420": "#A2420",
+    "WO-2430": "#A2430",
     "HF-0702": "#A2150",
     "HF-0688": "#A2270",
     "PP-2501": "#A2710",
@@ -183,8 +192,9 @@ function TaskDetailPage() {
 
 
 
-  // 观察中状态（来自复查 → 继续观察）
-  const obsDays = search.obs;
+  // 观察中状态（来自复查 → 继续观察）：支持 URL 参数 或 静态 mock 映射
+  const staticObsDays = observingOrdersMap[id];
+  const obsDays = search.obs ?? staticObsDays;
   const isObserving = isDisease && typeof obsDays === "number" && obsDays > 0 && !search.obsExpired;
   const isObsExpired = isDisease && Boolean(search.obsExpired);
 
@@ -386,11 +396,12 @@ function TaskDetailPage() {
       {/* === 3. 底部操作区 === */}
       {(() => {
         const showRespond = canDiagnose(role, o.type) && o.status === "待诊断" && !isObserving && !isObsExpired;
-        // 复查任务已触发：疾病类进行中工单视为已下发复查任务
-        const hasReviewTask = isDisease && o.status === "进行中" && !isObserving && !isObsExpired;
-        // 兽医视角：仅在触发复查任务时显示「开始执行」（进入复查页填写复查结论）
+        // 复查任务已触发：按工单显式标记，而非所有疾病进行中工单
+        const hasReviewTask =
+          isDisease && o.status === "进行中" && !isObserving && !isObsExpired && reviewTaskOrders.has(id);
+        // 兽医 / 场长视角：仅在触发复查任务时显示「开始执行」（进入复查页填写复查结论）
         // 助理/修蹄/免疫等执行角色：常规进行中工单显示「开始执行」，但若已触发复查任务则不显示
-        const showExecVet = role === "vet" && hasReviewTask;
+        const showExecVet = (role === "vet" || role === "manager") && hasReviewTask;
         const showExecOther =
           canExecute(role) && role !== "vet" && o.status === "进行中" && !isObserving && !isObsExpired && !hasReviewTask;
         const showExec = showExecVet || showExecOther;
