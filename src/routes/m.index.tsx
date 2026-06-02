@@ -113,9 +113,9 @@ function MHomePage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setReportOpen(true)}
-                className="h-10 px-4 rounded-full bg-white text-primary inline-flex items-center gap-1.5 text-body-sm font-semibold shadow-[0_6px_20px_-4px_rgba(0,0,0,0.35)] ring-2 ring-white/60 active:scale-[.97] transition-transform"
+                className="h-8 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-medium shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] active:scale-[.97] transition-transform"
               >
-                <Camera className="h-4 w-4" />
+                <Camera className="h-3.5 w-3.5" />
                 现场上报
               </button>
             </div>
@@ -141,23 +141,9 @@ function MHomePage() {
 
 
 
-      {/* ============ 工作任务 ============ */}
-      <section className="px-4 mt-3 mb-4">
-        <SectionTitle
-          title="工作任务"
-          hint={`共计 ${getTaskCount(role)} 项`}
-          to="/m/health"
-          search={{
-            tab: (roleFilterMap[role]?.status ?? "待诊断") === "进行中" ? "执行中" : "待诊断",
-            type: roleFilterMap[role]?.type ?? "疾病治疗",
-          }}
-        />
-        <TodayTaskList role={role} />
-      </section>
-
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-5 mb-4">
+        <section className="px-4 mt-3">
           <SectionTitle title="速查与近况" />
 
           <div className="grid grid-cols-3 gap-2.5">
@@ -189,6 +175,23 @@ function MHomePage() {
 
         </section>
       )}
+
+
+
+
+      {/* ============ 工作任务 ============ */}
+      <section className="px-4 mt-5 mb-4">
+        <SectionTitle
+          title="工作任务"
+          hint={`共计 ${getTaskCount(role)} 项`}
+          to="/m/health"
+          search={{
+            tab: (roleFilterMap[role]?.status ?? "待诊断") === "进行中" ? "执行中" : "待诊断",
+            type: roleFilterMap[role]?.type ?? "疾病治疗",
+          }}
+        />
+        <TodayTaskList role={role} />
+      </section>
 
 
 
@@ -380,7 +383,7 @@ function TodayTaskList({ role }: { role: Role }) {
   const filter: RoleFilter =
     roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
   const matched = getRoleTasks(role);
-  const visible = matched.slice(0, 5);
+  const visible = matched.slice(0, 6);
 
   if (visible.length === 0) {
     return (
