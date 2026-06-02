@@ -475,14 +475,6 @@ function TaskDetailPage() {
       })()}
 
 
-      <AnomalyFeedbackSheet
-        open={anomalyOpen}
-        onClose={() => setAnomalyOpen(false)}
-        workOrderId={o.id}
-        barn={o.barn}
-        target={isSingle ? earTag.replace(/^#/, "") : undefined}
-      />
-
       {/* === 复诊工单：开始诊断决策弹窗 === */}
       <Dialog open={revisitOpen} onOpenChange={setRevisitOpen}>
         <DialogContent className="max-w-[360px] rounded-2xl">
