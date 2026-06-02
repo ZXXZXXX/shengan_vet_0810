@@ -1022,33 +1022,44 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
             <Field label="操作人" value={<PersonChip name="李雨晴" />} />
           </div>
         </div>
-      ) : isPlatformIssued ? null : (
-        <div className={`rounded-2xl bg-card border border-border p-4 ${status !== "已完成" ? "opacity-50" : ""}`}>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <DayDot active={false} done={status === "已完成"} />
-              <span className={`text-body font-medium ${status === "已完成" ? "text-foreground" : "text-text-tertiary"}`}>
-                复查
-              </span>
-              <span className="text-caption text-text-tertiary font-mono" suppressHydrationWarning>
-                2026-05-16
+      ) : isPlatformIssued ? null : (() => {
+        const reviewPhase: DayPhase = reviewDone || status === "已完成" ? "done" : reviewActive ? "active" : "pending";
+        const isReviewDone = reviewPhase === "done";
+        const isReviewActive = reviewPhase === "active";
+        const reviewLabel = isReviewDone ? "已完成" : isReviewActive ? "进行中" : "未开始";
+        const reviewLabelClass = isReviewDone
+          ? "bg-brand-subtle text-primary"
+          : isReviewActive
+            ? "tag-info"
+            : "bg-surface-subtle text-text-tertiary";
+        return (
+          <div className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""}`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <DayDot active={isReviewActive} done={isReviewDone} />
+                <span className={`text-body font-medium ${isReviewDone || isReviewActive ? "text-foreground" : "text-text-tertiary"}`}>
+                  复查
+                </span>
+                <span className="text-caption text-text-tertiary font-mono" suppressHydrationWarning>
+                  2026-05-16
+                </span>
+              </div>
+              <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${reviewLabelClass}`}>
+                {reviewLabel}
               </span>
             </div>
-            <span className={`inline-flex items-center h-6 px-2.5 rounded-full text-caption font-medium ${status === "已完成" ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary"}`}>
-              {status === "已完成" ? "已完成" : "未开始"}
-            </span>
+            <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
+              <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
+              <div className="text-body-sm leading-relaxed text-foreground">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
+            </div>
+            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+              <PackagePlus className="h-3.5 w-3.5" />
+              <span>领物</span>
+              <span className="ml-1 inline-flex items-center h-5 px-2 rounded-full bg-surface-subtle text-text-tertiary">无需</span>
+            </div>
           </div>
-          <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
-            <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
-            <div className="text-body-sm leading-relaxed text-foreground">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
-          </div>
-          <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-            <PackagePlus className="h-3.5 w-3.5" />
-            <span>领物</span>
-            <span className="ml-1 inline-flex items-center h-5 px-2 rounded-full bg-surface-subtle text-text-tertiary">无需</span>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {pickupOpen && (
         <div
