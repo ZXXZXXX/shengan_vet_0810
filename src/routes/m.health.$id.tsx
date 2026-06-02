@@ -251,66 +251,52 @@ function TaskDetailPage() {
           </div>
 
           {isDisease && (relatedOrderId || showSummary) && (
-            <div className="relative mt-2">
-              {/* Connector notch pointing up to the 是否复诊 pill on the right */}
-              <div
-                className="absolute -top-1.5 right-3 h-3 w-3 rotate-45"
-                style={{
-                  background: "color-mix(in oklab, var(--primary) 5%, transparent)",
-                  borderLeft: "1px solid color-mix(in oklab, var(--primary) 20%, transparent)",
-                  borderTop: "1px solid color-mix(in oklab, var(--primary) 20%, transparent)",
-                }}
-              />
-              <div
-                className="relative rounded-lg p-3 space-y-2.5"
-                style={{
-                  background: "color-mix(in oklab, var(--primary) 5%, transparent)",
-                  border: "1px solid color-mix(in oklab, var(--primary) 20%, transparent)",
-                }}
-              >
-                <div className="flex items-center gap-1.5">
-                  <Repeat className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-caption font-medium text-primary">复诊关联信息</span>
-                  <span className="text-caption text-text-tertiary">· 由“是否复诊：是”带出</span>
+            <div
+              className="mt-2 rounded-lg p-3 space-y-2.5"
+              style={{ background: "color-mix(in oklab, var(--primary) 5%, transparent)" }}
+            >
+              <div className="flex items-center gap-1.5">
+                <Repeat className="h-3.5 w-3.5 text-primary" />
+                <span className="text-caption font-medium text-primary">复诊关联信息</span>
+              </div>
+              {showSummary && summary?.revisitReason && (
+                <div>
+                  <div className="text-caption text-text-tertiary mb-1">复诊原因</div>
+                  <p className="text-body-sm text-foreground leading-relaxed">
+                    {summary.revisitReason}
+                  </p>
                 </div>
-                {showSummary && summary?.revisitReason && (
-                  <div>
-                    <div className="text-caption text-text-tertiary mb-1">复诊原因</div>
-                    <p className="text-body-sm text-foreground leading-relaxed">
-                      {summary.revisitReason}
-                    </p>
+              )}
+              <div className="flex items-center justify-between gap-3 text-caption pt-0.5">
+                {relatedOrderId && (
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Link2 className="h-3.5 w-3.5 text-text-tertiary" />
+                    <span className="text-text-tertiary">关联原始工单</span>
+                    <Link
+                      to="/m/health/$id"
+                      params={{ id: relatedOrderId }}
+                      className="font-mono text-body-sm text-primary inline-flex items-center gap-0.5"
+                    >
+                      {relatedOrderId}
+                      <ChevronRight className="h-3 w-3" />
+                    </Link>
                   </div>
                 )}
-                <div className="flex items-center justify-between gap-3 text-caption pt-0.5">
-                  {relatedOrderId && (
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <Link2 className="h-3.5 w-3.5 text-text-tertiary" />
-                      <span className="text-text-tertiary">关联原始工单</span>
-                      <Link
-                        to="/m/health/$id"
-                        params={{ id: relatedOrderId }}
-                        className="font-mono text-body-sm text-primary inline-flex items-center gap-0.5"
-                      >
-                        {relatedOrderId}
-                        <ChevronRight className="h-3 w-3" />
-                      </Link>
-                    </div>
-                  )}
-                  {showSummary && (
-                    <button
-                      type="button"
-                      onClick={() => setRecordsOpen(true)}
-                      className="flex items-center gap-1.5 shrink-0"
-                    >
-                      <History className="h-3.5 w-3.5 text-text-tertiary" />
-                      <span className="text-text-tertiary">诊疗信息摘要</span>
-                      <span className="text-body-sm text-primary">查看</span>
-                    </button>
-                  )}
-                </div>
+                {showSummary && (
+                  <button
+                    type="button"
+                    onClick={() => setRecordsOpen(true)}
+                    className="flex items-center gap-1.5 shrink-0"
+                  >
+                    <History className="h-3.5 w-3.5 text-text-tertiary" />
+                    <span className="text-text-tertiary">诊疗信息摘要</span>
+                    <span className="text-body-sm text-primary">查看</span>
+                  </button>
+                )}
               </div>
             </div>
           )}
+
 
 
         </div>
