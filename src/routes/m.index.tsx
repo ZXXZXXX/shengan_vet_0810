@@ -768,7 +768,7 @@ function KBShortcut({
 // ---------------- 牧场切换 ----------------
 function FarmSwitcher() {
   const [open, setOpen] = useState(false);
-  const [switching, setSwitching] = useState(false);
+  const [switching, setSwitching] = useState<false | "loading" | "done">(false);
   const currentId = useFarmId();
   const ref = useRef<HTMLDivElement>(null);
   const current = FARMS.find((f) => f.id === currentId) ?? FARMS[0];
@@ -824,9 +824,10 @@ function FarmSwitcher() {
                 onClick={() => {
                   setOpen(false);
                   if (f.id === currentId) return;
-                  setSwitching(true);
+                  setSwitching("loading");
                   setFarmId(f.id);
-                  window.setTimeout(() => setSwitching(false), 1000);
+                  window.setTimeout(() => setSwitching("done"), 800);
+                  window.setTimeout(() => setSwitching(false), 1500);
                 }}
                 className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
                   active ? "bg-brand-subtle/40" : ""
@@ -854,8 +855,19 @@ function FarmSwitcher() {
       {switching && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-[2147483646] bg-black/45 backdrop-blur-[2px] flex items-start justify-center pt-[35vh] touch-none" style={{ pointerEvents: "auto" }}>
           <div className="h-28 w-28 rounded-2xl bg-card shadow-2xl flex flex-col items-center justify-center gap-3">
-            <span className="h-8 w-8 rounded-full border-[3px] border-primary/25 border-t-primary animate-spin" />
-            <span className="text-caption text-text-secondary">切换牧场中…</span>
+            {switching === "loading" ? (
+              <>
+                <span className="h-8 w-8 rounded-full border-[3px] border-primary/25 border-t-primary animate-spin" />
+                <span className="text-caption text-text-secondary">切换牧场中…</span>
+              </>
+            ) : (
+              <>
+                <span className="h-8 w-8 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center">
+                  <Check className="h-5 w-5" strokeWidth={3} />
+                </span>
+                <span className="text-caption text-text-secondary">切换成功</span>
+              </>
+            )}
           </div>
         </div>,
         document.body
