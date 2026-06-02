@@ -404,19 +404,16 @@ function TodayTaskList({ role }: { role: Role }) {
           t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查";
         const linkCls =
           "flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle";
-        return (
-          <Fragment key={t.id}>
-            {isReview ? (
-              <Link to="/m/health/$id/review" params={{ id: t.id }} className={linkCls}>
-                <TaskRowBody t={t} Icon={Icon} meta={meta} />
-              </Link>
-            ) : (
-              <Link to="/m/health/$id" params={{ id: t.id }} className={linkCls}>
-                <TaskRowBody t={t} Icon={Icon} meta={meta} />
-              </Link>
-            )}
-          </Fragment>
-        );
+        const chip: TaskChip | null =
+          t.type === "疾病治疗"
+            ? diseaseTaskMeta[t.id]?.task ?? null
+            : t.status === "进行中"
+              ? "待执行"
+              : t.status === "待诊断"
+                ? "待诊断"
+                : null;
+        const body = (
+          <>
             <span className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}>
               <Icon className="h-4 w-4" strokeWidth={1.75} />
             </span>
@@ -425,24 +422,13 @@ function TodayTaskList({ role }: { role: Role }) {
                 <span className="font-mono">{t.id}</span>
                 <span>·</span>
                 <span>{t.type}</span>
-                {(() => {
-                  const chip: TaskChip | null =
-                    t.type === "疾病治疗"
-                      ? diseaseTaskMeta[t.id]?.task ?? null
-                      : t.status === "进行中"
-                        ? "待执行"
-                        : t.status === "待诊断"
-                          ? "待诊断"
-                          : null;
-                  if (!chip) return null;
-                  return (
-                    <span
-                      className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
-                    >
-                      {chip}
-                    </span>
-                  );
-                })()}
+                {chip && (
+                  <span
+                    className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
+                  >
+                    {chip}
+                  </span>
+                )}
                 <span className="ml-auto">{formatTimeAgo(t.minutesAgo)}</span>
               </div>
               <div className="text-body text-foreground truncate mt-0.5">
@@ -454,6 +440,15 @@ function TodayTaskList({ role }: { role: Role }) {
               </div>
             </div>
             <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+          </>
+        );
+        return isReview ? (
+          <Link key={t.id} to="/m/health/$id/review" params={{ id: t.id }} className={linkCls}>
+            {body}
+          </Link>
+        ) : (
+          <Link key={t.id} to="/m/health/$id" params={{ id: t.id }} className={linkCls}>
+            {body}
           </Link>
         );
       })}
