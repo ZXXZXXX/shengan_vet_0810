@@ -266,9 +266,10 @@ function TaskListPage() {
                   const canVisitThis = canDiagnose(role, o.type) && o.status === "待诊断";
                   const isVetView = role === "vet" || role === "manager";
                   const isObserving = !!observeDaysMap[o.id] && !obsExpiredOrders.has(o.id);
+                  const isReviewNode = reviewTaskSet.has(o.id);
                   const canExecuteThis =
                     canExecute(role) && o.status === "进行中" && !isObserving &&
-                    (!isVetView || reviewTaskSet.has(o.id));
+                    (isReviewNode ? isVetView : !isVetView);
 
 
                   // 统一 Footer 元信息：左侧时间·人员
@@ -298,7 +299,7 @@ function TaskListPage() {
                     : canVisitThis
                       ? "诊断"
                       : canExecuteThis
-                        ? (isVetView && reviewTaskSet.has(o.id) ? "复查" : "执行")
+                        ? (isReviewNode ? "复查" : "执行")
                         : "查看";
 
                   const commonInner = (
