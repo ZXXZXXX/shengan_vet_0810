@@ -442,14 +442,25 @@ function TaskDetailPage() {
               )
             )}
             {showExec && (
-              <Link
-                to={showExecVet ? "/m/health/$id_/review" : "/m/health/$id/execute"}
-                params={{ id: o.id }}
-                className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-              >
-                <PlayCircle className="h-4 w-4" />
-                开始执行
-              </Link>
+              showExecVet ? (
+                <Link
+                  to="/m/health/$id/review"
+                  params={{ id: o.id }}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+                >
+                  <PlayCircle className="h-4 w-4" />
+                  开始复查
+                </Link>
+              ) : (
+                <Link
+                  to="/m/health/$id/execute"
+                  params={{ id: o.id }}
+                  className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+                >
+                  <PlayCircle className="h-4 w-4" />
+                  开始执行
+                </Link>
+              )
             )}
             {showRevisitReport && (
               <Link
