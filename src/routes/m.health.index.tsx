@@ -316,7 +316,7 @@ function TaskListPage() {
                       {/* Title 区：对象 · 初诊/复诊 · 疾病名称 · 任务 —— 单行 truncate */}
                       <div className="text-card-title text-foreground truncate h-[26px] leading-[26px]">
                         {(() => {
-                          const head = o.scope.type === "single" ? `单只 ${o.scope.ear}` : `${o.scope.label}`;
+                          const head = o.scope.type === "single" ? o.scope.ear : o.scope.label;
                           const parts = diseaseTitleParts(o);
                           if (parts) {
                             const segs = [parts.visit, parts.name];
