@@ -386,7 +386,8 @@ function TaskDetailPage() {
       {/* === 3. 底部操作区 === */}
       {(() => {
         const showRespond = canDiagnose(role, o.type) && o.status === "待诊断" && !isObserving && !isObsExpired;
-        const showExec = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
+        // 兽医视角下，进行中工单不直接显示「开始执行」，仅在触发复查任务后由复查流程产生
+        const showExec = canExecute(role) && role !== "vet" && o.status === "进行中" && !isObserving && !isObsExpired;
         const showReview = isDisease && role === "vet" && o.status === "进行中" && !isObserving && !isObsExpired;
         const showRevisitReport = isObserving && role === "vet_assistant";
         const showConfirmCure = isObsExpired && role === "vet_assistant";
