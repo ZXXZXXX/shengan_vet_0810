@@ -199,7 +199,7 @@ function TaskDetailPage() {
   const staticObsDays = observingOrdersMap[id];
   const obsDays = search.obs ?? staticObsDays;
   const isObserving = isDisease && typeof obsDays === "number" && obsDays > 0 && !search.obsExpired;
-  const isObsExpired = isDisease && Boolean(search.obsExpired);
+  const isObsExpired = isDisease && (Boolean(search.obsExpired) || obsExpiredOrders.has(id));
 
   const showAnomaly = canExecute(role) && o.status === "进行中" && !isObserving && !isObsExpired;
 
