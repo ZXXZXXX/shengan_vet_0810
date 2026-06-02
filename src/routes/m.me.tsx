@@ -58,11 +58,6 @@ function MePage() {
               </div>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-            <Brief label="本月工单" value="42" />
-            <Brief label="按时完成" value="96%" />
-            <Brief label="上报事件" value="8" />
-          </div>
         </div>
       </section>
 
