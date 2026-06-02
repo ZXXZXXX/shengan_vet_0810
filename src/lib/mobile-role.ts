@@ -61,17 +61,18 @@ export function canExecute(r: Role) {
     r === "vet_assistant" ||
     r === "immunizer" ||
     r === "hoof_trimmer" ||
-    r === "vet"
+    r === "vet" ||
+    r === "manager"
   );
 }
-// 诊断权限：兽医可诊断疾病；场长可诊断疾病；管理员仅查看
+// 诊断权限：兽医/场长可诊断疾病；管理员仅查看
 export function canDiagnose(r: Role, type?: string) {
   if (r === "vet" || r === "manager") return type === "疾病治疗";
   return false;
 }
-// 是否能查看全场/经营级数据
+// 是否能查看全场/经营级数据：兽医与场长一致
 export function canViewOperations(r: Role) {
-  return r === "admin" || r === "manager";
+  return r === "admin" || r === "manager" || r === "vet";
 }
 
 
