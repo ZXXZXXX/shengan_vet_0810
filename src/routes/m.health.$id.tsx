@@ -75,6 +75,8 @@ const statusById: Record<string, StatusKey> = {
   "WO-2381": "待诊断",
   "WO-2298": "进行中",
   "WO-2401": "进行中",
+  "WO-2420": "进行中",
+  "WO-2430": "进行中",
   "WO-2324": "已终止",
   "HF-0702": "进行中",
   "HF-0688": "已完成",
@@ -83,6 +85,11 @@ const statusById: Record<string, StatusKey> = {
   "YM-2042": "已终止",
   "YM-2501": "进行中",
 };
+
+// 已触发复查任务（处方执行完成，待兽医复查验收）的工单
+const reviewTaskOrders = new Set<string>(["WO-2420"]);
+// 已完成复查 → 继续观察中（静态 mock：剩余天数）
+const observingOrdersMap: Record<string, number> = { "WO-2430": 5 };
 
 function TaskDetailPage() {
   const { id } = useParams({ from: "/m/health/$id" });
