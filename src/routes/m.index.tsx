@@ -475,22 +475,27 @@ function SectionTitle({
   to?: string;
   search?: Record<string, unknown>;
 }) {
+  if (to) {
+    return (
+      <Link
+        to={to as never}
+        search={search as never}
+        className="flex items-center justify-between mb-2 active:opacity-70"
+      >
+        <h3 className="text-card-title text-foreground">{title}</h3>
+        {hint && (
+          <span className="inline-flex items-center gap-0.5 text-caption text-text-tertiary">
+            {hint}
+            <ChevronRight className="h-3 w-3" />
+          </span>
+        )}
+      </Link>
+    );
+  }
   return (
     <div className="flex items-center justify-between mb-2">
       <h3 className="text-card-title text-foreground">{title}</h3>
-      {hint &&
-        (to ? (
-          <Link
-            to={to as never}
-            search={search as never}
-            className="inline-flex items-center gap-0.5 text-caption text-text-tertiary active:opacity-70"
-          >
-            {hint}
-            <ChevronRight className="h-3 w-3" />
-          </Link>
-        ) : (
-          <span className="text-caption text-text-tertiary">{hint}</span>
-        ))}
+      {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
     </div>
   );
 }
