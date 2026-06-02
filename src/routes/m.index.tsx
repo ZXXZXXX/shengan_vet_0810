@@ -141,9 +141,23 @@ function MHomePage() {
 
 
 
+      {/* ============ 工作任务 ============ */}
+      <section className="px-4 mt-[2px] mb-4">
+        <SectionTitle
+          title="工作任务"
+          hint={`共计 ${getTaskCount(role)} 项`}
+          to="/m/health"
+          search={{
+            tab: (roleFilterMap[role]?.status ?? "待诊断") === "进行中" ? "执行中" : "待诊断",
+            type: roleFilterMap[role]?.type ?? "疾病治疗",
+          }}
+        />
+        <TodayTaskList role={role} />
+      </section>
+
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-[2px]">
+        <section className="px-4 mt-5">
           <SectionTitle title="速查与近况" />
 
           <div className="grid grid-cols-3 gap-2.5">
@@ -175,23 +189,6 @@ function MHomePage() {
 
         </section>
       )}
-
-
-
-
-      {/* ============ 工作任务 ============ */}
-      <section className="px-4 mt-5 mb-4">
-        <SectionTitle
-          title="工作任务"
-          hint={`共计 ${getTaskCount(role)} 项`}
-          to="/m/health"
-          search={{
-            tab: (roleFilterMap[role]?.status ?? "待诊断") === "进行中" ? "执行中" : "待诊断",
-            type: roleFilterMap[role]?.type ?? "疾病治疗",
-          }}
-        />
-        <TodayTaskList role={role} />
-      </section>
 
 
 
