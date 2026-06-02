@@ -305,8 +305,40 @@ function TaskDetailPage() {
           )}
 
 
+          {(isObserving || isObsExpired) && (
+            <div
+              className={`mt-2 rounded-lg p-3 flex items-start gap-2 ${
+                isObsExpired
+                  ? "bg-[#22ACEB]/10 border border-[#22ACEB]/30"
+                  : "bg-brand-subtle"
+              }`}
+            >
+              <Repeat
+                className={`h-4 w-4 mt-0.5 shrink-0 ${
+                  isObsExpired ? "text-[#22ACEB]" : "text-primary"
+                }`}
+              />
+              <div className="flex-1 min-w-0">
+                <div
+                  className={`text-body-sm font-medium ${
+                    isObsExpired ? "text-[#22ACEB]" : "text-primary"
+                  }`}
+                >
+                  {isObsExpired
+                    ? "观察期已结束，待确认治愈"
+                    : `继续观察中 · 剩余 ${obsDays} 天`}
+                </div>
+                <div className="text-caption text-text-tertiary mt-0.5 leading-relaxed">
+                  {isObsExpired
+                    ? "观察期内未发起复诊上报，请助理确认治愈并关闭工单。"
+                    : "观察期内若发现异常，可通过健康上报发起复诊。"}
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
+
 
 
 
