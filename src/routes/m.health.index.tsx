@@ -117,6 +117,37 @@ function cleanName(name: string) {
   return name.replace(/^(内部|外部)·/, "");
 }
 
+// 疾病工单的诊断/疑似 + 初诊/复诊 元数据
+const diseaseMeta: Record<string, { visit: "初诊" | "复诊"; diagnosis?: string; suspected?: string }> = {
+  "WO-2381": { visit: "初诊", suspected: "乳房炎" },
+  "WO-2410": { visit: "复诊", suspected: "乳房炎" },
+  "WO-2298": { visit: "复诊", diagnosis: "乳房炎" },
+  "WO-2420": { visit: "初诊", diagnosis: "乳房炎" },
+  "WO-2430": { visit: "初诊", diagnosis: "乳房炎" },
+  "WO-2324": { visit: "初诊", suspected: "采食异常" },
+};
+const reviewTaskSet = new Set<string>(["WO-2420"]);
+const observeDaysMap: Record<string, number> = { "WO-2430": 5 };
+
+function truncateCJK(s: string, max = 5) {
+  const arr = Array.from(s);
+  return arr.length > max ? arr.slice(0, max).join("") + "…" : s;
+}
+
+function diseaseTitleParts(o: Task) {
+  if (o.type !== "疾病治疗") return null;
+  const m = diseaseMeta[o.id];
+  const visit = m?.visit ?? "初诊";
+  const name = truncateCJK(m?.diagnosis || m?.suspected || "疾病不详");
+  let task: string | null = null;
+  if (o.status === "进行中") {
+    if (observeDaysMap[o.id]) task = `观察 ${observeDaysMap[o.id]} 天`;
+    else if (reviewTaskSet.has(o.id)) task = "复查任务";
+    else task = "执行任务";
+  }
+  return { visit, name, task };
+}
+
 
 
 
