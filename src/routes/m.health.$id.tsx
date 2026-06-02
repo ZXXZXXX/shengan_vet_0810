@@ -247,26 +247,25 @@ function TaskDetailPage() {
           </div>
 
           {isDisease && (relatedOrderId || showSummary) && (
-            <div className="pt-2 mt-1 border-t border-border/60 space-y-2">
+            <div
+              className="mt-2 rounded-lg border-l-[3px] border-l-primary p-3 space-y-2.5"
+              style={{
+                background: "color-mix(in oklab, var(--primary) 5%, transparent)",
+              }}
+            >
+              <div className="flex items-center gap-1.5">
+                <Repeat className="h-3.5 w-3.5 text-primary" />
+                <span className="text-caption font-medium text-primary">复诊关联信息</span>
+              </div>
               {showSummary && summary?.revisitReason && (
-                <div
-                  className="rounded-lg p-2.5 border-0"
-                  style={{
-                    background: "color-mix(in oklab, var(--primary) 6%, transparent)",
-                  }}
-                >
-
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Repeat className="h-3.5 w-3.5 text-primary" />
-                    <span className="text-caption font-medium text-primary">复诊原因</span>
-
-                  </div>
+                <div>
+                  <div className="text-caption text-text-tertiary mb-1">复诊原因</div>
                   <p className="text-body-sm text-foreground leading-relaxed">
                     {summary.revisitReason}
                   </p>
                 </div>
               )}
-              <div className="flex items-center justify-between gap-3 text-caption">
+              <div className="flex items-center justify-between gap-3 text-caption pt-0.5">
                 {relatedOrderId && (
                   <div className="flex items-center gap-1.5 min-w-0">
                     <Link2 className="h-3.5 w-3.5 text-text-tertiary" />
