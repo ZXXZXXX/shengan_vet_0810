@@ -264,7 +264,10 @@ function TaskListPage() {
                   const KIcon = kindIcon[o.kind];
                   const isPickup = o.kind === "领取";
                   const canVisitThis = canDiagnose(role, o.type) && o.status === "待诊断";
-                  const canExecuteThis = canExecute(role) && o.status === "进行中";
+                  const isVetView = role === "vet" || role === "manager";
+                  const canExecuteThis =
+                    canExecute(role) && o.status === "进行中" &&
+                    (!isVetView || reviewTaskSet.has(o.id));
 
 
                   // 统一 Footer 元信息：左侧时间·人员
@@ -294,7 +297,7 @@ function TaskListPage() {
                     : canVisitThis
                       ? "诊断"
                       : canExecuteThis
-                        ? "执行"
+                        ? (isVetView && reviewTaskSet.has(o.id) ? "复查" : "执行")
                         : "查看";
 
                   const commonInner = (
