@@ -84,8 +84,15 @@ function LossReportPage() {
     reasons.length > 0 &&
     (!otherSelected || otherReason.trim().length > 0);
 
+  const [submitted, setSubmitted] = useState(false);
+  const otherInvalid = submitted && otherSelected && otherReason.trim().length === 0;
+
   const submit = () => {
-    if (!canSubmit) return;
+    setSubmitted(true);
+    if (!canSubmit) {
+      toast.error("请完善必填项");
+      return;
+    }
     toast.success("损耗上报已提交");
     setTimeout(() => navigate({ to: "/m" }), 600);
   };
@@ -254,7 +261,7 @@ function LossReportPage() {
               onChange={(e) => setOtherReason(e.target.value)}
               placeholder="请填写其他损耗原因"
               className="w-full h-11 px-3 rounded-lg text-body mt-2"
-              aria-invalid={otherReason.trim().length === 0 || undefined}
+              aria-invalid={otherInvalid || undefined}
             />
           )}
         </Section>
@@ -295,8 +302,7 @@ function LossReportPage() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] z-40">
         <button
           onClick={submit}
-          disabled={!canSubmit}
-          className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-body font-medium inline-flex items-center justify-center gap-2 disabled:bg-surface-subtle disabled:text-text-tertiary"
+          className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-body font-medium inline-flex items-center justify-center gap-2"
         >
           <PackageX className="h-4 w-4" />
           提交损耗上报
