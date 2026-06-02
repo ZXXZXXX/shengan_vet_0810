@@ -139,6 +139,8 @@ function TaskDetailPage() {
   const singleEarMap: Record<string, string> = {
     "WO-2298": "#A2298",
     "WO-2410": "#A2410",
+    "WO-2420": "#A2420",
+    "WO-2430": "#A2430",
     "HF-0702": "#A2150",
     "HF-0688": "#A2270",
     "PP-2501": "#A2710",
