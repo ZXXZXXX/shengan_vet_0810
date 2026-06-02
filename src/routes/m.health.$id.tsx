@@ -252,8 +252,8 @@ function TaskDetailPage() {
 
           {isDisease && (relatedOrderId || showSummary) && (
             <div
-              className="mt-2 rounded-lg p-3 space-y-2.5"
-              style={{ background: "color-mix(in oklab, var(--primary) 5%, transparent)" }}
+              className="mt-2 rounded-lg p-3 space-y-2.5 bg-brand-subtle"
+
             >
               <div className="flex items-center gap-1.5">
                 <Repeat className="h-3.5 w-3.5 text-primary" />
