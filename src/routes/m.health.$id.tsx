@@ -186,9 +186,27 @@ function TaskDetailPage() {
         date: "2026-04-22",
         conclusion: "乳房炎（亚临床）",
         prescription: "标准 3 日抗炎方案：头孢噻呋钠 + 氟尼辛葡甲胺，每日 1 次连续 3 天，配合每日测温与乳样复查。",
-        meds: [
-          { name: "头孢噻呋钠", dose: "1g / 次", route: "肌肉注射", days: "3 天", executed: "2026-04-22 ~ 2026-04-24，按计划完成" },
-          { name: "氟尼辛葡甲胺", dose: "2ml / 次", route: "肌肉注射", days: "2 天", executed: "2026-04-22 ~ 2026-04-23，按计划完成" },
+        medGroups: [
+          {
+            date: "2026-04-24",
+            items: [
+              { name: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射" },
+            ],
+          },
+          {
+            date: "2026-04-23",
+            items: [
+              { name: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射" },
+              { name: "氟尼辛葡甲胺", manufacturer: "齐鲁动保", dose: "2ml / 次 · 肌肉注射" },
+            ],
+          },
+          {
+            date: "2026-04-22",
+            items: [
+              { name: "头孢噻呋钠", manufacturer: "瑞普生物", dose: "1g / 次 · 肌肉注射" },
+              { name: "氟尼辛葡甲胺", manufacturer: "齐鲁动保", dose: "2ml / 次 · 肌肉注射" },
+            ],
+          },
         ],
         revisitReason: "停药 5 天后乳区再次出现红肿，体温回升至 39.4℃，疑似炎症复发，需复查并调整方案。",
       }
