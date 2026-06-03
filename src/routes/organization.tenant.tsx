@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
@@ -9,14 +9,20 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Building2, Plus, Search, Users, Beef } from "lucide-react";
+import { Building2, Plus, Search, Users, Beef, Info, MapPin, ShieldCheck, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/organization/tenant")({
@@ -44,6 +50,35 @@ const initialTenants: TenantRow[] = [
 
 type Scale = "small" | "large";
 
+// 演示用地区数据
+const REGION: Record<string, Record<string, string[]>> = {
+  内蒙古: {
+    呼和浩特: ["赛罕区", "新城区", "回民区", "玉泉区"],
+    包头: ["昆都仑区", "青山区", "东河区"],
+    通辽: ["科尔沁区", "霍林郭勒"],
+  },
+  黑龙江: {
+    哈尔滨: ["道里区", "南岗区", "香坊区", "松北区"],
+    齐齐哈尔: ["建华区", "龙沙区"],
+    大庆: ["萨尔图区", "让胡路区"],
+  },
+  新疆: {
+    乌鲁木齐: ["天山区", "沙依巴克区", "高新区"],
+    伊犁: ["伊宁市", "奎屯市"],
+    昌吉: ["昌吉市", "阜康市"],
+  },
+  河北: {
+    石家庄: ["长安区", "桥西区", "新华区"],
+    保定: ["竞秀区", "莲池区"],
+    唐山: ["路北区", "路南区"],
+  },
+  山东: {
+    济南: ["历下区", "市中区", "槐荫区"],
+    青岛: ["市南区", "市北区", "崂山区"],
+    潍坊: ["奎文区", "潍城区"],
+  },
+};
+
 function TenantPage() {
   const [list, setList] = useState<TenantRow[]>(initialTenants);
   const [open, setOpen] = useState(false);
@@ -60,6 +95,12 @@ function TenantPage() {
   const [wecomEnabled, setWecomEnabled] = useState(false);
   const [corpId, setCorpId] = useState("");
 
+  const cityOptions = useMemo(() => (province ? Object.keys(REGION[province] ?? {}) : []), [province]);
+  const districtOptions = useMemo(
+    () => (province && city ? REGION[province]?.[city] ?? [] : []),
+    [province, city],
+  );
+
   const reset = () => {
     setName(""); setShortName(""); setScale("small");
     setProvince(""); setCity(""); setDistrict("");
@@ -70,7 +111,7 @@ function TenantPage() {
 
   const submit = () => {
     if (!name.trim()) return toast.error("请填写租户名称");
-    if (!province.trim() || !city.trim() || !district.trim()) return toast.error("请完整填写所在地区");
+    if (!province || !city || !district) return toast.error("请完整选择所在地区");
     if (!contact.trim()) return toast.error("请填写租户联系人");
     if (!phone.trim()) return toast.error("请填写租户联系方式");
     if (!adminName.trim()) return toast.error("请填写管理员账号名称");
@@ -144,23 +185,38 @@ function TenantPage() {
       </main>
 
       <Sheet open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
-        <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto p-0">
-          <SheetHeader className="px-6 pt-6">
-            <SheetTitle>新建租户</SheetTitle>
-            <SheetDescription>填写租户基础信息并创建管理员账号</SheetDescription>
+        <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col gap-0">
+          <SheetHeader className="px-6 py-4 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-md bg-brand-subtle flex items-center justify-center shrink-0">
+                <Building2 className="h-5 w-5 text-primary" strokeWidth={1.75} />
+              </div>
+              <div className="min-w-0">
+                <SheetTitle className="text-card-title text-foreground text-left">新建租户</SheetTitle>
+                <SheetDescription className="text-caption text-text-tertiary text-left">
+                  填写租户基础信息并创建管理员账号
+                </SheetDescription>
+              </div>
+            </div>
           </SheetHeader>
 
-          <div className="space-y-6 px-6 py-5">
-            {/* 1. 基础信息 */}
-            <section className="space-y-4">
-              <div className="text-section-title text-foreground">1. 基础信息</div>
+          <div className="flex-1 overflow-y-auto">
+            {/* 基础信息 */}
+            <section className="px-6 py-5 border-b border-border space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="h-5 w-1 rounded-full bg-primary" />
+                <h4 className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                  <Info className="h-3.5 w-3.5 text-text-secondary" />
+                  基础信息
+                </h4>
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <Field label="租户名称" required>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="如：奇点牧业集团" />
+                  <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="如：奇点牧业集团" className="h-9 bg-card border-border text-body-sm" />
                 </Field>
                 <Field label="租户简称">
-                  <Input value={shortName} onChange={(e) => setShortName(e.target.value)} placeholder="如：奇点" />
+                  <Input value={shortName} onChange={(e) => setShortName(e.target.value)} placeholder="如：奇点" className="h-9 bg-card border-border text-body-sm" />
                 </Field>
               </div>
 
@@ -182,47 +238,111 @@ function TenantPage() {
                   </label>
                 </RadioGroup>
               </Field>
+            </section>
+
+            {/* 所在地区 */}
+            <section className="px-6 py-5 border-b border-border space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="h-5 w-1 rounded-full bg-primary" />
+                <h4 className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-text-secondary" />
+                  所在地区与联系方式
+                </h4>
+              </div>
 
               <Field label="所在地区" required>
                 <div className="grid grid-cols-3 gap-2">
-                  <Input value={province} onChange={(e) => setProvince(e.target.value)} placeholder="省" />
-                  <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="市" />
-                  <Input value={district} onChange={(e) => setDistrict(e.target.value)} placeholder="区" />
+                  <Select
+                    value={province}
+                    onValueChange={(v) => { setProvince(v); setCity(""); setDistrict(""); }}
+                  >
+                    <SelectTrigger className="h-9 bg-card border-border text-body-sm">
+                      <SelectValue placeholder="省 / 自治区" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(REGION).map((p) => (
+                        <SelectItem key={p} value={p}>{p}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={city}
+                    onValueChange={(v) => { setCity(v); setDistrict(""); }}
+                    disabled={!province}
+                  >
+                    <SelectTrigger className="h-9 bg-card border-border text-body-sm">
+                      <SelectValue placeholder="市" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cityOptions.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={district}
+                    onValueChange={setDistrict}
+                    disabled={!city}
+                  >
+                    <SelectTrigger className="h-9 bg-card border-border text-body-sm">
+                      <SelectValue placeholder="区 / 县" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {districtOptions.map((d) => (
+                        <SelectItem key={d} value={d}>{d}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </Field>
 
               <div className="grid grid-cols-2 gap-4">
                 <Field label="租户联系人" required>
-                  <Input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="姓名" />
+                  <Input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="姓名" className="h-9 bg-card border-border text-body-sm" />
                 </Field>
                 <Field label="租户联系方式" required>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="手机号" />
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="手机号" className="h-9 bg-card border-border text-body-sm" />
                 </Field>
               </div>
             </section>
 
-            {/* 2. 管理员账号 */}
-            <section className="space-y-4">
-              <div className="text-section-title text-foreground">2. 创建 / 绑定租户管理员账号</div>
-              <div className="text-caption text-text-tertiary -mt-2">必填,仅限 1 个</div>
+            {/* 管理员账号 */}
+            <section className="px-6 py-5 border-b border-border space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="h-5 w-1 rounded-full bg-primary" />
+                  <h4 className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-text-secondary" />
+                    创建 / 绑定租户管理员账号
+                  </h4>
+                </div>
+                <span className="text-caption text-text-tertiary">必填 · 仅限 1 个</span>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <Field label="账号名称" required>
-                  <Input value={adminName} onChange={(e) => setAdminName(e.target.value)} placeholder="管理员姓名" />
+                  <Input value={adminName} onChange={(e) => setAdminName(e.target.value)} placeholder="管理员姓名" className="h-9 bg-card border-border text-body-sm" />
                 </Field>
                 <Field label="联系方式" required>
-                  <Input value={adminPhone} onChange={(e) => setAdminPhone(e.target.value)} placeholder="手机号" />
+                  <Input value={adminPhone} onChange={(e) => setAdminPhone(e.target.value)} placeholder="手机号" className="h-9 bg-card border-border text-body-sm" />
                 </Field>
               </div>
             </section>
 
-            {/* 3. 登录方式 */}
-            <section className="space-y-3">
-              <div className="text-section-title text-foreground">3. 登录方式</div>
+            {/* 登录方式 */}
+            <section className="px-6 py-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="h-5 w-1 rounded-full bg-primary" />
+                <h4 className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                  <KeyRound className="h-3.5 w-3.5 text-text-secondary" />
+                  登录方式
+                </h4>
+              </div>
               <div className="space-y-2">
                 <label className="flex items-center gap-2 opacity-90">
                   <Checkbox checked disabled />
                   <span className="text-body-sm text-foreground">系统帐密登录</span>
-                  <span className="text-caption text-text-tertiary">(必选)</span>
+                  <span className="text-caption text-text-tertiary">（必选）</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <Checkbox checked={wecomEnabled} onCheckedChange={(v) => setWecomEnabled(!!v)} />
@@ -232,19 +352,19 @@ function TenantPage() {
               {wecomEnabled && (
                 <div className="pl-6 pt-1">
                   <Field label="企业微信 CorpID" required>
-                    <Input value={corpId} onChange={(e) => setCorpId(e.target.value)} placeholder="ww1234567890abcdef" />
+                    <Input value={corpId} onChange={(e) => setCorpId(e.target.value)} placeholder="ww1234567890abcdef" className="h-9 bg-card border-border text-body-sm" />
                   </Field>
                 </div>
               )}
             </section>
           </div>
 
-          <SheetFooter className="px-6 py-4 border-t border-border bg-background sticky bottom-0">
+          <div className="px-6 py-4 border-t border-border flex justify-end gap-2 bg-background">
             <Button variant="outline" onClick={() => setOpen(false)}>取消</Button>
             <Button onClick={submit} className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
               创建租户
             </Button>
-          </SheetFooter>
+          </div>
         </SheetContent>
       </Sheet>
     </>
@@ -254,7 +374,7 @@ function TenantPage() {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-body-sm text-foreground">
+      <Label className="text-caption text-text-tertiary">
         {label}
         {required && <span className="text-destructive ml-0.5">*</span>}
       </Label>
