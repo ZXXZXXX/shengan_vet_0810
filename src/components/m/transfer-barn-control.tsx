@@ -32,6 +32,8 @@ type Props = {
   label?: string;
   /** 是否带卡片容器，默认 true */
   bordered?: boolean;
+  /** 隐藏开关，直接展示去向选择（默认 false） */
+  hideToggle?: boolean;
 };
 
 /**
