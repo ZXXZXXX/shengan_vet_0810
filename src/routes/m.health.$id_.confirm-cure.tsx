@@ -18,13 +18,23 @@ function ConfirmCurePage() {
 
   const [needTransfer, setNeedTransfer] = useState(false);
   const [transferTo, setTransferTo] = useState("");
+  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+  const earTagLabel = getOrderEarTagLabel(id);
 
   const canSubmit = !needTransfer || Boolean(transferTo);
 
+  const finalize = () => {
+    toast.success(needTransfer ? `已确认治愈，转至 ${transferTo}` : "已确认治愈，工单完成");
+    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
+  };
+
   const submit = () => {
     if (!canSubmit) return;
-    toast.success(needTransfer ? `已已治愈，转至 ${transferTo}` : "已已治愈，工单完成");
-    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
+    if (needTransfer) {
+      setTransferConfirmOpen(true);
+      return;
+    }
+    finalize();
   };
 
   return (
