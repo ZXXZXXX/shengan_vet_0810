@@ -3,7 +3,8 @@ import { useState } from "react";
 import { CheckCircle2, Send } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
-import { toast } from "sonner";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
 
 export const Route = createFileRoute("/m/health/$id_/confirm-cure")({
   head: () => ({ meta: [{ title: "已治愈 · 奇点智牧" }] }),
