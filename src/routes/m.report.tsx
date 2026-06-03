@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { TagPicker } from "@/components/m/tag-picker";
 import {
   RelatedOrderPicker,
@@ -405,10 +406,31 @@ function ReportPage() {
 
 
 
-  const submit = () => {
-    if (!canSubmit) return;
+  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+  const earTagLabel = useMemo(() => {
+    if (barnMode) {
+      if (barns.length === 0) return "本批牛只";
+      return barns.length === 1 ? `${barns[0]} 整栏` : `${barns.join("、")} 整栏`;
+    }
+    if (targets.length === 0) return "本批牛只";
+    const formatted = targets.map((t) => (t.startsWith("#") ? t : `#${t}`));
+    if (formatted.length === 1) return formatted[0];
+    if (formatted.length <= 3) return formatted.join("、");
+    return `${formatted.slice(0, 2).join("、")} 等 ${formatted.length} 头`;
+  }, [barnMode, barns, targets]);
+
+  const doSubmit = () => {
     setSubmitted(true);
     setTimeout(() => navigate({ to: "/m/health" }), 900);
+  };
+
+  const submit = () => {
+    if (!canSubmit) return;
+    if (needTransfer && transferBarn) {
+      setTransferConfirmOpen(true);
+      return;
+    }
+    doSubmit();
   };
 
   // 同牛舍其他牛只（mock 数据，规模 30+ 头，需搜索/扫码添加）
@@ -993,6 +1015,18 @@ function ReportPage() {
           </div>
         </div>
       )}
+
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={earTagLabel}
+        barn={transferBarn}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setTransferConfirmOpen(false);
+          doSubmit();
+        }}
+      />
+
 
       {/* 存草稿确认弹窗 */}
       {showDraftDialog && (

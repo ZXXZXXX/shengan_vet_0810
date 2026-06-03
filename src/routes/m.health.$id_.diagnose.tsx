@@ -23,8 +23,10 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { TagPicker } from "@/components/m/tag-picker";
 import { Switch } from "@/components/ui/switch";
+import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
 
 
 
@@ -186,6 +188,8 @@ function DiagnosePage() {
   const [termReasonOther, setTermReasonOther] = useState("");
   const [needTransfer, setNeedTransfer] = useState(false);
   const [transferTo, setTransferTo] = useState("");
+  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+  const earTagLabel = getOrderEarTagLabel(id);
 
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
@@ -762,7 +766,11 @@ function DiagnosePage() {
                   const reason = termReason === "其他" ? termReasonOther.trim() : termReason;
                   if (!reason) return;
                   if (needTransfer && !transferTo.trim()) return;
-                  toast.success(needTransfer ? `工单已终止，已安排转栏至 ${transferTo}` : "工单已终止");
+                  if (needTransfer) {
+                    setTransferConfirmOpen(true);
+                    return;
+                  }
+                  toast.success("工单已终止");
                   navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
                 }}
                 className="flex-1 h-11 rounded-lg bg-[var(--state-danger)] text-white text-body disabled:opacity-50"
@@ -773,6 +781,18 @@ function DiagnosePage() {
           </div>
         </div>
       )}
+
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={earTagLabel}
+        barn={transferTo}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setTransferConfirmOpen(false);
+          toast.success(`工单已终止，已安排转栏至 ${transferTo}`);
+          navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+        }}
+      />
 
       {/* 添加媒体选择弹层 */}
       {showMediaPicker && (

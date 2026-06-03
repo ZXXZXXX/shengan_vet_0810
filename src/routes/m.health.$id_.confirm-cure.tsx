@@ -3,6 +3,8 @@ import { useState } from "react";
 import { CheckCircle2, Send } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/health/$id_/confirm-cure")({
@@ -16,13 +18,23 @@ function ConfirmCurePage() {
 
   const [needTransfer, setNeedTransfer] = useState(false);
   const [transferTo, setTransferTo] = useState("");
+  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+  const earTagLabel = getOrderEarTagLabel(id);
 
   const canSubmit = !needTransfer || Boolean(transferTo);
 
+  const finalize = () => {
+    toast.success(needTransfer ? `已确认治愈，转至 ${transferTo}` : "已确认治愈，工单完成");
+    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
+  };
+
   const submit = () => {
     if (!canSubmit) return;
-    toast.success(needTransfer ? `已已治愈，转至 ${transferTo}` : "已已治愈，工单完成");
-    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
+    if (needTransfer) {
+      setTransferConfirmOpen(true);
+      return;
+    }
+    finalize();
   };
 
   return (
@@ -65,6 +77,17 @@ function ConfirmCurePage() {
           <Send className="h-4 w-4" /> 已治愈并完成工单
         </button>
       </div>
+
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={earTagLabel}
+        barn={transferTo}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setTransferConfirmOpen(false);
+          finalize();
+        }}
+      />
     </MobileShell>
   );
 }

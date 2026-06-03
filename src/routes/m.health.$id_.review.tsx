@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
@@ -45,6 +47,8 @@ function ReviewPage() {
   const [observeCustom, setObserveCustom] = useState("");
   const [needTransfer, setNeedTransfer] = useState(false);
   const [transferTo, setTransferTo] = useState("");
+  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+  const earTagLabel = getOrderEarTagLabel(id);
 
   const finalAbandonReason = abandonReason === "其他" ? abandonOther.trim() : abandonReason;
   const finalObserveDays = useMemo(() => {
@@ -79,16 +83,12 @@ function ReviewPage() {
     );
   }
 
-  const submit = () => {
-    if (!canSubmit) {
-      toast.error("请完成必填项");
-      return;
-    }
+  const doSubmit = () => {
     if (verdict === "cure") {
       toast.success(needTransfer ? `已确认治愈，转至 ${transferTo}` : "已确认治愈");
       navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
     } else if (verdict === "abandon") {
-      toast.success("已放弃治疗，工单已终止");
+      toast.success(needTransfer ? `已放弃治疗，已转至 ${transferTo}` : "已放弃治疗，工单已终止");
       navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
     } else {
       toast.success(`已设为继续观察 ${finalObserveDays} 天`);
@@ -98,6 +98,18 @@ function ReviewPage() {
         search: { tab: "execute", obs: finalObserveDays },
       });
     }
+  };
+
+  const submit = () => {
+    if (!canSubmit) {
+      toast.error("请完成必填项");
+      return;
+    }
+    if (needTransfer && transferTo) {
+      setTransferConfirmOpen(true);
+      return;
+    }
+    doSubmit();
   };
 
   return (
@@ -257,6 +269,17 @@ function ReviewPage() {
           <Send className="h-4 w-4" /> 提交复查结论
         </button>
       </div>
+
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={earTagLabel}
+        barn={transferTo}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setTransferConfirmOpen(false);
+          doSubmit();
+        }}
+      />
     </MobileShell>
   );
 }
