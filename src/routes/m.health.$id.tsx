@@ -232,7 +232,7 @@ function TaskDetailPage() {
       hideTabBar
     >
       <div className="pb-28">
-        {autoArchivedOrders.has(id) && status === "已完成" && (
+        {autoArchivedOrders.has(id) && o.status === "已完成" && (
           <div className="mx-4 mt-3 rounded-lg bg-[#FFF1F0] border border-[#FFA39E] px-3 py-2.5 text-caption text-[#CF1322] leading-relaxed">
             <span className="font-medium">系统自动归档</span>不代表复查结论正常，仅表示该工单治疗流程已结束。
           </div>
