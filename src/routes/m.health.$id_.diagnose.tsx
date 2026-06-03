@@ -913,6 +913,7 @@ function DrugEditor({
   onCancel: () => void;
   onSave: () => void;
 }) {
+  const isTherapy = value.kind === "therapy";
   const [query, setQuery] = useState(value.name);
   const [focused, setFocused] = useState(false);
   const matches = useMemo(() => {
@@ -928,106 +929,231 @@ function DrugEditor({
     setFocused(false);
   };
 
+  const setSlot = (k: SlotKey, v: string) =>
+    onChange({ ...value, slots: { ...(value.slots || {}), [k]: v } });
+
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={onCancel}>
       <div
         className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-4 max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-section-title text-foreground">编辑药品</div>
+        <div className="text-section-title text-foreground">
+          {isTherapy ? "编辑治疗手段" : "编辑药品"}
+        </div>
 
-        {/* 药品搜索 */}
-        <div className="space-y-1">
-          <span className="text-caption text-text-tertiary">药品名称</span>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-            <input
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setFocused(true);
-                onChange({ ...value, name: e.target.value, maker: "", spec: "" });
-              }}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setTimeout(() => setFocused(false), 150)}
-              placeholder="输入药品名称搜索"
-              className="h-10 w-full pl-9 pr-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
-            />
-            {focused && matches.length > 0 && (
-              <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-60 overflow-auto">
-                {matches.map((d) => (
-                  <button
-                    key={d.name}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => pickDrug(d)}
-                    className="w-full text-left px-3 py-2.5 hover:bg-surface-subtle border-b border-border last:border-b-0"
-                  >
-                    <div className="text-body-sm text-foreground">{d.name}</div>
-                    <div className="text-caption text-text-tertiary mt-0.5">
-                      {d.maker} · {d.spec}
-                    </div>
-                  </button>
-                ))}
+        {isTherapy ? (
+          <>
+            {/* 治疗手段类型 */}
+            <div className="space-y-1.5">
+              <span className="text-caption text-text-tertiary">治疗手段</span>
+              <div className="flex flex-wrap gap-1.5">
+                {therapyMethods.map((m) => {
+                  const active = value.therapyMethod === m;
+                  return (
+                    <button
+                      key={m}
+                      onClick={() =>
+                        onChange({
+                          ...value,
+                          therapyMethod: m,
+                          name: value.name || m,
+                        })
+                      }
+                      className={`h-8 px-3 rounded-full text-caption transition-colors ${
+                        active
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-white border border-border text-text-secondary"
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  );
+                })}
               </div>
-            )}
-          </div>
-          {matched && (
-            <div className="rounded-md bg-brand-subtle border border-primary/15 px-2.5 py-1.5 text-caption text-text-secondary mt-1.5">
-              <span className="text-primary font-medium">{matched.maker}</span>
-              <span className="mx-1.5 text-text-tertiary">·</span>
-              规格 {matched.spec}
             </div>
-          )}
-        </div>
 
-        {/* 使用方式 */}
-        <div className="space-y-1.5">
-          <span className="text-caption text-text-tertiary">使用方式</span>
-          <div className="flex flex-wrap gap-1.5">
-            {useMethods.map((m) => {
-              const active = value.use === m;
-              return (
-                <button
-                  key={m}
-                  onClick={() => onChange({ ...value, use: m })}
-                  className={`h-8 px-3 rounded-full text-caption transition-colors ${
-                    active
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-white border border-border text-text-secondary"
-                  }`}
-                >
-                  {m}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 用量 / 用药天数 */}
-        <div className="grid grid-cols-2 gap-3">
-          <label className="block space-y-1">
-            <span className="text-caption text-text-tertiary">单次用量</span>
-            <input
-              value={value.dose}
-              onChange={(e) => onChange({ ...value, dose: e.target.value })}
-              placeholder="如 2ml"
-              className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
-            />
-          </label>
-          <label className="block space-y-1">
-            <span className="text-caption text-text-tertiary">用药天数</span>
-            <div className="relative">
+            {/* 名称 */}
+            <label className="block space-y-1">
+              <span className="text-caption text-text-tertiary">方案名称</span>
               <input
-                value={value.days}
-                onChange={(e) => onChange({ ...value, days: e.target.value })}
-                inputMode="numeric"
-                placeholder="如 3"
-                className="h-10 w-full pl-3 pr-9 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                value={value.name}
+                onChange={(e) => onChange({ ...value, name: e.target.value })}
+                placeholder="如 乳房热敷按摩"
+                className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">天</span>
+            </label>
+
+            {/* 频次 / 天数 */}
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block space-y-1">
+                <span className="text-caption text-text-tertiary">频次</span>
+                <input
+                  value={value.frequency || ""}
+                  onChange={(e) => onChange({ ...value, frequency: e.target.value })}
+                  placeholder="如 2 次 / 天"
+                  className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                />
+              </label>
+              <label className="block space-y-1">
+                <span className="text-caption text-text-tertiary">持续天数</span>
+                <div className="relative">
+                  <input
+                    value={value.days}
+                    onChange={(e) => onChange({ ...value, days: e.target.value })}
+                    inputMode="numeric"
+                    placeholder="如 3"
+                    className="h-10 w-full pl-3 pr-9 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">天</span>
+                </div>
+              </label>
             </div>
-          </label>
-        </div>
+
+            {/* 操作说明 */}
+            <label className="block space-y-1">
+              <span className="text-caption text-text-tertiary">操作说明</span>
+              <textarea
+                value={value.desc || ""}
+                onChange={(e) => onChange({ ...value, desc: e.target.value })}
+                placeholder="如：每次 10 分钟，注意力度，观察反应"
+                className="h-20 w-full p-3 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+              />
+            </label>
+          </>
+        ) : (
+          <>
+            {/* 药品搜索 */}
+            <div className="space-y-1">
+              <span className="text-caption text-text-tertiary">药品名称</span>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                <input
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setFocused(true);
+                    onChange({ ...value, name: e.target.value, maker: "", spec: "" });
+                  }}
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => setTimeout(() => setFocused(false), 150)}
+                  placeholder="输入药品名称搜索"
+                  className="h-10 w-full pl-9 pr-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                />
+                {focused && matches.length > 0 && (
+                  <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg max-h-60 overflow-auto">
+                    {matches.map((d) => (
+                      <button
+                        key={d.name}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => pickDrug(d)}
+                        className="w-full text-left px-3 py-2.5 hover:bg-surface-subtle border-b border-border last:border-b-0"
+                      >
+                        <div className="text-body-sm text-foreground">{d.name}</div>
+                        <div className="text-caption text-text-tertiary mt-0.5">
+                          {d.maker} · {d.spec}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {matched && (
+                <div className="rounded-md bg-brand-subtle border border-primary/15 px-2.5 py-1.5 text-caption text-text-secondary mt-1.5">
+                  <span className="text-primary font-medium">{matched.maker}</span>
+                  <span className="mx-1.5 text-text-tertiary">·</span>
+                  规格 {matched.spec}
+                </div>
+              )}
+            </div>
+
+            {/* 使用方式 */}
+            <div className="space-y-1.5">
+              <span className="text-caption text-text-tertiary">使用方式</span>
+              <div className="flex flex-wrap gap-1.5">
+                {useMethods.map((m) => {
+                  const active = value.use === m;
+                  return (
+                    <button
+                      key={m}
+                      onClick={() => onChange({ ...value, use: m })}
+                      className={`h-8 px-3 rounded-full text-caption transition-colors ${
+                        active
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-white border border-border text-text-secondary"
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 区分用药时间段 切换 */}
+            <div className="rounded-lg border border-border bg-surface-subtle p-3 space-y-2.5">
+              <label className="flex items-center justify-between gap-2 cursor-pointer">
+                <div className="min-w-0">
+                  <div className="text-body-sm text-foreground">区分用药时间段</div>
+                  <div className="text-caption text-text-tertiary mt-0.5">
+                    开启后按上午 / 中午 / 晚上分别填写剂量
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={!!value.splitTime}
+                  onChange={(e) =>
+                    onChange({ ...value, splitTime: e.target.checked })
+                  }
+                  className="h-4 w-4 accent-[var(--primary)]"
+                />
+              </label>
+
+              {value.splitTime ? (
+                <div className="grid grid-cols-3 gap-2">
+                  {(["morning", "noon", "evening"] as SlotKey[]).map((k) => (
+                    <label key={k} className="block space-y-1">
+                      <span className="text-caption text-text-tertiary">
+                        {SLOT_LABEL[k]}
+                      </span>
+                      <input
+                        value={value.slots?.[k] || ""}
+                        onChange={(e) => setSlot(k, e.target.value)}
+                        placeholder="剂量"
+                        className="h-9 w-full px-2 rounded-md bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                      />
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <label className="block space-y-1">
+                  <span className="text-caption text-text-tertiary">单次用量</span>
+                  <input
+                    value={value.dose || ""}
+                    onChange={(e) => onChange({ ...value, dose: e.target.value })}
+                    placeholder="如 2ml"
+                    className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                  />
+                </label>
+              )}
+            </div>
+
+            {/* 用药天数 */}
+            <label className="block space-y-1">
+              <span className="text-caption text-text-tertiary">用药天数</span>
+              <div className="relative">
+                <input
+                  value={value.days}
+                  onChange={(e) => onChange({ ...value, days: e.target.value })}
+                  inputMode="numeric"
+                  placeholder="如 3"
+                  className="h-10 w-full pl-3 pr-9 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">天</span>
+              </div>
+            </label>
+          </>
+        )}
 
         <div className="flex gap-2 pt-2">
           <button
