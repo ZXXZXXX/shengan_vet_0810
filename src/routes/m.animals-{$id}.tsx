@@ -19,7 +19,21 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+import { TagPicker } from "@/components/m/tag-picker";
 import { toast } from "sonner";
+
+const TRANSFER_REASONS = [
+  "泌乳阶段调整",
+  "干奶转入",
+  "产前转入产房",
+  "产后转出",
+  "并群优化",
+  "隔离治疗",
+  "康复转出",
+  "淘汰待售",
+  "栏舍维修",
+  "饲养密度调整",
+];
 
 export const Route = createFileRoute("/m/animals-{$id}")({
   head: () => ({ meta: [{ title: "牛只详情 · 奇点智牧" }] }),
@@ -48,11 +62,16 @@ function AnimalDetailPage() {
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferEnabled, setTransferEnabled] = useState(true);
   const [transferTo, setTransferTo] = useState("");
+  const [transferReasons, setTransferReasons] = useState<string[]>([]);
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
 
   const handleTransferSubmit = () => {
     if (!transferTo) {
       toast.error("请选择转入栏舍");
+      return;
+    }
+    if (transferReasons.length === 0) {
+      toast.error("请选择或输入转栏原因");
       return;
     }
     setTransferConfirmOpen(true);
@@ -62,7 +81,9 @@ function AnimalDetailPage() {
     setTransferOpen(false);
     toast.success(`已转至 ${transferTo}`);
     setTransferTo("");
+    setTransferReasons([]);
   };
+
 
   // mock 当前相关工单（仅展示 待诊断 / 执行中）
   const orders = [
@@ -357,18 +378,33 @@ function AnimalDetailPage() {
                 hideToggle
               />
 
+              <div className="rounded-xl bg-card border border-border p-3">
+                <div className="text-body-sm text-foreground mb-2 inline-flex items-center gap-1">
+                  转栏原因
+                  <span className="text-[var(--state-danger)]">*</span>
+                </div>
+                <TagPicker
+                  selected={transferReasons}
+                  onChange={setTransferReasons}
+                  presets={TRANSFER_REASONS}
+                  singleSelect
+                  placeholder="输入关键词搜索，未命中可直接新建"
+                />
+              </div>
+
               <button
                 type="button"
                 onClick={handleTransferSubmit}
-                disabled={!transferTo}
+                disabled={!transferTo || transferReasons.length === 0}
                 className={`w-full h-11 rounded-lg text-body inline-flex items-center justify-center gap-1.5 ${
-                  transferTo
+                  transferTo && transferReasons.length > 0
                     ? "bg-primary text-primary-foreground"
                     : "bg-border text-text-tertiary"
                 }`}
               >
                 <ArrowRightLeft className="h-4 w-4" /> 提交转栏
               </button>
+
             </div>
           </div>
         </div>
