@@ -286,60 +286,13 @@ function DiagnosePage() {
             title="症状"
             extra={<span className="text-caption text-text-tertiary">{symptoms.length} 个</span>}
           >
-            <div className="flex flex-wrap gap-1.5">
-              {symptoms.map((s) => (
-                <span
-                  key={s}
-                  className="inline-flex items-center gap-1 h-7 pl-2.5 pr-1.5 rounded-full bg-brand-subtle text-primary text-body-sm"
-                >
-                  <Activity className="h-3 w-3" />
-                  {s}
-                  <button
-                    onClick={() => removeSymptom(s)}
-                    className="h-4 w-4 inline-flex items-center justify-center rounded-full hover:bg-primary/10"
-                    aria-label={`移除 ${s}`}
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
-              {symptoms.length === 0 && (
-                <span className="text-caption text-text-tertiary">尚未填写症状</span>
-              )}
-            </div>
-
-            <div className="mt-3 space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
-                <input
-                  value={symptomInput}
-                  onChange={(e) => setSymptomInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addSymptom(symptomInput.trim());
-                    }
-                  }}
-                  placeholder="输入并回车添加，或从下方选择"
-                  className="h-10 w-full pl-9 pr-3 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-                />
-              </div>
-              {symptomSuggestions.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {symptomSuggestions.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => addSymptom(s)}
-                      className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle border border-border text-body-sm text-text-secondary hover:border-primary hover:text-primary"
-                    >
-                      <Plus className="h-3 w-3" />
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <TagPicker
+              selected={symptoms}
+              onChange={setSymptoms}
+              presets={symptomLibrary}
+            />
           </Section>
+
 
           {/* === 疾病名称 === */}
           <Section
