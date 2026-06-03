@@ -7,15 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Building2, Plus, Search, Users, Beef, Calendar } from "lucide-react";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Building2, Plus, Search, Users, Beef } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/organization/tenant")({
@@ -23,20 +24,28 @@ export const Route = createFileRoute("/organization/tenant")({
   component: TenantPage,
 });
 
-type Plan = "旗舰版" | "专业版" | "标准版";
-const tenants: { id: string; name: string; code: string; plan: Plan; users: number; cattle: number; expiry: string; status: "正常" | "即将到期" }[] = [
-  { id: "T001", name: "奇点牧业集团", code: "qd-mu", plan: "旗舰版", users: 156, cattle: 2486, expiry: "2027-12-31", status: "正常" },
-  { id: "T002", name: "绿源乳业", code: "ly-dairy", plan: "专业版", users: 42, cattle: 860, expiry: "2026-08-15", status: "即将到期" },
-  { id: "T003", name: "北疆牧场合作社", code: "bj-coop", plan: "标准版", users: 18, cattle: 320, expiry: "2026-11-20", status: "正常" },
-];
+type TenantStatus = "正常" | "已冻结";
+type TenantRow = {
+  id: string;
+  name: string;
+  code: string;
+  region: string;
+  contact: string;
+  users: number;
+  cattle: number;
+  status: TenantStatus;
+};
 
-function planTag(p: Plan) {
-  return p === "旗舰版" ? "tag tag-brand" : p === "专业版" ? "tag tag-brand" : "tag tag-muted";
-}
+const initialTenants: TenantRow[] = [
+  { id: "T001", name: "奇点牧业集团", code: "qd-mu", region: "内蒙古 · 呼和浩特 · 赛罕区", contact: "王志远", users: 156, cattle: 2486, status: "正常" },
+  { id: "T002", name: "绿源乳业", code: "ly-dairy", region: "黑龙江 · 哈尔滨 · 道里区", contact: "李 雯", users: 42, cattle: 860, status: "正常" },
+  { id: "T003", name: "北疆牧场合作社", code: "bj-coop", region: "新疆 · 伊犁 · 伊宁市", contact: "马建国", users: 18, cattle: 320, status: "已冻结" },
+];
 
 type Scale = "small" | "large";
 
 function TenantPage() {
+  const [list, setList] = useState<TenantRow[]>(initialTenants);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [shortName, setShortName] = useState("");
@@ -72,6 +81,11 @@ function TenantPage() {
     reset();
   };
 
+  const toggleFreeze = (id: string, frozen: boolean) => {
+    setList((prev) => prev.map((t) => (t.id === id ? { ...t, status: frozen ? "已冻结" : "正常" } : t)));
+    toast.success(frozen ? "已冻结该租户" : "已恢复该租户");
+  };
+
   return (
     <>
       <AppHeader title="租户管理" breadcrumb={["组织管理", "租户管理"]} />
@@ -91,20 +105,22 @@ function TenantPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tenants.map((t) => (
+          {list.map((t) => (
             <Card key={t.id} className="border-border bg-card p-5 hover:border-primary/40 transition-colors">
               <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="h-10 w-10 rounded-lg bg-brand-subtle flex items-center justify-center">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="h-10 w-10 rounded-lg bg-brand-subtle flex items-center justify-center shrink-0">
                     <Building2 className="h-4 w-4 text-primary" strokeWidth={1.75} />
                   </div>
-                  <div>
-                    <div className="text-card-title text-foreground">{t.name}</div>
-                    <div className="text-caption text-text-tertiary font-mono">{t.code}</div>
+                  <div className="min-w-0">
+                    <div className="text-card-title text-foreground truncate">{t.name}</div>
+                    <div className="text-caption text-text-tertiary font-mono truncate">{t.code}</div>
                   </div>
                 </div>
-                <span className={planTag(t.plan)}>{t.plan}</span>
+                <span className={`tag ${t.status === "正常" ? "tag-success" : "tag-muted"}`}>{t.status}</span>
               </div>
+              <div className="text-caption text-text-tertiary truncate">{t.region}</div>
+              <div className="text-caption text-text-tertiary mt-1">联系人：{t.contact}</div>
               <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-border">
                 <div>
                   <div className="flex items-center gap-1.5 text-caption text-text-tertiary"><Users className="h-3 w-3" /> 用户</div>
@@ -116,22 +132,25 @@ function TenantPage() {
                 </div>
               </div>
               <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-                <div className="flex items-center gap-1.5 text-caption text-text-tertiary"><Calendar className="h-3 w-3" /> 到期 {t.expiry}</div>
-                <span className={`tag ${t.status === "正常" ? "tag-success" : "tag-warning"}`}>{t.status}</span>
+                <span className="text-caption text-text-tertiary">冻结该租户</span>
+                <Switch
+                  checked={t.status === "已冻结"}
+                  onCheckedChange={(v) => toggleFreeze(t.id, v)}
+                />
               </div>
             </Card>
           ))}
         </div>
       </main>
 
-      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
-        <DialogContent className="max-w-2xl max-h-[88vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>新建租户</DialogTitle>
-            <DialogDescription>填写租户基础信息并创建管理员账号</DialogDescription>
-          </DialogHeader>
+      <Sheet open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
+        <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto p-0">
+          <SheetHeader className="px-6 pt-6">
+            <SheetTitle>新建租户</SheetTitle>
+            <SheetDescription>填写租户基础信息并创建管理员账号</SheetDescription>
+          </SheetHeader>
 
-          <div className="space-y-6 py-2">
+          <div className="space-y-6 px-6 py-5">
             {/* 1. 基础信息 */}
             <section className="space-y-4">
               <div className="text-section-title text-foreground">1. 基础信息</div>
@@ -185,7 +204,7 @@ function TenantPage() {
             {/* 2. 管理员账号 */}
             <section className="space-y-4">
               <div className="text-section-title text-foreground">2. 创建 / 绑定租户管理员账号</div>
-              <div className="text-caption text-text-tertiary -mt-2">必填，仅限 1 个</div>
+              <div className="text-caption text-text-tertiary -mt-2">必填,仅限 1 个</div>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="账号名称" required>
                   <Input value={adminName} onChange={(e) => setAdminName(e.target.value)} placeholder="管理员姓名" />
@@ -203,7 +222,7 @@ function TenantPage() {
                 <label className="flex items-center gap-2 opacity-90">
                   <Checkbox checked disabled />
                   <span className="text-body-sm text-foreground">系统帐密登录</span>
-                  <span className="text-caption text-text-tertiary">（必选）</span>
+                  <span className="text-caption text-text-tertiary">(必选)</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <Checkbox checked={wecomEnabled} onCheckedChange={(v) => setWecomEnabled(!!v)} />
@@ -220,14 +239,14 @@ function TenantPage() {
             </section>
           </div>
 
-          <DialogFooter>
+          <SheetFooter className="px-6 py-4 border-t border-border bg-background sticky bottom-0">
             <Button variant="outline" onClick={() => setOpen(false)}>取消</Button>
             <Button onClick={submit} className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
               创建租户
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }
