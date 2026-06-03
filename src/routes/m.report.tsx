@@ -359,20 +359,6 @@ function ReportPage() {
     ? localStorage.getItem("mp:lastTransferBarn") ?? ""
     : "";
 
-  // 初始化标签集（workType 当前不可切换，仅保留预设；草稿预填的 symptoms/note 不会被重置）
-  useEffect(() => {
-    if (cfg?.tags) {
-      const extras = (draft?.symptoms ?? []).filter(
-        (s: string) => !cfg.tags!.presets.includes(s)
-      );
-      setSymptomTags([...cfg.tags.presets, ...extras, "其他"]);
-    } else {
-      setSymptomTags([]);
-    }
-  }, [workType]);
-
-
-
   // 是否完成"线索上传"——之后才显示疑似疾病（照片/视频必填）
   const evidenceReady = photos.length > 0 || videos.length > 0;
 
@@ -394,30 +380,6 @@ function ReportPage() {
     [suspectedDisease]
   );
 
-  const toggleSymptom = (s: string) => {
-    if (s === "其他") {
-      setShowCustomInput(true);
-      return;
-    }
-    setSymptoms((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
-  };
-
-  const addCustomSymptom = () => {
-    const v = customSymptom.trim();
-    if (!v) return;
-    if (!symptomTags.includes(v)) {
-      // 插入到"其他"之前
-      setSymptomTags((prev) => {
-        const idx = prev.indexOf("其他");
-        const copy = [...prev];
-        copy.splice(idx, 0, v);
-        return copy;
-      });
-    }
-    if (!symptoms.includes(v)) setSymptoms((prev) => [...prev, v]);
-    setCustomSymptom("");
-    setShowCustomInput(false);
-  };
 
 
   const startVoice = () => {
