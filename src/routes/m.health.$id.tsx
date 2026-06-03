@@ -94,7 +94,7 @@ const observingOrdersMap: Record<string, number> = { "WO-2430": 5 };
 // 观察期已满 → 待助理已治愈
 const obsExpiredOrders = new Set<string>([]);
 // 复查任务超时未操作 → 系统自动归档的工单（status 为 已完成 但无人工复查结论）
-const autoArchivedOrders = new Set<string>(["HF-0688"]);
+const autoArchivedOrders = new Set<string>(["HF-0688", "WO-2199"]);
 
 
 function TaskDetailPage() {
@@ -232,7 +232,7 @@ function TaskDetailPage() {
       hideTabBar
     >
       <div className="pb-28">
-        {autoArchivedOrders.has(id) && status === "已完成" && (
+        {autoArchivedOrders.has(id) && o.status === "已完成" && (
           <div className="mx-4 mt-3 rounded-lg bg-[#FFF1F0] border border-[#FFA39E] px-3 py-2.5 text-caption text-[#CF1322] leading-relaxed">
             <span className="font-medium">系统自动归档</span>不代表复查结论正常，仅表示该工单治疗流程已结束。
           </div>
