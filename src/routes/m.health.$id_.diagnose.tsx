@@ -837,7 +837,7 @@ function DiagnosePage() {
                 <button
                   key={name}
                   onClick={() => { setExecutor(name); setShowExecutorPicker(false); setExecutorQuery(""); }}
-                  className={`w-full h-10 rounded-lg border text-body-sm inline-flex items-center justify-center gap-1.5 ${executor === name ? "border-primary bg-brand-subtle text-primary" : "border-border bg-surface-subtle text-text-secondary"}`}
+                  className={`w-full h-10 rounded-lg border text-body-sm inline-flex items-center justify-center gap-1.5 ${executor === name ? "border-primary bg-brand-subtle text-primary" : "border-border bg-white text-text-secondary"}`}
                 >
                   <User className="h-3.5 w-3.5" />
                   {name}
