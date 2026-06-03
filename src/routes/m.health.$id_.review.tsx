@@ -83,8 +83,6 @@ function ReviewPage() {
     );
   }
 
-  const submit = () => {
-    if (!canSubmit) {
   const doSubmit = () => {
     if (verdict === "cure") {
       toast.success(needTransfer ? `已确认治愈，转至 ${transferTo}` : "已确认治愈");
