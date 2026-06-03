@@ -782,6 +782,18 @@ function DiagnosePage() {
         </div>
       )}
 
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={earTagLabel}
+        barn={transferTo}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setTransferConfirmOpen(false);
+          toast.success(`工单已终止，已安排转栏至 ${transferTo}`);
+          navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+        }}
+      />
+
       {/* 添加媒体选择弹层 */}
       {showMediaPicker && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setShowMediaPicker(false)}>
