@@ -220,15 +220,15 @@ function MHomePage() {
                 <div className="text-caption text-text-tertiary mt-0.5">疾病、修蹄、产后等</div>
               </Link>
               <Link
-                to="/m/loss-report"
+                to="/m/drug-report"
                 onClick={() => setReportOpen(false)}
                 className="rounded-xl border border-border bg-card p-3 active:bg-surface-subtle"
               >
                 <span className="h-9 w-9 rounded-lg bg-[var(--state-warning)]/15 text-[var(--state-alert)] inline-flex items-center justify-center">
                   <PackageX className="h-4 w-4" />
                 </span>
-                <div className="mt-2 text-body font-medium text-foreground">损耗上报</div>
-                <div className="text-caption text-text-tertiary mt-0.5">物品/药品损耗登记</div>
+                <div className="mt-2 text-body font-medium text-foreground">药品上报</div>
+                <div className="text-caption text-text-tertiary mt-0.5">损耗 / 退料登记</div>
               </Link>
             </div>
             <button
