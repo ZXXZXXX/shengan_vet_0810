@@ -103,7 +103,7 @@ function TenantPage() {
   );
 
   const reset = () => {
-    setName(""); setShortName(""); setScale("small");
+    setName(""); setShortName(""); setFarmRange(""); setCattleRange("");
     setProvince(""); setCity(""); setDistrict("");
     setContact(""); setPhone("");
     setAdminName(""); setAdminPhone("");
