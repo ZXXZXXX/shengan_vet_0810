@@ -1325,7 +1325,7 @@ function ChecklistDay({
               const done = it.status === "done";
               const blocked = it.status === "blocked";
               const needMed = it.needMed;
-              const isVerified = verified[it.id] || done;
+              const isVerified = dayVerified || done;
               return (
                 <li key={it.id} className="space-y-2">
                   <div
@@ -1385,7 +1385,7 @@ function ChecklistDay({
                       <div className="mt-2.5 pl-6">
                         <button
                           type="button"
-                          onClick={() => setVerifyFor(it.id)}
+                          onClick={() => setVerifyOpen(true)}
                           className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
                         >
                           <ScanLine className="h-4 w-4" /> 扫描耳码核验牛只
@@ -1536,11 +1536,11 @@ function ChecklistDay({
         </div>
       )}
 
-      {verifyFor && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex flex-col" onClick={() => setVerifyFor(null)}>
+      {verifyOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex flex-col" onClick={() => setVerifyOpen(false)}>
           <div className="flex items-center justify-between px-4 h-14 text-white">
             <span className="text-body font-medium">扫描牛只耳码</span>
-            <button onClick={() => setVerifyFor(null)} className="h-9 w-9 inline-flex items-center justify-center">
+            <button onClick={() => setVerifyOpen(false)} className="h-9 w-9 inline-flex items-center justify-center">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -1558,8 +1558,8 @@ function ChecklistDay({
             <button
               type="button"
               onClick={() => {
-                setVerified((m) => ({ ...m, [verifyFor]: true }));
-                setVerifyFor(null);
+                setDayVerified(true);
+                setVerifyOpen(false);
               }}
               className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
             >
@@ -1568,7 +1568,7 @@ function ChecklistDay({
             <button
               type="button"
               onClick={() => {
-                setVerifyFor(null);
+                setVerifyOpen(false);
                 setMismatchOpen(true);
               }}
               className="w-full h-11 rounded-lg border border-white/30 text-white/90 text-body inline-flex items-center justify-center gap-1.5"
