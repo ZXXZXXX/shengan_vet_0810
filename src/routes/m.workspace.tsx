@@ -95,6 +95,28 @@ function MWorkspacePage() {
 
         {/* 模块卡片 */}
         <div className="flex-1 px-4 -mt-4 pb-8 space-y-3">
+          {/* 当前账号 */}
+          <div className="rounded-2xl bg-card border border-border p-3 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center text-body font-semibold shrink-0">
+              {ACCOUNT.name.slice(-2)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-body text-foreground font-medium truncate">
+                  {ACCOUNT.name}
+                </span>
+                <span className="text-caption px-1.5 py-0.5 rounded-md bg-surface-subtle text-text-secondary shrink-0">
+                  {ACCOUNT.role}
+                </span>
+              </div>
+              <div className="text-caption text-text-tertiary mt-0.5 inline-flex items-center gap-1 truncate">
+                <Building2 className="h-3 w-3 shrink-0" />
+                {ACCOUNT.group}
+              </div>
+            </div>
+          </div>
+
+
           {MODULES.map((m) => {
             const Icon = m.icon;
             const disabled = !m.enabled;
