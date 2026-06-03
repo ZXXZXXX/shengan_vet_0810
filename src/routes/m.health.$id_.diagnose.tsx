@@ -143,8 +143,8 @@ const useMethods = [
   "外用涂抹",
 ];
 
-// 剂量单位
-const doseUnits = ["ml", "g", "mg", "IU", "片", "包"];
+
+
 
 
 // 治疗手段枚举
