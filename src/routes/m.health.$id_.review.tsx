@@ -269,6 +269,17 @@ function ReviewPage() {
           <Send className="h-4 w-4" /> 提交复查结论
         </button>
       </div>
+
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={earTagLabel}
+        barn={transferTo}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setTransferConfirmOpen(false);
+          doSubmit();
+        }}
+      />
     </MobileShell>
   );
 }
