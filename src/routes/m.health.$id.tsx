@@ -1320,12 +1320,36 @@ function ChecklistDay({
             处方拆解的本日任务
           </div>
 
+          <div className="px-4 pb-3">
+            {interactive && (
+              dayVerified ? (
+                <div className="rounded-xl border border-primary/30 bg-brand-subtle/20 px-3 py-2.5">
+                  <div className="text-body-sm text-primary inline-flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4" />
+                    本次执行已完成牛只核验 · <span className="font-mono">{expectedTag}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-border bg-card px-3 py-3 space-y-2">
+                  <div className="text-caption text-text-tertiary">执行本次记录前，请先扫描耳码核验牛只</div>
+                  <button
+                    type="button"
+                    onClick={() => setVerifyOpen(true)}
+                    className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
+                  >
+                    <ScanLine className="h-4 w-4" /> 扫描耳码核验牛只
+                  </button>
+                </div>
+              )
+            )}
+          </div>
+
           <ul className="px-4 pb-3 space-y-2">
             {items.map((it) => {
               const done = it.status === "done";
               const blocked = it.status === "blocked";
               const needMed = it.needMed;
-              const isVerified = dayVerified || done;
+              const isVerified = dayVerified;
               return (
                 <li key={it.id} className="space-y-2">
                   <div
@@ -1354,11 +1378,6 @@ function ChecklistDay({
                         {it.desc && (
                           <div className="text-caption text-text-tertiary mt-0.5">{it.desc}</div>
                         )}
-                        {isVerified && !done && interactive && (
-                          <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                            <CheckCircle2 className="h-3 w-3" /> 牛只已核验 · <span className="font-mono">{expectedTag}</span>
-                          </div>
-                        )}
                         {done && needMed && it.scanCode && (
                           <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
                             <ScanLine className="h-3 w-3" /> 已扫码核验 · <span className="font-mono">{it.scanCode}</span>
@@ -1381,17 +1400,6 @@ function ChecklistDay({
                         </button>
                       )}
                     </div>
-                    {interactive && !isVerified && !blocked && (
-                      <div className="mt-2.5 pl-6">
-                        <button
-                          type="button"
-                          onClick={() => setVerifyOpen(true)}
-                          className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
-                        >
-                          <ScanLine className="h-4 w-4" /> 扫描耳码核验牛只
-                        </button>
-                      </div>
-                    )}
                     {interactive && isVerified && !needMed && !done && it.title.includes("测温") && (
                       <div className="mt-2.5 pl-6 space-y-2">
                         <div className="flex items-center gap-2">
