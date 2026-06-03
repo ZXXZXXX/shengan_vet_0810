@@ -102,6 +102,8 @@ type Prescription = {
   spec?: string;
   use?: string;
   dose?: string;
+  doseUnit?: string;
+  timesPerDay?: string;
   // 是否区分时间段
   splitTime?: boolean;
   slots?: Partial<Record<SlotKey, string>>;
@@ -112,18 +114,18 @@ type Prescription = {
 };
 
 // 药品库（用于编辑弹层中搜索匹配）
-type DrugItem = { name: string; maker: string; spec: string };
+type DrugItem = { name: string; maker: string; spec: string; recommendedUse: string; defaultUnit: string };
 const drugLibrary: DrugItem[] = [
-  { name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶" },
-  { name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支" },
-  { name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋" },
-  { name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶" },
-  { name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶" },
-  { name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包" },
-  { name: "青霉素钠", maker: "华北制药", spec: "80 万 IU / 支" },
-  { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶" },
-  { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支" },
-  { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支" },
+  { name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
+  { name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", recommendedUse: "肌肉注射", defaultUnit: "g" },
+  { name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", recommendedUse: "口服", defaultUnit: "g" },
+  { name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
+  { name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", recommendedUse: "静脉注射", defaultUnit: "ml" },
+  { name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", recommendedUse: "口服", defaultUnit: "g" },
+  { name: "青霉素钠", maker: "华北制药", spec: "80 万 IU / 支", recommendedUse: "肌肉注射", defaultUnit: "IU" },
+  { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
+  { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支", recommendedUse: "静脉注射", defaultUnit: "ml" },
+  { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支", recommendedUse: "肌肉注射", defaultUnit: "ml" },
 ];
 
 // 使用方式枚举
@@ -136,6 +138,10 @@ const useMethods = [
   "灌服",
   "外用涂抹",
 ];
+
+// 剂量单位
+const doseUnits = ["ml", "g", "mg", "IU", "片", "包"];
+
 
 // 治疗手段枚举
 const therapyMethods = [
