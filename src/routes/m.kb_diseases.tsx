@@ -440,8 +440,3 @@ function tierTone(t: "首选" | "备选" | "应急") {
   return `${base} bg-surface-subtle text-text-secondary`;
 }
 
-      <div className="text-caption text-text-tertiary mb-1.5">{label}</div>
-      {children}
-    </div>
-  );
-}
