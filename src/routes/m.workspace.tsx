@@ -1,6 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Stethoscope, UtensilsCrossed, Truck, Activity, ChevronRight, Lock } from "lucide-react";
+import { Stethoscope, UtensilsCrossed, Truck, Activity, ChevronRight, Lock, Building2 } from "lucide-react";
 import grasslandHero from "@/assets/grassland-hero.png";
+
+const ACCOUNT = {
+  name: "李雨晴",
+  role: "兽医",
+  group: "奇点智牧集团",
+};
+
 
 export const Route = createFileRoute("/m/workspace")({
   head: () => ({ meta: [{ title: "工作台 · 奇点智牧" }] }),
