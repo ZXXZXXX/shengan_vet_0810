@@ -354,7 +354,9 @@ function AnimalDetailPage() {
                 onValueChange={setTransferTo}
                 exclude={[a.barn]}
                 label="转入栏舍"
+                hideToggle
               />
+
               <button
                 type="button"
                 onClick={handleTransferSubmit}
