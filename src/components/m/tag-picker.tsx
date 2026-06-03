@@ -94,7 +94,7 @@ export function TagPicker({
               {t}
               <button
                 type="button"
-                onClick={() => toggle(t)}
+                onClick={() => remove(t)}
                 className="h-5 w-5 inline-flex items-center justify-center rounded-full hover:bg-white/15"
                 aria-label={`移除 ${t}`}
               >
@@ -128,7 +128,7 @@ export function TagPicker({
                   <button
                     key={t}
                     type="button"
-                    onClick={() => toggle(t)}
+                    onClick={() => select(t)}
                     className={`h-8 px-3 rounded-full text-body-sm border transition-colors ${
                       active
                         ? "bg-brand-subtle text-primary border-primary/40"
@@ -167,7 +167,7 @@ export function TagPicker({
                 <button
                   key={t}
                   type="button"
-                  onClick={() => toggle(t)}
+                  onClick={() => select(t)}
                   className="h-8 px-3 rounded-full text-body-sm border border-border bg-card text-text-secondary active:scale-[0.97]"
                 >
                   {t}
