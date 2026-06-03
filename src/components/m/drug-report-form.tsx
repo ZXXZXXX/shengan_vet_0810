@@ -42,8 +42,9 @@ type Line = { itemId: string; qty: string };
 
 export type DrugReportMode = "loss" | "return";
 
-export function DrugReportForm({ mode }: { mode: DrugReportMode }) {
+export function DrugReportForm({ mode: initialMode }: { mode?: DrugReportMode }) {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<DrugReportMode>(initialMode ?? "loss");
   const isReturn = mode === "return";
   const word = isReturn ? "退料" : "损耗";
 
@@ -86,9 +87,36 @@ export function DrugReportForm({ mode }: { mode: DrugReportMode }) {
   };
 
   return (
-    <MobileShell title={`${word}上报`} back hideTabBar>
+    <MobileShell title="药品上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-5">
-        {/* 物品 */}
+        {/* 上报类型切换 */}
+        <div className="bg-card rounded-2xl border border-border p-1 grid grid-cols-2 gap-1">
+          {([
+            { key: "loss", label: "损耗上报" },
+            { key: "return", label: "退料上报" },
+          ] as { key: DrugReportMode; label: string }[]).map((opt) => {
+            const active = mode === opt.key;
+            return (
+              <button
+                key={opt.key}
+                onClick={() => {
+                  if (mode === opt.key) return;
+                  setMode(opt.key);
+                  setReasons([]);
+                }}
+                className={`h-10 rounded-xl text-body-sm font-medium transition-colors ${
+                  active
+                    ? "bg-brand-subtle text-primary"
+                    : "text-text-secondary"
+                }`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+
+
         <Section title={`${word}物品`} required hint="可一次性登记多项">
           <div className="space-y-2">
             {lines.map((l, idx) => {
