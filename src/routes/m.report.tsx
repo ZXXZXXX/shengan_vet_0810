@@ -1016,7 +1016,6 @@ function ReportPage() {
                     targets,
                     workType,
                     symptoms,
-                    customSymptom,
                     note,
                     suspectedDisease,
                     desc,
