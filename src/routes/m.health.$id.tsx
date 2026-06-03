@@ -1480,7 +1480,7 @@ function ChecklistDay({
                       onBlur={() => setNoteEditing(false)}
                       autoFocus={noteEditing}
                       placeholder="填写本日执行备注"
-                      className="w-full min-h-[72px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none leading-relaxed"
+                      className="w-full min-h-[72px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none leading-relaxed px-3 py-2"
                     />
                   </div>
 
