@@ -51,7 +51,9 @@ export function EvidenceSection({
         <h3 className="text-card-title text-foreground">{title}</h3>
       </div>
       <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-2">
-        <Camera className="h-3.5 w-3.5" /> 照片 / 视频 · {media.length} 条
+        <Camera className="h-3.5 w-3.5" /> 照片 / 视频
+        {mediaRequired && <span className="text-[var(--state-danger)]">*</span>}
+        <span>· {media.length} 条</span>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {media.map((m) => (
