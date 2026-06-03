@@ -409,10 +409,11 @@ function DiagnosePage() {
               <ul className="space-y-2">
                 {rxList.map((r) => {
                   const isTherapy = r.kind === "therapy";
+                  const unit = r.doseUnit || "ml";
                   const slotsText = r.splitTime && r.slots
                     ? (["morning", "noon", "evening"] as SlotKey[])
                         .filter((k) => r.slots?.[k])
-                        .map((k) => `${SLOT_LABEL[k]} ${r.slots?.[k]}`)
+                        .map((k) => `${SLOT_LABEL[k]} ${r.slots?.[k]}${unit}`)
                         .join(" / ")
                     : "";
                   return (
@@ -442,7 +443,8 @@ function DiagnosePage() {
                               : [
                                   r.spec,
                                   r.use,
-                                  !r.splitTime && r.dose && `${r.dose} / 次`,
+                                  !r.splitTime && r.dose && `${r.dose}${unit} / 次`,
+                                  !r.splitTime && r.timesPerDay && `${r.timesPerDay} 次 / 天`,
                                   r.days && `${r.days} 天`,
                                 ]
                                   .filter(Boolean)
