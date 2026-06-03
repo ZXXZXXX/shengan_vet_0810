@@ -24,6 +24,8 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { TagPicker } from "@/components/m/tag-picker";
+import { Switch } from "@/components/ui/switch";
+
 
 
 
@@ -1102,27 +1104,39 @@ function DrugEditor({
             </div>
 
             {/* 区分用药时间段 切换 */}
-            <label className="flex items-center justify-between gap-2 cursor-pointer">
+            <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-body-sm text-foreground">区分用药时间段</div>
                 <div className="text-caption text-text-tertiary mt-0.5">
                   开启后按上午 / 中午 / 晚上分别填写剂量
                 </div>
               </div>
-              <input
-                type="checkbox"
+              <Switch
                 checked={!!value.splitTime}
-                onChange={(e) =>
-                  onChange({ ...value, splitTime: e.target.checked })
+                onCheckedChange={(checked) =>
+                  onChange({ ...value, splitTime: checked })
                 }
-                className="h-4 w-4 accent-[var(--primary)]"
               />
-            </label>
+            </div>
 
             {/* 剂量 */}
             {value.splitTime ? (
               <div className="space-y-1.5">
-                <span className="text-caption text-text-tertiary">分时段剂量</span>
+                <div className="flex items-end justify-between gap-2">
+                  <span className="text-caption text-text-tertiary">分时段剂量</span>
+                  <label className="flex items-center gap-1.5">
+                    <span className="text-caption text-text-tertiary">单位</span>
+                    <select
+                      value={value.doseUnit || "ml"}
+                      onChange={(e) => onChange({ ...value, doseUnit: e.target.value })}
+                      className="h-7 rounded-md bg-white border border-border text-caption text-text-secondary px-1.5 focus:outline-none focus:border-primary"
+                    >
+                      {doseUnits.map((u) => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
                 <div className="grid grid-cols-3 gap-2">
                   {(["morning", "noon", "evening"] as SlotKey[]).map((k) => (
                     <label key={k} className="block space-y-1">
@@ -1134,9 +1148,10 @@ function DrugEditor({
                           value={value.slots?.[k] || ""}
                           onChange={(e) => setSlot(k, e.target.value)}
                           placeholder="剂量"
-                          className="h-9 w-full pl-2 pr-9 rounded-md bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                          inputMode="decimal"
+                          className="h-10 w-full pl-3 pr-9 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
                         />
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">
                           {value.doseUnit || "ml"}
                         </span>
                       </div>
@@ -1159,7 +1174,7 @@ function DrugEditor({
                     <select
                       value={value.doseUnit || "ml"}
                       onChange={(e) => onChange({ ...value, doseUnit: e.target.value })}
-                      className="w-16 px-2 bg-surface-subtle border-l border-border text-body-sm text-text-secondary focus:outline-none"
+                      className="w-16 pl-2 pr-1 bg-transparent border-l border-border text-body-sm text-text-secondary focus:outline-none"
                     >
                       {doseUnits.map((u) => (
                         <option key={u} value={u}>{u}</option>
@@ -1182,6 +1197,7 @@ function DrugEditor({
                 </label>
               </div>
             )}
+
 
             {/* 用药天数 */}
             <label className="block space-y-1">
