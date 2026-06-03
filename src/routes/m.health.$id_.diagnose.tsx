@@ -247,6 +247,10 @@ function DiagnosePage() {
       toast.error("处方不能为空");
       return;
     }
+    if (photos.length === 0 && videos.length === 0) {
+      toast.error("请上传至少一张照片或一段视频");
+      return;
+    }
     toast.success("诊断已提交");
     navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
   };
@@ -476,7 +480,9 @@ function DiagnosePage() {
             {/* 照片 / 视频 */}
             <div>
               <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                <Camera className="h-3 w-3" /> 照片 / 视频 · {photos.length + videos.length} 条
+                <Camera className="h-3 w-3" /> 照片 / 视频
+                <span className="text-[var(--state-danger)]">*</span>
+                <span>· {photos.length + videos.length} 条</span>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {photos.map((_, i) => (

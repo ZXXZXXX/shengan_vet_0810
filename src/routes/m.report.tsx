@@ -376,9 +376,8 @@ function ReportPage() {
 
 
 
-  // 是否完成"线索上传"——之后才显示疑似疾病
-  const evidenceReady =
-    desc.trim().length > 0 || photos.length > 0 || videos.length > 0 || voiceSecs !== null;
+  // 是否完成"线索上传"——之后才显示疑似疾病（照片/视频必填）
+  const evidenceReady = photos.length > 0 || videos.length > 0;
 
   const diseaseMatches = useMemo(() => {
     const kw = diseaseQ.trim().toLowerCase();
@@ -1179,7 +1178,9 @@ function EvidenceSection({
   return (
     <Section title="现场记录">
       <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-2">
-        <Camera className="h-3.5 w-3.5" /> 照片 / 视频 · {media.length} 条
+        <Camera className="h-3.5 w-3.5" /> 照片 / 视频
+        <span className="text-[var(--state-danger)]">*</span>
+        <span>· {media.length} 条</span>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {media.map((m) => (
