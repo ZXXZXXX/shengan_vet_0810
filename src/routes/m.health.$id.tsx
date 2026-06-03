@@ -1086,11 +1086,17 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
               <div className="text-body-sm leading-relaxed text-foreground">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
             </div>
+            {isReviewActive && (
+              <div className="rounded-lg bg-[#FFF7E6] border border-[#FFE1A8] px-3 py-2 mb-2 text-caption text-[#B8860B] leading-relaxed">
+                复查任务于执行完成后第 1 个自然日 00:00 自动触发；触发后 48 小时内未操作，将自动标记为<span className="font-medium">「逾期未完成」</span>，工单转为已完成。
+              </div>
+            )}
             <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
               <PackagePlus className="h-3.5 w-3.5" />
               <span>领物</span>
               <span className="ml-1 inline-flex items-center h-5 px-2 rounded-full bg-surface-subtle text-text-tertiary">无需</span>
             </div>
+
           </div>
         );
       })()}
