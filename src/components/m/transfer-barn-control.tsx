@@ -50,6 +50,7 @@ export function TransferBarnControl({
   options = DEFAULT_BARNS,
   label = "是否需要转栏",
   bordered = true,
+  hideToggle = false,
 }: Props) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [query, setQuery] = useState("");
