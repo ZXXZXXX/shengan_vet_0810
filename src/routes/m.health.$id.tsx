@@ -1327,6 +1327,7 @@ function ChecklistDay({
               const done = it.status === "done";
               const blocked = it.status === "blocked";
               const needMed = it.needMed;
+              const isVerified = verified[it.id] || done;
               return (
                 <li key={it.id} className="space-y-2">
                   <div
@@ -1355,6 +1356,11 @@ function ChecklistDay({
                         {it.desc && (
                           <div className="text-caption text-text-tertiary mt-0.5">{it.desc}</div>
                         )}
+                        {isVerified && !done && interactive && (
+                          <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> 牛只已核验 · <span className="font-mono">{expectedTag}</span>
+                          </div>
+                        )}
                         {done && needMed && it.scanCode && (
                           <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
                             <ScanLine className="h-3 w-3" /> 已扫码核验 · <span className="font-mono">{it.scanCode}</span>
@@ -1366,7 +1372,7 @@ function ChecklistDay({
                           </div>
                         )}
                       </div>
-                      {interactive && needMed && !done && (
+                      {interactive && needMed && !done && isVerified && (
                         <button
                           type="button"
                           onClick={() => setScanFor(it.id)}
@@ -1377,7 +1383,18 @@ function ChecklistDay({
                         </button>
                       )}
                     </div>
-                    {interactive && !needMed && !done && it.title.includes("测温") && (
+                    {interactive && !isVerified && !blocked && (
+                      <div className="mt-2.5 pl-6">
+                        <button
+                          type="button"
+                          onClick={() => setVerifyFor(it.id)}
+                          className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
+                        >
+                          <ScanLine className="h-4 w-4" /> 扫描耳码核验牛只
+                        </button>
+                      </div>
+                    )}
+                    {interactive && isVerified && !needMed && !done && it.title.includes("测温") && (
                       <div className="mt-2.5 pl-6 space-y-2">
                         <div className="flex items-center gap-2">
                           <input
@@ -1423,7 +1440,7 @@ function ChecklistDay({
                         onChange={(e) => setReasons((r) => ({ ...r, [it.id]: e.target.value }))}
                         placeholder="请说明无法执行的具体原因"
                         required
-                        className="w-full min-h-[44px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none"
+                        className="w-full min-h-[72px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none px-1 py-1.5"
                       />
                     </div>
                   ) : reasons[it.id] ? (
@@ -1437,6 +1454,7 @@ function ChecklistDay({
                 </li>
               );
             })}
+
 
             {interactive ? (
               <li>
