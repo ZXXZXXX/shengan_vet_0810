@@ -230,6 +230,7 @@ function LossReportPage() {
             }
           }}
           descRequired={false}
+          mediaRequired
           descPlaceholder="可补充损耗经过、影响范围等说明（选填）"
         />
       </div>
