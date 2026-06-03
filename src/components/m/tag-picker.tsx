@@ -8,6 +8,7 @@ export function TagPicker({
   placeholder = "输入关键词搜索，没有命中可直接新建",
   hotLabel = "常用标签",
   maxHot = 8,
+  singleSelect = false,
 }: {
   selected: string[];
   onChange: (next: string[]) => void;
@@ -15,6 +16,7 @@ export function TagPicker({
   placeholder?: string;
   hotLabel?: string;
   maxHot?: number;
+  singleSelect?: boolean;
 }) {
   const [q, setQ] = useState("");
 
@@ -43,14 +45,20 @@ export function TagPicker({
   const exactExists = pool.some((t) => t.toLowerCase() === lower);
   const canCreate = !!kw && !exactExists;
 
-  const toggle = (t: string) => {
-    if (selected.includes(t)) onChange(selected.filter((x) => x !== t));
-    else onChange([...selected, t]);
+  const select = (t: string) => {
+    if (singleSelect) {
+      onChange(selected[0] === t ? [] : [t]);
+    } else {
+      if (selected.includes(t)) onChange(selected.filter((x) => x !== t));
+      else onChange([...selected, t]);
+    }
   };
+
+  const remove = (t: string) => onChange(selected.filter((x) => x !== t));
 
   const create = () => {
     if (!canCreate) return;
-    onChange([...selected, kw]);
+    onChange(singleSelect ? [kw] : [...selected, kw]);
     setQ("");
   };
 
@@ -58,21 +66,20 @@ export function TagPicker({
     if (e.key !== "Enter") return;
     e.preventDefault();
     if (!kw) return;
-    // 优先命中已有标签（精确匹配则切换；否则若有候选取第一条加入）
     const exact = pool.find((t) => t.toLowerCase() === lower);
     if (exact) {
-      if (!selected.includes(exact)) onChange([...selected, exact]);
+      select(exact);
       setQ("");
       return;
     }
     if (matches.length > 0) {
-      const t = matches[0];
-      if (!selected.includes(t)) onChange([...selected, t]);
+      select(matches[0]);
       setQ("");
       return;
     }
     create();
   };
+
 
   return (
     <div className="space-y-3">
@@ -87,7 +94,7 @@ export function TagPicker({
               {t}
               <button
                 type="button"
-                onClick={() => toggle(t)}
+                onClick={() => remove(t)}
                 className="h-5 w-5 inline-flex items-center justify-center rounded-full hover:bg-white/15"
                 aria-label={`移除 ${t}`}
               >
@@ -121,7 +128,7 @@ export function TagPicker({
                   <button
                     key={t}
                     type="button"
-                    onClick={() => toggle(t)}
+                    onClick={() => select(t)}
                     className={`h-8 px-3 rounded-full text-body-sm border transition-colors ${
                       active
                         ? "bg-brand-subtle text-primary border-primary/40"
@@ -160,7 +167,7 @@ export function TagPicker({
                 <button
                   key={t}
                   type="button"
-                  onClick={() => toggle(t)}
+                  onClick={() => select(t)}
                   className="h-8 px-3 rounded-full text-body-sm border border-border bg-card text-text-secondary active:scale-[0.97]"
                 >
                   {t}

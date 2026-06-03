@@ -195,11 +195,12 @@ function LossReportPage() {
         </Section>
 
         {/* 损耗原因 */}
-        <Section title="损耗原因" required hint="可多选；输入关键词搜索，未命中可直接新建">
+        <Section title="损耗原因" required hint="单选；输入关键词搜索，未命中可直接新建">
           <TagPicker
             selected={reasons}
             onChange={setReasons}
             presets={REASON_TAGS}
+            singleSelect
           />
         </Section>
 
