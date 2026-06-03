@@ -10,6 +10,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { EvidenceSection } from "@/components/evidence-section";
 import { DrugItemPicker } from "@/components/drug-item-picker";
+import { TagPicker } from "@/components/m/tag-picker";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/loss-report")({
@@ -36,8 +37,8 @@ const REASON_TAGS = [
   "误开未用",
   "操作失误",
   "包装破损",
-  "其他",
 ];
+
 
 type Line = { itemId: string; qty: string };
 
@@ -46,7 +47,6 @@ function LossReportPage() {
 
   const [lines, setLines] = useState<Line[]>([{ itemId: "", qty: "" }]);
   const [reasons, setReasons] = useState<string[]>([]);
-  const [otherReason, setOtherReason] = useState("");
   const [desc, setDesc] = useState("");
   const [photos, setPhotos] = useState<number[]>([]);
   const [videos, setVideos] = useState<number[]>([]);
@@ -70,17 +70,12 @@ function LossReportPage() {
   const removeLine = (idx: number) =>
     setLines((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== idx)));
 
-  const toggleReason = (r: string) =>
-    setReasons((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
-
-  const otherSelected = reasons.includes("其他");
   const canSubmit =
     lines.every((l) => l.itemId && l.qty.trim()) &&
-    reasons.length > 0 &&
-    (!otherSelected || otherReason.trim().length > 0);
+    reasons.length > 0;
 
   const [submitted, setSubmitted] = useState(false);
-  const otherInvalid = submitted && otherSelected && otherReason.trim().length === 0;
+
 
   const submit = () => {
     setSubmitted(true);
@@ -200,35 +195,14 @@ function LossReportPage() {
         </Section>
 
         {/* 损耗原因 */}
-        <Section title="损耗原因" required>
-          <div className="flex flex-wrap gap-1.5">
-            {REASON_TAGS.map((r) => {
-              const active = reasons.includes(r);
-              return (
-                <button
-                  key={r}
-                  onClick={() => toggleReason(r)}
-                  className={`h-8 px-3 rounded-full text-caption border transition-colors ${
-                    active
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card text-text-secondary border-border"
-                  }`}
-                >
-                  {r}
-                </button>
-              );
-            })}
-          </div>
-          {otherSelected && (
-            <input
-              value={otherReason}
-              onChange={(e) => setOtherReason(e.target.value)}
-              placeholder="请填写其他损耗原因"
-              className="w-full h-11 px-3 rounded-lg text-body mt-2"
-              aria-invalid={otherInvalid || undefined}
-            />
-          )}
+        <Section title="损耗原因" required hint="可多选；输入关键词搜索，未命中可直接新建">
+          <TagPicker
+            selected={reasons}
+            onChange={setReasons}
+            presets={REASON_TAGS}
+          />
         </Section>
+
 
         {/* 现场记录（情况说明 + 照片 / 视频 / 录音） */}
         <EvidenceSection

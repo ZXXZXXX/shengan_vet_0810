@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { TagPicker } from "@/components/m/tag-picker";
 import {
   RelatedOrderPicker,
   RelatedOrderCard,
@@ -342,10 +343,7 @@ function ReportPage() {
   // 仅支持疾病治疗类型工单
   const [workType] = useState<WorkType>("疾病治疗");
   const cfg = workTypeConfig[workType];
-  const [symptomTags, setSymptomTags] = useState<string[]>([]);
   const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
-  const [customSymptom, setCustomSymptom] = useState<string>(draft?.customSymptom ?? "");
-  const [showCustomInput, setShowCustomInput] = useState(false);
   const [note, setNote] = useState<string>(draft?.note ?? "");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
@@ -361,20 +359,6 @@ function ReportPage() {
   const lastTransferBarn = typeof window !== "undefined"
     ? localStorage.getItem("mp:lastTransferBarn") ?? ""
     : "";
-
-  // 初始化标签集（workType 当前不可切换，仅保留预设；草稿预填的 symptoms/note 不会被重置）
-  useEffect(() => {
-    if (cfg?.tags) {
-      const extras = (draft?.symptoms ?? []).filter(
-        (s: string) => !cfg.tags!.presets.includes(s)
-      );
-      setSymptomTags([...cfg.tags.presets, ...extras, "其他"]);
-    } else {
-      setSymptomTags([]);
-    }
-  }, [workType]);
-
-
 
   // 是否完成"线索上传"——之后才显示疑似疾病（照片/视频必填）
   const evidenceReady = photos.length > 0 || videos.length > 0;
@@ -397,30 +381,6 @@ function ReportPage() {
     [suspectedDisease]
   );
 
-  const toggleSymptom = (s: string) => {
-    if (s === "其他") {
-      setShowCustomInput(true);
-      return;
-    }
-    setSymptoms((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
-  };
-
-  const addCustomSymptom = () => {
-    const v = customSymptom.trim();
-    if (!v) return;
-    if (!symptomTags.includes(v)) {
-      // 插入到"其他"之前
-      setSymptomTags((prev) => {
-        const idx = prev.indexOf("其他");
-        const copy = [...prev];
-        copy.splice(idx, 0, v);
-        return copy;
-      });
-    }
-    if (!symptoms.includes(v)) setSymptoms((prev) => [...prev, v]);
-    setCustomSymptom("");
-    setShowCustomInput(false);
-  };
 
 
   const startVoice = () => {
@@ -842,59 +802,16 @@ function ReportPage() {
                   <Section
                     title={cfg.tags.label}
                     required={cfg.tags.required}
-                    hint={`可多选；可通过"其他"自行添加`}
+                    hint="可多选；输入关键词搜索，未命中可直接新建"
                   >
-                  <div className="flex flex-wrap gap-2">
-                    {symptomTags.map((t) => {
-                      const active = symptoms.includes(t);
-                      const isOther = t === "其他";
-                      return (
-                        <button
-                          key={t}
-                          onClick={() => toggleSymptom(t)}
-                          className={`h-9 px-3.5 rounded-full text-body-sm transition-all active:scale-[0.96] inline-flex items-center gap-1 ${
-                            active
-                              ? "bg-primary text-primary-foreground shadow-[0_2px_6px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
-                              : isOther
-                              ? "bg-card border border-dashed border-border text-text-secondary"
-                              : "bg-card border border-border text-text-secondary"
-                          }`}
-                        >
-                          {isOther && <Plus className="h-3.5 w-3.5" />}
-                          {t}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {showCustomInput && (
-                    <div className="mt-2 flex gap-2">
-                      <input
-                        autoFocus
-                        value={customSymptom}
-                        onChange={(e) => setCustomSymptom(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && addCustomSymptom()}
-                        placeholder="输入自定义标签"
-                        className="flex-1 h-10 px-3 rounded-lg bg-card border border-border text-body-sm"
-                      />
-                      <button
-                        onClick={addCustomSymptom}
-                        className="h-10 px-3 rounded-lg bg-primary text-primary-foreground text-body-sm"
-                      >
-                        添加
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowCustomInput(false);
-                          setCustomSymptom("");
-                        }}
-                        className="h-10 px-3 rounded-lg bg-card border border-border text-text-secondary text-body-sm"
-                      >
-                        取消
-                      </button>
-                    </div>
-                  )}
+                    <TagPicker
+                      selected={symptoms}
+                      onChange={setSymptoms}
+                      presets={cfg.tags.presets}
+                    />
                   </Section>
                 )}
+
 
                 {/* 事项说明（干奶 / 疫苗 / 驱虫） */}
                 {cfg?.note && (
@@ -1100,7 +1017,6 @@ function ReportPage() {
                     targets,
                     workType,
                     symptoms,
-                    customSymptom,
                     note,
                     suspectedDisease,
                     desc,
