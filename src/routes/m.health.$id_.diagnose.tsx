@@ -483,8 +483,10 @@ function DiagnosePage() {
                     name: "",
                     maker: "",
                     spec: "",
-                    use: "肌肉注射",
+                    use: "",
                     dose: "",
+                    doseUnit: "ml",
+                    timesPerDay: "2",
                     days: "3",
                     splitTime: false,
                     slots: {},
@@ -496,6 +498,7 @@ function DiagnosePage() {
               >
                 <Pill className="h-3.5 w-3.5" /> 新增用药
               </button>
+
             </div>
           </Section>
 
