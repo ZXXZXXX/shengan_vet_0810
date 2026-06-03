@@ -220,24 +220,34 @@ function TenantPage() {
                 </Field>
               </div>
 
-              <Field label="租户规模">
-                <RadioGroup value={scale} onValueChange={(v) => setScale(v as Scale)} className="flex gap-6 pt-1">
-                  <label className="flex items-start gap-2 cursor-pointer">
-                    <RadioGroupItem value="small" id="scale-small" className="mt-0.5" />
-                    <div className="leading-tight">
-                      <div className="text-body-sm text-foreground">中小型</div>
-                      <div className="text-caption text-text-tertiary">牧场数 &lt; 5 个 且 牛只数量 &lt; 3000</div>
-                    </div>
-                  </label>
-                  <label className="flex items-start gap-2 cursor-pointer">
-                    <RadioGroupItem value="large" id="scale-large" className="mt-0.5" />
-                    <div className="leading-tight">
-                      <div className="text-body-sm text-foreground">大型</div>
-                      <div className="text-caption text-text-tertiary">牧场数 ≥ 5 个 或 牛只数量 ≥ 3000</div>
-                    </div>
-                  </label>
-                </RadioGroup>
-              </Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="牧场数量范围">
+                  <Select value={farmRange} onValueChange={setFarmRange}>
+                    <SelectTrigger className="h-9 bg-card border-border text-body-sm">
+                      <SelectValue placeholder="选择牧场数量范围" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="lt5">&lt; 5 个</SelectItem>
+                      <SelectItem value="5to20">5 ~ 20 个</SelectItem>
+                      <SelectItem value="20to50">20 ~ 50 个</SelectItem>
+                      <SelectItem value="gte50">≥ 50 个</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="牛只数量范围">
+                  <Select value={cattleRange} onValueChange={setCattleRange}>
+                    <SelectTrigger className="h-9 bg-card border-border text-body-sm">
+                      <SelectValue placeholder="选择牛只数量范围" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="lt3000">&lt; 3000 头</SelectItem>
+                      <SelectItem value="3000to10000">3000 ~ 10000 头</SelectItem>
+                      <SelectItem value="10000to50000">10000 ~ 50000 头</SelectItem>
+                      <SelectItem value="gte50000">≥ 50000 头</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+              </div>
             </section>
 
             {/* 所在地区 */}
