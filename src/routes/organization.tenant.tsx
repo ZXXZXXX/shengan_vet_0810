@@ -233,7 +233,7 @@ function TenantPage() {
                     <RadioGroupItem value="large" id="scale-large" className="mt-0.5" />
                     <div className="leading-tight">
                       <div className="text-body-sm text-foreground">大型</div>
-                      <div className="text-caption text-text-tertiary">牧场数 ≥ 5 个 或 牛只数量 ≥ 300</div>
+                      <div className="text-caption text-text-tertiary">牧场数 ≥ 5 个 或 牛只数量 ≥ 3000</div>
                     </div>
                   </label>
                 </RadioGroup>
