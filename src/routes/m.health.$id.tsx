@@ -1537,8 +1537,83 @@ function ChecklistDay({
           </div>
         </div>
       )}
+
+      {verifyFor && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex flex-col" onClick={() => setVerifyFor(null)}>
+          <div className="flex items-center justify-between px-4 h-14 text-white">
+            <span className="text-body font-medium">扫描牛只耳码</span>
+            <button onClick={() => setVerifyFor(null)} className="h-9 w-9 inline-flex items-center justify-center">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="flex-1 flex items-center justify-center px-8" onClick={(e) => e.stopPropagation()}>
+            <div className="relative w-full aspect-square max-w-[280px] rounded-2xl border-2 border-white/60">
+              <ScanLine className="absolute inset-0 m-auto h-16 w-16 text-white/40" />
+              <div className="absolute -top-px left-0 right-0 h-0.5 bg-primary animate-pulse" />
+            </div>
+          </div>
+          <div className="px-6 pb-10 space-y-3" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center text-caption text-white/70">
+              请扫描牛只耳码，核验成功后方可执行任务<br />
+              当前任务对应牛只：<span className="font-mono text-white/90">{expectedTag}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setVerified((m) => ({ ...m, [verifyFor]: true }));
+                setVerifyFor(null);
+              }}
+              className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+            >
+              <CheckCircle2 className="h-4 w-4" /> 模拟核验成功
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setVerifyFor(null);
+                setMismatchOpen(true);
+              }}
+              className="w-full h-11 rounded-lg border border-white/30 text-white/90 text-body inline-flex items-center justify-center gap-1.5"
+            >
+              <AlertTriangle className="h-4 w-4" /> 模拟扫到其他牛只
+            </button>
+          </div>
+        </div>
+      )}
+
+      {mismatchOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setMismatchOpen(false)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-[var(--state-danger)]/15 inline-flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-[var(--state-danger)]" />
+              </span>
+              <h3 className="text-card-title text-foreground">牛只不匹配</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              请确认牛只是否为
+              <span className="font-mono text-foreground"> {expectedTag}</span>
+              ，确认后请重新扫描耳码。
+            </p>
+            <button
+              type="button"
+              onClick={() => setMismatchOpen(false)}
+              className="w-full h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+            >
+              我知道了
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
+
 }
 
 function DayDot({ active, done }: { active: boolean; done: boolean }) {
