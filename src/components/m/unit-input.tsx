@@ -1,6 +1,55 @@
 import { useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
 
+type SheetProps = {
+  open: boolean;
+  onClose: () => void;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  title?: string;
+};
+
+function UnitSheet({ open, onClose, value, onChange, options, title = "选择单位" }: SheetProps) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/40 flex items-end" onClick={onClose}>
+      <div
+        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl pb-2 pt-3 max-h-[60vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-4 pb-2 text-caption text-text-tertiary">{title}</div>
+        {options.map((u) => {
+          const active = u === value;
+          return (
+            <button
+              key={u}
+              type="button"
+              onClick={() => {
+                onChange(u);
+                onClose();
+              }}
+              className={`w-full flex items-center justify-between px-4 h-12 text-body ${
+                active ? "text-primary" : "text-foreground"
+              } active:bg-surface-subtle`}
+            >
+              <span>{u}</span>
+              {active && <Check className="h-4 w-4" />}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-1 mx-3 mb-2 h-11 w-[calc(100%-1.5rem)] rounded-lg border border-border text-body-sm text-text-secondary"
+        >
+          取消
+        </button>
+      </div>
+    </div>
+  );
+}
+
 type UnitInputProps = {
   value: string;
   onChange: (v: string) => void;
@@ -23,7 +72,6 @@ export function UnitInput({
   className,
 }: UnitInputProps) {
   const [open, setOpen] = useState(false);
-
   return (
     <>
       <div
@@ -47,48 +95,34 @@ export function UnitInput({
           <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
         </button>
       </div>
-
-      {open && (
-        <div
-          className="fixed inset-0 z-[60] bg-black/40 flex items-end"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl pb-2 pt-3 max-h-[60vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-4 pb-2 text-caption text-text-tertiary">
-              选择单位
-            </div>
-            {units.map((u) => {
-              const active = u === unit;
-              return (
-                <button
-                  key={u}
-                  type="button"
-                  onClick={() => {
-                    onUnitChange(u);
-                    setOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-4 h-12 text-body ${
-                    active ? "text-primary" : "text-foreground"
-                  } active:bg-surface-subtle`}
-                >
-                  <span>{u}</span>
-                  {active && <Check className="h-4 w-4" />}
-                </button>
-              );
-            })}
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="mt-1 mx-3 mb-2 h-11 w-[calc(100%-1.5rem)] rounded-lg border border-border text-body-sm text-text-secondary"
-            >
-              取消
-            </button>
-          </div>
-        </div>
-      )}
+      <UnitSheet open={open} onClose={() => setOpen(false)} value={unit} onChange={onUnitChange} options={units} />
     </>
   );
 }
+
+type UnitPickerProps = {
+  value: string;
+  onChange: (v: string) => void;
+  units: string[];
+  className?: string;
+};
+
+export function UnitPicker({ value, onChange, units, className }: UnitPickerProps) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={`inline-flex items-center gap-0.5 h-7 px-2 rounded-md bg-white border border-border text-caption text-text-secondary active:bg-surface-subtle ${
+          className || ""
+        }`}
+      >
+        <span>{value}</span>
+        <ChevronDown className="h-3 w-3 text-text-tertiary" />
+      </button>
+      <UnitSheet open={open} onClose={() => setOpen(false)} value={value} onChange={onChange} options={units} />
+    </>
+  );
+}
+
