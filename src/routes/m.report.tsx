@@ -1016,6 +1016,18 @@ function ReportPage() {
         </div>
       )}
 
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={earTagLabel}
+        barn={transferBarn}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setTransferConfirmOpen(false);
+          doSubmit();
+        }}
+      />
+
+
       {/* 存草稿确认弹窗 */}
       {showDraftDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
