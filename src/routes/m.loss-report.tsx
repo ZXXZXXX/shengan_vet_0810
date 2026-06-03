@@ -195,35 +195,14 @@ function LossReportPage() {
         </Section>
 
         {/* 损耗原因 */}
-        <Section title="损耗原因" required>
-          <div className="flex flex-wrap gap-1.5">
-            {REASON_TAGS.map((r) => {
-              const active = reasons.includes(r);
-              return (
-                <button
-                  key={r}
-                  onClick={() => toggleReason(r)}
-                  className={`h-8 px-3 rounded-full text-caption border transition-colors ${
-                    active
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card text-text-secondary border-border"
-                  }`}
-                >
-                  {r}
-                </button>
-              );
-            })}
-          </div>
-          {otherSelected && (
-            <input
-              value={otherReason}
-              onChange={(e) => setOtherReason(e.target.value)}
-              placeholder="请填写其他损耗原因"
-              className="w-full h-11 px-3 rounded-lg text-body mt-2"
-              aria-invalid={otherInvalid || undefined}
-            />
-          )}
+        <Section title="损耗原因" required hint="可多选；输入关键词搜索，未命中可直接新建">
+          <TagPicker
+            selected={reasons}
+            onChange={setReasons}
+            presets={REASON_TAGS}
+          />
         </Section>
+
 
         {/* 现场记录（情况说明 + 照片 / 视频 / 录音） */}
         <EvidenceSection
