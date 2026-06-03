@@ -1447,7 +1447,7 @@ function ChecklistDay({
                         onChange={(e) => setReasons((r) => ({ ...r, [it.id]: e.target.value }))}
                         placeholder="请说明无法执行的具体原因"
                         required
-                        className="w-full min-h-[72px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none px-1 py-1.5"
+                        className="w-full min-h-[72px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none px-3 py-2 leading-relaxed"
                       />
                     </div>
                   ) : reasons[it.id] ? (
