@@ -1359,7 +1359,7 @@ function ChecklistDay({
                         : blocked
                           ? "border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5"
                           : isActive
-                            ? `border-border bg-card ${interactive && !isVerified ? "opacity-50" : ""}`
+                            ? `border-border bg-card ${interactive && !isVerified ? "opacity-40 grayscale bg-muted/40 pointer-events-none select-none" : ""}`
                             : "border-border bg-card opacity-80"
                     }`}
                   
