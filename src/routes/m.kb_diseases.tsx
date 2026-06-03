@@ -374,16 +374,51 @@ function DiseaseDetailSheet({ item, onClose }: { item: Disease; onClose: () => v
           </div>
         </Section>
 
-        <Section label="常用处方">
-          <div className="space-y-2">
-            {item.prescriptions.map((p) => (
-              <div key={p.name} className="rounded-lg border border-border p-3">
-                <div className="text-body text-foreground">{p.name}</div>
-                <div className="text-caption text-text-tertiary mt-1">{p.usage}</div>
+        <Section label={`适用处方 · ${item.prescriptions.length} 个`}>
+          <div className="space-y-2.5">
+            {item.prescriptions.map((p, idx) => (
+              <div key={p.name} className="rounded-xl border border-border p-3 bg-card">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="h-5 min-w-5 px-1 rounded-md bg-brand-subtle text-primary text-caption font-semibold inline-flex items-center justify-center tabular-nums">
+                    {idx + 1}
+                  </span>
+                  <span className="text-body text-foreground font-medium flex-1 min-w-0 truncate">
+                    {p.name}
+                  </span>
+                  <span className={tierTone(p.tier)}>{p.tier}</span>
+                </div>
+                <div className="text-caption text-text-secondary leading-relaxed">
+                  <span className="text-text-tertiary">适用场景：</span>
+                  {p.scenario}
+                </div>
+                <div className="text-caption text-text-tertiary mt-0.5">
+                  疗程：{p.course}
+                </div>
+                <div className="mt-2 rounded-lg bg-surface-subtle p-2 space-y-1.5">
+                  {p.drugs.map((d) => (
+                    <div key={d.name} className="flex items-start gap-1.5">
+                      <Pill className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-body-sm text-foreground leading-tight">
+                          {d.name}
+                        </div>
+                        <div className="text-caption text-text-tertiary mt-0.5">
+                          {d.usage}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {p.notes && (
+                  <div className="mt-2 text-caption text-[var(--state-alert)] bg-[var(--state-warning)]/15 rounded-md px-2 py-1">
+                    注意：{p.notes}
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </Section>
+
       </div>
     </div>
   );
