@@ -1513,7 +1513,7 @@ function ChecklistDay({
       )}
 
       {scanFor && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex flex-col" onClick={() => setScanFor(null)}>
+        <div className="fixed inset-0 z-50 bg-black flex flex-col" onClick={() => setScanFor(null)}>
           <div className="flex items-center justify-between px-4 h-14 text-white">
             <span className="text-body font-medium">扫描药品包装二维码</span>
             <button onClick={() => setScanFor(null)} className="h-9 w-9 inline-flex items-center justify-center">
