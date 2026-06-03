@@ -44,7 +44,12 @@ function SymptomKBMobile() {
   const list = useMemo(() => {
     const k = kw.trim();
     if (!k) return SYMPTOMS;
-    return SYMPTOMS.filter((s) => s.name.includes(k) || s.related.some((r) => r.includes(k)));
+    return SYMPTOMS.filter(
+      (s) =>
+        s.name.includes(k) ||
+        s.desc.includes(k) ||
+        s.related.some((r) => r.includes(k))
+    );
   }, [kw]);
 
   return (
@@ -56,7 +61,7 @@ function SymptomKBMobile() {
           <input
             value={kw}
             onChange={(e) => setKw(e.target.value)}
-            placeholder="搜索症状 / 关联疾病"
+            placeholder="搜索症状 / 描述 / 关联疾病"
             className="w-full h-10 pl-9 pr-3 rounded-xl bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
           />
         </div>
@@ -158,7 +163,7 @@ function SymptomDetailSheet({ item, onClose }: { item: Symptom; onClose: () => v
           <span className="text-caption text-text-tertiary">近 7 天 {item.recent7d} 头次</span>
         </div>
 
-        <Section label="典型表现">
+        <Section label="具体描述">
           <p className="text-body-sm text-text-secondary leading-relaxed">{item.desc}</p>
         </Section>
 
