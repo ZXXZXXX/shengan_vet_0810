@@ -25,6 +25,8 @@ import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { TagPicker } from "@/components/m/tag-picker";
 import { Switch } from "@/components/ui/switch";
+import { UnitInput, UnitPicker } from "@/components/m/unit-input";
+
 
 
 
@@ -1124,18 +1126,15 @@ function DrugEditor({
               <div className="space-y-1.5">
                 <div className="flex items-end justify-between gap-2">
                   <span className="text-caption text-text-tertiary">分时段剂量</span>
-                  <label className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5">
                     <span className="text-caption text-text-tertiary">单位</span>
-                    <select
+                    <UnitPicker
                       value={value.doseUnit || "ml"}
-                      onChange={(e) => onChange({ ...value, doseUnit: e.target.value })}
-                      className="h-7 rounded-md bg-white border border-border text-caption text-text-secondary px-1.5 focus:outline-none focus:border-primary"
-                    >
-                      {doseUnits.map((u) => (
-                        <option key={u} value={u}>{u}</option>
-                      ))}
-                    </select>
-                  </label>
+                      onChange={(u) => onChange({ ...value, doseUnit: u })}
+                      units={doseUnits}
+                    />
+                  </div>
+
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {(["morning", "noon", "evening"] as SlotKey[]).map((k) => (
@@ -1163,25 +1162,16 @@ function DrugEditor({
               <div className="grid grid-cols-2 gap-3">
                 <label className="block space-y-1">
                   <span className="text-caption text-text-tertiary">单次用量</span>
-                  <div className="flex h-10 rounded-lg bg-white border border-border overflow-hidden focus-within:border-primary">
-                    <input
-                      value={value.dose || ""}
-                      onChange={(e) => onChange({ ...value, dose: e.target.value })}
-                      placeholder="如 2"
-                      inputMode="decimal"
-                      className="flex-1 min-w-0 px-3 bg-transparent text-body-sm focus:outline-none"
-                    />
-                    <select
-                      value={value.doseUnit || "ml"}
-                      onChange={(e) => onChange({ ...value, doseUnit: e.target.value })}
-                      className="w-16 pl-2 pr-1 bg-transparent border-l border-border text-body-sm text-text-secondary focus:outline-none"
-                    >
-                      {doseUnits.map((u) => (
-                        <option key={u} value={u}>{u}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <UnitInput
+                    value={value.dose || ""}
+                    onChange={(v) => onChange({ ...value, dose: v })}
+                    unit={value.doseUnit || "ml"}
+                    onUnitChange={(u) => onChange({ ...value, doseUnit: u })}
+                    units={doseUnits}
+                    placeholder="如 2"
+                  />
                 </label>
+
                 <label className="block space-y-1">
                   <span className="text-caption text-text-tertiary">每天次数</span>
                   <div className="relative">
