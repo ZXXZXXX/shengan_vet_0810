@@ -1126,18 +1126,15 @@ function DrugEditor({
               <div className="space-y-1.5">
                 <div className="flex items-end justify-between gap-2">
                   <span className="text-caption text-text-tertiary">分时段剂量</span>
-                  <label className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5">
                     <span className="text-caption text-text-tertiary">单位</span>
-                    <select
+                    <UnitPicker
                       value={value.doseUnit || "ml"}
-                      onChange={(e) => onChange({ ...value, doseUnit: e.target.value })}
-                      className="h-7 rounded-md bg-white border border-border text-caption text-text-secondary px-1.5 focus:outline-none focus:border-primary"
-                    >
-                      {doseUnits.map((u) => (
-                        <option key={u} value={u}>{u}</option>
-                      ))}
-                    </select>
-                  </label>
+                      onChange={(u) => onChange({ ...value, doseUnit: u })}
+                      units={doseUnits}
+                    />
+                  </div>
+
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {(["morning", "noon", "evening"] as SlotKey[]).map((k) => (
