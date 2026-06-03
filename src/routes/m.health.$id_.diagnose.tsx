@@ -408,11 +408,7 @@ function DiagnosePage() {
                   return (
                     <li
                       key={r.id}
-                      className={`rounded-lg border p-3 ${
-                        isTherapy
-                          ? "border-[color-mix(in_oklab,var(--effect-ai-purple)_25%,var(--border))] bg-[color-mix(in_oklab,var(--effect-ai-purple)_6%,var(--card))]"
-                          : "border-primary/20 bg-brand-subtle"
-                      }`}
+                      className="rounded-lg border border-border bg-surface-subtle p-3"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
