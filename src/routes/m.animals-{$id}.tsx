@@ -44,6 +44,26 @@ function AnimalDetailPage() {
     withdrawalUntil: "2026-05-28",
   };
 
+  // 转栏弹窗状态
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferEnabled, setTransferEnabled] = useState(true);
+  const [transferTo, setTransferTo] = useState("");
+  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+
+  const handleTransferSubmit = () => {
+    if (!transferTo) {
+      toast.error("请选择转入栏舍");
+      return;
+    }
+    setTransferConfirmOpen(true);
+  };
+  const handleTransferConfirm = () => {
+    setTransferConfirmOpen(false);
+    setTransferOpen(false);
+    toast.success(`已转至 ${transferTo}`);
+    setTransferTo("");
+  };
+
   // mock 当前相关工单（仅展示 待诊断 / 执行中）
   const orders = [
     {
