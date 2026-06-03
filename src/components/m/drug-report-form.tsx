@@ -42,8 +42,9 @@ type Line = { itemId: string; qty: string };
 
 export type DrugReportMode = "loss" | "return";
 
-export function DrugReportForm({ mode }: { mode: DrugReportMode }) {
+export function DrugReportForm({ mode: initialMode }: { mode?: DrugReportMode }) {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<DrugReportMode>(initialMode ?? "loss");
   const isReturn = mode === "return";
   const word = isReturn ? "退料" : "损耗";
 
