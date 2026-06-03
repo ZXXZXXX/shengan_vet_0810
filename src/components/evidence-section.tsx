@@ -17,6 +17,7 @@ export function EvidenceSection({
   descRequired = true,
   descPlaceholder = "补充体征、用药反应、隔离建议等",
   title = "现场记录",
+  mediaRequired = false,
 }: {
   desc: string;
   setDesc: (v: string) => void;
@@ -31,6 +32,7 @@ export function EvidenceSection({
   hideVideo?: boolean;
   descLabel?: string;
   descRequired?: boolean;
+  mediaRequired?: boolean;
   descPlaceholder?: string;
   title?: string;
 }) {
