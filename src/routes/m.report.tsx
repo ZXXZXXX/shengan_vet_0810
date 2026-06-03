@@ -342,10 +342,7 @@ function ReportPage() {
   // 仅支持疾病治疗类型工单
   const [workType] = useState<WorkType>("疾病治疗");
   const cfg = workTypeConfig[workType];
-  const [symptomTags, setSymptomTags] = useState<string[]>([]);
   const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
-  const [customSymptom, setCustomSymptom] = useState<string>(draft?.customSymptom ?? "");
-  const [showCustomInput, setShowCustomInput] = useState(false);
   const [note, setNote] = useState<string>(draft?.note ?? "");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
