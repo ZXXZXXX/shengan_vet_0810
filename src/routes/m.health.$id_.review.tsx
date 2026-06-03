@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
 import { useRole } from "@/lib/mobile-role";
 import { toast } from "sonner";
 
