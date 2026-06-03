@@ -293,19 +293,96 @@ function AnimalDetailPage() {
         </section>
       </div>
 
-      {/* 底部固定：疾病上报入口 */}
+      {/* 底部固定：转栏 + 疾病上报 */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card/85 backdrop-blur-lg border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
-        <Link
-          to="/m/report"
-          search={{ target: a.id, barn: a.barn, lock: 1 } as never}
-          className="w-full h-12 rounded-2xl bg-primary text-primary-foreground text-body font-semibold inline-flex items-center justify-center gap-1.5 shadow-lg shadow-primary/30 active:scale-[0.98] transition-transform"
-        >
-          <ClipboardPlus className="h-4 w-4" /> 疾病上报
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setTransferEnabled(true);
+              setTransferTo("");
+              setTransferOpen(true);
+            }}
+            className="h-12 px-4 rounded-2xl bg-brand-subtle text-primary text-body font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
+          >
+            <ArrowRightLeft className="h-4 w-4" /> 转栏
+          </button>
+          <Link
+            to="/m/report"
+            search={{ target: a.id, barn: a.barn, lock: 1 } as never}
+            className="flex-1 h-12 rounded-2xl bg-primary text-primary-foreground text-body font-semibold inline-flex items-center justify-center gap-1.5 shadow-lg shadow-primary/30 active:scale-[0.98] transition-transform"
+          >
+            <ClipboardPlus className="h-4 w-4" /> 疾病上报
+          </Link>
+        </div>
       </div>
+
+      {/* 转栏 Sheet */}
+      {transferOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          onClick={() => setTransferOpen(false)}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl pb-[calc(env(safe-area-inset-bottom)+16px)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border">
+              <div className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                <ArrowRightLeft className="h-4 w-4 text-primary" />
+                转栏操作
+              </div>
+              <button
+                type="button"
+                onClick={() => setTransferOpen(false)}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <div className="rounded-xl bg-surface-subtle border border-border px-3 py-2.5">
+                <div className="text-caption text-text-tertiary mb-0.5">当前位置</div>
+                <div className="text-body-sm text-foreground">
+                  #{a.id} · {a.barn} · {a.pen}
+                </div>
+              </div>
+              <TransferBarnControl
+                enabled={transferEnabled}
+                onEnabledChange={setTransferEnabled}
+                value={transferTo}
+                onValueChange={setTransferTo}
+                exclude={[a.barn]}
+                label="转入栏舍"
+              />
+              <button
+                type="button"
+                onClick={handleTransferSubmit}
+                disabled={!transferTo}
+                className={`w-full h-11 rounded-lg text-body inline-flex items-center justify-center gap-1.5 ${
+                  transferTo
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-border text-text-tertiary"
+                }`}
+              >
+                <ArrowRightLeft className="h-4 w-4" /> 提交转栏
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={`#${a.id}`}
+        barn={transferTo}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={handleTransferConfirm}
+      />
     </MobileShell>
   );
 }
+
 
 function Brief({
   label,
