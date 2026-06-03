@@ -188,6 +188,8 @@ function DiagnosePage() {
   const [termReasonOther, setTermReasonOther] = useState("");
   const [needTransfer, setNeedTransfer] = useState(false);
   const [transferTo, setTransferTo] = useState("");
+  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+  const earTagLabel = getOrderEarTagLabel(id);
 
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
