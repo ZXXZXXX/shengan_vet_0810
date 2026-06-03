@@ -226,7 +226,7 @@ function TenantPage() {
                     <RadioGroupItem value="small" id="scale-small" className="mt-0.5" />
                     <div className="leading-tight">
                       <div className="text-body-sm text-foreground">中小型</div>
-                      <div className="text-caption text-text-tertiary">牧场数 &lt; 5 个 或 牛只数量 &lt; 300</div>
+                      <div className="text-caption text-text-tertiary">牧场数 &lt; 5 个 且 牛只数量 &lt; 3000</div>
                     </div>
                   </label>
                   <label className="flex items-start gap-2 cursor-pointer">
