@@ -84,7 +84,8 @@ function TenantPage() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [shortName, setShortName] = useState("");
-  const [scale, setScale] = useState<Scale>("small");
+  const [farmRange, setFarmRange] = useState("");
+  const [cattleRange, setCattleRange] = useState("");
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
