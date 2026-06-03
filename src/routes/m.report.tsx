@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { TagPicker } from "@/components/m/tag-picker";
 import {
   RelatedOrderPicker,
   RelatedOrderCard,
