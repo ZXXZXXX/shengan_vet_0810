@@ -1546,7 +1546,7 @@ function ChecklistDay({
       )}
 
       {verifyOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex flex-col" onClick={() => setVerifyOpen(false)}>
+        <div className="fixed inset-0 z-50 bg-black flex flex-col" onClick={() => setVerifyOpen(false)}>
           <div className="flex items-center justify-between px-4 h-14 text-white">
             <span className="text-body font-medium">扫描牛只耳码</span>
             <button onClick={() => setVerifyOpen(false)} className="h-9 w-9 inline-flex items-center justify-center">
