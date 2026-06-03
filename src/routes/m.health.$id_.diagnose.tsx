@@ -1162,25 +1162,16 @@ function DrugEditor({
               <div className="grid grid-cols-2 gap-3">
                 <label className="block space-y-1">
                   <span className="text-caption text-text-tertiary">单次用量</span>
-                  <div className="flex h-10 rounded-lg bg-white border border-border overflow-hidden focus-within:border-primary">
-                    <input
-                      value={value.dose || ""}
-                      onChange={(e) => onChange({ ...value, dose: e.target.value })}
-                      placeholder="如 2"
-                      inputMode="decimal"
-                      className="flex-1 min-w-0 px-3 bg-transparent text-body-sm focus:outline-none"
-                    />
-                    <select
-                      value={value.doseUnit || "ml"}
-                      onChange={(e) => onChange({ ...value, doseUnit: e.target.value })}
-                      className="w-16 pl-2 pr-1 bg-transparent border-l border-border text-body-sm text-text-secondary focus:outline-none"
-                    >
-                      {doseUnits.map((u) => (
-                        <option key={u} value={u}>{u}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <UnitInput
+                    value={value.dose || ""}
+                    onChange={(v) => onChange({ ...value, dose: v })}
+                    unit={value.doseUnit || "ml"}
+                    onUnitChange={(u) => onChange({ ...value, doseUnit: u })}
+                    units={doseUnits}
+                    placeholder="如 2"
+                  />
                 </label>
+
                 <label className="block space-y-1">
                   <span className="text-caption text-text-tertiary">每天次数</span>
                   <div className="relative">
