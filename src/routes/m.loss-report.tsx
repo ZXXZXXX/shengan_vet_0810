@@ -72,7 +72,8 @@ function LossReportPage() {
 
   const canSubmit =
     lines.every((l) => l.itemId && l.qty.trim()) &&
-    reasons.length > 0;
+    reasons.length > 0 &&
+    photos.length + videos.length > 0;
 
   const [submitted, setSubmitted] = useState(false);
 
@@ -229,6 +230,7 @@ function LossReportPage() {
             }
           }}
           descRequired={false}
+          mediaRequired
           descPlaceholder="可补充损耗经过、影响范围等说明（选填）"
         />
       </div>

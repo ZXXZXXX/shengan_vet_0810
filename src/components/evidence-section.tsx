@@ -17,6 +17,7 @@ export function EvidenceSection({
   descRequired = true,
   descPlaceholder = "补充体征、用药反应、隔离建议等",
   title = "现场记录",
+  mediaRequired = false,
 }: {
   desc: string;
   setDesc: (v: string) => void;
@@ -31,6 +32,7 @@ export function EvidenceSection({
   hideVideo?: boolean;
   descLabel?: string;
   descRequired?: boolean;
+  mediaRequired?: boolean;
   descPlaceholder?: string;
   title?: string;
 }) {
@@ -49,7 +51,9 @@ export function EvidenceSection({
         <h3 className="text-card-title text-foreground">{title}</h3>
       </div>
       <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-2">
-        <Camera className="h-3.5 w-3.5" /> 照片 / 视频 · {media.length} 条
+        <Camera className="h-3.5 w-3.5" /> 照片 / 视频
+        {mediaRequired && <span className="text-[var(--state-danger)]">*</span>}
+        <span>· {media.length} 条</span>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {media.map((m) => (
