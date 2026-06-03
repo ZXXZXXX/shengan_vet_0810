@@ -5,7 +5,7 @@ export function TagPicker({
   selected,
   onChange,
   presets,
-  placeholder = "输入关键词搜索，没有命中可直接新建",
+  placeholder = "输入关键词搜索，或创建新标签",
   hotLabel = "常用标签",
   maxHot = 8,
   singleSelect = false,
