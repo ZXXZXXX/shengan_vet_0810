@@ -44,6 +44,7 @@ import { Route as OrganizationRoleRouteImport } from './routes/organization.role
 import { Route as OrganizationAccountRouteImport } from './routes/organization.account'
 import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
 import { Route as MScanRouteImport } from './routes/m.scan'
+import { Route as MReturnReportRouteImport } from './routes/m.return-report'
 import { Route as MRespondRouteImport } from './routes/m.respond'
 import { Route as MReportRouteImport } from './routes/m.report'
 import { Route as MNotificationsRouteImport } from './routes/m.notifications'
@@ -54,6 +55,7 @@ import { Route as MKb_symptomsRouteImport } from './routes/m.kb_symptoms'
 import { Route as MKb_drugsRouteImport } from './routes/m.kb_drugs'
 import { Route as MKb_diseasesRouteImport } from './routes/m.kb_diseases'
 import { Route as MEmptyStatesRouteImport } from './routes/m.empty-states'
+import { Route as MDrugReportRouteImport } from './routes/m.drug-report'
 import { Route as MDraftsRouteImport } from './routes/m.drafts'
 import { Route as MAnimalsChar123idChar125RouteImport } from './routes/m.animals-{$id}'
 import { Route as MAccountSecurityRouteImport } from './routes/m.account-security'
@@ -247,6 +249,11 @@ const MScanRoute = MScanRouteImport.update({
   path: '/scan',
   getParentRoute: () => MRoute,
 } as any)
+const MReturnReportRoute = MReturnReportRouteImport.update({
+  id: '/return-report',
+  path: '/return-report',
+  getParentRoute: () => MRoute,
+} as any)
 const MRespondRoute = MRespondRouteImport.update({
   id: '/respond',
   path: '/respond',
@@ -295,6 +302,11 @@ const MKb_diseasesRoute = MKb_diseasesRouteImport.update({
 const MEmptyStatesRoute = MEmptyStatesRouteImport.update({
   id: '/empty-states',
   path: '/empty-states',
+  getParentRoute: () => MRoute,
+} as any)
+const MDrugReportRoute = MDrugReportRouteImport.update({
+  id: '/drug-report',
+  path: '/drug-report',
   getParentRoute: () => MRoute,
 } as any)
 const MDraftsRoute = MDraftsRouteImport.update({
@@ -406,6 +418,7 @@ export interface FileRoutesByFullPath {
   '/m/account-security': typeof MAccountSecurityRoute
   '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
+  '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
@@ -416,6 +429,7 @@ export interface FileRoutesByFullPath {
   '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
   '/m/respond': typeof MRespondRoute
+  '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
@@ -465,6 +479,7 @@ export interface FileRoutesByTo {
   '/m/account-security': typeof MAccountSecurityRoute
   '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
+  '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
@@ -475,6 +490,7 @@ export interface FileRoutesByTo {
   '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
   '/m/respond': typeof MRespondRoute
+  '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
@@ -530,6 +546,7 @@ export interface FileRoutesById {
   '/m/account-security': typeof MAccountSecurityRoute
   '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
+  '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
@@ -540,6 +557,7 @@ export interface FileRoutesById {
   '/m/notifications': typeof MNotificationsRoute
   '/m/report': typeof MReportRoute
   '/m/respond': typeof MRespondRoute
+  '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
   '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
@@ -596,6 +614,7 @@ export interface FileRouteTypes {
     | '/m/account-security'
     | '/m/animals-{$id}'
     | '/m/drafts'
+    | '/m/drug-report'
     | '/m/empty-states'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
@@ -606,6 +625,7 @@ export interface FileRouteTypes {
     | '/m/notifications'
     | '/m/report'
     | '/m/respond'
+    | '/m/return-report'
     | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
@@ -655,6 +675,7 @@ export interface FileRouteTypes {
     | '/m/account-security'
     | '/m/animals-{$id}'
     | '/m/drafts'
+    | '/m/drug-report'
     | '/m/empty-states'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
@@ -665,6 +686,7 @@ export interface FileRouteTypes {
     | '/m/notifications'
     | '/m/report'
     | '/m/respond'
+    | '/m/return-report'
     | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
@@ -719,6 +741,7 @@ export interface FileRouteTypes {
     | '/m/account-security'
     | '/m/animals-{$id}'
     | '/m/drafts'
+    | '/m/drug-report'
     | '/m/empty-states'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
@@ -729,6 +752,7 @@ export interface FileRouteTypes {
     | '/m/notifications'
     | '/m/report'
     | '/m/respond'
+    | '/m/return-report'
     | '/m/scan'
     | '/m/workspace'
     | '/organization/account'
@@ -1024,6 +1048,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MScanRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/return-report': {
+      id: '/m/return-report'
+      path: '/return-report'
+      fullPath: '/m/return-report'
+      preLoaderRoute: typeof MReturnReportRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/respond': {
       id: '/m/respond'
       path: '/respond'
@@ -1092,6 +1123,13 @@ declare module '@tanstack/react-router' {
       path: '/empty-states'
       fullPath: '/m/empty-states'
       preLoaderRoute: typeof MEmptyStatesRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/drug-report': {
+      id: '/m/drug-report'
+      path: '/drug-report'
+      fullPath: '/m/drug-report'
+      preLoaderRoute: typeof MDrugReportRouteImport
       parentRoute: typeof MRoute
     }
     '/m/drafts': {
@@ -1251,6 +1289,7 @@ interface MRouteChildren {
   MAccountSecurityRoute: typeof MAccountSecurityRoute
   MAnimalsChar123idChar125Route: typeof MAnimalsChar123idChar125Route
   MDraftsRoute: typeof MDraftsRoute
+  MDrugReportRoute: typeof MDrugReportRoute
   MEmptyStatesRoute: typeof MEmptyStatesRoute
   MKb_diseasesRoute: typeof MKb_diseasesRoute
   MKb_drugsRoute: typeof MKb_drugsRoute
@@ -1261,6 +1300,7 @@ interface MRouteChildren {
   MNotificationsRoute: typeof MNotificationsRoute
   MReportRoute: typeof MReportRoute
   MRespondRoute: typeof MRespondRoute
+  MReturnReportRoute: typeof MReturnReportRoute
   MScanRoute: typeof MScanRoute
   MWorkspaceRoute: typeof MWorkspaceRoute
   MIndexRoute: typeof MIndexRoute
@@ -1278,6 +1318,7 @@ const MRouteChildren: MRouteChildren = {
   MAccountSecurityRoute: MAccountSecurityRoute,
   MAnimalsChar123idChar125Route: MAnimalsChar123idChar125Route,
   MDraftsRoute: MDraftsRoute,
+  MDrugReportRoute: MDrugReportRoute,
   MEmptyStatesRoute: MEmptyStatesRoute,
   MKb_diseasesRoute: MKb_diseasesRoute,
   MKb_drugsRoute: MKb_drugsRoute,
@@ -1288,6 +1329,7 @@ const MRouteChildren: MRouteChildren = {
   MNotificationsRoute: MNotificationsRoute,
   MReportRoute: MReportRoute,
   MRespondRoute: MRespondRoute,
+  MReturnReportRoute: MReturnReportRoute,
   MScanRoute: MScanRoute,
   MWorkspaceRoute: MWorkspaceRoute,
   MIndexRoute: MIndexRoute,
