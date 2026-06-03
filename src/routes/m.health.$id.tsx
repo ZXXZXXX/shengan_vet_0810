@@ -1359,9 +1359,10 @@ function ChecklistDay({
                         : blocked
                           ? "border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5"
                           : isActive
-                            ? "border-border bg-card"
+                            ? `border-border bg-card ${interactive && !isVerified ? "opacity-50" : ""}`
                             : "border-border bg-card opacity-80"
                     }`}
+                  
                   >
                     <div className="flex items-start gap-2.5">
                       {done ? (
