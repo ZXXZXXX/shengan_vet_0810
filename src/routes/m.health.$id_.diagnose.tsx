@@ -397,67 +397,120 @@ function DiagnosePage() {
               </div>
             ) : (
               <ul className="space-y-2">
-                {rxList.map((r) => (
-                  <li
-                    key={r.id}
-                    className="rounded-lg border border-border bg-surface-subtle p-3"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="text-body text-foreground inline-flex items-center gap-1.5">
-                          <Pill className="h-3.5 w-3.5 text-primary" />
-                          {r.name || "未填写药品"}
-                          {r.maker && (
-                            <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                {rxList.map((r) => {
+                  const isTherapy = r.kind === "therapy";
+                  const slotsText = r.splitTime && r.slots
+                    ? (["morning", "noon", "evening"] as SlotKey[])
+                        .filter((k) => r.slots?.[k])
+                        .map((k) => `${SLOT_LABEL[k]} ${r.slots?.[k]}`)
+                        .join(" / ")
+                    : "";
+                  return (
+                    <li
+                      key={r.id}
+                      className="rounded-lg border border-border bg-surface-subtle p-3"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                            {isTherapy ? (
+                              <Activity className="h-3.5 w-3.5 text-primary" />
+                            ) : (
+                              <Pill className="h-3.5 w-3.5 text-primary" />
+                            )}
+                            {r.name || (isTherapy ? "未填写治疗手段" : "未填写药品")}
+                            {!isTherapy && r.maker && (
+                              <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                            )}
+                            <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
+                              {isTherapy ? "治疗手段" : "用药"}
+                            </span>
+                          </div>
+                          <div className="text-caption text-text-tertiary mt-1">
+                            {isTherapy
+                              ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
+                              : [
+                                  r.spec,
+                                  r.use,
+                                  !r.splitTime && r.dose && `${r.dose} / 次`,
+                                  r.days && `${r.days} 天`,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ")}
+                          </div>
+                          {!isTherapy && r.splitTime && slotsText && (
+                            <div className="text-caption text-primary mt-1">{slotsText}</div>
+                          )}
+                          {isTherapy && r.desc && (
+                            <div className="text-caption text-text-tertiary mt-1 line-clamp-2">{r.desc}</div>
                           )}
                         </div>
-                        <div className="text-caption text-text-tertiary mt-1">
-                          {[r.spec, r.use, r.dose && `${r.dose} / 次`, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
+                        <div className="flex items-center gap-0.5 shrink-0">
+                          <button
+                            onClick={() => setEditingRx({ ...r })}
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md text-primary hover:bg-brand-subtle"
+                            aria-label="编辑"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => removeRx(r.id)}
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
+                            aria-label="删除"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <button
-                          onClick={() => setEditingRx({ ...r })}
-                          className="h-7 w-7 inline-flex items-center justify-center rounded-md text-primary hover:bg-brand-subtle"
-                          aria-label="编辑"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => removeRx(r.id)}
-                          className="h-7 w-7 inline-flex items-center justify-center rounded-md text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
-                          aria-label="删除"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             )}
-            <button
-              onClick={() => {
-                const nextId = `r${Date.now()}`;
-                setEditingRx({
-                  id: nextId,
-                  name: "",
-                  maker: "",
-                  spec: "",
-                  use: "肌肉注射",
-                  dose: "",
-                  days: "3",
-                });
-                setRxList((prev) => [
-                  ...prev,
-                  { id: nextId, name: "", maker: "", spec: "", use: "肌肉注射", dose: "", days: "3" },
-                ]);
-              }}
-              className="mt-2 w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
-            >
-              <Plus className="h-3.5 w-3.5" /> 新增药品
-          </button>
-        </Section>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  const nextId = `r${Date.now()}`;
+                  const item: Prescription = {
+                    id: nextId,
+                    kind: "drug",
+                    name: "",
+                    maker: "",
+                    spec: "",
+                    use: "肌肉注射",
+                    dose: "",
+                    days: "3",
+                    splitTime: false,
+                    slots: {},
+                  };
+                  setEditingRx(item);
+                  setRxList((prev) => [...prev, item]);
+                }}
+                className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+              >
+                <Pill className="h-3.5 w-3.5" /> 新增用药
+              </button>
+              <button
+                onClick={() => {
+                  const nextId = `r${Date.now()}`;
+                  const item: Prescription = {
+                    id: nextId,
+                    kind: "therapy",
+                    name: "",
+                    therapyMethod: "按摩",
+                    frequency: "1 次 / 天",
+                    desc: "",
+                    days: "3",
+                  };
+                  setEditingRx(item);
+                  setRxList((prev) => [...prev, item]);
+                }}
+                className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+              >
+                <Activity className="h-3.5 w-3.5" /> 新增治疗手段
+              </button>
+            </div>
+          </Section>
 
         {/* === 现场记录 === */}
           <Section title="现场记录">
