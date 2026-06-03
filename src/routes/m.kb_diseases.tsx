@@ -432,3 +432,16 @@ function Section({ label, children }: { label: string; children: React.ReactNode
     </div>
   );
 }
+
+function tierTone(t: "首选" | "备选" | "应急") {
+  const base = "text-caption px-1.5 py-0.5 rounded-md shrink-0";
+  if (t === "首选") return `${base} bg-brand-subtle text-primary`;
+  if (t === "应急") return `${base} bg-[var(--state-danger)]/12 text-[var(--state-danger)]`;
+  return `${base} bg-surface-subtle text-text-secondary`;
+}
+
+      <div className="text-caption text-text-tertiary mb-1.5">{label}</div>
+      {children}
+    </div>
+  );
+}
