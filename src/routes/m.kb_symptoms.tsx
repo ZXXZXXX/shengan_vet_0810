@@ -141,7 +141,7 @@ function SymptomDetailSheet({ item, onClose }: { item: Symptom; onClose: () => v
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center" onClick={onClose}>
       <div
-        className="w-full max-w-[440px] bg-card rounded-t-2xl p-4 pb-[calc(env(safe-area-inset-bottom)+16px)] h-[60vh] max-h-[60vh] overflow-y-auto"
+        className="w-full max-w-[440px] bg-card rounded-t-2xl p-4 pb-[calc(env(safe-area-inset-bottom)+16px)] h-[75vh] max-h-[75vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3 mb-3">
