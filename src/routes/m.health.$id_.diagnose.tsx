@@ -467,7 +467,7 @@ function DiagnosePage() {
                 })}
               </ul>
             )}
-            <div className="mt-2 grid grid-cols-2 gap-2">
+            <div className="mt-2">
               <button
                 onClick={() => {
                   const nextId = `r${Date.now()}`;
@@ -486,31 +486,13 @@ function DiagnosePage() {
                   setEditingRx(item);
                   setRxList((prev) => [...prev, item]);
                 }}
-                className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+                className="w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
               >
                 <Pill className="h-3.5 w-3.5" /> 新增用药
               </button>
-              <button
-                onClick={() => {
-                  const nextId = `r${Date.now()}`;
-                  const item: Prescription = {
-                    id: nextId,
-                    kind: "therapy",
-                    name: "",
-                    therapyMethod: "按摩",
-                    frequency: "1 次 / 天",
-                    desc: "",
-                    days: "3",
-                  };
-                  setEditingRx(item);
-                  setRxList((prev) => [...prev, item]);
-                }}
-                className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
-              >
-                <Activity className="h-3.5 w-3.5" /> 新增治疗手段
-              </button>
             </div>
           </Section>
+
 
         {/* === 现场记录 === */}
           <Section title="现场记录">
