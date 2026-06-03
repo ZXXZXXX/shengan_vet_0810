@@ -47,7 +47,6 @@ function LossReportPage() {
 
   const [lines, setLines] = useState<Line[]>([{ itemId: "", qty: "" }]);
   const [reasons, setReasons] = useState<string[]>([]);
-  const [otherReason, setOtherReason] = useState("");
   const [desc, setDesc] = useState("");
   const [photos, setPhotos] = useState<number[]>([]);
   const [videos, setVideos] = useState<number[]>([]);
@@ -71,17 +70,12 @@ function LossReportPage() {
   const removeLine = (idx: number) =>
     setLines((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== idx)));
 
-  const toggleReason = (r: string) =>
-    setReasons((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
-
-  const otherSelected = reasons.includes("其他");
   const canSubmit =
     lines.every((l) => l.itemId && l.qty.trim()) &&
-    reasons.length > 0 &&
-    (!otherSelected || otherReason.trim().length > 0);
+    reasons.length > 0;
 
   const [submitted, setSubmitted] = useState(false);
-  const otherInvalid = submitted && otherSelected && otherReason.trim().length === 0;
+
 
   const submit = () => {
     setSubmitted(true);
