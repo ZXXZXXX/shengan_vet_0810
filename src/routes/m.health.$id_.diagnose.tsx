@@ -102,6 +102,8 @@ type Prescription = {
   spec?: string;
   use?: string;
   dose?: string;
+  doseUnit?: string;
+  timesPerDay?: string;
   // 是否区分时间段
   splitTime?: boolean;
   slots?: Partial<Record<SlotKey, string>>;
@@ -112,18 +114,18 @@ type Prescription = {
 };
 
 // 药品库（用于编辑弹层中搜索匹配）
-type DrugItem = { name: string; maker: string; spec: string };
+type DrugItem = { name: string; maker: string; spec: string; recommendedUse: string; defaultUnit: string };
 const drugLibrary: DrugItem[] = [
-  { name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶" },
-  { name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支" },
-  { name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋" },
-  { name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶" },
-  { name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶" },
-  { name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包" },
-  { name: "青霉素钠", maker: "华北制药", spec: "80 万 IU / 支" },
-  { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶" },
-  { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支" },
-  { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支" },
+  { name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
+  { name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", recommendedUse: "肌肉注射", defaultUnit: "g" },
+  { name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", recommendedUse: "口服", defaultUnit: "g" },
+  { name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
+  { name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", recommendedUse: "静脉注射", defaultUnit: "ml" },
+  { name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", recommendedUse: "口服", defaultUnit: "g" },
+  { name: "青霉素钠", maker: "华北制药", spec: "80 万 IU / 支", recommendedUse: "肌肉注射", defaultUnit: "IU" },
+  { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
+  { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支", recommendedUse: "静脉注射", defaultUnit: "ml" },
+  { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支", recommendedUse: "肌肉注射", defaultUnit: "ml" },
 ];
 
 // 使用方式枚举
@@ -136,6 +138,10 @@ const useMethods = [
   "灌服",
   "外用涂抹",
 ];
+
+// 剂量单位
+const doseUnits = ["ml", "g", "mg", "IU", "片", "包"];
+
 
 // 治疗手段枚举
 const therapyMethods = [
@@ -477,8 +483,10 @@ function DiagnosePage() {
                     name: "",
                     maker: "",
                     spec: "",
-                    use: "肌肉注射",
+                    use: "",
                     dose: "",
+                    doseUnit: "ml",
+                    timesPerDay: "2",
                     days: "3",
                     splitTime: false,
                     slots: {},
@@ -490,6 +498,7 @@ function DiagnosePage() {
               >
                 <Pill className="h-3.5 w-3.5" /> 新增用药
               </button>
+
             </div>
           </Section>
 
@@ -906,10 +915,18 @@ function DrugEditor({
   const matched = drugLibrary.find((d) => d.name === value.name);
 
   const pickDrug = (d: DrugItem) => {
-    onChange({ ...value, name: d.name, maker: d.maker, spec: d.spec });
+    onChange({
+      ...value,
+      name: d.name,
+      maker: d.maker,
+      spec: d.spec,
+      use: value.use || d.recommendedUse,
+      doseUnit: value.doseUnit || d.defaultUnit,
+    });
     setQuery(d.name);
     setFocused(false);
   };
+
 
   const setSlot = (k: SlotKey, v: string) =>
     onChange({ ...value, slots: { ...(value.slots || {}), [k]: v } });
@@ -1055,17 +1072,29 @@ function DrugEditor({
               <div className="flex flex-wrap gap-1.5">
                 {useMethods.map((m) => {
                   const active = value.use === m;
+                  const recommended = matched?.recommendedUse === m;
                   return (
                     <button
                       key={m}
                       onClick={() => onChange({ ...value, use: m })}
-                      className={`h-8 px-3 rounded-full text-caption transition-colors ${
+                      className={`h-8 px-3 rounded-full text-caption transition-colors inline-flex items-center gap-1 ${
                         active
                           ? "bg-primary text-primary-foreground"
                           : "bg-white border border-border text-text-secondary"
                       }`}
                     >
-                      {m}
+                      <span>{m}</span>
+                      {recommended && (
+                        <span
+                          className={`text-[10px] px-1 rounded ${
+                            active
+                              ? "bg-white/20 text-primary-foreground"
+                              : "bg-brand-subtle text-primary"
+                          }`}
+                        >
+                          推荐
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -1073,52 +1102,86 @@ function DrugEditor({
             </div>
 
             {/* 区分用药时间段 切换 */}
-            <div className="rounded-lg border border-border bg-surface-subtle p-3 space-y-2.5">
-              <label className="flex items-center justify-between gap-2 cursor-pointer">
-                <div className="min-w-0">
-                  <div className="text-body-sm text-foreground">区分用药时间段</div>
-                  <div className="text-caption text-text-tertiary mt-0.5">
-                    开启后按上午 / 中午 / 晚上分别填写剂量
-                  </div>
+            <label className="flex items-center justify-between gap-2 cursor-pointer">
+              <div className="min-w-0">
+                <div className="text-body-sm text-foreground">区分用药时间段</div>
+                <div className="text-caption text-text-tertiary mt-0.5">
+                  开启后按上午 / 中午 / 晚上分别填写剂量
                 </div>
-                <input
-                  type="checkbox"
-                  checked={!!value.splitTime}
-                  onChange={(e) =>
-                    onChange({ ...value, splitTime: e.target.checked })
-                  }
-                  className="h-4 w-4 accent-[var(--primary)]"
-                />
-              </label>
+              </div>
+              <input
+                type="checkbox"
+                checked={!!value.splitTime}
+                onChange={(e) =>
+                  onChange({ ...value, splitTime: e.target.checked })
+                }
+                className="h-4 w-4 accent-[var(--primary)]"
+              />
+            </label>
 
-              {value.splitTime ? (
+            {/* 剂量 */}
+            {value.splitTime ? (
+              <div className="space-y-1.5">
+                <span className="text-caption text-text-tertiary">分时段剂量</span>
                 <div className="grid grid-cols-3 gap-2">
                   {(["morning", "noon", "evening"] as SlotKey[]).map((k) => (
                     <label key={k} className="block space-y-1">
                       <span className="text-caption text-text-tertiary">
                         {SLOT_LABEL[k]}
                       </span>
-                      <input
-                        value={value.slots?.[k] || ""}
-                        onChange={(e) => setSlot(k, e.target.value)}
-                        placeholder="剂量"
-                        className="h-9 w-full px-2 rounded-md bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
-                      />
+                      <div className="relative">
+                        <input
+                          value={value.slots?.[k] || ""}
+                          onChange={(e) => setSlot(k, e.target.value)}
+                          placeholder="剂量"
+                          className="h-9 w-full pl-2 pr-9 rounded-md bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                        />
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">
+                          {value.doseUnit || "ml"}
+                        </span>
+                      </div>
                     </label>
                   ))}
                 </div>
-              ) : (
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
                 <label className="block space-y-1">
                   <span className="text-caption text-text-tertiary">单次用量</span>
-                  <input
-                    value={value.dose || ""}
-                    onChange={(e) => onChange({ ...value, dose: e.target.value })}
-                    placeholder="如 2ml"
-                    className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
-                  />
+                  <div className="flex h-10 rounded-lg bg-white border border-border overflow-hidden focus-within:border-primary">
+                    <input
+                      value={value.dose || ""}
+                      onChange={(e) => onChange({ ...value, dose: e.target.value })}
+                      placeholder="如 2"
+                      inputMode="decimal"
+                      className="flex-1 min-w-0 px-3 bg-transparent text-body-sm focus:outline-none"
+                    />
+                    <select
+                      value={value.doseUnit || "ml"}
+                      onChange={(e) => onChange({ ...value, doseUnit: e.target.value })}
+                      className="w-16 px-2 bg-surface-subtle border-l border-border text-body-sm text-text-secondary focus:outline-none"
+                    >
+                      {doseUnits.map((u) => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
+                  </div>
                 </label>
-              )}
-            </div>
+                <label className="block space-y-1">
+                  <span className="text-caption text-text-tertiary">每天次数</span>
+                  <div className="relative">
+                    <input
+                      value={value.timesPerDay || ""}
+                      onChange={(e) => onChange({ ...value, timesPerDay: e.target.value })}
+                      inputMode="numeric"
+                      placeholder="如 2"
+                      className="h-10 w-full pl-3 pr-12 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">次 / 天</span>
+                  </div>
+                </label>
+              </div>
+            )}
 
             {/* 用药天数 */}
             <label className="block space-y-1">
@@ -1131,6 +1194,7 @@ function DrugEditor({
                   placeholder="如 3"
                   className="h-10 w-full pl-3 pr-9 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
                 />
+
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">天</span>
               </div>
             </label>
