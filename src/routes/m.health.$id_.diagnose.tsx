@@ -1124,18 +1124,7 @@ function DrugEditor({
             {/* 剂量 */}
             {value.splitTime ? (
               <div className="space-y-1.5">
-                <div className="flex items-end justify-between gap-2">
-                  <span className="text-caption text-text-tertiary">分时段剂量</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-caption text-text-tertiary">单位</span>
-                    <UnitPicker
-                      value={value.doseUnit || "ml"}
-                      onChange={(u) => onChange({ ...value, doseUnit: u })}
-                      units={doseUnits}
-                    />
-                  </div>
-
-                </div>
+                <div className="text-caption text-text-tertiary">分时段剂量</div>
                 <div className="grid grid-cols-3 gap-2">
                   {(["morning", "noon", "evening"] as SlotKey[]).map((k) => (
                     <label key={k} className="block space-y-1">
@@ -1162,14 +1151,18 @@ function DrugEditor({
               <div className="grid grid-cols-2 gap-3">
                 <label className="block space-y-1">
                   <span className="text-caption text-text-tertiary">单次用量</span>
-                  <UnitInput
-                    value={value.dose || ""}
-                    onChange={(v) => onChange({ ...value, dose: v })}
-                    unit={value.doseUnit || "ml"}
-                    onUnitChange={(u) => onChange({ ...value, doseUnit: u })}
-                    units={doseUnits}
-                    placeholder="如 2"
-                  />
+                  <div className="relative">
+                    <input
+                      value={value.dose || ""}
+                      onChange={(e) => onChange({ ...value, dose: e.target.value })}
+                      inputMode="decimal"
+                      placeholder="如 2"
+                      className="h-10 w-full pl-3 pr-10 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">
+                      {value.doseUnit || "ml"}
+                    </span>
+                  </div>
                 </label>
 
                 <label className="block space-y-1">
@@ -1187,6 +1180,7 @@ function DrugEditor({
                 </label>
               </div>
             )}
+
 
 
             {/* 用药天数 */}
