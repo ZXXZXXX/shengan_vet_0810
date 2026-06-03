@@ -77,6 +77,17 @@ function ConfirmCurePage() {
           <Send className="h-4 w-4" /> 已治愈并完成工单
         </button>
       </div>
+
+      <ConfirmTransferDialog
+        open={transferConfirmOpen}
+        earTag={earTagLabel}
+        barn={transferTo}
+        onCancel={() => setTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setTransferConfirmOpen(false);
+          finalize();
+        }}
+      />
     </MobileShell>
   );
 }
