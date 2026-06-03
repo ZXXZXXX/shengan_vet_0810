@@ -1229,10 +1229,8 @@ function ChecklistDay({
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [temps, setTemps] = useState<Record<string, string>>({});
   const [scanFor, setScanFor] = useState<string | null>(null);
-  const [verifyFor, setVerifyFor] = useState<string | null>(null);
-  const [verified, setVerified] = useState<Record<string, boolean>>(() =>
-    isDone ? Object.fromEntries(buildDayItems(day, tags).map((it) => [it.id, true])) : {},
-  );
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [dayVerified, setDayVerified] = useState<boolean>(isDone);
   const [mismatchOpen, setMismatchOpen] = useState(false);
   const expectedTag = tags[0] ?? "#A0000";
 
