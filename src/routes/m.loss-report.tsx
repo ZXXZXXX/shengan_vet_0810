@@ -37,8 +37,8 @@ const REASON_TAGS = [
   "误开未用",
   "操作失误",
   "包装破损",
-  "其他",
 ];
+
 
 type Line = { itemId: string; qty: string };
 
