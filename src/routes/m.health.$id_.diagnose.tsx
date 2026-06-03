@@ -48,50 +48,67 @@ const diseaseLibrary: Disease[] = [
     name: "支气管肺炎",
     symptoms: ["高烧", "咳嗽", "鼻液", "呼吸急促", "食欲下降"],
     rx: [
-      { id: "r1", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "3" },
-      { id: "r2", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1g", days: "3" },
+      { id: "r1", kind: "drug", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "3" },
+      { id: "r2", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1g", days: "3" },
     ],
   },
   {
     name: "急性乳房炎",
     symptoms: ["高烧", "乳房红肿", "产奶骤降", "食欲下降"],
     rx: [
-      { id: "r1", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1g", days: "3" },
-      { id: "r2", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "2" },
+      { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1g", days: "3" },
+      { id: "r2", kind: "drug", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "2" },
+      { id: "r3", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "2 次 / 天", desc: "每次 10 分钟，促进炎症消散", days: "3" },
     ],
   },
   {
     name: "瘤胃酸中毒",
     symptoms: ["食欲下降", "反刍减少", "腹泻", "脱水"],
     rx: [
-      { id: "r1", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200g", days: "2" },
-      { id: "r2", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10ml", days: "3" },
+      { id: "r1", kind: "drug", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200g", days: "2" },
+      { id: "r2", kind: "drug", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10ml", days: "3" },
     ],
   },
   {
     name: "酮病",
     symptoms: ["食欲下降", "产奶骤降", "精神萎靡"],
     rx: [
-      { id: "r1", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500ml", days: "2" },
+      { id: "r1", kind: "drug", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500ml", days: "2" },
     ],
   },
   {
     name: "犊牛腹泻症",
     symptoms: ["腹泻", "脱水", "精神萎靡"],
     rx: [
-      { id: "r1", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1 包", days: "3" },
+      { id: "r1", kind: "drug", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1 包", days: "3" },
     ],
   },
 ];
 
+type SlotKey = "morning" | "noon" | "evening";
+const SLOT_LABEL: Record<SlotKey, string> = {
+  morning: "上午",
+  noon: "中午",
+  evening: "晚上",
+};
+
 type Prescription = {
   id: string;
+  kind: "drug" | "therapy";
   name: string;
-  maker: string;
-  spec: string;
-  use: string;
-  dose: string;
   days: string;
+  // 用药处方
+  maker?: string;
+  spec?: string;
+  use?: string;
+  dose?: string;
+  // 是否区分时间段
+  splitTime?: boolean;
+  slots?: Partial<Record<SlotKey, string>>;
+  // 治疗手段
+  therapyMethod?: string;
+  frequency?: string;
+  desc?: string;
 };
 
 // 药品库（用于编辑弹层中搜索匹配）
@@ -118,6 +135,19 @@ const useMethods = [
   "口服",
   "灌服",
   "外用涂抹",
+];
+
+// 治疗手段枚举
+const therapyMethods = [
+  "按摩",
+  "热敷",
+  "冷敷",
+  "灌肠",
+  "物理治疗",
+  "针灸",
+  "蹄部修整",
+  "隔离观察",
+  "补液护理",
 ];
 
 const executorPool = ["李雨晴", "张师傅", "王师傅", "刘师傅", "赵师傅", "陈师傅"];
