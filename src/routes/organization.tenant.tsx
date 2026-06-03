@@ -226,14 +226,14 @@ function TenantPage() {
                     <RadioGroupItem value="small" id="scale-small" className="mt-0.5" />
                     <div className="leading-tight">
                       <div className="text-body-sm text-foreground">中小型</div>
-                      <div className="text-caption text-text-tertiary">牧场数 &lt; 5 个 或 牛只数量 &lt; 300</div>
+                      <div className="text-caption text-text-tertiary">牧场数 &lt; 5 个 且 牛只数量 &lt; 3000</div>
                     </div>
                   </label>
                   <label className="flex items-start gap-2 cursor-pointer">
                     <RadioGroupItem value="large" id="scale-large" className="mt-0.5" />
                     <div className="leading-tight">
                       <div className="text-body-sm text-foreground">大型</div>
-                      <div className="text-caption text-text-tertiary">牧场数 ≥ 5 个 或 牛只数量 ≥ 300</div>
+                      <div className="text-caption text-text-tertiary">牧场数 ≥ 5 个 或 牛只数量 ≥ 3000</div>
                     </div>
                   </label>
                 </RadioGroup>
@@ -350,7 +350,13 @@ function TenantPage() {
                 </label>
               </div>
               {wecomEnabled && (
-                <div className="pl-6 pt-1">
+                <div className="pl-6 pt-1 space-y-2">
+                  <div className="flex items-start gap-1.5 rounded-md border border-warning/30 bg-warning/10 px-3 py-2">
+                    <Info className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
+                    <span className="text-caption text-text-secondary leading-relaxed">
+                      需由该企业的企业微信管理员完成授权后,该企业员工才可正常使用企微登录
+                    </span>
+                  </div>
                   <Field label="企业微信 CorpID" required>
                     <Input value={corpId} onChange={(e) => setCorpId(e.target.value)} placeholder="ww1234567890abcdef" className="h-9 bg-card border-border text-body-sm" />
                   </Field>
