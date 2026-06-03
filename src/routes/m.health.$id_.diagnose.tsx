@@ -915,10 +915,18 @@ function DrugEditor({
   const matched = drugLibrary.find((d) => d.name === value.name);
 
   const pickDrug = (d: DrugItem) => {
-    onChange({ ...value, name: d.name, maker: d.maker, spec: d.spec });
+    onChange({
+      ...value,
+      name: d.name,
+      maker: d.maker,
+      spec: d.spec,
+      use: value.use || d.recommendedUse,
+      doseUnit: value.doseUnit || d.defaultUnit,
+    });
     setQuery(d.name);
     setFocused(false);
   };
+
 
   const setSlot = (k: SlotKey, v: string) =>
     onChange({ ...value, slots: { ...(value.slots || {}), [k]: v } });
