@@ -109,32 +109,36 @@ export function TransferBarnControl({
     ? "rounded-xl bg-card border border-border p-4"
     : "";
 
+  const showPicker = hideToggle || enabled;
+
   return (
     <div className={wrapperCls}>
-      <div className="flex items-center justify-between">
-        <div className="text-body-sm text-foreground inline-flex items-center gap-1.5">
-          <ArrowRightLeft className="h-3.5 w-3.5 text-text-tertiary" />
-          {label}
-        </div>
-        <button
-          type="button"
-          onClick={toggle}
-          className={`relative h-6 w-11 rounded-full transition-colors ${
-            enabled ? "bg-primary" : "bg-border"
-          }`}
-          aria-pressed={enabled}
-          aria-label={label}
-        >
-          <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
-              enabled ? "left-[22px]" : "left-0.5"
+      {!hideToggle && (
+        <div className="flex items-center justify-between">
+          <div className="text-body-sm text-foreground inline-flex items-center gap-1.5">
+            <ArrowRightLeft className="h-3.5 w-3.5 text-text-tertiary" />
+            {label}
+          </div>
+          <button
+            type="button"
+            onClick={toggle}
+            className={`relative h-6 w-11 rounded-full transition-colors ${
+              enabled ? "bg-primary" : "bg-border"
             }`}
-          />
-        </button>
-      </div>
+            aria-pressed={enabled}
+            aria-label={label}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
+                enabled ? "left-[22px]" : "left-0.5"
+              }`}
+            />
+          </button>
+        </div>
+      )}
 
-      {enabled && (
-        <div className="mt-3">
+      {showPicker && (
+        <div className={hideToggle ? "" : "mt-3"}>
           <button
             type="button"
             onClick={openSheet}
@@ -157,6 +161,7 @@ export function TransferBarnControl({
           </button>
         </div>
       )}
+
 
       {sheetOpen && (
         <div
