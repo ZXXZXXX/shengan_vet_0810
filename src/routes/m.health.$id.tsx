@@ -1462,9 +1462,9 @@ function ChecklistDay({
                   <div
                     className={`rounded-xl border ${
                       dayNote ? "border-primary/40 bg-brand-subtle/20" : "border-border bg-card"
-                    } px-3 py-2.5`}
+                    } px-3 py-3`}
                   >
-                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-1">
+                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-2">
                       <FileText className="h-3 w-3" /> 备注（选填）
                     </div>
                     <textarea
@@ -1473,9 +1473,10 @@ function ChecklistDay({
                       onBlur={() => setNoteEditing(false)}
                       autoFocus={noteEditing}
                       placeholder="填写本日执行备注"
-                      className="w-full min-h-[44px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none"
+                      className="w-full min-h-[72px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none leading-relaxed"
                     />
                   </div>
+
                 ) : (
                   <button
                     type="button"
