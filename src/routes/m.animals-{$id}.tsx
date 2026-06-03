@@ -5,17 +5,21 @@ import {
   PlayCircle,
   ClipboardPlus,
   ChevronDown,
-  
   Pill,
   Clock,
   MapPin,
   ArrowRight,
+  ArrowRightLeft,
   ClipboardList,
   Stethoscope,
   Footprints,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/animals-{$id}")({
   head: () => ({ meta: [{ title: "牛只详情 · 奇点智牧" }] }),
