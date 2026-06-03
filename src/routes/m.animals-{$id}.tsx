@@ -378,18 +378,33 @@ function AnimalDetailPage() {
                 hideToggle
               />
 
+              <div className="rounded-xl bg-card border border-border p-3">
+                <div className="text-body-sm text-foreground mb-2 inline-flex items-center gap-1">
+                  转栏原因
+                  <span className="text-[var(--state-danger)]">*</span>
+                </div>
+                <TagPicker
+                  selected={transferReasons}
+                  onChange={setTransferReasons}
+                  presets={TRANSFER_REASONS}
+                  singleSelect
+                  placeholder="输入关键词搜索，未命中可直接新建"
+                />
+              </div>
+
               <button
                 type="button"
                 onClick={handleTransferSubmit}
-                disabled={!transferTo}
+                disabled={!transferTo || transferReasons.length === 0}
                 className={`w-full h-11 rounded-lg text-body inline-flex items-center justify-center gap-1.5 ${
-                  transferTo
+                  transferTo && transferReasons.length > 0
                     ? "bg-primary text-primary-foreground"
                     : "bg-border text-text-tertiary"
                 }`}
               >
                 <ArrowRightLeft className="h-4 w-4" /> 提交转栏
               </button>
+
             </div>
           </div>
         </div>
