@@ -17,6 +17,7 @@ export function EvidenceSection({
   descRequired = true,
   descPlaceholder = "补充体征、用药反应、隔离建议等",
   title = "现场记录",
+  photoRequired = false,
 }: {
   desc: string;
   setDesc: (v: string) => void;
@@ -33,6 +34,7 @@ export function EvidenceSection({
   descRequired?: boolean;
   descPlaceholder?: string;
   title?: string;
+  photoRequired?: boolean;
 }) {
   type MediaItem = { id: number; type: "photo" | "video" };
   const media: MediaItem[] = [
