@@ -48,7 +48,7 @@ const initialTenants: TenantRow[] = [
   { id: "T003", name: "北疆牧场合作社", code: "bj-coop", region: "新疆 · 伊犁 · 伊宁市", contact: "马建国", users: 18, cattle: 320, status: "已冻结" },
 ];
 
-type Scale = "small" | "large";
+
 
 // 演示用地区数据
 const REGION: Record<string, Record<string, string[]>> = {
