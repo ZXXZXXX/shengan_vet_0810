@@ -10,6 +10,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { EvidenceSection } from "@/components/evidence-section";
 import { DrugItemPicker } from "@/components/drug-item-picker";
+import { TagPicker } from "@/components/m/tag-picker";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/loss-report")({
