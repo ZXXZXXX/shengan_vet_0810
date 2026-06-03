@@ -62,11 +62,16 @@ function AnimalDetailPage() {
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferEnabled, setTransferEnabled] = useState(true);
   const [transferTo, setTransferTo] = useState("");
+  const [transferReasons, setTransferReasons] = useState<string[]>([]);
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
 
   const handleTransferSubmit = () => {
     if (!transferTo) {
       toast.error("请选择转入栏舍");
+      return;
+    }
+    if (transferReasons.length === 0) {
+      toast.error("请选择或输入转栏原因");
       return;
     }
     setTransferConfirmOpen(true);
@@ -76,7 +81,9 @@ function AnimalDetailPage() {
     setTransferOpen(false);
     toast.success(`已转至 ${transferTo}`);
     setTransferTo("");
+    setTransferReasons([]);
   };
+
 
   // mock 当前相关工单（仅展示 待诊断 / 执行中）
   const orders = [
