@@ -5,6 +5,7 @@ import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/health/$id_/confirm-cure")({
   head: () => ({ meta: [{ title: "已治愈 · 奇点智牧" }] }),
