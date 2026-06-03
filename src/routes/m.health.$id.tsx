@@ -94,7 +94,7 @@ const observingOrdersMap: Record<string, number> = { "WO-2430": 5 };
 // 观察期已满 → 待助理已治愈
 const obsExpiredOrders = new Set<string>([]);
 // 复查任务超时未操作 → 系统自动归档的工单（status 为 已完成 但无人工复查结论）
-const autoArchivedOrders = new Set<string>(["HF-0688"]);
+const autoArchivedOrders = new Set<string>(["HF-0688", "WO-2199"]);
 
 
 function TaskDetailPage() {
