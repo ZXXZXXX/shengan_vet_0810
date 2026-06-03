@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Stethoscope, Search, TrendingUp, ChevronRight, X } from "lucide-react";
+import { Stethoscope, Search, TrendingUp, ChevronRight, X, Pill } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useFarm } from "@/lib/farm-store";
 
@@ -9,6 +9,20 @@ export const Route = createFileRoute("/m/kb_diseases")({
   component: DiseaseKBMobile,
 });
 
+type Prescription = {
+  name: string;
+  /** 首选 / 备选 / 应急 */
+  tier: "首选" | "备选" | "应急";
+  /** 适用场景：病情阶段、严重程度、特殊群体等 */
+  scenario: string;
+  /** 疗程概述 */
+  course: string;
+  /** 用药组成 */
+  drugs: { name: string; usage: string }[];
+  /** 注意事项（可选） */
+  notes?: string;
+};
+
 type Disease = {
   id: string;
   name: string;
@@ -16,7 +30,7 @@ type Disease = {
   severity: "高" | "中" | "低";
   desc: string;
   symptoms: string[];
-  prescriptions: { name: string; usage: string }[];
+  prescriptions: Prescription[];
   recent7d: number; // 近7天发病头数
 };
 
@@ -29,8 +43,38 @@ const DISEASES: Disease[] = [
     desc: "乳腺组织炎症,常由细菌感染引起,表现为乳房红肿热痛、乳汁絮状或血色,严重者全身发热、产奶骤降。",
     symptoms: ["乳房红肿", "持续高烧", "乳汁异常", "产奶量骤降"],
     prescriptions: [
-      { name: "头孢噻呋钠注射液", usage: "肌注 2.2mg/kg · 日 1 次 × 3-5 天" },
-      { name: "乳房灌注 头孢洛宁", usage: "患区灌注 · 每次挤奶后 1 次 × 3 天" },
+      {
+        name: "头孢类全身抗感染方案",
+        tier: "首选",
+        scenario: "急性临床型 · 全身症状明显（发热 / 食欲下降）",
+        course: "3-5 天",
+        drugs: [
+          { name: "头孢噻呋钠注射液", usage: "肌注 2.2mg/kg · 日 1 次 × 3-5 天" },
+          { name: "氟尼辛葡甲胺", usage: "静注 2.2mg/kg · 日 1 次 × 2 天，退热抗炎" },
+        ],
+        notes: "休药期 4 天，泌乳期可使用",
+      },
+      {
+        name: "乳房局部灌注方案",
+        tier: "首选",
+        scenario: "亚临床 / 轻度临床型 · 仅单乳区受累",
+        course: "3 天",
+        drugs: [
+          { name: "乳房灌注 头孢洛宁", usage: "患区灌注 · 每次挤奶后 1 次 × 3 天" },
+          { name: "热敷 + 频繁挤奶", usage: "每 3-4 小时手工挤奶辅助排乳" },
+        ],
+      },
+      {
+        name: "干奶期长效封闭方案",
+        tier: "备选",
+        scenario: "干奶期入舍 · 预防性或慢性反复发作",
+        course: "单次",
+        drugs: [
+          { name: "干奶期乳房灌注剂 头孢喹肟", usage: "干奶当日灌注 · 1 次" },
+          { name: "乳头封闭剂", usage: "灌注后封闭乳头管" },
+        ],
+        notes: "禁用于泌乳期",
+      },
     ],
     recent7d: 7,
   },
@@ -42,8 +86,27 @@ const DISEASES: Disease[] = [
     desc: "蹄真皮层弥漫性无菌性炎症,与高精料、产后代谢紊乱相关,表现为跛行、蹄部发热、运步困难。",
     symptoms: ["跛行", "蹄部发热", "行走困难"],
     prescriptions: [
-      { name: "氟尼辛葡甲胺", usage: "静注 2.2mg/kg · 日 1 次 × 3 天" },
-      { name: "局部修蹄 + 蹄垫", usage: "削薄患蹄并粘贴健蹄蹄垫" },
+      {
+        name: "急性期抗炎止痛方案",
+        tier: "首选",
+        scenario: "急性蹄叶炎 · 重度跛行（运动评分 ≥ 3）",
+        course: "3 天",
+        drugs: [
+          { name: "氟尼辛葡甲胺", usage: "静注 2.2mg/kg · 日 1 次 × 3 天" },
+          { name: "5% 葡萄糖盐水", usage: "静滴 2-3L · 日 1 次，纠正脱水" },
+        ],
+      },
+      {
+        name: "局部修蹄保护方案",
+        tier: "首选",
+        scenario: "亚急性 / 慢性 · 蹄底病变可见",
+        course: "1 次（按需复修）",
+        drugs: [
+          { name: "局部修蹄", usage: "削薄患蹄、暴露病灶" },
+          { name: "健蹄蹄垫粘贴", usage: "对侧健蹄粘贴蹄垫减负" },
+        ],
+        notes: "搭配软垫卧床、限制硬地行走",
+      },
     ],
     recent7d: 5,
   },
@@ -55,8 +118,27 @@ const DISEASES: Disease[] = [
     desc: "瘤胃内乳酸快速堆积导致 pH 下降,常因突然加大精料或采食大量易发酵碳水化合物引起。",
     symptoms: ["食欲减退", "腹泻", "瘤胃运动减弱"],
     prescriptions: [
-      { name: "5% 碳酸氢钠溶液", usage: "静注 500-1000ml · 缓慢" },
-      { name: "瘤胃液移植", usage: "健康牛瘤胃液 4-8L 投服" },
+      {
+        name: "急性碱化补液方案",
+        tier: "首选",
+        scenario: "急性发作 · 瘤胃 pH < 5.5、严重脱水",
+        course: "1-2 天",
+        drugs: [
+          { name: "5% 碳酸氢钠溶液", usage: "静注 500-1000ml · 缓慢" },
+          { name: "复方氯化钠", usage: "静滴 4-6L，纠正脱水与电解质" },
+        ],
+      },
+      {
+        name: "瘤胃液移植方案",
+        tier: "备选",
+        scenario: "病情稳定后恢复期 · 瘤胃菌群重建",
+        course: "1-2 次",
+        drugs: [
+          { name: "健康牛瘤胃液", usage: "投服 4-8L · 间隔 24h 可再投 1 次" },
+          { name: "酵母 + 益生菌", usage: "拌料 50g/头 · 连用 7 天" },
+        ],
+        notes: "同步调整日粮，逐步恢复精料比例",
+      },
     ],
     recent7d: 4,
   },
@@ -68,8 +150,27 @@ const DISEASES: Disease[] = [
     desc: "围产后期能量负平衡导致血酮升高,表现为食欲下降、产奶量骤减、呼气酮味、消瘦。",
     symptoms: ["食欲减退", "产奶量骤降", "体温偏低"],
     prescriptions: [
-      { name: "50% 葡萄糖", usage: "静注 500ml · 日 1-2 次" },
-      { name: "丙二醇", usage: "口服 300ml · 日 2 次 × 3-5 天" },
+      {
+        name: "葡萄糖快补方案",
+        tier: "首选",
+        scenario: "临床型酮病 · 食欲废绝、产奶骤降",
+        course: "1-2 天",
+        drugs: [
+          { name: "50% 葡萄糖", usage: "静注 500ml · 日 1-2 次" },
+          { name: "地塞米松", usage: "肌注 20mg · 单次，配合糖异生" },
+        ],
+      },
+      {
+        name: "口服丙二醇方案",
+        tier: "首选",
+        scenario: "亚临床型 · 血酮 1.2-3.0 mmol/L",
+        course: "3-5 天",
+        drugs: [
+          { name: "丙二醇", usage: "口服 300ml · 日 2 次 × 3-5 天" },
+          { name: "复合维生素 B", usage: "肌注 10ml · 日 1 次" },
+        ],
+        notes: "同步优化产后日粮能量密度",
+      },
     ],
     recent7d: 3,
   },
@@ -81,8 +182,26 @@ const DISEASES: Disease[] = [
     desc: "产后 21 天内子宫感染,恶露异味、发热,影响后续配种。",
     symptoms: ["持续高烧", "食欲减退"],
     prescriptions: [
-      { name: "头孢噻呋钠", usage: "肌注 2.2mg/kg · 日 1 次 × 5 天" },
-      { name: "宫内灌注 土霉素", usage: "宫腔灌注 · 隔日 1 次 × 3 次" },
+      {
+        name: "全身抗生素方案",
+        tier: "首选",
+        scenario: "急性子宫炎 · 发热 ≥ 39.5℃ 或全身症状",
+        course: "5 天",
+        drugs: [
+          { name: "头孢噻呋钠", usage: "肌注 2.2mg/kg · 日 1 次 × 5 天" },
+          { name: "氟尼辛葡甲胺", usage: "静注 2.2mg/kg · 日 1 次 × 2 天" },
+        ],
+      },
+      {
+        name: "宫腔灌注方案",
+        tier: "备选",
+        scenario: "慢性 / 子宫内膜炎 · 无明显全身症状",
+        course: "3 次（隔日 1 次）",
+        drugs: [
+          { name: "宫内灌注 土霉素", usage: "宫腔灌注 · 隔日 1 次 × 3 次" },
+          { name: "PGF2α", usage: "肌注 25mg · 单次促排恶露" },
+        ],
+      },
     ],
     recent7d: 2,
   },
@@ -93,10 +212,23 @@ const DISEASES: Disease[] = [
     severity: "高",
     desc: "口蹄疫病毒引起的烈性传染病,口、蹄、乳房出现水疱与溃烂,传播极快,须立即上报隔离。",
     symptoms: ["口腔水疱", "跛行", "持续高烧"],
-    prescriptions: [{ name: "对症治疗 + 强制免疫", usage: "依据当地兽医主管部门要求执行" }],
+    prescriptions: [
+      {
+        name: "对症处置 + 强制免疫",
+        tier: "应急",
+        scenario: "疑似 / 确诊病例 · 必须立即上报当地兽医部门",
+        course: "依官方指令",
+        drugs: [
+          { name: "对症治疗", usage: "口腔与蹄部消毒、补液支持" },
+          { name: "强制免疫", usage: "依据当地兽医主管部门要求执行" },
+        ],
+        notes: "禁止自行使用抗病毒药；按程序隔离、扑杀与无害化",
+      },
+    ],
     recent7d: 0,
   },
 ];
+
 
 function severityTone(s: string) {
   if (s === "高") return "bg-[var(--state-danger)]/12 text-[var(--state-danger)]";
@@ -242,16 +374,51 @@ function DiseaseDetailSheet({ item, onClose }: { item: Disease; onClose: () => v
           </div>
         </Section>
 
-        <Section label="常用处方">
-          <div className="space-y-2">
-            {item.prescriptions.map((p) => (
-              <div key={p.name} className="rounded-lg border border-border p-3">
-                <div className="text-body text-foreground">{p.name}</div>
-                <div className="text-caption text-text-tertiary mt-1">{p.usage}</div>
+        <Section label={`适用处方 · ${item.prescriptions.length} 个`}>
+          <div className="space-y-2.5">
+            {item.prescriptions.map((p, idx) => (
+              <div key={p.name} className="rounded-xl border border-border p-3 bg-card">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="h-5 min-w-5 px-1 rounded-md bg-brand-subtle text-primary text-caption font-semibold inline-flex items-center justify-center tabular-nums">
+                    {idx + 1}
+                  </span>
+                  <span className="text-body text-foreground font-medium flex-1 min-w-0 truncate">
+                    {p.name}
+                  </span>
+                  <span className={tierTone(p.tier)}>{p.tier}</span>
+                </div>
+                <div className="text-caption text-text-secondary leading-relaxed">
+                  <span className="text-text-tertiary">适用场景：</span>
+                  {p.scenario}
+                </div>
+                <div className="text-caption text-text-tertiary mt-0.5">
+                  疗程：{p.course}
+                </div>
+                <div className="mt-2 rounded-lg bg-surface-subtle p-2 space-y-1.5">
+                  {p.drugs.map((d) => (
+                    <div key={d.name} className="flex items-start gap-1.5">
+                      <Pill className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-body-sm text-foreground leading-tight">
+                          {d.name}
+                        </div>
+                        <div className="text-caption text-text-tertiary mt-0.5">
+                          {d.usage}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {p.notes && (
+                  <div className="mt-2 text-caption text-[var(--state-alert)] bg-[var(--state-warning)]/15 rounded-md px-2 py-1">
+                    注意：{p.notes}
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </Section>
+
       </div>
     </div>
   );
@@ -265,3 +432,11 @@ function Section({ label, children }: { label: string; children: React.ReactNode
     </div>
   );
 }
+
+function tierTone(t: "首选" | "备选" | "应急") {
+  const base = "text-caption px-1.5 py-0.5 rounded-md shrink-0";
+  if (t === "首选") return `${base} bg-brand-subtle text-primary`;
+  if (t === "应急") return `${base} bg-[var(--state-danger)]/12 text-[var(--state-danger)]`;
+  return `${base} bg-surface-subtle text-text-secondary`;
+}
+
