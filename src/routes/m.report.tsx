@@ -464,30 +464,22 @@ function ReportPage() {
             >
               {barnMode ? (
                 <div className="space-y-2">
-                  {barns.map((b) => {
-                    const canDelete = barns.length > 1;
-                    return (
-                      <div
-                        key={b}
-                        className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
+                  {barns.map((b) => (
+                    <div
+                      key={b}
+                      className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
+                    >
+                      <span className="truncate">{b}</span>
+                      <button
+                        onClick={() => setBarns([])}
+                        className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+                        aria-label="删除"
                       >
-                        <span className="truncate">{b}</span>
-                        {canDelete && (
-                          <button
-                            onClick={() => removeBarn(b)}
-                            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
-                            aria-label="删除"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                  <div className="text-caption text-text-tertiary">
-                    至少保留 1 个牛舍
-                  </div>
-                  {showBarnAdd ? (
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {barns.length === 0 && (
                     <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
                       <div className="flex gap-2">
                         <div className="flex-1 relative">
@@ -510,15 +502,6 @@ function ReportPage() {
                         <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium active:scale-[0.97] transition-transform">
                           <ScanLine className="h-4 w-4" /> 扫码
                         </button>
-                        <button
-                          onClick={() => {
-                            setShowBarnAdd(false);
-                            setBarnAddQuery("");
-                          }}
-                          className="h-11 w-11 inline-flex items-center justify-center rounded-lg text-text-tertiary active:bg-surface-subtle"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {barnMatches.length === 0 ? (
@@ -537,14 +520,6 @@ function ReportPage() {
                         )}
                       </div>
                     </div>
-                  ) : (
-                    <button
-                      onClick={() => setShowBarnAdd(true)}
-                      className="w-full h-11 rounded-xl border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
-                    >
-                      <Plus className="h-4 w-4" />
-                      追加其他牛舍
-                    </button>
                   )}
                 </div>
               ) : (
