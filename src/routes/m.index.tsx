@@ -48,6 +48,7 @@ const MODULES: Module[] = [
 function MWorkspacePage() {
   const navigate = useNavigate();
   const enabledCount = MODULES.filter((m) => m.enabled).length;
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const pick = (m: Module) => {
     if (!m.enabled || !m.to) return;
