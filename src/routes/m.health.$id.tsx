@@ -1035,7 +1035,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               </span>
             </div>
 
-            <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
+            <div className="border-l-2 border-primary/40 pl-3 mb-2">
               <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
               <div className="text-body-sm leading-relaxed text-foreground">{d.action}</div>
             </div>
@@ -1113,7 +1113,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
                 {reviewLabel}
               </span>
             </div>
-            <div className="rounded-lg bg-surface-subtle px-3 py-2.5 mb-2">
+            <div className="border-l-2 border-primary/40 pl-3 mb-2">
               <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
               <div className="text-body-sm leading-relaxed text-foreground">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
             </div>
