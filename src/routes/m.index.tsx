@@ -60,7 +60,7 @@ function MWorkspacePage() {
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col">
         {/* 顶部头图：牛在草原上 */}
-        <div className="pt-10 pb-32 px-4 relative overflow-hidden" style={{ minHeight: 340 }}>
+        <div className="pt-10 pb-20 px-4 relative overflow-hidden" style={{ minHeight: 220 }}>
           <img
             src={heroImg.url}
             alt="草原上的牛群"
