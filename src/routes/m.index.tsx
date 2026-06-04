@@ -25,10 +25,12 @@ type Module = {
 };
 
 const MODULES: Module[] = [
-  { id: "vet", name: "智慧兽医", desc: "诊疗 · 处方 · 药品", icon: Stethoscope, to: "/m/homepage", enabled: true, tone: "var(--brand)" },
-  { id: "birth", name: "智能接生", desc: "产前预警 · 接产记录", icon: Baby, enabled: false, tone: "var(--effect-ai-purple)" },
-  { id: "feed", name: "饲喂管理", desc: "配方下发 · 投喂任务", icon: UtensilsCrossed, enabled: false, tone: "var(--effect-ai-cyan)" },
-  { id: "env", name: "环境监测", desc: "温湿度 · 氨气监测", icon: Activity, enabled: false, tone: "var(--state-warning)" },
+  { id: "vet", name: "智慧兽医", desc: "诊疗 · 处方 · 药品", icon: Stethoscope, to: "/m/homepage", enabled: true, tone: "#00A85A", gradient: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" },
+  { id: "birth", name: "智能接生", desc: "产前预警 · 接产", icon: Baby, enabled: false, tone: "#8B5CF6", gradient: "linear-gradient(135deg,#8B5CF6 0%,#C084FC 100%)" },
+  { id: "feed", name: "饲喂管理", desc: "配方 · 投喂任务", icon: UtensilsCrossed, enabled: false, tone: "#06B6D4", gradient: "linear-gradient(135deg,#0891B2 0%,#22D3EE 100%)" },
+  { id: "env", name: "环境监测", desc: "温湿度 · 氨气", icon: Activity, enabled: false, tone: "#F59E0B", gradient: "linear-gradient(135deg,#F59E0B 0%,#FBBF24 100%)" },
+  { id: "transport", name: "运牛管理", desc: "调运 · 路线追踪", icon: Truck, enabled: false, tone: "#3B82F6", gradient: "linear-gradient(135deg,#2563EB 0%,#60A5FA 100%)" },
+  { id: "milk", name: "产奶分析", desc: "产量 · 品质监控", icon: Droplets, enabled: false, tone: "#0EA5E9", gradient: "linear-gradient(135deg,#0284C7 0%,#7DD3FC 100%)" },
 ];
 
 function MWorkspacePage() {
