@@ -1,5 +1,5 @@
 import { createFileRoute, useParams, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   ClipboardList,
@@ -103,19 +103,35 @@ function TaskDetailPage() {
   const role = useRole();
 
   const search = Route.useSearch();
-  // 默认 tab：进行中工单（已有执行内容）直接定位到执行任务；有诊断记录优先诊断；否则上报
+  // 默认 tab：自动归档工单 → 执行任务（并滚到逾期那条）；进行中 → 执行任务；有诊断记录 → 复查；否则上报
   const currentStatus = statusById[id] ??
     (role === "hoof_trimmer" || role === "vet_assistant" || role === "immunizer" ? "进行中" : "待诊断");
   const hasDiagnosis = currentStatus !== "待诊断";
   const hasExecution = currentStatus === "进行中";
-  const defaultTab: "report" | "review" | "execute" = hasExecution
+  const isAutoArchivedOrder = autoArchivedOrders.has(id);
+  const defaultTab: "report" | "review" | "execute" = isAutoArchivedOrder
     ? "execute"
-    : hasDiagnosis
-      ? "review"
-      : "report";
+    : hasExecution
+      ? "execute"
+      : hasDiagnosis
+        ? "review"
+        : "report";
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   
   const [recordsOpen, setRecordsOpen] = useState(false);
+
+  // 自动归档工单：进入详情后自动滚到「逾期归档」那条复查任务
+  useEffect(() => {
+    if (!isAutoArchivedOrder || tab !== "execute") return;
+    const t = setTimeout(() => {
+      const el = document.getElementById("auto-archived-review-card");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 80);
+    return () => clearTimeout(t);
+  }, [isAutoArchivedOrder, tab]);
+
   const navigate = useNavigate();
   // 复诊工单：开始诊断决策弹窗
   const [revisitOpen, setRevisitOpen] = useState(false);
@@ -1082,7 +1098,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               ? "tag-info"
               : "bg-surface-subtle text-text-tertiary";
         return (
-          <div className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""}`}>
+          <div id={isAutoArchived ? "auto-archived-review-card" : undefined} className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""} ${isAutoArchived ? "ring-2 ring-[#FFA39E] ring-offset-2 ring-offset-background" : ""}`}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <DayDot active={isReviewActive} done={isReviewDone} />
