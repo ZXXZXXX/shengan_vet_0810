@@ -242,9 +242,10 @@ function ReportPage() {
 
   // 牛舍多选（barnMode）
   const allBarns = useMemo(
-    () => Array.from({ length: 8 }, (_, i) => `${i + 1} 号牛舍`),
+    () => Array.from({ length: 48 }, (_, i) => `${i + 1} 号牛舍`),
     []
   );
+
   const addBarn = (v: string) => {
     const t = v.trim();
     if (!t) return;
