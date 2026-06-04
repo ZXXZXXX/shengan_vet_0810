@@ -10,25 +10,12 @@ export const Route = createFileRoute("/m/scan")({
 function ScanPage() {
   const navigate = useNavigate();
   const [scanning, setScanning] = useState(true);
-  const [queryMode, setQueryMode] = useState<"cow" | "barn">("cow");
-  const [queryValue, setQueryValue] = useState("");
 
   useEffect(() => {
     if (!scanning) return;
-    setQueryValue("");
     const t = setTimeout(() => setScanning(false), 2000);
     return () => clearTimeout(t);
   }, [scanning]);
-
-  const submitQuery = () => {
-    const v = queryValue.trim();
-    if (!v) return;
-    if (queryMode === "cow") {
-      navigate({ to: "/m/animals-{$id}", params: { id: v } });
-    } else {
-      navigate({ to: "/m/barns/$id", params: { id: v } });
-    }
-  };
 
   return (
     <div className="m-scope fixed inset-0 z-50 bg-black text-white flex flex-col">
