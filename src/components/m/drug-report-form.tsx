@@ -83,7 +83,7 @@ export function DrugReportForm({ mode: initialMode }: { mode?: DrugReportMode })
       return;
     }
     toast.success(`${word}上报已提交`);
-    setTimeout(() => navigate({ to: "/m" }), 600);
+    setTimeout(() => navigate({ to: "/m/homepage" }), 600);
   };
 
   return (
