@@ -62,6 +62,7 @@ function AnimalDetailPage() {
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferEnabled, setTransferEnabled] = useState(true);
   const [transferTo, setTransferTo] = useState("");
+  const [transferPickerOpen, setTransferPickerOpen] = useState(false);
   const [transferReasons, setTransferReasons] = useState<string[]>([]);
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
 
@@ -375,19 +376,24 @@ function AnimalDetailPage() {
                 <div className={`shrink-0 flex items-center justify-center w-7 ${transferTo ? "text-primary" : "text-text-tertiary"}`}>
                   <ArrowRight className="h-4 w-4" />
                 </div>
-                <div
-                  className={`flex-1 min-w-0 rounded-xl bg-card px-3 py-2.5 ${
-                    transferTo ? "border border-primary" : "border border-dashed border-border"
+                <button
+                  type="button"
+                  onClick={() => setTransferPickerOpen(true)}
+                  className={`flex-1 min-w-0 rounded-xl bg-card px-3 py-2.5 text-left transition-colors ${
+                    transferTo ? "border border-primary" : "border border-dashed border-border active:border-primary/60"
                   }`}
                 >
-                  <div className={`flex items-center gap-1 text-caption mb-1 ${transferTo ? "text-primary" : "text-text-tertiary"}`}>
-                    <MapPin className="h-3 w-3" />
-                    转入位置
+                  <div className={`flex items-center justify-between gap-1 text-caption mb-1 ${transferTo ? "text-primary" : "text-text-tertiary"}`}>
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      转入位置
+                    </span>
+                    <span className="text-caption text-text-tertiary">{transferTo ? "更换" : "选择"}</span>
                   </div>
                   <div className={`text-body-sm truncate ${transferTo ? "text-foreground font-medium" : "text-text-tertiary"}`}>
-                    {transferTo || "待选择"}
+                    {transferTo || "点击选择牛舍"}
                   </div>
-                </div>
+                </button>
               </div>
               <TransferBarnControl
                 enabled={transferEnabled}
@@ -397,6 +403,9 @@ function AnimalDetailPage() {
                 exclude={[a.barn]}
                 label="转入栏舍"
                 hideToggle
+                triggerless
+                open={transferPickerOpen}
+                onOpenChange={setTransferPickerOpen}
               />
 
               <div className="rounded-xl bg-card border border-border p-3">
