@@ -200,8 +200,12 @@ function ReportPage() {
 
   const [kind] = useState<ReportKind>("health");
 
-  // 上报模式：扫到牛舍且无指定牛只 → 以牛舍为上报对象（可多选）
-  const barnMode = !!search.barn && !search.target;
+  // 上报模式：扫到牛舍且无指定牛只 → 默认以牛舍为对象；从现场上报入口进入时支持手动切换
+  const lockMode = !!search.barn || !!search.target;
+  const [mode, setMode] = useState<"cow" | "barn">(
+    !!search.barn && !search.target ? "barn" : "cow"
+  );
+  const barnMode = mode === "barn";
 
   const [targets, setTargets] = useState<string[]>(
     draft?.targets?.length
@@ -462,6 +466,37 @@ function ReportPage() {
               required
               hint={barnMode ? "仅可选择一个牛舍" : "仅可选择一个牛只"}
             >
+              {!lockMode && (
+                <div className="mb-2.5 inline-flex rounded-full border border-border bg-surface-subtle p-0.5">
+                  {[
+                    { v: "cow" as const, label: "按牛只" },
+                    { v: "barn" as const, label: "按牛舍" },
+                  ].map((opt) => {
+                    const active = mode === opt.v;
+                    return (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => {
+                          if (mode === opt.v) return;
+                          setMode(opt.v);
+                          setTargets([]);
+                          setBarns([]);
+                          setAddQuery("");
+                          setBarnAddQuery("");
+                        }}
+                        className={`h-8 min-w-[72px] px-3 rounded-full text-body-sm transition-colors ${
+                          active
+                            ? "bg-card text-foreground border border-border shadow-sm"
+                            : "text-text-tertiary"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
               {barnMode ? (
                 <div className="space-y-2">
                   {barns.map((b) => (
