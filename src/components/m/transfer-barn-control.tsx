@@ -119,15 +119,17 @@ export function TransferBarnControl({
     setQuery("");
   };
 
-  const wrapperCls = bordered
-    ? "rounded-xl bg-card border border-border p-4"
-    : "";
+  const wrapperCls = triggerless
+    ? ""
+    : bordered
+      ? "rounded-xl bg-card border border-border p-4"
+      : "";
 
-  const showPicker = hideToggle || enabled;
+  const showPicker = (hideToggle || enabled) && !triggerless;
 
   return (
     <div className={wrapperCls}>
-      {!hideToggle && (
+      {!hideToggle && !triggerless && (
         <div className="flex items-center justify-between">
           <div className="text-body-sm text-foreground inline-flex items-center gap-1.5">
             <ArrowRightLeft className="h-3.5 w-3.5 text-text-tertiary" />
