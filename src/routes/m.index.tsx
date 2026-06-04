@@ -99,10 +99,10 @@ function MWorkspacePage() {
               onClick={() => setLogoutOpen(true)}
               className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 h-7 px-3 rounded-full text-caption text-white shadow-sm active:opacity-90"
               style={{ background: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" }}
-              aria-label="切换账号"
+              aria-label="退出登录"
             >
               <LogOut className="h-3.5 w-3.5" />
-              切换账号
+              退出登录
             </button>
 
             <div className="relative p-5">
