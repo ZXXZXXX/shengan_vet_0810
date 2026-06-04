@@ -76,9 +76,19 @@ function MWorkspacePage() {
             }}
           />
 
-          <div className="relative text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
-            <div className="text-page-title font-semibold tracking-tight">工作台</div>
-            <div className="text-caption text-white/90 mt-1">让每一头牛都被照顾到</div>
+          <div className="relative flex items-start justify-between text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
+            <div>
+              <div className="text-page-title font-semibold tracking-tight">工作台</div>
+              <div className="text-caption text-white/90 mt-1">让每一头牛都被照顾到</div>
+            </div>
+            <button
+              onClick={() => setLogoutOpen(true)}
+              className="shrink-0 inline-flex items-center gap-1 h-8 px-2.5 rounded-full bg-white/15 backdrop-blur-sm text-caption text-white border border-white/25 active:bg-white/25"
+              aria-label="退出登录"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              退出
+            </button>
           </div>
         </div>
 
