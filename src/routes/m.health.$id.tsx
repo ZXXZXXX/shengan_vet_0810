@@ -625,7 +625,7 @@ function TaskDetailPage() {
       <Sheet open={recordsOpen} onOpenChange={setRecordsOpen}>
         <SheetContent
           side="bottom"
-          className="p-0 rounded-t-2xl h-[75vh] max-h-[75vh] flex flex-col gap-0 mx-auto w-full max-w-[440px]"
+          className="p-0 rounded-t-2xl h-[75vh] max-h-[75vh] flex flex-col gap-0 mx-auto w-full max-w-[440px] bg-card"
         >
           <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
             <SheetTitle className="text-card-title text-left">诊疗信息摘要</SheetTitle>
