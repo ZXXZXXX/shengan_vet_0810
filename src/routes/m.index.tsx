@@ -56,12 +56,9 @@ function MWorkspacePage() {
           <span aria-hidden className="absolute bottom-12 left-0 h-40 w-40 rounded-full opacity-20"
             style={{ background: "radial-gradient(circle,#A7FFD5 0%,transparent 70%)" }} />
 
-          <div className="relative flex items-center justify-between text-white">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm">
-              <Building2 className="h-3 w-3" />
-              <span className="text-caption">{ACCOUNT.group}</span>
-            </div>
-            <div className="text-caption text-white/80 font-mono">{ACCOUNT.workId}</div>
+          <div className="relative text-white">
+            <div className="text-page-title font-semibold tracking-tight">工作台</div>
+            <div className="text-caption text-white/85 mt-1">让每一头牛都被照顾到</div>
           </div>
         </div>
 
