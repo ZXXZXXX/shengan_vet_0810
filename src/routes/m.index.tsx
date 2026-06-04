@@ -22,6 +22,7 @@ type Module = {
   to?: string;
   enabled: boolean;
   tone: string;
+  gradient: string;
 };
 
 const MODULES: Module[] = [
