@@ -42,7 +42,6 @@ import { Route as OrganizationTenantRouteImport } from './routes/organization.te
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as OrganizationAccountRouteImport } from './routes/organization.account'
-import { Route as MWorkspaceRouteImport } from './routes/m.workspace'
 import { Route as MScanRouteImport } from './routes/m.scan'
 import { Route as MReturnReportRouteImport } from './routes/m.return-report'
 import { Route as MRespondRouteImport } from './routes/m.respond'
@@ -54,6 +53,7 @@ import { Route as MLoginRouteImport } from './routes/m.login'
 import { Route as MKb_symptomsRouteImport } from './routes/m.kb_symptoms'
 import { Route as MKb_drugsRouteImport } from './routes/m.kb_drugs'
 import { Route as MKb_diseasesRouteImport } from './routes/m.kb_diseases'
+import { Route as MHomepageRouteImport } from './routes/m.homepage'
 import { Route as MEmptyStatesRouteImport } from './routes/m.empty-states'
 import { Route as MDrugReportRouteImport } from './routes/m.drug-report'
 import { Route as MDraftsRouteImport } from './routes/m.drafts'
@@ -239,11 +239,6 @@ const OrganizationAccountRoute = OrganizationAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => OrganizationRoute,
 } as any)
-const MWorkspaceRoute = MWorkspaceRouteImport.update({
-  id: '/workspace',
-  path: '/workspace',
-  getParentRoute: () => MRoute,
-} as any)
 const MScanRoute = MScanRouteImport.update({
   id: '/scan',
   path: '/scan',
@@ -297,6 +292,11 @@ const MKb_drugsRoute = MKb_drugsRouteImport.update({
 const MKb_diseasesRoute = MKb_diseasesRouteImport.update({
   id: '/kb_diseases',
   path: '/kb_diseases',
+  getParentRoute: () => MRoute,
+} as any)
+const MHomepageRoute = MHomepageRouteImport.update({
+  id: '/homepage',
+  path: '/homepage',
   getParentRoute: () => MRoute,
 } as any)
 const MEmptyStatesRoute = MEmptyStatesRouteImport.update({
@@ -420,6 +420,7 @@ export interface FileRoutesByFullPath {
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/homepage': typeof MHomepageRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
   '/m/kb_symptoms': typeof MKb_symptomsRoute
@@ -431,7 +432,6 @@ export interface FileRoutesByFullPath {
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
-  '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
@@ -481,6 +481,7 @@ export interface FileRoutesByTo {
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/homepage': typeof MHomepageRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
   '/m/kb_symptoms': typeof MKb_symptomsRoute
@@ -492,7 +493,6 @@ export interface FileRoutesByTo {
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
-  '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
@@ -548,6 +548,7 @@ export interface FileRoutesById {
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/homepage': typeof MHomepageRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
   '/m/kb_symptoms': typeof MKb_symptomsRoute
@@ -559,7 +560,6 @@ export interface FileRoutesById {
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
-  '/m/workspace': typeof MWorkspaceRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
@@ -616,6 +616,7 @@ export interface FileRouteTypes {
     | '/m/drafts'
     | '/m/drug-report'
     | '/m/empty-states'
+    | '/m/homepage'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
     | '/m/kb_symptoms'
@@ -627,7 +628,6 @@ export interface FileRouteTypes {
     | '/m/respond'
     | '/m/return-report'
     | '/m/scan'
-    | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
     | '/organization/team'
@@ -677,6 +677,7 @@ export interface FileRouteTypes {
     | '/m/drafts'
     | '/m/drug-report'
     | '/m/empty-states'
+    | '/m/homepage'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
     | '/m/kb_symptoms'
@@ -688,7 +689,6 @@ export interface FileRouteTypes {
     | '/m/respond'
     | '/m/return-report'
     | '/m/scan'
-    | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
     | '/organization/team'
@@ -743,6 +743,7 @@ export interface FileRouteTypes {
     | '/m/drafts'
     | '/m/drug-report'
     | '/m/empty-states'
+    | '/m/homepage'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
     | '/m/kb_symptoms'
@@ -754,7 +755,6 @@ export interface FileRouteTypes {
     | '/m/respond'
     | '/m/return-report'
     | '/m/scan'
-    | '/m/workspace'
     | '/organization/account'
     | '/organization/role'
     | '/organization/team'
@@ -1034,13 +1034,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationAccountRouteImport
       parentRoute: typeof OrganizationRoute
     }
-    '/m/workspace': {
-      id: '/m/workspace'
-      path: '/workspace'
-      fullPath: '/m/workspace'
-      preLoaderRoute: typeof MWorkspaceRouteImport
-      parentRoute: typeof MRoute
-    }
     '/m/scan': {
       id: '/m/scan'
       path: '/scan'
@@ -1116,6 +1109,13 @@ declare module '@tanstack/react-router' {
       path: '/kb_diseases'
       fullPath: '/m/kb_diseases'
       preLoaderRoute: typeof MKb_diseasesRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/homepage': {
+      id: '/m/homepage'
+      path: '/homepage'
+      fullPath: '/m/homepage'
+      preLoaderRoute: typeof MHomepageRouteImport
       parentRoute: typeof MRoute
     }
     '/m/empty-states': {
@@ -1291,6 +1291,7 @@ interface MRouteChildren {
   MDraftsRoute: typeof MDraftsRoute
   MDrugReportRoute: typeof MDrugReportRoute
   MEmptyStatesRoute: typeof MEmptyStatesRoute
+  MHomepageRoute: typeof MHomepageRoute
   MKb_diseasesRoute: typeof MKb_diseasesRoute
   MKb_drugsRoute: typeof MKb_drugsRoute
   MKb_symptomsRoute: typeof MKb_symptomsRoute
@@ -1302,7 +1303,6 @@ interface MRouteChildren {
   MRespondRoute: typeof MRespondRoute
   MReturnReportRoute: typeof MReturnReportRoute
   MScanRoute: typeof MScanRoute
-  MWorkspaceRoute: typeof MWorkspaceRoute
   MIndexRoute: typeof MIndexRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
@@ -1320,6 +1320,7 @@ const MRouteChildren: MRouteChildren = {
   MDraftsRoute: MDraftsRoute,
   MDrugReportRoute: MDrugReportRoute,
   MEmptyStatesRoute: MEmptyStatesRoute,
+  MHomepageRoute: MHomepageRoute,
   MKb_diseasesRoute: MKb_diseasesRoute,
   MKb_drugsRoute: MKb_drugsRoute,
   MKb_symptomsRoute: MKb_symptomsRoute,
@@ -1331,7 +1332,6 @@ const MRouteChildren: MRouteChildren = {
   MRespondRoute: MRespondRoute,
   MReturnReportRoute: MReturnReportRoute,
   MScanRoute: MScanRoute,
-  MWorkspaceRoute: MWorkspaceRoute,
   MIndexRoute: MIndexRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
@@ -1443,3 +1443,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

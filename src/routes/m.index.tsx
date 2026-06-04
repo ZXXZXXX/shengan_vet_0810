@@ -27,7 +27,7 @@ const MODULES: Module[] = [
     name: "智慧兽医系统",
     desc: "疾病诊疗、处方执行、药品库存全流程",
     icon: Stethoscope,
-    to: "/m",
+    to: "/m/homepage",
     enabled: true,
     tone: "var(--brand)",
   },
