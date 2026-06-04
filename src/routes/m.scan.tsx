@@ -32,7 +32,7 @@ function ScanPage() {
           onClick={() => navigate({ to: "/m/search" })}
           className="h-8 px-3 rounded-full bg-white/10 inline-flex items-center gap-1 text-caption text-white/90 active:bg-white/15"
         >
-          <Search className="h-3.5 w-3.5" /> 搜索
+          <Search className="h-3.5 w-3.5" /> 搜索查询
         </button>
       </header>
 
