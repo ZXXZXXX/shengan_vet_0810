@@ -60,16 +60,18 @@ function MWorkspacePage() {
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col">
         {/* 顶部头图：牛在草原上 */}
-        <div className="pt-10 pb-20 px-4 relative overflow-hidden">
+        <div className="pt-10 pb-32 px-4 relative overflow-hidden" style={{ minHeight: 340 }}>
           <img
             src={heroImg.url}
             alt="草原上的牛群"
             className="absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: "center 75%" }}
           />
           {/* 底部渐变隐去，避免硬裁切 */}
           <span
             aria-hidden
-            className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
+
             style={{
               background:
                 "linear-gradient(180deg, rgba(245,247,250,0) 0%, var(--bg-page) 100%)",
