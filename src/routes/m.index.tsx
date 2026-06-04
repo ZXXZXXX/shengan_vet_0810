@@ -88,7 +88,7 @@ function MWorkspacePage() {
 
         </div>
 
-        <div className="flex-1 px-4 pb-8 space-y-5 -mt-14">
+        <div className="flex-1 px-4 pb-8 space-y-5 -mt-[72px]">
           {/* 名片 */}
           <div className="relative rounded-3xl bg-card shadow-xl overflow-hidden"
             style={{ boxShadow: "0 12px 32px -12px rgba(0,168,90,0.25), 0 4px 12px rgba(0,0,0,0.06)" }}>
