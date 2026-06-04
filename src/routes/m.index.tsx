@@ -162,7 +162,7 @@ function MWorkspacePage() {
                     <span
                       aria-hidden
                       className="absolute inset-x-0 top-0 h-1"
-                      style={{ background: disabled ? "var(--border)" : m.gradient }}
+                      style={{ background: m.gradient }}
                     />
                     {/* 角落柔光 */}
                     {!disabled && (
@@ -177,8 +177,8 @@ function MWorkspacePage() {
                     <div
                       className="relative h-12 w-12 rounded-2xl flex items-center justify-center shadow-sm"
                       style={{
-                        background: disabled ? "var(--bg-surface-subtle)" : m.gradient,
-                        color: disabled ? "var(--text-tertiary)" : "#ffffff",
+                        background: m.gradient,
+                        color: "#ffffff",
                       }}
                     >
                       <Icon className="h-6 w-6" strokeWidth={2} />
@@ -188,6 +188,15 @@ function MWorkspacePage() {
                         </span>
                       )}
                     </div>
+
+                    {/* 未开通蒙版 */}
+                    {disabled && (
+                      <span
+                        aria-hidden
+                        className="absolute inset-0 pointer-events-none"
+                        style={{ background: "rgba(245,246,248,0.55)" }}
+                      />
+                    )}
 
                     {/* 文字 */}
                     <div className="relative mt-3">
