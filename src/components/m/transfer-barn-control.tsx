@@ -34,6 +34,12 @@ type Props = {
   bordered?: boolean;
   /** 隐藏开关，直接展示去向选择（默认 false） */
   hideToggle?: boolean;
+  /** 隐藏默认的内联触发器（外部自己渲染触发器并通过 open 控制） */
+  triggerless?: boolean;
+  /** 受控的弹窗打开状态 */
+  open?: boolean;
+  /** 受控的弹窗状态回调 */
+  onOpenChange?: (v: boolean) => void;
 };
 
 /**
@@ -51,8 +57,16 @@ export function TransferBarnControl({
   label = "是否需要转栏",
   bordered = true,
   hideToggle = false,
+  triggerless = false,
+  open,
+  onOpenChange,
 }: Props) {
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const sheetOpen = open ?? internalOpen;
+  const setSheetOpen = (v: boolean) => {
+    if (onOpenChange) onOpenChange(v);
+    else setInternalOpen(v);
+  };
   const [query, setQuery] = useState("");
   const [lastPicked, setLastPicked] = useState<string>("");
 
