@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { HeartPulse, Stethoscope, Wheat, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight } from "lucide-react";
+import heroImg from "@/assets/m-workspace-hero.jpg.asset.json";
 
 const ACCOUNT = {
   name: "李雨晴",
