@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Stethoscope, Search, TrendingUp, ChevronRight, X, Pill } from "lucide-react";
+import { Stethoscope, Search, TrendingUp, ChevronRight, X, FileText } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { useFarm } from "@/lib/farm-store";
 
