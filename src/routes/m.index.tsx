@@ -66,15 +66,8 @@ function MWorkspacePage() {
             alt="草原上的牛群"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          {/* 渐变蒙版增强文字可读性 */}
-          <span
-            aria-hidden
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(0,120,60,0.55) 0%, rgba(0,140,70,0.35) 40%, rgba(245,247,250,0.0) 100%)",
-            }}
-          />
+
+
 
           <div className="relative text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
             <div className="text-page-title font-semibold tracking-tight">工作台</div>
