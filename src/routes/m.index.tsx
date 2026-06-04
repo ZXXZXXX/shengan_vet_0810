@@ -164,14 +164,6 @@ function MWorkspacePage() {
                       className="absolute inset-x-0 top-0 h-1"
                       style={{ background: m.gradient }}
                     />
-                    {/* 角落柔光 */}
-                    {!disabled && (
-                      <span
-                        aria-hidden
-                        className="absolute -top-8 -right-8 h-24 w-24 rounded-full opacity-[0.12]"
-                        style={{ background: m.gradient }}
-                      />
-                    )}
 
                     {/* 图标块 */}
                     <div
