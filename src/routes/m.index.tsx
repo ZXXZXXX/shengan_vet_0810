@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { HeartPulse, Stethoscope, Wheat, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight } from "lucide-react";
+import heroImg from "@/assets/m-workspace-hero.jpg.asset.json";
 
 const ACCOUNT = {
   name: "李雨晴",
@@ -46,19 +47,26 @@ function MWorkspacePage() {
   return (
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col">
-        {/* 顶部留白绿色背景 */}
-        <div
-          className="pt-10 pb-20 px-4 relative"
-          style={{ background: "linear-gradient(160deg,#009B53 0%,#00A85A 45%,#1FBE6F 100%)" }}
-        >
-          <span aria-hidden className="absolute top-0 right-0 h-32 w-32 rounded-full opacity-25"
-            style={{ background: "radial-gradient(circle,#7FF0BC 0%,transparent 70%)" }} />
-          <span aria-hidden className="absolute bottom-12 left-0 h-40 w-40 rounded-full opacity-20"
-            style={{ background: "radial-gradient(circle,#A7FFD5 0%,transparent 70%)" }} />
+        {/* 顶部头图：牛在草原上 */}
+        <div className="pt-10 pb-20 px-4 relative overflow-hidden">
+          <img
+            src={heroImg.url}
+            alt="草原上的牛群"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {/* 渐变蒙版增强文字可读性 */}
+          <span
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(0,120,60,0.55) 0%, rgba(0,140,70,0.35) 40%, rgba(245,247,250,0.0) 100%)",
+            }}
+          />
 
-          <div className="relative text-white">
+          <div className="relative text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
             <div className="text-page-title font-semibold tracking-tight">工作台</div>
-            <div className="text-caption text-white/85 mt-1">让每一头牛都被照顾到</div>
+            <div className="text-caption text-white/90 mt-1">让每一头牛都被照顾到</div>
           </div>
         </div>
 
