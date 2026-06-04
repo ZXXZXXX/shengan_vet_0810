@@ -1035,7 +1035,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               </span>
             </div>
 
-            <div className="border-l-2 border-primary/40 pl-3 mb-2">
+            <div className="border-l-2 border-primary/40 pl-3 mb-2 ml-[7px]">
               <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
               <div className="text-body-sm leading-relaxed text-foreground">{d.action}</div>
             </div>
