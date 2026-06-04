@@ -119,6 +119,19 @@ function TaskDetailPage() {
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   
   const [recordsOpen, setRecordsOpen] = useState(false);
+
+  // 自动归档工单：进入详情后自动滚到「逾期归档」那条复查任务
+  useEffect(() => {
+    if (!isAutoArchivedOrder || tab !== "execute") return;
+    const t = setTimeout(() => {
+      const el = document.getElementById("auto-archived-review-card");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 80);
+    return () => clearTimeout(t);
+  }, [isAutoArchivedOrder, tab]);
+
   const navigate = useNavigate();
   // 复诊工单：开始诊断决策弹窗
   const [revisitOpen, setRevisitOpen] = useState(false);
