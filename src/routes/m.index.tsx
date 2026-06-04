@@ -116,7 +116,7 @@ function MWorkspacePage() {
                 </div>
 
                 <div className="flex-1 min-w-0 pt-0.5 pr-20">
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex items-center gap-2">
                     <span className="text-section-title text-foreground font-semibold tracking-tight truncate">
                       {ACCOUNT.name}
                     </span>
