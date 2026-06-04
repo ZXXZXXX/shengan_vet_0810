@@ -90,11 +90,12 @@ function MWorkspacePage() {
 
             <button
               onClick={() => setLogoutOpen(true)}
-              className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle text-caption text-text-secondary border border-border active:bg-border"
-              aria-label="退出登录"
+              className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 h-7 px-3 rounded-full text-caption text-white shadow-sm active:opacity-90"
+              style={{ background: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" }}
+              aria-label="切换账号"
             >
               <LogOut className="h-3.5 w-3.5" />
-              退出
+              切换账号
             </button>
 
             <div className="relative p-5">
@@ -112,7 +113,7 @@ function MWorkspacePage() {
                   </span>
                 </div>
 
-                <div className="flex-1 min-w-0 pt-0.5">
+                <div className="flex-1 min-w-0 pt-0.5 pr-20">
                   <div className="flex items-baseline gap-2">
                     <span className="text-section-title text-foreground font-semibold tracking-tight truncate">
                       {ACCOUNT.name}
@@ -136,8 +137,32 @@ function MWorkspacePage() {
                   </div>
                 </div>
               </div>
+
+              {/* 所属牧场 */}
+              <div className="mt-4 pt-4 border-t border-dashed border-border">
+                <div className="flex items-center justify-between">
+                  <span className="text-caption text-text-tertiary">所属牧场</span>
+                  <span className="text-caption text-text-tertiary">共 {ACCOUNT.farms.length} 个</span>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {ACCOUNT.farms.map((f) => (
+                    <span
+                      key={f}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-caption font-medium"
+                      style={{
+                        background: "color-mix(in oklab, #00A85A 8%, transparent)",
+                        color: "var(--foreground)",
+                      }}
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#00A85A" }} />
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
+
 
 
           {/* 业务入口 */}
