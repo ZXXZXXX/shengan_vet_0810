@@ -82,7 +82,7 @@ function MWorkspacePage() {
 
 
 
-          <div className="relative text-white" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.45)" }}>
+          <div className="relative pt-6 text-white" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.45)" }}>
             <div className="text-page-title font-semibold tracking-tight">工作台</div>
             <div className="text-caption text-white/95 mt-1">让每一头牛都被照顾到</div>
           </div>
