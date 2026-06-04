@@ -68,23 +68,15 @@ function SearchPage() {
         </div>
 
         {/* 搜索框 */}
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-            <input
-              autoFocus
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={mode === "cow" ? "输入牛只编号" : "输入牛舍编号或名称"}
-              className="w-full h-11 pl-9 pr-3 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary"
-            />
-          </div>
-          <button
-            onClick={() => navigate({ to: "/m/scan" })}
-            className="h-11 px-3 rounded-xl bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium"
-          >
-            <ScanLine className="h-4 w-4" /> 扫码
-          </button>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+          <input
+            autoFocus
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={mode === "cow" ? "输入牛只编号" : "输入牛舍编号或名称"}
+            className="w-full h-11 pl-9 pr-3 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary"
+          />
         </div>
 
         {/* 结果 */}
