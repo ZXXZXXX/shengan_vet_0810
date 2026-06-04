@@ -1,5 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { HeartPulse, Stethoscope, Wheat, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight } from "lucide-react";
+import { HeartPulse, Stethoscope, Wheat, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight, LogOut } from "lucide-react";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import heroImg from "@/assets/m-workspace-hero.jpg.asset.json";
 
 const ACCOUNT = {
@@ -37,6 +48,7 @@ const MODULES: Module[] = [
 function MWorkspacePage() {
   const navigate = useNavigate();
   const enabledCount = MODULES.filter((m) => m.enabled).length;
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const pick = (m: Module) => {
     if (!m.enabled || !m.to) return;
@@ -64,9 +76,19 @@ function MWorkspacePage() {
             }}
           />
 
-          <div className="relative text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
-            <div className="text-page-title font-semibold tracking-tight">工作台</div>
-            <div className="text-caption text-white/90 mt-1">让每一头牛都被照顾到</div>
+          <div className="relative flex items-start justify-between text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
+            <div>
+              <div className="text-page-title font-semibold tracking-tight">工作台</div>
+              <div className="text-caption text-white/90 mt-1">让每一头牛都被照顾到</div>
+            </div>
+            <button
+              onClick={() => setLogoutOpen(true)}
+              className="shrink-0 inline-flex items-center gap-1 h-8 px-2.5 rounded-full bg-white/15 backdrop-blur-sm text-caption text-white border border-white/25 active:bg-white/25"
+              aria-label="退出登录"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              退出
+            </button>
           </div>
         </div>
 
@@ -223,6 +245,26 @@ function MWorkspacePage() {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+        <AlertDialogContent className="max-w-[320px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认退出登录？</AlertDialogTitle>
+            <AlertDialogDescription>
+              退出后需要重新通过企业微信授权登录。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+              onClick={() => navigate({ to: "/m/login" })}
+            >
+              确认退出
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   LogOut,
   ClipboardList,
   ShieldCheck,
+  LayoutGrid,
 } from "lucide-react";
 import meHero from "@/assets/me-hero.png";
 
@@ -64,6 +65,7 @@ function MePage() {
 
 
       <section className="px-4 mt-5 space-y-2">
+        <MenuItem icon={LayoutGrid} label="返回工作台" to="/m" />
         <MenuItem icon={ClipboardList} label="草稿箱" to="/m/drafts" />
         <MenuItem icon={ShieldCheck} label="账号安全" to="/m/account-security" />
         <MenuItem icon={HelpCircle} label="帮助与反馈" />
