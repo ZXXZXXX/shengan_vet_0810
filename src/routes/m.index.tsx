@@ -65,7 +65,7 @@ function MWorkspacePage() {
             src={heroImg}
             alt="草原上的牛群"
             className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "center 95%" }}
+            style={{ objectPosition: "center 55%" }}
           />
 
           {/* 底部渐变隐去，避免硬裁切 */}
