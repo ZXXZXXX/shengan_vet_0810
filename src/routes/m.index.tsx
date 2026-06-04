@@ -77,7 +77,7 @@ function MWorkspacePage() {
                 {/* 头像 */}
                 <div className="relative shrink-0">
                   <div
-                    className="h-16 w-16 rounded-2xl flex items-center justify-center text-section-title font-semibold text-white shadow-md"
+                    className="h-16 w-16 rounded-full flex items-center justify-center text-section-title font-semibold text-white shadow-md"
                     style={{ background: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" }}
                   >
                     {ACCOUNT.name.slice(-2)}
