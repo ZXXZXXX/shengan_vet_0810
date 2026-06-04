@@ -53,14 +53,25 @@ function MobileTopBar({
       navigate({ to: back.to });
       return;
     }
-    // 返回上一级路由（按路径层级），最低落到 /m
+    // 只有 /m/homepage 可以返回到 /m；其他页面最低落到 /m/homepage
+    // 已知存在的父级路由白名单
+    const knownParents = new Set([
+      "/m/homepage",
+      "/m/health",
+      "/m/me",
+      "/m/notifications",
+    ]);
     const segments = pathname.replace(/\/+$/, "").split("/").filter(Boolean);
     if (segments.length <= 1) {
       navigate({ to: "/m" });
       return;
     }
     const parent = "/" + segments.slice(0, -1).join("/");
-    navigate({ to: parent || "/m" });
+    if (parent === "/m" || (parent.startsWith("/m/") && !knownParents.has(parent))) {
+      navigate({ to: "/m/homepage" });
+      return;
+    }
+    navigate({ to: parent || "/m/homepage" });
   };
   return (
     <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border">
