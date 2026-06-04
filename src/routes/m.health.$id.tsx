@@ -103,16 +103,19 @@ function TaskDetailPage() {
   const role = useRole();
 
   const search = Route.useSearch();
-  // 默认 tab：进行中工单（已有执行内容）直接定位到执行任务；有诊断记录优先诊断；否则上报
+  // 默认 tab：自动归档工单 → 执行任务（并滚到逾期那条）；进行中 → 执行任务；有诊断记录 → 复查；否则上报
   const currentStatus = statusById[id] ??
     (role === "hoof_trimmer" || role === "vet_assistant" || role === "immunizer" ? "进行中" : "待诊断");
   const hasDiagnosis = currentStatus !== "待诊断";
   const hasExecution = currentStatus === "进行中";
-  const defaultTab: "report" | "review" | "execute" = hasExecution
+  const isAutoArchivedOrder = autoArchivedOrders.has(id);
+  const defaultTab: "report" | "review" | "execute" = isAutoArchivedOrder
     ? "execute"
-    : hasDiagnosis
-      ? "review"
-      : "report";
+    : hasExecution
+      ? "execute"
+      : hasDiagnosis
+        ? "review"
+        : "report";
   const [tab, setTab] = useState<"report" | "review" | "execute">(search.tab ?? defaultTab);
   
   const [recordsOpen, setRecordsOpen] = useState(false);
