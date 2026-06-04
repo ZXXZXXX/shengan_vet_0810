@@ -26,11 +26,11 @@ type Module = {
 
 const MODULES: Module[] = [
   { id: "vet", name: "智慧兽医", desc: "诊疗 · 处方 · 药品", icon: Stethoscope, to: "/m/homepage", enabled: true, gradient: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" },
-  { id: "birth", name: "智能接生", desc: "产前预警 · 接产", icon: HeartPulse, enabled: false, gradient: "linear-gradient(135deg,#8B5CF6 0%,#C084FC 100%)" },
-  { id: "feed", name: "饲喂管理", desc: "配方 · 投喂任务", icon: Wheat, enabled: false, gradient: "linear-gradient(135deg,#0891B2 0%,#22D3EE 100%)" },
-  { id: "env", name: "环境监测", desc: "温湿度 · 氨气", icon: Activity, enabled: false, gradient: "linear-gradient(135deg,#F59E0B 0%,#FBBF24 100%)" },
-  { id: "transport", name: "运牛管理", desc: "调运 · 路线追踪", icon: Truck, enabled: false, gradient: "linear-gradient(135deg,#2563EB 0%,#60A5FA 100%)" },
-  { id: "milk", name: "产奶分析", desc: "产量 · 品质监控", icon: Droplets, enabled: false, gradient: "linear-gradient(135deg,#0284C7 0%,#7DD3FC 100%)" },
+  { id: "birth", name: "智能接生", desc: "产前预警 · 接产", icon: HeartPulse, enabled: false, gradient: "linear-gradient(135deg,#EC4899 0%,#F9A8D4 100%)" },
+  { id: "feed", name: "饲喂管理", desc: "配方 · 投喂任务", icon: Wheat, enabled: false, gradient: "linear-gradient(135deg,#D4A017 0%,#F5D77A 100%)" },
+  { id: "env", name: "环境监测", desc: "温湿度 · 氨气", icon: Activity, enabled: false, gradient: "linear-gradient(135deg,#2563EB 0%,#60A5FA 100%)" },
+  { id: "transport", name: "运牛管理", desc: "调运 · 路线追踪", icon: Truck, enabled: false, gradient: "linear-gradient(135deg,#EA580C 0%,#FB923C 100%)" },
+  { id: "milk", name: "产奶分析", desc: "产量 · 品质监控", icon: Droplets, enabled: false, gradient: "linear-gradient(135deg,#14B8A6 0%,#5EEAD4 100%)" },
 ];
 
 function MWorkspacePage() {
@@ -162,7 +162,7 @@ function MWorkspacePage() {
                     <span
                       aria-hidden
                       className="absolute inset-x-0 top-0 h-1"
-                      style={{ background: disabled ? "var(--border)" : m.gradient }}
+                      style={{ background: m.gradient }}
                     />
                     {/* 角落柔光 */}
                     {!disabled && (
@@ -177,8 +177,8 @@ function MWorkspacePage() {
                     <div
                       className="relative h-12 w-12 rounded-2xl flex items-center justify-center shadow-sm"
                       style={{
-                        background: disabled ? "var(--bg-surface-subtle)" : m.gradient,
-                        color: disabled ? "var(--text-tertiary)" : "#ffffff",
+                        background: m.gradient,
+                        color: "#ffffff",
                       }}
                     >
                       <Icon className="h-6 w-6" strokeWidth={2} />
@@ -188,6 +188,15 @@ function MWorkspacePage() {
                         </span>
                       )}
                     </div>
+
+                    {/* 未开通蒙版 */}
+                    {disabled && (
+                      <span
+                        aria-hidden
+                        className="absolute inset-0 pointer-events-none"
+                        style={{ background: "rgba(245,246,248,0.55)" }}
+                      />
+                    )}
 
                     {/* 文字 */}
                     <div className="relative mt-3">
