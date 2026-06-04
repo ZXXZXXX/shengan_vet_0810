@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Baby, Stethoscope, UtensilsCrossed, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight } from "lucide-react";
+import { Sprout, Stethoscope, UtensilsCrossed, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight } from "lucide-react";
 
 const ACCOUNT = {
   name: "李雨晴",
