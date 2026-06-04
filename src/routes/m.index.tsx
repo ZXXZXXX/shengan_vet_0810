@@ -40,7 +40,7 @@ const MODULES: Module[] = [
   { id: "vet", name: "智慧兽医", desc: "诊疗 · 处方 · 药品", icon: Stethoscope, to: "/m/homepage", enabled: true, gradient: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" },
   { id: "birth", name: "智能接生", desc: "产前预警 · 接产", icon: HeartPulse, enabled: false, gradient: "linear-gradient(135deg,#EC4899 0%,#F9A8D4 100%)" },
   { id: "feed", name: "饲喂管理", desc: "配方 · 投喂任务", icon: Wheat, enabled: false, gradient: "linear-gradient(135deg,#D4A017 0%,#F5D77A 100%)" },
-  { id: "env", name: "环境监测", desc: "温湿度 · 氨气", icon: Activity, enabled: false, gradient: "linear-gradient(135deg,#2563EB 0%,#60A5FA 100%)" },
+  { id: "env", name: "环境监测", desc: "温湿度 · 氨气", icon: Activity, enabled: false, gradient: "linear-gradient(135deg,#22ACEB 0%,#7DD3F8 100%)" },
   { id: "transport", name: "运牛管理", desc: "调运 · 路线追踪", icon: Truck, enabled: false, gradient: "linear-gradient(135deg,#EA580C 0%,#FB923C 100%)" },
   { id: "milk", name: "产奶分析", desc: "产量 · 品质监控", icon: Droplets, enabled: false, gradient: "linear-gradient(135deg,#14B8A6 0%,#5EEAD4 100%)" },
 ];
