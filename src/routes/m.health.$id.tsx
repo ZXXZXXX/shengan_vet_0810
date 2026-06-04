@@ -1103,7 +1103,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
             </div>
             {isAutoArchived ? (
               <div className="rounded-lg bg-[#FFF1F0] border border-[#FFA39E] px-3 py-2 mb-2 text-caption text-[#CF1322] leading-relaxed">
-                复查任务触发后 48 小时内无人执行，系统已自动标记为<span className="font-medium">「逾期未完成」</span>并归档工单。该自动归档不代表复查结论正常，仅表示治疗流程已结束。
+                复查逾期 48 小时，已自动归档
               </div>
             ) : isReviewActive ? (
               <div className="rounded-lg bg-[#FFF7E6] border border-[#FFE1A8] px-3 py-2 mb-2 text-caption text-[#B8860B] leading-relaxed">
