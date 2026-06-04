@@ -622,50 +622,54 @@ function TaskDetailPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={recordsOpen} onOpenChange={setRecordsOpen}>
-        <DialogContent className="max-w-[360px] rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-card-title">诊疗信息摘要</DialogTitle>
-          </DialogHeader>
-          {summary && (
-            <div className="space-y-3 max-h-[65vh] overflow-y-auto -mx-1 px-1">
-              <div className="flex items-center gap-2">
+      <Sheet open={recordsOpen} onOpenChange={setRecordsOpen}>
+        <SheetContent
+          side="bottom"
+          className="p-0 rounded-t-2xl max-h-[85vh] flex flex-col gap-0 mx-auto w-full max-w-[440px]"
+        >
+          <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
+            <SheetTitle className="text-card-title text-left">诊疗信息摘要</SheetTitle>
+            {summary && (
+              <div className="flex items-center gap-2 mt-1">
                 <span className="text-caption text-text-tertiary">来源</span>
                 <span className="font-mono text-caption text-foreground">{summary.id}</span>
                 <span className="text-text-tertiary text-caption">·</span>
                 <span className="text-caption text-text-tertiary">{summary.date}</span>
               </div>
-
-              <div className="rounded-xl border border-border bg-card p-3 space-y-1.5">
+            )}
+          </SheetHeader>
+          {summary && (
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+              <div className="space-y-1.5">
                 <div className="text-caption text-text-tertiary">诊断结论</div>
                 <div className="text-body-sm text-foreground">{summary.conclusion}</div>
               </div>
 
-              <div className="rounded-xl border border-border bg-card p-3 space-y-1.5">
+              <div className="space-y-1.5">
                 <div className="text-caption text-text-tertiary">处方信息</div>
                 <p className="text-body-sm text-text-secondary leading-relaxed">{summary.prescription}</p>
               </div>
 
-              <div className="rounded-xl border border-border bg-card p-3 space-y-3">
+              <div className="space-y-3">
                 <div className="text-caption text-text-tertiary">用药记录</div>
                 <div className="relative pl-4">
-                  <span className="absolute left-[5px] top-1.5 bottom-1.5 w-px bg-border" />
+                  <span className="absolute left-[3px] top-2 bottom-2 w-px bg-border" />
                   <div className="space-y-4">
                     {summary.medGroups.map((g) => (
                       <div key={g.date} className="relative">
-                        <span className="absolute -left-4 top-1.5 h-[7px] w-[7px] rounded-full bg-primary ring-2 ring-background" />
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className="font-mono text-caption text-text-secondary">{g.date}</span>
+                        <span className="absolute -left-4 top-[7px] h-[7px] w-[7px] rounded-full bg-primary ring-2 ring-background" />
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-mono text-body-sm text-foreground">{g.date}</span>
                           <span className="text-caption text-text-tertiary">· {g.items.length} 条</span>
                         </div>
                         <div className="space-y-1.5">
                           {g.items.map((m) => (
                             <div
                               key={m.name}
-                              className="grid grid-cols-[1fr_auto_auto] gap-3 items-center"
+                              className="grid grid-cols-[1fr_auto_auto] gap-4 items-center"
                             >
                               <div className="text-body-sm text-foreground truncate">{m.name}</div>
-                              <div className="text-caption text-primary truncate text-center">
+                              <div className="text-caption text-primary truncate">
                                 {m.manufacturer}
                               </div>
                               <div className="text-caption text-text-secondary truncate text-right">
@@ -679,11 +683,10 @@ function TaskDetailPage() {
                   </div>
                 </div>
               </div>
-
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </MobileShell>
   );
 }
