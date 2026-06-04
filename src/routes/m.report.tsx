@@ -517,46 +517,17 @@ function ReportPage() {
                     </div>
                   ))}
                   {barns.length === 0 && (
-                    <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
-                      <div className="flex gap-2">
-                        <div className="flex-1 relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                          <input
-                            autoFocus
-                            value={barnAddQuery}
-                            onChange={(e) => setBarnAddQuery(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" && barnAddQuery.trim()) {
-                                e.preventDefault();
-                                addBarn(barnAddQuery.trim());
-                                setBarnAddQuery("");
-                              }
-                            }}
-                            placeholder="输入牛舍编号搜索或回车添加"
-                            className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
-                          />
-                        </div>
-                        <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium active:scale-[0.97] transition-transform">
-                          <ScanLine className="h-4 w-4" /> 扫码
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {barnMatches.length === 0 ? (
-                          <span className="text-caption text-text-tertiary px-1 py-1">无匹配结果</span>
-                        ) : (
-                          barnMatches.map((s) => (
-                            <button
-                              key={s}
-                              onClick={() => addBarn(s)}
-                              className="h-8 px-3 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 active:scale-[0.96]"
-                            >
-                              <Plus className="h-3 w-3" />
-                              {s}
-                            </button>
-                          ))
-                        )}
-                      </div>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBarnAddQuery("");
+                        setBarnPickerOpen(true);
+                      }}
+                      className="w-full h-12 px-3 rounded-xl bg-card border border-border text-left text-body text-text-tertiary flex items-center gap-2"
+                    >
+                      <Search className="h-4 w-4 text-text-tertiary" />
+                      <span className="flex-1">点击选择牛舍</span>
+                    </button>
                   )}
                 </div>
               ) : (
@@ -569,6 +540,7 @@ function ReportPage() {
                   }
                 }}
               >
+
                 {targets.map((t) => {
                   const isEditing = editingTarget === t;
                   const canDelete = true;
