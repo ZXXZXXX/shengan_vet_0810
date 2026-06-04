@@ -7,7 +7,7 @@ import {
   Mic,
   Video,
   Search,
-  Plus,
+
   Sparkles,
   FileText,
   Check,
@@ -242,9 +242,10 @@ function ReportPage() {
 
   // 牛舍多选（barnMode）
   const allBarns = useMemo(
-    () => Array.from({ length: 8 }, (_, i) => `${i + 1} 号牛舍`),
+    () => Array.from({ length: 48 }, (_, i) => `${i + 1} 号牛舍`),
     []
   );
+
   const addBarn = (v: string) => {
     const t = v.trim();
     if (!t) return;
@@ -254,12 +255,13 @@ function ReportPage() {
     setBarns((prev) => (prev.length <= 1 ? prev : prev.filter((x) => x !== t)));
   };
   const [barnAddQuery, setBarnAddQuery] = useState("");
-  const [showBarnAdd, setShowBarnAdd] = useState(false);
+  const [barnPickerOpen, setBarnPickerOpen] = useState(false);
   const barnMatches = useMemo(() => {
     const kw = barnAddQuery.trim();
     const pool = allBarns.filter((b) => !barns.includes(b));
-    return (kw ? pool.filter((b) => b.includes(kw)) : pool).slice(0, 8);
+    return kw ? pool.filter((b) => b.includes(kw)) : pool;
   }, [allBarns, barns, barnAddQuery]);
+
 
   const [editingTarget, setEditingTarget] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
@@ -515,46 +517,17 @@ function ReportPage() {
                     </div>
                   ))}
                   {barns.length === 0 && (
-                    <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
-                      <div className="flex gap-2">
-                        <div className="flex-1 relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                          <input
-                            autoFocus
-                            value={barnAddQuery}
-                            onChange={(e) => setBarnAddQuery(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" && barnAddQuery.trim()) {
-                                e.preventDefault();
-                                addBarn(barnAddQuery.trim());
-                                setBarnAddQuery("");
-                              }
-                            }}
-                            placeholder="输入牛舍编号搜索或回车添加"
-                            className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
-                          />
-                        </div>
-                        <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium active:scale-[0.97] transition-transform">
-                          <ScanLine className="h-4 w-4" /> 扫码
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {barnMatches.length === 0 ? (
-                          <span className="text-caption text-text-tertiary px-1 py-1">无匹配结果</span>
-                        ) : (
-                          barnMatches.map((s) => (
-                            <button
-                              key={s}
-                              onClick={() => addBarn(s)}
-                              className="h-8 px-3 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 active:scale-[0.96]"
-                            >
-                              <Plus className="h-3 w-3" />
-                              {s}
-                            </button>
-                          ))
-                        )}
-                      </div>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBarnAddQuery("");
+                        setBarnPickerOpen(true);
+                      }}
+                      className="w-full h-12 px-3 rounded-xl bg-card border border-border text-left text-body text-text-tertiary flex items-center gap-2"
+                    >
+                      <Search className="h-4 w-4 text-text-tertiary" />
+                      <span className="flex-1">点击选择牛舍</span>
+                    </button>
                   )}
                 </div>
               ) : (
@@ -567,6 +540,7 @@ function ReportPage() {
                   }
                 }}
               >
+
                 {targets.map((t) => {
                   const isEditing = editingTarget === t;
                   const canDelete = true;
@@ -1049,7 +1023,67 @@ function ReportPage() {
           </div>
         </div>
       )}
+
+      {/* 牛舍选择弹层 */}
+      {barnPickerOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          onClick={() => setBarnPickerOpen(false)}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[75vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border shrink-0">
+              <div className="text-body font-medium text-foreground">选择牛舍</div>
+              <button
+                type="button"
+                onClick={() => setBarnPickerOpen(false)}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
+                aria-label="关闭"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="px-4 pt-3 shrink-0">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                <input
+                  autoFocus
+                  value={barnAddQuery}
+                  onChange={(e) => setBarnAddQuery(e.target.value)}
+                  placeholder="搜索牛舍编号"
+                  className="w-full h-10 pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary"
+                />
+              </div>
+            </div>
+            <div className="p-3 overflow-y-auto flex-1">
+              {barnMatches.length === 0 ? (
+                <div className="text-center py-12 text-body-sm text-text-tertiary">无匹配牛舍</div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {barnMatches.map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => {
+                        addBarn(b);
+                        setBarnPickerOpen(false);
+                        setBarnAddQuery("");
+                      }}
+                      className="w-full text-left px-2 h-12 flex items-center text-body text-foreground active:bg-surface-subtle"
+                    >
+                      {b}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </MobileShell>
+
   );
 }
 
