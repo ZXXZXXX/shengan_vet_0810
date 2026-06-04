@@ -62,6 +62,7 @@ function AnimalDetailPage() {
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferEnabled, setTransferEnabled] = useState(true);
   const [transferTo, setTransferTo] = useState("");
+  const [transferPickerOpen, setTransferPickerOpen] = useState(false);
   const [transferReasons, setTransferReasons] = useState<string[]>([]);
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
 
