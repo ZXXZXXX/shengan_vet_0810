@@ -1,5 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { HeartPulse, Stethoscope, Wheat, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight } from "lucide-react";
+import { HeartPulse, Stethoscope, Wheat, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight, LogOut } from "lucide-react";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import heroImg from "@/assets/m-workspace-hero.jpg.asset.json";
 
 const ACCOUNT = {
