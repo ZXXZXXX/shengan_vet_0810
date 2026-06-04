@@ -28,7 +28,12 @@ function ScanPage() {
           <X className="h-4 w-4" />
         </button>
         <h1 className="flex-1 text-center text-card-title">扫码</h1>
-        <span className="w-8" />
+        <button
+          onClick={() => navigate({ to: "/m/search" })}
+          className="h-8 px-3 rounded-full bg-white/10 inline-flex items-center gap-1 text-caption text-white/90 active:bg-white/15"
+        >
+          <Search className="h-3.5 w-3.5" /> 搜索
+        </button>
       </header>
 
       {/* 取景框 */}
