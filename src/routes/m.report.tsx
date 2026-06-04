@@ -460,7 +460,7 @@ function ReportPage() {
             <Section
               title="上报对象"
               required
-              hint={barnMode ? "可一次性上报多个牛舍" : "可一次性上报多个对象"}
+              hint={barnMode ? "仅可选择一个牛舍" : "仅可选择一个牛只"}
             >
               {barnMode ? (
                 <div className="space-y-2">
