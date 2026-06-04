@@ -376,18 +376,16 @@ function AnimalDetailPage() {
                   <ArrowRight className="h-4 w-4" />
                 </div>
                 <div
-                  className={`flex-1 min-w-0 rounded-xl px-3 py-2.5 transition-colors ${
-                    transferTo
-                      ? "bg-primary text-primary-foreground border border-primary shadow-[0_4px_12px_-4px_color-mix(in_oklab,var(--primary)_55%,transparent)]"
-                      : "border border-dashed border-primary/40 bg-brand-subtle/40"
+                  className={`flex-1 min-w-0 rounded-xl bg-card px-3 py-2.5 ${
+                    transferTo ? "border border-primary" : "border border-dashed border-border"
                   }`}
                 >
-                  <div className={`flex items-center gap-1 text-caption mb-1 ${transferTo ? "text-primary-foreground/85" : "text-primary"}`}>
+                  <div className={`flex items-center gap-1 text-caption mb-1 ${transferTo ? "text-primary" : "text-text-tertiary"}`}>
                     <MapPin className="h-3 w-3" />
                     转入位置
                   </div>
-                  <div className={`text-body font-medium truncate ${transferTo ? "text-primary-foreground" : "text-primary/70"}`}>
-                    {transferTo || "请选择牛舍"}
+                  <div className={`text-body-sm truncate ${transferTo ? "text-foreground font-medium" : "text-text-tertiary"}`}>
+                    {transferTo || "待选择"}
                   </div>
                 </div>
               </div>
