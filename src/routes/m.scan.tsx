@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { X, ScanLine, AlertCircle, ClipboardPlus, RefreshCw, Home, Beef } from "lucide-react";
+import { X, ScanLine, AlertCircle, RefreshCw, Home, Beef, Search } from "lucide-react";
 
 export const Route = createFileRoute("/m/scan")({
   head: () => ({ meta: [{ title: "扫码 · 奇点智牧" }] }),
@@ -10,12 +10,25 @@ export const Route = createFileRoute("/m/scan")({
 function ScanPage() {
   const navigate = useNavigate();
   const [scanning, setScanning] = useState(true);
+  const [queryMode, setQueryMode] = useState<"cow" | "barn">("cow");
+  const [queryValue, setQueryValue] = useState("");
 
   useEffect(() => {
     if (!scanning) return;
+    setQueryValue("");
     const t = setTimeout(() => setScanning(false), 2000);
     return () => clearTimeout(t);
   }, [scanning]);
+
+  const submitQuery = () => {
+    const v = queryValue.trim();
+    if (!v) return;
+    if (queryMode === "cow") {
+      navigate({ to: "/m/animals-{$id}", params: { id: v } });
+    } else {
+      navigate({ to: "/m/barns/$id", params: { id: v } });
+    }
+  };
 
   return (
     <div className="m-scope fixed inset-0 z-50 bg-black text-white flex flex-col">
@@ -97,23 +110,65 @@ function ScanPage() {
               </span>
               <div className="text-section-title">未识别到有效码</div>
               <p className="text-body-sm text-text-tertiary leading-relaxed mt-2">
-                请确认条码清晰且在框内,
-                <br />
-                或直接进入异常上报
+                可手动输入牛只编号或牛舍编号快速查询
               </p>
             </div>
-            <div className="px-4 pt-5 flex gap-3">
+            <div className="px-4 pt-4 space-y-3">
+              <div className="inline-flex rounded-full border border-border bg-surface-subtle p-0.5">
+                {[
+                  { v: "cow" as const, label: "牛只", Icon: Beef },
+                  { v: "barn" as const, label: "牛舍", Icon: Home },
+                ].map(({ v, label, Icon }) => {
+                  const active = queryMode === v;
+                  return (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setQueryMode(v)}
+                      className={`h-8 min-w-[88px] px-3 rounded-full text-body-sm inline-flex items-center justify-center gap-1 transition-colors ${
+                        active
+                          ? "bg-card text-foreground border border-border shadow-sm"
+                          : "text-text-tertiary"
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex gap-2">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                  <input
+                    autoFocus
+                    value={queryValue}
+                    onChange={(e) => setQueryValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        submitQuery();
+                      }
+                    }}
+                    placeholder={
+                      queryMode === "cow" ? "输入牛只编号" : "输入牛舍编号"
+                    }
+                    className="w-full h-12 pl-9 pr-2 rounded-xl bg-surface-subtle border border-border text-body placeholder:text-text-tertiary"
+                  />
+                </div>
+                <button
+                  disabled={!queryValue.trim()}
+                  onClick={submitQuery}
+                  className="h-12 px-5 rounded-xl bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+                >
+                  查询
+                </button>
+              </div>
               <button
                 onClick={() => setScanning(true)}
-                className="flex-1 h-12 rounded-xl bg-surface-subtle text-body text-text-secondary inline-flex items-center justify-center gap-1.5"
+                className="w-full h-11 rounded-xl bg-surface-subtle text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
               >
                 <RefreshCw className="h-4 w-4" /> 重新扫描
-              </button>
-              <button
-                onClick={() => navigate({ to: "/m/report" })}
-                className="flex-1 h-12 rounded-xl bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
-              >
-                <ClipboardPlus className="h-4 w-4" /> 直接上报
               </button>
             </div>
           </div>
