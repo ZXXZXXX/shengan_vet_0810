@@ -42,6 +42,7 @@ import { Route as OrganizationTenantRouteImport } from './routes/organization.te
 import { Route as OrganizationTeamRouteImport } from './routes/organization.team'
 import { Route as OrganizationRoleRouteImport } from './routes/organization.role'
 import { Route as OrganizationAccountRouteImport } from './routes/organization.account'
+import { Route as MSearchRouteImport } from './routes/m.search'
 import { Route as MScanRouteImport } from './routes/m.scan'
 import { Route as MReturnReportRouteImport } from './routes/m.return-report'
 import { Route as MRespondRouteImport } from './routes/m.respond'
@@ -239,6 +240,11 @@ const OrganizationAccountRoute = OrganizationAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => OrganizationRoute,
 } as any)
+const MSearchRoute = MSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => MRoute,
+} as any)
 const MScanRoute = MScanRouteImport.update({
   id: '/scan',
   path: '/scan',
@@ -432,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
+  '/m/search': typeof MSearchRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
@@ -493,6 +500,7 @@ export interface FileRoutesByTo {
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
+  '/m/search': typeof MSearchRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
@@ -560,6 +568,7 @@ export interface FileRoutesById {
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
   '/m/scan': typeof MScanRoute
+  '/m/search': typeof MSearchRoute
   '/organization/account': typeof OrganizationAccountRoute
   '/organization/role': typeof OrganizationRoleRoute
   '/organization/team': typeof OrganizationTeamRoute
@@ -628,6 +637,7 @@ export interface FileRouteTypes {
     | '/m/respond'
     | '/m/return-report'
     | '/m/scan'
+    | '/m/search'
     | '/organization/account'
     | '/organization/role'
     | '/organization/team'
@@ -689,6 +699,7 @@ export interface FileRouteTypes {
     | '/m/respond'
     | '/m/return-report'
     | '/m/scan'
+    | '/m/search'
     | '/organization/account'
     | '/organization/role'
     | '/organization/team'
@@ -755,6 +766,7 @@ export interface FileRouteTypes {
     | '/m/respond'
     | '/m/return-report'
     | '/m/scan'
+    | '/m/search'
     | '/organization/account'
     | '/organization/role'
     | '/organization/team'
@@ -1034,6 +1046,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationAccountRouteImport
       parentRoute: typeof OrganizationRoute
     }
+    '/m/search': {
+      id: '/m/search'
+      path: '/search'
+      fullPath: '/m/search'
+      preLoaderRoute: typeof MSearchRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/scan': {
       id: '/m/scan'
       path: '/scan'
@@ -1303,6 +1322,7 @@ interface MRouteChildren {
   MRespondRoute: typeof MRespondRoute
   MReturnReportRoute: typeof MReturnReportRoute
   MScanRoute: typeof MScanRoute
+  MSearchRoute: typeof MSearchRoute
   MIndexRoute: typeof MIndexRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
@@ -1332,6 +1352,7 @@ const MRouteChildren: MRouteChildren = {
   MRespondRoute: MRespondRoute,
   MReturnReportRoute: MReturnReportRoute,
   MScanRoute: MScanRoute,
+  MSearchRoute: MSearchRoute,
   MIndexRoute: MIndexRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
