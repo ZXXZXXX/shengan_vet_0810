@@ -362,11 +362,11 @@ function AnimalDetailPage() {
               </button>
             </div>
             <div className="p-4 space-y-3">
-              <div className="rounded-xl bg-surface-subtle border border-border px-3 py-2.5">
-                <div className="text-caption text-text-tertiary mb-0.5">当前位置</div>
-                <div className="text-body-sm text-foreground">
+              <div className="flex items-baseline gap-2 px-1">
+                <span className="text-caption text-text-tertiary shrink-0">当前位置</span>
+                <span className="text-body-sm text-foreground">
                   #{a.id} · {a.barn} · {a.pen}
-                </div>
+                </span>
               </div>
               <TransferBarnControl
                 enabled={transferEnabled}
