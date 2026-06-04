@@ -32,7 +32,7 @@ import { Activity, BookMarked } from "lucide-react";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { QrCode } from "lucide-react";
-import grasslandHero from "@/assets/grassland-hero.png";
+import grasslandHero from "@/assets/homepage-hero.png";
 
 
 export const Route = createFileRoute("/m/homepage")({
