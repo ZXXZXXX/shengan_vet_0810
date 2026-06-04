@@ -464,6 +464,7 @@ function ReportPage() {
             <Section
               title="上报对象"
               required
+              hint={barnMode ? "仅可选择一个牛舍" : "仅可选择一个牛只"}
             >
               {!lockMode && (
                 <div className="mb-2.5 inline-flex rounded-full border border-border bg-surface-subtle p-0.5">
