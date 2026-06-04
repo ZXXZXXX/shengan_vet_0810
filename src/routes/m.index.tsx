@@ -92,11 +92,8 @@ function MWorkspacePage() {
                     <span className="text-section-title text-foreground font-semibold tracking-tight truncate">
                       {ACCOUNT.name}
                     </span>
-                    <span className="text-caption text-text-tertiary">您好</span>
-                  </div>
-                  <div className="mt-1.5 flex items-center gap-1.5">
                     <span
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium"
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium shrink-0"
                       style={{
                         background: "color-mix(in oklab, #00A85A 10%, transparent)",
                         color: "#00A85A",
@@ -105,8 +102,12 @@ function MWorkspacePage() {
                       <BadgeCheck className="h-3 w-3" />
                       {ACCOUNT.role}
                     </span>
-                    <span className="text-caption text-text-tertiary">·</span>
-                    <span className="text-caption text-text-secondary">{ACCOUNT.group}</span>
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-1.5 text-caption text-text-secondary">
+                    <Building2 className="h-3 w-3 text-text-tertiary shrink-0" />
+                    <span className="truncate">{ACCOUNT.group}</span>
+                    <span className="text-text-tertiary">·</span>
+                    <span className="font-mono text-text-tertiary">{ACCOUNT.workId}</span>
                   </div>
                 </div>
               </div>
