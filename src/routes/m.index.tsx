@@ -136,11 +136,9 @@ function MWorkspacePage() {
                   </div>
                 </div>
               </div>
-
-                </div>
-              </div>
             </div>
           </div>
+
 
           {/* 业务入口 */}
           <div>
