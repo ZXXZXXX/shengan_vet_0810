@@ -381,7 +381,7 @@ function TodayTaskList({ role }: { role: Role }) {
   const filter: RoleFilter =
     roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
   const matched = getRoleTasks(role);
-  const visible = matched.slice(0, 5);
+  const visible = matched.slice(0, 7);
 
   if (visible.length === 0) {
     return (
