@@ -66,11 +66,6 @@ function MWorkspacePage() {
           {/* 名片 */}
           <div className="relative rounded-3xl bg-card shadow-xl overflow-hidden"
             style={{ boxShadow: "0 12px 32px -12px rgba(0,168,90,0.25), 0 4px 12px rgba(0,0,0,0.06)" }}>
-            {/* 顶部装饰带 */}
-            <div className="absolute inset-x-0 top-0 h-20 opacity-[0.08]"
-              style={{ background: "linear-gradient(135deg,#00A85A,#3FD49C)" }} />
-            <span aria-hidden className="absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-10"
-              style={{ background: "radial-gradient(circle,#00A85A 0%,transparent 70%)" }} />
 
             <div className="relative p-5">
               <div className="flex items-start gap-3.5">
