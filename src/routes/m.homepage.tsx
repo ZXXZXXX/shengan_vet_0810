@@ -698,20 +698,25 @@ function KBShortcut({
       className="group relative block h-[110px] active:scale-[0.98] transition-transform"
       aria-label={label}
     >
+      {/* 顶部 tab —— 与后片共用同一底色，确保边缘连续 */}
+      <div
+        className="absolute left-0 top-0 h-4 w-[44%] rounded-tl-[14px] rounded-tr-[10px]"
+        style={{ background: accent }}
+      />
       {/* 文件夹后片 */}
       <div
-        className="absolute inset-x-0 bottom-0 top-2.5 rounded-tr-[14px] rounded-b-[14px]"
-
+        className="absolute inset-x-0 bottom-0 top-3 rounded-tr-[14px] rounded-b-[14px]"
         style={{
-          background: `linear-gradient(160deg, color-mix(in oklab, ${accent} 92%, #fff) 0%, ${accent} 55%, color-mix(in oklab, ${accent} 82%, #000) 100%)`,
+          background: accent,
           boxShadow: `0 10px 22px -12px color-mix(in oklab, ${accent} 70%, transparent)`,
         }}
       />
-      {/* 顶部 tab */}
+      {/* 上沿一体化高光 */}
       <div
-        className="absolute left-0 top-0 h-3.5 w-[42%] rounded-tl-[14px] rounded-tr-[8px]"
+        aria-hidden
+        className="absolute left-0 right-0 top-0 h-[26px] rounded-tl-[14px] rounded-tr-[14px] pointer-events-none"
         style={{
-          background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 88%, #fff) 0%, ${accent} 100%)`,
+          background: "linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 100%)",
         }}
       />
 
