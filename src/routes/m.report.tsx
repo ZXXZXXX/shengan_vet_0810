@@ -534,7 +534,7 @@ function ReportPage() {
               >
                 {targets.map((t) => {
                   const isEditing = editingTarget === t;
-                  const canDelete = targets.length > 1;
+                  const canDelete = true;
                   const tBarn = search.barn ?? barnOfCattle(t);
                   return (
                     <div
