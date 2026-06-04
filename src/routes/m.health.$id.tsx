@@ -79,6 +79,7 @@ const statusById: Record<string, StatusKey> = {
   "WO-2430": "进行中",
   "WO-2440": "进行中",
   "WO-2324": "已终止",
+  "WO-2199": "已完成",
   "HF-0702": "进行中",
   "HF-0688": "已完成",
   "LS-1029": "待诊断",
@@ -148,6 +149,7 @@ function TaskDetailPage() {
     "WO-2420": "#A2420",
     "WO-2430": "#A2430",
     "WO-2440": "#A2440",
+    "WO-2199": "#A2199",
     "HF-0702": "#A2150",
     "HF-0688": "#A2270",
     "PP-2501": "#A2710",
@@ -232,11 +234,6 @@ function TaskDetailPage() {
       hideTabBar
     >
       <div className="pb-28">
-        {autoArchivedOrders.has(id) && o.status === "已完成" && (
-          <div className="mx-4 mt-3 rounded-lg bg-[#FFF1F0] border border-[#FFA39E] px-3 py-2.5 text-caption text-[#CF1322] leading-relaxed">
-            <span className="font-medium">系统自动归档</span>不代表复查结论正常，仅表示该工单治疗流程已结束。
-          </div>
-        )}
         {/* === 1. 顶部工单摘要 === */}
         <div className="px-4 pt-3 pb-3 bg-card border-b border-border space-y-2">
 
@@ -1066,15 +1063,24 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
           </div>
         </div>
       ) : isPlatformIssued ? null : (() => {
+        const isAutoArchived = autoArchivedOrders.has(id);
         const reviewPhase: DayPhase = reviewDone || status === "已完成" ? "done" : reviewActive ? "active" : "pending";
         const isReviewDone = reviewPhase === "done";
         const isReviewActive = reviewPhase === "active";
-        const reviewLabel = isReviewDone ? "已完成" : isReviewActive ? "进行中" : "未开始";
-        const reviewLabelClass = isReviewDone
-          ? "bg-brand-subtle text-primary"
-          : isReviewActive
-            ? "tag-info"
-            : "bg-surface-subtle text-text-tertiary";
+        const reviewLabel = isAutoArchived
+          ? "逾期归档"
+          : isReviewDone
+            ? "已完成"
+            : isReviewActive
+              ? "进行中"
+              : "未开始";
+        const reviewLabelClass = isAutoArchived
+          ? "bg-[#FFF1F0] text-[#CF1322]"
+          : isReviewDone
+            ? "bg-brand-subtle text-primary"
+            : isReviewActive
+              ? "tag-info"
+              : "bg-surface-subtle text-text-tertiary";
         return (
           <div className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""}`}>
             <div className="flex items-center justify-between mb-2">
@@ -1095,11 +1101,15 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               <div className="text-caption text-text-tertiary mb-0.5">具体动作</div>
               <div className="text-body-sm leading-relaxed text-foreground">第 4 天复测体温（≤39.0℃）与采食情况，记录复查结果。</div>
             </div>
-            {isReviewActive && (
+            {isAutoArchived ? (
+              <div className="rounded-lg bg-[#FFF1F0] border border-[#FFA39E] px-3 py-2 mb-2 text-caption text-[#CF1322] leading-relaxed">
+                复查任务触发后 48 小时内无人执行，系统已自动标记为<span className="font-medium">「逾期未完成」</span>并归档工单。该自动归档不代表复查结论正常，仅表示治疗流程已结束。
+              </div>
+            ) : isReviewActive ? (
               <div className="rounded-lg bg-[#FFF7E6] border border-[#FFE1A8] px-3 py-2 mb-2 text-caption text-[#B8860B] leading-relaxed">
                 复查任务于执行完成后第 1 个自然日 00:00 自动触发；触发后 48 小时内未操作，将自动标记为<span className="font-medium">「逾期未完成」</span>，工单转为已完成。
               </div>
-            )}
+            ) : null}
             <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
               <PackagePlus className="h-3.5 w-3.5" />
               <span>领物</span>
