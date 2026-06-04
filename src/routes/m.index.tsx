@@ -115,9 +115,6 @@ function MWorkspacePage() {
                   >
                     {ACCOUNT.name.slice(-2)}
                   </div>
-                  <span className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-white flex items-center justify-center shadow">
-                    <BadgeCheck className="h-3.5 w-3.5" style={{ color: "#00A85A" }} fill="#00A85A" stroke="#ffffff" />
-                  </span>
                 </div>
 
                 <div className="flex-1 min-w-0 pt-0.5 pr-20">
@@ -126,16 +123,16 @@ function MWorkspacePage() {
                       {ACCOUNT.name}
                     </span>
                     <span
-                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium shrink-0"
+                      className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium shrink-0"
                       style={{
                         background: "color-mix(in oklab, #00A85A 10%, transparent)",
                         color: "#00A85A",
                       }}
                     >
-                      <BadgeCheck className="h-3 w-3" />
                       {ACCOUNT.role}
                     </span>
                   </div>
+
                   <div className="mt-1.5 flex items-center gap-1.5 text-caption text-text-secondary">
                     <Building2 className="h-3 w-3 text-text-tertiary shrink-0" />
                     <span className="truncate">{ACCOUNT.group}</span>
