@@ -363,7 +363,7 @@ function AnimalDetailPage() {
             </div>
             <div className="p-4 space-y-3">
               <div className="flex items-stretch gap-2">
-                <div className="flex-1 min-w-0 rounded-xl border border-primary/35 bg-card px-3 py-2.5">
+                <div className="flex-1 min-w-0 rounded-xl border border-primary/40 bg-brand-subtle px-3 py-2.5">
                   <div className="flex items-center gap-1 text-caption text-primary mb-1">
                     <MapPin className="h-3 w-3" />
                     当前位置
