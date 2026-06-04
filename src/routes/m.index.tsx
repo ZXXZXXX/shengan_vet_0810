@@ -92,8 +92,8 @@ function MWorkspacePage() {
               <span className="text-caption text-text-tertiary">已开通 {enabledCount} / {MODULES.length}</span>
             </div>
 
-            <div className="rounded-2xl bg-card border border-border overflow-hidden shadow-card">
-              {MODULES.map((m, i) => {
+            <div className="grid grid-cols-2 gap-3">
+              {MODULES.map((m) => {
                 const Icon = m.icon;
                 const disabled = !m.enabled;
                 return (
@@ -101,31 +101,49 @@ function MWorkspacePage() {
                     key={m.id}
                     onClick={() => pick(m)}
                     disabled={disabled}
-                    className={`w-full text-left px-4 py-3.5 flex items-center gap-3 transition-colors ${
-                      i > 0 ? "border-t border-border" : ""
-                    } ${disabled ? "opacity-55" : "active:bg-[var(--bg-surface-subtle)]"}`}
+                    className={`relative aspect-square rounded-2xl overflow-hidden text-left p-3.5 flex flex-col justify-between shadow-card transition-transform ${
+                      disabled ? "" : "active:scale-[0.97]"
+                    }`}
+                    style={{
+                      background: disabled ? "var(--bg-surface)" : m.gradient,
+                      border: disabled ? "1px solid var(--border)" : "none",
+                    }}
                   >
+                    {!disabled && (
+                      <>
+                        <span aria-hidden className="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-white/15" />
+                        <span aria-hidden className="absolute -bottom-8 -left-6 h-24 w-24 rounded-full bg-white/10" />
+                      </>
+                    )}
                     <div
-                      className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0"
+                      className="relative h-11 w-11 rounded-xl flex items-center justify-center"
                       style={{
-                        background: disabled ? "var(--bg-surface-subtle)" : `color-mix(in oklab, ${m.tone} 14%, transparent)`,
-                        color: disabled ? "var(--text-tertiary)" : m.tone,
+                        background: disabled ? "var(--bg-surface-subtle)" : "rgba(255,255,255,0.22)",
+                        color: disabled ? "var(--text-tertiary)" : "#ffffff",
+                        backdropFilter: disabled ? undefined : "blur(4px)",
                       }}
                     >
-                      <Icon className="h-5 w-5" strokeWidth={1.85} />
+                      <Icon className="h-6 w-6" strokeWidth={1.9} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-body text-foreground font-medium truncate">{m.name}</span>
+                    <div className="relative">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className="text-card-title font-medium truncate"
+                          style={{ color: disabled ? "var(--text-secondary)" : "#ffffff" }}
+                        >
+                          {m.name}
+                        </span>
                         {disabled && (
-                          <span className="inline-flex items-center gap-0.5 text-[11px] px-1.5 py-0.5 rounded bg-surface-subtle text-text-tertiary">
-                            <Lock className="h-2.5 w-2.5" />未开通
-                          </span>
+                          <Lock className="h-3 w-3 text-text-tertiary shrink-0" />
                         )}
                       </div>
-                      <div className="text-caption text-text-tertiary mt-0.5 truncate">{m.desc}</div>
+                      <div
+                        className="text-caption mt-0.5 truncate"
+                        style={{ color: disabled ? "var(--text-tertiary)" : "rgba(255,255,255,0.85)" }}
+                      >
+                        {disabled ? "未开通" : m.desc}
+                      </div>
                     </div>
-                    {!disabled && <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />}
                   </button>
                 );
               })}
