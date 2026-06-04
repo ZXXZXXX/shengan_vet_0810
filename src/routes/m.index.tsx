@@ -88,6 +88,15 @@ function MWorkspacePage() {
           <div className="relative rounded-3xl bg-card shadow-xl overflow-hidden"
             style={{ boxShadow: "0 12px 32px -12px rgba(0,168,90,0.25), 0 4px 12px rgba(0,0,0,0.06)" }}>
 
+            <button
+              onClick={() => setLogoutOpen(true)}
+              className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-surface-subtle text-caption text-text-secondary border border-border active:bg-border"
+              aria-label="退出登录"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              退出
+            </button>
+
             <div className="relative p-5">
               <div className="flex items-start gap-3.5">
                 {/* 头像 */}
@@ -128,26 +137,6 @@ function MWorkspacePage() {
                 </div>
               </div>
 
-              {/* 所属牧场 */}
-              <div className="mt-4 pt-4 border-t border-dashed border-border">
-                <div className="flex items-center justify-between">
-                  <span className="text-caption text-text-tertiary">所属牧场</span>
-                  <span className="text-caption text-text-tertiary">共 {ACCOUNT.farms.length} 个</span>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {ACCOUNT.farms.map((f) => (
-                    <span
-                      key={f}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-caption font-medium"
-                      style={{
-                        background: "color-mix(in oklab, #00A85A 8%, transparent)",
-                        color: "var(--foreground)",
-                      }}
-                    >
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#00A85A" }} />
-                      {f}
-                    </span>
-                  ))}
                 </div>
               </div>
             </div>
