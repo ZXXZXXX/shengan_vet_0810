@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import heroImg from "@/assets/m-workspace-hero.jpg.asset.json";
+import heroImg from "@/assets/grassland-hero.png";
 
 const ACCOUNT = {
   name: "李雨晴",
