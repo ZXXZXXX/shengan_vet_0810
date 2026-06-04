@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Baby, Stethoscope, UtensilsCrossed, Activity, Lock, BadgeCheck, Truck, Droplets } from "lucide-react";
+import { Baby, Stethoscope, UtensilsCrossed, Activity, Lock, BadgeCheck, Truck, Droplets, Building2, ChevronRight } from "lucide-react";
 
 const ACCOUNT = {
   name: "李雨晴",
@@ -21,17 +21,16 @@ type Module = {
   icon: typeof Stethoscope;
   to?: string;
   enabled: boolean;
-  tone: string;
   gradient: string;
 };
 
 const MODULES: Module[] = [
-  { id: "vet", name: "智慧兽医", desc: "诊疗 · 处方 · 药品", icon: Stethoscope, to: "/m/homepage", enabled: true, tone: "#00A85A", gradient: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" },
-  { id: "birth", name: "智能接生", desc: "产前预警 · 接产", icon: Baby, enabled: false, tone: "#8B5CF6", gradient: "linear-gradient(135deg,#8B5CF6 0%,#C084FC 100%)" },
-  { id: "feed", name: "饲喂管理", desc: "配方 · 投喂任务", icon: UtensilsCrossed, enabled: false, tone: "#06B6D4", gradient: "linear-gradient(135deg,#0891B2 0%,#22D3EE 100%)" },
-  { id: "env", name: "环境监测", desc: "温湿度 · 氨气", icon: Activity, enabled: false, tone: "#F59E0B", gradient: "linear-gradient(135deg,#F59E0B 0%,#FBBF24 100%)" },
-  { id: "transport", name: "运牛管理", desc: "调运 · 路线追踪", icon: Truck, enabled: false, tone: "#3B82F6", gradient: "linear-gradient(135deg,#2563EB 0%,#60A5FA 100%)" },
-  { id: "milk", name: "产奶分析", desc: "产量 · 品质监控", icon: Droplets, enabled: false, tone: "#0EA5E9", gradient: "linear-gradient(135deg,#0284C7 0%,#7DD3FC 100%)" },
+  { id: "vet", name: "智慧兽医", desc: "诊疗 · 处方 · 药品", icon: Stethoscope, to: "/m/homepage", enabled: true, gradient: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" },
+  { id: "birth", name: "智能接生", desc: "产前预警 · 接产", icon: Baby, enabled: false, gradient: "linear-gradient(135deg,#8B5CF6 0%,#C084FC 100%)" },
+  { id: "feed", name: "饲喂管理", desc: "配方 · 投喂任务", icon: UtensilsCrossed, enabled: false, gradient: "linear-gradient(135deg,#0891B2 0%,#22D3EE 100%)" },
+  { id: "env", name: "环境监测", desc: "温湿度 · 氨气", icon: Activity, enabled: false, gradient: "linear-gradient(135deg,#F59E0B 0%,#FBBF24 100%)" },
+  { id: "transport", name: "运牛管理", desc: "调运 · 路线追踪", icon: Truck, enabled: false, gradient: "linear-gradient(135deg,#2563EB 0%,#60A5FA 100%)" },
+  { id: "milk", name: "产奶分析", desc: "产量 · 品质监控", icon: Droplets, enabled: false, gradient: "linear-gradient(135deg,#0284C7 0%,#7DD3FC 100%)" },
 ];
 
 function MWorkspacePage() {
@@ -47,49 +46,109 @@ function MWorkspacePage() {
   return (
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col">
-        {/* 顶部：集团条 */}
+        {/* 顶部留白绿色背景 */}
         <div
-          className="px-5 pt-11 pb-4 text-white"
-          style={{ background: "linear-gradient(135deg, #00A85A 0%, #1FBE6F 100%)" }}
+          className="pt-10 pb-20 px-4 relative"
+          style={{ background: "linear-gradient(160deg,#009B53 0%,#00A85A 45%,#1FBE6F 100%)" }}
         >
-          <div className="text-caption text-white/85">{ACCOUNT.group}</div>
-          <div className="mt-1 text-page-title font-semibold tracking-tight">工作台</div>
+          <span aria-hidden className="absolute top-0 right-0 h-32 w-32 rounded-full opacity-25"
+            style={{ background: "radial-gradient(circle,#7FF0BC 0%,transparent 70%)" }} />
+          <span aria-hidden className="absolute bottom-12 left-0 h-40 w-40 rounded-full opacity-20"
+            style={{ background: "radial-gradient(circle,#A7FFD5 0%,transparent 70%)" }} />
+
+          <div className="relative flex items-center justify-between text-white">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm">
+              <Building2 className="h-3 w-3" />
+              <span className="text-caption">{ACCOUNT.group}</span>
+            </div>
+            <div className="text-caption text-white/80 font-mono">{ACCOUNT.workId}</div>
+          </div>
         </div>
 
-        <div className="flex-1 px-4 pt-4 pb-8 space-y-4">
+        <div className="flex-1 px-4 pb-8 space-y-5 -mt-14">
           {/* 名片 */}
-          <div className="rounded-2xl bg-card border border-border p-4 shadow-card">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-[color-mix(in_oklab,var(--brand)_12%,transparent)] text-[color:var(--brand)] flex items-center justify-center text-card-title font-semibold shrink-0">
-                {ACCOUNT.name.slice(-2)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-card-title text-foreground font-medium truncate">{ACCOUNT.name}</span>
-                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] bg-[color-mix(in_oklab,var(--brand)_10%,transparent)] text-[color:var(--brand)]">
-                    <BadgeCheck className="h-2.5 w-2.5" />{ACCOUNT.role}
+          <div className="relative rounded-3xl bg-card shadow-xl overflow-hidden"
+            style={{ boxShadow: "0 12px 32px -12px rgba(0,168,90,0.25), 0 4px 12px rgba(0,0,0,0.06)" }}>
+            {/* 顶部装饰带 */}
+            <div className="absolute inset-x-0 top-0 h-20 opacity-[0.08]"
+              style={{ background: "linear-gradient(135deg,#00A85A,#3FD49C)" }} />
+            <span aria-hidden className="absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-10"
+              style={{ background: "radial-gradient(circle,#00A85A 0%,transparent 70%)" }} />
+
+            <div className="relative p-5">
+              <div className="flex items-start gap-3.5">
+                {/* 头像 */}
+                <div className="relative shrink-0">
+                  <div
+                    className="h-16 w-16 rounded-2xl flex items-center justify-center text-section-title font-semibold text-white shadow-md"
+                    style={{ background: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" }}
+                  >
+                    {ACCOUNT.name.slice(-2)}
+                  </div>
+                  <span className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-white flex items-center justify-center shadow">
+                    <BadgeCheck className="h-3.5 w-3.5" style={{ color: "#00A85A" }} fill="#00A85A" stroke="#ffffff" />
                   </span>
                 </div>
-                <div className="text-caption text-text-tertiary mt-1 truncate">工号 {ACCOUNT.workId}</div>
+
+                <div className="flex-1 min-w-0 pt-0.5">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-section-title text-foreground font-semibold tracking-tight truncate">
+                      {ACCOUNT.name}
+                    </span>
+                    <span className="text-caption text-text-tertiary">您好</span>
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium"
+                      style={{
+                        background: "color-mix(in oklab, #00A85A 10%, transparent)",
+                        color: "#00A85A",
+                      }}
+                    >
+                      <BadgeCheck className="h-3 w-3" />
+                      {ACCOUNT.role}
+                    </span>
+                    <span className="text-caption text-text-tertiary">·</span>
+                    <span className="text-caption text-text-secondary">{ACCOUNT.group}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="mt-3 pt-3 border-t border-border flex items-start gap-2">
-              <span className="text-caption text-text-tertiary shrink-0">所属牧场</span>
-              <div className="flex flex-wrap gap-1.5">
-                {ACCOUNT.farms.map((f) => (
-                  <span key={f} className="inline-flex items-center px-2 py-0.5 rounded bg-surface-subtle text-caption text-foreground">
-                    {f}
-                  </span>
-                ))}
+
+              {/* 所属牧场 */}
+              <div className="mt-4 pt-4 border-t border-dashed border-border">
+                <div className="flex items-center justify-between">
+                  <span className="text-caption text-text-tertiary">所属牧场</span>
+                  <span className="text-caption text-text-tertiary">共 {ACCOUNT.farms.length} 个</span>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {ACCOUNT.farms.map((f) => (
+                    <span
+                      key={f}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-caption font-medium"
+                      style={{
+                        background: "color-mix(in oklab, #00A85A 8%, transparent)",
+                        color: "var(--foreground)",
+                      }}
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#00A85A" }} />
+                      {f}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
           {/* 业务入口 */}
           <div>
-            <div className="px-1 pb-2 flex items-center justify-between">
-              <span className="text-section-title text-foreground font-medium">业务入口</span>
-              <span className="text-caption text-text-tertiary">已开通 {enabledCount} / {MODULES.length}</span>
+            <div className="px-1 pb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="h-4 w-1 rounded-full" style={{ background: "#00A85A" }} />
+                <span className="text-section-title text-foreground font-medium">业务入口</span>
+              </div>
+              <span className="text-caption text-text-tertiary">
+                已开通 <span className="text-foreground font-medium">{enabledCount}</span> / {MODULES.length}
+              </span>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -101,46 +160,53 @@ function MWorkspacePage() {
                     key={m.id}
                     onClick={() => pick(m)}
                     disabled={disabled}
-                    className={`relative aspect-square rounded-2xl overflow-hidden text-left p-3.5 flex flex-col justify-between shadow-card transition-transform ${
-                      disabled ? "" : "active:scale-[0.97]"
+                    className={`group relative rounded-2xl overflow-hidden text-left p-4 bg-card border border-border transition-all ${
+                      disabled ? "" : "active:scale-[0.97] hover:shadow-md"
                     }`}
-                    style={{
-                      background: disabled ? "var(--bg-surface)" : m.gradient,
-                      border: disabled ? "1px solid var(--border)" : "none",
-                    }}
+                    style={{ minHeight: 132 }}
                   >
+                    {/* 顶部色带 */}
+                    <span
+                      aria-hidden
+                      className="absolute inset-x-0 top-0 h-1"
+                      style={{ background: disabled ? "var(--border)" : m.gradient }}
+                    />
+                    {/* 角落柔光 */}
                     {!disabled && (
-                      <>
-                        <span aria-hidden className="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-white/15" />
-                        <span aria-hidden className="absolute -bottom-8 -left-6 h-24 w-24 rounded-full bg-white/10" />
-                      </>
+                      <span
+                        aria-hidden
+                        className="absolute -top-8 -right-8 h-24 w-24 rounded-full opacity-[0.12]"
+                        style={{ background: m.gradient }}
+                      />
                     )}
+
+                    {/* 图标块 */}
                     <div
-                      className="relative h-11 w-11 rounded-xl flex items-center justify-center"
+                      className="relative h-12 w-12 rounded-2xl flex items-center justify-center shadow-sm"
                       style={{
-                        background: disabled ? "var(--bg-surface-subtle)" : "rgba(255,255,255,0.22)",
+                        background: disabled ? "var(--bg-surface-subtle)" : m.gradient,
                         color: disabled ? "var(--text-tertiary)" : "#ffffff",
-                        backdropFilter: disabled ? undefined : "blur(4px)",
                       }}
                     >
-                      <Icon className="h-6 w-6" strokeWidth={1.9} />
+                      <Icon className="h-6 w-6" strokeWidth={2} />
+                      {disabled && (
+                        <span className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-card border border-border flex items-center justify-center">
+                          <Lock className="h-2.5 w-2.5 text-text-tertiary" />
+                        </span>
+                      )}
                     </div>
-                    <div className="relative">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className="text-card-title font-medium truncate"
-                          style={{ color: disabled ? "var(--text-secondary)" : "#ffffff" }}
-                        >
+
+                    {/* 文字 */}
+                    <div className="relative mt-3">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className={`text-body font-medium truncate ${disabled ? "text-text-secondary" : "text-foreground"}`}>
                           {m.name}
                         </span>
-                        {disabled && (
-                          <Lock className="h-3 w-3 text-text-tertiary shrink-0" />
+                        {!disabled && (
+                          <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
                         )}
                       </div>
-                      <div
-                        className="text-caption mt-0.5 truncate"
-                        style={{ color: disabled ? "var(--text-tertiary)" : "rgba(255,255,255,0.85)" }}
-                      >
+                      <div className="text-caption text-text-tertiary mt-0.5 truncate">
                         {disabled ? "未开通" : m.desc}
                       </div>
                     </div>
@@ -149,7 +215,7 @@ function MWorkspacePage() {
               })}
             </div>
 
-            <div className="pt-3 text-caption text-text-tertiary text-center">
+            <div className="pt-4 text-caption text-text-tertiary text-center">
               如需开通其他系统，请联系您的牧场管理员
             </div>
           </div>
