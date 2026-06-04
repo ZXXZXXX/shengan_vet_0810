@@ -362,11 +362,28 @@ function AnimalDetailPage() {
               </button>
             </div>
             <div className="p-4 space-y-3">
-              <div className="flex items-baseline gap-2 px-1">
-                <span className="text-caption text-text-tertiary shrink-0">当前位置</span>
-                <span className="text-body-sm text-foreground">
-                  #{a.id} · {a.barn} · {a.pen}
-                </span>
+              <div className="flex items-stretch gap-2">
+                <div className="flex-1 min-w-0 rounded-xl border border-primary/30 bg-brand-subtle px-3 py-2.5">
+                  <div className="flex items-center gap-1 text-caption text-primary mb-1">
+                    <MapPin className="h-3 w-3" />
+                    当前位置
+                  </div>
+                  <div className="text-body-sm text-foreground font-medium truncate">
+                    {a.barn} · {a.pen}
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center justify-center w-7 text-primary">
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0 rounded-xl border border-dashed border-border px-3 py-2.5">
+                  <div className="flex items-center gap-1 text-caption text-text-tertiary mb-1">
+                    <MapPin className="h-3 w-3" />
+                    转入位置
+                  </div>
+                  <div className={`text-body-sm truncate ${transferTo ? "text-foreground font-medium" : "text-text-tertiary"}`}>
+                    {transferTo || "待选择"}
+                  </div>
+                </div>
               </div>
               <TransferBarnControl
                 enabled={transferEnabled}
