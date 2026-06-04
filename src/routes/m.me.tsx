@@ -5,6 +5,7 @@ import {
   LogOut,
   ClipboardList,
   ShieldCheck,
+  LayoutGrid,
 } from "lucide-react";
 import meHero from "@/assets/me-hero.png";
 
