@@ -1098,7 +1098,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               ? "tag-info"
               : "bg-surface-subtle text-text-tertiary";
         return (
-          <div className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""}`}>
+          <div id={isAutoArchived ? "auto-archived-review-card" : undefined} className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""} ${isAutoArchived ? "ring-2 ring-[#FFA39E] ring-offset-2 ring-offset-background" : ""}`}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <DayDot active={isReviewActive} done={isReviewDone} />
