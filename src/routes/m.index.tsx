@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import heroImg from "@/assets/grassland-hero.png";
+import heroImg from "@/assets/m-workspace-hero.jpg.asset.json";
 
 const ACCOUNT = {
   name: "李雨晴",
@@ -37,7 +37,7 @@ type Module = {
 };
 
 const MODULES: Module[] = [
-  { id: "vet", name: "智慧兽医", desc: "诊疗 · 护理 · 药品", icon: Stethoscope, to: "/m/homepage", enabled: true, gradient: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" },
+  { id: "vet", name: "智慧兽医", desc: "诊疗 · 处方 · 药品", icon: Stethoscope, to: "/m/homepage", enabled: true, gradient: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" },
   { id: "birth", name: "智能接生", desc: "产前预警 · 接产", icon: HeartPulse, enabled: false, gradient: "linear-gradient(135deg,#EC4899 0%,#F9A8D4 100%)" },
   { id: "feed", name: "饲喂管理", desc: "配方 · 投喂任务", icon: Wheat, enabled: false, gradient: "linear-gradient(135deg,#D4A017 0%,#F5D77A 100%)" },
   { id: "env", name: "环境监测", desc: "温湿度 · 氨气", icon: Activity, enabled: false, gradient: "linear-gradient(135deg,#22ACEB 0%,#7DD3F8 100%)" },
@@ -60,47 +60,35 @@ function MWorkspacePage() {
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col">
         {/* 顶部头图：牛在草原上 */}
-        <div className="pt-0 pb-20 px-4 relative overflow-hidden" style={{ minHeight: 180 }}>
+        <div className="pt-10 pb-20 px-4 relative overflow-hidden">
           <img
-            src={heroImg}
+            src={heroImg.url}
             alt="草原上的牛群"
             className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "center 55%" }}
-          />
-
-          {/* 底部渐变隐去，避免硬裁切 */}
-          <span
-            aria-hidden
-            className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
-
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(245,247,250,0) 0%, var(--bg-page) 100%)",
-            }}
           />
 
 
 
-
-          <div className="relative pt-6 text-white" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.45)" }}>
+          <div className="relative text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
             <div className="text-page-title font-semibold tracking-tight">工作台</div>
-            <div className="text-caption text-white/95 mt-1">让每一头牛都被照顾到</div>
+            <div className="text-caption text-white/90 mt-1">让每一头牛都被照顾到</div>
           </div>
-
 
         </div>
 
-        <div className="flex-1 px-4 pb-8 space-y-5 -mt-[72px]">
+        <div className="flex-1 px-4 pb-8 space-y-5 -mt-14">
           {/* 名片 */}
           <div className="relative rounded-3xl bg-card shadow-xl overflow-hidden"
             style={{ boxShadow: "0 12px 32px -12px rgba(0,168,90,0.25), 0 4px 12px rgba(0,0,0,0.06)" }}>
 
             <button
               onClick={() => setLogoutOpen(true)}
-              className="absolute top-4 right-4 z-10 text-caption text-[var(--text-tertiary)] active:opacity-70"
-              aria-label="退出登录"
+              className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 h-7 px-3 rounded-full text-caption text-white shadow-sm active:opacity-90"
+              style={{ background: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" }}
+              aria-label="切换账号"
             >
-              退出登录
+              <LogOut className="h-3.5 w-3.5" />
+              切换账号
             </button>
 
             <div className="relative p-5">
@@ -113,24 +101,27 @@ function MWorkspacePage() {
                   >
                     {ACCOUNT.name.slice(-2)}
                   </div>
+                  <span className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-white flex items-center justify-center shadow">
+                    <BadgeCheck className="h-3.5 w-3.5" style={{ color: "#00A85A" }} fill="#00A85A" stroke="#ffffff" />
+                  </span>
                 </div>
 
                 <div className="flex-1 min-w-0 pt-0.5 pr-20">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-baseline gap-2">
                     <span className="text-section-title text-foreground font-semibold tracking-tight truncate">
                       {ACCOUNT.name}
                     </span>
                     <span
-                      className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium shrink-0"
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium shrink-0"
                       style={{
                         background: "color-mix(in oklab, #00A85A 10%, transparent)",
                         color: "#00A85A",
                       }}
                     >
+                      <BadgeCheck className="h-3 w-3" />
                       {ACCOUNT.role}
                     </span>
                   </div>
-
                   <div className="mt-1.5 flex items-center gap-1.5 text-caption text-text-secondary">
                     <Building2 className="h-3 w-3 text-text-tertiary shrink-0" />
                     <span className="truncate">{ACCOUNT.group}</span>
