@@ -66,6 +66,16 @@ function MWorkspacePage() {
             alt="草原上的牛群"
             className="absolute inset-0 h-full w-full object-cover"
           />
+          {/* 底部渐变隐去，避免硬裁切 */}
+          <span
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(245,247,250,0) 0%, var(--bg-page) 100%)",
+            }}
+          />
+
 
 
 
