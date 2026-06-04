@@ -7,7 +7,8 @@ import {
   Mic,
   Video,
   Search,
-  Plus,
+  Search as _Search,
+
   Sparkles,
   FileText,
   Check,
