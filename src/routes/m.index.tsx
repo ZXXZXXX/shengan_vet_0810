@@ -355,9 +355,9 @@ const diseaseTaskMeta: Record<string, { disease: string; task: TaskChip }> = {
 
 // 任务类型 chip 颜色
 const taskChipStyle: Record<TaskChip, string> = {
-  "待诊断": "bg-brand-subtle text-primary",
+  "待诊断": "bg-[#FFF5DF] text-[#B45309]",
   "待执行": "bg-[#E6F7FE] text-[#0EA5E9]",
-  "待复查": "bg-[#FFF5DF] text-[#B45309]",
+  "待复查": "bg-[#E6F7FE] text-[#0EA5E9]",
   "待治愈": "bg-[#F3E8FF] text-[#9333EA]",
 };
 
