@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   LayoutGrid,
 } from "lucide-react";
+
 import meHero from "@/assets/me-hero.png";
 
 import { useState } from "react";
