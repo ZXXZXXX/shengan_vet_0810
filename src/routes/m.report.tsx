@@ -255,12 +255,13 @@ function ReportPage() {
     setBarns((prev) => (prev.length <= 1 ? prev : prev.filter((x) => x !== t)));
   };
   const [barnAddQuery, setBarnAddQuery] = useState("");
-  const [showBarnAdd, setShowBarnAdd] = useState(false);
+  const [barnPickerOpen, setBarnPickerOpen] = useState(false);
   const barnMatches = useMemo(() => {
     const kw = barnAddQuery.trim();
     const pool = allBarns.filter((b) => !barns.includes(b));
-    return (kw ? pool.filter((b) => b.includes(kw)) : pool).slice(0, 8);
+    return kw ? pool.filter((b) => b.includes(kw)) : pool;
   }, [allBarns, barns, barnAddQuery]);
+
 
   const [editingTarget, setEditingTarget] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
