@@ -596,10 +596,10 @@ function ReportPage() {
                 })}
                 {targets.length > 0 && (
                   <div className="text-caption text-text-tertiary">
-                    至少保留 1 项；牛舍信息根据牛只编号自动获取，不可更改
+                    牛舍信息根据牛只编号自动获取，不可更改
                   </div>
                 )}
-                {targets.length === 0 || showAddPanel ? (
+                {targets.length === 0 && (
                   <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
                     <div className="flex gap-2">
                       <div className="flex-1 relative">
@@ -615,62 +615,18 @@ function ReportPage() {
                               setAddQuery("");
                             }
                           }}
-                          placeholder={targets.length === 0 ? "输入牛只编号回车添加" : "输入牛只编号搜索"}
+                          placeholder="输入牛只编号回车添加"
                           className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
                         />
                       </div>
                       <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium active:scale-[0.97] transition-transform">
                         <ScanLine className="h-4 w-4" /> 扫码
                       </button>
-                      {targets.length > 0 && (
-                        <button
-                          onClick={() => {
-                            setShowAddPanel(false);
-                            setAddQuery("");
-                          }}
-                          className="h-11 w-11 inline-flex items-center justify-center rounded-lg text-text-tertiary active:bg-surface-subtle"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
                     </div>
-                    {targets.length > 0 && lockBarn && (
-                      <>
-                        <div className="flex flex-wrap gap-1.5">
-                          {addMatches.length === 0 ? (
-                            <span className="text-caption text-text-tertiary px-1 py-1">无匹配结果</span>
-                          ) : (
-                            addMatches.map((s) => (
-                              <button
-                                key={s}
-                                onClick={() => addTarget(s)}
-                                className="h-8 px-3 rounded-full bg-surface-subtle border border-border text-caption text-text-secondary inline-flex items-center gap-1 font-mono active:scale-[0.96]"
-                              >
-                                <Plus className="h-3 w-3" />
-                                {s}
-                              </button>
-                            ))
-                          )}
-                        </div>
-                        <div className="text-caption text-text-tertiary">
-                          {barn} 共 {sameBarnPool.length + targets.length} 头，按编号搜索或扫码添加
-                        </div>
-                      </>
-                    )}
-                    {targets.length === 0 && (
-                      <div className="text-caption text-text-tertiary">
-                        输入牛只编号后，将自动获取所属牛舍信息
-                      </div>
-                    )}
+                    <div className="text-caption text-text-tertiary">
+                      输入牛只编号后，将自动获取所属牛舍信息
+                    </div>
                   </div>
-                ) : (
-                  <button
-                    onClick={() => setShowAddPanel(true)}
-                    className="w-full h-11 rounded-xl border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
-                  >
-                    <Plus className="h-4 w-4" />
-                    追加同牛舍其他牛只
-                  </button>
                 )}
               </div>
               )}
