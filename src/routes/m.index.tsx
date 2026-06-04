@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import heroImg from "@/assets/m-workspace-hero.jpg.asset.json";
+import heroImg from "@/assets/grassland-hero.png";
 
 const ACCOUNT = {
   name: "李雨晴",
@@ -62,7 +62,7 @@ function MWorkspacePage() {
         {/* 顶部头图：牛在草原上 */}
         <div className="pt-0 pb-20 px-4 relative overflow-hidden" style={{ minHeight: 180 }}>
           <img
-            src={heroImg.url}
+            src={heroImg}
             alt="草原上的牛群"
             className="absolute inset-0 h-full w-full object-cover"
             style={{ objectPosition: "center 95%" }}
