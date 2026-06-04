@@ -44,7 +44,16 @@ function MePage() {
           aria-hidden
           className="absolute inset-0 w-full h-full object-cover"
         />
+        <button
+          onClick={() => navigate({ to: "/m" })}
+          className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 h-8 px-2.5 rounded-full bg-white/85 backdrop-blur-sm text-caption text-foreground border border-white/60 shadow-sm active:bg-white"
+          aria-label="返回工作台"
+        >
+          <LayoutGrid className="h-3.5 w-3.5" />
+          返回工作台
+        </button>
       </div>
+
 
       {/* 个人信息卡（上浮覆盖图底部） */}
       <section className="px-4 -mt-10 relative">
