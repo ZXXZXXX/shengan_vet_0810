@@ -1133,8 +1133,8 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
             ) : isReviewActive ? (
               (() => {
                 const d = new Date();
-                d.setHours(0, 0, 0, 0);
-                d.setDate(d.getDate() + 2);
+                d.setHours(23, 59, 0, 0);
+                d.setDate(d.getDate() + 1);
                 const pad = (n: number) => String(n).padStart(2, "0");
                 const deadline = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
                 return (
