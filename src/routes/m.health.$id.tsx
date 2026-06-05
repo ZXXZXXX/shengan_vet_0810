@@ -1131,9 +1131,18 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
                 复查逾期 48 小时，已自动归档
               </div>
             ) : isReviewActive ? (
-              <div className="rounded-lg bg-[#FFF7E6] border border-[#FFE1A8] px-3 py-2 mb-2 text-caption text-[#B8860B] leading-relaxed">
-                复查任务于执行完成后第 1 个自然日 00:00 自动触发；触发后 48 小时内未操作，将自动标记为<span className="font-medium">「逾期未完成」</span>，工单转为已完成。
-              </div>
+              (() => {
+                const d = new Date();
+                d.setHours(0, 0, 0, 0);
+                d.setDate(d.getDate() + 2);
+                const pad = (n: number) => String(n).padStart(2, "0");
+                const deadline = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                return (
+                  <div className="rounded-lg bg-[#FFF7E6] border border-[#FFE1A8] px-3 py-2 mb-2 text-caption text-[#B8860B] leading-relaxed">
+                    复查任务已开始，请在 <span className="font-medium">{deadline}</span> 前完成。
+                  </div>
+                );
+              })()
             ) : null}
             <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
               <PackagePlus className="h-3.5 w-3.5" />
