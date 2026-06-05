@@ -186,11 +186,13 @@ export function DrugReportForm({ mode: initialMode }: { mode?: DrugReportMode })
                     >
                       {item?.unit ?? "单位"}
                     </span>
-                    <span
-                      className={`text-body-sm w-20 text-right tabular-nums ${lineAmount > 0 ? "text-text-secondary" : "text-text-tertiary"}`}
-                    >
-                      {lineAmount > 0 ? `¥ ${lineAmount.toFixed(4)}` : "待估算"}
-                    </span>
+                    {!isReturn && (
+                      <span
+                        className={`text-body-sm w-20 text-right tabular-nums ${lineAmount > 0 ? "text-text-secondary" : "text-text-tertiary"}`}
+                      >
+                        {lineAmount > 0 ? `¥ ${lineAmount.toFixed(4)}` : "待估算"}
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -203,18 +205,20 @@ export function DrugReportForm({ mode: initialMode }: { mode?: DrugReportMode })
               追加{word}物品
             </button>
 
-            <div
-              className="flex items-center justify-between rounded-xl px-3 py-2.5 mt-1"
-              style={{
-                background:
-                  "color-mix(in oklab, var(--primary) 6%, transparent)",
-              }}
-            >
-              <span className="text-body-sm text-text-secondary">{word}总金额（仅供参考）</span>
-              <span className="text-card-title text-primary tabular-nums">
-                ¥ {estimatedTotal.toFixed(2)}
-              </span>
-            </div>
+            {!isReturn && (
+              <div
+                className="flex items-center justify-between rounded-xl px-3 py-2.5 mt-1"
+                style={{
+                  background:
+                    "color-mix(in oklab, var(--primary) 6%, transparent)",
+                }}
+              >
+                <span className="text-body-sm text-text-secondary">{word}总金额（仅供参考）</span>
+                <span className="text-card-title text-primary tabular-nums">
+                  ¥ {estimatedTotal.toFixed(2)}
+                </span>
+              </div>
+            )}
           </div>
         </Section>
 
