@@ -589,14 +589,15 @@ type MoveRecord = {
   date: string;
   from: string;
   to: string;
-  orderId: string;
+  orderId: string | null;
+  reason: string;
   operator: string;
 };
 
 const ALL_MOVES: MoveRecord[] = [
-  { id: "MV-0518", date: "2026-05-18", from: "1 号牛舍 · A 区 05 栏", to: "3 号牛舍 · B 区 12 栏", orderId: "WO-2026-0518", operator: "李雨晴" },
-  { id: "MV-0301", date: "2026-03-01", from: "犊牛舍 · 03 栏", to: "1 号牛舍 · A 区 05 栏", orderId: "TR-2026-0301", operator: "王场长" },
-  { id: "MV-0101", date: "2026-01-10", from: "产房 · 02 栏", to: "犊牛舍 · 03 栏", orderId: "TR-2026-0101", operator: "周凯" },
+  { id: "MV-0518", date: "2026-05-18", from: "1 号牛舍 · A 区 05 栏", to: "3 号牛舍 · B 区 12 栏", orderId: "WO-2026-0518", reason: "疾病治疗", operator: "李雨晴" },
+  { id: "MV-0301", date: "2026-03-01", from: "犊牛舍 · 03 栏", to: "1 号牛舍 · A 区 05 栏", orderId: "TR-2026-0301", reason: "调拨转库", operator: "王场长" },
+  { id: "MV-0101", date: "2026-01-10", from: "产房 · 02 栏", to: "犊牛舍 · 03 栏", orderId: null, reason: "断奶分群", operator: "周凯" },
 ];
 
 function MoveHistory() {
@@ -624,16 +625,26 @@ function MoveHistory() {
             <ArrowRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
             <span className="flex-1 min-w-0 truncate text-right">{m.to}</span>
           </div>
-          <div className="text-caption text-text-tertiary mt-1 inline-flex items-center gap-1">
-            关联工单
-            <Link
-              to="/m/health/$id"
-              params={{ id: m.orderId }}
-              className="font-mono text-primary inline-flex items-center gap-0.5"
-            >
-              {m.orderId}
-              <ChevronRight className="h-3 w-3" />
-            </Link>
+          <div className="text-caption text-text-tertiary mt-1 flex items-center gap-3">
+            <span className="inline-flex items-center gap-1">
+              <span className="text-text-tertiary">原因</span>
+              <span className="text-foreground">{m.reason}</span>
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-text-tertiary">工单</span>
+              {m.orderId ? (
+                <Link
+                  to="/m/health/$id"
+                  params={{ id: m.orderId }}
+                  className="font-mono text-primary inline-flex items-center gap-0.5"
+                >
+                  {m.orderId}
+                  <ChevronRight className="h-3 w-3" />
+                </Link>
+              ) : (
+                <span className="font-mono text-text-tertiary">-</span>
+              )}
+            </span>
           </div>
         </div>
       ))}
