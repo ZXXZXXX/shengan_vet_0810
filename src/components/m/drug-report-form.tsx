@@ -186,11 +186,13 @@ export function DrugReportForm({ mode: initialMode }: { mode?: DrugReportMode })
                     >
                       {item?.unit ?? "单位"}
                     </span>
-                    <span
-                      className={`text-body-sm w-20 text-right tabular-nums ${lineAmount > 0 ? "text-text-secondary" : "text-text-tertiary"}`}
-                    >
-                      {lineAmount > 0 ? `¥ ${lineAmount.toFixed(4)}` : "待估算"}
-                    </span>
+                    {!isReturn && (
+                      <span
+                        className={`text-body-sm w-20 text-right tabular-nums ${lineAmount > 0 ? "text-text-secondary" : "text-text-tertiary"}`}
+                      >
+                        {lineAmount > 0 ? `¥ ${lineAmount.toFixed(4)}` : "待估算"}
+                      </span>
+                    )}
                   </div>
                 </div>
               );
