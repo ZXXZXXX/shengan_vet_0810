@@ -1291,7 +1291,7 @@ function ChecklistDay({
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [dayVerified, setDayVerified] = useState<boolean>(isDone);
   const [mismatchOpen, setMismatchOpen] = useState(false);
-  const [manualOpen, setManualOpen] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
   const [manualPhotos, setManualPhotos] = useState<number[]>([]);
   const [manualDesc, setManualDesc] = useState("");
   const expectedTag = tags[0] ?? "#A0000";
@@ -1385,11 +1385,70 @@ function ChecklistDay({
           <div className="px-4 pb-3">
             {interactive && (
               dayVerified ? (
-                <div className="rounded-xl border border-primary/30 bg-brand-subtle/20 px-3 py-2.5">
-                  <div className="text-body-sm text-primary inline-flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4" />
-                    本次执行已完成牛只核验 · <span className="font-mono">{expectedTag}</span>
+                <div className="space-y-2">
+                  <div className="rounded-xl border border-primary/30 bg-brand-subtle/20 px-3 py-2.5">
+                    <div className="text-body-sm text-primary inline-flex items-center gap-1.5">
+                      <CheckCircle2 className="h-4 w-4" />
+                      {manualMode ? <>已改用证据留档 · <span className="font-mono">{expectedTag}</span></> : <>本次执行已完成牛只核验 · <span className="font-mono">{expectedTag}</span></>}
+                    </div>
                   </div>
+                  {manualMode && (
+                    <div className="rounded-xl border border-border bg-card px-3 py-3 space-y-3">
+                      <div className="text-caption text-text-tertiary leading-relaxed">
+                        无法识别耳码时的兜底通道：上传目标牛只照片与特征描述，仅作留档追溯，不影响本次执行。提交后仍可随时补充或修改。
+                      </div>
+
+                      <div>
+                        <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
+                          <span>牛只证明照片</span>
+                          <span className="text-caption text-text-tertiary">{manualPhotos.length} / 6</span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2">
+                          {manualPhotos.map((id) => (
+                            <div key={id} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                              <button
+                                onClick={() => setManualPhotos((p) => p.filter((x) => x !== id))}
+                                className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                          {manualPhotos.length < 6 && (
+                            <label className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-border transition-colors">
+                              <Camera className="h-5 w-5" />
+                              <span className="text-caption">拍照</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                capture="environment"
+                                multiple
+                                className="hidden"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files ?? []);
+                                  files.forEach(() => setManualPhotos((p) => [...p, Date.now() + Math.random()]));
+                                  e.target.value = "";
+                                }}
+                              />
+                            </label>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-body-sm text-foreground mb-2">牛只特征描述</div>
+                        <textarea
+                          value={manualDesc}
+                          onChange={(e) => setManualDesc(e.target.value)}
+                          placeholder="如所在牛舍位置、毛色花斑、体型特征等，便于追溯"
+                          rows={3}
+                          maxLength={200}
+                          className="w-full p-3 rounded-lg text-body resize-none leading-relaxed border border-border bg-card"
+                        />
+                        <div className="text-right text-caption text-text-tertiary mt-1">{manualDesc.length} / 200</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="rounded-xl border border-border bg-card px-3 py-3 space-y-2">
@@ -1404,6 +1463,7 @@ function ChecklistDay({
                 </div>
               )
             )}
+
           </div>
 
           <ul className="px-4 pb-3 space-y-2">
@@ -1650,107 +1710,17 @@ function ChecklistDay({
               type="button"
               onClick={() => {
                 setVerifyOpen(false);
-                setManualOpen(true);
+                setManualMode(true);
+                setDayVerified(true);
               }}
               className="w-full text-center text-caption text-white/55 underline underline-offset-4 decoration-white/30"
             >
-              耳码缺失或无法识别？开启人工核验
+              耳码缺失或无法识别？改用证据留档
             </button>
           </div>
         </div>
       )}
 
-      {manualOpen && (
-        <div
-          className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50"
-          onClick={() => setManualOpen(false)}
-        >
-          <div
-            className="w-full max-w-[440px] rounded-t-2xl sm:rounded-2xl bg-card p-5 space-y-4 max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-card-title text-foreground">人工核验牛只</h3>
-                <p className="text-caption text-text-tertiary mt-1">
-                  当前任务对应牛只：<span className="font-mono text-text-secondary">{expectedTag}</span>
-                </p>
-              </div>
-              <button onClick={() => setManualOpen(false)} className="h-8 w-8 -mr-1 -mt-1 inline-flex items-center justify-center text-text-tertiary">
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="rounded-lg bg-[var(--state-warning)]/10 px-3 py-2 text-caption text-[var(--state-warning-foreground,#8A5A0A)] leading-relaxed">
-              人工核验记录会留痕并提交审核，请确认目标牛只与任务一致后再上传。
-            </div>
-
-            <div>
-              <div className="text-body-sm text-foreground mb-2">
-                目标牛只证明照片<span className="text-[var(--state-danger)] ml-0.5">*</span>
-                <span className="text-caption text-text-tertiary ml-1">· {manualPhotos.length} / 6</span>
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {manualPhotos.map((id) => (
-                  <div key={id} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
-                    <button
-                      onClick={() => setManualPhotos((p) => p.filter((x) => x !== id))}
-                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-                {manualPhotos.length < 6 && (
-                  <label className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-border transition-colors">
-                    <Camera className="h-5 w-5" />
-                    <span className="text-caption">拍照</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => {
-                        const files = Array.from(e.target.files ?? []);
-                        files.forEach(() => setManualPhotos((p) => [...p, Date.now() + Math.random()]));
-                        e.target.value = "";
-                      }}
-                    />
-                  </label>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <div className="text-body-sm text-foreground mb-2">
-                牛只特征描述<span className="text-[var(--state-danger)] ml-0.5">*</span>
-              </div>
-              <textarea
-                value={manualDesc}
-                onChange={(e) => setManualDesc(e.target.value)}
-                placeholder="如所在牛舍位置、毛色花斑、体型特征等，便于复核"
-                rows={3}
-                maxLength={200}
-                className="w-full p-3 rounded-lg text-body resize-none leading-relaxed border border-border bg-card"
-              />
-              <div className="text-right text-caption text-text-tertiary mt-1">{manualDesc.length} / 200</div>
-            </div>
-
-            <button
-              type="button"
-              disabled={manualPhotos.length === 0 || manualDesc.trim().length === 0}
-              onClick={() => {
-                setDayVerified(true);
-                setManualOpen(false);
-                toast.success("已提交人工核验");
-              }}
-              className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5 disabled:opacity-40"
-            >
-              <CheckCircle2 className="h-4 w-4" /> 提交人工核验
-            </button>
-          </div>
-        </div>
-      )}
 
       {mismatchOpen && (
         <div
