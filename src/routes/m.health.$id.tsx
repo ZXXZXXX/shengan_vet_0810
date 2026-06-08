@@ -1291,6 +1291,9 @@ function ChecklistDay({
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [dayVerified, setDayVerified] = useState<boolean>(isDone);
   const [mismatchOpen, setMismatchOpen] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualPhotos, setManualPhotos] = useState<number[]>([]);
+  const [manualDesc, setManualDesc] = useState("");
   const expectedTag = tags[0] ?? "#A0000";
 
 
