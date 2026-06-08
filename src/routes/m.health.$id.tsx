@@ -1385,11 +1385,70 @@ function ChecklistDay({
           <div className="px-4 pb-3">
             {interactive && (
               dayVerified ? (
-                <div className="rounded-xl border border-primary/30 bg-brand-subtle/20 px-3 py-2.5">
-                  <div className="text-body-sm text-primary inline-flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4" />
-                    本次执行已完成牛只核验 · <span className="font-mono">{expectedTag}</span>
+                <div className="space-y-2">
+                  <div className="rounded-xl border border-primary/30 bg-brand-subtle/20 px-3 py-2.5">
+                    <div className="text-body-sm text-primary inline-flex items-center gap-1.5">
+                      <CheckCircle2 className="h-4 w-4" />
+                      {manualMode ? <>已改用证据留档 · <span className="font-mono">{expectedTag}</span></> : <>本次执行已完成牛只核验 · <span className="font-mono">{expectedTag}</span></>}
+                    </div>
                   </div>
+                  {manualMode && (
+                    <div className="rounded-xl border border-border bg-card px-3 py-3 space-y-3">
+                      <div className="text-caption text-text-tertiary leading-relaxed">
+                        无法识别耳码时的兜底通道：上传目标牛只照片与特征描述，仅作留档追溯，不影响本次执行。提交后仍可随时补充或修改。
+                      </div>
+
+                      <div>
+                        <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
+                          <span>牛只证明照片</span>
+                          <span className="text-caption text-text-tertiary">{manualPhotos.length} / 6</span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2">
+                          {manualPhotos.map((id) => (
+                            <div key={id} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                              <button
+                                onClick={() => setManualPhotos((p) => p.filter((x) => x !== id))}
+                                className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                          {manualPhotos.length < 6 && (
+                            <label className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-border transition-colors">
+                              <Camera className="h-5 w-5" />
+                              <span className="text-caption">拍照</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                capture="environment"
+                                multiple
+                                className="hidden"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files ?? []);
+                                  files.forEach(() => setManualPhotos((p) => [...p, Date.now() + Math.random()]));
+                                  e.target.value = "";
+                                }}
+                              />
+                            </label>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-body-sm text-foreground mb-2">牛只特征描述</div>
+                        <textarea
+                          value={manualDesc}
+                          onChange={(e) => setManualDesc(e.target.value)}
+                          placeholder="如所在牛舍位置、毛色花斑、体型特征等，便于追溯"
+                          rows={3}
+                          maxLength={200}
+                          className="w-full p-3 rounded-lg text-body resize-none leading-relaxed border border-border bg-card"
+                        />
+                        <div className="text-right text-caption text-text-tertiary mt-1">{manualDesc.length} / 200</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="rounded-xl border border-border bg-card px-3 py-3 space-y-2">
@@ -1404,6 +1463,7 @@ function ChecklistDay({
                 </div>
               )
             )}
+
           </div>
 
           <ul className="px-4 pb-3 space-y-2">
