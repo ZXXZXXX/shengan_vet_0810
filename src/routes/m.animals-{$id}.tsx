@@ -51,11 +51,18 @@ function AnimalDetailPage() {
     pen: "B 区 · 12 栏",
     breed: "荷斯坦",
     sex: "母",
+    type: "哺乳牛" as "哺乳牛" | "育成牛" | "青年牛" | "干奶牛",
     ageDays: 1218,
     health: "观察中" as "健康" | "观察中" | "异常" | "治疗中",
     treating: true,
     withdrawalDays: 3,
     withdrawalUntil: "2026-05-28",
+    // 生产信息
+    lactationDays: 168,
+    pregnancyDays: 92,
+    parity: 3,
+    // 近 14 天产奶量 (kg/天)
+    milk14d: [32, 33, 31, 30, 28, 27, 26, 25, 24, 22, 23, 24, 25, 26],
   };
 
   // 转栏弹窗状态
@@ -156,8 +163,8 @@ function AnimalDetailPage() {
               />
               <Brief
                 icon={<Beef className="h-3 w-3 opacity-85" />}
-                label="品种 / 性别 / 日龄"
-                value={`${a.breed} · ${a.sex} · ${a.ageDays} 日龄`}
+                label="品种 / 性别 / 类型 / 日龄"
+                value={`${a.breed} · ${a.sex} · ${a.type} · ${a.ageDays} 日龄`}
               />
             </div>
           </div>
