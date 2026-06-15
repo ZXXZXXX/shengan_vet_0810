@@ -532,7 +532,7 @@ function DiagnosePage() {
       violations.push({
         kind: "disease",
         title: `「${disease}」上报次数超限`,
-        detail: `本牛只历史已上报 ${reported} 次，本次将达 ${reported + 1} 次，超过阈值 ${RULES.diseaseReportMax} 次。`,
+        detail: `当前：${reported + 1} 次；限制：${RULES.diseaseReportMax} 次。`,
       });
     }
     for (const r of allDrugs) {
@@ -553,14 +553,14 @@ function DiagnosePage() {
         violations.push({
           kind: "drug",
           title: `「${r.name}」累计剂量超限`,
-          detail: `历史 ${hist.totalDose}${unit}，本次新增 ${addDose}${unit}，合计 ${nextDose}${unit}，超过 ${RULES.drugTotalDoseFactorMax} 倍基准（${doseCap}${unit}）。`,
+          detail: `当前：${nextDose}${unit}；限制：${doseCap}${unit}。`,
         });
       }
       if (nextCount > RULES.drugUsageCountMax) {
         violations.push({
           kind: "drug",
           title: `「${r.name}」累计使用次数超限`,
-          detail: `历史 ${hist.count} 次，本次新增 ${addCount} 次，合计 ${nextCount} 次，超过阈值 ${RULES.drugUsageCountMax} 次。`,
+          detail: `当前：${nextCount} 次；限制：${RULES.drugUsageCountMax} 次。`,
         });
       }
     }
@@ -1471,7 +1471,7 @@ function DiagnosePage() {
             {submitCheck.stage === "stock" && (
               <div className="space-y-1.5">
                 <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
-                  <Package className="h-3.5 w-3.5" /> 库存不足（不拦截，可继续提交）
+                  <Package className="h-3.5 w-3.5" /> 库存不足（请联系管理人员调拨库存）
                 </div>
                 <ul className="rounded-lg border border-border divide-y divide-border">
                   {submitCheck.shortages.map((s) => (
