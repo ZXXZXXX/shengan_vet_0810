@@ -10,6 +10,7 @@ import {
 
   Sparkles,
   FileText,
+  RefreshCw,
   Check,
   ImagePlus,
   Pencil,
@@ -131,32 +132,46 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
 };
 
 
-// 疾病知识库 + 自动治疗方案
-const diseaseKB: { name: string; symptoms: string[]; plan: { rx: string; drugs: string[]; duration: string } }[] = [
+// 疾病知识库 + 自动治疗方案（每个疾病支持多个处方方案）
+type DiseasePlan = { id: string; rx: string; desc?: string; drugs: string[]; duration: string };
+const diseaseKB: { name: string; symptoms: string[]; plans: DiseasePlan[] }[] = [
   {
     name: "乳房炎",
     symptoms: ["乳房红肿", "体温升高", "产奶量骤降"],
-    plan: { rx: "RX-001 乳房炎标准处方 A", drugs: ["乳房炎抗生素 5mg ×2", "消炎药 ×1"], duration: "5 天" },
+    plans: [
+      { id: "p1", rx: "RX-001 乳房炎标准处方 A", desc: "抗生素 + 消炎", drugs: ["乳房炎抗生素 5mg ×2", "消炎药 ×1"], duration: "5 天" },
+      { id: "p2", rx: "RX-001B 乳房炎简化方案", desc: "轻症首选", drugs: ["乳房炎抗生素 5mg ×1"], duration: "3 天" },
+    ],
   },
   {
     name: "口蹄疫",
     symptoms: ["体温升高", "口腔水疱", "跛行"],
-    plan: { rx: "RX-002 口蹄疫紧急处方", drugs: ["口蹄疫疫苗 A 型 ×1", "消毒液 ×5L"], duration: "立即" },
+    plans: [
+      { id: "p1", rx: "RX-002 口蹄疫紧急处方", desc: "立即隔离 + 疫苗", drugs: ["口蹄疫疫苗 A 型 ×1", "消毒液 ×5L"], duration: "立即" },
+    ],
   },
   {
     name: "蹄叶炎",
     symptoms: ["跛行", "卧地不起"],
-    plan: { rx: "RX-003 蹄叶炎康复处方", drugs: ["消炎止痛剂 ×1", "蹄部护理液 ×1"], duration: "7 天" },
+    plans: [
+      { id: "p1", rx: "RX-003 蹄叶炎康复处方", desc: "消炎 + 蹄部护理", drugs: ["消炎止痛剂 ×1", "蹄部护理液 ×1"], duration: "7 天" },
+      { id: "p2", rx: "RX-003B 物理治疗方案", desc: "禁用药物时使用", drugs: ["蹄浴 1 次/天"], duration: "10 天" },
+    ],
   },
   {
     name: "酮病",
     symptoms: ["采食下降", "产奶量骤降", "体温偏低"],
-    plan: { rx: "RX-004 酮病调理处方", drugs: ["丙二醇 500ml ×1", "葡萄糖注射液"], duration: "3 天" },
+    plans: [
+      { id: "p1", rx: "RX-004 酮病调理处方", desc: "静脉补糖", drugs: ["丙二醇 500ml ×1", "葡萄糖注射液"], duration: "3 天" },
+    ],
   },
   {
     name: "瘤胃酸中毒",
     symptoms: ["采食下降", "腹泻", "精神沉郁"],
-    plan: { rx: "RX-005 瘤胃调理处方", drugs: ["碳酸氢钠", "瘤胃缓冲剂"], duration: "3 天" },
+    plans: [
+      { id: "p1", rx: "RX-005 瘤胃调理处方", desc: "缓冲 + 调理", drugs: ["碳酸氢钠", "瘤胃缓冲剂"], duration: "3 天" },
+      { id: "p2", rx: "RX-005B 强化方案", desc: "重症加补液", drugs: ["碳酸氢钠", "瘤胃缓冲剂", "口服补液盐"], duration: "5 天" },
+    ],
   },
 ];
 
@@ -387,6 +402,9 @@ function ReportPage() {
     () => diseaseKB.find((d) => d.name === suspectedDisease) ?? null,
     [suspectedDisease]
   );
+  const [planIdx, setPlanIdx] = useState(0);
+  useEffect(() => { setPlanIdx(0); }, [suspectedDisease]);
+  const selectedPlan = selectedDisease?.plans[planIdx] ?? null;
 
 
 
@@ -840,21 +858,45 @@ function ReportPage() {
                             重选
                           </button>
                         </div>
-                        {selectedDisease && (
+                        {selectedDisease && selectedPlan && (
                           <div className="rounded-md bg-card border border-border p-2.5 space-y-1.5">
-                            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-                              <Sparkles className="h-3 w-3 text-primary" />
-                              已自动匹配治疗方案
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+                                <Sparkles className="h-3 w-3 text-primary" />
+                                已自动匹配治疗方案
+                                {selectedDisease.plans.length > 1 && (
+                                  <span className="text-text-tertiary">
+                                    （{planIdx + 1}/{selectedDisease.plans.length}）
+                                  </span>
+                                )}
+                              </div>
+                              {selectedDisease.plans.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setPlanIdx((i) => (i + 1) % selectedDisease.plans.length)
+                                  }
+                                  className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
+                                >
+                                  <RefreshCw className="h-3 w-3" />
+                                  更换方案
+                                </button>
+                              )}
                             </div>
                             <div className="flex items-center gap-1.5 text-body-sm text-foreground">
                               <FileText className="h-3.5 w-3.5 text-primary" />
-                              {selectedDisease.plan.rx}
+                              {selectedPlan.rx}
+                            </div>
+                            {selectedPlan.desc && (
+                              <div className="text-caption text-text-tertiary">
+                                {selectedPlan.desc}
+                              </div>
+                            )}
+                            <div className="text-caption text-text-secondary">
+                              用药：{selectedPlan.drugs.join("、")}
                             </div>
                             <div className="text-caption text-text-secondary">
-                              用药：{selectedDisease.plan.drugs.join("、")}
-                            </div>
-                            <div className="text-caption text-text-secondary">
-                              疗程：{selectedDisease.plan.duration}
+                              疗程：{selectedPlan.duration}
                             </div>
                           </div>
                         )}
