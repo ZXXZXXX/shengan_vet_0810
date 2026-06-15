@@ -43,27 +43,18 @@ function ReviewPage() {
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [abandonReason, setAbandonReason] = useState("");
   const [abandonOther, setAbandonOther] = useState("");
-  const [observeDays, setObserveDays] = useState<number>(3);
-  const [observeCustom, setObserveCustom] = useState("");
   const [needTransfer, setNeedTransfer] = useState(false);
   const [transferTo, setTransferTo] = useState("");
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
   const earTagLabel = getOrderEarTagLabel(id);
 
   const finalAbandonReason = abandonReason === "其他" ? abandonOther.trim() : abandonReason;
-  const finalObserveDays = useMemo(() => {
-    if (observeCustom.trim()) {
-      const n = parseInt(observeCustom, 10);
-      return Number.isFinite(n) && n > 0 ? n : 0;
-    }
-    return observeDays;
-  }, [observeDays, observeCustom]);
 
   const canSubmit = (() => {
     if (!verdict) return false;
+    if (verdict === "revisit") return true;
     if (needTransfer && !transferTo) return false;
     if (verdict === "abandon" && !finalAbandonReason) return false;
-    if (verdict === "observe" && finalObserveDays <= 0) return false;
     return true;
   })();
 
