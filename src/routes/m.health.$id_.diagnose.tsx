@@ -1212,8 +1212,52 @@ function DiagnosePage() {
         </div>
       )}
 
+      {/* 选择牛只体重 */}
+      {weightSheetOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setWeightSheetOpen(false)}>
+          <div
+            className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[70vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-section text-foreground font-medium">选择牛只体重</div>
+              <button
+                onClick={() => setWeightSheetOpen(false)}
+                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                aria-label="关闭"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+              {WEIGHT_OPTIONS.map((w) => {
+                const active = cattleWeight === w;
+                return (
+                  <li key={w}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCattleWeight(w);
+                        setWeightSheetOpen(false);
+                      }}
+                      className={`w-full px-3 py-3 flex items-center justify-between text-left ${
+                        active ? "bg-brand-subtle/40 text-primary" : "bg-card text-foreground"
+                      }`}
+                    >
+                      <span className="text-body">{w} kg</span>
+                      {active && <CheckCircle2 className="h-4 w-4 text-primary" />}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {/* 切换标准处方方案 */}
       {planSheetOpen && (
+
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setPlanSheetOpen(false)}>
           <div
             className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[80vh] overflow-y-auto"
