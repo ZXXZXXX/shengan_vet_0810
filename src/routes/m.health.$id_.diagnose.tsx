@@ -281,10 +281,11 @@ function DiagnosePage() {
   // 提交校验弹窗
   type Shortage = { name: string; need: number; stock: number; unit: string };
   type Violation = { kind: "disease" | "drug"; title: string; detail: string };
-  const [submitCheck, setSubmitCheck] = useState<{
-    shortages: Shortage[];
-    violations: Violation[];
-  } | null>(null);
+  const [submitCheck, setSubmitCheck] = useState<
+    | { stage: "stock"; shortages: Shortage[] }
+    | { stage: "rules"; violations: Violation[] }
+    | null
+  >(null);
 
 
   // 终止工单
@@ -511,7 +512,20 @@ function DiagnosePage() {
       }
     }
 
-    // 2) 规则校验
+    if (shortages.length > 0) {
+      setSubmitCheck({ stage: "stock", shortages });
+      return;
+    }
+
+    proceedRuleCheck();
+  };
+
+  // 2) 规则校验（库存通过或用户已确认继续后触发）
+  const proceedRuleCheck = () => {
+    const planItems = selectedPlan?.items ?? [];
+    const allDrugs = [...planItems, ...specialList].filter((r) => r.kind === "drug");
+    const w = cattleWeight ?? 500;
+
     const violations: Violation[] = [];
     const reported = cattleHistory.diseaseCount[disease] ?? 0;
     if (reported + 1 > RULES.diseaseReportMax) {
@@ -534,7 +548,7 @@ function DiagnosePage() {
       const unit = hist.unit;
       const nextDose = Math.round((hist.totalDose + addDose) * 10) / 10;
       const nextCount = hist.count + addCount;
-      const doseCap = RULES.drugTotalDoseFactorMax * (perDose || base);
+      const doseCap = Math.round(RULES.drugTotalDoseFactorMax * (perDose || base) * 10) / 10;
       if (nextDose > doseCap) {
         violations.push({
           kind: "drug",
@@ -551,11 +565,11 @@ function DiagnosePage() {
       }
     }
 
-    if (shortages.length === 0 && violations.length === 0) {
+    if (violations.length === 0) {
       doSubmit();
       return;
     }
-    setSubmitCheck({ shortages, violations });
+    setSubmitCheck({ stage: "rules", violations });
   };
 
 
@@ -1454,7 +1468,7 @@ function DiagnosePage() {
               <div className="text-section text-foreground font-medium">提交前请确认</div>
             </div>
 
-            {submitCheck.shortages.length > 0 && (
+            {submitCheck.stage === "stock" && (
               <div className="space-y-1.5">
                 <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
                   <Package className="h-3.5 w-3.5" /> 库存不足（不拦截，可继续提交）
@@ -1475,7 +1489,7 @@ function DiagnosePage() {
               </div>
             )}
 
-            {submitCheck.violations.length > 0 && (
+            {submitCheck.stage === "rules" && (
               <div className="space-y-1.5">
                 <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1">
                   <AlertTriangle className="h-3.5 w-3.5" /> 规则告警（需二次确认）
@@ -1499,14 +1513,21 @@ function DiagnosePage() {
                 返回修改
               </button>
               <button
-                onClick={doSubmit}
+                onClick={() => {
+                  if (submitCheck.stage === "stock") {
+                    setSubmitCheck(null);
+                    proceedRuleCheck();
+                  } else {
+                    doSubmit();
+                  }
+                }}
                 className={`flex-1 h-10 rounded-lg text-body-sm text-white font-medium ${
-                  submitCheck.violations.length > 0
+                  submitCheck.stage === "rules"
                     ? "bg-[var(--state-danger)]"
                     : "bg-primary"
                 }`}
               >
-                {submitCheck.violations.length > 0 ? "仍旧提交" : "知道了，继续提交"}
+                {submitCheck.stage === "rules" ? "仍旧提交" : "知道了，继续提交"}
               </button>
             </div>
           </div>
