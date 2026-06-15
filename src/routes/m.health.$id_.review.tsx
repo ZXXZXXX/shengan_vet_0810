@@ -45,6 +45,7 @@ function ReviewPage() {
   const [needTransfer, setNeedTransfer] = useState(false);
   const [transferTo, setTransferTo] = useState("");
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+  const [revisitConfirmOpen, setRevisitConfirmOpen] = useState(false);
   const earTagLabel = getOrderEarTagLabel(id);
 
   const finalAbandonReason = abandonReason === "其他" ? abandonOther.trim() : abandonReason;
