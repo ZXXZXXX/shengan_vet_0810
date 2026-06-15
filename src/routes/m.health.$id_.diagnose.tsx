@@ -231,10 +231,10 @@ function DiagnosePage() {
   const [diseaseFocused, setDiseaseFocused] = useState(false);
 
 
-  // 标准处方（系统内置，不可改药品/剂量/天数；按体重自动算量）
-  const [stdRxList, setStdRxList] = useState<Prescription[]>([]);
-  const [stdExcluded, setStdExcluded] = useState<Set<string>>(new Set());
-  const [cattleWeight, setCattleWeight] = useState("");
+  // 标准处方（系统内置，按疾病提供多个完整方案，二选一/三选一；按体重自动算量）
+  const [stdPlans, setStdPlans] = useState<Plan[]>([]);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
+  const [cattleWeight, setCattleWeight] = useState<number | null>(null);
   // 特殊处方（需填原因，可自由编辑）
   const [specialReason, setSpecialReason] = useState("");
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
