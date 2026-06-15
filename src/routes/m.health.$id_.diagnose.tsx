@@ -149,6 +149,34 @@ const diseaseLibrary: Disease[] = [
 // 牛只体重档位（用于自动计算剂量）
 const WEIGHT_OPTIONS = [350, 400, 450, 500, 550, 600, 650, 700];
 
+// 库存（仓库实时在册量；用于提交校验）
+const drugStock: Record<string, { qty: number; unit: string }> = {
+  "氟尼辛葡甲胺注射液": { qty: 120, unit: "ml" },
+  "头孢噻呋钠": { qty: 2, unit: "g" }, // 故意偏少，触发缺药提示
+  "碳酸氢钠": { qty: 5000, unit: "g" },
+  "复合维生素 B": { qty: 800, unit: "ml" },
+  "50% 葡萄糖": { qty: 2000, unit: "ml" },
+  "口服补液盐": { qty: 30, unit: "包" },
+  "氟尼辛葡甲胺": { qty: 200, unit: "ml" },
+};
+
+// 用药/疾病规则限制（提交时触发二次确认）
+const RULES = {
+  diseaseReportMax: 2,         // 同一疾病累计上报次数上限
+  drugTotalDoseFactorMax: 3,   // 累计剂量相对单次基准的倍数上限
+  drugUsageCountMax: 5,        // 同一药品累计使用次数上限
+};
+
+// 本牛只历史用药/上报（模拟）
+const cattleHistory = {
+  diseaseCount: { "支气管肺炎": 2, "急性乳房炎": 1 } as Record<string, number>,
+  drugUsage: {
+    "头孢噻呋钠": { totalDose: 4, unit: "g", count: 5 }, // 已达上限，触发规则
+    "氟尼辛葡甲胺注射液": { totalDose: 6, unit: "ml", count: 3 },
+  } as Record<string, { totalDose: number; unit: string; count: number }>,
+};
+
+
 type SlotKey = "morning" | "noon" | "evening";
 const SLOT_LABEL: Record<SlotKey, string> = {
   morning: "上午",
