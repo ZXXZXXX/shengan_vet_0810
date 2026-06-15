@@ -279,8 +279,8 @@ function TaskDetailPage() {
             className="-mr-1 h-8 px-2 inline-flex items-center gap-1 rounded-md text-caption text-destructive active:bg-destructive/10"
             aria-label="异常终止"
           >
-            <OctagonX className="h-4 w-4" />
-            <span className="whitespace-nowrap">终止</span>
+            <AlertOctagon className="h-4 w-4" />
+            <span className="whitespace-nowrap">异常</span>
           </button>
         ) : undefined
       }
