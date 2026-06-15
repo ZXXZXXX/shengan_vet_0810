@@ -240,6 +240,8 @@ function DiagnosePage() {
   const [specialReason, setSpecialReason] = useState("");
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
+  const [planSheetOpen, setPlanSheetOpen] = useState(false);
+  const [specialOpen, setSpecialOpen] = useState(false);
 
   // 终止工单
   const [confirmTerminate, setConfirmTerminate] = useState(false);
@@ -616,91 +618,78 @@ function DiagnosePage() {
                   </div>
                 </div>
 
-                {/* 方案选择 */}
-                <div className="space-y-2">
-                  {stdPlans.map((plan) => {
-                    const active = plan.id === selectedPlanId;
-                    return (
-                      <button
-                        key={plan.id}
-                        type="button"
-                        onClick={() => setSelectedPlanId(plan.id)}
-                        className={`w-full text-left rounded-lg border p-3 transition-colors ${
-                          active
-                            ? "border-primary bg-brand-subtle/40"
-                            : "border-border bg-card"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="min-w-0">
-                            <div className="text-body text-foreground font-medium">
-                              {plan.name}
-                            </div>
-                            {plan.desc && (
-                              <div className="text-caption text-text-tertiary mt-0.5">{plan.desc}</div>
-                            )}
-                          </div>
-                          <span
-                            className={`shrink-0 h-5 w-5 rounded-full border inline-flex items-center justify-center ${
-                              active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"
-                            }`}
-                          >
-                            {active && <CheckCircle2 className="h-3.5 w-3.5" />}
-                          </span>
+                {/* 当前方案 */}
+                {selectedPlan && (
+                  <div className="rounded-lg border border-primary bg-brand-subtle/40 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-body text-foreground font-medium">
+                          {selectedPlan.name}
                         </div>
-
-                        {active && (
-                          <ul className="mt-3 space-y-2">
-                            {plan.items.map((r) => {
-                              const isTherapy = r.kind === "therapy";
-                              const unit = r.doseUnit || "ml";
-                              const baseDose = parseFloat(r.dose || "");
-                              const w = cattleWeight ?? 0;
-                              const computedDose =
-                                !isTherapy && !Number.isNaN(baseDose) && w > 0
-                                  ? Math.round(baseDose * (w / 500) * 10) / 10
-                                  : null;
-                              return (
-                                <li
-                                  key={r.id}
-                                  className="rounded-md border border-border bg-card p-2.5"
-                                >
-                                  <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
-                                    {isTherapy ? (
-                                      <Activity className="h-3.5 w-3.5 text-primary" />
-                                    ) : (
-                                      <Pill className="h-3.5 w-3.5 text-primary" />
-                                    )}
-                                    {r.name}
-                                    {!isTherapy && r.maker && (
-                                      <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
-                                    )}
-                                    <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
-                                      {isTherapy ? "理疗" : "用药"}
-                                    </span>
-                                  </div>
-                                  <div className="text-caption text-text-tertiary mt-1">
-                                    {isTherapy
-                                      ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                      : [r.spec, r.use, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
-                                  </div>
-                                  {!isTherapy && (
-                                    <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                                      <Sparkles className="h-3 w-3" />
-                                      {computedDose !== null
-                                        ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
-                                        : `基准 ${r.dose}${unit} / 次 @ 500kg，请选择体重`}
-                                    </div>
-                                  )}
-                                </li>
-                              );
-                            })}
-                          </ul>
+                        {selectedPlan.desc && (
+                          <div className="text-caption text-text-tertiary mt-0.5">{selectedPlan.desc}</div>
                         )}
-                      </button>
-                    );
-                  })}
-                </div>
+                      </div>
+                      {stdPlans.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setPlanSheetOpen(true)}
+                          className="shrink-0 h-7 px-2.5 rounded-md text-caption text-primary border border-primary/40 bg-card"
+                        >
+                          切换方案
+                        </button>
+                      )}
+                    </div>
+
+                    <ul className="mt-3 space-y-2">
+                      {selectedPlan.items.map((r) => {
+                        const isTherapy = r.kind === "therapy";
+                        const unit = r.doseUnit || "ml";
+                        const baseDose = parseFloat(r.dose || "");
+                        const w = cattleWeight ?? 0;
+                        const computedDose =
+                          !isTherapy && !Number.isNaN(baseDose) && w > 0
+                            ? Math.round(baseDose * (w / 500) * 10) / 10
+                            : null;
+                        return (
+                          <li
+                            key={r.id}
+                            className="rounded-md border border-border bg-card p-2.5"
+                          >
+                            <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                              {isTherapy ? (
+                                <Activity className="h-3.5 w-3.5 text-primary" />
+                              ) : (
+                                <Pill className="h-3.5 w-3.5 text-primary" />
+                              )}
+                              {r.name}
+                              {!isTherapy && r.maker && (
+                                <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                              )}
+                              <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
+                                {isTherapy ? "理疗" : "用药"}
+                              </span>
+                            </div>
+                            <div className="text-caption text-text-tertiary mt-1">
+                              {isTherapy
+                                ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
+                                : [r.spec, r.use, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
+                            </div>
+                            {!isTherapy && (
+                              <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
+                                <Sparkles className="h-3 w-3" />
+                                {computedDose !== null
+                                  ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
+                                  : `基准 ${r.dose}${unit} / 次 @ 500kg，请选择体重`}
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+
               </div>
             )}
           </Section>
@@ -715,96 +704,116 @@ function DiagnosePage() {
               </span>
             }
           >
-            <div className="space-y-3">
-              <label className="block">
-                <div className="text-caption text-text-tertiary mb-1">
-                  开具原因
-                  {specialList.length > 0 && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
+            {!specialOpen && specialList.length === 0 ? (
+              <button
+                type="button"
+                onClick={() => setSpecialOpen(true)}
+                className="w-full h-10 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-primary" /> 开具特殊处方
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <label className="block">
+                  <div className="text-caption text-text-tertiary mb-1">
+                    开具原因 <span className="text-[var(--state-danger)]">*</span>
+                  </div>
+                  <textarea
+                    value={specialReason}
+                    onChange={(e) => setSpecialReason(e.target.value)}
+                    maxLength={200}
+                    rows={2}
+                    placeholder="如标准处方过敏、合并感染、孕期禁用等"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+                  />
+                  <div className="text-caption text-text-tertiary text-right">{specialReason.length} / 200</div>
+                </label>
+
+                {specialList.length > 0 && (
+                  <ul className="space-y-2">
+                    {specialList.map((r) => {
+                      const isTherapy = r.kind === "therapy";
+                      const unit = r.doseUnit || "ml";
+                      return (
+                        <li key={r.id} className="rounded-lg border border-border bg-card p-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                                {isTherapy ? (
+                                  <Activity className="h-3.5 w-3.5 text-primary" />
+                                ) : (
+                                  <Pill className="h-3.5 w-3.5 text-primary" />
+                                )}
+                                {r.name || (isTherapy ? "未填写治疗手段" : "未填写药品")}
+                                {!isTherapy && r.maker && (
+                                  <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                                )}
+                                <span className="tag tag-muted">特殊</span>
+                              </div>
+                              <div className="text-caption text-text-tertiary mt-1">
+                                {isTherapy
+                                  ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
+                                  : [
+                                      r.spec,
+                                      r.use,
+                                      r.dose && `${r.dose}${unit} / 次`,
+                                      r.timesPerDay && `${r.timesPerDay} 次 / 天`,
+                                      r.days && `${r.days} 天`,
+                                    ].filter(Boolean).join(" · ")}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-0.5 shrink-0">
+                              <button
+                                onClick={() => setEditingRx({ ...r })}
+                                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-primary hover:bg-brand-subtle"
+                                aria-label="编辑"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                onClick={() => removeSpecialRx(r.id)}
+                                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
+                                aria-label="删除"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => addSpecial("drug")}
+                    className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+                  >
+                    <Pill className="h-3.5 w-3.5 text-primary" /> 新增用药
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addSpecial("therapy")}
+                    className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+                  >
+                    <Activity className="h-3.5 w-3.5 text-primary" /> 新增理疗
+                  </button>
                 </div>
-                <textarea
-                  value={specialReason}
-                  onChange={(e) => setSpecialReason(e.target.value)}
-                  maxLength={200}
-                  rows={2}
-                  placeholder="如标准处方过敏、合并感染、孕期禁用等"
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
-                />
-                <div className="text-caption text-text-tertiary text-right">{specialReason.length} / 200</div>
-              </label>
 
-              {specialList.length > 0 && (
-                <ul className="space-y-2">
-                  {specialList.map((r) => {
-                    const isTherapy = r.kind === "therapy";
-                    const unit = r.doseUnit || "ml";
-                    return (
-                      <li key={r.id} className="rounded-lg border border-border bg-card p-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
-                              {isTherapy ? (
-                                <Activity className="h-3.5 w-3.5 text-primary" />
-                              ) : (
-                                <Pill className="h-3.5 w-3.5 text-primary" />
-                              )}
-                              {r.name || (isTherapy ? "未填写治疗手段" : "未填写药品")}
-                              {!isTherapy && r.maker && (
-                                <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
-                              )}
-                              <span className="tag tag-muted">特殊</span>
-                            </div>
-                            <div className="text-caption text-text-tertiary mt-1">
-                              {isTherapy
-                                ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                : [
-                                    r.spec,
-                                    r.use,
-                                    r.dose && `${r.dose}${unit} / 次`,
-                                    r.timesPerDay && `${r.timesPerDay} 次 / 天`,
-                                    r.days && `${r.days} 天`,
-                                  ].filter(Boolean).join(" · ")}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-0.5 shrink-0">
-                            <button
-                              onClick={() => setEditingRx({ ...r })}
-                              className="h-7 w-7 inline-flex items-center justify-center rounded-md text-primary hover:bg-brand-subtle"
-                              aria-label="编辑"
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </button>
-                            <button
-                              onClick={() => removeSpecialRx(r.id)}
-                              className="h-7 w-7 inline-flex items-center justify-center rounded-md text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
-                              aria-label="删除"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => addSpecial("drug")}
-                  className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
-                >
-                  <Pill className="h-3.5 w-3.5 text-primary" /> 新增用药
-                </button>
-                <button
-                  type="button"
-                  onClick={() => addSpecial("therapy")}
-                  className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
-                >
-                  <Activity className="h-3.5 w-3.5 text-primary" /> 新增理疗
-                </button>
+                {specialList.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => { setSpecialOpen(false); setSpecialReason(""); }}
+                    className="w-full text-caption text-text-tertiary hover:text-text-secondary"
+                  >
+                    收起
+                  </button>
+                )}
               </div>
-            </div>
+            )}
+
           </Section>
 
 
@@ -1169,7 +1178,69 @@ function DiagnosePage() {
           </div>
         </div>
       )}
+
+      {/* 切换标准处方方案 */}
+      {planSheetOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setPlanSheetOpen(false)}>
+          <div
+            className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-section text-foreground font-medium">选择标准处方方案</div>
+              <button
+                onClick={() => setPlanSheetOpen(false)}
+                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                aria-label="关闭"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <ul className="space-y-2">
+              {stdPlans.map((plan) => {
+                const active = plan.id === selectedPlanId;
+                return (
+                  <li key={plan.id}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedPlanId(plan.id);
+                        setPlanSheetOpen(false);
+                      }}
+                      className={`w-full text-left rounded-lg border p-3 transition-colors ${
+                        active ? "border-primary bg-brand-subtle/40" : "border-border bg-card"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="text-body text-foreground font-medium">{plan.name}</div>
+                          {plan.desc && (
+                            <div className="text-caption text-text-tertiary mt-0.5">{plan.desc}</div>
+                          )}
+                          <div className="text-caption text-text-tertiary mt-1">
+                            包含 {plan.items.length} 项 ·{" "}
+                            {plan.items.filter((i) => i.kind === "drug").length} 用药 /{" "}
+                            {plan.items.filter((i) => i.kind === "therapy").length} 理疗
+                          </div>
+                        </div>
+                        <span
+                          className={`shrink-0 h-5 w-5 rounded-full border inline-flex items-center justify-center ${
+                            active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"
+                          }`}
+                        >
+                          {active && <CheckCircle2 className="h-3.5 w-3.5" />}
+                        </span>
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
     </MobileShell>
+
   );
 }
 
