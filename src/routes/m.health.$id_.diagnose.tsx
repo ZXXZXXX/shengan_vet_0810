@@ -276,6 +276,15 @@ function DiagnosePage() {
   const [weightSheetOpen, setWeightSheetOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
 
+  // 提交校验弹窗
+  type Shortage = { name: string; need: number; stock: number; unit: string };
+  type Violation = { kind: "disease" | "drug"; title: string; detail: string };
+  const [submitCheck, setSubmitCheck] = useState<{
+    shortages: Shortage[];
+    violations: Violation[];
+  } | null>(null);
+
+
   // 终止工单
   const [confirmTerminate, setConfirmTerminate] = useState(false);
   const [termReason, setTermReason] = useState("");
