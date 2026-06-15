@@ -22,6 +22,8 @@ import {
   UserPlus,
   User,
   Repeat2,
+  RefreshCw,
+  FileText,
   ChevronDown,
   AlertTriangle,
   Package,
