@@ -288,6 +288,22 @@ function DiagnosePage() {
       toast.error("请至少填写一个症状");
       return;
     }
+    const temp = parseFloat(temperature);
+    if (!temperature.trim() || Number.isNaN(temp)) {
+      toast.error("请填写牛只体温");
+      return;
+    }
+    if (temp < 30 || temp > 45) {
+      toast.error("体温应在 30 ~ 45 ℃ 之间");
+      return;
+    }
+    if (ketone.trim()) {
+      const k = parseFloat(ketone);
+      if (Number.isNaN(k) || k < 0 || k > 10) {
+        toast.error("血酮值应在 0 ~ 10 mmol/L 之间");
+        return;
+      }
+    }
     if (!disease) {
       toast.error("请选择疾病");
       return;
