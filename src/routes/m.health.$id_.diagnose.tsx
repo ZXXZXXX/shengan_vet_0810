@@ -191,6 +191,10 @@ function DiagnosePage() {
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
   const earTagLabel = getOrderEarTagLabel(id);
 
+  // 体征数据
+  const [temperature, setTemperature] = useState("");
+  const [ketone, setKetone] = useState("");
+
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
   const [videos, setVideos] = useState<string[]>([]);
