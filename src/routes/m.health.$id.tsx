@@ -145,6 +145,11 @@ function TaskDetailPage() {
   const [revisitStep, setRevisitStep] = useState<"choose" | "terminate-old">("choose");
   const [revisitReason, setRevisitReason] = useState<string>("");
   const [revisitReasonOther, setRevisitReasonOther] = useState<string>("");
+
+  // 异常终止
+  const [abortOpen, setAbortOpen] = useState(false);
+  const [abortReason, setAbortReason] = useState<string>("");
+  const [abortOther, setAbortOther] = useState<string>("");
   
   
 
