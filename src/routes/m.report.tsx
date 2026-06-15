@@ -402,6 +402,9 @@ function ReportPage() {
     () => diseaseKB.find((d) => d.name === suspectedDisease) ?? null,
     [suspectedDisease]
   );
+  const [planIdx, setPlanIdx] = useState(0);
+  useEffect(() => { setPlanIdx(0); }, [suspectedDisease]);
+  const selectedPlan = selectedDisease?.plans[planIdx] ?? null;
 
 
 
