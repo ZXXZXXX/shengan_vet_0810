@@ -830,7 +830,7 @@ function DiagnosePage() {
                 onClick={() => setSpecialOpen(true)}
                 className="w-full h-10 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
               >
-                <Sparkles className="h-3.5 w-3.5 text-primary" /> 开具特殊处方
+                <FileText className="h-3.5 w-3.5 text-primary" /> 开具特殊处方
               </button>
             ) : (
               <div className="space-y-3">
