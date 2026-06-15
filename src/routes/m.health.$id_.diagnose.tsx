@@ -22,6 +22,7 @@ import {
   UserPlus,
   User,
   Repeat2,
+  ChevronDown,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
@@ -242,6 +243,7 @@ function DiagnosePage() {
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
   const [planSheetOpen, setPlanSheetOpen] = useState(false);
+  const [weightSheetOpen, setWeightSheetOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
 
   // 终止工单
@@ -592,32 +594,24 @@ function DiagnosePage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {/* 牛只体重（档位选择） */}
+                {/* 牛只体重（下拉选择） */}
                 <div>
                   <div className="text-caption text-text-tertiary mb-1.5">
                     牛只体重 <span className="text-[var(--state-danger)]">*</span>
                     <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {WEIGHT_OPTIONS.map((w) => {
-                      const active = cattleWeight === w;
-                      return (
-                        <button
-                          key={w}
-                          type="button"
-                          onClick={() => setCattleWeight(w)}
-                          className={`h-8 px-3 rounded-full text-body-sm border ${
-                            active
-                              ? "bg-brand-subtle text-primary border-primary/40"
-                              : "bg-card text-text-secondary border-border"
-                          }`}
-                        >
-                          {w} kg
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setWeightSheetOpen(true)}
+                    className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
+                  >
+                    <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
+                      {cattleWeight == null ? "请选择牛只体重" : `${cattleWeight} kg`}
+                    </span>
+                    <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
+                  </button>
                 </div>
+
 
                 {/* 当前方案 */}
                 {selectedPlan && (
@@ -1218,8 +1212,52 @@ function DiagnosePage() {
         </div>
       )}
 
+      {/* 选择牛只体重 */}
+      {weightSheetOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setWeightSheetOpen(false)}>
+          <div
+            className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[70vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-section text-foreground font-medium">选择牛只体重</div>
+              <button
+                onClick={() => setWeightSheetOpen(false)}
+                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                aria-label="关闭"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+              {WEIGHT_OPTIONS.map((w) => {
+                const active = cattleWeight === w;
+                return (
+                  <li key={w}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCattleWeight(w);
+                        setWeightSheetOpen(false);
+                      }}
+                      className={`w-full px-3 py-3 flex items-center justify-between text-left ${
+                        active ? "bg-brand-subtle/40 text-primary" : "bg-card text-foreground"
+                      }`}
+                    >
+                      <span className="text-body">{w} kg</span>
+                      {active && <CheckCircle2 className="h-4 w-4 text-primary" />}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {/* 切换标准处方方案 */}
       {planSheetOpen && (
+
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setPlanSheetOpen(false)}>
           <div
             className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[80vh] overflow-y-auto"
