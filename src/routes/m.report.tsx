@@ -443,8 +443,18 @@ function ReportPage() {
     return `${formatted.slice(0, 2).join("、")} 等 ${formatted.length} 头`;
   }, [barnMode, barns, targets]);
 
+  const [postSubmitOpen, setPostSubmitOpen] = useState(false);
+  const [newWorkOrderId, setNewWorkOrderId] = useState<string>("");
+
   const doSubmit = () => {
     setSubmitted(true);
+    // 兽医/场长在现场上报后，提示是否直接进入诊断
+    if (role === "vet" || role === "manager") {
+      const id = `WO-${Math.floor(Math.random() * 9000 + 1000)}`;
+      setNewWorkOrderId(id);
+      setTimeout(() => setPostSubmitOpen(true), 400);
+      return;
+    }
     setTimeout(() => navigate({ to: "/m/health" }), 900);
   };
 
