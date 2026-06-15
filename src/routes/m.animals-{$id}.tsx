@@ -777,14 +777,13 @@ type DiagnosisRecord = {
   date: string;
   disease: string;
   doctor: string;
-  result: "已治愈" | "治疗中" | "转归不良" | "观察中";
 };
 
 const ALL_DIAGNOSES: DiagnosisRecord[] = [
-  { id: "DX-0518", date: "2026-05-18", disease: "急性乳房炎", doctor: "李雨晴", result: "治疗中" },
-  { id: "DX-0405", date: "2026-04-05", disease: "蹄叶炎", doctor: "李雨晴", result: "已治愈" },
-  { id: "DX-0312", date: "2026-03-12", disease: "瘤胃酸中毒", doctor: "周凯", result: "已治愈" },
-  { id: "DX-0125", date: "2026-01-25", disease: "产后子宫炎", doctor: "王场长", result: "已治愈" },
+  { id: "DX-0518", date: "2026-05-18", disease: "急性乳房炎", doctor: "李雨晴" },
+  { id: "DX-0405", date: "2026-04-05", disease: "蹄叶炎", doctor: "李雨晴" },
+  { id: "DX-0312", date: "2026-03-12", disease: "瘤胃酸中毒", doctor: "周凯" },
+  { id: "DX-0125", date: "2026-01-25", disease: "产后子宫炎", doctor: "王场长" },
 ];
 
 function DiagnosisHistory() {
@@ -795,35 +794,20 @@ function DiagnosisHistory() {
       </div>
     );
   }
-  const resultCls = (r: DiagnosisRecord["result"]) =>
-    r === "已治愈"
-      ? "bg-brand-subtle text-primary"
-      : r === "治疗中"
-      ? "bg-[#FFE8CC] text-[#C9621F]"
-      : r === "转归不良"
-      ? "bg-[#FFE4E1] text-[#D9534F]"
-      : "bg-[#FFF7E6] text-[#B8860B]";
   return (
-    <div className="space-y-2">
+    <div>
       <div className="text-caption text-text-tertiary mb-1">共 {ALL_DIAGNOSES.length} 条</div>
-      {ALL_DIAGNOSES.map((d) => (
-        <div key={d.id} className="rounded-xl border border-border bg-card p-3">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="font-mono text-caption text-text-secondary">{d.date}</span>
-            <span className={`tag ${resultCls(d.result)} inline-flex items-center`}>
-              {d.result}
-            </span>
+      <div className="rounded-xl border border-border bg-card divide-y divide-border">
+        {ALL_DIAGNOSES.map((d) => (
+          <div key={d.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <span className="shrink-0 font-mono text-caption text-text-secondary">{d.date}</span>
+              <span className="truncate text-body-sm text-foreground">{d.disease}</span>
+            </div>
+            <span className="shrink-0 text-caption text-text-secondary">{d.doctor}</span>
           </div>
-          <div className="text-body-sm text-foreground">{d.disease}</div>
-          <div className="text-caption text-text-tertiary mt-1 inline-flex items-center gap-1.5">
-            <span>诊断人</span>
-            <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
-              {d.doctor.charAt(0)}
-            </span>
-            <span className="text-text-secondary">{d.doctor}</span>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
