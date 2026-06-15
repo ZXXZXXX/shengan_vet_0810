@@ -535,7 +535,7 @@ function MedicationHistory() {
 
   const { visible, recentCount, totalCount } = useMemo(() => {
     const cutoff = new Date(TODAY);
-    cutoff.setDate(cutoff.getDate() - 30);
+    cutoff.setDate(cutoff.getDate() - 20);
     const sorted = [...ALL_MEDS].sort((a, b) => (a.date < b.date ? 1 : -1));
     const recent = sorted.filter((m) => new Date(m.date) >= cutoff);
     return {
@@ -560,13 +560,13 @@ function MedicationHistory() {
     <div>
       <div className="flex items-center justify-between mb-2">
         <span className="text-caption text-text-tertiary">
-          {expanded ? `全部 ${totalCount} 条` : `近 30 天 ${recentCount} 条`}
+          {expanded ? `全部 ${totalCount} 条` : `近 20 天 ${recentCount} 条`}
         </span>
       </div>
 
       {groups.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
-          近 30 天无用药记录
+          近 20 天无用药记录
         </div>
       ) : (
         <div className="relative pl-4">
