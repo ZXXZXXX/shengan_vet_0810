@@ -753,9 +753,9 @@ function DiagnosePage() {
                           onClick={() => setPlanSheetOpen(true)}
                           aria-label="切换方案"
                           title="切换方案"
-                          className="shrink-0 h-7 w-7 inline-flex items-center justify-center rounded-md text-primary border border-primary/40 bg-card"
+                          className="shrink-0 h-7 w-7 inline-flex items-center justify-center rounded-md text-primary bg-card"
                         >
-                          <Repeat2 className="h-3.5 w-3.5" />
+                          <RefreshCw className="h-3.5 w-3.5" />
                         </button>
                       )}
 
