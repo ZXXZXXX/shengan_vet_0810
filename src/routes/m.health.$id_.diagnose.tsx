@@ -618,91 +618,78 @@ function DiagnosePage() {
                   </div>
                 </div>
 
-                {/* 方案选择 */}
-                <div className="space-y-2">
-                  {stdPlans.map((plan) => {
-                    const active = plan.id === selectedPlanId;
-                    return (
-                      <button
-                        key={plan.id}
-                        type="button"
-                        onClick={() => setSelectedPlanId(plan.id)}
-                        className={`w-full text-left rounded-lg border p-3 transition-colors ${
-                          active
-                            ? "border-primary bg-brand-subtle/40"
-                            : "border-border bg-card"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="min-w-0">
-                            <div className="text-body text-foreground font-medium">
-                              {plan.name}
-                            </div>
-                            {plan.desc && (
-                              <div className="text-caption text-text-tertiary mt-0.5">{plan.desc}</div>
-                            )}
-                          </div>
-                          <span
-                            className={`shrink-0 h-5 w-5 rounded-full border inline-flex items-center justify-center ${
-                              active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"
-                            }`}
-                          >
-                            {active && <CheckCircle2 className="h-3.5 w-3.5" />}
-                          </span>
+                {/* 当前方案 */}
+                {selectedPlan && (
+                  <div className="rounded-lg border border-primary bg-brand-subtle/40 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-body text-foreground font-medium">
+                          {selectedPlan.name}
                         </div>
-
-                        {active && (
-                          <ul className="mt-3 space-y-2">
-                            {plan.items.map((r) => {
-                              const isTherapy = r.kind === "therapy";
-                              const unit = r.doseUnit || "ml";
-                              const baseDose = parseFloat(r.dose || "");
-                              const w = cattleWeight ?? 0;
-                              const computedDose =
-                                !isTherapy && !Number.isNaN(baseDose) && w > 0
-                                  ? Math.round(baseDose * (w / 500) * 10) / 10
-                                  : null;
-                              return (
-                                <li
-                                  key={r.id}
-                                  className="rounded-md border border-border bg-card p-2.5"
-                                >
-                                  <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
-                                    {isTherapy ? (
-                                      <Activity className="h-3.5 w-3.5 text-primary" />
-                                    ) : (
-                                      <Pill className="h-3.5 w-3.5 text-primary" />
-                                    )}
-                                    {r.name}
-                                    {!isTherapy && r.maker && (
-                                      <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
-                                    )}
-                                    <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
-                                      {isTherapy ? "理疗" : "用药"}
-                                    </span>
-                                  </div>
-                                  <div className="text-caption text-text-tertiary mt-1">
-                                    {isTherapy
-                                      ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                      : [r.spec, r.use, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
-                                  </div>
-                                  {!isTherapy && (
-                                    <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                                      <Sparkles className="h-3 w-3" />
-                                      {computedDose !== null
-                                        ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
-                                        : `基准 ${r.dose}${unit} / 次 @ 500kg，请选择体重`}
-                                    </div>
-                                  )}
-                                </li>
-                              );
-                            })}
-                          </ul>
+                        {selectedPlan.desc && (
+                          <div className="text-caption text-text-tertiary mt-0.5">{selectedPlan.desc}</div>
                         )}
-                      </button>
-                    );
-                  })}
-                </div>
+                      </div>
+                      {stdPlans.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setPlanSheetOpen(true)}
+                          className="shrink-0 h-7 px-2.5 rounded-md text-caption text-primary border border-primary/40 bg-card"
+                        >
+                          切换方案
+                        </button>
+                      )}
+                    </div>
+
+                    <ul className="mt-3 space-y-2">
+                      {selectedPlan.items.map((r) => {
+                        const isTherapy = r.kind === "therapy";
+                        const unit = r.doseUnit || "ml";
+                        const baseDose = parseFloat(r.dose || "");
+                        const w = cattleWeight ?? 0;
+                        const computedDose =
+                          !isTherapy && !Number.isNaN(baseDose) && w > 0
+                            ? Math.round(baseDose * (w / 500) * 10) / 10
+                            : null;
+                        return (
+                          <li
+                            key={r.id}
+                            className="rounded-md border border-border bg-card p-2.5"
+                          >
+                            <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                              {isTherapy ? (
+                                <Activity className="h-3.5 w-3.5 text-primary" />
+                              ) : (
+                                <Pill className="h-3.5 w-3.5 text-primary" />
+                              )}
+                              {r.name}
+                              {!isTherapy && r.maker && (
+                                <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                              )}
+                              <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
+                                {isTherapy ? "理疗" : "用药"}
+                              </span>
+                            </div>
+                            <div className="text-caption text-text-tertiary mt-1">
+                              {isTherapy
+                                ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
+                                : [r.spec, r.use, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
+                            </div>
+                            {!isTherapy && (
+                              <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
+                                <Sparkles className="h-3 w-3" />
+                                {computedDose !== null
+                                  ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
+                                  : `基准 ${r.dose}${unit} / 次 @ 500kg，请选择体重`}
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+
               </div>
             )}
           </Section>
