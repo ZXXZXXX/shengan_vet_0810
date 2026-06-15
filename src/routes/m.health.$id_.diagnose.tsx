@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import {
   Activity,
   Search,
-  Plus,
+  
+
   X,
   Send,
   Pill,
@@ -47,49 +48,102 @@ const symptomLibrary = [
   "乳房红肿", "产奶骤降", "跛行", "腹泻", "脱水", "精神萎靡",
 ];
 
-// 疾病库（关联症状）
-type Disease = { name: string; symptoms: string[]; rx: Prescription[] };
+// 疾病库（关联症状）；每个疾病可包含多个治疗处方方案
+type Plan = { id: string; name: string; desc?: string; items: Prescription[] };
+type Disease = { name: string; symptoms: string[]; plans: Plan[] };
 const diseaseLibrary: Disease[] = [
   {
     name: "支气管肺炎",
     symptoms: ["高烧", "咳嗽", "鼻液", "呼吸急促", "食欲下降"],
-    rx: [
-      { id: "r1", kind: "drug", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "3" },
-      { id: "r2", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1g", days: "3" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 抗炎 + 抗生素",
+        desc: "适用于高烧伴明显呼吸道症状",
+        items: [
+          { id: "r1", kind: "drug", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2", doseUnit: "ml", days: "3" },
+          { id: "r2", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1", doseUnit: "g", days: "3" },
+        ],
+      },
+      {
+        id: "p2",
+        name: "方案 B · 单用抗生素",
+        desc: "无明显高烧时的简化方案",
+        items: [
+          { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1", doseUnit: "g", days: "5" },
+        ],
+      },
     ],
   },
   {
     name: "急性乳房炎",
     symptoms: ["高烧", "乳房红肿", "产奶骤降", "食欲下降"],
-    rx: [
-      { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1g", days: "3" },
-      { id: "r2", kind: "drug", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "2" },
-      { id: "r3", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "2 次 / 天", desc: "每次 10 分钟，促进炎症消散", days: "3" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 药物 + 物理治疗",
+        desc: "联合用药 + 热敷按摩",
+        items: [
+          { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1", doseUnit: "g", days: "3" },
+          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2", doseUnit: "ml", days: "2" },
+          { id: "r3", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "2 次 / 天", desc: "每次 10 分钟，促进炎症消散", days: "3" },
+        ],
+      },
+      {
+        id: "p2",
+        name: "方案 B · 仅物理治疗",
+        desc: "轻症或孕期禁用抗生素时",
+        items: [
+          { id: "r1", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "3 次 / 天", desc: "每次 15 分钟，配合人工挤奶", days: "5" },
+        ],
+      },
     ],
   },
   {
     name: "瘤胃酸中毒",
     symptoms: ["食欲下降", "反刍减少", "腹泻", "脱水"],
-    rx: [
-      { id: "r1", kind: "drug", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200g", days: "2" },
-      { id: "r2", kind: "drug", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10ml", days: "3" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 常规治疗",
+        items: [
+          { id: "r1", kind: "drug", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200", doseUnit: "g", days: "2" },
+          { id: "r2", kind: "drug", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10", doseUnit: "ml", days: "3" },
+        ],
+      },
     ],
   },
   {
     name: "酮病",
     symptoms: ["食欲下降", "产奶骤降", "精神萎靡"],
-    rx: [
-      { id: "r1", kind: "drug", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500ml", days: "2" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 静脉补糖",
+        items: [
+          { id: "r1", kind: "drug", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500", doseUnit: "ml", days: "2" },
+        ],
+      },
     ],
   },
   {
     name: "犊牛腹泻症",
     symptoms: ["腹泻", "脱水", "精神萎靡"],
-    rx: [
-      { id: "r1", kind: "drug", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1 包", days: "3" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 补液护理",
+        items: [
+          { id: "r1", kind: "drug", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1", doseUnit: "包", days: "3" },
+          { id: "r2", kind: "therapy", name: "保温隔离", therapyMethod: "隔离观察", frequency: "全天", desc: "干燥温暖环境，单独看护", days: "5" },
+        ],
+      },
     ],
   },
 ];
+
+// 牛只体重档位（用于自动计算剂量）
+const WEIGHT_OPTIONS = [350, 400, 450, 500, 550, 600, 650, 700];
 
 type SlotKey = "morning" | "noon" | "evening";
 const SLOT_LABEL: Record<SlotKey, string> = {
@@ -178,10 +232,10 @@ function DiagnosePage() {
   const [diseaseFocused, setDiseaseFocused] = useState(false);
 
 
-  // 标准处方（系统内置，不可改药品/剂量/天数；按体重自动算量）
-  const [stdRxList, setStdRxList] = useState<Prescription[]>([]);
-  const [stdExcluded, setStdExcluded] = useState<Set<string>>(new Set());
-  const [cattleWeight, setCattleWeight] = useState("");
+  // 标准处方（系统内置，按疾病提供多个完整方案，二选一/三选一；按体重自动算量）
+  const [stdPlans, setStdPlans] = useState<Plan[]>([]);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
+  const [cattleWeight, setCattleWeight] = useState<number | null>(null);
   // 特殊处方（需填原因，可自由编辑）
   const [specialReason, setSpecialReason] = useState("");
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
@@ -274,19 +328,15 @@ function DiagnosePage() {
   const pickDisease = (d: (typeof rankedDiseases)[number]) => {
     setDisease(d.name);
     setDiseaseQuery(d.name);
-    setStdRxList(d.rx.map((r) => ({ ...r })));
-    setStdExcluded(new Set());
+    setStdPlans(d.plans.map((p) => ({ ...p, items: p.items.map((it) => ({ ...it })) })));
+    setSelectedPlanId(d.plans[0]?.id ?? "");
     setDiseaseFocused(false);
   };
 
-  const toggleStdRx = (rxId: string) => {
-    setStdExcluded((prev) => {
-      const next = new Set(prev);
-      if (next.has(rxId)) next.delete(rxId);
-      else next.add(rxId);
-      return next;
-    });
-  };
+  const selectedPlan = useMemo(
+    () => stdPlans.find((p) => p.id === selectedPlanId) ?? null,
+    [stdPlans, selectedPlanId],
+  );
 
   const removeSpecialRx = (rxId: string) =>
     setSpecialList((prev) => prev.filter((r) => r.id !== rxId));
@@ -295,6 +345,37 @@ function DiagnosePage() {
     if (!editingRx) return;
     setSpecialList((prev) => prev.map((r) => (r.id === editingRx.id ? editingRx : r)));
     setEditingRx(null);
+  };
+
+  const addSpecial = (kind: "drug" | "therapy") => {
+    const nextId = `s${Date.now()}`;
+    const base: Prescription =
+      kind === "drug"
+        ? {
+            id: nextId,
+            kind: "drug",
+            name: "",
+            maker: "",
+            spec: "",
+            use: "",
+            dose: "",
+            doseUnit: "ml",
+            timesPerDay: "2",
+            days: "3",
+            splitTime: false,
+            slots: {},
+          }
+        : {
+            id: nextId,
+            kind: "therapy",
+            name: "",
+            therapyMethod: "",
+            frequency: "",
+            desc: "",
+            days: "3",
+          };
+    setEditingRx(base);
+    setSpecialList((prev) => [...prev, base]);
   };
 
   const submit = () => {
@@ -322,17 +403,14 @@ function DiagnosePage() {
       toast.error("请选择疾病");
       return;
     }
-    const stdSelected = stdRxList.filter((r) => !stdExcluded.has(r.id));
-    if (stdSelected.length === 0 && specialList.length === 0) {
-      toast.error("请至少选择一项标准处方或开具一项特殊处方");
+    const planItems = selectedPlan?.items ?? [];
+    if (planItems.length === 0 && specialList.length === 0) {
+      toast.error("请选择一个标准处方方案或开具特殊处方");
       return;
     }
-    if (stdSelected.some((r) => r.kind === "drug")) {
-      const w = parseFloat(cattleWeight);
-      if (!cattleWeight.trim() || Number.isNaN(w) || w < 50 || w > 1500) {
-        toast.error("请填写有效牛只体重（50 ~ 1500 kg）以计算剂量");
-        return;
-      }
+    if (planItems.some((r) => r.kind === "drug") && cattleWeight == null) {
+      toast.error("请选择牛只体重以自动计算剂量");
+      return;
     }
     if (specialList.length > 0 && !specialReason.trim()) {
       toast.error("请填写开具特殊处方的原因");
@@ -340,6 +418,10 @@ function DiagnosePage() {
     }
     if (specialList.some((r) => r.kind === "drug" && (!r.name || !r.dose))) {
       toast.error("请补全特殊处方的药品与剂量");
+      return;
+    }
+    if (specialList.some((r) => r.kind === "therapy" && !r.therapyMethod)) {
+      toast.error("请补全特殊理疗的治疗手段");
       return;
     }
     if (photos.length === 0 && videos.length === 0) {
@@ -495,109 +577,134 @@ function DiagnosePage() {
             title="标准处方"
             extra={
               <span className="text-caption text-text-tertiary">
-                {stdRxList.length === 0
+                {stdPlans.length === 0
                   ? "选择疾病后载入"
-                  : `${stdRxList.length - stdExcluded.size} / ${stdRxList.length} 项已选`}
+                  : `共 ${stdPlans.length} 个方案`}
               </span>
             }
           >
-            {stdRxList.length === 0 ? (
+            {stdPlans.length === 0 ? (
               <div className="text-caption text-text-tertiary text-center py-4">
-                选择疾病后将自动载入系统推荐处方
+                选择疾病后将自动载入系统推荐处方方案
               </div>
             ) : (
               <div className="space-y-3">
-                <label className="block">
-                  <div className="text-caption text-text-tertiary mb-1">
+                {/* 牛只体重（档位选择） */}
+                <div>
+                  <div className="text-caption text-text-tertiary mb-1.5">
                     牛只体重 <span className="text-[var(--state-danger)]">*</span>
                     <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
                   </div>
-                  <div className="relative">
-                    <input
-                      inputMode="decimal"
-                      value={cattleWeight}
-                      onChange={(e) => setCattleWeight(e.target.value)}
-                      placeholder="如 500"
-                      maxLength={6}
-                      className="h-10 w-full pl-3 pr-10 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">kg</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {WEIGHT_OPTIONS.map((w) => {
+                      const active = cattleWeight === w;
+                      return (
+                        <button
+                          key={w}
+                          type="button"
+                          onClick={() => setCattleWeight(w)}
+                          className={`h-8 px-3 rounded-full text-body-sm border ${
+                            active
+                              ? "bg-brand-subtle text-primary border-primary/40"
+                              : "bg-card text-text-secondary border-border"
+                          }`}
+                        >
+                          {w} kg
+                        </button>
+                      );
+                    })}
                   </div>
-                </label>
+                </div>
 
-                <ul className="space-y-2">
-                  {stdRxList.map((r) => {
-                    const isTherapy = r.kind === "therapy";
-                    const unit = r.doseUnit || "ml";
-                    const baseDose = parseFloat(r.dose || "");
-                    const w = parseFloat(cattleWeight);
-                    const computedDose =
-                      !isTherapy && !Number.isNaN(baseDose) && !Number.isNaN(w) && w > 0
-                        ? Math.round(baseDose * (w / 500) * 10) / 10
-                        : null;
-                    const excluded = stdExcluded.has(r.id);
+                {/* 方案选择 */}
+                <div className="space-y-2">
+                  {stdPlans.map((plan) => {
+                    const active = plan.id === selectedPlanId;
                     return (
-                      <li
-                        key={r.id}
-                        className={`rounded-lg border p-3 ${
-                          excluded
-                            ? "border-border bg-surface-subtle opacity-60"
-                            : "border-primary/30 bg-card"
+                      <button
+                        key={plan.id}
+                        type="button"
+                        onClick={() => setSelectedPlanId(plan.id)}
+                        className={`w-full text-left rounded-lg border p-3 transition-colors ${
+                          active
+                            ? "border-primary bg-brand-subtle/40"
+                            : "border-border bg-card"
                         }`}
                       >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
-                              {isTherapy ? (
-                                <Activity className="h-3.5 w-3.5 text-primary" />
-                              ) : (
-                                <Pill className="h-3.5 w-3.5 text-primary" />
-                              )}
-                              {r.name}
-                              {!isTherapy && r.maker && (
-                                <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
-                              )}
-                              <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
-                                {isTherapy ? "治疗手段" : "用药"}
-                              </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="text-body text-foreground font-medium">
+                              {plan.name}
                             </div>
-                            <div className="text-caption text-text-tertiary mt-1">
-                              {isTherapy
-                                ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                : [
-                                    r.spec,
-                                    r.use,
-                                    r.days && `${r.days} 天`,
-                                  ].filter(Boolean).join(" · ")}
-                            </div>
-                            {!isTherapy && (
-                              <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                                <Sparkles className="h-3 w-3" />
-                                {computedDose !== null
-                                  ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
-                                  : `基准 ${r.dose}${unit} / 次 @ 500kg，请填写体重`}
-                              </div>
+                            {plan.desc && (
+                              <div className="text-caption text-text-tertiary mt-0.5">{plan.desc}</div>
                             )}
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => toggleStdRx(r.id)}
-                            className={`shrink-0 h-7 px-2.5 rounded-md text-caption border ${
-                              excluded
-                                ? "border-border bg-card text-text-secondary"
-                                : "border-primary/40 bg-brand-subtle text-primary"
+                          <span
+                            className={`shrink-0 h-5 w-5 rounded-full border inline-flex items-center justify-center ${
+                              active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"
                             }`}
                           >
-                            {excluded ? "选用" : "已选"}
-                          </button>
+                            {active && <CheckCircle2 className="h-3.5 w-3.5" />}
+                          </span>
                         </div>
-                      </li>
+
+                        {active && (
+                          <ul className="mt-3 space-y-2">
+                            {plan.items.map((r) => {
+                              const isTherapy = r.kind === "therapy";
+                              const unit = r.doseUnit || "ml";
+                              const baseDose = parseFloat(r.dose || "");
+                              const w = cattleWeight ?? 0;
+                              const computedDose =
+                                !isTherapy && !Number.isNaN(baseDose) && w > 0
+                                  ? Math.round(baseDose * (w / 500) * 10) / 10
+                                  : null;
+                              return (
+                                <li
+                                  key={r.id}
+                                  className="rounded-md border border-border bg-card p-2.5"
+                                >
+                                  <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                                    {isTherapy ? (
+                                      <Activity className="h-3.5 w-3.5 text-primary" />
+                                    ) : (
+                                      <Pill className="h-3.5 w-3.5 text-primary" />
+                                    )}
+                                    {r.name}
+                                    {!isTherapy && r.maker && (
+                                      <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                                    )}
+                                    <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
+                                      {isTherapy ? "理疗" : "用药"}
+                                    </span>
+                                  </div>
+                                  <div className="text-caption text-text-tertiary mt-1">
+                                    {isTherapy
+                                      ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
+                                      : [r.spec, r.use, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
+                                  </div>
+                                  {!isTherapy && (
+                                    <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
+                                      <Sparkles className="h-3 w-3" />
+                                      {computedDose !== null
+                                        ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
+                                        : `基准 ${r.dose}${unit} / 次 @ 500kg，请选择体重`}
+                                    </div>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </button>
                     );
                   })}
-                </ul>
+                </div>
               </div>
             )}
           </Section>
+
 
           {/* === 特殊处方 === */}
           <Section
@@ -681,30 +788,22 @@ function DiagnosePage() {
                 </ul>
               )}
 
-              <button
-                onClick={() => {
-                  const nextId = `s${Date.now()}`;
-                  const item: Prescription = {
-                    id: nextId,
-                    kind: "drug",
-                    name: "",
-                    maker: "",
-                    spec: "",
-                    use: "",
-                    dose: "",
-                    doseUnit: "ml",
-                    timesPerDay: "2",
-                    days: "3",
-                    splitTime: false,
-                    slots: {},
-                  };
-                  setEditingRx(item);
-                  setSpecialList((prev) => [...prev, item]);
-                }}
-                className="w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
-              >
-                <Plus className="h-3.5 w-3.5" /> 新增特殊处方
-              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => addSpecial("drug")}
+                  className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+                >
+                  <Pill className="h-3.5 w-3.5 text-primary" /> 新增用药
+                </button>
+                <button
+                  type="button"
+                  onClick={() => addSpecial("therapy")}
+                  className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+                >
+                  <Activity className="h-3.5 w-3.5 text-primary" /> 新增理疗
+                </button>
+              </div>
             </div>
           </Section>
 
