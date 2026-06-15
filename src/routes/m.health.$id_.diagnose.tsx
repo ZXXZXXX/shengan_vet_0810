@@ -1436,7 +1436,82 @@ function DiagnosePage() {
           </div>
         </div>
       )}
+
+      {/* 提交校验：缺药 / 规则二次确认 */}
+      {submitCheck && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+          onClick={() => setSubmitCheck(null)}
+        >
+          <div
+            className="w-full max-w-sm bg-card rounded-2xl p-4 space-y-3 max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-[var(--state-warning,#F59E0B)]" />
+              <div className="text-section text-foreground font-medium">提交前请确认</div>
+            </div>
+
+            {submitCheck.shortages.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                  <Package className="h-3.5 w-3.5" /> 库存不足（不拦截，可继续提交）
+                </div>
+                <ul className="rounded-lg border border-border divide-y divide-border">
+                  {submitCheck.shortages.map((s) => (
+                    <li key={s.name} className="px-3 py-2">
+                      <div className="text-body-sm text-foreground">{s.name}</div>
+                      <div className="text-caption text-text-tertiary mt-0.5">
+                        需要 {s.need}
+                        {s.unit} · 库存 {s.stock}
+                        {s.unit} · 缺 {Math.round((s.need - s.stock) * 10) / 10}
+                        {s.unit}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {submitCheck.violations.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1">
+                  <AlertTriangle className="h-3.5 w-3.5" /> 规则告警（需二次确认）
+                </div>
+                <ul className="rounded-lg border border-[var(--state-danger)]/30 bg-[color-mix(in_oklab,var(--state-danger)_4%,transparent)] divide-y divide-[var(--state-danger)]/20">
+                  {submitCheck.violations.map((v, i) => (
+                    <li key={i} className="px-3 py-2">
+                      <div className="text-body-sm text-foreground">{v.title}</div>
+                      <div className="text-caption text-text-tertiary mt-0.5">{v.detail}</div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={() => setSubmitCheck(null)}
+                className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
+              >
+                返回修改
+              </button>
+              <button
+                onClick={doSubmit}
+                className={`flex-1 h-10 rounded-lg text-body-sm text-white font-medium ${
+                  submitCheck.violations.length > 0
+                    ? "bg-[var(--state-danger)]"
+                    : "bg-primary"
+                }`}
+              >
+                {submitCheck.violations.length > 0 ? "仍旧提交" : "知道了，继续提交"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </MobileShell>
+
 
   );
 }
