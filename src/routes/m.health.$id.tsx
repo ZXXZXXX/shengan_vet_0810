@@ -24,6 +24,7 @@ import {
   History,
   Link2,
   Tag,
+  OctagonX,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
