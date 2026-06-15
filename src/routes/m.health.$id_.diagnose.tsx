@@ -634,11 +634,14 @@ function DiagnosePage() {
                         <button
                           type="button"
                           onClick={() => setPlanSheetOpen(true)}
-                          className="shrink-0 h-7 px-2.5 rounded-md text-caption text-primary border border-primary/40 bg-card"
+                          aria-label="切换方案"
+                          title="切换方案"
+                          className="shrink-0 h-7 w-7 inline-flex items-center justify-center rounded-md text-primary border border-primary/40 bg-card"
                         >
-                          切换方案
+                          <Repeat2 className="h-3.5 w-3.5" />
                         </button>
                       )}
+
                     </div>
 
                     <ul className="mt-3 space-y-2">
