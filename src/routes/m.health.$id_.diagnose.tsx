@@ -47,49 +47,102 @@ const symptomLibrary = [
   "乳房红肿", "产奶骤降", "跛行", "腹泻", "脱水", "精神萎靡",
 ];
 
-// 疾病库（关联症状）
-type Disease = { name: string; symptoms: string[]; rx: Prescription[] };
+// 疾病库（关联症状）；每个疾病可包含多个治疗处方方案
+type Plan = { id: string; name: string; desc?: string; items: Prescription[] };
+type Disease = { name: string; symptoms: string[]; plans: Plan[] };
 const diseaseLibrary: Disease[] = [
   {
     name: "支气管肺炎",
     symptoms: ["高烧", "咳嗽", "鼻液", "呼吸急促", "食欲下降"],
-    rx: [
-      { id: "r1", kind: "drug", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "3" },
-      { id: "r2", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1g", days: "3" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 抗炎 + 抗生素",
+        desc: "适用于高烧伴明显呼吸道症状",
+        items: [
+          { id: "r1", kind: "drug", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2", doseUnit: "ml", days: "3" },
+          { id: "r2", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1", doseUnit: "g", days: "3" },
+        ],
+      },
+      {
+        id: "p2",
+        name: "方案 B · 单用抗生素",
+        desc: "无明显高烧时的简化方案",
+        items: [
+          { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1", doseUnit: "g", days: "5" },
+        ],
+      },
     ],
   },
   {
     name: "急性乳房炎",
     symptoms: ["高烧", "乳房红肿", "产奶骤降", "食欲下降"],
-    rx: [
-      { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1g", days: "3" },
-      { id: "r2", kind: "drug", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml", days: "2" },
-      { id: "r3", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "2 次 / 天", desc: "每次 10 分钟，促进炎症消散", days: "3" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 药物 + 物理治疗",
+        desc: "联合用药 + 热敷按摩",
+        items: [
+          { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1", doseUnit: "g", days: "3" },
+          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2", doseUnit: "ml", days: "2" },
+          { id: "r3", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "2 次 / 天", desc: "每次 10 分钟，促进炎症消散", days: "3" },
+        ],
+      },
+      {
+        id: "p2",
+        name: "方案 B · 仅物理治疗",
+        desc: "轻症或孕期禁用抗生素时",
+        items: [
+          { id: "r1", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "3 次 / 天", desc: "每次 15 分钟，配合人工挤奶", days: "5" },
+        ],
+      },
     ],
   },
   {
     name: "瘤胃酸中毒",
     symptoms: ["食欲下降", "反刍减少", "腹泻", "脱水"],
-    rx: [
-      { id: "r1", kind: "drug", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200g", days: "2" },
-      { id: "r2", kind: "drug", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10ml", days: "3" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 常规治疗",
+        items: [
+          { id: "r1", kind: "drug", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200", doseUnit: "g", days: "2" },
+          { id: "r2", kind: "drug", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10", doseUnit: "ml", days: "3" },
+        ],
+      },
     ],
   },
   {
     name: "酮病",
     symptoms: ["食欲下降", "产奶骤降", "精神萎靡"],
-    rx: [
-      { id: "r1", kind: "drug", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500ml", days: "2" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 静脉补糖",
+        items: [
+          { id: "r1", kind: "drug", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500", doseUnit: "ml", days: "2" },
+        ],
+      },
     ],
   },
   {
     name: "犊牛腹泻症",
     symptoms: ["腹泻", "脱水", "精神萎靡"],
-    rx: [
-      { id: "r1", kind: "drug", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1 包", days: "3" },
+    plans: [
+      {
+        id: "p1",
+        name: "方案 A · 补液护理",
+        items: [
+          { id: "r1", kind: "drug", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1", doseUnit: "包", days: "3" },
+          { id: "r2", kind: "therapy", name: "保温隔离", therapyMethod: "隔离观察", frequency: "全天", desc: "干燥温暖环境，单独看护", days: "5" },
+        ],
+      },
     ],
   },
 ];
+
+// 牛只体重档位（用于自动计算剂量）
+const WEIGHT_OPTIONS = [350, 400, 450, 500, 550, 600, 650, 700];
 
 type SlotKey = "morning" | "noon" | "evening";
 const SLOT_LABEL: Record<SlotKey, string> = {
