@@ -274,17 +274,26 @@ function DiagnosePage() {
   const pickDisease = (d: (typeof rankedDiseases)[number]) => {
     setDisease(d.name);
     setDiseaseQuery(d.name);
-    setRxList(d.rx.map((r) => ({ ...r })));
+    setStdRxList(d.rx.map((r) => ({ ...r })));
+    setStdExcluded(new Set());
     setDiseaseFocused(false);
   };
 
+  const toggleStdRx = (rxId: string) => {
+    setStdExcluded((prev) => {
+      const next = new Set(prev);
+      if (next.has(rxId)) next.delete(rxId);
+      else next.add(rxId);
+      return next;
+    });
+  };
 
-  const removeRx = (rxId: string) =>
-    setRxList((prev) => prev.filter((r) => r.id !== rxId));
+  const removeSpecialRx = (rxId: string) =>
+    setSpecialList((prev) => prev.filter((r) => r.id !== rxId));
 
   const saveRxEdit = () => {
     if (!editingRx) return;
-    setRxList((prev) => prev.map((r) => (r.id === editingRx.id ? editingRx : r)));
+    setSpecialList((prev) => prev.map((r) => (r.id === editingRx.id ? editingRx : r)));
     setEditingRx(null);
   };
 
