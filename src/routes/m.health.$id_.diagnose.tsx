@@ -576,109 +576,134 @@ function DiagnosePage() {
             title="标准处方"
             extra={
               <span className="text-caption text-text-tertiary">
-                {stdRxList.length === 0
+                {stdPlans.length === 0
                   ? "选择疾病后载入"
-                  : `${stdRxList.length - stdExcluded.size} / ${stdRxList.length} 项已选`}
+                  : `共 ${stdPlans.length} 个方案`}
               </span>
             }
           >
-            {stdRxList.length === 0 ? (
+            {stdPlans.length === 0 ? (
               <div className="text-caption text-text-tertiary text-center py-4">
-                选择疾病后将自动载入系统推荐处方
+                选择疾病后将自动载入系统推荐处方方案
               </div>
             ) : (
               <div className="space-y-3">
-                <label className="block">
-                  <div className="text-caption text-text-tertiary mb-1">
+                {/* 牛只体重（档位选择） */}
+                <div>
+                  <div className="text-caption text-text-tertiary mb-1.5">
                     牛只体重 <span className="text-[var(--state-danger)]">*</span>
                     <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
                   </div>
-                  <div className="relative">
-                    <input
-                      inputMode="decimal"
-                      value={cattleWeight}
-                      onChange={(e) => setCattleWeight(e.target.value)}
-                      placeholder="如 500"
-                      maxLength={6}
-                      className="h-10 w-full pl-3 pr-10 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">kg</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {WEIGHT_OPTIONS.map((w) => {
+                      const active = cattleWeight === w;
+                      return (
+                        <button
+                          key={w}
+                          type="button"
+                          onClick={() => setCattleWeight(w)}
+                          className={`h-8 px-3 rounded-full text-body-sm border ${
+                            active
+                              ? "bg-brand-subtle text-primary border-primary/40"
+                              : "bg-card text-text-secondary border-border"
+                          }`}
+                        >
+                          {w} kg
+                        </button>
+                      );
+                    })}
                   </div>
-                </label>
+                </div>
 
-                <ul className="space-y-2">
-                  {stdRxList.map((r) => {
-                    const isTherapy = r.kind === "therapy";
-                    const unit = r.doseUnit || "ml";
-                    const baseDose = parseFloat(r.dose || "");
-                    const w = parseFloat(cattleWeight);
-                    const computedDose =
-                      !isTherapy && !Number.isNaN(baseDose) && !Number.isNaN(w) && w > 0
-                        ? Math.round(baseDose * (w / 500) * 10) / 10
-                        : null;
-                    const excluded = stdExcluded.has(r.id);
+                {/* 方案选择 */}
+                <div className="space-y-2">
+                  {stdPlans.map((plan) => {
+                    const active = plan.id === selectedPlanId;
                     return (
-                      <li
-                        key={r.id}
-                        className={`rounded-lg border p-3 ${
-                          excluded
-                            ? "border-border bg-surface-subtle opacity-60"
-                            : "border-primary/30 bg-card"
+                      <button
+                        key={plan.id}
+                        type="button"
+                        onClick={() => setSelectedPlanId(plan.id)}
+                        className={`w-full text-left rounded-lg border p-3 transition-colors ${
+                          active
+                            ? "border-primary bg-brand-subtle/40"
+                            : "border-border bg-card"
                         }`}
                       >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
-                              {isTherapy ? (
-                                <Activity className="h-3.5 w-3.5 text-primary" />
-                              ) : (
-                                <Pill className="h-3.5 w-3.5 text-primary" />
-                              )}
-                              {r.name}
-                              {!isTherapy && r.maker && (
-                                <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
-                              )}
-                              <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
-                                {isTherapy ? "治疗手段" : "用药"}
-                              </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="text-body text-foreground font-medium">
+                              {plan.name}
                             </div>
-                            <div className="text-caption text-text-tertiary mt-1">
-                              {isTherapy
-                                ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                : [
-                                    r.spec,
-                                    r.use,
-                                    r.days && `${r.days} 天`,
-                                  ].filter(Boolean).join(" · ")}
-                            </div>
-                            {!isTherapy && (
-                              <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                                <Sparkles className="h-3 w-3" />
-                                {computedDose !== null
-                                  ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
-                                  : `基准 ${r.dose}${unit} / 次 @ 500kg，请填写体重`}
-                              </div>
+                            {plan.desc && (
+                              <div className="text-caption text-text-tertiary mt-0.5">{plan.desc}</div>
                             )}
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => toggleStdRx(r.id)}
-                            className={`shrink-0 h-7 px-2.5 rounded-md text-caption border ${
-                              excluded
-                                ? "border-border bg-card text-text-secondary"
-                                : "border-primary/40 bg-brand-subtle text-primary"
+                          <span
+                            className={`shrink-0 h-5 w-5 rounded-full border inline-flex items-center justify-center ${
+                              active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"
                             }`}
                           >
-                            {excluded ? "选用" : "已选"}
-                          </button>
+                            {active && <CheckCircle2 className="h-3.5 w-3.5" />}
+                          </span>
                         </div>
-                      </li>
+
+                        {active && (
+                          <ul className="mt-3 space-y-2">
+                            {plan.items.map((r) => {
+                              const isTherapy = r.kind === "therapy";
+                              const unit = r.doseUnit || "ml";
+                              const baseDose = parseFloat(r.dose || "");
+                              const w = cattleWeight ?? 0;
+                              const computedDose =
+                                !isTherapy && !Number.isNaN(baseDose) && w > 0
+                                  ? Math.round(baseDose * (w / 500) * 10) / 10
+                                  : null;
+                              return (
+                                <li
+                                  key={r.id}
+                                  className="rounded-md border border-border bg-card p-2.5"
+                                >
+                                  <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                                    {isTherapy ? (
+                                      <Activity className="h-3.5 w-3.5 text-primary" />
+                                    ) : (
+                                      <Pill className="h-3.5 w-3.5 text-primary" />
+                                    )}
+                                    {r.name}
+                                    {!isTherapy && r.maker && (
+                                      <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                                    )}
+                                    <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
+                                      {isTherapy ? "理疗" : "用药"}
+                                    </span>
+                                  </div>
+                                  <div className="text-caption text-text-tertiary mt-1">
+                                    {isTherapy
+                                      ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
+                                      : [r.spec, r.use, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
+                                  </div>
+                                  {!isTherapy && (
+                                    <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
+                                      <Sparkles className="h-3 w-3" />
+                                      {computedDose !== null
+                                        ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
+                                        : `基准 ${r.dose}${unit} / 次 @ 500kg，请选择体重`}
+                                    </div>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </button>
                     );
                   })}
-                </ul>
+                </div>
               </div>
             )}
           </Section>
+
 
           {/* === 特殊处方 === */}
           <Section
