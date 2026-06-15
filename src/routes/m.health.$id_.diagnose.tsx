@@ -242,6 +242,7 @@ function DiagnosePage() {
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
   const [planSheetOpen, setPlanSheetOpen] = useState(false);
+  const [weightSheetOpen, setWeightSheetOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
 
   // 终止工单
