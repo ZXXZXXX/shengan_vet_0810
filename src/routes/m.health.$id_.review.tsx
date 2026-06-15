@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import {
   CheckCircle2,
   Ban,
-  Eye,
+  Stethoscope as StethoscopeIcon,
   Send,
   Stethoscope,
   Lock,
