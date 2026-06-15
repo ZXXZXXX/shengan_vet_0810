@@ -178,8 +178,13 @@ function DiagnosePage() {
   const [diseaseFocused, setDiseaseFocused] = useState(false);
 
 
-  // 处方（默认按选中疾病载入，可编辑）
-  const [rxList, setRxList] = useState<Prescription[]>([]);
+  // 标准处方（系统内置，不可改药品/剂量/天数；按体重自动算量）
+  const [stdRxList, setStdRxList] = useState<Prescription[]>([]);
+  const [stdExcluded, setStdExcluded] = useState<Set<string>>(new Set());
+  const [cattleWeight, setCattleWeight] = useState("");
+  // 特殊处方（需填原因，可自由编辑）
+  const [specialReason, setSpecialReason] = useState("");
+  const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
 
   // 终止工单
