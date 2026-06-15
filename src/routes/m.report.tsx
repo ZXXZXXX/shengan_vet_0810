@@ -858,21 +858,45 @@ function ReportPage() {
                             重选
                           </button>
                         </div>
-                        {selectedDisease && (
+                        {selectedDisease && selectedPlan && (
                           <div className="rounded-md bg-card border border-border p-2.5 space-y-1.5">
-                            <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-                              <Sparkles className="h-3 w-3 text-primary" />
-                              已自动匹配治疗方案
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+                                <Sparkles className="h-3 w-3 text-primary" />
+                                已自动匹配治疗方案
+                                {selectedDisease.plans.length > 1 && (
+                                  <span className="text-text-tertiary">
+                                    （{planIdx + 1}/{selectedDisease.plans.length}）
+                                  </span>
+                                )}
+                              </div>
+                              {selectedDisease.plans.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setPlanIdx((i) => (i + 1) % selectedDisease.plans.length)
+                                  }
+                                  className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
+                                >
+                                  <RefreshCw className="h-3 w-3" />
+                                  更换方案
+                                </button>
+                              )}
                             </div>
                             <div className="flex items-center gap-1.5 text-body-sm text-foreground">
                               <FileText className="h-3.5 w-3.5 text-primary" />
-                              {selectedDisease.plan.rx}
+                              {selectedPlan.rx}
+                            </div>
+                            {selectedPlan.desc && (
+                              <div className="text-caption text-text-tertiary">
+                                {selectedPlan.desc}
+                              </div>
+                            )}
+                            <div className="text-caption text-text-secondary">
+                              用药：{selectedPlan.drugs.join("、")}
                             </div>
                             <div className="text-caption text-text-secondary">
-                              用药：{selectedDisease.plan.drugs.join("、")}
-                            </div>
-                            <div className="text-caption text-text-secondary">
-                              疗程：{selectedDisease.plan.duration}
+                              疗程：{selectedPlan.duration}
                             </div>
                           </div>
                         )}
