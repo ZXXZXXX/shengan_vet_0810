@@ -1178,7 +1178,69 @@ function DiagnosePage() {
           </div>
         </div>
       )}
+
+      {/* 切换标准处方方案 */}
+      {planSheetOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setPlanSheetOpen(false)}>
+          <div
+            className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-section text-foreground font-medium">选择标准处方方案</div>
+              <button
+                onClick={() => setPlanSheetOpen(false)}
+                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                aria-label="关闭"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <ul className="space-y-2">
+              {stdPlans.map((plan) => {
+                const active = plan.id === selectedPlanId;
+                return (
+                  <li key={plan.id}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedPlanId(plan.id);
+                        setPlanSheetOpen(false);
+                      }}
+                      className={`w-full text-left rounded-lg border p-3 transition-colors ${
+                        active ? "border-primary bg-brand-subtle/40" : "border-border bg-card"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="text-body text-foreground font-medium">{plan.name}</div>
+                          {plan.desc && (
+                            <div className="text-caption text-text-tertiary mt-0.5">{plan.desc}</div>
+                          )}
+                          <div className="text-caption text-text-tertiary mt-1">
+                            包含 {plan.items.length} 项 ·{" "}
+                            {plan.items.filter((i) => i.kind === "drug").length} 用药 /{" "}
+                            {plan.items.filter((i) => i.kind === "therapy").length} 理疗
+                          </div>
+                        </div>
+                        <span
+                          className={`shrink-0 h-5 w-5 rounded-full border inline-flex items-center justify-center ${
+                            active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"
+                          }`}
+                        >
+                          {active && <CheckCircle2 className="h-3.5 w-3.5" />}
+                        </span>
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
     </MobileShell>
+
   );
 }
 
