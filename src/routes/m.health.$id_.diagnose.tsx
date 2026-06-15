@@ -1465,7 +1465,9 @@ function DiagnosePage() {
           >
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-[var(--state-warning,#F59E0B)]" />
-              <div className="text-section text-foreground font-medium">提交前请确认</div>
+              <div className="text-section text-foreground font-medium">
+                {submitCheck.stage === "rules" ? "规则告警" : "提交前请确认"}
+              </div>
             </div>
 
             {submitCheck.stage === "stock" && (
@@ -1491,9 +1493,6 @@ function DiagnosePage() {
 
             {submitCheck.stage === "rules" && (
               <div className="space-y-1.5">
-                <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1">
-                  <AlertTriangle className="h-3.5 w-3.5" /> 规则告警（需二次确认）
-                </div>
                 <ul className="rounded-lg border border-[var(--state-danger)]/30 bg-[color-mix(in_oklab,var(--state-danger)_4%,transparent)] divide-y divide-[var(--state-danger)]/20">
                   {submitCheck.violations.map((v, i) => (
                     <li key={i} className="px-3 py-2">
