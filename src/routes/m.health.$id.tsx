@@ -276,11 +276,11 @@ function TaskDetailPage() {
               setAbortOther("");
               setAbortOpen(true);
             }}
-            className="inline-flex items-center gap-1 h-8 px-2 -mr-1 rounded-md text-caption text-state-error active:bg-state-error/10"
+            className="-mr-1 h-8 px-2 inline-flex items-center gap-1 rounded-md text-caption text-state-error active:bg-state-error/10"
             aria-label="异常终止"
           >
             <OctagonX className="h-4 w-4" />
-            <span>异常终止</span>
+            <span className="whitespace-nowrap">终止</span>
           </button>
         ) : undefined
       }
