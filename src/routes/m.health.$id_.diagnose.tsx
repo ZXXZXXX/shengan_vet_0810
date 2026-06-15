@@ -281,10 +281,11 @@ function DiagnosePage() {
   // 提交校验弹窗
   type Shortage = { name: string; need: number; stock: number; unit: string };
   type Violation = { kind: "disease" | "drug"; title: string; detail: string };
-  const [submitCheck, setSubmitCheck] = useState<{
-    shortages: Shortage[];
-    violations: Violation[];
-  } | null>(null);
+  const [submitCheck, setSubmitCheck] = useState<
+    | { stage: "stock"; shortages: Shortage[] }
+    | { stage: "rules"; violations: Violation[] }
+    | null
+  >(null);
 
 
   // 终止工单
