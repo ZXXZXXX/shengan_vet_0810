@@ -240,6 +240,8 @@ function DiagnosePage() {
   const [specialReason, setSpecialReason] = useState("");
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
+  const [planSheetOpen, setPlanSheetOpen] = useState(false);
+  const [specialOpen, setSpecialOpen] = useState(false);
 
   // 终止工单
   const [confirmTerminate, setConfirmTerminate] = useState(false);
