@@ -593,32 +593,24 @@ function DiagnosePage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {/* 牛只体重（档位选择） */}
+                {/* 牛只体重（下拉选择） */}
                 <div>
                   <div className="text-caption text-text-tertiary mb-1.5">
                     牛只体重 <span className="text-[var(--state-danger)]">*</span>
                     <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {WEIGHT_OPTIONS.map((w) => {
-                      const active = cattleWeight === w;
-                      return (
-                        <button
-                          key={w}
-                          type="button"
-                          onClick={() => setCattleWeight(w)}
-                          className={`h-8 px-3 rounded-full text-body-sm border ${
-                            active
-                              ? "bg-brand-subtle text-primary border-primary/40"
-                              : "bg-card text-text-secondary border-border"
-                          }`}
-                        >
-                          {w} kg
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setWeightSheetOpen(true)}
+                    className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
+                  >
+                    <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
+                      {cattleWeight == null ? "请选择牛只体重" : `${cattleWeight} kg`}
+                    </span>
+                    <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
+                  </button>
                 </div>
+
 
                 {/* 当前方案 */}
                 {selectedPlan && (
