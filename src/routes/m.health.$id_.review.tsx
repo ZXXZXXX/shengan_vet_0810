@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   CheckCircle2,
   Ban,
@@ -30,7 +30,6 @@ const ABANDON_REASONS = [
   "其他",
 ];
 
-const OBSERVE_DAYS = [3, 5, 7];
 
 
 function ReviewPage() {
