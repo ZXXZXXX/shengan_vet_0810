@@ -20,7 +20,7 @@ export const Route = createFileRoute("/m/health/$id_/review")({
   component: ReviewPage,
 });
 
-type Verdict = "cure" | "abandon" | "observe";
+type Verdict = "cure" | "abandon" | "revisit";
 
 const ABANDON_REASONS = [
   "治疗无效",
