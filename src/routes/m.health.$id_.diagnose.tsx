@@ -191,6 +191,10 @@ function DiagnosePage() {
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
   const earTagLabel = getOrderEarTagLabel(id);
 
+  // 体征数据
+  const [temperature, setTemperature] = useState("");
+  const [ketone, setKetone] = useState("");
+
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
   const [videos, setVideos] = useState<string[]>([]);
@@ -284,6 +288,22 @@ function DiagnosePage() {
       toast.error("请至少填写一个症状");
       return;
     }
+    const temp = parseFloat(temperature);
+    if (!temperature.trim() || Number.isNaN(temp)) {
+      toast.error("请填写牛只体温");
+      return;
+    }
+    if (temp < 30 || temp > 45) {
+      toast.error("体温应在 30 ~ 45 ℃ 之间");
+      return;
+    }
+    if (ketone.trim()) {
+      const k = parseFloat(ketone);
+      if (Number.isNaN(k) || k < 0 || k > 10) {
+        toast.error("血酮值应在 0 ~ 10 mmol/L 之间");
+        return;
+      }
+    }
     if (!disease) {
       toast.error("请选择疾病");
       return;
@@ -336,6 +356,46 @@ function DiagnosePage() {
               presets={symptomLibrary}
             />
           </Section>
+
+          {/* === 体征数据 === */}
+          <Section title="体征数据">
+            <div className="grid grid-cols-2 gap-2">
+              <label className="block">
+                <div className="text-caption text-text-tertiary mb-1">
+                  体温 <span className="text-[var(--state-danger)]">*</span>
+                </div>
+                <div className="relative">
+                  <input
+                    inputMode="decimal"
+                    value={temperature}
+                    onChange={(e) => setTemperature(e.target.value)}
+                    placeholder="如 39.2"
+                    maxLength={5}
+                    className="h-10 w-full pl-3 pr-10 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">℃</span>
+                </div>
+              </label>
+              <label className="block">
+                <div className="text-caption text-text-tertiary mb-1">
+                  血酮 <span className="text-text-tertiary">(选填)</span>
+                </div>
+                <div className="relative">
+                  <input
+                    inputMode="decimal"
+                    value={ketone}
+                    onChange={(e) => setKetone(e.target.value)}
+                    placeholder="如 1.2"
+                    maxLength={5}
+                    className="h-10 w-full pl-3 pr-16 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">mmol/L</span>
+                </div>
+              </label>
+            </div>
+          </Section>
+
+
 
 
           {/* === 疾病名称 === */}
