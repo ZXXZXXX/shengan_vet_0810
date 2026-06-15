@@ -322,8 +322,24 @@ function DiagnosePage() {
       toast.error("请选择疾病");
       return;
     }
-    if (rxList.length === 0) {
-      toast.error("处方不能为空");
+    const stdSelected = stdRxList.filter((r) => !stdExcluded.has(r.id));
+    if (stdSelected.length === 0 && specialList.length === 0) {
+      toast.error("请至少选择一项标准处方或开具一项特殊处方");
+      return;
+    }
+    if (stdSelected.some((r) => r.kind === "drug")) {
+      const w = parseFloat(cattleWeight);
+      if (!cattleWeight.trim() || Number.isNaN(w) || w < 50 || w > 1500) {
+        toast.error("请填写有效牛只体重（50 ~ 1500 kg）以计算剂量");
+        return;
+      }
+    }
+    if (specialList.length > 0 && !specialReason.trim()) {
+      toast.error("请填写开具特殊处方的原因");
+      return;
+    }
+    if (specialList.some((r) => r.kind === "drug" && (!r.name || !r.dose))) {
+      toast.error("请补全特殊处方的药品与剂量");
       return;
     }
     if (photos.length === 0 && videos.length === 0) {
