@@ -357,6 +357,46 @@ function DiagnosePage() {
             />
           </Section>
 
+          {/* === 体征数据 === */}
+          <Section title="体征数据">
+            <div className="grid grid-cols-2 gap-2">
+              <label className="block">
+                <div className="text-caption text-text-tertiary mb-1">
+                  体温 <span className="text-[var(--state-danger)]">*</span>
+                </div>
+                <div className="relative">
+                  <input
+                    inputMode="decimal"
+                    value={temperature}
+                    onChange={(e) => setTemperature(e.target.value)}
+                    placeholder="如 39.2"
+                    maxLength={5}
+                    className="h-10 w-full pl-3 pr-10 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">℃</span>
+                </div>
+              </label>
+              <label className="block">
+                <div className="text-caption text-text-tertiary mb-1">
+                  血酮 <span className="text-text-tertiary">(选填)</span>
+                </div>
+                <div className="relative">
+                  <input
+                    inputMode="decimal"
+                    value={ketone}
+                    onChange={(e) => setKetone(e.target.value)}
+                    placeholder="如 1.2"
+                    maxLength={5}
+                    className="h-10 w-full pl-3 pr-16 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">mmol/L</span>
+                </div>
+              </label>
+            </div>
+          </Section>
+
+
+
 
           {/* === 疾病名称 === */}
           <Section
