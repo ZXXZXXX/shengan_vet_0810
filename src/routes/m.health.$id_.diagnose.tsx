@@ -23,6 +23,8 @@ import {
   User,
   Repeat2,
   ChevronDown,
+  AlertTriangle,
+  Package,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
@@ -147,6 +149,34 @@ const diseaseLibrary: Disease[] = [
 // 牛只体重档位（用于自动计算剂量）
 const WEIGHT_OPTIONS = [350, 400, 450, 500, 550, 600, 650, 700];
 
+// 库存（仓库实时在册量；用于提交校验）
+const drugStock: Record<string, { qty: number; unit: string }> = {
+  "氟尼辛葡甲胺注射液": { qty: 120, unit: "ml" },
+  "头孢噻呋钠": { qty: 2, unit: "g" }, // 故意偏少，触发缺药提示
+  "碳酸氢钠": { qty: 5000, unit: "g" },
+  "复合维生素 B": { qty: 800, unit: "ml" },
+  "50% 葡萄糖": { qty: 2000, unit: "ml" },
+  "口服补液盐": { qty: 30, unit: "包" },
+  "氟尼辛葡甲胺": { qty: 200, unit: "ml" },
+};
+
+// 用药/疾病规则限制（提交时触发二次确认）
+const RULES = {
+  diseaseReportMax: 2,         // 同一疾病累计上报次数上限
+  drugTotalDoseFactorMax: 3,   // 累计剂量相对单次基准的倍数上限
+  drugUsageCountMax: 5,        // 同一药品累计使用次数上限
+};
+
+// 本牛只历史用药/上报（模拟）
+const cattleHistory = {
+  diseaseCount: { "支气管肺炎": 2, "急性乳房炎": 1 } as Record<string, number>,
+  drugUsage: {
+    "头孢噻呋钠": { totalDose: 4, unit: "g", count: 5 }, // 已达上限，触发规则
+    "氟尼辛葡甲胺注射液": { totalDose: 6, unit: "ml", count: 3 },
+  } as Record<string, { totalDose: number; unit: string; count: number }>,
+};
+
+
 type SlotKey = "morning" | "noon" | "evening";
 const SLOT_LABEL: Record<SlotKey, string> = {
   morning: "上午",
@@ -245,6 +275,15 @@ function DiagnosePage() {
   const [planSheetOpen, setPlanSheetOpen] = useState(false);
   const [weightSheetOpen, setWeightSheetOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
+
+  // 提交校验弹窗
+  type Shortage = { name: string; need: number; stock: number; unit: string };
+  type Violation = { kind: "disease" | "drug"; title: string; detail: string };
+  const [submitCheck, setSubmitCheck] = useState<{
+    shortages: Shortage[];
+    violations: Violation[];
+  } | null>(null);
+
 
   // 终止工单
   const [confirmTerminate, setConfirmTerminate] = useState(false);
@@ -383,6 +422,12 @@ function DiagnosePage() {
     setSpecialList((prev) => [...prev, base]);
   };
 
+  const doSubmit = () => {
+    setSubmitCheck(null);
+    toast.success("诊断已提交");
+    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+  };
+
   const submit = () => {
     if (symptoms.length === 0) {
       toast.error("请至少填写一个症状");
@@ -433,9 +478,84 @@ function DiagnosePage() {
       toast.error("请上传至少一张照片或一段视频");
       return;
     }
-    toast.success("诊断已提交");
-    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+
+    // 汇总所有药品处方（标准 + 特殊）
+    const allDrugs = [...planItems, ...specialList].filter((r) => r.kind === "drug");
+    const w = cattleWeight ?? 500;
+
+    // 1) 库存校验
+    const shortages: Shortage[] = [];
+    const need: Record<string, { qty: number; unit: string }> = {};
+    for (const r of allDrugs) {
+      const base = parseFloat(r.dose || "0");
+      if (Number.isNaN(base) || base <= 0) continue;
+      const perDose = Math.round(base * (w / 500) * 10) / 10;
+      const times = parseFloat(r.timesPerDay || "1") || 1;
+      const days = parseFloat(r.days || "1") || 1;
+      const total = Math.round(perDose * times * days * 10) / 10;
+      const unit = r.doseUnit || "ml";
+      if (!need[r.name]) need[r.name] = { qty: 0, unit };
+      need[r.name].qty = Math.round((need[r.name].qty + total) * 10) / 10;
+    }
+    for (const [name, n] of Object.entries(need)) {
+      const stock = drugStock[name];
+      if (!stock || stock.qty < n.qty) {
+        shortages.push({
+          name,
+          need: n.qty,
+          stock: stock?.qty ?? 0,
+          unit: stock?.unit ?? n.unit,
+        });
+      }
+    }
+
+    // 2) 规则校验
+    const violations: Violation[] = [];
+    const reported = cattleHistory.diseaseCount[disease] ?? 0;
+    if (reported + 1 > RULES.diseaseReportMax) {
+      violations.push({
+        kind: "disease",
+        title: `「${disease}」上报次数超限`,
+        detail: `本牛只历史已上报 ${reported} 次，本次将达 ${reported + 1} 次，超过阈值 ${RULES.diseaseReportMax} 次。`,
+      });
+    }
+    for (const r of allDrugs) {
+      const base = parseFloat(r.dose || "0");
+      if (Number.isNaN(base) || base <= 0) continue;
+      const perDose = Math.round(base * (w / 500) * 10) / 10;
+      const times = parseFloat(r.timesPerDay || "1") || 1;
+      const days = parseFloat(r.days || "1") || 1;
+      const addDose = Math.round(perDose * times * days * 10) / 10;
+      const addCount = Math.round(times * days);
+      const hist = cattleHistory.drugUsage[r.name];
+      if (!hist) continue;
+      const unit = hist.unit;
+      const nextDose = Math.round((hist.totalDose + addDose) * 10) / 10;
+      const nextCount = hist.count + addCount;
+      const doseCap = RULES.drugTotalDoseFactorMax * (perDose || base);
+      if (nextDose > doseCap) {
+        violations.push({
+          kind: "drug",
+          title: `「${r.name}」累计剂量超限`,
+          detail: `历史 ${hist.totalDose}${unit}，本次新增 ${addDose}${unit}，合计 ${nextDose}${unit}，超过 ${RULES.drugTotalDoseFactorMax} 倍基准（${doseCap}${unit}）。`,
+        });
+      }
+      if (nextCount > RULES.drugUsageCountMax) {
+        violations.push({
+          kind: "drug",
+          title: `「${r.name}」累计使用次数超限`,
+          detail: `历史 ${hist.count} 次，本次新增 ${addCount} 次，合计 ${nextCount} 次，超过阈值 ${RULES.drugUsageCountMax} 次。`,
+        });
+      }
+    }
+
+    if (shortages.length === 0 && violations.length === 0) {
+      doSubmit();
+      return;
+    }
+    setSubmitCheck({ shortages, violations });
   };
+
 
   return (
     <MobileShell title="诊断记录" back hideTabBar>
@@ -1316,7 +1436,82 @@ function DiagnosePage() {
           </div>
         </div>
       )}
+
+      {/* 提交校验：缺药 / 规则二次确认 */}
+      {submitCheck && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+          onClick={() => setSubmitCheck(null)}
+        >
+          <div
+            className="w-full max-w-sm bg-card rounded-2xl p-4 space-y-3 max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-[var(--state-warning,#F59E0B)]" />
+              <div className="text-section text-foreground font-medium">提交前请确认</div>
+            </div>
+
+            {submitCheck.shortages.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                  <Package className="h-3.5 w-3.5" /> 库存不足（不拦截，可继续提交）
+                </div>
+                <ul className="rounded-lg border border-border divide-y divide-border">
+                  {submitCheck.shortages.map((s) => (
+                    <li key={s.name} className="px-3 py-2">
+                      <div className="text-body-sm text-foreground">{s.name}</div>
+                      <div className="text-caption text-text-tertiary mt-0.5">
+                        需要 {s.need}
+                        {s.unit} · 库存 {s.stock}
+                        {s.unit} · 缺 {Math.round((s.need - s.stock) * 10) / 10}
+                        {s.unit}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {submitCheck.violations.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1">
+                  <AlertTriangle className="h-3.5 w-3.5" /> 规则告警（需二次确认）
+                </div>
+                <ul className="rounded-lg border border-[var(--state-danger)]/30 bg-[color-mix(in_oklab,var(--state-danger)_4%,transparent)] divide-y divide-[var(--state-danger)]/20">
+                  {submitCheck.violations.map((v, i) => (
+                    <li key={i} className="px-3 py-2">
+                      <div className="text-body-sm text-foreground">{v.title}</div>
+                      <div className="text-caption text-text-tertiary mt-0.5">{v.detail}</div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={() => setSubmitCheck(null)}
+                className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
+              >
+                返回修改
+              </button>
+              <button
+                onClick={doSubmit}
+                className={`flex-1 h-10 rounded-lg text-body-sm text-white font-medium ${
+                  submitCheck.violations.length > 0
+                    ? "bg-[var(--state-danger)]"
+                    : "bg-primary"
+                }`}
+              >
+                {submitCheck.violations.length > 0 ? "仍旧提交" : "知道了，继续提交"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </MobileShell>
+
 
   );
 }
