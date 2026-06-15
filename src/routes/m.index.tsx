@@ -92,18 +92,15 @@ function MWorkspacePage() {
 
             <div className="relative p-5">
               <div className="flex items-start gap-3.5">
-                {/* 头像 */}
-                <div className="relative shrink-0">
+                <div className="shrink-0">
                   <div
                     className="h-16 w-16 rounded-full flex items-center justify-center text-section-title font-semibold text-white shadow-md"
                     style={{ background: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)" }}
                   >
                     {ACCOUNT.name.slice(-2)}
                   </div>
-                  <span className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-white flex items-center justify-center shadow">
-                    <BadgeCheck className="h-3.5 w-3.5" style={{ color: "#00A85A" }} fill="#00A85A" stroke="#ffffff" />
-                  </span>
                 </div>
+
 
                 <div className="flex-1 min-w-0 pt-0.5 pr-20">
                   <div className="flex items-baseline gap-2">
