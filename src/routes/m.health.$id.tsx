@@ -276,7 +276,7 @@ function TaskDetailPage() {
               setAbortOther("");
               setAbortOpen(true);
             }}
-            className="-mr-1 h-8 px-2 inline-flex items-center gap-1 rounded-md text-caption text-state-error active:bg-state-error/10"
+            className="-mr-1 h-8 px-2 inline-flex items-center gap-1 rounded-md text-caption text-destructive active:bg-destructive/10"
             aria-label="异常终止"
           >
             <OctagonX className="h-4 w-4" />
@@ -775,7 +775,7 @@ function TaskDetailPage() {
                 toast.success("工单已终止");
                 navigate({ to: "/m/health" });
               }}
-              className="flex-1 h-11 rounded-lg bg-state-error text-white text-body disabled:opacity-50"
+              className="flex-1 h-11 rounded-lg bg-destructive text-white text-body disabled:opacity-50"
             >
               确认终止
             </button>
