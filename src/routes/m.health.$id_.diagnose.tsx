@@ -787,30 +787,22 @@ function DiagnosePage() {
                 </ul>
               )}
 
-              <button
-                onClick={() => {
-                  const nextId = `s${Date.now()}`;
-                  const item: Prescription = {
-                    id: nextId,
-                    kind: "drug",
-                    name: "",
-                    maker: "",
-                    spec: "",
-                    use: "",
-                    dose: "",
-                    doseUnit: "ml",
-                    timesPerDay: "2",
-                    days: "3",
-                    splitTime: false,
-                    slots: {},
-                  };
-                  setEditingRx(item);
-                  setSpecialList((prev) => [...prev, item]);
-                }}
-                className="w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
-              >
-                <Plus className="h-3.5 w-3.5" /> 新增特殊处方
-              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => addSpecial("drug")}
+                  className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+                >
+                  <Pill className="h-3.5 w-3.5 text-primary" /> 新增用药
+                </button>
+                <button
+                  type="button"
+                  onClick={() => addSpecial("therapy")}
+                  className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
+                >
+                  <Activity className="h-3.5 w-3.5 text-primary" /> 新增理疗
+                </button>
+              </div>
             </div>
           </Section>
 
