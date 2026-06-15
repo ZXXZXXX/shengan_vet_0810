@@ -12,6 +12,7 @@ import {
 import appCss from "../styles.css?url";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -127,6 +128,7 @@ function RootComponent() {
     return (
       <QueryClientProvider client={queryClient}>
         <Outlet />
+        <Toaster />
       </QueryClientProvider>
     );
   }
@@ -143,6 +145,7 @@ function RootComponent() {
           </div>
         </div>
       </SidebarProvider>
+      <Toaster />
     </QueryClientProvider>
   );
 }
