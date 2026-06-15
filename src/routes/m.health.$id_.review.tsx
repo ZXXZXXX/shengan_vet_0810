@@ -125,7 +125,7 @@ function ReviewPage() {
             <div className="grid grid-cols-3 gap-2">
               {([
                 { v: "cure", icon: CheckCircle2, label: "治愈", tone: "primary" },
-                { v: "observe", icon: Eye, label: "继续观察", tone: "info" },
+                { v: "revisit", icon: StethoscopeIcon, label: "复诊", tone: "info" },
                 { v: "abandon", icon: Ban, label: "放弃", tone: "danger" },
               ] as { v: Verdict; icon: typeof CheckCircle2; label: string; tone: string }[]).map(
                 ({ v, icon: Icon, label, tone }) => {
@@ -140,7 +140,13 @@ function ReviewPage() {
                     <button
                       key={v}
                       type="button"
-                      onClick={() => setVerdict(v)}
+                      onClick={() => {
+                        if (v === "revisit") {
+                          goRevisit();
+                          return;
+                        }
+                        setVerdict(v);
+                      }}
                       className={`h-20 rounded-lg border flex flex-col items-center justify-center gap-1 text-body-sm ${
                         active ? activeCls : "border-border bg-card text-foreground"
                       }`}
