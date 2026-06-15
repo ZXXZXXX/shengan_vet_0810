@@ -1019,6 +1019,71 @@ function ReportPage() {
       />
 
       {/* 兽医/场长：上报后是否直接进入诊断 */}
+      {/* 更换治疗方案抽屉 */}
+      {planPickerOpen && selectedDisease && (
+        <div
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40"
+          onClick={() => setPlanPickerOpen(false)}
+        >
+          <div
+            className="w-full max-w-[440px] rounded-t-2xl bg-card pb-[calc(env(safe-area-inset-bottom)+12px)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 pt-4 pb-2">
+              <div className="text-card-title text-foreground font-medium">选择治疗方案</div>
+              <button
+                type="button"
+                onClick={() => setPlanPickerOpen(false)}
+                className="text-caption text-text-tertiary"
+              >
+                取消
+              </button>
+            </div>
+            <div className="px-4 pb-2 text-caption text-text-tertiary">
+              「{selectedDisease.name}」共 {selectedDisease.plans.length} 个推荐方案
+            </div>
+            <ul className="px-4 pb-3 space-y-2 max-h-[60vh] overflow-y-auto">
+              {selectedDisease.plans.map((p, i) => {
+                const active = i === planIdx;
+                return (
+                  <li key={p.id}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPlanIdx(i);
+                        setPlanPickerOpen(false);
+                      }}
+                      className={`w-full text-left rounded-lg border p-3 space-y-1 ${
+                        active
+                          ? "border-primary bg-brand-subtle"
+                          : "border-border bg-card"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-body-sm text-foreground">
+                          <FileText className="h-3.5 w-3.5 text-primary" />
+                          {p.rx}
+                        </div>
+                        {active && <Check className="h-4 w-4 text-primary" />}
+                      </div>
+                      {p.desc && (
+                        <div className="text-caption text-text-tertiary">{p.desc}</div>
+                      )}
+                      <div className="text-caption text-text-secondary">
+                        用药：{p.drugs.join("、")}
+                      </div>
+                      <div className="text-caption text-text-secondary">
+                        疗程：{p.duration}
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {postSubmitOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4">
