@@ -255,11 +255,35 @@ function TaskDetailPage() {
 
   
 
+  const canAbort =
+    isDisease &&
+    (role === "vet" || role === "manager") &&
+    o.status === "进行中" &&
+    !isObserving &&
+    !isObsExpired;
+
   return (
     <MobileShell
       title="工单详情"
       back
       hideTabBar
+      right={
+        canAbort ? (
+          <button
+            type="button"
+            onClick={() => {
+              setAbortReason("");
+              setAbortOther("");
+              setAbortOpen(true);
+            }}
+            className="inline-flex items-center gap-1 h-8 px-2 -mr-1 rounded-md text-caption text-state-error active:bg-state-error/10"
+            aria-label="异常终止"
+          >
+            <OctagonX className="h-4 w-4" />
+            <span>异常终止</span>
+          </button>
+        ) : undefined
+      }
     >
       <div className="pb-28">
         {/* === 1. 顶部工单摘要 === */}
