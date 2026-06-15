@@ -1468,7 +1468,7 @@ function DiagnosePage() {
               <div className="text-section text-foreground font-medium">提交前请确认</div>
             </div>
 
-            {submitCheck.shortages.length > 0 && (
+            {submitCheck.stage === "stock" && (
               <div className="space-y-1.5">
                 <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
                   <Package className="h-3.5 w-3.5" /> 库存不足（不拦截，可继续提交）
@@ -1489,7 +1489,7 @@ function DiagnosePage() {
               </div>
             )}
 
-            {submitCheck.violations.length > 0 && (
+            {submitCheck.stage === "rules" && (
               <div className="space-y-1.5">
                 <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1">
                   <AlertTriangle className="h-3.5 w-3.5" /> 规则告警（需二次确认）
@@ -1513,14 +1513,21 @@ function DiagnosePage() {
                 返回修改
               </button>
               <button
-                onClick={doSubmit}
+                onClick={() => {
+                  if (submitCheck.stage === "stock") {
+                    setSubmitCheck(null);
+                    proceedRuleCheck();
+                  } else {
+                    doSubmit();
+                  }
+                }}
                 className={`flex-1 h-10 rounded-lg text-body-sm text-white font-medium ${
-                  submitCheck.violations.length > 0
+                  submitCheck.stage === "rules"
                     ? "bg-[var(--state-danger)]"
                     : "bg-primary"
                 }`}
               >
-                {submitCheck.violations.length > 0 ? "仍旧提交" : "知道了，继续提交"}
+                {submitCheck.stage === "rules" ? "仍旧提交" : "知道了，继续提交"}
               </button>
             </div>
           </div>
