@@ -689,3 +689,142 @@ function MoveHistory() {
     </div>
   );
 }
+
+function ProdStat({
+  label,
+  value,
+  unit,
+}: {
+  label: string;
+  value: string;
+  unit: string;
+}) {
+  return (
+    <div className="rounded-lg bg-surface-subtle px-2.5 py-2">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="mt-0.5">
+        <span className="text-section text-foreground font-medium tabular-nums">{value}</span>
+        {unit && <span className="text-caption text-text-tertiary ml-0.5">{unit}</span>}
+      </div>
+    </div>
+  );
+}
+
+function MilkChart({ values }: { values: number[] }) {
+  const W = 300;
+  const H = 70;
+  const padX = 4;
+  const padY = 6;
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const range = Math.max(max - min, 1);
+  const n = values.length;
+  const stepX = (W - padX * 2) / (n - 1);
+  const points = values.map((v, i) => {
+    const x = padX + i * stepX;
+    const y = padY + (1 - (v - min) / range) * (H - padY * 2);
+    return [x, y] as const;
+  });
+  const linePath = points
+    .map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`)
+    .join(" ");
+  const areaPath = `${linePath} L${points[n - 1][0].toFixed(1)},${H - padY} L${points[0][0].toFixed(1)},${H - padY} Z`;
+  const last = values[n - 1];
+  const first = values[0];
+  const delta = Math.round((last - first) * 10) / 10;
+  return (
+    <div>
+      <div className="flex items-baseline justify-between mb-1.5">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-section text-foreground font-medium tabular-nums">{last}</span>
+          <span className="text-caption text-text-tertiary">kg / 当日</span>
+        </div>
+        <span
+          className={`text-caption tabular-nums ${
+            delta >= 0 ? "text-primary" : "text-[var(--state-danger,#D9534F)]"
+          }`}
+        >
+          {delta >= 0 ? "+" : ""}
+          {delta} kg · 较 14 天前
+        </span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[70px]" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="milkArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={areaPath} fill="url(#milkArea)" />
+        <path d={linePath} fill="none" stroke="var(--primary)" strokeWidth="1.5" />
+        <circle
+          cx={points[n - 1][0]}
+          cy={points[n - 1][1]}
+          r="2.5"
+          fill="var(--primary)"
+        />
+      </svg>
+      <div className="flex items-center justify-between text-caption text-text-tertiary mt-1">
+        <span>14 天前</span>
+        <span>今天</span>
+      </div>
+    </div>
+  );
+}
+
+type DiagnosisRecord = {
+  id: string;
+  date: string;
+  disease: string;
+  doctor: string;
+  result: "已治愈" | "治疗中" | "转归不良" | "观察中";
+};
+
+const ALL_DIAGNOSES: DiagnosisRecord[] = [
+  { id: "DX-0518", date: "2026-05-18", disease: "急性乳房炎", doctor: "李雨晴", result: "治疗中" },
+  { id: "DX-0405", date: "2026-04-05", disease: "蹄叶炎", doctor: "李雨晴", result: "已治愈" },
+  { id: "DX-0312", date: "2026-03-12", disease: "瘤胃酸中毒", doctor: "周凯", result: "已治愈" },
+  { id: "DX-0125", date: "2026-01-25", disease: "产后子宫炎", doctor: "王场长", result: "已治愈" },
+];
+
+function DiagnosisHistory() {
+  if (ALL_DIAGNOSES.length === 0) {
+    return (
+      <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
+        暂无诊断记录
+      </div>
+    );
+  }
+  const resultCls = (r: DiagnosisRecord["result"]) =>
+    r === "已治愈"
+      ? "bg-brand-subtle text-primary"
+      : r === "治疗中"
+      ? "bg-[#FFE8CC] text-[#C9621F]"
+      : r === "转归不良"
+      ? "bg-[#FFE4E1] text-[#D9534F]"
+      : "bg-[#FFF7E6] text-[#B8860B]";
+  return (
+    <div className="space-y-2">
+      <div className="text-caption text-text-tertiary mb-1">共 {ALL_DIAGNOSES.length} 条</div>
+      {ALL_DIAGNOSES.map((d) => (
+        <div key={d.id} className="rounded-xl border border-border bg-card p-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-mono text-caption text-text-secondary">{d.date}</span>
+            <span className={`tag ${resultCls(d.result)} inline-flex items-center`}>
+              {d.result}
+            </span>
+          </div>
+          <div className="text-body-sm text-foreground">{d.disease}</div>
+          <div className="text-caption text-text-tertiary mt-1 inline-flex items-center gap-1.5">
+            <span>诊断人</span>
+            <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
+              {d.doctor.charAt(0)}
+            </span>
+            <span className="text-text-secondary">{d.doctor}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
