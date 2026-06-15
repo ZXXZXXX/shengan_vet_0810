@@ -142,7 +142,7 @@ function ReviewPage() {
                       type="button"
                       onClick={() => {
                         if (v === "revisit") {
-                          goRevisit();
+                          setRevisitConfirmOpen(true);
                           return;
                         }
                         setVerdict(v);
