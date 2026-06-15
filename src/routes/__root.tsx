@@ -128,6 +128,7 @@ function RootComponent() {
     return (
       <QueryClientProvider client={queryClient}>
         <Outlet />
+        <Toaster />
       </QueryClientProvider>
     );
   }
@@ -144,6 +145,7 @@ function RootComponent() {
           </div>
         </div>
       </SidebarProvider>
+      <Toaster />
     </QueryClientProvider>
   );
 }
