@@ -403,6 +403,7 @@ function ReportPage() {
     [suspectedDisease]
   );
   const [planIdx, setPlanIdx] = useState(0);
+  const [planPickerOpen, setPlanPickerOpen] = useState(false);
   useEffect(() => { setPlanIdx(0); }, [suspectedDisease]);
   const selectedPlan = selectedDisease?.plans[planIdx] ?? null;
 
@@ -883,9 +884,7 @@ function ReportPage() {
                               {selectedDisease.plans.length > 1 && (
                                 <button
                                   type="button"
-                                  onClick={() =>
-                                    setPlanIdx((i) => (i + 1) % selectedDisease.plans.length)
-                                  }
+                                  onClick={() => setPlanPickerOpen(true)}
                                   className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
                                 >
                                   <RefreshCw className="h-3 w-3" />
