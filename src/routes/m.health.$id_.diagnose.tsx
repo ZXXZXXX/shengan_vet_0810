@@ -785,22 +785,57 @@ function DiagnosePage() {
                   </ul>
                 )}
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => addSpecial("drug")}
-                    className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
-                  >
-                    <Pill className="h-3.5 w-3.5 text-primary" /> 新增用药
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => addSpecial("therapy")}
-                    className="h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
-                  >
-                    <Activity className="h-3.5 w-3.5 text-primary" /> 新增理疗
-                  </button>
-                </div>
+                {(() => {
+                  const reasonReady = specialReason.trim().length > 0;
+                  return (
+                    <>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          disabled={!reasonReady}
+                          onClick={() => {
+                            if (!reasonReady) {
+                              toast.error("请先填写开具原因");
+                              return;
+                            }
+                            addSpecial("drug");
+                          }}
+                          className={`h-9 rounded-lg border border-dashed text-body-sm inline-flex items-center justify-center gap-1.5 ${
+                            reasonReady
+                              ? "border-border text-text-secondary"
+                              : "border-border/60 text-text-tertiary opacity-60 cursor-not-allowed"
+                          }`}
+                        >
+                          <Pill className="h-3.5 w-3.5 text-primary" /> 新增用药
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!reasonReady}
+                          onClick={() => {
+                            if (!reasonReady) {
+                              toast.error("请先填写开具原因");
+                              return;
+                            }
+                            addSpecial("therapy");
+                          }}
+                          className={`h-9 rounded-lg border border-dashed text-body-sm inline-flex items-center justify-center gap-1.5 ${
+                            reasonReady
+                              ? "border-border text-text-secondary"
+                              : "border-border/60 text-text-tertiary opacity-60 cursor-not-allowed"
+                          }`}
+                        >
+                          <Activity className="h-3.5 w-3.5 text-primary" /> 新增理疗
+                        </button>
+                      </div>
+                      {!reasonReady && (
+                        <div className="text-caption text-text-tertiary text-center">
+                          填写开具原因后才能新增特殊处方
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+
 
                 {specialList.length === 0 && (
                   <button
