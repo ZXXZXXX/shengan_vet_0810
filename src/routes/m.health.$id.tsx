@@ -717,6 +717,71 @@ function TaskDetailPage() {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* 异常终止 */}
+      <Sheet open={abortOpen} onOpenChange={setAbortOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[80vh] overflow-y-auto">
+          <SheetHeader className="px-4 pt-4 pb-2 text-left">
+            <SheetTitle className="text-card-title">异常终止工单</SheetTitle>
+          </SheetHeader>
+          <div className="px-4 pb-2 text-caption text-text-tertiary">
+            终止后工单将转为「已终止」，未完成的执行任务与复查任务一并关闭，操作不可撤销。
+          </div>
+          <div className="px-4 pt-3 pb-2 text-body-sm text-foreground">终止原因</div>
+          <div className="px-4 space-y-2">
+            {["牛只死亡", "牛只淘汰/转出", "误诊，需重新上报", "转外院治疗", "其他"].map((r) => {
+              const active = abortReason === r;
+              return (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setAbortReason(r)}
+                  className={`w-full h-11 px-3 rounded-lg border text-body-sm text-left inline-flex items-center gap-2 ${
+                    active ? "border-primary bg-primary/5 text-foreground" : "border-border bg-card text-text-secondary"
+                  }`}
+                >
+                  {active ? (
+                    <CheckSquare className="h-4 w-4 text-primary" />
+                  ) : (
+                    <Square className="h-4 w-4 text-text-tertiary" />
+                  )}
+                  {r}
+                </button>
+              );
+            })}
+            {abortReason === "其他" && (
+              <textarea
+                value={abortOther}
+                onChange={(e) => setAbortOther(e.target.value.slice(0, 200))}
+                placeholder="请填写终止原因（必填，最多 200 字）"
+                rows={3}
+                className="w-full rounded-lg border border-border bg-card p-3 text-body-sm placeholder:text-text-tertiary resize-none"
+              />
+            )}
+          </div>
+          <div className="px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+16px)] flex gap-2">
+            <button
+              type="button"
+              onClick={() => setAbortOpen(false)}
+              className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              disabled={!abortReason || (abortReason === "其他" && !abortOther.trim())}
+              onClick={() => {
+                setAbortOpen(false);
+                toast.success("工单已终止");
+                navigate({ to: "/m/health" });
+              }}
+              className="flex-1 h-11 rounded-lg bg-state-error text-white text-body disabled:opacity-50"
+            >
+              确认终止
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </MobileShell>
   );
 }
