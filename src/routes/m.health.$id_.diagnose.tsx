@@ -490,93 +490,200 @@ function DiagnosePage() {
 
           </Section>
 
-          {/* === 处方 === */}
+          {/* === 标准处方 === */}
           <Section
-            title="处方"
-            extra={<span className="text-caption text-text-tertiary">{rxList.length} 项</span>}
+            title="标准处方"
+            extra={
+              <span className="text-caption text-text-tertiary">
+                {stdRxList.length === 0
+                  ? "选择疾病后载入"
+                  : `${stdRxList.length - stdExcluded.size} / ${stdRxList.length} 项已选`}
+              </span>
+            }
           >
-            {rxList.length === 0 ? (
+            {stdRxList.length === 0 ? (
               <div className="text-caption text-text-tertiary text-center py-4">
-                选择疾病后将自动载入推荐处方，可逐项调整
+                选择疾病后将自动载入系统推荐处方
               </div>
             ) : (
-              <ul className="space-y-2">
-                {rxList.map((r) => {
-                  const isTherapy = r.kind === "therapy";
-                  const unit = r.doseUnit || "ml";
-                  const slotsText = r.splitTime && r.slots
-                    ? (["morning", "noon", "evening"] as SlotKey[])
-                        .filter((k) => r.slots?.[k])
-                        .map((k) => `${SLOT_LABEL[k]} ${r.slots?.[k]}${unit}`)
-                        .join(" / ")
-                    : "";
-                  return (
-                    <li
-                      key={r.id}
-                      className="rounded-lg border border-border bg-card p-3"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
-                            {isTherapy ? (
-                              <Activity className="h-3.5 w-3.5 text-primary" />
-                            ) : (
-                              <Pill className="h-3.5 w-3.5 text-primary" />
+              <div className="space-y-3">
+                <label className="block">
+                  <div className="text-caption text-text-tertiary mb-1">
+                    牛只体重 <span className="text-[var(--state-danger)]">*</span>
+                    <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      inputMode="decimal"
+                      value={cattleWeight}
+                      onChange={(e) => setCattleWeight(e.target.value)}
+                      placeholder="如 500"
+                      maxLength={6}
+                      className="h-10 w-full pl-3 pr-10 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">kg</span>
+                  </div>
+                </label>
+
+                <ul className="space-y-2">
+                  {stdRxList.map((r) => {
+                    const isTherapy = r.kind === "therapy";
+                    const unit = r.doseUnit || "ml";
+                    const baseDose = parseFloat(r.dose || "");
+                    const w = parseFloat(cattleWeight);
+                    const computedDose =
+                      !isTherapy && !Number.isNaN(baseDose) && !Number.isNaN(w) && w > 0
+                        ? Math.round(baseDose * (w / 500) * 10) / 10
+                        : null;
+                    const excluded = stdExcluded.has(r.id);
+                    return (
+                      <li
+                        key={r.id}
+                        className={`rounded-lg border p-3 ${
+                          excluded
+                            ? "border-border bg-surface-subtle opacity-60"
+                            : "border-primary/30 bg-card"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                              {isTherapy ? (
+                                <Activity className="h-3.5 w-3.5 text-primary" />
+                              ) : (
+                                <Pill className="h-3.5 w-3.5 text-primary" />
+                              )}
+                              {r.name}
+                              {!isTherapy && r.maker && (
+                                <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                              )}
+                              <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
+                                {isTherapy ? "治疗手段" : "用药"}
+                              </span>
+                            </div>
+                            <div className="text-caption text-text-tertiary mt-1">
+                              {isTherapy
+                                ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
+                                : [
+                                    r.spec,
+                                    r.use,
+                                    r.days && `${r.days} 天`,
+                                  ].filter(Boolean).join(" · ")}
+                            </div>
+                            {!isTherapy && (
+                              <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
+                                <Sparkles className="h-3 w-3" />
+                                {computedDose !== null
+                                  ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
+                                  : `基准 ${r.dose}${unit} / 次 @ 500kg，请填写体重`}
+                              </div>
                             )}
-                            {r.name || (isTherapy ? "未填写治疗手段" : "未填写药品")}
-                            {!isTherapy && r.maker && (
-                              <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
-                            )}
-                            <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
-                              {isTherapy ? "治疗手段" : "用药"}
-                            </span>
                           </div>
-                          <div className="text-caption text-text-tertiary mt-1">
-                            {isTherapy
-                              ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                              : [
-                                  r.spec,
-                                  r.use,
-                                  !r.splitTime && r.dose && `${r.dose}${unit} / 次`,
-                                  !r.splitTime && r.timesPerDay && `${r.timesPerDay} 次 / 天`,
-                                  r.days && `${r.days} 天`,
-                                ]
-                                  .filter(Boolean)
-                                  .join(" · ")}
-                          </div>
-                          {!isTherapy && r.splitTime && slotsText && (
-                            <div className="text-caption text-primary mt-1">{slotsText}</div>
-                          )}
-                          {isTherapy && r.desc && (
-                            <div className="text-caption text-text-tertiary mt-1 line-clamp-2">{r.desc}</div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-0.5 shrink-0">
                           <button
-                            onClick={() => setEditingRx({ ...r })}
-                            className="h-7 w-7 inline-flex items-center justify-center rounded-md text-primary hover:bg-brand-subtle"
-                            aria-label="编辑"
+                            type="button"
+                            onClick={() => toggleStdRx(r.id)}
+                            className={`shrink-0 h-7 px-2.5 rounded-md text-caption border ${
+                              excluded
+                                ? "border-border bg-card text-text-secondary"
+                                : "border-primary/40 bg-brand-subtle text-primary"
+                            }`}
                           >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={() => removeRx(r.id)}
-                            className="h-7 w-7 inline-flex items-center justify-center rounded-md text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
-                            aria-label="删除"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            {excluded ? "选用" : "已选"}
                           </button>
                         </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             )}
-            <div className="mt-2">
+          </Section>
+
+          {/* === 特殊处方 === */}
+          <Section
+            title="特殊处方"
+            extra={
+              <span className="text-caption text-text-tertiary">
+                {specialList.length > 0 ? `${specialList.length} 项` : "可选"}
+              </span>
+            }
+          >
+            <div className="space-y-3">
+              <label className="block">
+                <div className="text-caption text-text-tertiary mb-1">
+                  开具原因
+                  {specialList.length > 0 && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
+                </div>
+                <textarea
+                  value={specialReason}
+                  onChange={(e) => setSpecialReason(e.target.value)}
+                  maxLength={200}
+                  rows={2}
+                  placeholder="如标准处方过敏、合并感染、孕期禁用等"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+                />
+                <div className="text-caption text-text-tertiary text-right">{specialReason.length} / 200</div>
+              </label>
+
+              {specialList.length > 0 && (
+                <ul className="space-y-2">
+                  {specialList.map((r) => {
+                    const isTherapy = r.kind === "therapy";
+                    const unit = r.doseUnit || "ml";
+                    return (
+                      <li key={r.id} className="rounded-lg border border-border bg-card p-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                              {isTherapy ? (
+                                <Activity className="h-3.5 w-3.5 text-primary" />
+                              ) : (
+                                <Pill className="h-3.5 w-3.5 text-primary" />
+                              )}
+                              {r.name || (isTherapy ? "未填写治疗手段" : "未填写药品")}
+                              {!isTherapy && r.maker && (
+                                <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
+                              )}
+                              <span className="tag tag-muted">特殊</span>
+                            </div>
+                            <div className="text-caption text-text-tertiary mt-1">
+                              {isTherapy
+                                ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
+                                : [
+                                    r.spec,
+                                    r.use,
+                                    r.dose && `${r.dose}${unit} / 次`,
+                                    r.timesPerDay && `${r.timesPerDay} 次 / 天`,
+                                    r.days && `${r.days} 天`,
+                                  ].filter(Boolean).join(" · ")}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-0.5 shrink-0">
+                            <button
+                              onClick={() => setEditingRx({ ...r })}
+                              className="h-7 w-7 inline-flex items-center justify-center rounded-md text-primary hover:bg-brand-subtle"
+                              aria-label="编辑"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={() => removeSpecialRx(r.id)}
+                              className="h-7 w-7 inline-flex items-center justify-center rounded-md text-[var(--state-danger)] hover:bg-[color-mix(in_oklab,var(--state-danger)_8%,transparent)]"
+                              aria-label="删除"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
               <button
                 onClick={() => {
-                  const nextId = `r${Date.now()}`;
+                  const nextId = `s${Date.now()}`;
                   const item: Prescription = {
                     id: nextId,
                     kind: "drug",
@@ -592,15 +699,15 @@ function DiagnosePage() {
                     slots: {},
                   };
                   setEditingRx(item);
-                  setRxList((prev) => [...prev, item]);
+                  setSpecialList((prev) => [...prev, item]);
                 }}
                 className="w-full h-9 rounded-lg border border-dashed border-border text-body-sm text-text-secondary inline-flex items-center justify-center gap-1.5"
               >
-                <Pill className="h-3.5 w-3.5" /> 新增用药
+                <Plus className="h-3.5 w-3.5" /> 新增特殊处方
               </button>
-
             </div>
           </Section>
+
 
 
         {/* === 现场记录 === */}
