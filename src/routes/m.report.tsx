@@ -1050,8 +1050,8 @@ function ReportPage() {
                 onClick={() => {
                   setPostSubmitOpen(false);
                   navigate({
-                    to: "/m/health/$id_/diagnose",
-                    params: { id_: newWorkOrderId },
+                    to: "/m/health/$id/diagnose",
+                    params: { id: newWorkOrderId },
                   });
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
