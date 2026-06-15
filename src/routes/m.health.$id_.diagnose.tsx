@@ -422,6 +422,12 @@ function DiagnosePage() {
     setSpecialList((prev) => [...prev, base]);
   };
 
+  const doSubmit = () => {
+    setSubmitCheck(null);
+    toast.success("诊断已提交");
+    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+  };
+
   const submit = () => {
     if (symptoms.length === 0) {
       toast.error("请至少填写一个症状");
@@ -472,9 +478,84 @@ function DiagnosePage() {
       toast.error("请上传至少一张照片或一段视频");
       return;
     }
-    toast.success("诊断已提交");
-    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
+
+    // 汇总所有药品处方（标准 + 特殊）
+    const allDrugs = [...planItems, ...specialList].filter((r) => r.kind === "drug");
+    const w = cattleWeight ?? 500;
+
+    // 1) 库存校验
+    const shortages: Shortage[] = [];
+    const need: Record<string, { qty: number; unit: string }> = {};
+    for (const r of allDrugs) {
+      const base = parseFloat(r.dose || "0");
+      if (Number.isNaN(base) || base <= 0) continue;
+      const perDose = Math.round(base * (w / 500) * 10) / 10;
+      const times = parseFloat(r.timesPerDay || "1") || 1;
+      const days = parseFloat(r.days || "1") || 1;
+      const total = Math.round(perDose * times * days * 10) / 10;
+      const unit = r.doseUnit || "ml";
+      if (!need[r.name]) need[r.name] = { qty: 0, unit };
+      need[r.name].qty = Math.round((need[r.name].qty + total) * 10) / 10;
+    }
+    for (const [name, n] of Object.entries(need)) {
+      const stock = drugStock[name];
+      if (!stock || stock.qty < n.qty) {
+        shortages.push({
+          name,
+          need: n.qty,
+          stock: stock?.qty ?? 0,
+          unit: stock?.unit ?? n.unit,
+        });
+      }
+    }
+
+    // 2) 规则校验
+    const violations: Violation[] = [];
+    const reported = cattleHistory.diseaseCount[disease] ?? 0;
+    if (reported + 1 > RULES.diseaseReportMax) {
+      violations.push({
+        kind: "disease",
+        title: `「${disease}」上报次数超限`,
+        detail: `本牛只历史已上报 ${reported} 次，本次将达 ${reported + 1} 次，超过阈值 ${RULES.diseaseReportMax} 次。`,
+      });
+    }
+    for (const r of allDrugs) {
+      const base = parseFloat(r.dose || "0");
+      if (Number.isNaN(base) || base <= 0) continue;
+      const perDose = Math.round(base * (w / 500) * 10) / 10;
+      const times = parseFloat(r.timesPerDay || "1") || 1;
+      const days = parseFloat(r.days || "1") || 1;
+      const addDose = Math.round(perDose * times * days * 10) / 10;
+      const addCount = Math.round(times * days);
+      const hist = cattleHistory.drugUsage[r.name];
+      if (!hist) continue;
+      const unit = hist.unit;
+      const nextDose = Math.round((hist.totalDose + addDose) * 10) / 10;
+      const nextCount = hist.count + addCount;
+      const doseCap = RULES.drugTotalDoseFactorMax * (perDose || base);
+      if (nextDose > doseCap) {
+        violations.push({
+          kind: "drug",
+          title: `「${r.name}」累计剂量超限`,
+          detail: `历史 ${hist.totalDose}${unit}，本次新增 ${addDose}${unit}，合计 ${nextDose}${unit}，超过 ${RULES.drugTotalDoseFactorMax} 倍基准（${doseCap}${unit}）。`,
+        });
+      }
+      if (nextCount > RULES.drugUsageCountMax) {
+        violations.push({
+          kind: "drug",
+          title: `「${r.name}」累计使用次数超限`,
+          detail: `历史 ${hist.count} 次，本次新增 ${addCount} 次，合计 ${nextCount} 次，超过阈值 ${RULES.drugUsageCountMax} 次。`,
+        });
+      }
+    }
+
+    if (shortages.length === 0 && violations.length === 0) {
+      doSubmit();
+      return;
+    }
+    setSubmitCheck({ shortages, violations });
   };
+
 
   return (
     <MobileShell title="诊断记录" back hideTabBar>
