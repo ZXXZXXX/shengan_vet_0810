@@ -512,7 +512,20 @@ function DiagnosePage() {
       }
     }
 
-    // 2) 规则校验
+    if (shortages.length > 0) {
+      setSubmitCheck({ stage: "stock", shortages });
+      return;
+    }
+
+    proceedRuleCheck();
+  };
+
+  // 2) 规则校验（库存通过或用户已确认继续后触发）
+  const proceedRuleCheck = () => {
+    const planItems = selectedPlan?.items ?? [];
+    const allDrugs = [...planItems, ...specialList].filter((r) => r.kind === "drug");
+    const w = cattleWeight ?? 500;
+
     const violations: Violation[] = [];
     const reported = cattleHistory.diseaseCount[disease] ?? 0;
     if (reported + 1 > RULES.diseaseReportMax) {
@@ -535,7 +548,7 @@ function DiagnosePage() {
       const unit = hist.unit;
       const nextDose = Math.round((hist.totalDose + addDose) * 10) / 10;
       const nextCount = hist.count + addCount;
-      const doseCap = RULES.drugTotalDoseFactorMax * (perDose || base);
+      const doseCap = Math.round(RULES.drugTotalDoseFactorMax * (perDose || base) * 10) / 10;
       if (nextDose > doseCap) {
         violations.push({
           kind: "drug",
@@ -552,11 +565,11 @@ function DiagnosePage() {
       }
     }
 
-    if (shortages.length === 0 && violations.length === 0) {
+    if (violations.length === 0) {
       doSubmit();
       return;
     }
-    setSubmitCheck({ shortages, violations });
+    setSubmitCheck({ stage: "rules", violations });
   };
 
 
