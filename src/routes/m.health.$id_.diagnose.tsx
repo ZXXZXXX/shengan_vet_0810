@@ -327,19 +327,15 @@ function DiagnosePage() {
   const pickDisease = (d: (typeof rankedDiseases)[number]) => {
     setDisease(d.name);
     setDiseaseQuery(d.name);
-    setStdRxList(d.rx.map((r) => ({ ...r })));
-    setStdExcluded(new Set());
+    setStdPlans(d.plans.map((p) => ({ ...p, items: p.items.map((it) => ({ ...it })) })));
+    setSelectedPlanId(d.plans[0]?.id ?? "");
     setDiseaseFocused(false);
   };
 
-  const toggleStdRx = (rxId: string) => {
-    setStdExcluded((prev) => {
-      const next = new Set(prev);
-      if (next.has(rxId)) next.delete(rxId);
-      else next.add(rxId);
-      return next;
-    });
-  };
+  const selectedPlan = useMemo(
+    () => stdPlans.find((p) => p.id === selectedPlanId) ?? null,
+    [stdPlans, selectedPlanId],
+  );
 
   const removeSpecialRx = (rxId: string) =>
     setSpecialList((prev) => prev.filter((r) => r.id !== rxId));
@@ -348,6 +344,37 @@ function DiagnosePage() {
     if (!editingRx) return;
     setSpecialList((prev) => prev.map((r) => (r.id === editingRx.id ? editingRx : r)));
     setEditingRx(null);
+  };
+
+  const addSpecial = (kind: "drug" | "therapy") => {
+    const nextId = `s${Date.now()}`;
+    const base: Prescription =
+      kind === "drug"
+        ? {
+            id: nextId,
+            kind: "drug",
+            name: "",
+            maker: "",
+            spec: "",
+            use: "",
+            dose: "",
+            doseUnit: "ml",
+            timesPerDay: "2",
+            days: "3",
+            splitTime: false,
+            slots: {},
+          }
+        : {
+            id: nextId,
+            kind: "therapy",
+            name: "",
+            therapyMethod: "",
+            frequency: "",
+            desc: "",
+            days: "3",
+          };
+    setEditingRx(base);
+    setSpecialList((prev) => [...prev, base]);
   };
 
   const submit = () => {
@@ -375,17 +402,14 @@ function DiagnosePage() {
       toast.error("请选择疾病");
       return;
     }
-    const stdSelected = stdRxList.filter((r) => !stdExcluded.has(r.id));
-    if (stdSelected.length === 0 && specialList.length === 0) {
-      toast.error("请至少选择一项标准处方或开具一项特殊处方");
+    const planItems = selectedPlan?.items ?? [];
+    if (planItems.length === 0 && specialList.length === 0) {
+      toast.error("请选择一个标准处方方案或开具特殊处方");
       return;
     }
-    if (stdSelected.some((r) => r.kind === "drug")) {
-      const w = parseFloat(cattleWeight);
-      if (!cattleWeight.trim() || Number.isNaN(w) || w < 50 || w > 1500) {
-        toast.error("请填写有效牛只体重（50 ~ 1500 kg）以计算剂量");
-        return;
-      }
+    if (planItems.some((r) => r.kind === "drug") && cattleWeight == null) {
+      toast.error("请选择牛只体重以自动计算剂量");
+      return;
     }
     if (specialList.length > 0 && !specialReason.trim()) {
       toast.error("请填写开具特殊处方的原因");
@@ -393,6 +417,10 @@ function DiagnosePage() {
     }
     if (specialList.some((r) => r.kind === "drug" && (!r.name || !r.dose))) {
       toast.error("请补全特殊处方的药品与剂量");
+      return;
+    }
+    if (specialList.some((r) => r.kind === "therapy" && !r.therapyMethod)) {
+      toast.error("请补全特殊理疗的治疗手段");
       return;
     }
     if (photos.length === 0 && videos.length === 0) {
