@@ -443,8 +443,18 @@ function ReportPage() {
     return `${formatted.slice(0, 2).join("、")} 等 ${formatted.length} 头`;
   }, [barnMode, barns, targets]);
 
+  const [postSubmitOpen, setPostSubmitOpen] = useState(false);
+  const [newWorkOrderId, setNewWorkOrderId] = useState<string>("");
+
   const doSubmit = () => {
     setSubmitted(true);
+    // 兽医/场长在现场上报后，提示是否直接进入诊断
+    if (role === "vet" || role === "manager") {
+      const id = `WO-${Math.floor(Math.random() * 9000 + 1000)}`;
+      setNewWorkOrderId(id);
+      setTimeout(() => setPostSubmitOpen(true), 400);
+      return;
+    }
     setTimeout(() => navigate({ to: "/m/health" }), 900);
   };
 
@@ -1008,6 +1018,52 @@ function ReportPage() {
           doSubmit();
         }}
       />
+
+      {/* 兽医/场长：上报后是否直接进入诊断 */}
+      {postSubmitOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
+                <FileText className="h-4 w-4 text-primary" />
+              </span>
+              <h3 className="text-card-title text-foreground">是否直接进行诊断？</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              上报已生成工单
+              <span className="font-mono text-foreground"> {newWorkOrderId}</span>
+              ，可立即进入诊断界面继续处理，或返回首页。
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setPostSubmitOpen(false);
+                  navigate({ to: "/m/homepage" });
+                }}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                否，返回首页
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPostSubmitOpen(false);
+                  navigate({
+                    to: "/m/health/$id/diagnose",
+                    params: { id: newWorkOrderId },
+                  });
+                }}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                是，进入诊断
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
 
 
       {/* 存草稿确认弹窗 */}
