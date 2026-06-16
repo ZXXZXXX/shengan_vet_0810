@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Home, ClipboardList, Bell, User, ScanLine } from "lucide-react";
+import { Home, ClipboardList, Bell, User, Search } from "lucide-react";
 import { ReactNode } from "react";
 
 const leftTabs = [
@@ -120,8 +120,7 @@ function MobileTabBar() {
     <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] z-40 bg-card border-t border-border pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-5 h-16 relative">
         {leftTabs.map(renderTab)}
-        {/* 中央扫码按钮 */}
-        {/* 中央扫码按钮 */}
+        {/* 中央搜索按钮 */}
         <div className="flex items-start justify-center relative">
           {/* 柔和漫射光晕阴影 */}
           <span
@@ -130,13 +129,14 @@ function MobileTabBar() {
             style={{ background: "radial-gradient(ellipse at center, color-mix(in oklab, var(--primary) 55%, transparent) 0%, transparent 70%)" }}
           />
           <Link
-            to="/m/scan"
-            aria-label="扫码"
+            to="/m/search"
+            aria-label="搜索档案"
             className="relative -mt-5 h-14 w-14 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center ring-4 ring-card active:scale-95 transition-transform"
           >
-            <ScanLine className="h-6 w-6" strokeWidth={2} />
+            <Search className="h-6 w-6" strokeWidth={2} />
           </Link>
         </div>
+
 
         {rightTabs.map(renderTab)}
       </div>
