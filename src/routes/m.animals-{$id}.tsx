@@ -730,8 +730,22 @@ function MilkChart({ values }: { values: number[] }) {
     .join(" ");
   const areaPath = `${linePath} L${points[n - 1][0].toFixed(1)},${H - padY} L${points[0][0].toFixed(1)},${H - padY} Z`;
   const last = values[n - 1];
-  const first = values[0];
-  const delta = Math.round((last - first) * 10) / 10;
+  const avg = values.reduce((s, v) => s + v, 0) / n;
+  const diffAvg = Math.round((last - avg) * 10) / 10;
+  const recent = values.slice(-7);
+  const prior = values.slice(-14, -7);
+  const recentAvg = recent.reduce((s, v) => s + v, 0) / recent.length;
+  const priorAvg = prior.length ? prior.reduce((s, v) => s + v, 0) / prior.length : recentAvg;
+  const trendDelta = recentAvg - priorAvg;
+  const trendLabel =
+    Math.abs(trendDelta) < 0.3 ? "近 7 天持平" : trendDelta > 0 ? "近 7 天上升" : "近 7 天下降";
+  const avgLabel =
+    Math.abs(diffAvg) < 0.1
+      ? "与均值持平"
+      : diffAvg > 0
+      ? `高于均值 ${diffAvg} kg`
+      : `低于均值 ${Math.abs(diffAvg)} kg`;
+  const positive = diffAvg >= 0 && trendDelta >= -0.3;
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1.5">
@@ -741,13 +755,13 @@ function MilkChart({ values }: { values: number[] }) {
         </div>
         <span
           className={`text-caption tabular-nums ${
-            delta >= 0 ? "text-primary" : "text-[var(--state-danger,#D9534F)]"
+            positive ? "text-primary" : "text-[var(--state-danger,#D9534F)]"
           }`}
         >
-          {delta >= 0 ? "+" : ""}
-          {delta} kg · 较 14 天前
+          {avgLabel} · {trendLabel}
         </span>
       </div>
+
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[70px]" preserveAspectRatio="none">
         <defs>
           <linearGradient id="milkArea" x1="0" y1="0" x2="0" y2="1">
