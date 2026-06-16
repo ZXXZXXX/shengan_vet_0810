@@ -136,7 +136,7 @@ function PenDetailPage() {
   ];
 
   const [showAll, setShowAll] = useState(false);
-  const visibleCount = showAll ? totalCows : 24;
+  const visibleCount = Math.min(totalCows, showAll ? totalCows : INITIAL_VISIBLE);
   const cows = useMemo(
     () =>
       Array.from({ length: visibleCount }, (_, i) => ({
