@@ -84,14 +84,15 @@ for (let bi = 0; bi < BARN_COUNT; bi++) {
   const type = BARN_TYPE[bi];
   for (let pi = 0; pi < PEN_PER_BARN; pi++) {
     const penIdx = pi + 1;
+    const globalPenNo = (barnIdx - 1) * PEN_PER_BARN + penIdx;
     const { movedIn, movedOut } = todayInOut(barnIdx, penIdx);
     allPens.push({
       barnIdx,
       barnId,
       barnName,
       idx: penIdx,
-      name: `${penIdx} 栏`,
-      fullName: `${barnName} · ${penIdx} 栏`,
+      name: `${globalPenNo} 栏`,
+      fullName: `${barnName} · ${globalPenNo} 栏`,
       type,
       stock: COWS_PER_PEN,
       movedIn,
