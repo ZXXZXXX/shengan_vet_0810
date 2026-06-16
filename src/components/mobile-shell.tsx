@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Home, ClipboardList, Bell, User, ScanLine } from "lucide-react";
+import { Home, ClipboardList, Bell, User, Search } from "lucide-react";
 import { ReactNode } from "react";
 
 const leftTabs = [
