@@ -60,10 +60,10 @@ function BarnDetailPage() {
 
   // mock 该牛舍内全部相关工单
   const orders: WO[] = [
-    { id: "WO-2026-0518", target: "#A2381", kind: "健康", type: "疾病治疗", conclusion: "疑似乳房炎", desc: "持续高烧 39.6℃，食欲明显下降", status: "执行中", time: "2026-05-18 09:20", person: "李雨晴", needPickup: true },
-    { id: "WO-2026-0521", target: "#A2298", kind: "健康", type: "疾病治疗", conclusion: "乳房炎复诊", desc: "复诊评估恢复情况", status: "执行中", time: "2026-05-21 10:15", person: "李雨晴", needPickup: false },
-    { id: "HF-2026-0702", target: "#A2150", kind: "修蹄", type: "趾间皮炎处置", conclusion: "待诊断", desc: "右后蹄红肿，需清创修蹄", status: "待诊断", time: "2026-05-21 14:05", person: "王巡栏", needPickup: false },
-    { id: "HF-2026-0688", target: "#A2270", kind: "修蹄", type: "蹄底溃疡", conclusion: "蹄底溃疡 II 度", desc: "处置 + 包蹄", status: "执行中", time: "2026-05-20 16:30", person: "张师傅", needPickup: true },
+    { id: "WO-2026-0518", target: "#01-24-2381", kind: "健康", type: "疾病治疗", conclusion: "疑似乳房炎", desc: "持续高烧 39.6℃，食欲明显下降", status: "执行中", time: "2026-05-18 09:20", person: "李雨晴", needPickup: true },
+    { id: "WO-2026-0521", target: "#01-24-2298", kind: "健康", type: "疾病治疗", conclusion: "乳房炎复诊", desc: "复诊评估恢复情况", status: "执行中", time: "2026-05-21 10:15", person: "李雨晴", needPickup: false },
+    { id: "HF-2026-0702", target: "#01-24-2150", kind: "修蹄", type: "趾间皮炎处置", conclusion: "待诊断", desc: "右后蹄红肿，需清创修蹄", status: "待诊断", time: "2026-05-21 14:05", person: "王巡栏", needPickup: false },
+    { id: "HF-2026-0688", target: "#01-24-2270", kind: "修蹄", type: "蹄底溃疡", conclusion: "蹄底溃疡 II 度", desc: "处置 + 包蹄", status: "执行中", time: "2026-05-20 16:30", person: "张师傅", needPickup: true },
     { id: "IM-2026-0401", target: "犊牛舍 A", kind: "免疫", type: "口蹄疫加强", conclusion: "批次免疫", desc: "口蹄疫疫苗加强针批次免疫", status: "执行中", time: "2026-05-22 08:00", person: "周凯", needPickup: true },
   ];
 

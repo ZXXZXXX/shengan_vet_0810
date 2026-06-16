@@ -96,16 +96,16 @@ type Animal = {
 };
 
 const animals: Animal[] = [
-  { id: "A2381", breed: "荷斯坦", age: "3 岁 4 月", barn: "3 号牛舍", stage: "成母牛", status: "观察中", health: 3.6, lastCheck: "2026-05-09", alert: "体温异常" },
-  { id: "A2105", breed: "荷斯坦", age: "4 岁 1 月", barn: "1 号牛舍", stage: "成母牛", status: "健康", health: 4.8, lastCheck: "2026-05-10", alert: null },
-  { id: "A2456", breed: "西门塔尔", age: "2 岁 9 月", barn: "2 号牛舍", stage: "青年", status: "健康", health: 4.6, lastCheck: "2026-05-11", alert: null },
-  { id: "A2298", breed: "荷斯坦", age: "5 岁 2 月", barn: "1 号牛舍", stage: "成母牛", status: "治疗中", health: 2.9, lastCheck: "2026-05-08", alert: "乳房炎复查" },
-  { id: "A2502", breed: "西门塔尔", age: "1 岁 8 月", barn: "犊牛舍 A", stage: "犊牛", status: "健康", health: 4.7, lastCheck: "2026-05-11", alert: null },
-  { id: "A2178", breed: "荷斯坦", age: "3 岁 11 月", barn: "2 号牛舍", stage: "成母牛", status: "健康", health: 4.5, lastCheck: "2026-05-10", alert: null },
-  { id: "A2611", breed: "荷斯坦", age: "干奶期 32 天", barn: "干奶舍", stage: "干奶", status: "健康", health: 4.4, lastCheck: "2026-05-09", alert: null },
-  { id: "A2324", breed: "荷斯坦", age: "2 岁 1 月", barn: "2 号牛舍", stage: "青年", status: "观察中", health: 3.8, lastCheck: "2026-05-09", alert: "采食量下降" },
-  { id: "A2087", breed: "西门塔尔", age: "6 岁", barn: "1 号牛舍", stage: "成母牛", status: "健康", health: 4.6, lastCheck: "2026-05-11", alert: null },
-  { id: "A2733", breed: "荷斯坦", age: "3 岁", barn: "3 号牛舍", stage: "成母牛", status: "健康", health: 4.3, lastCheck: "2026-05-10", alert: null },
+  { id: "01-24-2381", breed: "荷斯坦", age: "3 岁 4 月", barn: "3 号牛舍", stage: "成母牛", status: "观察中", health: 3.6, lastCheck: "2026-05-09", alert: "体温异常" },
+  { id: "01-24-2105", breed: "荷斯坦", age: "4 岁 1 月", barn: "1 号牛舍", stage: "成母牛", status: "健康", health: 4.8, lastCheck: "2026-05-10", alert: null },
+  { id: "01-24-2456", breed: "西门塔尔", age: "2 岁 9 月", barn: "2 号牛舍", stage: "青年", status: "健康", health: 4.6, lastCheck: "2026-05-11", alert: null },
+  { id: "01-24-2298", breed: "荷斯坦", age: "5 岁 2 月", barn: "1 号牛舍", stage: "成母牛", status: "治疗中", health: 2.9, lastCheck: "2026-05-08", alert: "乳房炎复查" },
+  { id: "01-24-2502", breed: "西门塔尔", age: "1 岁 8 月", barn: "犊牛舍 A", stage: "犊牛", status: "健康", health: 4.7, lastCheck: "2026-05-11", alert: null },
+  { id: "01-24-2178", breed: "荷斯坦", age: "3 岁 11 月", barn: "2 号牛舍", stage: "成母牛", status: "健康", health: 4.5, lastCheck: "2026-05-10", alert: null },
+  { id: "01-24-2611", breed: "荷斯坦", age: "干奶期 32 天", barn: "干奶舍", stage: "干奶", status: "健康", health: 4.4, lastCheck: "2026-05-09", alert: null },
+  { id: "01-24-2324", breed: "荷斯坦", age: "2 岁 1 月", barn: "2 号牛舍", stage: "青年", status: "观察中", health: 3.8, lastCheck: "2026-05-09", alert: "采食量下降" },
+  { id: "01-24-2087", breed: "西门塔尔", age: "6 岁", barn: "1 号牛舍", stage: "成母牛", status: "健康", health: 4.6, lastCheck: "2026-05-11", alert: null },
+  { id: "01-24-2733", breed: "荷斯坦", age: "3 岁", barn: "3 号牛舍", stage: "成母牛", status: "健康", health: 4.3, lastCheck: "2026-05-10", alert: null },
 ];
 
 function statusTag(s: string) {

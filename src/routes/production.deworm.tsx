@@ -9,7 +9,7 @@ const orders = makeOrders("QC", [
   { target: "犊牛舍 B", event: "球虫病预防", desc: "犊牛舍 B 球虫病预防驱虫。" },
   { target: "干奶舍", event: "干奶牛驱虫", desc: "干奶舍批次驱虫。" },
   { target: "全场", event: "夏季体外驱虫", desc: "全场夏季蝇蜱体外驱虫。" },
-  { target: "#A2188", event: "个体补充驱虫", desc: "#A2188 漏批次驱虫，单独补打。" },
+  { target: "#01-24-2188", event: "个体补充驱虫", desc: "#01-24-2188 漏批次驱虫，单独补打。" },
 ]);
 
 export const Route = createFileRoute("/production/deworm")({
