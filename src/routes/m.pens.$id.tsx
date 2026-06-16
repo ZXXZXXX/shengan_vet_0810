@@ -130,9 +130,9 @@ function PenDetailPage() {
     () =>
       Array.from({ length: visibleCount }, (_, i) => ({
         id: cowIdFor(barnIdx, localPenIdx, i),
-        status: statusFor(barnIdx, localPenIdx, i),
+        status: statusFor(barnType, i),
       })),
-    [barnIdx, localPenIdx, visibleCount],
+    [barnIdx, localPenIdx, barnType, visibleCount],
   );
 
   return (
