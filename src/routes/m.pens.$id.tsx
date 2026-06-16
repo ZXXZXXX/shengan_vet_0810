@@ -27,18 +27,27 @@ const statusTone: Record<CowStatus, string> = {
 };
 
 const PEN_PER_BARN = 4;
-const COWS_PER_PEN = 100;
+const LARGE_PEN_COWS = 100;
 
 const BARN_TYPE: Record<number, string> = {
   1: "成牛舍",
   2: "成牛舍",
   3: "病牛舍",
-  4: "过抗栏",
-  5: "休药栏",
+  4: "产后护理舍",
+  5: "围产舍",
   6: "犊牛舍",
   7: "干奶舍",
   8: "成牛舍",
 };
+
+// 与 m.search.tsx 中 stockFor 保持一致
+function stockFor(barnType: string, barnIdx: number, penIdx: number) {
+  const seed = barnIdx * 17 + penIdx * 5;
+  if (barnType === "病牛舍" || barnType === "产后护理舍") {
+    return 4 + (seed % 22); // 4 ~ 25
+  }
+  return 90 + (seed % 21); // 90 ~ 110
+}
 
 function parsePenId(raw: string) {
   // 形如 B001-3，表示 1 号牛舍 · 全场第 3 栏
@@ -52,18 +61,18 @@ function parsePenId(raw: string) {
 
 function cowIdFor(barnIdx: number, localPenIdx: number, i: number) {
   const seq =
-    (barnIdx - 1) * PEN_PER_BARN * COWS_PER_PEN + (localPenIdx - 1) * COWS_PER_PEN + i + 1;
+    (barnIdx - 1) * PEN_PER_BARN * LARGE_PEN_COWS + (localPenIdx - 1) * LARGE_PEN_COWS + i + 1;
   return `01-24-${String(2000 + seq).padStart(4, "0")}`;
 }
 function statusFor(barnType: string, i: number): CowStatus {
   // 同一牛栏内牛只状态须与牛舍类型一致：
   // - 病牛舍：基本都是治疗中，偶有观察中（待移入过抗/休药栏）
-  // - 过抗栏 / 休药栏：基本都是观察中
-  // - 其他舍（成牛/犊牛/干奶/围产 等）：默认都是健康
+  // - 产后护理舍：处于护理观察期
+  // - 其他舍（成牛 / 犊牛 / 干奶 / 围产 等）：默认都是健康
   if (barnType === "病牛舍") {
-    return i % 11 === 5 ? "观察中" : "治疗中";
+    return i % 7 === 3 ? "观察中" : "治疗中";
   }
-  if (barnType === "过抗栏" || barnType === "休药栏") {
+  if (barnType === "产后护理舍") {
     return "观察中";
   }
   return "健康";
