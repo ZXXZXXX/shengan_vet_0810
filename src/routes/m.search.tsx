@@ -283,12 +283,12 @@ function Stat({
         : "text-foreground";
   const Icon = tone === "up" ? ArrowUpRight : tone === "down" ? ArrowDownRight : null;
   return (
-    <div className="rounded-lg bg-surface-subtle px-2 py-1.5">
+    <div className="px-3 first:pl-0 last:pr-0">
       <div className="text-caption text-text-tertiary">{label}</div>
-      <div className={`mt-0.5 inline-flex items-baseline gap-0.5 ${color}`}>
-        {Icon ? <Icon className="h-3 w-3 self-center" /> : null}
-        <span className="text-body font-medium tabular-nums">{value}</span>
-        <span className="text-caption text-text-tertiary">{unit}</span>
+      <div className={`mt-1 inline-flex items-baseline gap-0.5 ${color}`}>
+        {Icon ? <Icon className="h-3.5 w-3.5 self-center" /> : null}
+        <span className="text-section font-medium tabular-nums">{value}</span>
+        <span className="text-caption text-text-tertiary ml-0.5">{unit}</span>
       </div>
     </div>
   );
