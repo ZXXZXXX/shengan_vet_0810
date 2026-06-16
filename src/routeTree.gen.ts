@@ -67,6 +67,7 @@ import { Route as ArchiveFarmRouteImport } from './routes/archive.farm'
 import { Route as ArchiveCattleRouteImport } from './routes/archive.cattle'
 import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
+import { Route as MPensIdRouteImport } from './routes/m.pens.$id'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
 import { Route as MHealthIdReviewRouteImport } from './routes/m.health.$id_.review'
@@ -366,6 +367,11 @@ const MHealthIndexRoute = MHealthIndexRouteImport.update({
   path: '/health/',
   getParentRoute: () => MRoute,
 } as any)
+const MPensIdRoute = MPensIdRouteImport.update({
+  id: '/pens/$id',
+  path: '/pens/$id',
+  getParentRoute: () => MRoute,
+} as any)
 const MHealthIdRoute = MHealthIdRouteImport.update({
   id: '/health/$id',
   path: '/health/$id',
@@ -463,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
+  '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
@@ -525,6 +532,7 @@ export interface FileRoutesByTo {
   '/warehouse': typeof WarehouseIndexRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
+  '/m/pens/$id': typeof MPensIdRoute
   '/m/health': typeof MHealthIndexRoute
   '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
@@ -593,6 +601,7 @@ export interface FileRoutesById {
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
+  '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/health/$id_/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id_/diagnose': typeof MHealthIdDiagnoseRoute
@@ -662,6 +671,7 @@ export interface FileRouteTypes {
     | '/warehouse/'
     | '/m/barns/$id'
     | '/m/health/$id'
+    | '/m/pens/$id'
     | '/m/health/'
     | '/m/health/$id/confirm-cure'
     | '/m/health/$id/diagnose'
@@ -724,6 +734,7 @@ export interface FileRouteTypes {
     | '/warehouse'
     | '/m/barns/$id'
     | '/m/health/$id'
+    | '/m/pens/$id'
     | '/m/health'
     | '/m/health/$id/confirm-cure'
     | '/m/health/$id/diagnose'
@@ -791,6 +802,7 @@ export interface FileRouteTypes {
     | '/warehouse/'
     | '/m/barns/$id'
     | '/m/health/$id'
+    | '/m/pens/$id'
     | '/m/health/'
     | '/m/health/$id_/confirm-cure'
     | '/m/health/$id_/diagnose'
@@ -1221,6 +1233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MHealthIndexRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/pens/$id': {
+      id: '/m/pens/$id'
+      path: '/pens/$id'
+      fullPath: '/m/pens/$id'
+      preLoaderRoute: typeof MPensIdRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/health/$id': {
       id: '/m/health/$id'
       path: '/health/$id'
@@ -1326,6 +1345,7 @@ interface MRouteChildren {
   MIndexRoute: typeof MIndexRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
+  MPensIdRoute: typeof MPensIdRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
   MHealthIdConfirmCureRoute: typeof MHealthIdConfirmCureRoute
   MHealthIdDiagnoseRoute: typeof MHealthIdDiagnoseRoute
@@ -1356,6 +1376,7 @@ const MRouteChildren: MRouteChildren = {
   MIndexRoute: MIndexRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
+  MPensIdRoute: MPensIdRoute,
   MHealthIndexRoute: MHealthIndexRoute,
   MHealthIdConfirmCureRoute: MHealthIdConfirmCureRoute,
   MHealthIdDiagnoseRoute: MHealthIdDiagnoseRoute,
