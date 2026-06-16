@@ -250,20 +250,10 @@ function SearchPage() {
                   <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
                 </div>
 
-                <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="mt-3 grid grid-cols-3 divide-x divide-border">
                   <Stat label="当前存栏" value={pen.stock} unit="头" />
-                  <Stat
-                    label="今日移入"
-                    value={pen.movedIn}
-                    unit="头"
-                    tone="up"
-                  />
-                  <Stat
-                    label="今日移出"
-                    value={pen.movedOut}
-                    unit="头"
-                    tone="down"
-                  />
+                  <Stat label="今日移入" value={pen.movedIn} unit="头" tone="up" />
+                  <Stat label="今日移出" value={pen.movedOut} unit="头" tone="down" />
                 </div>
               </button>
             ))}
@@ -293,12 +283,12 @@ function Stat({
         : "text-foreground";
   const Icon = tone === "up" ? ArrowUpRight : tone === "down" ? ArrowDownRight : null;
   return (
-    <div className="rounded-lg bg-surface-subtle px-2 py-1.5">
+    <div className="px-3 first:pl-0 last:pr-0">
       <div className="text-caption text-text-tertiary">{label}</div>
-      <div className={`mt-0.5 inline-flex items-baseline gap-0.5 ${color}`}>
-        {Icon ? <Icon className="h-3 w-3 self-center" /> : null}
-        <span className="text-body font-medium tabular-nums">{value}</span>
-        <span className="text-caption text-text-tertiary">{unit}</span>
+      <div className={`mt-1 inline-flex items-baseline gap-0.5 ${color}`}>
+        {Icon ? <Icon className="h-3.5 w-3.5 self-center" /> : null}
+        <span className="text-section font-medium tabular-nums">{value}</span>
+        <span className="text-caption text-text-tertiary ml-0.5">{unit}</span>
       </div>
     </div>
   );
