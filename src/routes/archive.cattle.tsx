@@ -13,11 +13,11 @@ export const Route = createFileRoute("/archive/cattle")({
 
 type Health = "健康" | "观察中" | "治疗中";
 const cattle: { id: string; ear: string; breed: string; sex: string; birth: string; farm: string; barn: string; health: Health }[] = [
-  { id: "C-2381", ear: "A2381", breed: "荷斯坦", sex: "♀", birth: "2022-03-15", farm: "1 号牧场", barn: "3 号牛舍", health: "治疗中" },
-  { id: "C-2380", ear: "A2380", breed: "荷斯坦", sex: "♀", birth: "2021-11-08", farm: "1 号牧场", barn: "1 号牛舍", health: "健康" },
-  { id: "C-2379", ear: "A2379", breed: "荷斯坦", sex: "♀", birth: "2023-06-20", farm: "1 号牧场", barn: "犊牛舍 A", health: "健康" },
-  { id: "C-2378", ear: "A2378", breed: "西门塔尔", sex: "♂", birth: "2022-09-10", farm: "2 号牧场", barn: "2 号牛舍", health: "观察中" },
-  { id: "C-2377", ear: "A2377", breed: "荷斯坦", sex: "♀", birth: "2020-05-12", farm: "1 号牧场", barn: "3 号牛舍", health: "健康" },
+  { id: "C-2381", ear: "01-24-2381", breed: "荷斯坦", sex: "♀", birth: "2022-03-15", farm: "1 号牧场", barn: "3 号牛舍", health: "治疗中" },
+  { id: "C-2380", ear: "01-24-2380", breed: "荷斯坦", sex: "♀", birth: "2021-11-08", farm: "1 号牧场", barn: "1 号牛舍", health: "健康" },
+  { id: "C-2379", ear: "01-24-2379", breed: "荷斯坦", sex: "♀", birth: "2023-06-20", farm: "1 号牧场", barn: "犊牛舍 A", health: "健康" },
+  { id: "C-2378", ear: "01-24-2378", breed: "西门塔尔", sex: "♂", birth: "2022-09-10", farm: "2 号牧场", barn: "2 号牛舍", health: "观察中" },
+  { id: "C-2377", ear: "01-24-2377", breed: "荷斯坦", sex: "♀", birth: "2020-05-12", farm: "1 号牧场", barn: "3 号牛舍", health: "健康" },
 ];
 
 function healthTag(h: Health) {

@@ -19,14 +19,14 @@ function ExecuteRecordPage() {
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
 
   const singleEarMap: Record<string, string> = {
-    "WO-2298": "#A2298",
-    "HF-0702": "#A2150",
-    "HF-0688": "#A2270",
+    "WO-2298": "#01-24-2298",
+    "HF-0702": "#01-24-2150",
+    "HF-0688": "#01-24-2270",
   };
   const singleEar = singleEarMap[id];
   const isSingle = isHoof || Boolean(singleEar);
-  const earTag = singleEar ?? (isHoof ? "#A2150" : "#A2381");
-  const execTags: string[] = isSingle ? [earTag] : ["#A2381", "#A2382", "#A2383"];
+  const earTag = singleEar ?? (isHoof ? "#01-24-2150" : "#01-24-2381");
+  const execTags: string[] = isSingle ? [earTag] : ["#01-24-2381", "#01-24-2382", "#01-24-2383"];
   const pickupCode = isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`;
 
   return (

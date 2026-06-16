@@ -172,20 +172,20 @@ function TaskDetailPage() {
 
   // 单对象工单（仅一只牛）：WO-2298、HF-* 等
   const singleEarMap: Record<string, string> = {
-    "WO-2298": "#A2298",
-    "WO-2410": "#A2410",
-    "WO-2420": "#A2420",
-    "WO-2430": "#A2430",
-    "WO-2440": "#A2440",
-    "WO-2199": "#A2199",
-    "HF-0702": "#A2150",
-    "HF-0688": "#A2270",
-    "PP-2501": "#A2710",
+    "WO-2298": "#01-24-2298",
+    "WO-2410": "#01-24-2410",
+    "WO-2420": "#01-24-2420",
+    "WO-2430": "#01-24-2430",
+    "WO-2440": "#01-24-2440",
+    "WO-2199": "#01-24-2199",
+    "HF-0702": "#01-24-2150",
+    "HF-0688": "#01-24-2270",
+    "PP-2501": "#01-24-2710",
   };
   const singleEar = singleEarMap[id];
   const isSingle = isHoof || Boolean(singleEar);
-  const earTag = singleEar ?? (isHoof ? "#A2150" : "#A2381");
-  const execTags: string[] = isSingle ? [earTag] : ["#A2381", "#A2382", "#A2383"];
+  const earTag = singleEar ?? (isHoof ? "#01-24-2150" : "#01-24-2381");
+  const execTags: string[] = isSingle ? [earTag] : ["#01-24-2381", "#01-24-2382", "#01-24-2383"];
 
   const fallbackStatus: StatusKey =
     role === "hoof_trimmer" || role === "vet_assistant" || role === "immunizer" ? "进行中" : "待诊断";
@@ -1389,7 +1389,7 @@ function ChecklistDay({
   const [manualMode, setManualMode] = useState(false);
   const [manualPhotos, setManualPhotos] = useState<number[]>([]);
   const [manualDesc, setManualDesc] = useState("");
-  const expectedTag = tags[0] ?? "#A0000";
+  const expectedTag = tags[0] ?? "#01-24-0000";
 
 
   const total = items.length;
