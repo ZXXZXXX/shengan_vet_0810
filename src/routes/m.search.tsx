@@ -257,7 +257,8 @@ function SearchPage() {
                   <Stat label="今日移出" value={pen.movedOut} unit="头" tone="down" />
                 </div>
               </button>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
