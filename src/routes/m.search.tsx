@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Beef, Home, ChevronRight, ChevronDown } from "lucide-react";
+import { Search, Beef, Home, ChevronRight, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
 export const Route = createFileRoute("/m/search")({
@@ -10,6 +10,7 @@ export const Route = createFileRoute("/m/search")({
 
 type CowStatus = "健康" | "观察中" | "治疗中" | "异常";
 type Cow = { id: string; barnIdx: number; penIdx: number; status: CowStatus };
+type PenType = "病牛舍" | "产后护理舍" | "成牛舍" | "犊牛舍" | "围产舍" | "干奶舍";
 
 const statusTone: Record<CowStatus, string> = {
   健康: "tag tag-success",
@@ -18,12 +19,32 @@ const statusTone: Record<CowStatus, string> = {
   异常: "tag tag-danger",
 };
 
+const penTypeTone: Record<PenType, string> = {
+  病牛舍: "bg-status-danger-subtle text-status-danger",
+  产后护理舍: "bg-status-warning-subtle text-status-warning",
+  成牛舍: "bg-brand-subtle text-primary",
+  犊牛舍: "bg-status-info-subtle text-status-info",
+  围产舍: "bg-status-warning-subtle text-status-warning",
+  干奶舍: "bg-surface-muted text-text-secondary",
+};
+
 const STATUSES: CowStatus[] = ["健康", "健康", "健康", "健康", "健康", "观察中", "治疗中", "异常"];
 const BARN_COUNT = 8;
 const PEN_PER_BARN = 4;
 const COWS_PER_PEN = 100;
 
-// 牛只编号：aa-bb-cccc。这里 mock 数据按全场顺序编号。
+// 各牛舍主用途（一个牛舍内 4 个栏共享同一类型，简化 mock）
+const BARN_TYPE: PenType[] = [
+  "成牛舍",
+  "成牛舍",
+  "病牛舍",
+  "产后护理舍",
+  "围产舍",
+  "犊牛舍",
+  "干奶舍",
+  "成牛舍",
+];
+
 function cowIdFor(barnIdx: number, penIdx: number, i: number) {
   const seq = (barnIdx - 1) * PEN_PER_BARN * COWS_PER_PEN + (penIdx - 1) * COWS_PER_PEN + i + 1;
   return `01-24-${String(2000 + seq).padStart(4, "0")}`;
@@ -33,33 +54,52 @@ function statusFor(barnIdx: number, penIdx: number, i: number): CowStatus {
   return STATUSES[(barnIdx * 13 + penIdx * 7 + i) % STATUSES.length];
 }
 
-const allBarns = Array.from({ length: BARN_COUNT }, (_, bi) => {
-  const idx = bi + 1;
-  const pens = Array.from({ length: PEN_PER_BARN }, (_, pi) => {
-    const penIdx = pi + 1;
-    // 仅生成统计需要的状态分布，不预生成所有牛只对象
-    const breakdown: Record<CowStatus, number> = { 健康: 0, 观察中: 0, 治疗中: 0, 异常: 0 };
-    for (let i = 0; i < COWS_PER_PEN; i++) breakdown[statusFor(idx, penIdx, i)]++;
-    return { idx: penIdx, name: `${penIdx} 栏`, stock: COWS_PER_PEN, breakdown };
-  });
+// 今日移入 / 减少：根据牛舍、栏稳定生成 0~6
+function todayInOut(barnIdx: number, penIdx: number) {
+  const seed = barnIdx * 31 + penIdx * 11;
   return {
-    id: `B${String(idx).padStart(3, "0")}`,
-    idx,
-    name: `${idx} 号牛舍`,
-    stock: PEN_PER_BARN * COWS_PER_PEN,
-    pens,
+    movedIn: (seed * 7) % 7,
+    movedOut: (seed * 5 + 3) % 5,
   };
-});
-
-function listCows(barnIdx: number, penIdx: number, limit = COWS_PER_PEN): Cow[] {
-  const out: Cow[] = [];
-  for (let i = 0; i < Math.min(limit, COWS_PER_PEN); i++) {
-    out.push({ id: cowIdFor(barnIdx, penIdx, i), barnIdx, penIdx, status: statusFor(barnIdx, penIdx, i) });
-  }
-  return out;
 }
 
-// 牛只搜索：按编号过滤（在所有牛舍/栏中扫描）
+type Pen = {
+  barnIdx: number;
+  barnId: string;
+  barnName: string;
+  idx: number;
+  name: string;
+  fullName: string;
+  type: PenType;
+  stock: number;
+  movedIn: number;
+  movedOut: number;
+};
+
+const allPens: Pen[] = [];
+for (let bi = 0; bi < BARN_COUNT; bi++) {
+  const barnIdx = bi + 1;
+  const barnId = `B${String(barnIdx).padStart(3, "0")}`;
+  const barnName = `${barnIdx} 号牛舍`;
+  const type = BARN_TYPE[bi];
+  for (let pi = 0; pi < PEN_PER_BARN; pi++) {
+    const penIdx = pi + 1;
+    const { movedIn, movedOut } = todayInOut(barnIdx, penIdx);
+    allPens.push({
+      barnIdx,
+      barnId,
+      barnName,
+      idx: penIdx,
+      name: `${penIdx} 栏`,
+      fullName: `${barnName} · ${penIdx} 栏`,
+      type,
+      stock: COWS_PER_PEN,
+      movedIn,
+      movedOut,
+    });
+  }
+}
+
 function searchCows(kw: string, max = 30): Cow[] {
   const out: Cow[] = [];
   for (let b = 1; b <= BARN_COUNT && out.length < max; b++) {
@@ -79,8 +119,6 @@ function SearchPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"cow" | "barn">("cow");
   const [q, setQ] = useState("");
-  const [expandedBarn, setExpandedBarn] = useState<string | null>(null);
-  const [openPen, setOpenPen] = useState<string | null>(null); // `${barnId}-${penIdx}`
 
   const cowResults = useMemo(() => {
     const kw = q.trim().toLowerCase();
@@ -88,10 +126,16 @@ function SearchPage() {
     return searchCows(kw);
   }, [q]);
 
-  const barnResults = useMemo(() => {
+  const penResults = useMemo(() => {
     const kw = q.trim().toLowerCase();
     if (!kw) return [];
-    return allBarns.filter((b) => b.id.toLowerCase().includes(kw) || b.name.includes(kw));
+    return allPens.filter(
+      (p) =>
+        p.barnId.toLowerCase().includes(kw) ||
+        p.barnName.includes(kw) ||
+        p.fullName.includes(kw) ||
+        p.type.includes(kw),
+    );
   }, [q]);
 
   return (
@@ -108,11 +152,7 @@ function SearchPage() {
               <button
                 key={v}
                 type="button"
-                onClick={() => {
-                  setMode(v);
-                  setExpandedBarn(null);
-                  setOpenPen(null);
-                }}
+                onClick={() => setMode(v)}
                 className={`h-8 min-w-[88px] px-3 rounded-full text-body-sm inline-flex items-center justify-center gap-1 transition-colors ${
                   active
                     ? "bg-card text-foreground border border-border shadow-sm"
@@ -134,7 +174,9 @@ function SearchPage() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={
-              mode === "cow" ? "输入牛只编号，如 01-24-2381" : "输入牛舍编号或名称，如 B001 / 3 号牛舍"
+              mode === "cow"
+                ? "输入牛只编号，如 01-24-2381"
+                : "输入牛舍编号、名称或类型，如 B001 / 病牛舍"
             }
             className="w-full h-11 pl-9 pr-3 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary"
           />
@@ -170,135 +212,94 @@ function SearchPage() {
             </div>
           )
         ) : q.trim() === "" ? (
-          <EmptyHint text="输入牛舍编号或名称查询" />
-        ) : barnResults.length === 0 ? (
-          <EmptyHint text="未找到匹配的牛舍" />
+          <EmptyHint text="输入牛舍编号、名称或类型查询牛栏" />
+        ) : penResults.length === 0 ? (
+          <EmptyHint text="未找到匹配的牛栏" />
         ) : (
-          <div className="space-y-3">
-            {barnResults.map((b) => {
-              const isOpen = expandedBarn === b.id;
-              return (
-                <div key={b.id} className="rounded-xl bg-card border border-border overflow-hidden">
-                  {/* 牛舍头部：摘要 */}
-                  <button
-                    onClick={() => {
-                      setExpandedBarn(isOpen ? null : b.id);
-                      setOpenPen(null);
-                    }}
-                    className="w-full flex items-center gap-3 h-16 px-3 active:bg-surface-subtle"
-                  >
-                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center">
-                      <Home className="h-4 w-4" />
-                    </span>
-                    <div className="flex-1 min-w-0 text-left">
-                      <div className="text-body text-foreground">{b.name}</div>
-                      <div className="text-caption text-text-tertiary">
-                        编号 {b.id} · {PEN_PER_BARN} 栏 · 存栏 {b.stock} 头
-                      </div>
+          <div className="space-y-2">
+            <div className="text-caption text-text-tertiary px-1">
+              共 {penResults.length} 个牛栏
+            </div>
+            {penResults.map((pen) => (
+              <button
+                key={`${pen.barnId}-${pen.idx}`}
+                onClick={() =>
+                  navigate({
+                    to: "/m/barns/$id",
+                    params: { id: pen.barnId },
+                    search: { pen: pen.idx },
+                  } as never)
+                }
+                className="w-full rounded-xl bg-card border border-border p-3 text-left active:bg-surface-subtle"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-body font-medium text-foreground">
+                        {pen.fullName}
+                      </span>
+                      <span
+                        className={`text-caption px-1.5 h-5 inline-flex items-center rounded ${penTypeTone[pen.type]}`}
+                      >
+                        {pen.type}
+                      </span>
                     </div>
-                    <span
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate({ to: "/m/barns/$id", params: { id: b.id } });
-                      }}
-                      className="text-caption text-primary px-2 h-7 inline-flex items-center"
-                    >
-                      牛舍详情
-                    </span>
-                    <ChevronDown
-                      className={`h-4 w-4 text-text-tertiary transition-transform ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                  {/* 栏列表 */}
-                  {isOpen && (
-                    <div className="border-t border-border bg-surface-subtle/40 p-3 space-y-2">
-                      {b.pens.map((pen) => {
-                        const penKey = `${b.id}-${pen.idx}`;
-                        const penOpen = openPen === penKey;
-                        const preview = penOpen ? listCows(b.idx, pen.idx, 12) : [];
-                        return (
-                          <div
-                            key={pen.idx}
-                            className="rounded-lg bg-card border border-border overflow-hidden"
-                          >
-                            <button
-                              onClick={() => setOpenPen(penOpen ? null : penKey)}
-                              className="w-full flex items-center gap-2 h-12 px-3 active:bg-surface-subtle"
-                            >
-                              <div className="flex-1 min-w-0 text-left">
-                                <div className="text-body-sm text-foreground font-medium">
-                                  {pen.name}
-                                </div>
-                                <div className="text-caption text-text-tertiary mt-0.5 flex items-center gap-2 flex-wrap">
-                                  <span>{pen.stock} 头</span>
-                                  {(["观察中", "治疗中", "异常"] as CowStatus[])
-                                    .filter((s) => pen.breakdown[s] > 0)
-                                    .map((s) => (
-                                      <span key={s} className={statusTone[s]}>
-                                        {s} {pen.breakdown[s]}
-                                      </span>
-                                    ))}
-                                </div>
-                              </div>
-                              <ChevronDown
-                                className={`h-4 w-4 text-text-tertiary transition-transform ${
-                                  penOpen ? "rotate-180" : ""
-                                }`}
-                              />
-                            </button>
-
-                            {penOpen && (
-                              <div className="border-t border-border px-3 py-3">
-                                <div className="grid grid-cols-2 gap-2">
-                                  {preview.map((c) => (
-                                    <button
-                                      key={c.id}
-                                      onClick={() =>
-                                        navigate({
-                                          to: "/m/animals-{$id}",
-                                          params: { id: c.id },
-                                        })
-                                      }
-                                      className="rounded-lg bg-surface-subtle border border-border p-2.5 text-left active:bg-card"
-                                    >
-                                      <div className="flex items-center gap-1.5">
-                                        <Beef className="h-3.5 w-3.5 text-primary shrink-0" />
-                                        <span className="text-body-sm font-mono text-foreground truncate">
-                                          {c.id}
-                                        </span>
-                                      </div>
-                                      <div className="mt-1.5">
-                                        <span className={statusTone[c.status]}>{c.status}</span>
-                                      </div>
-                                    </button>
-                                  ))}
-                                </div>
-                                <button
-                                  onClick={() =>
-                                    navigate({ to: "/m/barns/$id", params: { id: b.id } })
-                                  }
-                                  className="mt-3 w-full h-9 rounded-lg border border-border text-body-sm text-primary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
-                                >
-                                  查看该栏全部 {pen.stock} 头
-                                  <ChevronRight className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                    <div className="text-caption text-text-tertiary mt-0.5">编号 {pen.barnId}</div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
                 </div>
-              );
-            })}
+
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <Stat label="当前存栏" value={pen.stock} unit="头" />
+                  <Stat
+                    label="今日移入"
+                    value={pen.movedIn}
+                    unit="头"
+                    tone="up"
+                  />
+                  <Stat
+                    label="今日减少"
+                    value={pen.movedOut}
+                    unit="头"
+                    tone="down"
+                  />
+                </div>
+              </button>
+            ))}
           </div>
         )}
       </div>
     </MobileShell>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  unit,
+  tone,
+}: {
+  label: string;
+  value: number;
+  unit: string;
+  tone?: "up" | "down";
+}) {
+  const color =
+    tone === "up"
+      ? "text-status-success"
+      : tone === "down"
+        ? "text-status-danger"
+        : "text-foreground";
+  const Icon = tone === "up" ? ArrowUpRight : tone === "down" ? ArrowDownRight : null;
+  return (
+    <div className="rounded-lg bg-surface-subtle px-2 py-1.5">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className={`mt-0.5 inline-flex items-baseline gap-0.5 ${color}`}>
+        {Icon ? <Icon className="h-3 w-3 self-center" /> : null}
+        <span className="text-body font-medium tabular-nums">{value}</span>
+        <span className="text-caption text-text-tertiary">{unit}</span>
+      </div>
+    </div>
   );
 }
 
