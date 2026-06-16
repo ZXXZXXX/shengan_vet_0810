@@ -166,6 +166,17 @@ function AnimalDetailPage() {
               />
             </div>
 
+            <div className="relative mt-3 grid grid-cols-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/15 px-2 py-2.5">
+              <HeaderStat label="泌乳天数" value={`${a.lactationDays}`} unit="天" />
+              <HeaderStat
+                label="怀孕天数"
+                value={a.pregnancyDays > 0 ? `${a.pregnancyDays}` : "—"}
+                unit={a.pregnancyDays > 0 ? "天" : ""}
+                divider
+              />
+              <HeaderStat label="胎次" value={`${a.parity}`} unit="胎" divider />
+            </div>
+
           </div>
         </div>
 
