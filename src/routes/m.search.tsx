@@ -240,7 +240,7 @@ function SearchPage() {
                         {pen.fullName}
                       </span>
                       <span
-                        className={`text-caption px-1.5 h-5 inline-flex items-center rounded ${penTypeTone[pen.type]}`}
+                        className={penTypeTone[pen.type]}
                       >
                         {pen.type}
                       </span>
