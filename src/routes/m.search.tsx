@@ -250,20 +250,10 @@ function SearchPage() {
                   <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
                 </div>
 
-                <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="mt-3 grid grid-cols-3 divide-x divide-border">
                   <Stat label="当前存栏" value={pen.stock} unit="头" />
-                  <Stat
-                    label="今日移入"
-                    value={pen.movedIn}
-                    unit="头"
-                    tone="up"
-                  />
-                  <Stat
-                    label="今日移出"
-                    value={pen.movedOut}
-                    unit="头"
-                    tone="down"
-                  />
+                  <Stat label="今日移入" value={pen.movedIn} unit="头" tone="up" />
+                  <Stat label="今日移出" value={pen.movedOut} unit="头" tone="down" />
                 </div>
               </button>
             ))}
