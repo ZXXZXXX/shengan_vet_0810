@@ -699,7 +699,7 @@ function ProdStat({
   unit: string;
 }) {
   return (
-    <div className="rounded-lg bg-surface-subtle px-2.5 py-2">
+    <div className="px-1 py-1">
       <div className="text-caption text-text-tertiary">{label}</div>
       <div className="mt-0.5">
         <span className="text-section text-foreground font-medium tabular-nums">{value}</span>
@@ -708,6 +708,7 @@ function ProdStat({
     </div>
   );
 }
+
 
 function MilkChart({ values }: { values: number[] }) {
   const W = 300;
