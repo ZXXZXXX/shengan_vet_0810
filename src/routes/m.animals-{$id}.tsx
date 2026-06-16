@@ -166,6 +166,17 @@ function AnimalDetailPage() {
               />
             </div>
 
+            <div className="relative mt-3 grid grid-cols-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/15 px-2 py-2.5">
+              <HeaderStat label="泌乳天数" value={`${a.lactationDays}`} unit="天" />
+              <HeaderStat
+                label="怀孕天数"
+                value={a.pregnancyDays > 0 ? `${a.pregnancyDays}` : "—"}
+                unit={a.pregnancyDays > 0 ? "天" : ""}
+                divider
+              />
+              <HeaderStat label="胎次" value={`${a.parity}`} unit="胎" divider />
+            </div>
+
           </div>
         </div>
 
@@ -186,19 +197,9 @@ function AnimalDetailPage() {
         {/* 生产信息 */}
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">生产信息</h3>
-            <span className="text-caption text-text-tertiary">近 14 天产奶</span>
+            <h3 className="text-card-title text-foreground">近 14 天产奶</h3>
           </div>
-          <div className="rounded-xl bg-card border border-border p-3 space-y-3">
-            <div className="grid grid-cols-3 gap-2">
-              <ProdStat label="泌乳天数" value={`${a.lactationDays}`} unit="天" />
-              <ProdStat
-                label="怀孕天数"
-                value={a.pregnancyDays > 0 ? `${a.pregnancyDays}` : "—"}
-                unit={a.pregnancyDays > 0 ? "天" : ""}
-              />
-              <ProdStat label="胎次" value={`${a.parity}`} unit="胎" />
-            </div>
+          <div className="rounded-xl bg-card border border-border p-3">
             <MilkChart values={a.milk14d} />
           </div>
         </section>
@@ -689,21 +690,25 @@ function MoveHistory() {
   );
 }
 
-function ProdStat({
+function HeaderStat({
   label,
   value,
   unit,
+  divider,
 }: {
   label: string;
   value: string;
   unit: string;
+  divider?: boolean;
 }) {
   return (
-    <div className="px-1 py-1">
-      <div className="text-caption text-text-tertiary">{label}</div>
-      <div className="mt-0.5">
-        <span className="text-section text-foreground font-medium tabular-nums">{value}</span>
-        {unit && <span className="text-caption text-text-tertiary ml-0.5">{unit}</span>}
+    <div
+      className={`px-2 ${divider ? "border-l border-white/20" : ""}`}
+    >
+      <div className="text-[11px] opacity-80 leading-none">{label}</div>
+      <div className="mt-1.5 leading-none">
+        <span className="text-[20px] font-semibold tabular-nums">{value}</span>
+        {unit && <span className="text-[11px] opacity-80 ml-0.5">{unit}</span>}
       </div>
     </div>
   );
