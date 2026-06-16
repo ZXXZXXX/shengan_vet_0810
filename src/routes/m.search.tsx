@@ -221,15 +221,16 @@ function SearchPage() {
             <div className="text-caption text-text-tertiary px-1">
               共 {penResults.length} 个牛栏
             </div>
-            {penResults.map((pen) => (
+            {penResults.map((pen) => {
+              const globalPenNo = (pen.barnIdx - 1) * PEN_PER_BARN + pen.idx;
+              return (
               <button
                 key={`${pen.barnId}-${pen.idx}`}
                 onClick={() =>
                   navigate({
-                    to: "/m/barns/$id",
-                    params: { id: pen.barnId },
-                    search: { pen: pen.idx },
-                  } as never)
+                    to: "/m/pens/$id",
+                    params: { id: `${pen.barnId}-${globalPenNo}` },
+                  })
                 }
                 className="w-full rounded-xl bg-card border border-border p-3 text-left active:bg-surface-subtle"
               >
@@ -256,7 +257,8 @@ function SearchPage() {
                   <Stat label="今日移出" value={pen.movedOut} unit="头" tone="down" />
                 </div>
               </button>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
