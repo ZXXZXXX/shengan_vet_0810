@@ -135,12 +135,15 @@ function AnimalDetailPage() {
               <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/15">
                 <Beef className="h-6 w-6" strokeWidth={1.75} />
               </div>
-              <div className="min-w-0">
-                <div className="text-[11px] opacity-75 font-medium">耳号</div>
+              <div className="min-w-0 flex-1">
                 <div className="text-section-title font-mono leading-tight">#{a.id}</div>
+                <div className="mt-1 inline-flex items-center gap-1 text-[11px] opacity-90 font-medium">
+                  <MapPin className="h-3 w-3 opacity-85 shrink-0" />
+                  <span className="truncate">{a.farm} · {a.barn} · {a.pen}</span>
+                </div>
               </div>
               <span
-                className={`ml-auto h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
+                className={`shrink-0 self-start h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
                   a.health === "异常"
                     ? "bg-[#FFE4E1] text-[#D9534F]"
                     : a.health === "观察中"
@@ -155,18 +158,14 @@ function AnimalDetailPage() {
               </span>
             </div>
 
-            <div className="relative mt-5 space-y-2">
-              <Brief
-                icon={<MapPin className="h-3 w-3 opacity-85" />}
-                label="所在位置"
-                value={`${a.farm} · ${a.barn} · ${a.pen}`}
-              />
+            <div className="relative mt-4">
               <Brief
                 icon={<Beef className="h-3 w-3 opacity-85" />}
                 label="品种 / 性别 / 类型 / 日龄"
                 value={`${a.breed} · ${a.sex} · ${a.type} · ${a.ageDays} 日龄`}
               />
             </div>
+
           </div>
         </div>
 
