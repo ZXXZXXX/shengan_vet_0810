@@ -690,21 +690,25 @@ function MoveHistory() {
   );
 }
 
-function ProdStat({
+function HeaderStat({
   label,
   value,
   unit,
+  divider,
 }: {
   label: string;
   value: string;
   unit: string;
+  divider?: boolean;
 }) {
   return (
-    <div className="px-1 py-1">
-      <div className="text-caption text-text-tertiary">{label}</div>
-      <div className="mt-0.5">
-        <span className="text-section text-foreground font-medium tabular-nums">{value}</span>
-        {unit && <span className="text-caption text-text-tertiary ml-0.5">{unit}</span>}
+    <div
+      className={`px-2 ${divider ? "border-l border-white/20" : ""}`}
+    >
+      <div className="text-[11px] opacity-80 leading-none">{label}</div>
+      <div className="mt-1.5 leading-none">
+        <span className="text-[20px] font-semibold tabular-nums">{value}</span>
+        {unit && <span className="text-[11px] opacity-80 ml-0.5">{unit}</span>}
       </div>
     </div>
   );
