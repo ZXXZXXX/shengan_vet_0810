@@ -98,6 +98,8 @@ function PenDetailPage() {
   const barnId = `B${String(barnIdx).padStart(3, "0")}`;
   const barnType = BARN_TYPE[barnIdx] ?? "成牛舍";
   const title = `${barnIdx} 号牛舍 · ${globalPenNo} 栏`;
+  const totalCows = stockFor(barnType, barnIdx, localPenIdx);
+  const INITIAL_VISIBLE = 24;
 
   // mock 整栏工单
   const groupOrders: GroupOrder[] = [
