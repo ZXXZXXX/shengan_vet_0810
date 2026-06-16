@@ -63,6 +63,15 @@ function todayInOut(barnIdx: number, penIdx: number) {
   };
 }
 
+// 病牛舍 / 产后护理舍 这类特殊栏一般规模较小（多在 20 头以内，封顶 ~40）
+function stockFor(type: PenType, barnIdx: number, penIdx: number) {
+  const seed = barnIdx * 17 + penIdx * 5;
+  if (type === "病牛舍" || type === "产后护理舍") {
+    return 4 + (seed % 22); // 4 ~ 25
+  }
+  return 90 + (seed % 21); // 90 ~ 110
+}
+
 type Pen = {
   barnIdx: number;
   barnId: string;
@@ -94,7 +103,7 @@ for (let bi = 0; bi < BARN_COUNT; bi++) {
       name: `${globalPenNo} 栏`,
       fullName: `${barnName} · ${globalPenNo} 栏`,
       type,
-      stock: COWS_PER_PEN,
+      stock: stockFor(type, barnIdx, penIdx),
       movedIn,
       movedOut,
     });
