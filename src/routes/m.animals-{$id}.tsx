@@ -135,12 +135,15 @@ function AnimalDetailPage() {
               <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/15">
                 <Beef className="h-6 w-6" strokeWidth={1.75} />
               </div>
-              <div className="min-w-0">
-                <div className="text-[11px] opacity-75 font-medium">耳号</div>
+              <div className="min-w-0 flex-1">
                 <div className="text-section-title font-mono leading-tight">#{a.id}</div>
+                <div className="mt-1 inline-flex items-center gap-1 text-[11px] opacity-90 font-medium">
+                  <MapPin className="h-3 w-3 opacity-85 shrink-0" />
+                  <span className="truncate">{a.farm} · {a.barn} · {a.pen}</span>
+                </div>
               </div>
               <span
-                className={`ml-auto h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
+                className={`shrink-0 self-start h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
                   a.health === "异常"
                     ? "bg-[#FFE4E1] text-[#D9534F]"
                     : a.health === "观察中"
@@ -155,18 +158,14 @@ function AnimalDetailPage() {
               </span>
             </div>
 
-            <div className="relative mt-5 space-y-2">
-              <Brief
-                icon={<MapPin className="h-3 w-3 opacity-85" />}
-                label="所在位置"
-                value={`${a.farm} · ${a.barn} · ${a.pen}`}
-              />
+            <div className="relative mt-4">
               <Brief
                 icon={<Beef className="h-3 w-3 opacity-85" />}
                 label="品种 / 性别 / 类型 / 日龄"
                 value={`${a.breed} · ${a.sex} · ${a.type} · ${a.ageDays} 日龄`}
               />
             </div>
+
           </div>
         </div>
 
@@ -700,7 +699,7 @@ function ProdStat({
   unit: string;
 }) {
   return (
-    <div className="rounded-lg bg-surface-subtle px-2.5 py-2">
+    <div className="px-1 py-1">
       <div className="text-caption text-text-tertiary">{label}</div>
       <div className="mt-0.5">
         <span className="text-section text-foreground font-medium tabular-nums">{value}</span>
@@ -709,6 +708,7 @@ function ProdStat({
     </div>
   );
 }
+
 
 function MilkChart({ values }: { values: number[] }) {
   const W = 300;
@@ -730,8 +730,22 @@ function MilkChart({ values }: { values: number[] }) {
     .join(" ");
   const areaPath = `${linePath} L${points[n - 1][0].toFixed(1)},${H - padY} L${points[0][0].toFixed(1)},${H - padY} Z`;
   const last = values[n - 1];
-  const first = values[0];
-  const delta = Math.round((last - first) * 10) / 10;
+  const avg = values.reduce((s, v) => s + v, 0) / n;
+  const diffAvg = Math.round((last - avg) * 10) / 10;
+  const recent = values.slice(-7);
+  const prior = values.slice(-14, -7);
+  const recentAvg = recent.reduce((s, v) => s + v, 0) / recent.length;
+  const priorAvg = prior.length ? prior.reduce((s, v) => s + v, 0) / prior.length : recentAvg;
+  const trendDelta = recentAvg - priorAvg;
+  const trendLabel =
+    Math.abs(trendDelta) < 0.3 ? "近 7 天持平" : trendDelta > 0 ? "近 7 天上升" : "近 7 天下降";
+  const avgLabel =
+    Math.abs(diffAvg) < 0.1
+      ? "与均值持平"
+      : diffAvg > 0
+      ? `高于均值 ${diffAvg} kg`
+      : `低于均值 ${Math.abs(diffAvg)} kg`;
+  const positive = diffAvg >= 0 && trendDelta >= -0.3;
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1.5">
@@ -741,13 +755,13 @@ function MilkChart({ values }: { values: number[] }) {
         </div>
         <span
           className={`text-caption tabular-nums ${
-            delta >= 0 ? "text-primary" : "text-[var(--state-danger,#D9534F)]"
+            positive ? "text-primary" : "text-[var(--state-danger,#D9534F)]"
           }`}
         >
-          {delta >= 0 ? "+" : ""}
-          {delta} kg · 较 14 天前
+          {avgLabel} · {trendLabel}
         </span>
       </div>
+
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[70px]" preserveAspectRatio="none">
         <defs>
           <linearGradient id="milkArea" x1="0" y1="0" x2="0" y2="1">
