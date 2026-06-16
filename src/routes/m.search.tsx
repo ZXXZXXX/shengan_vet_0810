@@ -258,7 +258,7 @@ function SearchPage() {
                     tone="up"
                   />
                   <Stat
-                    label="今日减少"
+                    label="今日移出"
                     value={pen.movedOut}
                     unit="头"
                     tone="down"
