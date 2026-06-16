@@ -20,12 +20,12 @@ const statusTone: Record<CowStatus, string> = {
 };
 
 const penTypeTone: Record<PenType, string> = {
-  病牛舍: "bg-status-danger-subtle text-status-danger",
-  产后护理舍: "bg-status-warning-subtle text-status-warning",
-  成牛舍: "bg-brand-subtle text-primary",
-  犊牛舍: "bg-status-info-subtle text-status-info",
-  围产舍: "bg-status-warning-subtle text-status-warning",
-  干奶舍: "bg-surface-muted text-text-secondary",
+  病牛舍: "tag tag-danger",
+  产后护理舍: "tag tag-warning",
+  成牛舍: "tag tag-brand",
+  犊牛舍: "tag tag-info",
+  围产舍: "tag tag-warning",
+  干奶舍: "tag tag-muted",
 };
 
 const STATUSES: CowStatus[] = ["健康", "健康", "健康", "健康", "健康", "观察中", "治疗中", "异常"];
@@ -240,7 +240,7 @@ function SearchPage() {
                         {pen.fullName}
                       </span>
                       <span
-                        className={`text-caption px-1.5 h-5 inline-flex items-center rounded ${penTypeTone[pen.type]}`}
+                        className={penTypeTone[pen.type]}
                       >
                         {pen.type}
                       </span>
