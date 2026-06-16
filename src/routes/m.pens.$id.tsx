@@ -26,7 +26,6 @@ const statusTone: Record<CowStatus, string> = {
   异常: "tag tag-danger",
 };
 
-const STATUSES: CowStatus[] = ["健康", "健康", "健康", "健康", "健康", "观察中", "治疗中", "异常"];
 const PEN_PER_BARN = 4;
 const COWS_PER_PEN = 100;
 
@@ -34,8 +33,8 @@ const BARN_TYPE: Record<number, string> = {
   1: "成牛舍",
   2: "成牛舍",
   3: "病牛舍",
-  4: "产后护理舍",
-  5: "围产舍",
+  4: "过抗栏",
+  5: "休药栏",
   6: "犊牛舍",
   7: "干奶舍",
   8: "成牛舍",
@@ -56,8 +55,18 @@ function cowIdFor(barnIdx: number, localPenIdx: number, i: number) {
     (barnIdx - 1) * PEN_PER_BARN * COWS_PER_PEN + (localPenIdx - 1) * COWS_PER_PEN + i + 1;
   return `01-24-${String(2000 + seq).padStart(4, "0")}`;
 }
-function statusFor(barnIdx: number, localPenIdx: number, i: number): CowStatus {
-  return STATUSES[(barnIdx * 13 + localPenIdx * 7 + i) % STATUSES.length];
+function statusFor(barnType: string, i: number): CowStatus {
+  // 同一牛栏内牛只状态须与牛舍类型一致：
+  // - 病牛舍：基本都是治疗中，偶有观察中（待移入过抗/休药栏）
+  // - 过抗栏 / 休药栏：基本都是观察中
+  // - 其他舍（成牛/犊牛/干奶/围产 等）：默认都是健康
+  if (barnType === "病牛舍") {
+    return i % 11 === 5 ? "观察中" : "治疗中";
+  }
+  if (barnType === "过抗栏" || barnType === "休药栏") {
+    return "观察中";
+  }
+  return "健康";
 }
 
 type GroupOrder = {
@@ -121,9 +130,9 @@ function PenDetailPage() {
     () =>
       Array.from({ length: visibleCount }, (_, i) => ({
         id: cowIdFor(barnIdx, localPenIdx, i),
-        status: statusFor(barnIdx, localPenIdx, i),
+        status: statusFor(barnType, i),
       })),
-    [barnIdx, localPenIdx, visibleCount],
+    [barnIdx, localPenIdx, barnType, visibleCount],
   );
 
   return (
