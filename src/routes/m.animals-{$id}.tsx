@@ -197,19 +197,9 @@ function AnimalDetailPage() {
         {/* 生产信息 */}
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">生产信息</h3>
-            <span className="text-caption text-text-tertiary">近 14 天产奶</span>
+            <h3 className="text-card-title text-foreground">近 14 天产奶</h3>
           </div>
-          <div className="rounded-xl bg-card border border-border p-3 space-y-3">
-            <div className="grid grid-cols-3 gap-2">
-              <ProdStat label="泌乳天数" value={`${a.lactationDays}`} unit="天" />
-              <ProdStat
-                label="怀孕天数"
-                value={a.pregnancyDays > 0 ? `${a.pregnancyDays}` : "—"}
-                unit={a.pregnancyDays > 0 ? "天" : ""}
-              />
-              <ProdStat label="胎次" value={`${a.parity}`} unit="胎" />
-            </div>
+          <div className="rounded-xl bg-card border border-border p-3">
             <MilkChart values={a.milk14d} />
           </div>
         </section>
