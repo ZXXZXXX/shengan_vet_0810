@@ -136,7 +136,7 @@ function PenDetailPage() {
   ];
 
   const [showAll, setShowAll] = useState(false);
-  const visibleCount = showAll ? COWS_PER_PEN : 24;
+  const visibleCount = showAll ? totalCows : 24;
   const cows = useMemo(
     () =>
       Array.from({ length: visibleCount }, (_, i) => ({
@@ -166,7 +166,7 @@ function PenDetailPage() {
               </span>
             </div>
             <div className="relative mt-4 flex items-baseline gap-2">
-              <span className="text-page-title tabular-nums">{COWS_PER_PEN}</span>
+              <span className="text-page-title tabular-nums">{totalCows}</span>
               <span className="text-caption opacity-85">头 · 当前存栏</span>
             </div>
           </div>
@@ -251,7 +251,7 @@ function PenDetailPage() {
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-card-title text-foreground">牛只档案</h3>
-            <span className="text-caption text-text-tertiary">共 {COWS_PER_PEN} 头</span>
+            <span className="text-caption text-text-tertiary">共 {totalCows} 头</span>
           </div>
           <div className="grid grid-cols-2 gap-2">
             {cows.map((c) => (
@@ -272,13 +272,13 @@ function PenDetailPage() {
               </Link>
             ))}
           </div>
-          {!showAll && COWS_PER_PEN > 24 && (
+          {!showAll && totalCows > 24 && (
             <div className="mt-3 flex justify-center">
               <button
                 onClick={() => setShowAll(true)}
                 className="h-9 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1 active:bg-primary/15"
               >
-                展开全部 {COWS_PER_PEN} 头
+                展开全部 {totalCows} 头
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
             </div>
