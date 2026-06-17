@@ -252,7 +252,13 @@ function TaskListPage() {
           }, {})
         )
           .sort(([a], [b]) => a.localeCompare(b, "zh"))
-          .map(([barn, items]) => (
+          .map(([barn, rawItems]) => {
+            const items = [...rawItems].sort((a, b) => {
+              const aDone = a.status === "进行中" && todayDoneSet.has(a.id) ? 1 : 0;
+              const bDone = b.status === "进行中" && todayDoneSet.has(b.id) ? 1 : 0;
+              return aDone - bDone;
+            });
+            return (
             <section key={barn}>
               <div className="sticky top-0 z-[1] -mx-4 px-4 py-2 bg-background/85 backdrop-blur flex items-center gap-2">
                 <span className="h-6 w-6 rounded-md bg-brand-subtle text-primary inline-flex items-center justify-center">
