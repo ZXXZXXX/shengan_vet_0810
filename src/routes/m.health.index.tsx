@@ -277,8 +277,9 @@ function TaskListPage() {
                   const isVetView = role === "vet" || role === "manager";
                   const isObserving = !!observeDaysMap[o.id] && !obsExpiredOrders.has(o.id);
                   const isReviewNode = reviewTaskSet.has(o.id);
+                  const todayDone = o.status === "进行中" && todayDoneSet.has(o.id);
                   const canExecuteThis =
-                    canExecute(role) && o.status === "进行中" && !isObserving &&
+                    canExecute(role) && o.status === "进行中" && !isObserving && !todayDone &&
                     (isReviewNode ? isVetView : !isVetView);
 
 
