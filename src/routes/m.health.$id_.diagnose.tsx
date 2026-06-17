@@ -429,6 +429,9 @@ function DiagnosePage() {
 
   const doSubmit = () => {
     setSubmitCheck(null);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(`health:dailyTemp:${id}`, dailyTempRequired ? "1" : "0");
+    }
     toast.success("诊断已提交");
     navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
   };
