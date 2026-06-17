@@ -173,7 +173,7 @@ function PickupItemRow({
   const scanUnit = scanUnitOf(item);
 
   const onScan = () => {
-    if (disabled || done) return;
+    if (disabled || remainingNeed <= 0) return;
     if (unitScannable) {
       addScannedEntry(pickupId, item.name, {
         code: genScanCode("UNIT"),
@@ -181,21 +181,30 @@ function PickupItemRow({
       });
       if (taken + 1 === needNum) toast.success(`已扫齐 · ${item.name}`);
     } else {
-      const max = Math.min(remainingNeed, item.packRemain ?? remainingNeed);
-      const initial = Math.min(1, max) || 1;
+      // 演示：每次扫描的包装内剩余量不同，循环 [4, 16, 8]
+      const remainPool = [4, 16, 8];
+      const packRemain = remainPool[entries.length % remainPool.length];
+      const initial = Math.min(remainingNeed, packRemain);
       addScannedEntry(pickupId, item.name, {
         code: genScanCode("PACK"),
-        qty: initial,
+        qty: Math.max(1, initial),
+        packRemain,
       });
-      toast.success(`已识别包装 · ${item.name}`);
+      if (packRemain < remainingNeed) {
+        toast.message(`包内仅余 ${packRemain} ${unit}，请继续扫描其他包装`);
+      } else {
+        toast.success(`已识别包装 · ${item.name}`);
+      }
     }
   };
 
   const maxForEntry = (idx: number) => {
     if (unitScannable) return 1;
+    const entry = entries[idx];
     const others = entries.reduce((s, e, i) => (i === idx ? s : s + (e.qty || 0)), 0);
     const remainByNeed = Math.max(1, needNum - others);
-    return Math.min(remainByNeed, item.packRemain ?? remainByNeed);
+    const packCap = entry?.packRemain ?? remainByNeed;
+    return Math.min(remainByNeed, packCap);
   };
 
   return (
@@ -258,9 +267,18 @@ function PickupItemRow({
                   key={`${e.code}-${idx}`}
                   className="flex items-center gap-2 text-caption"
                 >
-                  <span className="font-mono text-text-secondary truncate flex-1">
-                    {e.code}
-                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-mono text-text-secondary truncate">{e.code}</div>
+                    {!unitScannable && (
+                      <div className="text-text-tertiary mt-0.5">
+                        包内剩余{" "}
+                        <span className="font-mono text-text-secondary">
+                          {Math.max(0, (e.packRemain ?? 0) - e.qty)}
+                        </span>{" "}
+                        / {e.packRemain ?? "—"} {unit}
+                      </div>
+                    )}
+                  </div>
                   {unitScannable ? (
                     <span className="font-mono text-foreground">
                       ×1 {unit}
@@ -309,7 +327,7 @@ function PickupItemRow({
                       type="button"
                       onClick={() => removeScannedEntry(pickupId, item.name, idx)}
                       aria-label="删除"
-                      className="h-7 w-7 inline-flex items-center justify-center text-text-tertiary hover:text-foreground"
+                      className="h-7 w-7 inline-flex items-center justify-center text-text-tertiary hover:text-foreground shrink-0"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
