@@ -27,7 +27,7 @@ import {
 } from "@/lib/pickup-store";
 
 export const Route = createFileRoute("/m/health/$id_/execute_/$pickupId")({
-  head: () => ({ meta: [{ title: "药品器材领取 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "药品领取 · 奇点智牧" }] }),
   component: PickupDetailPage,
 });
 
@@ -79,7 +79,7 @@ function PickupDetailPage() {
   };
 
   return (
-    <MobileShell title="药品器材领取" back hideTabBar>
+    <MobileShell title="药品领取" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-3">
         {/* 状态卡 */}
         <div
