@@ -113,7 +113,7 @@ function PickupDetailPage() {
                   className={`rounded-lg border px-3 py-2.5 ${
                     done
                       ? "border-primary/40 bg-brand-subtle/30"
-                      : "border-border bg-surface-subtle"
+                      : "border-border bg-card"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
