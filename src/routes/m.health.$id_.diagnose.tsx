@@ -300,6 +300,8 @@ function DiagnosePage() {
   // 体征数据
   const [temperature, setTemperature] = useState("");
   const [ketone, setKetone] = useState("");
+  // 是否需要每日测量体温（治疗执行任务中带入测温步骤）
+  const [dailyTempRequired, setDailyTempRequired] = useState(true);
 
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
