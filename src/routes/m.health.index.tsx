@@ -133,6 +133,8 @@ const diseaseMeta: Record<string, { visit: "初诊" | "复诊"; diagnosis?: stri
 const reviewTaskSet = new Set<string>(["WO-2420", "WO-2440"]);
 const observeDaysMap: Record<string, number> = { "WO-2430": 5 };
 const obsExpiredOrders = new Set<string>([]);
+// 今日具体执行任务已完成的进行中工单（靠后展示，操作改为「查看」）
+const todayDoneSet = new Set<string>(["WO-2401", "HF-0702"]);
 
 function truncateCJK(s: string, max = 5) {
   const arr = Array.from(s);
