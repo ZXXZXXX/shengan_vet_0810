@@ -481,9 +481,13 @@ function ScannerOverlay({
   const [phase, setPhase] = useState<"scanning" | "recognized">("scanning");
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase("recognized"), 1200);
-    return () => clearTimeout(t);
-  }, []);
+    const t1 = setTimeout(() => setPhase("recognized"), 900);
+    const t2 = setTimeout(() => onDone(), 1300);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [onDone]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
@@ -567,21 +571,13 @@ function ScannerOverlay({
             </div>
           )}
 
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4">
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 h-11 rounded-lg border border-white/20 text-white/90 text-body-sm"
+              className="w-full h-11 rounded-lg border border-white/20 text-white/90 text-body-sm"
             >
               取消
-            </button>
-            <button
-              type="button"
-              disabled={phase !== "recognized"}
-              onClick={onDone}
-              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body-sm disabled:opacity-40"
-            >
-              {phase === "recognized" ? "添加" : "识别中…"}
             </button>
           </div>
         </div>
