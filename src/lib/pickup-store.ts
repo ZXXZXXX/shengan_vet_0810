@@ -5,6 +5,7 @@ export type PickupItem = {
   spec?: string;
   qty: string;
   stock?: string; // 当前库存
+  usage?: string; // 用法，如 "2ml / 次 · 肌肉注射"
   /** 情况一：最小单位有二维码，每个都可单独扫码录入。情况二（false）：仅上级包装有码，按包扫描后输入数量。 */
   unitScannable?: boolean;
   /** 情况二专用：该药品当前打开包装内剩余数量（用于限定最大可取数量） */
@@ -16,6 +17,10 @@ export type ScannedEntry = {
   qty: number; // 情况一恒为 1；情况二为该包装下取数
   /** 情况二：该次扫描的包装内剩余可取数量 */
   packRemain?: number;
+  /** 厂商 */
+  manufacturer?: string;
+  /** 批号 */
+  batch?: string;
 };
 
 /** 从「2 瓶」「6 支」等文本中解析数量与单位 */
@@ -51,8 +56,8 @@ export const PICKUPS: Pickup[] = [
     visitor: "张磊（场长）",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", unitScannable: true },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", unitScannable: false, packRemain: 20 },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", usage: "2ml / 次 · 肌肉注射", unitScannable: true },
+      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", usage: "1g / 次 · 肌肉注射", unitScannable: false, packRemain: 20 },
     ],
   },
   {
@@ -328,8 +333,8 @@ export function getPickup(id: string): Pickup | null {
     visitor: "王医生",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", unitScannable: true },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", unitScannable: false, packRemain: 20 },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", usage: "2ml / 次 · 肌肉注射", unitScannable: true },
+      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", usage: "1g / 次 · 肌肉注射", unitScannable: false, packRemain: 20 },
     ],
   };
 }
