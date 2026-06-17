@@ -1034,9 +1034,11 @@ type ExecItem = {
   status: ItemStatus;
   needMed: boolean;
   scanCode?: string;
+  manufacturer?: string;
+  batchNo?: string;
 };
 
-// 根据处方拆解每日任务：每种药品 = 一次任务（需扫码核验），加上不需用药的常规任务（如测温）
+// 根据处方拆解每日任务：每种药品 = 一次任务，加上不需用药的常规任务（如测温）
 function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem[] {
   const items: ExecItem[] = [];
   if (withTemp) {
@@ -1055,6 +1057,8 @@ function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem
       desc: "2ml / 次 · 肌肉注射",
       status: "pending",
       needMed: true,
+      manufacturer: "齐鲁动保",
+      batchNo: "L20260418",
     },
     {
       id: `d${day}-t2`,
@@ -1062,6 +1066,8 @@ function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem
       desc: "1g / 次 · 肌肉注射",
       status: "pending",
       needMed: true,
+      manufacturer: "瑞普生物",
+      batchNo: "B20260512",
     },
   );
   return items;
