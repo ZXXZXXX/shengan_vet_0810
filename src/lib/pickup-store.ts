@@ -99,14 +99,14 @@ export const PICKUP_HISTORY: Pickup[] = [
   },
   {
     id: "PK-2072",
-    title: "疫苗冷藏运输袋领取",
-    source: "LS-2072",
+    title: "退烧药品领取",
+    source: "WO-2072",
     barn: "3 号牛舍",
     approvedAt: "05-23 08:30",
     visitor: "王芳（兽医）",
-    warehouse: "冷链库 · 冷柜 #2",
+    warehouse: "中央药房 · A 区货架 02",
     items: [
-      { name: "保温运输袋", spec: "大号", qty: "1 个" },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "1 瓶" },
     ],
     result: "invalidated",
     handledAt: "05-23 09:00",
