@@ -1527,12 +1527,12 @@ function ChecklistDay({
                 </div>
                 <div className="flex items-center gap-2">
                   <input
-                    type="number"
+                    type="text"
                     inputMode="decimal"
-                    step="0.1"
+                    pattern="[0-9]*\.?[0-9]*"
                     disabled={inputsLocked}
                     value={temps[tempItem.id] ?? ""}
-                    onChange={(e) => setTemps((m) => ({ ...m, [tempItem.id]: e.target.value }))}
+                    onChange={(e) => setTemps((m) => ({ ...m, [tempItem.id]: e.target.value.replace(/[^0-9.]/g, "") }))}
                     placeholder="输入直肠温度"
                     className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm disabled:bg-surface-subtle disabled:cursor-not-allowed"
                   />
