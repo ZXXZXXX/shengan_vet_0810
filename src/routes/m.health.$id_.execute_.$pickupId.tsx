@@ -326,7 +326,7 @@ function PickupItemRow({
         </div>
         <button
           type="button"
-          onClick={onScan}
+          onClick={openScanner}
           disabled={disabled || done}
           aria-label="扫描"
           className="shrink-0 h-10 w-10 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
