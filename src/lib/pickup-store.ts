@@ -78,7 +78,6 @@ export const PICKUP_HISTORY: Pickup[] = [
     warehouse: "中央药房 · A 区货架 05",
     items: [
       { name: "蹄浴液", spec: "5L / 桶", qty: "1 桶" },
-      { name: "绷带", spec: "宽型", qty: "2 卷" },
     ],
     result: "claimed",
     handledAt: "昨日 10:30",
