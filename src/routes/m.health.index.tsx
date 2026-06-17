@@ -133,6 +133,8 @@ const diseaseMeta: Record<string, { visit: "初诊" | "复诊"; diagnosis?: stri
 const reviewTaskSet = new Set<string>(["WO-2420", "WO-2440"]);
 const observeDaysMap: Record<string, number> = { "WO-2430": 5 };
 const obsExpiredOrders = new Set<string>([]);
+// 今日具体执行任务已完成的进行中工单（靠后展示，操作改为「查看」）
+const todayDoneSet = new Set<string>(["WO-2401", "HF-0702"]);
 
 function truncateCJK(s: string, max = 5) {
   const arr = Array.from(s);
@@ -250,7 +252,13 @@ function TaskListPage() {
           }, {})
         )
           .sort(([a], [b]) => a.localeCompare(b, "zh"))
-          .map(([barn, items]) => (
+          .map(([barn, rawItems]) => {
+            const items = [...rawItems].sort((a, b) => {
+              const aDone = a.status === "进行中" && todayDoneSet.has(a.id) ? 1 : 0;
+              const bDone = b.status === "进行中" && todayDoneSet.has(b.id) ? 1 : 0;
+              return aDone - bDone;
+            });
+            return (
             <section key={barn}>
               <div className="sticky top-0 z-[1] -mx-4 px-4 py-2 bg-background/85 backdrop-blur flex items-center gap-2">
                 <span className="h-6 w-6 rounded-md bg-brand-subtle text-primary inline-flex items-center justify-center">
@@ -269,8 +277,9 @@ function TaskListPage() {
                   const isVetView = role === "vet" || role === "manager";
                   const isObserving = !!observeDaysMap[o.id] && !obsExpiredOrders.has(o.id);
                   const isReviewNode = reviewTaskSet.has(o.id);
+                  const todayDone = o.status === "进行中" && todayDoneSet.has(o.id);
                   const canExecuteThis =
-                    canExecute(role) && o.status === "进行中" && !isObserving &&
+                    canExecute(role) && o.status === "进行中" && !isObserving && !todayDone &&
                     (isReviewNode ? isVetView : !isVetView);
 
 
@@ -397,7 +406,8 @@ function TaskListPage() {
 
               </div>
             </section>
-          ))}
+            );
+          })}
       </div>
     </MobileShell>
   );
