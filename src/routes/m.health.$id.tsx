@@ -1342,7 +1342,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
 // === 执行页：仅显示当前进行中的当天 checklist ===
 export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13", workOrderId, onReadyChange }: { pickupCode: string | null; tags: string[]; day?: number; date?: string; workOrderId: string; onReadyChange?: (ready: boolean) => void }) {
   // 疾病治疗工单（WO 前缀，非 HF/LS）默认需要每日测温；可被诊断页开关覆盖
-  let withTemp = workOrderId.startsWith("WO");
+  let withTemp = !workOrderId || (!workOrderId.startsWith("HF") && !workOrderId.startsWith("LS"));
   if (typeof window !== "undefined") {
     const flag = window.localStorage.getItem(`health:dailyTemp:${workOrderId}`);
     if (flag === "1") withTemp = true;
