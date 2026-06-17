@@ -1374,6 +1374,7 @@ function ChecklistDay({
   initialNote = "",
   readOnly = false,
   workOrderId,
+  withTemp = false,
 }: {
   day: number;
   date: string;
@@ -1383,6 +1384,7 @@ function ChecklistDay({
   initialNote?: string;
   readOnly?: boolean;
   workOrderId?: string;
+  withTemp?: boolean;
 }) {
 
   const isActive = dayState === "active";
@@ -1391,7 +1393,7 @@ function ChecklistDay({
   const interactive = isActive && !readOnly;
 
   const [items, setItems] = useState<ExecItem[]>(() => {
-    const base = buildDayItems(day, tags);
+    const base = buildDayItems(day, tags, withTemp);
     if (isDone) return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
     return base;
   });
