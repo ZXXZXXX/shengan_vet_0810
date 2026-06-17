@@ -481,9 +481,13 @@ function ScannerOverlay({
   const [phase, setPhase] = useState<"scanning" | "recognized">("scanning");
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase("recognized"), 1200);
-    return () => clearTimeout(t);
-  }, []);
+    const t1 = setTimeout(() => setPhase("recognized"), 900);
+    const t2 = setTimeout(() => onDone(), 1300);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [onDone]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
