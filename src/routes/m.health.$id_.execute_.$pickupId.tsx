@@ -72,9 +72,8 @@ function PickupDetailPage() {
     claimPickup(pickupId);
     toast.success("已完成领药");
     navigate({
-      to: "/m/health/$id",
+      to: "/m/health/$id/execute",
       params: { id: workOrderId },
-      search: { tab: "execute" },
     });
   };
 
