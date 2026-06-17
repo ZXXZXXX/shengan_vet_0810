@@ -29,6 +29,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
+import { useClaimed } from "@/lib/pickup-store";
 
 import {
   AlertDialog,
