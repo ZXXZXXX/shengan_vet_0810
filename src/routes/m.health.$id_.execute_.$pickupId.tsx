@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import {
   CheckCircle2,
@@ -181,11 +181,17 @@ function PickupItemRow({
   );
 
   const attemptsRef = useRef(0);
+  const [scanner, setScanner] = useState<null | {
+    manufacturer: string;
+    batch: string;
+    code: string;
+    packRemain?: number;
+    blocked?: string;
+  }>(null);
 
-  const onScan = () => {
+  const openScanner = () => {
     if (disabled || remainingNeed <= 0) return;
     const attempt = attemptsRef.current;
-    // 模拟扫码：基于点击次数循环厂商（包含被拦截的扫描），便于演示拦截后再次扫描可继续流程
     const picked =
       sources.length > 0
         ? sources[attempt % sources.length]
@@ -194,10 +200,34 @@ function PickupItemRow({
     const batch = genBatch();
     attemptsRef.current = attempt + 1;
 
-    // 不允许混用：若已存在不同厂商记录，拦截（仅提示，不写入）
-    if (!allowMix && existingMfrs.length > 0 && !existingMfrs.includes(manufacturer)) {
+    const blocked =
+      !allowMix && existingMfrs.length > 0 && !existingMfrs.includes(manufacturer)
+        ? existingMfrs[0]
+        : undefined;
+
+    if (unitScannable) {
+      setScanner({ manufacturer, batch, code: genScanCode("UNIT"), blocked });
+    } else {
+      const remainPool = [4, 16, 8];
+      const packRemain = remainPool[entries.length % remainPool.length];
+      setScanner({
+        manufacturer,
+        batch,
+        code: genScanCode("PACK"),
+        packRemain,
+        blocked,
+      });
+    }
+  };
+
+  const commitScan = () => {
+    if (!scanner) return;
+    const { manufacturer, batch, code, packRemain, blocked } = scanner;
+    setScanner(null);
+
+    if (blocked) {
       toast.warning(
-        `该药品不允许多厂商混用，已使用「${existingMfrs[0]}」，请勿扫描「${manufacturer}」`,
+        `该药品不允许多厂商混用，已使用「${blocked}」，请勿扫描「${manufacturer}」`,
         {
           style: {
             background: "#FFF7E6",
@@ -210,25 +240,17 @@ function PickupItemRow({
     }
 
     if (unitScannable) {
-      addScannedEntry(pickupId, item.name, {
-        code: genScanCode("UNIT"),
-        qty: 1,
-        manufacturer,
-        batch,
-      });
+      addScannedEntry(pickupId, item.name, { code, qty: 1, manufacturer, batch });
       if (taken + 1 === needNum) toast.success(`已扫齐 · ${item.name}`);
     } else {
-      // 演示：每次扫描的包装内剩余量不同，循环 [4, 16, 8]
-      const remainPool = [4, 16, 8];
-      const packRemain = remainPool[entries.length % remainPool.length];
       addScannedEntry(pickupId, item.name, {
-        code: genScanCode("PACK"),
+        code,
         qty: 1,
         packRemain,
         manufacturer,
         batch,
       });
-      if (packRemain < remainingNeed) {
+      if ((packRemain ?? 0) < remainingNeed) {
         toast.warning(`包内仅余 ${packRemain} ${unit}，请继续扫描其他包装`, {
           style: {
             background: "#FFF7E6",
@@ -241,6 +263,7 @@ function PickupItemRow({
       }
     }
   };
+
 
   const maxForEntry = (idx: number) => {
     if (unitScannable) return 1;
@@ -303,7 +326,7 @@ function PickupItemRow({
         </div>
         <button
           type="button"
-          onClick={onScan}
+          onClick={openScanner}
           disabled={disabled || done}
           aria-label="扫描"
           className="shrink-0 h-10 w-10 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
@@ -416,6 +439,154 @@ function PickupItemRow({
           </ul>
         )}
       </div>
+
+      {scanner && (
+        <ScannerOverlay
+          itemName={item.name}
+          scanUnit={scanUnit}
+          code={scanner.code}
+          manufacturer={scanner.manufacturer}
+          batch={scanner.batch}
+          packRemain={scanner.packRemain}
+          unit={unit}
+          onCancel={() => setScanner(null)}
+          onDone={commitScan}
+        />
+      )}
     </div>
   );
 }
+
+function ScannerOverlay({
+  itemName,
+  scanUnit,
+  code,
+  manufacturer,
+  batch,
+  packRemain,
+  unit,
+  onCancel,
+  onDone,
+}: {
+  itemName: string;
+  scanUnit: string;
+  code: string;
+  manufacturer: string;
+  batch: string;
+  packRemain?: number;
+  unit: string;
+  onCancel: () => void;
+  onDone: () => void;
+}) {
+  const [phase, setPhase] = useState<"scanning" | "recognized">("scanning");
+
+  useEffect(() => {
+    const t = setTimeout(() => setPhase("recognized"), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
+      {/* 顶栏 */}
+      <div className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top)] h-14">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-white/10"
+          aria-label="关闭"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <div className="text-body-sm text-white/80">扫码核验</div>
+        <div className="w-9" />
+      </div>
+
+      {/* 取景框 */}
+      <div className="flex-1 flex items-center justify-center px-8">
+        <div className="relative w-full max-w-[280px] aspect-square">
+          {/* 四角 */}
+          <span className="absolute top-0 left-0 w-7 h-7 border-t-2 border-l-2 border-primary rounded-tl-md" />
+          <span className="absolute top-0 right-0 w-7 h-7 border-t-2 border-r-2 border-primary rounded-tr-md" />
+          <span className="absolute bottom-0 left-0 w-7 h-7 border-b-2 border-l-2 border-primary rounded-bl-md" />
+          <span className="absolute bottom-0 right-0 w-7 h-7 border-b-2 border-r-2 border-primary rounded-br-md" />
+          {/* 扫描线 */}
+          {phase === "scanning" && (
+            <div
+              className="absolute left-2 right-2 h-[2px] bg-primary shadow-[0_0_12px_2px_hsl(var(--primary))]"
+              style={{ animation: "scanline 1.2s ease-in-out infinite" }}
+            />
+          )}
+          {/* 识别成功打勾 */}
+          {phase === "recognized" && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-16 w-16 rounded-full bg-primary/20 inline-flex items-center justify-center">
+                <CheckCircle2 className="h-10 w-10 text-primary" />
+              </div>
+            </div>
+          )}
+          <style>{`@keyframes scanline { 0%{top:6%} 50%{top:90%} 100%{top:6%} }`}</style>
+        </div>
+      </div>
+
+      {/* 底部信息 */}
+      <div className="px-4 pb-[max(env(safe-area-inset-bottom),16px)]">
+        <div className="rounded-2xl bg-white/8 border border-white/10 p-4 backdrop-blur">
+          <div className="text-caption text-white/60">
+            {phase === "scanning" ? "对准条码 / 二维码…" : "已识别"}
+          </div>
+          <div className="mt-1 text-card-title text-white inline-flex items-center gap-2">
+            <Package className="h-4 w-4 text-primary" />
+            <span className="truncate">{itemName}</span>
+          </div>
+          {phase === "recognized" && (
+            <div className="mt-3 space-y-1.5 text-body-sm">
+              <div className="flex justify-between">
+                <span className="text-white/60">条码</span>
+                <span className="font-mono text-white">{code}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-white/60">厂商</span>
+                <span className="text-primary">{manufacturer}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-white/60">批号</span>
+                <span className="font-mono text-white">{batch}</span>
+              </div>
+              {typeof packRemain === "number" && (
+                <div className="flex justify-between">
+                  <span className="text-white/60">包内剩余</span>
+                  <span className="font-mono text-white">
+                    {packRemain} {unit}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-white/60">单位</span>
+                <span className="text-white">{scanUnit}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-4 flex gap-2">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 h-11 rounded-lg border border-white/20 text-white/90 text-body-sm"
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              disabled={phase !== "recognized"}
+              onClick={onDone}
+              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body-sm disabled:opacity-40"
+            >
+              {phase === "recognized" ? "确认入库" : "识别中…"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
