@@ -243,6 +243,24 @@ export function genScanCode(prefix: string): string {
   return `${prefix}-${ts}${rnd}`;
 }
 
+const MANUFACTURER_POOL = ["齐鲁动保", "瑞普生物", "中牧股份", "辉瑞动保", "勃林格"];
+
+/** 基于药品名稳定生成厂商，避免每次重渲染抖动 */
+export function pickManufacturer(itemName: string, index: number): string {
+  let h = 0;
+  for (let i = 0; i < itemName.length; i++) h = (h * 31 + itemName.charCodeAt(i)) >>> 0;
+  return MANUFACTURER_POOL[(h + index) % MANUFACTURER_POOL.length];
+}
+
+/** 生成批号 */
+export function genBatch(): string {
+  const yr = 2026;
+  const mm = String(1 + Math.floor(Math.random() * 12)).padStart(2, "0");
+  const dd = String(1 + Math.floor(Math.random() * 28)).padStart(2, "0");
+  const prefix = ["L", "B", "C", "K"][Math.floor(Math.random() * 4)];
+  return `${prefix}${yr}${mm}${dd}`;
+}
+
 
 
 
