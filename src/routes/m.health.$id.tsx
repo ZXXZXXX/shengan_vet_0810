@@ -1342,7 +1342,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
 // === 执行页：仅显示当前进行中的当天 checklist ===
 export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13", workOrderId, onReadyChange }: { pickupCode: string | null; tags: string[]; day?: number; date?: string; workOrderId: string; onReadyChange?: (ready: boolean) => void }) {
   // 疾病治疗工单（WO 前缀，非 HF/LS）默认需要每日测温；可被诊断页开关覆盖
-  let withTemp = workOrderId.startsWith("WO");
+  let withTemp = !workOrderId || (!workOrderId.startsWith("HF") && !workOrderId.startsWith("LS"));
   if (typeof window !== "undefined") {
     const flag = window.localStorage.getItem(`health:dailyTemp:${workOrderId}`);
     if (flag === "1") withTemp = true;
@@ -1480,7 +1480,7 @@ function ChecklistDay({
                 </div>
               ) : (
                 <Link
-                  to="/m/health/$id_/execute/$pickupId"
+                  to="/m/health/$id/execute/$pickupId"
                   params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
                   className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
                   style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
