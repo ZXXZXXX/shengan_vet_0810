@@ -267,9 +267,18 @@ function PickupItemRow({
                   key={`${e.code}-${idx}`}
                   className="flex items-center gap-2 text-caption"
                 >
-                  <span className="font-mono text-text-secondary truncate flex-1">
-                    {e.code}
-                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-mono text-text-secondary truncate">{e.code}</div>
+                    {!unitScannable && (
+                      <div className="text-text-tertiary mt-0.5">
+                        包内剩余{" "}
+                        <span className="font-mono text-text-secondary">
+                          {Math.max(0, (e.packRemain ?? 0) - e.qty)}
+                        </span>{" "}
+                        / {e.packRemain ?? "—"} {unit}
+                      </div>
+                    )}
+                  </div>
                   {unitScannable ? (
                     <span className="font-mono text-foreground">
                       ×1 {unit}
@@ -318,7 +327,7 @@ function PickupItemRow({
                       type="button"
                       onClick={() => removeScannedEntry(pickupId, item.name, idx)}
                       aria-label="删除"
-                      className="h-7 w-7 inline-flex items-center justify-center text-text-tertiary hover:text-foreground"
+                      className="h-7 w-7 inline-flex items-center justify-center text-text-tertiary hover:text-foreground shrink-0"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
