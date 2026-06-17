@@ -1610,9 +1610,9 @@ function ChecklistDay({
                         {it.desc && (
                           <div className="text-caption text-text-tertiary mt-0.5">{it.desc}</div>
                         )}
-                        {done && needMed && it.scanCode && (
+                        {done && needMed && (
                           <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                            <ScanLine className="h-3 w-3" /> 已扫码核验 · <span className="font-mono">{it.scanCode}</span>
+                            <CheckCircle2 className="h-3 w-3" /> 已自动同步领药信息{it.scanCode ? <> · <span className="font-mono">{it.scanCode}</span></> : null}
                           </div>
                         )}
                         {done && !needMed && it.title.includes("测温") && temps[it.id] && (
@@ -1621,16 +1621,6 @@ function ChecklistDay({
                           </div>
                         )}
                       </div>
-                      {interactive && needMed && !done && isVerified && (
-                        <button
-                          type="button"
-                          onClick={() => setScanFor(it.id)}
-                          className="shrink-0 h-8 w-8 -mt-0.5 -mr-1 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center"
-                          aria-label="扫码核验用药"
-                        >
-                          <ScanLine className="h-4 w-4" />
-                        </button>
-                      )}
                     </div>
                     {interactive && isVerified && !needMed && !done && it.title.includes("测温") && (
                       <div className="mt-2.5 pl-6 space-y-2">
@@ -1656,7 +1646,7 @@ function ChecklistDay({
                         </button>
                       </div>
                     )}
-                    {interactive && done && (
+                    {interactive && done && !needMed && (
                       <div className="pl-6 mt-2">
                         <button
                           type="button"
