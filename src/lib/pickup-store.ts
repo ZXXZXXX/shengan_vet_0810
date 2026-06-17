@@ -282,7 +282,6 @@ export function getPickup(id: string): Pickup | null {
     items: [
       { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
       { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
-      { name: "一次性注射器", spec: "20ml", qty: "8 支", stock: "320 支" },
     ],
   };
 }
