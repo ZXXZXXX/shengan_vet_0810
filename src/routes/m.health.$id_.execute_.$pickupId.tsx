@@ -481,8 +481,8 @@ function ScannerOverlay({
   const [phase, setPhase] = useState<"scanning" | "recognized">("scanning");
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase("recognized"), 900);
-    const t2 = setTimeout(() => onDone(), 1300);
+    const t1 = setTimeout(() => setPhase("recognized"), 600);
+    const t2 = setTimeout(() => onDone(), 900);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -532,54 +532,10 @@ function ScannerOverlay({
         </div>
       </div>
 
-      {/* 底部信息 */}
-      <div className="px-4 pb-[max(env(safe-area-inset-bottom),16px)]">
-        <div className="rounded-2xl bg-white/8 border border-white/10 p-4 backdrop-blur">
-          <div className="text-caption text-white/60">
-            {phase === "scanning" ? "对准条码 / 二维码…" : "已识别"}
-          </div>
-          <div className="mt-1 text-card-title text-white inline-flex items-center gap-2">
-            <Package className="h-4 w-4 text-primary" />
-            <span className="truncate">{itemName}</span>
-          </div>
-          {phase === "recognized" && (
-            <div className="mt-3 space-y-1.5 text-body-sm">
-              <div className="flex justify-between">
-                <span className="text-white/60">条码</span>
-                <span className="font-mono text-white">{code}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/60">厂商</span>
-                <span className="text-primary">{manufacturer}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/60">批号</span>
-                <span className="font-mono text-white">{batch}</span>
-              </div>
-              {typeof packRemain === "number" && (
-                <div className="flex justify-between">
-                  <span className="text-white/60">包内剩余</span>
-                  <span className="font-mono text-white">
-                    {packRemain} {unit}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span className="text-white/60">单位</span>
-                <span className="text-white">{scanUnit}</span>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-4">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="w-full h-11 rounded-lg border border-white/20 text-white/90 text-body-sm"
-            >
-              取消
-            </button>
-          </div>
+      {/* 底部提示 */}
+      <div className="px-4 pb-[max(env(safe-area-inset-bottom),16px)] text-center">
+        <div className="text-caption text-white/70">
+          {phase === "scanning" ? "对准条码 / 二维码…" : "已识别"}
         </div>
       </div>
     </div>
