@@ -439,6 +439,154 @@ function PickupItemRow({
           </ul>
         )}
       </div>
+
+      {scanner && (
+        <ScannerOverlay
+          itemName={item.name}
+          scanUnit={scanUnit}
+          code={scanner.code}
+          manufacturer={scanner.manufacturer}
+          batch={scanner.batch}
+          packRemain={scanner.packRemain}
+          unit={unit}
+          onCancel={() => setScanner(null)}
+          onDone={commitScan}
+        />
+      )}
     </div>
   );
 }
+
+function ScannerOverlay({
+  itemName,
+  scanUnit,
+  code,
+  manufacturer,
+  batch,
+  packRemain,
+  unit,
+  onCancel,
+  onDone,
+}: {
+  itemName: string;
+  scanUnit: string;
+  code: string;
+  manufacturer: string;
+  batch: string;
+  packRemain?: number;
+  unit: string;
+  onCancel: () => void;
+  onDone: () => void;
+}) {
+  const [phase, setPhase] = useState<"scanning" | "recognized">("scanning");
+
+  useEffect(() => {
+    const t = setTimeout(() => setPhase("recognized"), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
+      {/* 顶栏 */}
+      <div className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top)] h-14">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-white/10"
+          aria-label="关闭"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <div className="text-body-sm text-white/80">扫码核验</div>
+        <div className="w-9" />
+      </div>
+
+      {/* 取景框 */}
+      <div className="flex-1 flex items-center justify-center px-8">
+        <div className="relative w-full max-w-[280px] aspect-square">
+          {/* 四角 */}
+          <span className="absolute top-0 left-0 w-7 h-7 border-t-2 border-l-2 border-primary rounded-tl-md" />
+          <span className="absolute top-0 right-0 w-7 h-7 border-t-2 border-r-2 border-primary rounded-tr-md" />
+          <span className="absolute bottom-0 left-0 w-7 h-7 border-b-2 border-l-2 border-primary rounded-bl-md" />
+          <span className="absolute bottom-0 right-0 w-7 h-7 border-b-2 border-r-2 border-primary rounded-br-md" />
+          {/* 扫描线 */}
+          {phase === "scanning" && (
+            <div
+              className="absolute left-2 right-2 h-[2px] bg-primary shadow-[0_0_12px_2px_hsl(var(--primary))]"
+              style={{ animation: "scanline 1.2s ease-in-out infinite" }}
+            />
+          )}
+          {/* 识别成功打勾 */}
+          {phase === "recognized" && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-16 w-16 rounded-full bg-primary/20 inline-flex items-center justify-center">
+                <CheckCircle2 className="h-10 w-10 text-primary" />
+              </div>
+            </div>
+          )}
+          <style>{`@keyframes scanline { 0%{top:6%} 50%{top:90%} 100%{top:6%} }`}</style>
+        </div>
+      </div>
+
+      {/* 底部信息 */}
+      <div className="px-4 pb-[max(env(safe-area-inset-bottom),16px)]">
+        <div className="rounded-2xl bg-white/8 border border-white/10 p-4 backdrop-blur">
+          <div className="text-caption text-white/60">
+            {phase === "scanning" ? "对准条码 / 二维码…" : "已识别"}
+          </div>
+          <div className="mt-1 text-card-title text-white inline-flex items-center gap-2">
+            <Package className="h-4 w-4 text-primary" />
+            <span className="truncate">{itemName}</span>
+          </div>
+          {phase === "recognized" && (
+            <div className="mt-3 space-y-1.5 text-body-sm">
+              <div className="flex justify-between">
+                <span className="text-white/60">条码</span>
+                <span className="font-mono text-white">{code}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-white/60">厂商</span>
+                <span className="text-primary">{manufacturer}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-white/60">批号</span>
+                <span className="font-mono text-white">{batch}</span>
+              </div>
+              {typeof packRemain === "number" && (
+                <div className="flex justify-between">
+                  <span className="text-white/60">包内剩余</span>
+                  <span className="font-mono text-white">
+                    {packRemain} {unit}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-white/60">单位</span>
+                <span className="text-white">{scanUnit}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-4 flex gap-2">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 h-11 rounded-lg border border-white/20 text-white/90 text-body-sm"
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              disabled={phase !== "recognized"}
+              onClick={onDone}
+              className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body-sm disabled:opacity-40"
+            >
+              {phase === "recognized" ? "确认入库" : "识别中…"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
