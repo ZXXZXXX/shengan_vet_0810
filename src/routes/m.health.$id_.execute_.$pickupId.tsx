@@ -173,11 +173,38 @@ function PickupItemRow({
   const done = taken >= needNum;
   const scanUnit = scanUnitOf(item);
 
+  const sources = item.stockSources ?? [];
+  const allowMix = item.allowMixManufacturer !== false;
+  const existingMfrs = Array.from(
+    new Set(entries.map((e) => e.manufacturer).filter(Boolean) as string[]),
+  );
+
   const onScan = () => {
     if (disabled || remainingNeed <= 0) return;
     const idx = entries.length;
-    const manufacturer = pickManufacturer(item.name, idx);
+    // 模拟扫码：在该药品库存厂商中循环挑选；无 stockSources 时回退到旧池
+    const picked =
+      sources.length > 0
+        ? sources[idx % sources.length]
+        : { manufacturer: pickManufacturer(item.name, idx), qty: 0 };
+    const manufacturer = picked.manufacturer;
     const batch = genBatch();
+
+    // 不允许混用：若已存在不同厂商记录，拦截
+    if (!allowMix && existingMfrs.length > 0 && !existingMfrs.includes(manufacturer)) {
+      toast.warning(
+        `该药品不允许多厂商混用，已使用「${existingMfrs[0]}」，请勿扫描「${manufacturer}」`,
+        {
+          style: {
+            background: "#FFF7E6",
+            border: "1px solid #FFD591",
+            color: "#AD4E00",
+          },
+        },
+      );
+      return;
+    }
+
     if (unitScannable) {
       addScannedEntry(pickupId, item.name, {
         code: genScanCode("UNIT"),
