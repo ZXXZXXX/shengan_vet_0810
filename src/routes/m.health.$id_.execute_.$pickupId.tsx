@@ -16,9 +16,11 @@ import { MobileShell } from "@/components/mobile-shell";
 import {
   addScannedEntry,
   claimPickup,
+  genBatch,
   genScanCode,
   getPickup,
   parseQty,
+  pickManufacturer,
   removeScannedEntry,
   updateScannedEntryQty,
   useClaimed,
@@ -173,10 +175,15 @@ function PickupItemRow({
 
   const onScan = () => {
     if (disabled || remainingNeed <= 0) return;
+    const idx = entries.length;
+    const manufacturer = pickManufacturer(item.name, idx);
+    const batch = genBatch();
     if (unitScannable) {
       addScannedEntry(pickupId, item.name, {
         code: genScanCode("UNIT"),
         qty: 1,
+        manufacturer,
+        batch,
       });
       if (taken + 1 === needNum) toast.success(`已扫齐 · ${item.name}`);
     } else {
@@ -188,6 +195,8 @@ function PickupItemRow({
         code: genScanCode("PACK"),
         qty: Math.max(1, initial),
         packRemain,
+        manufacturer,
+        batch,
       });
       if (packRemain < remainingNeed) {
         toast.warning(`包内仅余 ${packRemain} ${unit}，请继续扫描其他包装`, {
@@ -214,28 +223,31 @@ function PickupItemRow({
 
   return (
     <div
-      className={`rounded-lg border ${
-        done ? "border-primary/40 bg-brand-subtle/30" : "border-border bg-card"
+      className={`rounded-xl border ${
+        done ? "border-primary/50 bg-brand-subtle/40" : "border-primary/20 bg-brand-subtle/20"
       }`}
     >
-      {/* 顶部：药品信息 + 扫描入口 */}
-      <div className="px-3 py-2.5 flex items-start gap-3">
+      {/* 顶部：药品标题区（绿色调） */}
+      <div className="px-3.5 pt-3 pb-2.5 flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <div className="text-body text-foreground inline-flex items-center gap-1.5">
-            <Package className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+          <div className="text-card-title text-foreground inline-flex items-center gap-1.5">
+            <Package className="h-4 w-4 text-primary shrink-0" />
             <span className="truncate">{item.name}</span>
           </div>
-          <div className="mt-1 text-caption text-text-tertiary space-y-0.5">
-            <div>
-              规格 <span className="text-text-secondary">{item.spec ?? "—"}</span>
-              <span className="mx-1.5 text-border">·</span>
-              扫码单位 <span className="text-text-secondary">{scanUnit}</span>
+          <div className="mt-1.5 text-caption text-text-tertiary">
+            规格 <span className="text-text-secondary">{item.spec ?? "—"}</span>
+            <span className="mx-1.5 text-border">·</span>
+            扫码单位 <span className="text-text-secondary">{scanUnit}</span>
+          </div>
+          {item.usage && (
+            <div className="mt-0.5 text-caption text-text-tertiary">
+              用法 <span className="text-text-secondary">{item.usage}</span>
             </div>
-            <div>
-              所需 <span className="font-mono text-foreground">{item.qty}</span>
-              <span className="mx-1.5 text-border">·</span>
-              库存 <span className="font-mono">{item.stock ?? "—"}</span>
-            </div>
+          )}
+          <div className="mt-0.5 text-caption text-text-tertiary">
+            所需 <span className="font-mono text-foreground">{item.qty}</span>
+            <span className="mx-1.5 text-border">·</span>
+            库存 <span className="font-mono">{item.stock ?? "—"}</span>
           </div>
         </div>
         <button
@@ -249,8 +261,8 @@ function PickupItemRow({
         </button>
       </div>
 
-      {/* 分隔 + 已取统计（右上） */}
-      <div className="border-t border-dashed border-border px-3 pt-2 pb-2.5">
+      {/* 分隔 + 已取统计 + 扫描结果 */}
+      <div className="border-t border-dashed border-primary/20 px-3.5 pt-2 pb-3">
         <div className="flex items-center justify-end text-caption">
           <span className="text-text-tertiary">
             已取{" "}
@@ -262,18 +274,28 @@ function PickupItemRow({
           </span>
         </div>
 
-        {/* 扫描结果列表 */}
         {entries.length > 0 && (
-          <ul className="mt-2 space-y-1.5">
+          <ul className="mt-2 space-y-2">
             {entries.map((e, idx) => {
               const max = maxForEntry(idx);
               return (
                 <li
                   key={`${e.code}-${idx}`}
-                  className="flex items-center gap-2 text-caption"
+                  className="flex items-start gap-2 text-caption"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="font-mono text-text-secondary truncate">{e.code}</div>
+                    <div className="mt-0.5 text-text-tertiary inline-flex items-center gap-1.5 flex-wrap">
+                      {e.manufacturer && (
+                        <span className="text-primary">{e.manufacturer}</span>
+                      )}
+                      {e.batch && (
+                        <>
+                          <span className="text-border">·</span>
+                          <span className="font-mono">{e.batch}</span>
+                        </>
+                      )}
+                    </div>
                     {!unitScannable && (
                       <div className="text-text-tertiary mt-0.5">
                         包内剩余{" "}
@@ -285,11 +307,11 @@ function PickupItemRow({
                     )}
                   </div>
                   {unitScannable ? (
-                    <span className="font-mono text-foreground">
+                    <span className="font-mono text-foreground shrink-0 pt-0.5">
                       ×1 {unit}
                     </span>
                   ) : (
-                    <div className="inline-flex items-center rounded-md border border-border overflow-hidden">
+                    <div className="inline-flex items-center rounded-md border border-border overflow-hidden shrink-0">
                       <button
                         type="button"
                         disabled={disabled || e.qty <= 1}
