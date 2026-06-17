@@ -1470,7 +1470,7 @@ function ChecklistDay({
                 <div className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm bg-surface-subtle text-text-secondary">
                   <span className="inline-flex items-center gap-1.5">
                     <PackagePlus className="h-3.5 w-3.5" />
-                    已领物 · {pickupCode}
+                    已领药 · {pickupCode}
                   </span>
                   <CheckCircle2 className="h-4 w-4 text-primary" />
                 </div>
@@ -1484,7 +1484,7 @@ function ChecklistDay({
                 >
                   <span className="inline-flex items-center gap-1.5">
                     <PackagePlus className="h-3.5 w-3.5" />
-                    需领物 · 点击前往领物码 {pickupCode}
+                    需领物 · 点击查看领物清单
                   </span>
                   <ChevronRight className="h-4 w-4 opacity-70" />
                 </Link>
