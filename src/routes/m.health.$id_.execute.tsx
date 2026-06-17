@@ -56,7 +56,7 @@ function ExecuteRecordPage() {
           }}
           className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Send className="h-4 w-4" /> {ready ? "提交记录" : "请先填写测温与上传治疗照片"}
+          <Send className="h-4 w-4" /> 提交记录
         </button>
       </div>
     </MobileShell>
