@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import {
   CheckCircle2,
@@ -179,18 +180,21 @@ function PickupItemRow({
     new Set(entries.map((e) => e.manufacturer).filter(Boolean) as string[]),
   );
 
+  const attemptsRef = useRef(0);
+
   const onScan = () => {
     if (disabled || remainingNeed <= 0) return;
-    const idx = entries.length;
-    // 模拟扫码：在该药品库存厂商中循环挑选；无 stockSources 时回退到旧池
+    const attempt = attemptsRef.current;
+    // 模拟扫码：基于点击次数循环厂商（包含被拦截的扫描），便于演示拦截后再次扫描可继续流程
     const picked =
       sources.length > 0
-        ? sources[idx % sources.length]
-        : { manufacturer: pickManufacturer(item.name, idx), qty: 0 };
+        ? sources[attempt % sources.length]
+        : { manufacturer: pickManufacturer(item.name, attempt), qty: 0 };
     const manufacturer = picked.manufacturer;
     const batch = genBatch();
+    attemptsRef.current = attempt + 1;
 
-    // 不允许混用：若已存在不同厂商记录，拦截
+    // 不允许混用：若已存在不同厂商记录，拦截（仅提示，不写入）
     if (!allowMix && existingMfrs.length > 0 && !existingMfrs.includes(manufacturer)) {
       toast.warning(
         `该药品不允许多厂商混用，已使用「${existingMfrs[0]}」，请勿扫描「${manufacturer}」`,
