@@ -386,8 +386,33 @@ export function getPickup(id: string): Pickup | null {
     visitor: "王医生",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", usage: "2ml / 次 · 肌肉注射", unitScannable: true },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", usage: "1g / 次 · 肌肉注射", unitScannable: false, packRemain: 20 },
+      {
+        name: "氟尼辛葡甲胺注射液",
+        spec: "100ml / 瓶",
+        qty: "2 瓶",
+        stock: "12 瓶",
+        usage: "2ml / 次 · 肌肉注射",
+        unitScannable: true,
+        allowMixManufacturer: false,
+        stockSources: [
+          { manufacturer: "齐鲁动保", qty: 8, unit: "瓶" },
+          { manufacturer: "瑞普生物", qty: 4, unit: "瓶" },
+        ],
+      },
+      {
+        name: "头孢噻呋钠",
+        spec: "1g / 支",
+        qty: "6 支",
+        stock: "48 支",
+        usage: "1g / 次 · 肌肉注射",
+        unitScannable: false,
+        packRemain: 20,
+        allowMixManufacturer: true,
+        stockSources: [
+          { manufacturer: "中牧股份", qty: 30, unit: "支" },
+          { manufacturer: "辉瑞动保", qty: 18, unit: "支" },
+        ],
+      },
     ],
   };
 }
