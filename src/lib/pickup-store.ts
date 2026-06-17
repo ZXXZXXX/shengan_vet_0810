@@ -132,7 +132,7 @@ export const PICKUP_HISTORY: Pickup[] = [
 
 const KEY = "mp:pickup-claimed";
 const INVALIDATED_KEY = "mp:pickup-invalidated";
-const SCANNED_QTY_KEY = "mp:pickup-scanned-qty";
+const SCANNED_CODES_KEY = "mp:pickup-scanned-codes";
 const listeners = new Set<() => void>();
 
 function readSet(key: string): Set<string> {
@@ -155,11 +155,13 @@ function readInvalidatedMap(): Record<string, string> {
   }
 }
 
-function readScannedQtyMap(): Record<string, Record<string, number>> {
+type ScannedCodesMap = Record<string, Record<string, ScannedEntry[]>>;
+
+function readScannedCodesMap(): ScannedCodesMap {
   if (typeof window === "undefined") return {};
   try {
-    const raw = localStorage.getItem(SCANNED_QTY_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, Record<string, number>>) : {};
+    const raw = localStorage.getItem(SCANNED_CODES_KEY);
+    return raw ? (JSON.parse(raw) as ScannedCodesMap) : {};
   } catch {
     return {};
   }
@@ -167,36 +169,71 @@ function readScannedQtyMap(): Record<string, Record<string, number>> {
 
 let claimedSnapshot: string[] = typeof window === "undefined" ? [] : Array.from(readSet(KEY));
 let invalidatedSnapshot: Record<string, string> = typeof window === "undefined" ? {} : readInvalidatedMap();
-let scannedQtySnapshot: Record<string, Record<string, number>> = typeof window === "undefined" ? {} : readScannedQtyMap();
+let scannedCodesSnapshot: ScannedCodesMap = typeof window === "undefined" ? {} : readScannedCodesMap();
 
 function refresh() {
   claimedSnapshot = Array.from(readSet(KEY));
   invalidatedSnapshot = readInvalidatedMap();
-  scannedQtySnapshot = readScannedQtyMap();
+  scannedCodesSnapshot = readScannedCodesMap();
   listeners.forEach((fn) => fn());
 }
 
-export function setScanQty(pickupId: string, itemName: string, qty: number) {
-  if (typeof window === "undefined") return;
-  const map = readScannedQtyMap();
-  const cur = { ...(map[pickupId] ?? {}) };
-  if (qty <= 0) delete cur[itemName];
-  else cur[itemName] = qty;
-  map[pickupId] = cur;
-  localStorage.setItem(SCANNED_QTY_KEY, JSON.stringify(map));
+function writeScannedCodes(map: ScannedCodesMap) {
+  localStorage.setItem(SCANNED_CODES_KEY, JSON.stringify(map));
   refresh();
 }
 
-export function useScannedQty(pickupId: string): Record<string, number> {
+export function addScannedEntry(pickupId: string, itemName: string, entry: ScannedEntry) {
+  if (typeof window === "undefined") return;
+  const map = readScannedCodesMap();
+  const list = [...(map[pickupId]?.[itemName] ?? []), entry];
+  map[pickupId] = { ...(map[pickupId] ?? {}), [itemName]: list };
+  writeScannedCodes(map);
+}
+
+export function updateScannedEntryQty(
+  pickupId: string,
+  itemName: string,
+  index: number,
+  qty: number,
+) {
+  if (typeof window === "undefined") return;
+  const map = readScannedCodesMap();
+  const list = [...(map[pickupId]?.[itemName] ?? [])];
+  if (!list[index]) return;
+  list[index] = { ...list[index], qty };
+  map[pickupId] = { ...(map[pickupId] ?? {}), [itemName]: list };
+  writeScannedCodes(map);
+}
+
+export function removeScannedEntry(pickupId: string, itemName: string, index: number) {
+  if (typeof window === "undefined") return;
+  const map = readScannedCodesMap();
+  const list = (map[pickupId]?.[itemName] ?? []).filter((_, i) => i !== index);
+  map[pickupId] = { ...(map[pickupId] ?? {}), [itemName]: list };
+  writeScannedCodes(map);
+}
+
+export function useScannedCodes(pickupId: string): Record<string, ScannedEntry[]> {
   const all = useSyncExternalStore(
     (cb) => {
       listeners.add(cb);
       return () => listeners.delete(cb);
     },
-    () => scannedQtySnapshot,
-    () => scannedQtySnapshot,
+    () => scannedCodesSnapshot,
+    () => scannedCodesSnapshot,
   );
   return all[pickupId] ?? {};
+}
+
+/** 生成一个仿真扫码值 */
+export function genScanCode(prefix: string): string {
+  const ts = Date.now().toString(36).toUpperCase().slice(-5);
+  const rnd = Math.floor(Math.random() * 0xfff)
+    .toString(16)
+    .toUpperCase()
+    .padStart(3, "0");
+  return `${prefix}-${ts}${rnd}`;
 }
 
 
