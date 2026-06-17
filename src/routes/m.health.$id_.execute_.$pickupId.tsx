@@ -191,7 +191,7 @@ function PickupItemRow({
         packRemain,
       });
       if (packRemain < remainingNeed) {
-        toast.message(`包内仅余 ${packRemain} ${unit}，请继续扫描其他包装`);
+        toast.warning(`包内仅余 ${packRemain} ${unit}，请继续扫描其他包装`);
       } else {
         toast.success(`已识别包装 · ${item.name}`);
       }
