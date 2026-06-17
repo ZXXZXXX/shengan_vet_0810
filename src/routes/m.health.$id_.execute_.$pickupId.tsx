@@ -217,10 +217,9 @@ function PickupItemRow({
       // 演示：每次扫描的包装内剩余量不同，循环 [4, 16, 8]
       const remainPool = [4, 16, 8];
       const packRemain = remainPool[entries.length % remainPool.length];
-      const initial = Math.min(remainingNeed, packRemain);
       addScannedEntry(pickupId, item.name, {
         code: genScanCode("PACK"),
-        qty: Math.max(1, initial),
+        qty: 1,
         packRemain,
         manufacturer,
         batch,
