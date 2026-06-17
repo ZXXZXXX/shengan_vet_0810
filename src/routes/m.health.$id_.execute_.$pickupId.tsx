@@ -266,16 +266,37 @@ function PickupItemRow({
             <span className="mx-1.5 text-border">·</span>
             扫码单位 <span className="text-text-secondary">{scanUnit}</span>
           </div>
-          {item.usage && (
-            <div className="mt-0.5 text-caption text-text-tertiary">
-              用法 <span className="text-text-secondary">{item.usage}</span>
-            </div>
-          )}
           <div className="mt-0.5 text-caption text-text-tertiary">
             所需 <span className="font-mono text-foreground">{item.qty}</span>
             <span className="mx-1.5 text-border">·</span>
             库存 <span className="font-mono">{item.stock ?? "—"}</span>
           </div>
+          {sources.length > 0 && (
+            <div className="mt-1 text-caption text-text-tertiary flex items-start gap-1 flex-wrap">
+              <span className="shrink-0">厂商</span>
+              <span className="inline-flex items-center gap-1 flex-wrap">
+                {sources.map((s, i) => (
+                  <span key={s.manufacturer} className="inline-flex items-center gap-1">
+                    {i > 0 && <span className="text-border">·</span>}
+                    <span className="text-text-secondary">{s.manufacturer}</span>
+                    <span className="font-mono text-text-tertiary">
+                      {s.qty}
+                      {s.unit ?? ""}
+                    </span>
+                  </span>
+                ))}
+                <span
+                  className={`ml-1 px-1.5 rounded text-[10px] leading-4 border ${
+                    allowMix
+                      ? "border-border text-text-tertiary"
+                      : "border-[#FFD591] text-[#AD4E00] bg-[#FFF7E6]"
+                  }`}
+                >
+                  {allowMix ? "允许混用" : "不可混用"}
+                </span>
+              </span>
+            </div>
+          )}
         </div>
         <button
           type="button"
