@@ -11,6 +11,11 @@ export type PickupItem = {
   packRemain?: number;
 };
 
+export type ScannedEntry = {
+  code: string;
+  qty: number; // 情况一恒为 1；情况二为该包装下取数
+};
+
 /** 从「2 瓶」「6 支」等文本中解析数量与单位 */
 export function parseQty(qty: string): { num: number; unit: string } {
   const m = qty.match(/^\s*(\d+(?:\.\d+)?)\s*(.*)$/);
