@@ -113,7 +113,7 @@ function PickupDetailPage() {
                   className={`rounded-lg border px-3 py-2.5 ${
                     done
                       ? "border-primary/40 bg-brand-subtle/30"
-                      : "border-border bg-surface-subtle"
+                      : "border-border bg-card"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -180,7 +180,7 @@ function PickupDetailPage() {
             className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CheckCircle2 className="h-4 w-4" />
-            {allScanned ? "确认完成领药" : `还需核验 ${totalCount - scannedCount} 项`}
+            完成领药
           </button>
         </div>
       )}
