@@ -405,7 +405,8 @@ function TaskListPage() {
 
               </div>
             </section>
-          ))}
+            );
+          })}
       </div>
     </MobileShell>
   );
