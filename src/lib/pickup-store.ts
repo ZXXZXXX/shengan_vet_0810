@@ -5,7 +5,18 @@ export type PickupItem = {
   spec?: string;
   qty: string;
   stock?: string; // 当前库存
+  /** 情况一：最小单位有二维码，每个都可单独扫码录入。情况二（false）：仅上级包装有码，按包扫描后输入数量。 */
+  unitScannable?: boolean;
+  /** 情况二专用：该药品当前打开包装内剩余数量（用于限定最大可取数量） */
+  packRemain?: number;
 };
+
+/** 从「2 瓶」「6 支」等文本中解析数量与单位 */
+export function parseQty(qty: string): { num: number; unit: string } {
+  const m = qty.match(/^\s*(\d+(?:\.\d+)?)\s*(.*)$/);
+  if (!m) return { num: 0, unit: "" };
+  return { num: Number(m[1]), unit: (m[2] ?? "").trim() };
+}
 
 export type PickupResult = "claimed" | "invalidated";
 
