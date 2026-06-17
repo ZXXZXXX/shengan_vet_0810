@@ -44,8 +44,8 @@ export const PICKUPS: Pickup[] = [
     visitor: "张磊（场长）",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", unitScannable: true },
+      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", unitScannable: false, packRemain: 20 },
     ],
   },
   {
