@@ -14,6 +14,8 @@ export type PickupItem = {
 export type ScannedEntry = {
   code: string;
   qty: number; // 情况一恒为 1；情况二为该包装下取数
+  /** 情况二：该次扫描的包装内剩余可取数量 */
+  packRemain?: number;
 };
 
 /** 从「2 瓶」「6 支」等文本中解析数量与单位 */
