@@ -581,7 +581,7 @@ function ScannerOverlay({
               onClick={onDone}
               className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body-sm disabled:opacity-40"
             >
-              {phase === "recognized" ? "确认入库" : "识别中…"}
+              {phase === "recognized" ? "添加" : "识别中…"}
             </button>
           </div>
         </div>
