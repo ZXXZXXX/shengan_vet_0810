@@ -173,11 +173,38 @@ function PickupItemRow({
   const done = taken >= needNum;
   const scanUnit = scanUnitOf(item);
 
+  const sources = item.stockSources ?? [];
+  const allowMix = item.allowMixManufacturer !== false;
+  const existingMfrs = Array.from(
+    new Set(entries.map((e) => e.manufacturer).filter(Boolean) as string[]),
+  );
+
   const onScan = () => {
     if (disabled || remainingNeed <= 0) return;
     const idx = entries.length;
-    const manufacturer = pickManufacturer(item.name, idx);
+    // 模拟扫码：在该药品库存厂商中循环挑选；无 stockSources 时回退到旧池
+    const picked =
+      sources.length > 0
+        ? sources[idx % sources.length]
+        : { manufacturer: pickManufacturer(item.name, idx), qty: 0 };
+    const manufacturer = picked.manufacturer;
     const batch = genBatch();
+
+    // 不允许混用：若已存在不同厂商记录，拦截
+    if (!allowMix && existingMfrs.length > 0 && !existingMfrs.includes(manufacturer)) {
+      toast.warning(
+        `该药品不允许多厂商混用，已使用「${existingMfrs[0]}」，请勿扫描「${manufacturer}」`,
+        {
+          style: {
+            background: "#FFF7E6",
+            border: "1px solid #FFD591",
+            color: "#AD4E00",
+          },
+        },
+      );
+      return;
+    }
+
     if (unitScannable) {
       addScannedEntry(pickupId, item.name, {
         code: genScanCode("UNIT"),
@@ -239,16 +266,37 @@ function PickupItemRow({
             <span className="mx-1.5 text-border">·</span>
             扫码单位 <span className="text-text-secondary">{scanUnit}</span>
           </div>
-          {item.usage && (
-            <div className="mt-0.5 text-caption text-text-tertiary">
-              用法 <span className="text-text-secondary">{item.usage}</span>
-            </div>
-          )}
           <div className="mt-0.5 text-caption text-text-tertiary">
             所需 <span className="font-mono text-foreground">{item.qty}</span>
             <span className="mx-1.5 text-border">·</span>
             库存 <span className="font-mono">{item.stock ?? "—"}</span>
           </div>
+          {sources.length > 0 && (
+            <div className="mt-1 text-caption text-text-tertiary flex items-start gap-1 flex-wrap">
+              <span className="shrink-0">厂商</span>
+              <span className="inline-flex items-center gap-1 flex-wrap">
+                {sources.map((s, i) => (
+                  <span key={s.manufacturer} className="inline-flex items-center gap-1">
+                    {i > 0 && <span className="text-border">·</span>}
+                    <span className="text-text-secondary">{s.manufacturer}</span>
+                    <span className="font-mono text-text-tertiary">
+                      {s.qty}
+                      {s.unit ?? ""}
+                    </span>
+                  </span>
+                ))}
+                <span
+                  className={`ml-1 px-1.5 rounded text-[10px] leading-4 border ${
+                    allowMix
+                      ? "border-border text-text-tertiary"
+                      : "border-[#FFD591] text-[#AD4E00] bg-[#FFF7E6]"
+                  }`}
+                >
+                  {allowMix ? "允许混用" : "不可混用"}
+                </span>
+              </span>
+            </div>
+          )}
         </div>
         <button
           type="button"

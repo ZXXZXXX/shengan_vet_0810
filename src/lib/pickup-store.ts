@@ -1,5 +1,11 @@
 import { useSyncExternalStore, useMemo } from "react";
 
+export type StockSource = {
+  manufacturer: string;
+  qty: number; // 该厂商剩余库存
+  unit?: string;
+};
+
 export type PickupItem = {
   name: string;
   spec?: string;
@@ -10,6 +16,10 @@ export type PickupItem = {
   unitScannable?: boolean;
   /** 情况二专用：该药品当前打开包装内剩余数量（用于限定最大可取数量） */
   packRemain?: number;
+  /** 本牧场库存中该药品的厂商分布 */
+  stockSources?: StockSource[];
+  /** 后台规则：是否允许多厂商混用，默认 true */
+  allowMixManufacturer?: boolean;
 };
 
 export type ScannedEntry = {
@@ -56,8 +66,33 @@ export const PICKUPS: Pickup[] = [
     visitor: "张磊（场长）",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", usage: "2ml / 次 · 肌肉注射", unitScannable: true },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", usage: "1g / 次 · 肌肉注射", unitScannable: false, packRemain: 20 },
+      {
+        name: "氟尼辛葡甲胺注射液",
+        spec: "100ml / 瓶",
+        qty: "2 瓶",
+        stock: "12 瓶",
+        usage: "2ml / 次 · 肌肉注射",
+        unitScannable: true,
+        allowMixManufacturer: false,
+        stockSources: [
+          { manufacturer: "齐鲁动保", qty: 8, unit: "瓶" },
+          { manufacturer: "瑞普生物", qty: 4, unit: "瓶" },
+        ],
+      },
+      {
+        name: "头孢噻呋钠",
+        spec: "1g / 支",
+        qty: "6 支",
+        stock: "48 支",
+        usage: "1g / 次 · 肌肉注射",
+        unitScannable: false,
+        packRemain: 20,
+        allowMixManufacturer: true,
+        stockSources: [
+          { manufacturer: "中牧股份", qty: 30, unit: "支" },
+          { manufacturer: "辉瑞动保", qty: 18, unit: "支" },
+        ],
+      },
     ],
   },
   {
@@ -351,8 +386,33 @@ export function getPickup(id: string): Pickup | null {
     visitor: "王医生",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", usage: "2ml / 次 · 肌肉注射", unitScannable: true },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", usage: "1g / 次 · 肌肉注射", unitScannable: false, packRemain: 20 },
+      {
+        name: "氟尼辛葡甲胺注射液",
+        spec: "100ml / 瓶",
+        qty: "2 瓶",
+        stock: "12 瓶",
+        usage: "2ml / 次 · 肌肉注射",
+        unitScannable: true,
+        allowMixManufacturer: false,
+        stockSources: [
+          { manufacturer: "齐鲁动保", qty: 8, unit: "瓶" },
+          { manufacturer: "瑞普生物", qty: 4, unit: "瓶" },
+        ],
+      },
+      {
+        name: "头孢噻呋钠",
+        spec: "1g / 支",
+        qty: "6 支",
+        stock: "48 支",
+        usage: "1g / 次 · 肌肉注射",
+        unitScannable: false,
+        packRemain: 20,
+        allowMixManufacturer: true,
+        stockSources: [
+          { manufacturer: "中牧股份", qty: 30, unit: "支" },
+          { manufacturer: "辉瑞动保", qty: 18, unit: "支" },
+        ],
+      },
     ],
   };
 }
