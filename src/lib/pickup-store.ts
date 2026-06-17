@@ -35,7 +35,6 @@ export const PICKUPS: Pickup[] = [
     items: [
       { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
       { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
-      { name: "一次性注射器", spec: "20ml", qty: "8 支", stock: "320 支" },
     ],
   },
   {
@@ -48,7 +47,6 @@ export const PICKUPS: Pickup[] = [
     warehouse: "冷链库 · 冷柜 #3",
     items: [
       { name: "口蹄疫疫苗 A 型", spec: "10ml / 支", qty: "8 支", stock: "60 支" },
-      { name: "保温运输袋", spec: "小号", qty: "1 个", stock: "12 个" },
     ],
   },
 ];
