@@ -4,6 +4,7 @@ export type PickupItem = {
   name: string;
   spec?: string;
   qty: string;
+  stock?: string; // 当前库存
 };
 
 export type PickupResult = "claimed" | "invalidated";
