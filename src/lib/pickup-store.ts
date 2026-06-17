@@ -1,5 +1,11 @@
 import { useSyncExternalStore, useMemo } from "react";
 
+export type StockSource = {
+  manufacturer: string;
+  qty: number; // 该厂商剩余库存
+  unit?: string;
+};
+
 export type PickupItem = {
   name: string;
   spec?: string;
@@ -10,6 +16,10 @@ export type PickupItem = {
   unitScannable?: boolean;
   /** 情况二专用：该药品当前打开包装内剩余数量（用于限定最大可取数量） */
   packRemain?: number;
+  /** 本牧场库存中该药品的厂商分布 */
+  stockSources?: StockSource[];
+  /** 后台规则：是否允许多厂商混用，默认 true */
+  allowMixManufacturer?: boolean;
 };
 
 export type ScannedEntry = {
