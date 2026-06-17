@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
@@ -29,6 +30,9 @@ function ExecuteRecordPage() {
   const execTags: string[] = isSingle ? [earTag] : ["#01-24-2381", "#01-24-2382", "#01-24-2383"];
   const pickupCode = isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`;
 
+  const [ready, setReady] = useState(false);
+  const handleReady = useCallback((r: boolean) => setReady(r), []);
+
   return (
     <MobileShell title="执行记录" back hideTabBar>
       <div className="pb-28">
@@ -38,19 +42,21 @@ function ExecuteRecordPage() {
           </div>
         </div>
         <div className="px-4 space-y-3">
-          <ActiveDayExecute pickupCode={pickupCode} tags={execTags} workOrderId={id} />
+          <ActiveDayExecute pickupCode={pickupCode} tags={execTags} workOrderId={id} onReadyChange={handleReady} />
         </div>
       </div>
 
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <button
+          disabled={!ready}
           onClick={() => {
+            if (!ready) return;
             toast.success("提交成功");
             navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
           }}
-          className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
+          className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Send className="h-4 w-4" /> 提交记录
+          <Send className="h-4 w-4" /> {ready ? "提交记录" : "请先填写测温与上传治疗照片"}
         </button>
       </div>
     </MobileShell>
