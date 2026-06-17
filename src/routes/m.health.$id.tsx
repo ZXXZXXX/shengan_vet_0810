@@ -1377,6 +1377,7 @@ function ChecklistDay({
   readOnly = false,
   workOrderId,
   withTemp = false,
+  onReadyChange,
 }: {
   day: number;
   date: string;
@@ -1387,12 +1388,16 @@ function ChecklistDay({
   readOnly?: boolean;
   workOrderId?: string;
   withTemp?: boolean;
+  onReadyChange?: (ready: boolean) => void;
 }) {
 
   const isActive = dayState === "active";
   const isDone = dayState === "done";
   const isPending = dayState === "pending";
   const interactive = isActive && !readOnly;
+
+  const claimed = useClaimed();
+  const pickupClaimed = pickupCode ? claimed.includes(pickupCode) : true;
 
   const [items, setItems] = useState<ExecItem[]>(() => {
     const base = buildDayItems(day, tags, withTemp);
@@ -1403,14 +1408,27 @@ function ChecklistDay({
   const [noteEditing, setNoteEditing] = useState(false);
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [temps, setTemps] = useState<Record<string, string>>({});
-  const [scanFor, setScanFor] = useState<string | null>(null);
-  const [verifyOpen, setVerifyOpen] = useState(false);
-  const [dayVerified, setDayVerified] = useState<boolean>(isDone);
-  const [mismatchOpen, setMismatchOpen] = useState(false);
-  const [manualMode, setManualMode] = useState(false);
-  const [manualPhotos, setManualPhotos] = useState<number[]>([]);
-  const [manualDesc, setManualDesc] = useState("");
-  const expectedTag = tags[0] ?? "#01-24-0000";
+  const [evidencePhotos, setEvidencePhotos] = useState<number[]>([]);
+
+  // 领药完成后，用药任务自动标记完成（信息从领取单同步）
+  useEffect(() => {
+    if (!interactive || !pickupClaimed) return;
+    setItems((arr) =>
+      arr.map((it) =>
+        it.needMed && it.status !== "done"
+          ? { ...it, status: "done" as ItemStatus, scanCode: pickupCode ?? undefined }
+          : it,
+      ),
+    );
+  }, [pickupClaimed, interactive, pickupCode]);
+
+  // 提交就绪：测温（若需要）已填 + 至少一张治疗证据照片
+  const tempItem = items.find((i) => i.title.includes("测温"));
+  const tempReady = !withTemp || Boolean((temps[tempItem?.id ?? ""] ?? "").trim());
+  const ready = interactive && pickupClaimed && tempReady && evidencePhotos.length > 0;
+  useEffect(() => {
+    onReadyChange?.(ready);
+  }, [ready, onReadyChange]);
 
 
   const total = items.length;
