@@ -1468,12 +1468,15 @@ function ChecklistDay({
           {pickupCode && (
             <div className="px-4 pb-2">
               {pickupClaimed || pickupDone ? (
-                <div className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm bg-surface-subtle text-text-secondary">
+                <div
+                  className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
+                  style={{ backgroundColor: "color-mix(in oklab, hsl(var(--primary)) 10%, transparent)", color: "hsl(var(--primary))" }}
+                >
                   <span className="inline-flex items-center gap-1.5">
                     <PackagePlus className="h-3.5 w-3.5" />
                     已领药 · {pickupCode}
                   </span>
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  <CheckCircle2 className="h-4 w-4" />
                 </div>
               ) : (
                 <Link
