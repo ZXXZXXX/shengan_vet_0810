@@ -1567,14 +1567,39 @@ function ChecklistDay({
                 </div>
               ) : (
                 <div className="rounded-xl border border-border bg-card px-3 py-3 space-y-2">
-                  <div className="text-caption text-text-tertiary">执行本次记录前，请先扫描耳码核验牛只</div>
-                  <button
-                    type="button"
-                    onClick={() => setVerifyOpen(true)}
-                    className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
-                  >
-                    <ScanLine className="h-4 w-4" /> 扫描耳码核验牛只
-                  </button>
+                  <div className="text-caption text-text-tertiary">
+                    {pickupDone
+                      ? "已完成领药，可拍摄/上传牛只照片开放本次执行记录"
+                      : "执行本次记录前，请先扫描耳码核验牛只"}
+                  </div>
+                  {pickupDone ? (
+                    <label className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:bg-brand-subtle/30">
+                      <Camera className="h-4 w-4" /> 拍摄 / 上传牛只照片
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files ?? []);
+                          if (files.length === 0) return;
+                          files.forEach(() => setManualPhotos((p) => [...p, Date.now() + Math.random()]));
+                          setManualMode(true);
+                          setDayVerified(true);
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setVerifyOpen(true)}
+                      className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
+                    >
+                      <ScanLine className="h-4 w-4" /> 扫描耳码核验牛只
+                    </button>
+                  )}
                 </div>
               )
             )}
