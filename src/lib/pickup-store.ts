@@ -142,14 +142,59 @@ function readInvalidatedMap(): Record<string, string> {
   }
 }
 
+function readScannedItemsMap(): Record<string, string[]> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(SCANNED_ITEMS_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
+  } catch {
+    return {};
+  }
+}
+
 let claimedSnapshot: string[] = typeof window === "undefined" ? [] : Array.from(readSet(KEY));
 let invalidatedSnapshot: Record<string, string> = typeof window === "undefined" ? {} : readInvalidatedMap();
+let scannedItemsSnapshot: Record<string, string[]> = typeof window === "undefined" ? {} : readScannedItemsMap();
 
 function refresh() {
   claimedSnapshot = Array.from(readSet(KEY));
   invalidatedSnapshot = readInvalidatedMap();
+  scannedItemsSnapshot = readScannedItemsMap();
   listeners.forEach((fn) => fn());
 }
+
+export function scanPickupItem(pickupId: string, itemName: string) {
+  if (typeof window === "undefined") return;
+  const map = readScannedItemsMap();
+  const cur = new Set(map[pickupId] ?? []);
+  cur.add(itemName);
+  map[pickupId] = Array.from(cur);
+  localStorage.setItem(SCANNED_ITEMS_KEY, JSON.stringify(map));
+  refresh();
+}
+
+export function unscanPickupItem(pickupId: string, itemName: string) {
+  if (typeof window === "undefined") return;
+  const map = readScannedItemsMap();
+  const cur = new Set(map[pickupId] ?? []);
+  cur.delete(itemName);
+  map[pickupId] = Array.from(cur);
+  localStorage.setItem(SCANNED_ITEMS_KEY, JSON.stringify(map));
+  refresh();
+}
+
+export function useScannedItems(pickupId: string): string[] {
+  const all = useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    () => scannedItemsSnapshot,
+    () => scannedItemsSnapshot,
+  );
+  return all[pickupId] ?? [];
+}
+
 
 export function claimPickup(id: string) {
   if (typeof window === "undefined") return;
