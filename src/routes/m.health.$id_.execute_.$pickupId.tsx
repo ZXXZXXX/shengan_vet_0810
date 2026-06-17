@@ -191,7 +191,13 @@ function PickupItemRow({
         packRemain,
       });
       if (packRemain < remainingNeed) {
-        toast.warning(`包内仅余 ${packRemain} ${unit}，请继续扫描其他包装`);
+        toast.warning(`包内仅余 ${packRemain} ${unit}，请继续扫描其他包装`, {
+          style: {
+            background: "#FFF7E6",
+            border: "1px solid #FFD591",
+            color: "#AD4E00",
+          },
+        });
       } else {
         toast.success(`已识别包装 · ${item.name}`);
       }
