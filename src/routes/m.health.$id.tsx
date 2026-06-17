@@ -1034,9 +1034,11 @@ type ExecItem = {
   status: ItemStatus;
   needMed: boolean;
   scanCode?: string;
+  manufacturer?: string;
+  batchNo?: string;
 };
 
-// 根据处方拆解每日任务：每种药品 = 一次任务（需扫码核验），加上不需用药的常规任务（如测温）
+// 根据处方拆解每日任务：每种药品 = 一次任务，加上不需用药的常规任务（如测温）
 function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem[] {
   const items: ExecItem[] = [];
   if (withTemp) {
@@ -1055,6 +1057,8 @@ function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem
       desc: "2ml / 次 · 肌肉注射",
       status: "pending",
       needMed: true,
+      manufacturer: "齐鲁动保",
+      batchNo: "L20260418",
     },
     {
       id: `d${day}-t2`,
@@ -1062,6 +1066,8 @@ function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem
       desc: "1g / 次 · 肌肉注射",
       status: "pending",
       needMed: true,
+      manufacturer: "瑞普生物",
+      batchNo: "B20260512",
     },
   );
   return items;
@@ -1406,7 +1412,6 @@ function ChecklistDay({
   });
   const [dayNote, setDayNote] = useState(initialNote);
   const [noteEditing, setNoteEditing] = useState(false);
-  const [reasons, setReasons] = useState<Record<string, string>>({});
   const [temps, setTemps] = useState<Record<string, string>>({});
   const [evidencePhotos, setEvidencePhotos] = useState<number[]>([]);
 
@@ -1422,7 +1427,7 @@ function ChecklistDay({
     );
   }, [pickupClaimed, interactive, pickupCode]);
 
-  // 提交就绪：测温（若需要）已填 + 至少一张治疗证据照片
+  // 提交就绪：领药完成 + 测温（若需要）已填 + 至少一张治疗证据照片
   const tempItem = items.find((i) => i.title.includes("测温"));
   const tempReady = !withTemp || Boolean((temps[tempItem?.id ?? ""] ?? "").trim());
   const ready = interactive && pickupClaimed && tempReady && evidencePhotos.length > 0;
@@ -1430,13 +1435,10 @@ function ChecklistDay({
     onReadyChange?.(ready);
   }, [ready, onReadyChange]);
 
-
   const total = items.length;
   const doneCount = items.filter((i) => i.status === "done").length;
-  const blockedCount = items.filter((i) => i.status === "blocked").length;
-  const settled = doneCount + blockedCount;
-  const allSettled = settled === total;
-  const dayDone = isDone || (isActive && allSettled && blockedCount === 0);
+  const allSettled = doneCount === total;
+  const dayDone = isDone || (isActive && allSettled);
 
   // 状态标签
   let dayStatusTag: string;
@@ -1452,16 +1454,10 @@ function ChecklistDay({
     dayStatusText = "未开始";
   }
 
-  const update = (id: string, patch: Partial<ExecItem>) =>
-    setItems((arr) => arr.map((it) => (it.id === id ? { ...it, ...patch } : it)));
-
-  const toggleDone = (id: string, current: ItemStatus) => {
-    if (!interactive) return;
-    update(id, { status: current === "done" ? "pending" : "done" });
-  };
-
   const pickupDone = isDone || (isActive && dayDone);
-
+  // 仍需领物：所有填写禁用
+  const inputsLocked = interactive && Boolean(pickupCode) && !pickupClaimed;
+  const medItems = items.filter((it) => it.needMed);
 
   return (
     <div className="rounded-2xl bg-card border border-border overflow-hidden">
@@ -1485,7 +1481,7 @@ function ChecklistDay({
         <>
           {pickupCode && (
             <div className="px-4 pb-2">
-              {pickupDone ? (
+              {pickupClaimed || pickupDone ? (
                 <div className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm bg-surface-subtle text-text-secondary">
                   <span className="inline-flex items-center gap-1.5">
                     <PackagePlus className="h-3.5 w-3.5" />
@@ -1497,7 +1493,6 @@ function ChecklistDay({
                 <Link
                   to="/m/health/$id_/execute/$pickupId"
                   params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
-
                   className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
                   style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
                 >
@@ -1511,26 +1506,56 @@ function ChecklistDay({
             </div>
           )}
 
+          {/* 用药信息（只读，无勾选） */}
+          {medItems.length > 0 && (
+            <div className={`px-4 pb-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
+              <div className="text-caption text-text-tertiary">用药信息</div>
+              {medItems.map((it) => (
+                <div key={it.id} className="rounded-xl border border-border bg-card px-3 py-2.5">
+                  <div className="text-body text-foreground">{it.title}</div>
+                  <div className="mt-1 flex items-center gap-2 text-caption">
+                    <span className={pickupClaimed ? "text-primary font-medium" : "text-text-tertiary"}>
+                      {pickupClaimed ? (it.manufacturer ?? "-") : "-"}
+                    </span>
+                    <span className="text-text-tertiary">·</span>
+                    <span className={`font-mono ${pickupClaimed ? "text-text-secondary" : "text-text-tertiary"}`}>
+                      {pickupClaimed ? (it.batchNo ?? "-") : "-"}
+                    </span>
+                  </div>
+                  {it.desc && (
+                    <div className="text-caption text-text-tertiary mt-1">{it.desc}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {interactive && withTemp && tempItem && (
+            <div className="px-4 pb-3">
+              <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
+                <div className="text-body-sm text-foreground mb-2">
+                  每日测温 <span className="text-[var(--state-danger)]">*</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.1"
+                    disabled={inputsLocked}
+                    value={temps[tempItem.id] ?? ""}
+                    onChange={(e) => setTemps((m) => ({ ...m, [tempItem.id]: e.target.value }))}
+                    placeholder="输入直肠温度"
+                    className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm disabled:bg-surface-subtle disabled:cursor-not-allowed"
+                  />
+                  <span className="text-caption text-text-tertiary">℃</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {interactive && (
             <div className="px-4 pb-3">
-              {!pickupClaimed && pickupCode ? (
-                <div className="rounded-xl border border-border bg-card px-3 py-3">
-                  <div className="text-caption text-text-tertiary">
-                    请先完成药品器材领取，领药后用药信息将自动同步至本日任务。
-                  </div>
-                </div>
-              ) : (
-                <div className="rounded-xl border border-primary/30 bg-brand-subtle/20 px-3 py-2.5">
-                  <div className="text-body-sm text-primary inline-flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4" />
-                    用药信息已自动同步{pickupCode ? <> · 来源 <span className="font-mono">{pickupCode}</span></> : null}
-                  </div>
-                </div>
-              )}
-
-              {/* 治疗证据照片（必传） */}
-              <div className="mt-3 rounded-xl border border-border bg-card px-3 py-3">
+              <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
                 <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
                   <span>
                     治疗证据照片 <span className="text-[var(--state-danger)]">*</span>
@@ -1538,19 +1563,24 @@ function ChecklistDay({
                   <span className="text-caption text-text-tertiary">{evidencePhotos.length} / 6</span>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
-                  {evidencePhotos.map((id) => (
-                    <div key={id} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                  {evidencePhotos.map((pid) => (
+                    <div key={pid} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
                       <button
                         type="button"
-                        onClick={() => setEvidencePhotos((p) => p.filter((x) => x !== id))}
-                        className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
+                        disabled={inputsLocked}
+                        onClick={() => setEvidencePhotos((p) => p.filter((x) => x !== pid))}
+                        className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow disabled:opacity-50"
                       >
                         <X className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
                   {evidencePhotos.length < 6 && (
-                    <label className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-border transition-colors">
+                    <label
+                      className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary transition-colors ${
+                        inputsLocked ? "cursor-not-allowed" : "cursor-pointer active:bg-border"
+                      }`}
+                    >
                       <Camera className="h-5 w-5" />
                       <span className="text-caption">拍照</span>
                       <input
@@ -1558,6 +1588,7 @@ function ChecklistDay({
                         accept="image/*"
                         capture="environment"
                         multiple
+                        disabled={inputsLocked}
                         className="hidden"
                         onChange={(e) => {
                           const files = Array.from(e.target.files ?? []);
@@ -1576,112 +1607,7 @@ function ChecklistDay({
           )}
 
           <ul className="px-4 pb-3 space-y-2">
-            {items.map((it) => {
-              const done = it.status === "done";
-              const blocked = it.status === "blocked";
-              const needMed = it.needMed;
-              const isVerified = true;
-              return (
-                <li key={it.id} className="space-y-2">
-                  <div
-                    className={`w-full rounded-xl border px-3 py-2.5 transition-all ${
-                      done
-                        ? "border-primary/40 bg-brand-subtle/30"
-                        : blocked
-                          ? "border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5"
-                          : isActive
-                            ? `border-border bg-card ${interactive && !isVerified ? "opacity-40 grayscale bg-muted/40 pointer-events-none select-none" : ""}`
-                            : "border-border bg-card opacity-80"
-                    }`}
-                  
-                  >
-                    <div className="flex items-start gap-2.5">
-                      {done ? (
-                        <CheckSquare className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      ) : blocked ? (
-                        <AlertTriangle className="h-4 w-4 text-[var(--state-danger)] shrink-0 mt-0.5" />
-                      ) : (
-                        <Square className="h-4 w-4 text-text-tertiary shrink-0 mt-0.5" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className={`text-body ${done || isActive ? "text-foreground" : "text-text-tertiary"}`}>
-                          {it.title}
-                        </div>
-                        {it.desc && (
-                          <div className="text-caption text-text-tertiary mt-0.5">{it.desc}</div>
-                        )}
-                        {done && needMed && (
-                          <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                            <CheckCircle2 className="h-3 w-3" /> 已自动同步领药信息{it.scanCode ? <> · <span className="font-mono">{it.scanCode}</span></> : null}
-                          </div>
-                        )}
-                        {done && !needMed && it.title.includes("测温") && temps[it.id] && (
-                          <div className="text-caption text-primary mt-1">
-                            体温：<span className="font-mono">{temps[it.id]} ℃</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    {interactive && isVerified && !needMed && !done && it.title.includes("测温") && (
-                      <div className="mt-2.5 pl-6 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            inputMode="decimal"
-                            step="0.1"
-                            value={temps[it.id] ?? ""}
-                            onChange={(e) => setTemps((m) => ({ ...m, [it.id]: e.target.value }))}
-                            placeholder="输入直肠温度"
-                            className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm"
-                          />
-                          <span className="text-caption text-text-tertiary">℃</span>
-                        </div>
-                        <button
-                          type="button"
-                          disabled={!(temps[it.id] ?? "").trim()}
-                          onClick={() => toggleDone(it.id, it.status)}
-                          className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <CheckSquare className="h-4 w-4" /> 标记完成
-                        </button>
-                      </div>
-                    )}
-                    {interactive && done && !needMed && (
-                      <div className="pl-6 mt-2">
-                        <button
-                          type="button"
-                          onClick={() => update(it.id, { status: "pending", scanCode: undefined })}
-                          className="text-caption text-text-tertiary active:text-foreground"
-                        >
-                          撤销
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  {blocked && (interactive ? (
-                    <div className="rounded-xl border border-[var(--state-danger)]/40 bg-[var(--state-danger)]/5 px-3 py-2.5">
-                      <div className="text-caption text-[var(--state-danger)] inline-flex items-center gap-1 mb-1">
-                        <AlertTriangle className="h-3 w-3" /> 无法执行原因（必填）
-                      </div>
-                      <textarea
-                        value={reasons[it.id] ?? ""}
-                        onChange={(e) => setReasons((r) => ({ ...r, [it.id]: e.target.value }))}
-                        placeholder="请说明无法执行的具体原因"
-                        required
-                        className="w-full min-h-[72px] rounded-md bg-transparent text-body-sm text-foreground placeholder:text-text-tertiary resize-none focus:outline-none px-3 py-2 leading-relaxed"
-                      />
-                    </div>
-                  ) : reasons[it.id] ? (
-                    <div className="rounded-xl border border-border bg-surface-subtle px-3 py-2.5">
-                      <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-0.5">
-                        <AlertTriangle className="h-3 w-3" /> 无法执行原因
-                      </div>
-                      <div className="text-body-sm text-foreground">{reasons[it.id]}</div>
-                    </div>
-                  ) : null)}
-                </li>
-              );
-            })}
+
 
 
             {interactive ? (
