@@ -300,6 +300,8 @@ function DiagnosePage() {
   // 体征数据
   const [temperature, setTemperature] = useState("");
   const [ketone, setKetone] = useState("");
+  // 是否需要每日测量体温（治疗执行任务中带入测温步骤）
+  const [dailyTempRequired, setDailyTempRequired] = useState(true);
 
   // 现场记录
   const [photos, setPhotos] = useState<string[]>([]);
@@ -427,6 +429,9 @@ function DiagnosePage() {
 
   const doSubmit = () => {
     setSubmitCheck(null);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(`health:dailyTemp:${id}`, dailyTempRequired ? "1" : "0");
+    }
     toast.success("诊断已提交");
     navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
   };
@@ -646,7 +651,19 @@ function DiagnosePage() {
                 </div>
               </label>
             </div>
+            <label className="mt-3 flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5">
+              <div className="min-w-0">
+                <div className="text-body-sm text-foreground">需要每日测量体温</div>
+                <div className="text-caption text-text-tertiary mt-0.5">开启后，每日治疗执行任务中会包含测温步骤</div>
+              </div>
+              <Switch checked={dailyTempRequired} onCheckedChange={setDailyTempRequired} />
+            </label>
           </Section>
+
+
+
+
+
 
 
 
