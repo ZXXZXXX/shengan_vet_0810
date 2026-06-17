@@ -1470,7 +1470,7 @@ function ChecklistDay({
               {pickupClaimed || pickupDone ? (
                 <div
                   className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
-                  style={{ backgroundColor: "color-mix(in oklab, hsl(var(--primary)) 10%, transparent)", color: "hsl(var(--primary))" }}
+                  style={{ backgroundColor: "color-mix(in oklab, var(--brand) 10%, transparent)", color: "var(--brand)" }}
                 >
                   <span className="inline-flex items-center gap-1.5">
                     <PackagePlus className="h-3.5 w-3.5" />
