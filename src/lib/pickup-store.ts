@@ -4,6 +4,7 @@ export type PickupItem = {
   name: string;
   spec?: string;
   qty: string;
+  stock?: string; // 当前库存
 };
 
 export type PickupResult = "claimed" | "invalidated";
@@ -32,9 +33,9 @@ export const PICKUPS: Pickup[] = [
     visitor: "张磊（场长）",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶" },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支" },
-      { name: "一次性注射器", spec: "20ml", qty: "8 支" },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
+      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
+      { name: "一次性注射器", spec: "20ml", qty: "8 支", stock: "320 支" },
     ],
   },
   {
@@ -46,8 +47,8 @@ export const PICKUPS: Pickup[] = [
     visitor: "刘洋（兽医）",
     warehouse: "冷链库 · 冷柜 #3",
     items: [
-      { name: "口蹄疫疫苗 A 型", spec: "10ml / 支", qty: "8 支" },
-      { name: "保温运输袋", spec: "小号", qty: "1 个" },
+      { name: "口蹄疫疫苗 A 型", spec: "10ml / 支", qty: "8 支", stock: "60 支" },
+      { name: "保温运输袋", spec: "小号", qty: "1 个", stock: "12 个" },
     ],
   },
 ];
@@ -118,6 +119,7 @@ export const PICKUP_HISTORY: Pickup[] = [
 
 const KEY = "mp:pickup-claimed";
 const INVALIDATED_KEY = "mp:pickup-invalidated";
+const SCANNED_ITEMS_KEY = "mp:pickup-scanned-items";
 const listeners = new Set<() => void>();
 
 function readSet(key: string): Set<string> {
@@ -140,14 +142,59 @@ function readInvalidatedMap(): Record<string, string> {
   }
 }
 
+function readScannedItemsMap(): Record<string, string[]> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(SCANNED_ITEMS_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
+  } catch {
+    return {};
+  }
+}
+
 let claimedSnapshot: string[] = typeof window === "undefined" ? [] : Array.from(readSet(KEY));
 let invalidatedSnapshot: Record<string, string> = typeof window === "undefined" ? {} : readInvalidatedMap();
+let scannedItemsSnapshot: Record<string, string[]> = typeof window === "undefined" ? {} : readScannedItemsMap();
 
 function refresh() {
   claimedSnapshot = Array.from(readSet(KEY));
   invalidatedSnapshot = readInvalidatedMap();
+  scannedItemsSnapshot = readScannedItemsMap();
   listeners.forEach((fn) => fn());
 }
+
+export function scanPickupItem(pickupId: string, itemName: string) {
+  if (typeof window === "undefined") return;
+  const map = readScannedItemsMap();
+  const cur = new Set(map[pickupId] ?? []);
+  cur.add(itemName);
+  map[pickupId] = Array.from(cur);
+  localStorage.setItem(SCANNED_ITEMS_KEY, JSON.stringify(map));
+  refresh();
+}
+
+export function unscanPickupItem(pickupId: string, itemName: string) {
+  if (typeof window === "undefined") return;
+  const map = readScannedItemsMap();
+  const cur = new Set(map[pickupId] ?? []);
+  cur.delete(itemName);
+  map[pickupId] = Array.from(cur);
+  localStorage.setItem(SCANNED_ITEMS_KEY, JSON.stringify(map));
+  refresh();
+}
+
+export function useScannedItems(pickupId: string): string[] {
+  const all = useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    () => scannedItemsSnapshot,
+    () => scannedItemsSnapshot,
+  );
+  return all[pickupId] ?? [];
+}
+
 
 export function claimPickup(id: string) {
   if (typeof window === "undefined") return;
@@ -236,9 +283,9 @@ export function getPickup(id: string): Pickup | null {
     visitor: "王医生",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶" },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支" },
-      { name: "一次性注射器", spec: "20ml", qty: "8 支" },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
+      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
+      { name: "一次性注射器", spec: "20ml", qty: "8 支", stock: "320 支" },
     ],
   };
 }
