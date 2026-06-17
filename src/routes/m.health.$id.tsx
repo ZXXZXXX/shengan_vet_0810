@@ -1512,88 +1512,47 @@ function ChecklistDay({
           )}
 
 
-          <div className="px-4 pb-2 text-caption text-text-tertiary">
-            处方拆解的本日任务
-          </div>
-
-          <div className="px-4 pb-3">
-            {interactive && (
-              dayVerified ? (
-                <div className="space-y-2">
-                  <div className="rounded-xl border border-primary/30 bg-brand-subtle/20 px-3 py-2.5">
-                    <div className="text-body-sm text-primary inline-flex items-center gap-1.5">
-                      <CheckCircle2 className="h-4 w-4" />
-                      {manualMode ? <>已改用证据留档 · <span className="font-mono">{expectedTag}</span></> : <>本次执行已完成牛只核验 · <span className="font-mono">{expectedTag}</span></>}
-                    </div>
+          {interactive && (
+            <div className="px-4 pb-3">
+              {!pickupClaimed && pickupCode ? (
+                <div className="rounded-xl border border-border bg-card px-3 py-3">
+                  <div className="text-caption text-text-tertiary">
+                    请先完成药品器材领取，领药后用药信息将自动同步至本日任务。
                   </div>
-                  {manualMode && (
-                    <div className="rounded-xl border border-border bg-card px-3 py-3 space-y-3">
-                      <div className="text-caption text-text-tertiary leading-relaxed">
-                        无法识别耳码时的兜底通道：上传目标牛只照片与特征描述，仅作留档追溯，不影响本次执行。提交后仍可随时补充或修改。
-                      </div>
-
-                      <div>
-                        <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
-                          <span>牛只证明照片</span>
-                          <span className="text-caption text-text-tertiary">{manualPhotos.length} / 6</span>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                          {manualPhotos.map((id) => (
-                            <div key={id} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
-                              <button
-                                onClick={() => setManualPhotos((p) => p.filter((x) => x !== id))}
-                                className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                            </div>
-                          ))}
-                          {manualPhotos.length < 6 && (
-                            <label className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-border transition-colors">
-                              <Camera className="h-5 w-5" />
-                              <span className="text-caption">拍照</span>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                capture="environment"
-                                multiple
-                                className="hidden"
-                                onChange={(e) => {
-                                  const files = Array.from(e.target.files ?? []);
-                                  files.forEach(() => setManualPhotos((p) => [...p, Date.now() + Math.random()]));
-                                  e.target.value = "";
-                                }}
-                              />
-                            </label>
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="text-body-sm text-foreground mb-2">牛只特征描述</div>
-                        <textarea
-                          value={manualDesc}
-                          onChange={(e) => setManualDesc(e.target.value)}
-                          placeholder="如所在牛舍位置、毛色花斑、体型特征等，便于追溯"
-                          rows={3}
-                          maxLength={200}
-                          className="w-full p-3 rounded-lg text-body resize-none leading-relaxed border border-border bg-card"
-                        />
-                        <div className="text-right text-caption text-text-tertiary mt-1">{manualDesc.length} / 200</div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               ) : (
-                <div className="rounded-xl border border-border bg-card px-3 py-3 space-y-2">
-                  <div className="text-caption text-text-tertiary">
-                    {pickupDone
-                      ? "已完成领药，可拍摄/上传牛只照片开放本次执行记录"
-                      : "执行本次记录前，请先扫描耳码核验牛只"}
+                <div className="rounded-xl border border-primary/30 bg-brand-subtle/20 px-3 py-2.5">
+                  <div className="text-body-sm text-primary inline-flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4" />
+                    用药信息已自动同步{pickupCode ? <> · 来源 <span className="font-mono">{pickupCode}</span></> : null}
                   </div>
-                  {pickupDone ? (
-                    <label className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:bg-brand-subtle/30">
-                      <Camera className="h-4 w-4" /> 拍摄 / 上传牛只照片
+                </div>
+              )}
+
+              {/* 治疗证据照片（必传） */}
+              <div className="mt-3 rounded-xl border border-border bg-card px-3 py-3">
+                <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
+                  <span>
+                    治疗证据照片 <span className="text-[var(--state-danger)]">*</span>
+                  </span>
+                  <span className="text-caption text-text-tertiary">{evidencePhotos.length} / 6</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {evidencePhotos.map((id) => (
+                    <div key={id} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                      <button
+                        type="button"
+                        onClick={() => setEvidencePhotos((p) => p.filter((x) => x !== id))}
+                        className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {evidencePhotos.length < 6 && (
+                    <label className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-border transition-colors">
+                      <Camera className="h-5 w-5" />
+                      <span className="text-caption">拍照</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -1602,35 +1561,26 @@ function ChecklistDay({
                         className="hidden"
                         onChange={(e) => {
                           const files = Array.from(e.target.files ?? []);
-                          if (files.length === 0) return;
-                          files.forEach(() => setManualPhotos((p) => [...p, Date.now() + Math.random()]));
-                          setManualMode(true);
-                          setDayVerified(true);
+                          files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
                           e.target.value = "";
                         }}
                       />
                     </label>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setVerifyOpen(true)}
-                      className="w-full h-9 rounded-lg border border-primary/40 text-primary text-body-sm inline-flex items-center justify-center gap-1.5"
-                    >
-                      <ScanLine className="h-4 w-4" /> 扫描耳码核验牛只
-                    </button>
                   )}
                 </div>
-              )
-            )}
-
-          </div>
+                <div className="mt-2 text-caption text-text-tertiary">
+                  请上传至少一张本次治疗的现场照片
+                </div>
+              </div>
+            </div>
+          )}
 
           <ul className="px-4 pb-3 space-y-2">
             {items.map((it) => {
               const done = it.status === "done";
               const blocked = it.status === "blocked";
               const needMed = it.needMed;
-              const isVerified = dayVerified;
+              const isVerified = true;
               return (
                 <li key={it.id} className="space-y-2">
                   <div
