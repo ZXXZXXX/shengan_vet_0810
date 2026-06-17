@@ -9,17 +9,21 @@ import {
   Package,
   Minus,
   Plus,
-  RotateCcw,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { MobileShell } from "@/components/mobile-shell";
 import {
+  addScannedEntry,
   claimPickup,
+  genScanCode,
   getPickup,
   parseQty,
-  setScanQty,
+  removeScannedEntry,
+  updateScannedEntryQty,
   useClaimed,
-  useScannedQty,
+  useScannedCodes,
+  type ScannedEntry,
 } from "@/lib/pickup-store";
 
 export const Route = createFileRoute("/m/health/$id_/execute_/$pickupId")({
@@ -27,13 +31,22 @@ export const Route = createFileRoute("/m/health/$id_/execute_/$pickupId")({
   component: PickupDetailPage,
 });
 
+function scanUnitOf(item: import("@/lib/pickup-store").PickupItem) {
+  const { unit } = parseQty(item.qty);
+  return item.unitScannable === false ? "包装" : unit || "最小单位";
+}
+
+function entryQtySum(list: ScannedEntry[]) {
+  return list.reduce((s, e) => s + (e.qty || 0), 0);
+}
+
 function PickupDetailPage() {
   const { id: workOrderId, pickupId } = useParams({
     from: "/m/health/$id_/execute_/$pickupId",
   });
   const navigate = useNavigate();
   const claimed = useClaimed();
-  const scannedQty = useScannedQty(pickupId);
+  const scannedMap = useScannedCodes(pickupId);
   const pickup = getPickup(pickupId);
 
   const isClaimed = claimed.includes(pickupId);
@@ -50,7 +63,7 @@ function PickupDetailPage() {
 
   const totalCount = pickup.items.length;
   const doneCount = pickup.items.filter(
-    (it) => (scannedQty[it.name] ?? 0) >= parseQty(it.qty).num,
+    (it) => entryQtySum(scannedMap[it.name] ?? []) >= parseQty(it.qty).num,
   ).length;
   const allScanned = doneCount === totalCount;
 
@@ -103,13 +116,13 @@ function PickupDetailPage() {
             <span className="text-caption text-text-tertiary">共 {totalCount} 项</span>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {pickup.items.map((it) => (
               <PickupItemRow
                 key={it.name}
                 item={it}
                 pickupId={pickupId}
-                currentQty={scannedQty[it.name] ?? 0}
+                entries={scannedMap[it.name] ?? []}
                 disabled={isClaimed}
               />
             ))}
@@ -118,9 +131,7 @@ function PickupDetailPage() {
           {!isClaimed && (
             <div className="mt-3 rounded-lg bg-brand-subtle px-3 py-2 text-caption text-text-secondary inline-flex items-start gap-1.5 w-full">
               <AlertTriangle className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
-              <span>
-                按所需数量逐一扫描药品二维码完成取药记录，全部核验后点击下方按钮确认领药。
-              </span>
+              <span>按所需数量扫描药品二维码完成取药记录，全部核验后点击下方按钮确认领药。</span>
             </div>
           )}
         </div>
@@ -146,176 +157,167 @@ function PickupDetailPage() {
 function PickupItemRow({
   item,
   pickupId,
-  currentQty,
+  entries,
   disabled,
 }: {
   item: import("@/lib/pickup-store").PickupItem;
   pickupId: string;
-  currentQty: number;
+  entries: ScannedEntry[];
   disabled: boolean;
 }) {
   const { num: needNum, unit } = parseQty(item.qty);
-  const unitScannable = item.unitScannable !== false; // 默认情况一
-  const maxForCase2 = Math.min(needNum, item.packRemain ?? needNum);
-  const done = currentQty >= needNum;
+  const unitScannable = item.unitScannable !== false;
+  const taken = entryQtySum(entries);
+  const remainingNeed = Math.max(0, needNum - taken);
+  const done = taken >= needNum;
+  const scanUnit = scanUnitOf(item);
 
-  const onScanOne = () => {
+  const onScan = () => {
     if (disabled || done) return;
-    const next = Math.min(currentQty + 1, needNum);
-    setScanQty(pickupId, item.name, next);
-    if (next === needNum) toast.success(`已扫齐 · ${item.name}`);
+    if (unitScannable) {
+      addScannedEntry(pickupId, item.name, {
+        code: genScanCode("UNIT"),
+        qty: 1,
+      });
+      if (taken + 1 === needNum) toast.success(`已扫齐 · ${item.name}`);
+    } else {
+      const max = Math.min(remainingNeed, item.packRemain ?? remainingNeed);
+      const initial = Math.min(1, max) || 1;
+      addScannedEntry(pickupId, item.name, {
+        code: genScanCode("PACK"),
+        qty: initial,
+      });
+      toast.success(`已识别包装 · ${item.name}`);
+    }
   };
 
-  const onScanPack = () => {
-    if (disabled || currentQty > 0) return;
-    setScanQty(pickupId, item.name, 1);
-    toast.success(`已识别包装 · ${item.name}`);
-  };
-
-  const onDelta = (delta: number) => {
-    if (disabled) return;
-    const next = Math.max(0, Math.min(currentQty + delta, maxForCase2));
-    setScanQty(pickupId, item.name, next);
-  };
-
-  const onInput = (v: string) => {
-    if (disabled) return;
-    const n = Number(v.replace(/[^\d]/g, ""));
-    if (!Number.isFinite(n)) return;
-    const next = Math.max(0, Math.min(n, maxForCase2));
-    setScanQty(pickupId, item.name, next);
-  };
-
-  const onReset = () => {
-    if (disabled) return;
-    setScanQty(pickupId, item.name, 0);
+  const maxForEntry = (idx: number) => {
+    if (unitScannable) return 1;
+    const others = entries.reduce((s, e, i) => (i === idx ? s : s + (e.qty || 0)), 0);
+    const remainByNeed = Math.max(1, needNum - others);
+    return Math.min(remainByNeed, item.packRemain ?? remainByNeed);
   };
 
   return (
     <div
-      className={`rounded-lg border px-3 py-2.5 ${
+      className={`rounded-lg border ${
         done ? "border-primary/40 bg-brand-subtle/30" : "border-border bg-card"
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
+      {/* 顶部：药品信息 + 扫描入口 */}
+      <div className="px-3 py-2.5 flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <div className="text-body text-foreground inline-flex items-center gap-1.5">
             <Package className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
             <span className="truncate">{item.name}</span>
           </div>
-          {item.spec && (
-            <div className="text-caption text-text-tertiary mt-1">规格 {item.spec}</div>
-          )}
-          <div className="mt-1.5 flex items-center gap-3 text-caption">
-            <span className="text-text-secondary">
-              需领 <span className="font-mono text-foreground">{item.qty}</span>
-            </span>
-            <span className="text-text-tertiary">
+          <div className="mt-1 text-caption text-text-tertiary space-y-0.5">
+            <div>
+              规格 <span className="text-text-secondary">{item.spec ?? "—"}</span>
+              <span className="mx-1.5 text-border">·</span>
+              扫码单位 <span className="text-text-secondary">{scanUnit}</span>
+            </div>
+            <div>
+              所需 <span className="font-mono text-foreground">{item.qty}</span>
+              <span className="mx-1.5 text-border">·</span>
               库存 <span className="font-mono">{item.stock ?? "—"}</span>
-            </span>
+            </div>
           </div>
         </div>
-        {done && (
-          <span className="shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-md bg-brand-subtle text-caption text-primary">
-            <CheckCircle2 className="h-3.5 w-3.5" /> 已扫齐
-          </span>
-        )}
+        <button
+          type="button"
+          onClick={onScan}
+          disabled={disabled || done}
+          aria-label="扫描"
+          className="shrink-0 h-10 w-10 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <ScanLine className="h-5 w-5" />
+        </button>
       </div>
 
-      {/* 进度 + 操作 */}
-      <div className="mt-2.5 pt-2.5 border-t border-dashed border-border">
-        <div className="flex items-center justify-between text-caption">
+      {/* 分隔 + 已取统计（右上） */}
+      <div className="border-t border-dashed border-border px-3 pt-2 pb-2.5">
+        <div className="flex items-center justify-end text-caption">
           <span className="text-text-tertiary">
-            已扫{" "}
-            <span className="font-mono text-foreground">
-              {currentQty}
-            </span>{" "}
-            / <span className="font-mono">{needNum}</span> {unit}
-          </span>
-          {unitScannable ? (
-            <span className="text-text-tertiary">单支可扫</span>
-          ) : (
-            <span className="text-text-tertiary">
-              包装扫描 · 本包可取 {maxForCase2} {unit}
+            已取{" "}
+            <span className={`font-mono ${done ? "text-primary" : "text-foreground"}`}>
+              {taken}
             </span>
-          )}
+            <span className="text-text-tertiary">/{needNum}</span>{" "}
+            <span className="text-text-tertiary">{unit}</span>
+          </span>
         </div>
 
-        {!disabled && (
-          <div className="mt-2">
-            {unitScannable ? (
-              // 情况一：单支码，逐一扫描
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={onScanOne}
-                  disabled={done}
-                  className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1 disabled:opacity-40"
+        {/* 扫描结果列表 */}
+        {entries.length > 0 && (
+          <ul className="mt-2 space-y-1.5">
+            {entries.map((e, idx) => {
+              const max = maxForEntry(idx);
+              return (
+                <li
+                  key={`${e.code}-${idx}`}
+                  className="flex items-center gap-2 text-caption"
                 >
-                  <ScanLine className="h-4 w-4" /> 扫码 +1
-                </button>
-                {currentQty > 0 && (
-                  <button
-                    type="button"
-                    onClick={onReset}
-                    className="h-9 px-3 rounded-lg border border-border text-body-sm text-text-secondary inline-flex items-center gap-1"
-                  >
-                    <RotateCcw className="h-3.5 w-3.5" /> 重置
-                  </button>
-                )}
-              </div>
-            ) : currentQty === 0 ? (
-              // 情况二未扫包装
-              <button
-                type="button"
-                onClick={onScanPack}
-                className="w-full h-9 rounded-lg bg-primary text-primary-foreground text-body-sm inline-flex items-center justify-center gap-1"
-              >
-                <ScanLine className="h-4 w-4" /> 扫描包装二维码
-              </button>
-            ) : (
-              // 情况二：包装已扫，输入数量
-              <div className="flex items-center gap-2">
-                <div className="flex items-center rounded-lg border border-border bg-card overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={() => onDelta(-1)}
-                    disabled={currentQty <= 1}
-                    className="h-9 w-9 inline-flex items-center justify-center text-text-secondary disabled:opacity-40"
-                    aria-label="减少"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </button>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={currentQty}
-                    onChange={(e) => onInput(e.target.value)}
-                    className="w-12 h-9 text-center font-mono text-body-sm bg-transparent focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => onDelta(1)}
-                    disabled={currentQty >= maxForCase2}
-                    className="h-9 w-9 inline-flex items-center justify-center text-text-secondary disabled:opacity-40"
-                    aria-label="增加"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
-                </div>
-                <span className="text-caption text-text-tertiary flex-1">
-                  {unit}（1 – {maxForCase2}）
-                </span>
-                <button
-                  type="button"
-                  onClick={onReset}
-                  className="h-9 px-2.5 rounded-lg border border-border text-caption text-text-secondary inline-flex items-center gap-1"
-                >
-                  <RotateCcw className="h-3 w-3" />
-                </button>
-              </div>
-            )}
-          </div>
+                  <span className="font-mono text-text-secondary truncate flex-1">
+                    {e.code}
+                  </span>
+                  {unitScannable ? (
+                    <span className="font-mono text-foreground">
+                      ×1 {unit}
+                    </span>
+                  ) : (
+                    <div className="inline-flex items-center rounded-md border border-border overflow-hidden">
+                      <button
+                        type="button"
+                        disabled={disabled || e.qty <= 1}
+                        onClick={() =>
+                          updateScannedEntryQty(
+                            pickupId,
+                            item.name,
+                            idx,
+                            Math.max(1, e.qty - 1),
+                          )
+                        }
+                        className="h-7 w-7 inline-flex items-center justify-center text-text-secondary disabled:opacity-40"
+                        aria-label="减少"
+                      >
+                        <Minus className="h-3.5 w-3.5" />
+                      </button>
+                      <span className="min-w-[2.25rem] text-center font-mono text-body-sm">
+                        {e.qty}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={disabled || e.qty >= max}
+                        onClick={() =>
+                          updateScannedEntryQty(
+                            pickupId,
+                            item.name,
+                            idx,
+                            Math.min(max, e.qty + 1),
+                          )
+                        }
+                        className="h-7 w-7 inline-flex items-center justify-center text-text-secondary disabled:opacity-40"
+                        aria-label="增加"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                  {!disabled && (
+                    <button
+                      type="button"
+                      onClick={() => removeScannedEntry(pickupId, item.name, idx)}
+                      aria-label="删除"
+                      className="h-7 w-7 inline-flex items-center justify-center text-text-tertiary hover:text-foreground"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
     </div>
