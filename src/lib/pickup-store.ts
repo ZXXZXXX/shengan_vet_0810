@@ -5,7 +5,18 @@ export type PickupItem = {
   spec?: string;
   qty: string;
   stock?: string; // 当前库存
+  /** 情况一：最小单位有二维码，每个都可单独扫码录入。情况二（false）：仅上级包装有码，按包扫描后输入数量。 */
+  unitScannable?: boolean;
+  /** 情况二专用：该药品当前打开包装内剩余数量（用于限定最大可取数量） */
+  packRemain?: number;
 };
+
+/** 从「2 瓶」「6 支」等文本中解析数量与单位 */
+export function parseQty(qty: string): { num: number; unit: string } {
+  const m = qty.match(/^\s*(\d+(?:\.\d+)?)\s*(.*)$/);
+  if (!m) return { num: 0, unit: "" };
+  return { num: Number(m[1]), unit: (m[2] ?? "").trim() };
+}
 
 export type PickupResult = "claimed" | "invalidated";
 
@@ -33,8 +44,8 @@ export const PICKUPS: Pickup[] = [
     visitor: "张磊（场长）",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", unitScannable: true },
+      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", unitScannable: false, packRemain: 20 },
     ],
   },
   {
@@ -116,7 +127,7 @@ export const PICKUP_HISTORY: Pickup[] = [
 
 const KEY = "mp:pickup-claimed";
 const INVALIDATED_KEY = "mp:pickup-invalidated";
-const SCANNED_ITEMS_KEY = "mp:pickup-scanned-items";
+const SCANNED_QTY_KEY = "mp:pickup-scanned-qty";
 const listeners = new Set<() => void>();
 
 function readSet(key: string): Set<string> {
@@ -139,11 +150,11 @@ function readInvalidatedMap(): Record<string, string> {
   }
 }
 
-function readScannedItemsMap(): Record<string, string[]> {
+function readScannedQtyMap(): Record<string, Record<string, number>> {
   if (typeof window === "undefined") return {};
   try {
-    const raw = localStorage.getItem(SCANNED_ITEMS_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
+    const raw = localStorage.getItem(SCANNED_QTY_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, Record<string, number>>) : {};
   } catch {
     return {};
   }
@@ -151,46 +162,39 @@ function readScannedItemsMap(): Record<string, string[]> {
 
 let claimedSnapshot: string[] = typeof window === "undefined" ? [] : Array.from(readSet(KEY));
 let invalidatedSnapshot: Record<string, string> = typeof window === "undefined" ? {} : readInvalidatedMap();
-let scannedItemsSnapshot: Record<string, string[]> = typeof window === "undefined" ? {} : readScannedItemsMap();
+let scannedQtySnapshot: Record<string, Record<string, number>> = typeof window === "undefined" ? {} : readScannedQtyMap();
 
 function refresh() {
   claimedSnapshot = Array.from(readSet(KEY));
   invalidatedSnapshot = readInvalidatedMap();
-  scannedItemsSnapshot = readScannedItemsMap();
+  scannedQtySnapshot = readScannedQtyMap();
   listeners.forEach((fn) => fn());
 }
 
-export function scanPickupItem(pickupId: string, itemName: string) {
+export function setScanQty(pickupId: string, itemName: string, qty: number) {
   if (typeof window === "undefined") return;
-  const map = readScannedItemsMap();
-  const cur = new Set(map[pickupId] ?? []);
-  cur.add(itemName);
-  map[pickupId] = Array.from(cur);
-  localStorage.setItem(SCANNED_ITEMS_KEY, JSON.stringify(map));
+  const map = readScannedQtyMap();
+  const cur = { ...(map[pickupId] ?? {}) };
+  if (qty <= 0) delete cur[itemName];
+  else cur[itemName] = qty;
+  map[pickupId] = cur;
+  localStorage.setItem(SCANNED_QTY_KEY, JSON.stringify(map));
   refresh();
 }
 
-export function unscanPickupItem(pickupId: string, itemName: string) {
-  if (typeof window === "undefined") return;
-  const map = readScannedItemsMap();
-  const cur = new Set(map[pickupId] ?? []);
-  cur.delete(itemName);
-  map[pickupId] = Array.from(cur);
-  localStorage.setItem(SCANNED_ITEMS_KEY, JSON.stringify(map));
-  refresh();
-}
-
-export function useScannedItems(pickupId: string): string[] {
+export function useScannedQty(pickupId: string): Record<string, number> {
   const all = useSyncExternalStore(
     (cb) => {
       listeners.add(cb);
       return () => listeners.delete(cb);
     },
-    () => scannedItemsSnapshot,
-    () => scannedItemsSnapshot,
+    () => scannedQtySnapshot,
+    () => scannedQtySnapshot,
   );
-  return all[pickupId] ?? [];
+  return all[pickupId] ?? {};
 }
+
+
 
 
 export function claimPickup(id: string) {
@@ -280,8 +284,8 @@ export function getPickup(id: string): Pickup | null {
     visitor: "王医生",
     warehouse: "中央药房 · A 区货架 03",
     items: [
-      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
-      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶", unitScannable: true },
+      { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支", unitScannable: false, packRemain: 20 },
     ],
   };
 }
