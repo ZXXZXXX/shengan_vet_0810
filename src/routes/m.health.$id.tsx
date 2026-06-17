@@ -1480,7 +1480,7 @@ function ChecklistDay({
                 </div>
               ) : (
                 <Link
-                  to="/m/health/$id_/execute/$pickupId"
+                  to="/m/health/$id/execute/$pickupId"
                   params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
                   className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
                   style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
