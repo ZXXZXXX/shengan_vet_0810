@@ -35,7 +35,6 @@ export const PICKUPS: Pickup[] = [
     items: [
       { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
       { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
-      { name: "一次性注射器", spec: "20ml", qty: "8 支", stock: "320 支" },
     ],
   },
   {
@@ -48,7 +47,6 @@ export const PICKUPS: Pickup[] = [
     warehouse: "冷链库 · 冷柜 #3",
     items: [
       { name: "口蹄疫疫苗 A 型", spec: "10ml / 支", qty: "8 支", stock: "60 支" },
-      { name: "保温运输袋", spec: "小号", qty: "1 个", stock: "12 个" },
     ],
   },
 ];
@@ -80,7 +78,6 @@ export const PICKUP_HISTORY: Pickup[] = [
     warehouse: "中央药房 · A 区货架 05",
     items: [
       { name: "蹄浴液", spec: "5L / 桶", qty: "1 桶" },
-      { name: "绷带", spec: "宽型", qty: "2 卷" },
     ],
     result: "claimed",
     handledAt: "昨日 10:30",
@@ -102,14 +99,14 @@ export const PICKUP_HISTORY: Pickup[] = [
   },
   {
     id: "PK-2072",
-    title: "疫苗冷藏运输袋领取",
-    source: "LS-2072",
+    title: "退烧药品领取",
+    source: "WO-2072",
     barn: "3 号牛舍",
     approvedAt: "05-23 08:30",
     visitor: "王芳（兽医）",
-    warehouse: "冷链库 · 冷柜 #2",
+    warehouse: "中央药房 · A 区货架 02",
     items: [
-      { name: "保温运输袋", spec: "大号", qty: "1 个" },
+      { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "1 瓶" },
     ],
     result: "invalidated",
     handledAt: "05-23 09:00",
@@ -285,7 +282,6 @@ export function getPickup(id: string): Pickup | null {
     items: [
       { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "2 瓶", stock: "12 瓶" },
       { name: "头孢噻呋钠", spec: "1g / 支", qty: "6 支", stock: "48 支" },
-      { name: "一次性注射器", spec: "20ml", qty: "8 支", stock: "320 支" },
     ],
   };
 }
