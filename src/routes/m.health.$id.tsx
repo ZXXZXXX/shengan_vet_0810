@@ -1036,8 +1036,8 @@ type ExecItem = {
 };
 
 // 根据处方拆解每日任务：每种药品 = 一次任务（需扫码核验），加上不需用药的常规任务（如测温）
-function buildDayItems(day: number, _tags: string[]): ExecItem[] {
-  return [
+function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem[] {
+  const items: ExecItem[] = [
     {
       id: `d${day}-t1`,
       title: "氟尼辛葡甲胺注射液",
@@ -1053,6 +1053,16 @@ function buildDayItems(day: number, _tags: string[]): ExecItem[] {
       needMed: true,
     },
   ];
+  if (withTemp) {
+    items.push({
+      id: `d${day}-temp`,
+      title: "每日测温",
+      desc: "测量并记录当日直肠体温",
+      status: "pending",
+      needMed: false,
+    });
+  }
+  return items;
 }
 
 // === 执行任务（详情页只读摘要） ===
