@@ -181,11 +181,17 @@ function PickupItemRow({
   );
 
   const attemptsRef = useRef(0);
+  const [scanner, setScanner] = useState<null | {
+    manufacturer: string;
+    batch: string;
+    code: string;
+    packRemain?: number;
+    blocked?: string;
+  }>(null);
 
-  const onScan = () => {
+  const openScanner = () => {
     if (disabled || remainingNeed <= 0) return;
     const attempt = attemptsRef.current;
-    // 模拟扫码：基于点击次数循环厂商（包含被拦截的扫描），便于演示拦截后再次扫描可继续流程
     const picked =
       sources.length > 0
         ? sources[attempt % sources.length]
@@ -194,10 +200,34 @@ function PickupItemRow({
     const batch = genBatch();
     attemptsRef.current = attempt + 1;
 
-    // 不允许混用：若已存在不同厂商记录，拦截（仅提示，不写入）
-    if (!allowMix && existingMfrs.length > 0 && !existingMfrs.includes(manufacturer)) {
+    const blocked =
+      !allowMix && existingMfrs.length > 0 && !existingMfrs.includes(manufacturer)
+        ? existingMfrs[0]
+        : undefined;
+
+    if (unitScannable) {
+      setScanner({ manufacturer, batch, code: genScanCode("UNIT"), blocked });
+    } else {
+      const remainPool = [4, 16, 8];
+      const packRemain = remainPool[entries.length % remainPool.length];
+      setScanner({
+        manufacturer,
+        batch,
+        code: genScanCode("PACK"),
+        packRemain,
+        blocked,
+      });
+    }
+  };
+
+  const commitScan = () => {
+    if (!scanner) return;
+    const { manufacturer, batch, code, packRemain, blocked } = scanner;
+    setScanner(null);
+
+    if (blocked) {
       toast.warning(
-        `该药品不允许多厂商混用，已使用「${existingMfrs[0]}」，请勿扫描「${manufacturer}」`,
+        `该药品不允许多厂商混用，已使用「${blocked}」，请勿扫描「${manufacturer}」`,
         {
           style: {
             background: "#FFF7E6",
@@ -210,25 +240,17 @@ function PickupItemRow({
     }
 
     if (unitScannable) {
-      addScannedEntry(pickupId, item.name, {
-        code: genScanCode("UNIT"),
-        qty: 1,
-        manufacturer,
-        batch,
-      });
+      addScannedEntry(pickupId, item.name, { code, qty: 1, manufacturer, batch });
       if (taken + 1 === needNum) toast.success(`已扫齐 · ${item.name}`);
     } else {
-      // 演示：每次扫描的包装内剩余量不同，循环 [4, 16, 8]
-      const remainPool = [4, 16, 8];
-      const packRemain = remainPool[entries.length % remainPool.length];
       addScannedEntry(pickupId, item.name, {
-        code: genScanCode("PACK"),
+        code,
         qty: 1,
         packRemain,
         manufacturer,
         batch,
       });
-      if (packRemain < remainingNeed) {
+      if ((packRemain ?? 0) < remainingNeed) {
         toast.warning(`包内仅余 ${packRemain} ${unit}，请继续扫描其他包装`, {
           style: {
             background: "#FFF7E6",
@@ -241,6 +263,7 @@ function PickupItemRow({
       }
     }
   };
+
 
   const maxForEntry = (idx: number) => {
     if (unitScannable) return 1;
