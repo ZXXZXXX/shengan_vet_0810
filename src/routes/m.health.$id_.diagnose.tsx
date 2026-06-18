@@ -1808,7 +1808,7 @@ function DrugEditor({
             <div className="space-y-1.5">
               <span className="text-caption text-text-tertiary">使用方式</span>
               <div className="flex flex-wrap gap-1.5">
-                {useMethods.map((m) => {
+                {(matched?.allowedUses ?? useMethods).map((m) => {
                   const active = value.use === m;
                   const recommended = matched?.recommendedUse === m;
                   return (
@@ -1837,6 +1837,11 @@ function DrugEditor({
                   );
                 })}
               </div>
+              {matched && (
+                <div className="text-caption text-text-tertiary">
+                  根据药品说明书，仅可选择以上使用方式
+                </div>
+              )}
             </div>
 
             {/* 区分用药时间段 切换 */}
