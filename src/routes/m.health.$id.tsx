@@ -82,10 +82,16 @@ function cleanName(n: string) {
 const statusById: Record<string, StatusKey> = {
   "WO-2381": "待诊断",
   "WO-2298": "进行中",
+  "WO-2299": "进行中",
+  "WO-2300": "进行中",
+  "WO-2301": "进行中",
+  "WO-2302": "进行中",
+  "WO-2303": "进行中",
   "WO-2401": "进行中",
   "WO-2420": "进行中",
   "WO-2430": "进行中",
   "WO-2440": "进行中",
+  "PP-2501": "进行中",
   "WO-2324": "已终止",
   "WO-2199": "已完成",
   "HF-0702": "进行中",
@@ -468,12 +474,19 @@ function TaskDetailPage() {
         // 复查任务已触发：按工单显式标记，而非所有疾病进行中工单
         const hasReviewTask =
           isDisease && o.status === "进行中" && !isObserving && !isObsExpired && reviewTaskOrders.has(id);
-        // 兽医 / 场长视角：仅在触发复查任务时显示「开始执行」（进入复查页填写复查结论）
+        // 兽医 / 场长视角：待复查进入复查页；待执行的疾病治疗/产后护理进入执行页
         // 助理/修蹄/免疫等执行角色：常规进行中工单显示「开始执行」，但若已触发复查任务则不显示
-        const showExecVet = (role === "vet" || role === "manager") && hasReviewTask;
+        const showReviewVet = (role === "vet" || role === "manager") && hasReviewTask;
+        const showExecVet =
+          (role === "vet" || role === "manager") &&
+          o.status === "进行中" &&
+          !isObserving &&
+          !isObsExpired &&
+          !hasReviewTask &&
+          (o.type === "疾病治疗" || o.type === "产后护理");
         const showExecOther =
           canExecute(role) && role !== "vet" && o.status === "进行中" && !isObserving && !isObsExpired && !hasReviewTask;
-        const showExec = showExecVet || showExecOther;
+        const showExec = showReviewVet || showExecVet || showExecOther;
         const showRevisitReport = isObserving && role === "vet_assistant";
         const showConfirmCure = isObsExpired && role === "vet_assistant";
 
@@ -507,7 +520,7 @@ function TaskDetailPage() {
               )
             )}
             {showExec && (
-              showExecVet ? (
+              showReviewVet ? (
                 <Link
                   to="/m/health/$id/review"
                   params={{ id: o.id }}
