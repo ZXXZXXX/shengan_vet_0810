@@ -132,6 +132,22 @@ function TodayTasksPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<"batch" | null>(null);
   const claimed = useClaimed();
+  const { capture } = Route.useSearch();
+
+  // 领药完成后回到此页：自动进入多选 + 触发拍照记录步骤
+  useEffect(() => {
+    if (!capture) return;
+    const ids = capture.split(",").filter(Boolean);
+    setActiveTab("待执行");
+    setSelectMode(true);
+    setSelected(new Set(ids));
+    setDone("batch");
+    navigate({
+      to: "/m/health/today",
+      search: { capture: undefined },
+      replace: true,
+    });
+  }, [capture, navigate]);
 
   // 当前 tab 下的任务，叠加牛舍筛选
   const tabTasks = useMemo(
