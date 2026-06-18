@@ -14,7 +14,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
-import { PICKUPS, parseQty, useClaimed } from "@/lib/pickup-store";
+import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import {
   homeTasks,
   diseaseTaskMeta,
