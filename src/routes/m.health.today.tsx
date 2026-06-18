@@ -49,6 +49,29 @@ function pickupForWO(woId: string) {
   return PICKUPS.find((p) => p.source === woId);
 }
 
+// 任务的具体动作描述（执行类任务展示在卡片副信息位）
+const TASK_ACTION: Record<string, string> = {
+  "WO-2299": "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录",
+  "WO-2300": "氯前列烯醇 2ml IM + 子宫冲洗",
+  "WO-2301": "氟苯尼考 15ml IM + 测温记录",
+  "WO-2302": "削蹄 + 碘酊涂擦 + 绷带包扎",
+  "WO-2303": "丙二醇 300ml 灌服 + 葡萄糖 500ml IV",
+  "WO-2298": "测温 + 乳样采集复查",
+  "WO-2440": "测温 + 乳房触诊复查",
+  "PP-2501": "产后 3 天护理：测温 + 恶露检查 + 灌服补液",
+};
+
+// 待诊断任务展示主诉/症状概述
+const DIAG_BRIEF: Record<string, string> = {
+  "WO-2381": "乳房红肿、产奶量下降",
+  "WO-2382": "采食量骤降、精神沉郁",
+  "WO-2383": "呼气有丙酮味、产奶量下降",
+  "WO-2384": "乳区硬块、乳汁絮状",
+  "WO-2385": "阴道排出脓性分泌物",
+  "WO-2386": "跛行、蹄部红肿",
+  "WO-2387": "水样腹泻、脱水",
+};
+
 type StatusTab = "待诊断" | "待执行" | "待复查";
 
 function getRoleTabs(role: Role): StatusTab[] {
@@ -403,14 +426,18 @@ function TodayTasksPage() {
                 ? "/m/health/$id/review"
                 : "/m/health/$id";
 
-            const diseaseName =
-              t.type === "疾病治疗"
-                ? diseaseTaskMeta[t.id]?.disease ?? "疾病不详"
-                : t.conclusion;
             const cattleId = t.target.startsWith("#") ? t.target : null;
             const groupTarget = cattleId ? null : t.target;
             const pk = activeTab === "待执行" ? pickupForWO(t.id) : null;
             const pickupClaimed = pk ? claimed.includes(pk.id) : false;
+
+            const actionLine =
+              activeTab === "待诊断"
+                ? DIAG_BRIEF[t.id] ?? "症状待评估"
+                : TASK_ACTION[t.id] ??
+                  (activeTab === "待复查" ? "测温 + 复查评估" : "执行处方");
+            const actionLabel =
+              activeTab === "待诊断" ? "主诉" : activeTab === "待复查" ? "复查" : "动作";
 
             const inner = (
               <div className="p-3.5">
@@ -445,24 +472,21 @@ function TodayTasksPage() {
                   </div>
                 </div>
 
-                {/* 主体:左侧 1px 直线 + 牛只耳号(主) + 任务概述(次) */}
+                {/* 主体:左侧 1px 直线 + 牛只耳号(主, 牛舍右侧) + 具体动作(次) */}
                 <div className="mt-2.5 pl-2.5 border-l border-primary">
                   <div className="text-caption text-text-tertiary">牛只耳号</div>
-                  <div className="text-page-title font-medium text-foreground font-mono truncate mt-0.5 leading-tight">
-                    {cattleId ?? groupTarget}
-                  </div>
-                  <div className="mt-1 text-body text-text-secondary truncate">
-                    <span className="text-text-tertiary mr-1">
-                      {t.type === "疾病治疗" ? "疾病" : "诊断"}
+                  <div className="mt-0.5 flex items-baseline gap-2.5 min-w-0">
+                    <span className="text-page-title font-medium text-foreground font-mono truncate leading-tight">
+                      {cattleId ?? groupTarget}
                     </span>
-                    {diseaseName}
+                    <span className="text-caption text-text-tertiary shrink-0 truncate">
+                      {barn}
+                    </span>
                   </div>
-                </div>
-
-                {/* 牛舍 */}
-                <div className="mt-2.5 flex items-center gap-1 text-caption text-text-secondary">
-                  <span className="text-text-tertiary">牛舍</span>
-                  <span className="text-text-secondary truncate">{barn}</span>
+                  <div className="mt-1.5 text-body text-text-secondary line-clamp-2 leading-snug">
+                    <span className="text-text-tertiary mr-1">{actionLabel}</span>
+                    {actionLine}
+                  </div>
                 </div>
 
                 {/* 底部:取药状态 + 操作箭头 */}
