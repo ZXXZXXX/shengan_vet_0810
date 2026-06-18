@@ -98,17 +98,6 @@ const tabs: { key: Status | "全部" | "执行中"; label: string }[] = [
   { key: "已终止", label: "已终止" },
 ];
 
-// 兽医/场长视角：把“执行中”拆为“待执行/待复查”
-const vetTabs: { key: Status | "全部" | "待执行" | "待复查"; label: string }[] = [
-  { key: "全部", label: "全部" },
-  { key: "待诊断", label: "待诊断" },
-  { key: "待执行", label: "待执行" },
-  { key: "待复查", label: "待复查" },
-  { key: "已完成", label: "已完成" },
-  { key: "已终止", label: "已终止" },
-];
-
-
 
 const statusTone: Record<Status, { tag: string; icon: typeof PlayCircle; color: string }> = {
   待诊断: { tag: "tag tag-warning", icon: ClipboardList, color: "" },
@@ -173,16 +162,14 @@ function diseaseTitleParts(o: Task) {
 function TaskListPage() {
   const role = useRole();
   const isVisitor = canVisit(role);
-  const isVetRole = role === "vet" || role === "manager";
-  const activeTabs = isVetRole ? vetTabs : tabs;
   const claimed = useClaimed();
   const search = Route.useSearch();
-  const initialTab: (typeof activeTabs)[number]["key"] = search.tab === "执行中"
-    ? (isVetRole ? "待执行" : "执行中")
+  const initialTab: (typeof tabs)[number]["key"] = search.tab === "执行中"
+    ? "执行中"
     : isVisitor
       ? "待诊断"
       : "全部";
-  const [tab, setTab] = useState<(typeof activeTabs)[number]["key"]>(initialTab);
+  const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(initialTab);
   const [q, setQ] = useState("");
   const typeFilter = search.type;
 
@@ -193,16 +180,13 @@ function TaskListPage() {
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (role === "immunizer") list = list.filter((t) => t.type === "免疫");
   if (role === "vet_assistant") list = list.filter((t) => t.type === "疾病治疗" || t.type === "产后护理");
-  if (isVetRole) list = list.filter((t) => t.type === "疾病治疗" || t.type === "产后护理");
+  if (role === "vet" || role === "manager") list = list.filter((t) => t.type === "疾病治疗" || t.type === "产后护理");
 
   if (typeFilter) {
     list = list.filter((o) => o.type === typeFilter || (typeFilter === "疫苗免疫" && o.type === "免疫"));
   }
   if (tab === "执行中") list = list.filter((o) => o.status === "进行中");
-  else if (tab === "待执行") list = list.filter((o) => o.status === "进行中" && !reviewTaskSet.has(o.id));
-  else if (tab === "待复查") list = list.filter((o) => o.status === "进行中" && reviewTaskSet.has(o.id));
   else if (tab !== "全部") list = list.filter((o) => o.status === tab);
-
 
   const kw = q.trim().toLowerCase();
   if (kw) {
@@ -236,7 +220,7 @@ function TaskListPage() {
 
       {/* 状态 Tabs */}
       <div className="px-4 mt-3 flex gap-1.5 overflow-x-auto no-scrollbar">
-        {activeTabs.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
@@ -250,7 +234,6 @@ function TaskListPage() {
           </button>
         ))}
       </div>
-
 
 
       {/* 列表 —— 按牛舍分组 */}
