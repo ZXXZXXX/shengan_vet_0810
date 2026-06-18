@@ -276,15 +276,6 @@ function TodayTasksPage() {
             {roleLabel[role]} · {barnLabel} · {tasks.length} 项
           </div>
         </div>
-        {!selectMode && tasks.length > 0 && (
-          <button
-            type="button"
-            onClick={enterSelect}
-            className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
-          >
-            批量执行
-          </button>
-        )}
         {selectMode && tasks.length > 0 && (
           <button
             type="button"
