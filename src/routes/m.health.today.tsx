@@ -529,7 +529,16 @@ function TodayTasksPage() {
               <button
                 type="button"
                 disabled={count === 0}
-                onClick={() => setDrugSheet(true)}
+                onClick={() => {
+                  const ids = selectedTasks
+                    .filter((t) => pickupForWO(t.id))
+                    .map((t) => t.id)
+                    .join(",");
+                  navigate({
+                    to: "/m/health/today/pickup",
+                    search: { ids },
+                  });
+                }}
                 className="w-full h-11 rounded-full bg-warning text-white text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:opacity-90"
               >
                 <Package className="h-4 w-4" />
@@ -551,113 +560,6 @@ function TodayTasksPage() {
         );
       })()}
 
-      {/* 药品合并清单 sheet */}
-      {drugSheet && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
-          onClick={() => setDrugSheet(false)}
-        >
-          <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[80vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-4 pt-4 pb-3 border-b border-border">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-card-title text-foreground">
-                    合并领药清单
-                  </div>
-                  <div className="text-caption text-text-tertiary mt-0.5">
-                    覆盖 {aggregationTasks.length} 头牛 · {aggregatedDrugs.length} 种药品
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setDrugSheet(false)}
-                  className="h-8 w-8 inline-flex items-center justify-center rounded-lg active:bg-surface-subtle"
-                  aria-label="关闭"
-                >
-                  <X className="h-4 w-4 text-text-secondary" />
-                </button>
-              </div>
-            </div>
-            <div className="overflow-y-auto px-4 py-3 space-y-2 flex-1">
-              {aggregatedDrugs.length === 0 ? (
-                <div className="py-8 text-center text-body-sm text-text-tertiary">
-                  当前范围无需领药
-                </div>
-              ) : (
-                aggregatedDrugs.map((d) => (
-                  <div
-                    key={d.name + (d.spec ?? "")}
-                    className="rounded-xl border border-border bg-card p-3"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="text-body font-medium text-foreground truncate">
-                          {d.name}
-                        </div>
-                        {d.spec && (
-                          <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                            {d.spec}
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-right shrink-0">
-                        <div className="text-body font-semibold text-primary tabular-nums">
-                          {d.qty}
-                          <span className="text-caption text-text-tertiary font-normal ml-0.5">
-                            {d.unit}
-                          </span>
-                        </div>
-                        <div className="text-caption text-text-tertiary">
-                          共 {d.breakdown.length} 头
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-2 pt-2 border-t border-border/60 space-y-1">
-                      {d.breakdown.map((row, i) => (
-                        <div
-                          key={row.woId + i}
-                          className="flex items-center justify-between text-caption"
-                        >
-                          <span className="inline-flex items-center gap-1.5 min-w-0">
-                            <span className="font-mono text-text-secondary truncate">
-                              {row.cattle}
-                            </span>
-                            <span className="text-text-tertiary shrink-0">
-                              · {row.barn}
-                            </span>
-                          </span>
-                          <span className="text-text-secondary tabular-nums shrink-0">
-                            {row.qty}
-                            <span className="text-text-tertiary ml-0.5">
-                              {row.unit}
-                            </span>
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            <div className="px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] border-t border-border">
-              <button
-                type="button"
-                onClick={() => {
-                  setDrugSheet(false);
-                  setDone("claim");
-                }}
-                disabled={aggregatedDrugs.length === 0}
-                className="w-full h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
-              >
-                前往药房统一领取
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 完成弹窗 */}
       {done && (
