@@ -374,18 +374,11 @@ function TodayTasksPage() {
                 </div>
               </div>
             </div>
-            <div className="mt-2.5 pt-2.5 border-t border-warning/20 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setDrugSheet(true)}
-                className="flex-1 h-9 rounded-lg text-body-sm text-warning bg-warning/10 active:bg-warning/20 inline-flex items-center justify-center"
-              >
-                查看药品清单
-              </button>
+            <div className="mt-2.5 pt-2.5 border-t border-warning/20">
               <button
                 type="button"
                 onClick={enterSelect}
-                className="flex-1 h-9 rounded-lg text-body-sm font-medium text-white bg-warning active:opacity-90 inline-flex items-center justify-center gap-1"
+                className="w-full h-9 rounded-lg text-body-sm font-medium text-white bg-warning active:opacity-90 inline-flex items-center justify-center gap-1"
               >
                 批量执行
                 <ChevronRight className="h-3.5 w-3.5" />
