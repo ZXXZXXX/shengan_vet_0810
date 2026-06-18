@@ -440,31 +440,31 @@ function TodayTasksPage() {
               activeTab === "待诊断" ? "主诉" : activeTab === "待复查" ? "复查" : "动作";
 
             const inner = (
-              <div className="p-3.5">
-                {/* 顶部:icon + 工单类型 + 工单编号 + 状态 chip */}
-                <div className="flex items-center gap-2">
+              <div className="px-3.5 py-3">
+                {/* 顶部:类型 + 编号 + 状态 */}
+                <div className="flex items-center gap-1.5">
                   <span
-                    className={`h-7 w-7 rounded-full ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0 ring-1 ring-current/10`}
+                    className={`h-5 w-5 rounded-full ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
                   >
-                    <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                    <Icon className="h-3 w-3" strokeWidth={2} />
                   </span>
-                  <span className="text-body font-medium text-foreground">{t.type}</span>
+                  <span className="text-body-sm text-text-secondary">{t.type}</span>
                   <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
                   <div className="ml-auto">
                     {selectMode ? (
                       <span
-                        className={`h-5 w-5 rounded-md inline-flex items-center justify-center shrink-0 border ${
+                        className={`h-[18px] w-[18px] rounded inline-flex items-center justify-center shrink-0 border ${
                           checked
                             ? "bg-primary border-primary text-primary-foreground"
                             : "border-border bg-card"
                         }`}
                         aria-hidden
                       >
-                        {checked && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                        {checked && <Check className="h-3 w-3" strokeWidth={3} />}
                       </span>
                     ) : chip ? (
                       <span
-                        className={`inline-flex items-center px-1.5 h-[20px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
+                        className={`inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
                       >
                         {chip}
                       </span>
@@ -472,58 +472,49 @@ function TodayTasksPage() {
                   </div>
                 </div>
 
-                {/* 主体:左侧 1px 直线 + 牛只耳号(主, 牛舍右侧) + 具体动作(次) */}
-                <div className="mt-2.5 pl-2.5 border-l border-primary">
-                  <div className="text-caption text-text-tertiary">牛只耳号</div>
-                  <div className="mt-0.5 flex items-baseline gap-2.5 min-w-0">
-                    <span className="text-page-title font-medium text-foreground font-mono truncate leading-tight">
+                {/* 主体 */}
+                <div className="mt-2 pl-2.5 border-l border-primary">
+                  <div className="flex items-baseline gap-2 min-w-0">
+                    <span className="text-[15px] font-semibold text-foreground font-mono leading-tight truncate">
                       {cattleId ?? groupTarget}
                     </span>
                     <span className="text-caption text-text-tertiary shrink-0 truncate">
                       {barn}
                     </span>
                   </div>
-                  <div className="mt-1.5 text-body text-text-secondary line-clamp-2 leading-snug">
+                  <div className="mt-1 text-body-sm text-text-secondary truncate">
                     <span className="text-text-tertiary mr-1">{actionLabel}</span>
                     {actionLine}
                   </div>
                 </div>
 
-                {/* 底部:取药状态 + 操作箭头 */}
-                <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between">
+                {/* 底部:领物 + 操作 */}
+                <div className="mt-2.5 flex items-center justify-between">
                   {activeTab === "待执行" ? (
-                    !pk ? (
-                      <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
-                        <Package className="h-3 w-3" />
-                        <span>领物</span>
+                    <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                      <Package className="h-3 w-3" />
+                      <span>领物</span>
+                      {!pk ? (
                         <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-surface-subtle text-text-tertiary">
                           无需
                         </span>
-                      </span>
-                    ) : pickupClaimed ? (
-                      <span className="inline-flex items-center gap-1 text-caption text-text-secondary">
-                        <Package className="h-3 w-3" />
-                        <span>领物</span>
+                      ) : pickupClaimed ? (
                         <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[color-mix(in_oklab,var(--state-success)_15%,transparent)] text-[var(--state-success)]">
                           已领
                         </span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-caption text-text-secondary">
-                        <Package className="h-3 w-3 text-warning" />
-                        <span>领物</span>
+                      ) : (
                         <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[var(--state-warning)]/25 text-[var(--state-alert)]">
                           未领
                         </span>
-                      </span>
-                    )
+                      )}
+                    </span>
                   ) : (
                     <span />
                   )}
                   {!selectMode && (
-                    <span className="inline-flex items-center gap-0.5 text-caption text-primary">
+                    <span className="inline-flex items-center gap-0.5 text-body-sm text-primary">
                       {actionText}
-                      <ChevronRight className="h-3 w-3" />
+                      <ChevronRight className="h-3.5 w-3.5" />
                     </span>
                   )}
                 </div>
