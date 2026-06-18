@@ -206,7 +206,7 @@ function BatchPickupPage() {
             </span>
           </div>
           <div className="mt-2 text-section-title text-foreground">
-            已选 {woIds.length} 项任务 · 合并 {pickupIds.length} 张领取单
+            合并 {pickupIds.length} 张领取单
           </div>
           <div className="mt-1 text-caption text-text-tertiary">
             覆盖 {cattleCount} 头牛 · {totalCount} 种药品
