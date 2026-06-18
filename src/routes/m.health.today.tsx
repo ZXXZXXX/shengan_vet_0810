@@ -384,37 +384,6 @@ function TodayTasksPage() {
         </div>
       )}
 
-      {/* 聚合操作卡：引导批量执行 + 一次领药 */}
-      {tasks.length > 0 && pickupTasks.length > 0 && !selectMode && (
-        <div className="px-4 pt-3">
-          <div className="w-full rounded-2xl bg-warning/10 border border-warning/30 p-3.5">
-            <div className="flex items-center gap-3">
-              <span className="h-10 w-10 rounded-lg bg-warning/20 text-warning inline-flex items-center justify-center shrink-0">
-                <Package className="h-5 w-5" />
-              </span>
-              <div className="flex-1 min-w-0 text-left">
-                <div className="text-body-sm font-medium text-foreground">
-                  共 {pickupTasks.length} 项任务需领药 ·{" "}
-                  {aggregatedDrugs.length} 种药品
-                </div>
-                <div className="text-caption text-text-tertiary mt-0.5">
-                  建议「批量执行」合并取药，避免多次往返药房
-                </div>
-              </div>
-            </div>
-            <div className="mt-2.5 pt-2.5 border-t border-warning/20">
-              <button
-                type="button"
-                onClick={enterSelect}
-                className="w-full h-9 rounded-lg text-body-sm font-medium text-white bg-warning active:opacity-90 inline-flex items-center justify-center gap-1"
-              >
-                批量执行
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 列表 */}
       <div className={`px-4 pt-3 ${selectMode ? "pb-[120px]" : "pb-6"} space-y-2.5`}>
