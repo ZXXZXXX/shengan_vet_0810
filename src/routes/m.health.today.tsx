@@ -426,14 +426,18 @@ function TodayTasksPage() {
                 ? "/m/health/$id/review"
                 : "/m/health/$id";
 
-            const diseaseName =
-              t.type === "疾病治疗"
-                ? diseaseTaskMeta[t.id]?.disease ?? "疾病不详"
-                : t.conclusion;
             const cattleId = t.target.startsWith("#") ? t.target : null;
             const groupTarget = cattleId ? null : t.target;
             const pk = activeTab === "待执行" ? pickupForWO(t.id) : null;
             const pickupClaimed = pk ? claimed.includes(pk.id) : false;
+
+            const actionLine =
+              activeTab === "待诊断"
+                ? DIAG_BRIEF[t.id] ?? "症状待评估"
+                : TASK_ACTION[t.id] ??
+                  (activeTab === "待复查" ? "测温 + 复查评估" : "执行处方");
+            const actionLabel =
+              activeTab === "待诊断" ? "主诉" : activeTab === "待复查" ? "复查" : "动作";
 
             const inner = (
               <div className="p-3.5">
