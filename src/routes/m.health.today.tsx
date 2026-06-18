@@ -7,19 +7,19 @@ import {
   CheckCircle2,
   Package,
   X,
+  Camera,
+  Filter,
   ChevronRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
-import { useRole, roleLabel } from "@/lib/mobile-role";
-import { PICKUPS } from "@/lib/pickup-store";
+import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
+import { PICKUPS, parseQty } from "@/lib/pickup-store";
 import {
-  getRoleTasks,
-  roleFilterMap,
+  homeTasks,
   diseaseTaskMeta,
   taskChipStyle,
   typeMeta,
-  formatTimeAgo,
   truncateCJK,
   type HomeTask,
   type TaskChip,
@@ -29,6 +29,14 @@ export const Route = createFileRoute("/m/health/today")({
   head: () => ({ meta: [{ title: "今日工作任务 · 奇点智牧" }] }),
   component: TodayTasksPage,
 });
+
+/* ============================================================
+ * 工作任务页 —— 业务版
+ * 1. 按角色 + 状态分流：兽医/场长 = 待诊断 / 待执行 / 待复查
+ *    执行类角色（助理、免疫员、修蹄工）= 待执行
+ * 2. 牛舍筛选（多选 chip）—— 集中处理某几个牛舍的任务
+ * 3. 顶部聚合工具栏：选中范围内的「需领药品清单」+「批量记录执行」
+ * ============================================================ */
 
 function inferBarn(t: HomeTask): string {
   if (!t.target.startsWith("#")) return t.target.split(" · ")[0];
@@ -41,21 +49,115 @@ function pickupForWO(woId: string) {
   return PICKUPS.find((p) => p.source === woId);
 }
 
-function todayLabel() {
-  const d = new Date();
-  const w = ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
-  return `${d.getMonth() + 1} 月 ${d.getDate()} 日 · 星期${w}`;
+type StatusTab = "待诊断" | "待执行" | "待复查";
+
+function getRoleTabs(role: Role): StatusTab[] {
+  if (role === "vet" || role === "manager") return ["待诊断", "待执行", "待复查"];
+  return ["待执行"];
+}
+
+// 按角色获取候选任务全集（不区分状态 tab）
+function getRoleAllTasks(role: Role): HomeTask[] {
+  if (role === "vet" || role === "manager") {
+    return homeTasks.filter((t) => t.type === "疾病治疗");
+  }
+  if (role === "vet_assistant")
+    return homeTasks.filter(
+      (t) =>
+        t.type === "疾病治疗" &&
+        t.status === "进行中" &&
+        diseaseTaskMeta[t.id]?.task !== "待复查",
+    );
+  if (role === "immunizer")
+    return homeTasks.filter((t) => t.type === "疫苗免疫" && t.status === "进行中");
+  if (role === "hoof_trimmer")
+    return homeTasks.filter((t) => t.type === "修蹄" && t.status === "进行中");
+  return [];
+}
+
+function statusOf(t: HomeTask): StatusTab {
+  if (t.type === "疾病治疗") {
+    const meta = diseaseTaskMeta[t.id]?.task;
+    if (meta === "待诊断") return "待诊断";
+    if (meta === "待复查") return "待复查";
+    return "待执行";
+  }
+  return "待执行";
 }
 
 function TodayTasksPage() {
   const role = useRole();
   const navigate = useNavigate();
-  const tasks = useMemo<HomeTask[]>(() => getRoleTasks(role), [role]);
-  const filter = roleFilterMap[role];
+  const tabs = useMemo(() => getRoleTabs(role), [role]);
+  const allTasks = useMemo(() => getRoleAllTasks(role), [role]);
 
+  const [activeTab, setActiveTab] = useState<StatusTab>(tabs[0]);
+  const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [done, setDone] = useState(false);
+  const [drugSheet, setDrugSheet] = useState(false);
+  const [done, setDone] = useState<"claim" | "batch" | null>(null);
+
+  // 当前 tab 下的任务，叠加牛舍筛选
+  const tabTasks = useMemo(
+    () => allTasks.filter((t) => statusOf(t) === activeTab),
+    [allTasks, activeTab],
+  );
+
+  const allBarns = useMemo(() => {
+    const s = new Set<string>();
+    tabTasks.forEach((t) => s.add(inferBarn(t)));
+    return Array.from(s);
+  }, [tabTasks]);
+
+  const tasks = useMemo(
+    () =>
+      selectedBarns.size === 0
+        ? tabTasks
+        : tabTasks.filter((t) => selectedBarns.has(inferBarn(t))),
+    [tabTasks, selectedBarns],
+  );
+
+  // 当前范围内 需领药任务 & 聚合药品清单
+  const pickupTasks = useMemo(
+    () => tasks.filter((t) => pickupForWO(t.id)),
+    [tasks],
+  );
+  const aggregatedDrugs = useMemo(() => {
+    const map = new Map<
+      string,
+      { name: string; spec?: string; unit: string; qty: number; from: Set<string> }
+    >();
+    pickupTasks.forEach((t) => {
+      const pk = pickupForWO(t.id);
+      pk?.items.forEach((it) => {
+        const { num, unit } = parseQty(it.qty);
+        const key = it.name + "|" + (it.spec ?? "");
+        const cur = map.get(key);
+        if (cur) {
+          cur.qty += num;
+          cur.from.add(inferBarn(t));
+        } else {
+          map.set(key, {
+            name: it.name,
+            spec: it.spec,
+            unit,
+            qty: num,
+            from: new Set([inferBarn(t)]),
+          });
+        }
+      });
+    });
+    return Array.from(map.values());
+  }, [pickupTasks]);
+
+  const toggleBarn = (b: string) =>
+    setSelectedBarns((prev) => {
+      const next = new Set(prev);
+      if (next.has(b)) next.delete(b);
+      else next.add(b);
+      return next;
+    });
 
   const toggle = (id: string) =>
     setSelected((prev) => {
@@ -76,17 +178,16 @@ function TodayTasksPage() {
     setSelected(new Set());
   };
 
-  const count = selected.size;
+  const enterSelect = () => {
+    setSelectMode(true);
+    setSelected(new Set(tasks.map((t) => t.id))); // 默认全选当前筛选范围
+  };
 
-  const summary = useMemo(() => {
-    const barns = new Set<string>();
-    let pickupCount = 0;
-    tasks.forEach((t) => {
-      barns.add(inferBarn(t));
-      if (pickupForWO(t.id)) pickupCount += 1;
-    });
-    return { barnCount: barns.size, pickupCount };
-  }, [tasks]);
+  const count = selected.size;
+  const barnLabel =
+    selectedBarns.size === 0
+      ? `全部 ${allBarns.length} 个牛舍`
+      : `${selectedBarns.size} 个牛舍`;
 
   return (
     <MobileShell hideTabBar>
@@ -94,7 +195,9 @@ function TodayTasksPage() {
       <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border px-3 h-12 flex items-center gap-2">
         <button
           type="button"
-          onClick={() => (selectMode ? exitSelect() : navigate({ to: "/m/homepage" }))}
+          onClick={() =>
+            selectMode ? exitSelect() : navigate({ to: "/m/homepage" })
+          }
           className="h-9 w-9 -ml-1 inline-flex items-center justify-center rounded-lg active:bg-surface-subtle"
           aria-label={selectMode ? "退出多选" : "返回"}
         >
@@ -109,93 +212,158 @@ function TodayTasksPage() {
             {selectMode ? `已选 ${count} 项` : "今日工作任务"}
           </div>
           <div className="text-caption text-text-tertiary leading-tight truncate">
-            {roleLabel[role]} · {filter?.label ?? "全部"} · 共 {tasks.length} 项
+            {roleLabel[role]} · {barnLabel} · {tasks.length} 项
           </div>
         </div>
-        {tasks.length > 0 &&
-          (selectMode ? (
-            <button
-              type="button"
-              onClick={toggleAll}
-              className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
-            >
-              {allSelected ? "取消全选" : "全选"}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setSelectMode(true)}
-              className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
-            >
-              批量操作
-            </button>
-          ))}
+        {!selectMode && tasks.length > 0 && (
+          <button
+            type="button"
+            onClick={enterSelect}
+            className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
+          >
+            批量记录
+          </button>
+        )}
+        {selectMode && tasks.length > 0 && (
+          <button
+            type="button"
+            onClick={toggleAll}
+            className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
+          >
+            {allSelected ? "取消全选" : "全选"}
+          </button>
+        )}
       </header>
 
-      {/* 概览卡 */}
-      {tasks.length > 0 && (
-        <div className="px-4 pt-4">
-          <div className="rounded-2xl bg-card border border-border p-4">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-body-sm font-medium text-foreground">任务概览</span>
-              <span className="text-caption text-text-tertiary">{todayLabel()}</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-brand-subtle px-3 py-2.5">
-                <div className="text-caption text-primary/80 mb-0.5">涉及牛舍</div>
-                <div className="flex items-baseline gap-1 text-primary">
-                  <span className="text-[22px] leading-none font-semibold tabular-nums">
-                    {summary.barnCount}
-                  </span>
-                  <span className="text-caption text-text-tertiary">个</span>
-                </div>
-              </div>
-              <div
-                className={`rounded-xl px-3 py-2.5 ${
-                  summary.pickupCount > 0
-                    ? "bg-warning/10"
-                    : "bg-surface-subtle"
-                }`}
-              >
-                <div
-                  className={`text-caption mb-0.5 flex items-center gap-1 ${
-                    summary.pickupCount > 0 ? "text-warning" : "text-text-tertiary"
+      {/* 状态 tab */}
+      {tabs.length > 1 && (
+        <div className="sticky top-12 z-20 bg-card/95 backdrop-blur border-b border-border px-2">
+          <div className="flex">
+            {tabs.map((tb) => {
+              const tabCount = allTasks.filter((t) => statusOf(t) === tb).length;
+              const active = activeTab === tb;
+              return (
+                <button
+                  key={tb}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tb);
+                    setSelectedBarns(new Set());
+                    exitSelect();
+                  }}
+                  className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
+                    active
+                      ? "text-primary font-medium"
+                      : "text-text-secondary"
                   }`}
                 >
-                  <Package className="h-3 w-3" />
-                  需取药
-                </div>
-                <div className="flex items-baseline gap-1">
+                  <span>{tb}</span>
                   <span
-                    className={`text-[22px] leading-none font-semibold tabular-nums ${
-                      summary.pickupCount > 0 ? "text-warning" : "text-text-tertiary"
+                    className={`text-caption tabular-nums ${
+                      active ? "text-primary" : "text-text-tertiary"
                     }`}
                   >
-                    {summary.pickupCount}
+                    {tabCount}
                   </span>
-                  <span className="text-caption text-text-tertiary">项</span>
-                </div>
-              </div>
+                  {active && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full bg-primary" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 牛舍筛选 chip 横向滚动 */}
+      {allBarns.length > 1 && (
+        <div className="px-4 pt-3">
+          <div className="flex items-center gap-1.5 mb-2 text-caption text-text-tertiary">
+            <Filter className="h-3 w-3" />
+            <span>按牛舍筛选 · 集中处理</span>
+            {selectedBarns.size > 0 && (
+              <button
+                onClick={() => setSelectedBarns(new Set())}
+                className="ml-auto text-primary"
+              >
+                清除
+              </button>
+            )}
+          </div>
+          <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
+            <div className="flex gap-1.5 w-max pr-4">
+              {allBarns.map((b) => {
+                const sel = selectedBarns.has(b);
+                const cnt = tabTasks.filter((t) => inferBarn(t) === b).length;
+                return (
+                  <button
+                    key={b}
+                    type="button"
+                    onClick={() => toggleBarn(b)}
+                    className={`shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-full border text-body-sm transition-colors ${
+                      sel
+                        ? "border-primary bg-brand-subtle text-primary"
+                        : "border-border bg-card text-text-secondary"
+                    }`}
+                  >
+                    <span>{b}</span>
+                    <span
+                      className={`text-caption tabular-nums ${
+                        sel ? "text-primary/80" : "text-text-tertiary"
+                      }`}
+                    >
+                      {cnt}
+                    </span>
+                    {sel && <Check className="h-3 w-3" strokeWidth={3} />}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
       )}
 
-      {/* 分组标题 */}
-      {tasks.length > 0 && (
-        <div className="px-4 mt-4 mb-2 flex items-center gap-2">
-          <span className="h-3 w-[3px] rounded-full bg-primary" aria-hidden />
-          <span className="text-body-sm font-medium text-foreground">
-            待处理 <span className="text-text-tertiary font-normal">({tasks.length})</span>
-          </span>
+      {/* 聚合操作卡：一次领药 / 批量记录 */}
+      {tasks.length > 0 && pickupTasks.length > 0 && !selectMode && (
+        <div className="px-4 pt-3">
+          <button
+            type="button"
+            onClick={() => setDrugSheet(true)}
+            className="w-full rounded-2xl bg-warning/10 border border-warning/30 p-3.5 flex items-center gap-3 active:bg-warning/15"
+          >
+            <span className="h-10 w-10 rounded-lg bg-warning/20 text-warning inline-flex items-center justify-center shrink-0">
+              <Package className="h-5 w-5" />
+            </span>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="text-body-sm font-medium text-foreground">
+                共 {pickupTasks.length} 项任务需领药 ·{" "}
+                {aggregatedDrugs.length} 种药品
+              </div>
+              <div className="text-caption text-text-tertiary mt-0.5 truncate">
+                合并清单一次性领齐，避免多次往返药房
+              </div>
+            </div>
+            <span className="text-caption text-warning inline-flex items-center shrink-0">
+              查看
+              <ChevronRight className="h-3.5 w-3.5" />
+            </span>
+          </button>
         </div>
       )}
 
       {/* 列表 */}
-      <div className={`px-4 ${selectMode ? "pb-[120px]" : "pb-6"} space-y-2.5`}>
+      <div className={`px-4 pt-3 ${selectMode ? "pb-[120px]" : "pb-6"} space-y-2.5`}>
         {tasks.length === 0 ? (
           <div className="mt-6 rounded-2xl bg-card border border-border">
-            <EmptyState icon={Inbox} size="sm" title="今日暂无工单" />
+            <EmptyState
+              icon={Inbox}
+              size="sm"
+              title={
+                selectedBarns.size > 0
+                  ? "所选牛舍暂无该状态任务"
+                  : "今日暂无该状态任务"
+              }
+            />
           </div>
         ) : (
           tasks.map((t) => {
@@ -205,11 +373,7 @@ function TodayTasksPage() {
             const chip: TaskChip | null =
               t.type === "疾病治疗"
                 ? diseaseTaskMeta[t.id]?.task ?? null
-                : t.status === "进行中"
-                  ? "待执行"
-                  : t.status === "待诊断"
-                    ? "待诊断"
-                    : null;
+                : "待执行";
             const barn = inferBarn(t);
             const needPickup = !!pickupForWO(t.id);
             const title =
@@ -219,7 +383,6 @@ function TodayTasksPage() {
 
             const inner = (
               <div className="flex">
-                {/* 左侧色条 */}
                 <span
                   className={`w-[3px] shrink-0 rounded-l-2xl ${
                     needPickup ? "bg-warning" : "bg-primary"
@@ -227,7 +390,6 @@ function TodayTasksPage() {
                   aria-hidden
                 />
                 <div className="flex-1 p-3.5">
-                  {/* 顶部：图标+标题 / 状态chip / 选择框 */}
                   <div className="flex items-start gap-2.5">
                     <span
                       className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
@@ -266,7 +428,6 @@ function TodayTasksPage() {
                     ) : null}
                   </div>
 
-                  {/* 二列网格信息 */}
                   <div className="mt-3 grid grid-cols-2 gap-y-1.5 gap-x-3">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-caption text-text-tertiary shrink-0">
@@ -286,20 +447,17 @@ function TodayTasksPage() {
                     </div>
                   </div>
 
-                  {/* 底部分隔 */}
                   <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      {needPickup ? (
-                        <span className="inline-flex items-center gap-1 text-caption text-warning">
-                          <Package className="h-3 w-3" />
-                          需先到药房取药
-                        </span>
-                      ) : (
-                        <span className="text-caption text-text-tertiary">
-                          {formatTimeAgo(t.minutesAgo)}
-                        </span>
-                      )}
-                    </div>
+                    {needPickup ? (
+                      <span className="inline-flex items-center gap-1 text-caption text-warning">
+                        <Package className="h-3 w-3" />
+                        需先到药房取药
+                      </span>
+                    ) : (
+                      <span className="text-caption text-text-tertiary">
+                        无需取药
+                      </span>
+                    )}
                     {!selectMode && (
                       <span className="inline-flex items-center gap-0.5 text-caption text-primary">
                         详情
@@ -340,26 +498,125 @@ function TodayTasksPage() {
         )}
       </div>
 
-      {/* 底部操作栏（仅多选态） */}
+      {/* 底部操作栏（多选态）：批量记录执行 */}
       {selectMode && tasks.length > 0 && (
         <div className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-3 max-w-[440px] mx-auto">
           <div className="flex-1 min-w-0">
             <div className="text-body-sm text-foreground">
-              已选 <span className="text-primary font-semibold tabular-nums">{count}</span>{" "}
+              已选{" "}
+              <span className="text-primary font-semibold tabular-nums">
+                {count}
+              </span>{" "}
               <span className="text-text-tertiary">/ {tasks.length}</span>
             </div>
             <div className="text-caption text-text-tertiary truncate">
-              {count === 0 ? "选择需要批量处理的任务" : "确认后将批量执行所选任务"}
+              {count === 0 ? "选择任务后集中拍照记录" : "上传一次照片同步至所选任务"}
             </div>
           </div>
           <button
             type="button"
             disabled={count === 0}
-            onClick={() => setDone(true)}
-            className="h-11 px-5 rounded-full bg-primary text-primary-foreground text-body-sm font-medium disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
+            onClick={() => setDone("batch")}
+            className="h-11 px-5 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
           >
-            批量执行
+            <Camera className="h-4 w-4" />
+            拍照记录
           </button>
+        </div>
+      )}
+
+      {/* 药品合并清单 sheet */}
+      {drugSheet && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
+          onClick={() => setDrugSheet(false)}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 pt-4 pb-3 border-b border-border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-card-title text-foreground">
+                    合并领药清单
+                  </div>
+                  <div className="text-caption text-text-tertiary mt-0.5">
+                    覆盖 {pickupTasks.length} 项任务 ·{" "}
+                    {selectedBarns.size === 0
+                      ? `全部 ${allBarns.length} 个牛舍`
+                      : Array.from(selectedBarns).join("、")}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDrugSheet(false)}
+                  className="h-8 w-8 inline-flex items-center justify-center rounded-lg active:bg-surface-subtle"
+                  aria-label="关闭"
+                >
+                  <X className="h-4 w-4 text-text-secondary" />
+                </button>
+              </div>
+            </div>
+            <div className="overflow-y-auto px-4 py-3 space-y-2 flex-1">
+              {aggregatedDrugs.length === 0 ? (
+                <div className="py-8 text-center text-body-sm text-text-tertiary">
+                  当前范围无需领药
+                </div>
+              ) : (
+                aggregatedDrugs.map((d) => (
+                  <div
+                    key={d.name + (d.spec ?? "")}
+                    className="rounded-xl border border-border bg-card p-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-body font-medium text-foreground truncate">
+                          {d.name}
+                        </div>
+                        {d.spec && (
+                          <div className="text-caption text-text-tertiary mt-0.5 truncate">
+                            {d.spec}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="text-body-sm font-semibold text-primary tabular-nums">
+                          {d.qty}
+                          <span className="text-caption text-text-tertiary font-normal ml-0.5">
+                            {d.unit}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {Array.from(d.from).map((b) => (
+                        <span
+                          key={b}
+                          className="inline-flex items-center px-1.5 h-[18px] rounded bg-surface-subtle text-text-tertiary text-[11px] leading-none"
+                        >
+                          {b}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] border-t border-border">
+              <button
+                type="button"
+                onClick={() => {
+                  setDrugSheet(false);
+                  setDone("claim");
+                }}
+                disabled={aggregatedDrugs.length === 0}
+                className="w-full h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
+              >
+                前往药房统一领取
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -367,7 +624,7 @@ function TodayTasksPage() {
       {done && (
         <div
           className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center"
-          onClick={() => setDone(false)}
+          onClick={() => setDone(null)}
         >
           <div
             className="w-full max-w-[440px] bg-card rounded-t-2xl sm:rounded-2xl p-5 pb-[calc(env(safe-area-inset-bottom)+20px)]"
@@ -377,15 +634,21 @@ function TodayTasksPage() {
               <span className="h-12 w-12 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center mb-3">
                 <CheckCircle2 className="h-6 w-6" />
               </span>
-              <div className="text-card-title text-foreground">已批量执行 {count} 项任务</div>
+              <div className="text-card-title text-foreground">
+                {done === "claim"
+                  ? `已生成 ${aggregatedDrugs.length} 种药品领取单`
+                  : `已为 ${count} 项任务上传执行照片`}
+              </div>
               <div className="text-caption text-text-tertiary mt-1">
-                结果将同步至对应工单详情
+                {done === "claim"
+                  ? "请前往中央药房一次性领取"
+                  : "结果已同步至对应工单"}
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2">
               <button
                 onClick={() => {
-                  setDone(false);
+                  setDone(null);
                   exitSelect();
                 }}
                 className="h-10 rounded-lg border border-border text-body-sm text-text-secondary active:bg-surface-subtle"
