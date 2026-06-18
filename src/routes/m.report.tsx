@@ -1448,11 +1448,13 @@ function Section({
   title,
   required,
   hint,
+  extra,
   children,
 }: {
   title: string;
   required?: boolean;
   hint?: string;
+  extra?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -1462,7 +1464,9 @@ function Section({
           {title}
           {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
         </div>
-        {hint && <div className="text-caption text-text-tertiary text-right">{hint}</div>}
+        {extra
+          ? extra
+          : hint && <div className="text-caption text-text-tertiary text-right">{hint}</div>}
       </div>
       {children}
     </div>
