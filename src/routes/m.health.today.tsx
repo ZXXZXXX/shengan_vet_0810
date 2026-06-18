@@ -654,22 +654,38 @@ function TodayTasksPage() {
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="text-body-sm font-semibold text-primary tabular-nums">
+                        <div className="text-body font-semibold text-primary tabular-nums">
                           {d.qty}
                           <span className="text-caption text-text-tertiary font-normal ml-0.5">
                             {d.unit}
                           </span>
                         </div>
+                        <div className="text-caption text-text-tertiary">
+                          共 {d.breakdown.length} 头
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {Array.from(d.from).map((b) => (
-                        <span
-                          key={b}
-                          className="inline-flex items-center px-1.5 h-[18px] rounded bg-surface-subtle text-text-tertiary text-[11px] leading-none"
+                    <div className="mt-2 pt-2 border-t border-border/60 space-y-1">
+                      {d.breakdown.map((row, i) => (
+                        <div
+                          key={row.woId + i}
+                          className="flex items-center justify-between text-caption"
                         >
-                          {b}
-                        </span>
+                          <span className="inline-flex items-center gap-1.5 min-w-0">
+                            <span className="font-mono text-text-secondary truncate">
+                              {row.cattle}
+                            </span>
+                            <span className="text-text-tertiary shrink-0">
+                              · {row.barn}
+                            </span>
+                          </span>
+                          <span className="text-text-secondary tabular-nums shrink-0">
+                            {row.qty}
+                            <span className="text-text-tertiary ml-0.5">
+                              {row.unit}
+                            </span>
+                          </span>
+                        </div>
                       ))}
                     </div>
                   </div>
