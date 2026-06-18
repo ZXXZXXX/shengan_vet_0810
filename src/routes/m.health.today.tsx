@@ -434,29 +434,24 @@ function TodayTasksPage() {
                   </div>
                 </div>
 
-                {/* 主体:左侧绿色竖线 + 标签 + 疾病名称 */}
-                <div className="mt-2.5 pl-2 border-l-[3px] border-primary/80 rounded-sm">
-                  <div className="text-caption text-text-tertiary">
-                    {t.type === "疾病治疗" ? "疾病名称" : "诊断结论"}
+                {/* 主体:左侧 1px 直线 + 牛只耳号(主) + 任务概述(次) */}
+                <div className="mt-2.5 pl-2.5 border-l border-primary">
+                  <div className="text-caption text-text-tertiary">牛只耳号</div>
+                  <div className="text-page-title font-medium text-foreground font-mono truncate mt-0.5 leading-tight">
+                    {cattleId ?? groupTarget}
                   </div>
-                  <div className="text-body font-medium text-foreground truncate mt-0.5">
+                  <div className="mt-1 text-body text-text-secondary truncate">
+                    <span className="text-text-tertiary mr-1">
+                      {t.type === "疾病治疗" ? "疾病" : "诊断"}
+                    </span>
                     {diseaseName}
                   </div>
                 </div>
 
-                {/* 牛只编号 · 牛舍 */}
-                <div className="mt-2.5 flex items-center gap-3 text-caption text-text-secondary">
-                  <span className="inline-flex items-center gap-1 min-w-0">
-                    <span className="text-text-tertiary">牛只</span>
-                    <span className="font-mono text-text-secondary truncate">
-                      {cattleId ?? groupTarget}
-                    </span>
-                  </span>
-                  <span className="text-border">·</span>
-                  <span className="inline-flex items-center gap-1 min-w-0">
-                    <span className="text-text-tertiary">牛舍</span>
-                    <span className="text-text-secondary truncate">{barn}</span>
-                  </span>
+                {/* 牛舍 */}
+                <div className="mt-2.5 flex items-center gap-1 text-caption text-text-secondary">
+                  <span className="text-text-tertiary">牛舍</span>
+                  <span className="text-text-secondary truncate">{barn}</span>
                 </div>
 
                 {/* 底部:取药状态 + 操作箭头 */}
