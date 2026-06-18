@@ -231,7 +231,7 @@ function TodayTasksPage() {
             onClick={enterSelect}
             className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
           >
-            批量记录
+            批量执行
           </button>
         )}
         {selectMode && tasks.length > 0 && (
@@ -290,7 +290,7 @@ function TodayTasksPage() {
         <div className="px-4 pt-3">
           <div className="flex items-center gap-1.5 mb-2 text-caption text-text-tertiary">
             <Filter className="h-3 w-3" />
-            <span>按牛舍筛选 · 集中处理</span>
+            <span>按牛舍筛选</span>
             {selectedBarns.size > 0 && (
               <button
                 onClick={() => setSelectedBarns(new Set())}
