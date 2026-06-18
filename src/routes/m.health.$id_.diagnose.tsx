@@ -651,13 +651,6 @@ function DiagnosePage() {
                 </div>
               </label>
             </div>
-            <label className="mt-3 flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5">
-              <div className="min-w-0">
-                <div className="text-body-sm text-foreground">需要每日测量体温</div>
-                <div className="text-caption text-text-tertiary mt-0.5">开启后，每日治疗执行任务中会包含测温步骤</div>
-              </div>
-              <Switch checked={dailyTempRequired} onCheckedChange={setDailyTempRequired} />
-            </label>
           </Section>
 
 
@@ -667,6 +660,118 @@ function DiagnosePage() {
 
 
 
+
+          {/* === 现场记录（前置:体征数据之后即上传，便于诊断参考） === */}
+          <Section title="现场记录">
+            {/* 照片 / 视频 */}
+            <div>
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Camera className="h-3 w-3" /> 照片 / 视频
+                <span className="text-[var(--state-danger)]">*</span>
+                <span>· {photos.length + videos.length} 条</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {photos.map((_, i) => (
+                  <div key={`p-${i}`} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                    <button
+                      onClick={() => setPhotos((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
+                      aria-label="删除照片"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                {videos.map((_, i) => (
+                  <div key={`v-${i}`} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center">
+                    <PlayCircle className="h-5 w-5 text-text-tertiary" />
+                    <button
+                      onClick={() => setVideos((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
+                      aria-label="删除视频"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => setShowMediaPicker(true)}
+                  className="aspect-square rounded-lg border border-dashed border-border bg-surface-subtle text-text-tertiary inline-flex flex-col items-center justify-center gap-0.5"
+                >
+                  <Camera className="h-4 w-4" />
+                  <span className="text-[10px]">添加</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 录音 */}
+            <div className="mt-3">
+              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
+                <Mic className="h-3 w-3" /> 录音 · {audios.length} 条
+              </div>
+              <div className="space-y-2">
+                {audios.map((a, i) => (
+                  <div
+                    key={a.id}
+                    className="flex items-center gap-2 h-10 px-3 rounded-lg bg-surface-subtle border border-border"
+                  >
+                    <PlayCircle className="h-4 w-4 text-primary" />
+                    <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
+                      <div className="h-full w-1/3 bg-primary/40" />
+                    </div>
+                    <span className="text-caption text-text-tertiary tabular-nums">{fmtSec(a.duration)}</span>
+                    <button
+                      onClick={() => setAudios((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
+                      aria-label="删除录音"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                {recording ? (
+                  <button
+                    onClick={stopRecord}
+                    className="w-full h-10 px-3 rounded-lg bg-[var(--state-danger)]/10 border border-[var(--state-danger)]/40 text-[var(--state-danger)] text-body-sm inline-flex items-center justify-center gap-2"
+                  >
+                    <span className="relative inline-flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--state-danger)] opacity-60 animate-ping" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--state-danger)]" />
+                    </span>
+                    正在录音 {fmtSec(recordSec)}
+                    <Square className="h-3.5 w-3.5 ml-1" /> 点击结束
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { setRecordSec(0); setRecording(true); }}
+                    className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
+                  >
+                    <Mic className="h-3.5 w-3.5" /> 点击开始录音
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 文字描述 */}
+            <div className="mt-3">
+              <div className="text-caption text-text-tertiary mb-2">文字描述<span className="text-[var(--state-danger)] ml-0.5">*</span></div>
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                maxLength={500}
+                rows={3}
+                placeholder="补充体征、用药反应、隔离建议等"
+                className="w-full px-3 py-2 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+              />
+              <div className="text-caption text-text-tertiary text-right mt-1">{note.length} / 500</div>
+            </div>
+          </Section>
+
+          {/* ===== 治疗方案 分组 ===== */}
+          <div className="pt-1 pb-0.5 flex items-center gap-2">
+            <span className="text-section-title text-foreground font-medium">治疗方案</span>
+            <span className="text-caption text-text-tertiary">疾病名称、标准 / 特殊处方与执行设置</span>
+          </div>
 
           {/* === 疾病名称 === */}
           <Section
@@ -1004,112 +1109,15 @@ function DiagnosePage() {
 
 
 
-        {/* === 现场记录 === */}
-          <Section title="现场记录">
-            {/* 照片 / 视频 */}
-            <div>
-              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                <Camera className="h-3 w-3" /> 照片 / 视频
-                <span className="text-[var(--state-danger)]">*</span>
-                <span>· {photos.length + videos.length} 条</span>
+          {/* === 每日测量体温（治疗方案的一部分） === */}
+          <Section title="每日测量体温">
+            <label className="flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5">
+              <div className="min-w-0">
+                <div className="text-body-sm text-foreground">需要每日测量体温</div>
+                <div className="text-caption text-text-tertiary mt-0.5">开启后，每日治疗执行任务中会包含测温步骤</div>
               </div>
-              <div className="grid grid-cols-4 gap-2">
-                {photos.map((_, i) => (
-                  <div key={`p-${i}`} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
-                    <button
-                      onClick={() => setPhotos((prev) => prev.filter((_, idx) => idx !== i))}
-                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
-                      aria-label="删除照片"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-                {videos.map((_, i) => (
-                  <div key={`v-${i}`} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center">
-                    <PlayCircle className="h-5 w-5 text-text-tertiary" />
-                    <button
-                      onClick={() => setVideos((prev) => prev.filter((_, idx) => idx !== i))}
-                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
-                      aria-label="删除视频"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() => setShowMediaPicker(true)}
-                  className="aspect-square rounded-lg border border-dashed border-border bg-surface-subtle text-text-tertiary inline-flex flex-col items-center justify-center gap-0.5"
-                >
-                  <Camera className="h-4 w-4" />
-                  <span className="text-[10px]">添加</span>
-                </button>
-              </div>
-            </div>
-
-            {/* 录音 */}
-            <div className="mt-3">
-              <div className="text-caption text-text-tertiary mb-2 inline-flex items-center gap-1">
-                <Mic className="h-3 w-3" /> 录音 · {audios.length} 条
-              </div>
-              <div className="space-y-2">
-                {audios.map((a, i) => (
-                  <div
-                    key={a.id}
-                    className="flex items-center gap-2 h-10 px-3 rounded-lg bg-surface-subtle border border-border"
-                  >
-                    <PlayCircle className="h-4 w-4 text-primary" />
-                    <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
-                      <div className="h-full w-1/3 bg-primary/40" />
-                    </div>
-                    <span className="text-caption text-text-tertiary tabular-nums">{fmtSec(a.duration)}</span>
-                    <button
-                      onClick={() => setAudios((prev) => prev.filter((_, idx) => idx !== i))}
-                      className="h-5 w-5 rounded-full bg-card border border-border text-text-secondary inline-flex items-center justify-center"
-                      aria-label="删除录音"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-                {recording ? (
-                  <button
-                    onClick={stopRecord}
-                    className="w-full h-10 px-3 rounded-lg bg-[var(--state-danger)]/10 border border-[var(--state-danger)]/40 text-[var(--state-danger)] text-body-sm inline-flex items-center justify-center gap-2"
-                  >
-                    <span className="relative inline-flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--state-danger)] opacity-60 animate-ping" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--state-danger)]" />
-                    </span>
-                    正在录音 {fmtSec(recordSec)}
-                    <Square className="h-3.5 w-3.5 ml-1" /> 点击结束
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => { setRecordSec(0); setRecording(true); }}
-                    className="w-full h-10 px-3 rounded-lg border border-dashed border-border text-body-sm text-text-tertiary inline-flex items-center justify-center gap-1.5"
-                  >
-                    <Mic className="h-3.5 w-3.5" /> 点击开始录音
-                  </button>
-                )}
-              </div>
-            </div>
-
-
-
-            {/* 文字描述 */}
-            <div className="mt-3">
-              <div className="text-caption text-text-tertiary mb-2">文字描述<span className="text-[var(--state-danger)] ml-0.5">*</span></div>
-              <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                maxLength={500}
-                rows={3}
-                placeholder="补充体征、用药反应、隔离建议等"
-                className="w-full px-3 py-2 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
-              />
-              <div className="text-caption text-text-tertiary text-right mt-1">{note.length} / 500</div>
-            </div>
+              <Switch checked={dailyTempRequired} onCheckedChange={setDailyTempRequired} />
+            </label>
           </Section>
 
           {/* === 指派执行人 === */}
