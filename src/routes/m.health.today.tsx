@@ -127,8 +127,7 @@ function TodayTasksPage() {
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [drugSheet, setDrugSheet] = useState(false);
-  const [done, setDone] = useState<"claim" | "batch" | null>(null);
+  const [done, setDone] = useState<"batch" | null>(null);
   const claimed = useClaimed();
 
   // 当前 tab 下的任务，叠加牛舍筛选
