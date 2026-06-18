@@ -241,7 +241,7 @@ function TodayTasksPage() {
 
   const enterSelect = () => {
     setSelectMode(true);
-    setSelected(new Set(tasks.map((t) => t.id))); // 默认全选当前筛选范围
+    setSelected(new Set()); // 默认不选,由用户主动勾选范围
   };
 
   const count = selected.size;
