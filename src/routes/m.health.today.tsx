@@ -156,33 +156,61 @@ function TodayTasksPage() {
     () => (activeTab === "待执行" ? tasks.filter((t) => pickupForWO(t.id)) : []),
     [tasks, activeTab],
   );
+
+  // 选中(批量执行)态下,基于已选任务汇总;否则按全部 pickupTasks 预览
+  const aggregationTasks = useMemo(() => {
+    if (selectMode) {
+      return pickupTasks.filter((t) => selected.has(t.id));
+    }
+    return pickupTasks;
+  }, [pickupTasks, selectMode, selected]);
+
+  type DrugBreakdown = {
+    cattle: string;
+    barn: string;
+    woId: string;
+    qty: number;
+    unit: string;
+  };
   const aggregatedDrugs = useMemo(() => {
     const map = new Map<
       string,
-      { name: string; spec?: string; unit: string; qty: number; from: Set<string> }
+      {
+        name: string;
+        spec?: string;
+        unit: string;
+        qty: number;
+        from: Set<string>;
+        breakdown: DrugBreakdown[];
+      }
     >();
-    pickupTasks.forEach((t) => {
+    aggregationTasks.forEach((t) => {
       const pk = pickupForWO(t.id);
+      const barn = inferBarn(t);
+      const cattle = t.target.startsWith("#") ? t.target : t.target;
       pk?.items.forEach((it) => {
         const { num, unit } = parseQty(it.qty);
         const key = it.name + "|" + (it.spec ?? "");
         const cur = map.get(key);
+        const row: DrugBreakdown = { cattle, barn, woId: t.id, qty: num, unit };
         if (cur) {
           cur.qty += num;
-          cur.from.add(inferBarn(t));
+          cur.from.add(barn);
+          cur.breakdown.push(row);
         } else {
           map.set(key, {
             name: it.name,
             spec: it.spec,
             unit,
             qty: num,
-            from: new Set([inferBarn(t)]),
+            from: new Set([barn]),
+            breakdown: [row],
           });
         }
       });
     });
     return Array.from(map.values());
-  }, [pickupTasks]);
+  }, [aggregationTasks]);
 
   const toggleBarn = (b: string) =>
     setSelectedBarns((prev) => {
@@ -374,18 +402,11 @@ function TodayTasksPage() {
                 </div>
               </div>
             </div>
-            <div className="mt-2.5 pt-2.5 border-t border-warning/20 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setDrugSheet(true)}
-                className="flex-1 h-9 rounded-lg text-body-sm text-warning bg-warning/10 active:bg-warning/20 inline-flex items-center justify-center"
-              >
-                查看药品清单
-              </button>
+            <div className="mt-2.5 pt-2.5 border-t border-warning/20">
               <button
                 type="button"
                 onClick={enterSelect}
-                className="flex-1 h-9 rounded-lg text-body-sm font-medium text-white bg-warning active:opacity-90 inline-flex items-center justify-center gap-1"
+                className="w-full h-9 rounded-lg text-body-sm font-medium text-white bg-warning active:opacity-90 inline-flex items-center justify-center gap-1"
               >
                 批量执行
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -552,8 +573,8 @@ function TodayTasksPage() {
 
       {/* 底部操作栏（多选态）：批量记录执行 */}
       {selectMode && tasks.length > 0 && (
-        <div className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-3 max-w-[440px] mx-auto">
-          <div className="flex-1 min-w-0">
+        <div className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] max-w-[440px] mx-auto">
+          <div className="flex items-center justify-between mb-2">
             <div className="text-body-sm text-foreground">
               已选{" "}
               <span className="text-primary font-semibold tabular-nums">
@@ -561,19 +582,32 @@ function TodayTasksPage() {
               </span>{" "}
               <span className="text-text-tertiary">/ {tasks.length}</span>
             </div>
-            <div className="text-caption text-text-tertiary truncate">
-              {count === 0 ? "选择任务后集中拍照记录" : "上传一次照片同步至所选任务"}
+            <div className="text-caption text-text-tertiary truncate ml-2">
+              {aggregatedDrugs.length > 0
+                ? `需领 ${aggregatedDrugs.length} 种药品`
+                : "无需取药"}
             </div>
           </div>
-          <button
-            type="button"
-            disabled={count === 0}
-            onClick={() => setDone("batch")}
-            className="h-11 px-5 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
-          >
-            <Camera className="h-4 w-4" />
-            拍照记录
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={count === 0 || aggregatedDrugs.length === 0}
+              onClick={() => setDrugSheet(true)}
+              className="flex-1 h-11 rounded-full border border-warning/40 text-warning text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:bg-warning/10"
+            >
+              <Package className="h-4 w-4" />
+              汇总取药清单
+            </button>
+            <button
+              type="button"
+              disabled={count === 0}
+              onClick={() => setDone("batch")}
+              className="flex-1 h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
+            >
+              <Camera className="h-4 w-4" />
+              拍照记录
+            </button>
+          </div>
         </div>
       )}
 
@@ -594,10 +628,7 @@ function TodayTasksPage() {
                     合并领药清单
                   </div>
                   <div className="text-caption text-text-tertiary mt-0.5">
-                    覆盖 {pickupTasks.length} 项任务 ·{" "}
-                    {selectedBarns.size === 0
-                      ? `全部 ${allBarns.length} 个牛舍`
-                      : Array.from(selectedBarns).join("、")}
+                    覆盖 {aggregationTasks.length} 头牛 · {aggregatedDrugs.length} 种药品
                   </div>
                 </div>
                 <button
@@ -633,22 +664,38 @@ function TodayTasksPage() {
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="text-body-sm font-semibold text-primary tabular-nums">
+                        <div className="text-body font-semibold text-primary tabular-nums">
                           {d.qty}
                           <span className="text-caption text-text-tertiary font-normal ml-0.5">
                             {d.unit}
                           </span>
                         </div>
+                        <div className="text-caption text-text-tertiary">
+                          共 {d.breakdown.length} 头
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {Array.from(d.from).map((b) => (
-                        <span
-                          key={b}
-                          className="inline-flex items-center px-1.5 h-[18px] rounded bg-surface-subtle text-text-tertiary text-[11px] leading-none"
+                    <div className="mt-2 pt-2 border-t border-border/60 space-y-1">
+                      {d.breakdown.map((row, i) => (
+                        <div
+                          key={row.woId + i}
+                          className="flex items-center justify-between text-caption"
                         >
-                          {b}
-                        </span>
+                          <span className="inline-flex items-center gap-1.5 min-w-0">
+                            <span className="font-mono text-text-secondary truncate">
+                              {row.cattle}
+                            </span>
+                            <span className="text-text-tertiary shrink-0">
+                              · {row.barn}
+                            </span>
+                          </span>
+                          <span className="text-text-secondary tabular-nums shrink-0">
+                            {row.qty}
+                            <span className="text-text-tertiary ml-0.5">
+                              {row.unit}
+                            </span>
+                          </span>
+                        </div>
                       ))}
                     </div>
                   </div>
