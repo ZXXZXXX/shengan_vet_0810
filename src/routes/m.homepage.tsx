@@ -409,6 +409,8 @@ function TodayTaskList({ role }: { role: Role }) {
         const Icon = meta.icon;
         const isReview =
           t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查";
+        const isExecution =
+          t.status === "进行中" && VET_EXEC_TYPES.has(t.type) && !isReview;
         const linkCls =
           "flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle";
         const chip: TaskChip | null =
@@ -451,6 +453,10 @@ function TodayTaskList({ role }: { role: Role }) {
         );
         return isReview ? (
           <Link key={t.id} to="/m/health/$id/review" params={{ id: t.id }} className={linkCls}>
+            {body}
+          </Link>
+        ) : isExecution ? (
+          <Link key={t.id} to="/m/health/$id/execute" params={{ id: t.id }} className={linkCls}>
             {body}
           </Link>
         ) : (
