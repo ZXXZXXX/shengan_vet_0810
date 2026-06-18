@@ -49,6 +49,29 @@ function pickupForWO(woId: string) {
   return PICKUPS.find((p) => p.source === woId);
 }
 
+// 任务的具体动作描述（执行类任务展示在卡片副信息位）
+const TASK_ACTION: Record<string, string> = {
+  "WO-2299": "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录",
+  "WO-2300": "氯前列烯醇 2ml IM + 子宫冲洗",
+  "WO-2301": "氟苯尼考 15ml IM + 测温记录",
+  "WO-2302": "削蹄 + 碘酊涂擦 + 绷带包扎",
+  "WO-2303": "丙二醇 300ml 灌服 + 葡萄糖 500ml IV",
+  "WO-2298": "测温 + 乳样采集复查",
+  "WO-2440": "测温 + 乳房触诊复查",
+  "PP-2501": "产后 3 天护理：测温 + 恶露检查 + 灌服补液",
+};
+
+// 待诊断任务展示主诉/症状概述
+const DIAG_BRIEF: Record<string, string> = {
+  "WO-2381": "乳房红肿、产奶量下降",
+  "WO-2382": "采食量骤降、精神沉郁",
+  "WO-2383": "呼气有丙酮味、产奶量下降",
+  "WO-2384": "乳区硬块、乳汁絮状",
+  "WO-2385": "阴道排出脓性分泌物",
+  "WO-2386": "跛行、蹄部红肿",
+  "WO-2387": "水样腹泻、脱水",
+};
+
 type StatusTab = "待诊断" | "待执行" | "待复查";
 
 function getRoleTabs(role: Role): StatusTab[] {
