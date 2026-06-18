@@ -841,6 +841,12 @@ function DiagnosePage() {
 
           </Section>
 
+          {/* ===== 治疗方案 分组 ===== */}
+          <div className="pt-1 pb-0.5 flex items-center gap-2">
+            <span className="text-section-title text-foreground font-medium">治疗方案</span>
+            <span className="text-caption text-text-tertiary">标准 / 特殊处方与执行设置</span>
+          </div>
+
           {/* === 标准处方 === */}
           <Section
             title="标准处方"
