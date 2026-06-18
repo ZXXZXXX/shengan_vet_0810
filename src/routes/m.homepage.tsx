@@ -269,6 +269,8 @@ export const homeTasks: HomeTask[] = [
   { id: "WO-2302", target: "#01-24-2102", conclusion: "蹄部脓肿排脓", type: "疾病治疗", status: "进行中", minutesAgo: 67 },
   { id: "WO-2303", target: "#01-24-2233", conclusion: "酮病补液+葡萄糖", type: "疾病治疗", status: "进行中", minutesAgo: 82 },
   { id: "WO-2440", target: "#01-24-2440", conclusion: "乳房炎 · 观察期满复查", type: "疾病治疗", status: "进行中", minutesAgo: 95 },
+  // 产后护理 · 进行中
+  { id: "PP-2501", target: "#01-24-2710", conclusion: "产后 3 天护理执行", type: "产后护理", status: "进行中", minutesAgo: 28 },
   // 疫苗免疫 · 进行中
   { id: "YM-1041", target: "犊牛舍 A · 84 头", conclusion: "口蹄疫加强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 5 },
   { id: "YM-1042", target: "2 号牛舍 · 56 头", conclusion: "布病强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 18 },
@@ -289,24 +291,32 @@ export const homeTasks: HomeTask[] = [
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
 export const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
-  manager: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
-  vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
+  manager: { status: "待诊断", type: "疾病治疗", label: "待诊断 / 待执行 / 待复查" },
+  vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 / 待执行 / 待复查" },
   vet_assistant: { status: "进行中", type: "疾病治疗", label: "执行中 · 疾病治疗" },
   immunizer: { status: "进行中", type: "疫苗免疫", label: "执行中 · 疫苗免疫" },
   hoof_trimmer: { status: "进行中", type: "修蹄", label: "执行中 · 修蹄" },
 };
 
+const VET_EXEC_TYPES = new Set(["疾病治疗", "产后护理"]);
+
 export function getRoleTasks(role: Role): HomeTask[] {
   const filter = roleFilterMap[role];
   if (!filter) return [];
-  const base = homeTasks.filter((t) => t.status === filter.status && t.type === filter.type);
-  // 复查任务仅在兽医、场长视角下出现
   if (role === "vet" || role === "manager") {
+    const executions = homeTasks.filter(
+      (t) =>
+        t.status === "进行中" &&
+        VET_EXEC_TYPES.has(t.type) &&
+        diseaseTaskMeta[t.id]?.task !== "待复查",
+    );
     const reviews = homeTasks.filter(
       (t) => t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查",
     );
-    return [...reviews, ...base.filter((t) => diseaseTaskMeta[t.id]?.task !== "待复查")];
+    const diagnoses = homeTasks.filter((t) => t.status === "待诊断" && t.type === "疾病治疗");
+    return [...executions, ...reviews, ...diagnoses];
   }
+  const base = homeTasks.filter((t) => t.status === filter.status && t.type === filter.type);
   return base.filter((t) => diseaseTaskMeta[t.id]?.task !== "待复查");
 }
 
@@ -399,6 +409,8 @@ function TodayTaskList({ role }: { role: Role }) {
         const Icon = meta.icon;
         const isReview =
           t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查";
+        const isExecution =
+          t.status === "进行中" && VET_EXEC_TYPES.has(t.type) && !isReview;
         const linkCls =
           "flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle";
         const chip: TaskChip | null =
@@ -441,6 +453,10 @@ function TodayTaskList({ role }: { role: Role }) {
         );
         return isReview ? (
           <Link key={t.id} to="/m/health/$id/review" params={{ id: t.id }} className={linkCls}>
+            {body}
+          </Link>
+        ) : isExecution ? (
+          <Link key={t.id} to="/m/health/$id/execute" params={{ id: t.id }} className={linkCls}>
             {body}
           </Link>
         ) : (
