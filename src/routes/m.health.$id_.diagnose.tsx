@@ -603,6 +603,12 @@ function DiagnosePage() {
         </div>
 
         <div className="px-4 space-y-3">
+          {/* ===== 牛只情况 分组 ===== */}
+          <div className="pt-1 pb-0.5 flex items-center gap-2">
+            <span className="text-section-title text-foreground font-medium">牛只情况</span>
+            <span className="text-caption text-text-tertiary">症状、体征数据与现场记录</span>
+          </div>
+
           {/* === 症状 === */}
           <Section
             title="症状"
