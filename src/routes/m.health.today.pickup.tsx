@@ -93,7 +93,7 @@ function BatchPickupPage() {
     const pids = new Set<string>();
     const cattleSet = new Set<string>();
     let wh = "";
-    woIds.forEach((woId) => {
+    woIds.forEach((woId: string) => {
       const task = homeTasks.find((t) => t.id === woId);
       const pk = PICKUPS.find((p) => p.source === woId);
       if (!task || !pk) return;
