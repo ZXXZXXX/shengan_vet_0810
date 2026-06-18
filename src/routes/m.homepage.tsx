@@ -180,13 +180,9 @@ function MHomePage() {
       {/* ============ 工作任务 ============ */}
       <section className="px-4 mt-5 mb-4">
         <SectionTitle
-          title="工作任务"
+          title="今日工作任务"
           hint={`共计 ${getTaskCount(role)} 项`}
-          to="/m/health"
-          search={{
-            tab: (roleFilterMap[role]?.status ?? "待诊断") === "进行中" ? "执行中" : "待诊断",
-            type: roleFilterMap[role]?.type ?? "疾病治疗",
-          }}
+          to="/m/health/today"
         />
         <TodayTaskList role={role} />
       </section>
