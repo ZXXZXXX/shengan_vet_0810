@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChevronLeft,
   Check,
@@ -26,6 +26,9 @@ import {
 } from "@/routes/m.homepage";
 
 export const Route = createFileRoute("/m/health/today")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    capture: typeof s.capture === "string" ? s.capture : undefined,
+  }),
   head: () => ({ meta: [{ title: "今日工作任务 · 奇点智牧" }] }),
   component: TodayTasksPage,
 });
@@ -129,6 +132,22 @@ function TodayTasksPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<"batch" | null>(null);
   const claimed = useClaimed();
+  const { capture } = Route.useSearch();
+
+  // 领药完成后回到此页：自动进入多选 + 触发拍照记录步骤
+  useEffect(() => {
+    if (!capture) return;
+    const ids = capture.split(",").filter(Boolean);
+    setActiveTab("待执行");
+    setSelectMode(true);
+    setSelected(new Set(ids));
+    setDone("batch");
+    navigate({
+      to: "/m/health/today",
+      search: { capture: undefined },
+      replace: true,
+    });
+  }, [capture, navigate]);
 
   // 当前 tab 下的任务，叠加牛舍筛选
   const tabTasks = useMemo(
@@ -501,10 +520,9 @@ function TodayTasksPage() {
           count === 0
             ? "勾选要一次处理的任务"
             : needPickup
-              ? `${unclaimedCount} 项任务尚未取药,需先汇总领取`
-              : pickupSelected.length > 0
-                ? "已全部取药,可拍照记录执行"
-                : "无需取药,可直接拍照记录执行";
+              ? `下一步：领取 ${unclaimedCount} 项任务所需药品 → 拍照记录`
+              : "下一步：拍照记录执行";
+        const allIds = selectedTasks.map((t) => t.id).join(",");
         return (
           <div className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] max-w-[440px] mx-auto">
             <div className="flex items-center justify-between mb-2">
@@ -519,37 +537,34 @@ function TodayTasksPage() {
                 {subText}
               </div>
             </div>
-            {needPickup ? (
-              <button
-                type="button"
-                disabled={count === 0}
-                onClick={() => {
-                  const ids = selectedTasks
-                    .filter((t) => pickupForWO(t.id))
-                    .map((t) => t.id)
-                    .join(",");
+            <button
+              type="button"
+              disabled={count === 0}
+              onClick={() => {
+                if (needPickup) {
                   navigate({
                     to: "/m/health/today/pickup",
-                    search: { ids },
+                    search: { ids: allIds },
                   });
-                }}
-                className="w-full h-11 rounded-full bg-warning text-white text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:opacity-90"
-              >
-                <Package className="h-4 w-4" />
-                汇总取药清单
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            ) : (
-              <button
-                type="button"
-                disabled={count === 0}
-                onClick={() => setDone("batch")}
-                className="w-full h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
-              >
-                <Camera className="h-4 w-4" />
-                拍照记录执行
-              </button>
-            )}
+                } else {
+                  setDone("batch");
+                }
+              }}
+              className="w-full h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
+            >
+              {needPickup ? (
+                <>
+                  <Package className="h-4 w-4" />
+                  开始执行
+                </>
+              ) : (
+                <>
+                  <Camera className="h-4 w-4" />
+                  开始执行
+                </>
+              )}
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
           </div>
         );
       })()}

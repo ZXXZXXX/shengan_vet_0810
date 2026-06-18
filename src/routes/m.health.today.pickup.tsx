@@ -165,7 +165,7 @@ function BatchPickupPage() {
     if (!allScanned) return;
     pickupIds.forEach((id) => claimPickup(id));
     toast.success(`已完成 ${pickupIds.length} 项领药`);
-    navigate({ to: "/m/health/today" });
+    navigate({ to: "/m/health/today", search: { capture: ids } });
   };
 
   return (
