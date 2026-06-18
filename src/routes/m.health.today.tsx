@@ -576,14 +576,10 @@ function TodayTasksPage() {
                 <CheckCircle2 className="h-6 w-6" />
               </span>
               <div className="text-card-title text-foreground">
-                {done === "claim"
-                  ? `已生成 ${aggregatedDrugs.length} 种药品领取单`
-                  : `已为 ${count} 项任务上传执行照片`}
+                已为 {count} 项任务上传执行照片
               </div>
               <div className="text-caption text-text-tertiary mt-1">
-                {done === "claim"
-                  ? "请前往中央药房一次性领取"
-                  : "结果已同步至对应工单"}
+                结果已同步至对应工单
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2">
