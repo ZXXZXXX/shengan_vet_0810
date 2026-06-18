@@ -367,6 +367,8 @@ function ReportPage() {
   const cfg = workTypeConfig[workType];
   const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
   const [note, setNote] = useState<string>(draft?.note ?? "");
+  const [temperature, setTemperature] = useState<string>(draft?.temperature ?? "");
+  const [ketone, setKetone] = useState<string>(draft?.ketone ?? "");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [diseasePickerOpen, setDiseasePickerOpen] = useState(false);
@@ -788,6 +790,12 @@ function ReportPage() {
             )}
             {true && (
               <>
+                {/* ===== 牛只情况 分组 ===== */}
+                <div className="pt-1 pb-0.5 flex items-center gap-2">
+                  <span className="text-section-title text-foreground font-medium">牛只情况</span>
+                  <span className="text-caption text-text-tertiary">症状、体征数据与现场记录</span>
+                </div>
+
                 {/* 标签字段（按工作类型显示） */}
                 {cfg?.tags && (
                   <Section
@@ -803,6 +811,43 @@ function ReportPage() {
                   </Section>
                 )}
 
+                {/* 体征数据（体温非必填） */}
+                <Section title="体征数据" hint="可选；如已现场测量请填写">
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="block">
+                      <div className="text-caption text-text-tertiary mb-1">
+                        体温 <span className="text-text-tertiary">(选填)</span>
+                      </div>
+                      <div className="relative">
+                        <input
+                          inputMode="decimal"
+                          value={temperature}
+                          onChange={(e) => setTemperature(e.target.value)}
+                          placeholder="如 39.2"
+                          maxLength={5}
+                          className="h-10 w-full pl-3 pr-10 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">℃</span>
+                      </div>
+                    </label>
+                    <label className="block">
+                      <div className="text-caption text-text-tertiary mb-1">
+                        血酮 <span className="text-text-tertiary">(选填)</span>
+                      </div>
+                      <div className="relative">
+                        <input
+                          inputMode="decimal"
+                          value={ketone}
+                          onChange={(e) => setKetone(e.target.value)}
+                          placeholder="如 1.2"
+                          maxLength={5}
+                          className="h-10 w-full pl-3 pr-16 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">mmol/L</span>
+                      </div>
+                    </label>
+                  </div>
+                </Section>
 
                 {/* 事项说明（干奶 / 疫苗 / 驱虫） */}
                 {cfg?.note && (
@@ -818,9 +863,6 @@ function ReportPage() {
                   </Section>
                 )}
 
-                {/* 处理人已移至页面底部 */}
-
-
                 {/* 证据材料 / 线索 */}
                 <EvidenceSection
                   desc={desc}
@@ -835,63 +877,80 @@ function ReportPage() {
                   onVoiceToggle={startVoice}
                 />
 
-                {/* 疑似疾病 —— 仅在线索上传后显示 */}
+                {/* ===== 诊断结论 分组（疑似疾病将预填至诊断页） ===== */}
                 {cfg?.allowDisease && evidenceReady && (
-                  <Section
-                    title="疑似疾病"
-                    hint="可选；选择后将从诊疗知识库自动拉取治疗方案"
-                  >
-                    {!suspectedDisease ? (
-                      <button
-                        type="button"
-                        onClick={() => setDiseasePickerOpen(true)}
-                        className="w-full h-11 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
-                      >
-                        <Search className="h-4 w-4" />
-                        选择疑似疾病
-                      </button>
-                    ) : (
-                      <div className="rounded-lg border border-primary/20 bg-brand-subtle p-3 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5">
-                            <Check className="h-3.5 w-3.5 text-primary" />
-                            <span className="text-body-sm text-primary font-medium">
-                              {suspectedDisease}
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setSuspectedDisease("");
-                              setDiseaseQ("");
-                            }}
-                            className="text-caption text-text-tertiary"
-                          >
-                            重选
-                          </button>
-                        </div>
-                        {selectedDisease && selectedPlan && (
-                          <div className="rounded-md bg-card border border-border p-2.5 space-y-1.5">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-                                <Sparkles className="h-3 w-3 text-primary" />
-                                已自动匹配治疗方案
-                                {selectedDisease.plans.length > 1 && (
-                                  <span className="text-text-tertiary">
-                                    （{planIdx + 1}/{selectedDisease.plans.length}）
-                                  </span>
-                                )}
-                              </div>
-                              {selectedDisease.plans.length > 1 && (
-                                <button
-                                  type="button"
-                                  onClick={() => setPlanPickerOpen(true)}
-                                  className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
-                                >
-                                  <RefreshCw className="h-3 w-3" />
-                                  更换方案
-                                </button>
-                              )}
+                  <>
+                    <div className="pt-1 pb-0.5 flex items-center gap-2">
+                      <span className="text-section-title text-foreground font-medium">诊断结论</span>
+                      <span className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                        <Sparkles className="h-3 w-3 text-primary" />
+                        预填写，诊断时可修改
+                      </span>
+                    </div>
+
+                    <Section
+                      title="疑似疾病"
+                      hint="可选；选择后将自动匹配治疗方案"
+                    >
+                      {!suspectedDisease ? (
+                        <button
+                          type="button"
+                          onClick={() => setDiseasePickerOpen(true)}
+                          className="w-full h-11 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
+                        >
+                          <Search className="h-4 w-4" />
+                          选择疑似疾病
+                        </button>
+                      ) : (
+                        <div className="rounded-lg border border-primary/20 bg-brand-subtle p-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <Check className="h-3.5 w-3.5 text-primary" />
+                              <span className="text-body-sm text-primary font-medium">
+                                {suspectedDisease}
+                              </span>
                             </div>
+                            <button
+                              onClick={() => {
+                                setSuspectedDisease("");
+                                setDiseaseQ("");
+                              }}
+                              className="text-caption text-text-tertiary"
+                            >
+                              重选
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </Section>
+
+                    {/* ===== 治疗方案 分组 ===== */}
+                    {selectedDisease && selectedPlan && (
+                      <>
+                        <div className="pt-1 pb-0.5 flex items-center gap-2">
+                          <span className="text-section-title text-foreground font-medium">治疗方案</span>
+                          <span className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                            <Sparkles className="h-3 w-3 text-primary" />
+                            已自动匹配标准处方，仍可更换
+                          </span>
+                        </div>
+
+                        <Section
+                          title="标准处方"
+                          extra={
+                            selectedDisease.plans.length > 1 ? (
+                              <button
+                                type="button"
+                                onClick={() => setPlanPickerOpen(true)}
+                                className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
+                              >
+                                <RefreshCw className="h-3 w-3" />
+                                更换方案（{planIdx + 1}/{selectedDisease.plans.length}）
+                              </button>
+                            ) : undefined
+                          }
+                        >
+                          <div className="rounded-lg border border-primary/20 bg-brand-subtle/40 p-3 space-y-1.5">
                             <div className="flex items-center gap-1.5 text-body-sm text-foreground">
                               <FileText className="h-3.5 w-3.5 text-primary" />
                               {selectedPlan.rx}
@@ -908,10 +967,10 @@ function ReportPage() {
                               疗程：{selectedPlan.duration}
                             </div>
                           </div>
-                        )}
-                      </div>
+                        </Section>
+                      </>
                     )}
-                  </Section>
+                  </>
                 )}
 
                 {/* 是否转栏 */}
@@ -1389,11 +1448,13 @@ function Section({
   title,
   required,
   hint,
+  extra,
   children,
 }: {
   title: string;
   required?: boolean;
   hint?: string;
+  extra?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -1403,7 +1464,9 @@ function Section({
           {title}
           {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
         </div>
-        {hint && <div className="text-caption text-text-tertiary text-right">{hint}</div>}
+        {extra
+          ? extra
+          : hint && <div className="text-caption text-text-tertiary text-right">{hint}</div>}
       </div>
       {children}
     </div>
