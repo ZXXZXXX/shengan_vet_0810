@@ -208,18 +208,18 @@ type Prescription = {
 };
 
 // 药品库（用于编辑弹层中搜索匹配）
-type DrugItem = { name: string; maker: string; spec: string; recommendedUse: string; defaultUnit: string };
+type DrugItem = { name: string; maker: string; spec: string; recommendedUse: string; defaultUnit: string; allowedUses: string[] };
 const drugLibrary: DrugItem[] = [
-  { name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
-  { name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", recommendedUse: "肌肉注射", defaultUnit: "g" },
-  { name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", recommendedUse: "口服", defaultUnit: "g" },
-  { name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
-  { name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", recommendedUse: "静脉注射", defaultUnit: "ml" },
-  { name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", recommendedUse: "口服", defaultUnit: "g" },
-  { name: "青霉素钠", maker: "华北制药", spec: "80 万 IU / 支", recommendedUse: "肌肉注射", defaultUnit: "IU" },
-  { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml" },
-  { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支", recommendedUse: "静脉注射", defaultUnit: "ml" },
-  { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支", recommendedUse: "肌肉注射", defaultUnit: "ml" },
+  { name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射", "静脉注射"] },
+  { name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", recommendedUse: "肌肉注射", defaultUnit: "g", allowedUses: ["肌肉注射", "皮下注射"] },
+  { name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", recommendedUse: "口服", defaultUnit: "g", allowedUses: ["口服", "灌服"] },
+  { name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射", "静脉注射"] },
+  { name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", recommendedUse: "静脉注射", defaultUnit: "ml", allowedUses: ["静脉注射"] },
+  { name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", recommendedUse: "口服", defaultUnit: "g", allowedUses: ["口服", "灌服"] },
+  { name: "青霉素钠", maker: "华北制药", spec: "80 万 IU / 支", recommendedUse: "肌肉注射", defaultUnit: "IU", allowedUses: ["肌肉注射", "静脉注射", "乳房灌注"] },
+  { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射", "静脉注射"] },
+  { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支", recommendedUse: "静脉注射", defaultUnit: "ml", allowedUses: ["静脉注射", "肌肉注射"] },
+  { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射", "静脉注射"] },
 ];
 
 // 使用方式枚举
@@ -1808,7 +1808,7 @@ function DrugEditor({
             <div className="space-y-1.5">
               <span className="text-caption text-text-tertiary">使用方式</span>
               <div className="flex flex-wrap gap-1.5">
-                {useMethods.map((m) => {
+                {(matched?.allowedUses ?? useMethods).map((m) => {
                   const active = value.use === m;
                   const recommended = matched?.recommendedUse === m;
                   return (
@@ -1837,6 +1837,11 @@ function DrugEditor({
                   );
                 })}
               </div>
+              {matched && (
+                <div className="text-caption text-text-tertiary">
+                  根据药品说明书，仅可选择以上使用方式
+                </div>
+              )}
             </div>
 
             {/* 区分用药时间段 切换 */}
