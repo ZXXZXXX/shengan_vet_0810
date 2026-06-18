@@ -1742,13 +1742,18 @@ function DrugEditor({
                 <input
                   value={query}
                   onChange={(e) => {
-                    setQuery(e.target.value);
+                    const next = e.target.value;
+                    setQuery(next);
                     setFocused(true);
-                    onChange({ ...value, name: e.target.value, maker: "", spec: "" });
+                    // 只允许从药品库中选择:输入框仅用于搜索,不直接写入 name
+                    // 当输入内容与已选药品不一致时,清空已选药品信息
+                    if (value.name && next !== value.name) {
+                      onChange({ ...value, name: "", maker: "", spec: "" });
+                    }
                   }}
                   onFocus={() => setFocused(true)}
                   onBlur={() => setTimeout(() => setFocused(false), 150)}
-                  placeholder="输入药品名称搜索"
+                  placeholder="输入关键字从药品库选择"
                   className="h-10 w-full pl-9 pr-3 rounded-lg bg-white border border-border text-body-sm focus:outline-none focus:border-primary"
                 />
                 {focused && matches.length > 0 && (
@@ -1768,14 +1773,23 @@ function DrugEditor({
                     ))}
                   </div>
                 )}
+                {focused && matches.length === 0 && (
+                  <div className="absolute z-10 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg px-3 py-3 text-caption text-text-tertiary">
+                    药品库中暂无匹配项,请联系管理员录入后再开具
+                  </div>
+                )}
               </div>
-              {matched && (
+              {matched ? (
                 <div className="rounded-md bg-brand-subtle border border-primary/15 px-2.5 py-1.5 text-caption text-text-secondary mt-1.5">
                   <span className="text-primary font-medium">{matched.maker}</span>
                   <span className="mx-1.5 text-text-tertiary">·</span>
                   规格 {matched.spec}
                 </div>
-              )}
+              ) : query.trim() && !value.name ? (
+                <div className="text-caption text-[var(--state-alert)] mt-1.5">
+                  请从下拉列表中选择药品
+                </div>
+              ) : null}
             </div>
 
             {/* 使用方式 */}
