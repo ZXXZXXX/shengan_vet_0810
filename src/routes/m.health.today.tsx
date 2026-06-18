@@ -296,6 +296,13 @@ function TodayTasksPage() {
         )}
       </header>
 
+      {/* 批量执行引导 */}
+      {!selectMode && tasks.length > 1 && activeTab === "待执行" && (
+        <div className="px-4 pt-2 text-caption text-text-tertiary">
+          点击右上角「批量执行」可一次性处理多个任务
+        </div>
+      )}
+
       {/* 状态 tab */}
       {tabs.length > 1 && (
         <div className="sticky top-12 z-20 bg-card/95 backdrop-blur border-b border-border px-2">
