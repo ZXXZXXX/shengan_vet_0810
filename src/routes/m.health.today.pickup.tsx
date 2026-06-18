@@ -206,7 +206,7 @@ function BatchPickupPage() {
             </span>
           </div>
           <div className="mt-2 text-section-title text-foreground">
-            已选 {woIds.length} 项任务 · 合并 {pickupIds.length} 张领取单
+            合并 {pickupIds.length} 张领取单
           </div>
           <div className="mt-1 text-caption text-text-tertiary">
             覆盖 {cattleCount} 头牛 · {totalCount} 种药品
@@ -291,6 +291,14 @@ function BatchPickupPage() {
 
       {!allAlreadyClaimed && aggregated.length > 0 && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+          <div className="flex items-center justify-between mb-2 px-0.5">
+            <span className="text-caption text-text-tertiary">
+              已选 <span className="text-primary font-medium">{woIds.length}</span> 项任务
+            </span>
+            <span className="text-caption text-text-tertiary">
+              核验进度 <span className="text-foreground tabular-nums">{doneCount}/{totalCount}</span>
+            </span>
+          </div>
           <button
             type="button"
             disabled={!allScanned}
