@@ -20,7 +20,7 @@ import {
   diseaseTaskMeta,
   taskChipStyle,
   typeMeta,
-  truncateCJK,
+  
   type HomeTask,
   type TaskChip,
 } from "@/routes/m.homepage";
@@ -385,11 +385,6 @@ function TodayTasksPage() {
                 ? diseaseTaskMeta[t.id]?.task ?? null
                 : "待执行";
             const barn = inferBarn(t);
-            const needPickup = activeTab === "待执行" && !!pickupForWO(t.id);
-            const title =
-              t.type === "疾病治疗" && diseaseTaskMeta[t.id]
-                ? truncateCJK(diseaseTaskMeta[t.id].disease)
-                : t.conclusion;
             const actionText = activeTab === "待执行" ? "执行" : activeTab === "待复查" ? "复查" : "诊断";
             const linkTo = activeTab === "待执行"
               ? "/m/health/$id/execute"
