@@ -472,24 +472,21 @@ function TodayTasksPage() {
                   </div>
                 </div>
 
-                {/* 主体:左侧 1px 直线 + 牛只耳号(主) + 任务概述(次) */}
+                {/* 主体:左侧 1px 直线 + 牛只耳号(主, 牛舍右侧) + 具体动作(次) */}
                 <div className="mt-2.5 pl-2.5 border-l border-primary">
                   <div className="text-caption text-text-tertiary">牛只耳号</div>
-                  <div className="text-page-title font-medium text-foreground font-mono truncate mt-0.5 leading-tight">
-                    {cattleId ?? groupTarget}
-                  </div>
-                  <div className="mt-1 text-body text-text-secondary truncate">
-                    <span className="text-text-tertiary mr-1">
-                      {t.type === "疾病治疗" ? "疾病" : "诊断"}
+                  <div className="mt-0.5 flex items-baseline gap-2.5 min-w-0">
+                    <span className="text-page-title font-medium text-foreground font-mono truncate leading-tight">
+                      {cattleId ?? groupTarget}
                     </span>
-                    {diseaseName}
+                    <span className="text-caption text-text-tertiary shrink-0 truncate">
+                      {barn}
+                    </span>
                   </div>
-                </div>
-
-                {/* 牛舍 */}
-                <div className="mt-2.5 flex items-center gap-1 text-caption text-text-secondary">
-                  <span className="text-text-tertiary">牛舍</span>
-                  <span className="text-text-secondary truncate">{barn}</span>
+                  <div className="mt-1.5 text-body text-text-secondary line-clamp-2 leading-snug">
+                    <span className="text-text-tertiary mr-1">{actionLabel}</span>
+                    {actionLine}
+                  </div>
                 </div>
 
                 {/* 底部:取药状态 + 操作箭头 */}
