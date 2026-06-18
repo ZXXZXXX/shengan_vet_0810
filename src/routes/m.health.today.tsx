@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ChevronLeft, Check, Inbox, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, Check, Inbox, CheckCircle2, Package, X } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel } from "@/lib/mobile-role";
+import { PICKUPS } from "@/lib/pickup-store";
 import {
   getRoleTasks,
   roleFilterMap,
@@ -21,12 +22,26 @@ export const Route = createFileRoute("/m/health/today")({
   component: TodayTasksPage,
 });
 
+// 简单根据 target 推断牛栏/牛舍。若 target 已是牛舍描述（如 "3 号牛舍 · 24 头"）就直接展示；
+// 若是耳号（#01-24-XXXX）按耳号末位 mock 一个牛舍。
+function inferBarn(t: HomeTask): string {
+  if (!t.target.startsWith("#")) return t.target.split(" · ")[0];
+  const tail = t.target.slice(-1);
+  const n = Number.isFinite(Number(tail)) ? Number(tail) : 1;
+  return `${(n % 4) + 1} 号牛舍`;
+}
+
+function pickupForWO(woId: string) {
+  return PICKUPS.find((p) => p.source === woId);
+}
+
 function TodayTasksPage() {
   const role = useRole();
   const navigate = useNavigate();
   const tasks = useMemo<HomeTask[]>(() => getRoleTasks(role), [role]);
   const filter = roleFilterMap[role];
 
+  const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState(false);
 
@@ -44,7 +59,23 @@ function TodayTasksPage() {
     else setSelected(new Set(tasks.map((t) => t.id)));
   };
 
+  const exitSelect = () => {
+    setSelectMode(false);
+    setSelected(new Set());
+  };
+
   const count = selected.size;
+
+  // 汇总：涉及牛舍数 & 需取药任务数
+  const summary = useMemo(() => {
+    const barns = new Set<string>();
+    let pickupCount = 0;
+    tasks.forEach((t) => {
+      barns.add(inferBarn(t));
+      if (pickupForWO(t.id)) pickupCount += 1;
+    });
+    return { barns: Array.from(barns), pickupCount };
+  }, [tasks]);
 
   return (
     <MobileShell hideTabBar>
@@ -52,33 +83,83 @@ function TodayTasksPage() {
       <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border px-3 h-12 flex items-center gap-2">
         <button
           type="button"
-          onClick={() => navigate({ to: "/m/homepage" })}
+          onClick={() => (selectMode ? exitSelect() : navigate({ to: "/m/homepage" }))}
           className="h-9 w-9 -ml-1 inline-flex items-center justify-center rounded-lg active:bg-surface-subtle"
-          aria-label="返回"
+          aria-label={selectMode ? "退出多选" : "返回"}
         >
-          <ChevronLeft className="h-5 w-5 text-foreground" />
+          {selectMode ? (
+            <X className="h-5 w-5 text-foreground" />
+          ) : (
+            <ChevronLeft className="h-5 w-5 text-foreground" />
+          )}
         </button>
         <div className="flex-1 min-w-0">
           <div className="text-body font-medium text-foreground leading-tight truncate">
-            今日工作任务
+            {selectMode ? `已选 ${count} 项` : "今日工作任务"}
           </div>
           <div className="text-caption text-text-tertiary leading-tight truncate">
             {roleLabel[role]} · {filter?.label ?? "全部"} · 共 {tasks.length} 项
           </div>
         </div>
-        {tasks.length > 0 && (
-          <button
-            type="button"
-            onClick={toggleAll}
-            className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
-          >
-            {allSelected ? "取消全选" : "全选"}
-          </button>
-        )}
+        {tasks.length > 0 &&
+          (selectMode ? (
+            <button
+              type="button"
+              onClick={toggleAll}
+              className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
+            >
+              {allSelected ? "取消全选" : "全选"}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setSelectMode(true)}
+              className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
+            >
+              批量操作
+            </button>
+          ))}
       </header>
 
+      {/* 顶部信息卡：涉及牛舍 / 需取药 */}
+      {tasks.length > 0 && (
+        <div className="px-4 pt-3">
+          <div className="rounded-xl bg-card border border-border p-3 space-y-2">
+            <div className="flex items-start gap-2">
+              <span className="text-caption text-text-tertiary shrink-0 mt-0.5">涉及牛舍</span>
+              <div className="flex-1 flex flex-wrap gap-1.5">
+                {summary.barns.map((b) => (
+                  <span
+                    key={b}
+                    className="inline-flex items-center px-2 h-[22px] rounded-md bg-surface-subtle text-text-secondary text-caption"
+                  >
+                    {b}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-caption text-text-tertiary shrink-0">取药提醒</span>
+              {summary.pickupCount > 0 ? (
+                <span className="inline-flex items-center gap-1 text-body-sm text-warning">
+                  <Package className="h-3.5 w-3.5" />
+                  <span>
+                    有 <span className="font-semibold tabular-nums">{summary.pickupCount}</span>{" "}
+                    项任务需先到药房取药
+                  </span>
+                </span>
+              ) : (
+                <span className="text-body-sm text-text-secondary">无需取药</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 列表 */}
-      <div className="px-4 pt-3 pb-[120px] space-y-2">
+      <div
+        className={`px-4 pt-3 ${selectMode ? "pb-[120px]" : "pb-6"} space-y-2`}
+      >
         {tasks.length === 0 ? (
           <div className="mt-6 rounded-xl bg-card border border-border">
             <EmptyState icon={Inbox} size="sm" title="今日暂无工单" />
@@ -96,29 +177,23 @@ function TodayTasksPage() {
                   : t.status === "待诊断"
                     ? "待诊断"
                     : null;
-            return (
-              <label
-                key={t.id}
-                className={`flex items-center gap-3 p-3 rounded-xl border bg-card active:bg-surface-subtle ${
-                  checked ? "border-primary ring-1 ring-primary/40" : "border-border"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggle(t.id)}
-                  className="sr-only"
-                />
-                <span
-                  className={`h-5 w-5 rounded-md inline-flex items-center justify-center shrink-0 border ${
-                    checked
-                      ? "bg-primary border-primary text-primary-foreground"
-                      : "border-border bg-card"
-                  }`}
-                  aria-hidden
-                >
-                  {checked && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
-                </span>
+            const barn = inferBarn(t);
+            const needPickup = !!pickupForWO(t.id);
+
+            const inner = (
+              <>
+                {selectMode && (
+                  <span
+                    className={`h-5 w-5 rounded-md inline-flex items-center justify-center shrink-0 border ${
+                      checked
+                        ? "bg-primary border-primary text-primary-foreground"
+                        : "border-border bg-card"
+                    }`}
+                    aria-hidden
+                  >
+                    {checked && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                  </span>
+                )}
                 <span
                   className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
                 >
@@ -145,21 +220,50 @@ function TodayTasksPage() {
                       ? truncateCJK(diseaseTaskMeta[t.id].disease)
                       : t.conclusion}
                   </div>
+                  <div className="mt-1 flex items-center gap-1.5">
+                    <span className="inline-flex items-center px-1.5 h-[18px] rounded bg-surface-subtle text-text-tertiary text-[11px] leading-none">
+                      {barn}
+                    </span>
+                    {needPickup && (
+                      <span className="inline-flex items-center gap-0.5 px-1.5 h-[18px] rounded bg-warning/10 text-warning text-[11px] leading-none">
+                        <Package className="h-3 w-3" />
+                        需取药
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </label>
+              </>
+            );
+
+            const cls = `flex items-center gap-3 p-3 rounded-xl border bg-card active:bg-surface-subtle ${
+              checked ? "border-primary ring-1 ring-primary/40" : "border-border"
+            }`;
+
+            return selectMode ? (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => toggle(t.id)}
+                className={cls + " w-full text-left"}
+              >
+                {inner}
+              </button>
+            ) : (
+              <Link
+                key={t.id}
+                to="/m/health/$id"
+                params={{ id: t.id }}
+                className={cls}
+              >
+                {inner}
+              </Link>
             );
           })
         )}
-
-        {tasks.length > 0 && (
-          <div className="pt-2 text-center text-caption text-text-tertiary">
-            勾选任务后可批量执行
-          </div>
-        )}
       </div>
 
-      {/* 底部操作栏 */}
-      {tasks.length > 0 && (
+      {/* 底部操作栏（仅多选态） */}
+      {selectMode && tasks.length > 0 && (
         <div className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-3 max-w-[440px] mx-auto">
           <div className="flex-1 min-w-0">
             <div className="text-body-sm text-foreground">
@@ -204,11 +308,11 @@ function TodayTasksPage() {
               <button
                 onClick={() => {
                   setDone(false);
-                  setSelected(new Set());
+                  exitSelect();
                 }}
                 className="h-10 rounded-lg border border-border text-body-sm text-text-secondary active:bg-surface-subtle"
               >
-                继续选择
+                继续浏览
               </button>
               <Link
                 to="/m/homepage"
