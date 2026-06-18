@@ -628,10 +628,7 @@ function TodayTasksPage() {
                     合并领药清单
                   </div>
                   <div className="text-caption text-text-tertiary mt-0.5">
-                    覆盖 {pickupTasks.length} 项任务 ·{" "}
-                    {selectedBarns.size === 0
-                      ? `全部 ${allBarns.length} 个牛舍`
-                      : Array.from(selectedBarns).join("、")}
+                    覆盖 {aggregationTasks.length} 头牛 · {aggregatedDrugs.length} 种药品
                   </div>
                 </div>
                 <button
