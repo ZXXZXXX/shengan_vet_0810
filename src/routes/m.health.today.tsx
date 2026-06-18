@@ -57,9 +57,13 @@ function getRoleTabs(role: Role): StatusTab[] {
 }
 
 // 按角色获取候选任务全集（不区分状态 tab）
+// 兽医/场长：疾病治疗的诊断/复查 + 所有类型的待执行
+// 助理：疾病治疗的待执行；免疫员：疫苗免疫；修蹄工：修蹄
 function getRoleAllTasks(role: Role): HomeTask[] {
   if (role === "vet" || role === "manager") {
-    return homeTasks.filter((t) => t.type === "疾病治疗");
+    return homeTasks.filter(
+      (t) => t.type === "疾病治疗" || t.status === "进行中",
+    );
   }
   if (role === "vet_assistant")
     return homeTasks.filter(
