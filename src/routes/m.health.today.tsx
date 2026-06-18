@@ -503,7 +503,7 @@ function TodayTasksPage() {
                           已领
                         </span>
                       ) : (
-                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[var(--state-warning)]/25 text-[var(--state-alert)]">
+                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[#FFF1E0] text-[#E07B1F]">
                           未领
                         </span>
                       )}
