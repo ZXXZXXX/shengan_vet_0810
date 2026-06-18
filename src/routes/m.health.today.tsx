@@ -573,8 +573,8 @@ function TodayTasksPage() {
 
       {/* 底部操作栏（多选态）：批量记录执行 */}
       {selectMode && tasks.length > 0 && (
-        <div className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] flex items-center gap-3 max-w-[440px] mx-auto">
-          <div className="flex-1 min-w-0">
+        <div className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] max-w-[440px] mx-auto">
+          <div className="flex items-center justify-between mb-2">
             <div className="text-body-sm text-foreground">
               已选{" "}
               <span className="text-primary font-semibold tabular-nums">
@@ -582,19 +582,32 @@ function TodayTasksPage() {
               </span>{" "}
               <span className="text-text-tertiary">/ {tasks.length}</span>
             </div>
-            <div className="text-caption text-text-tertiary truncate">
-              {count === 0 ? "选择任务后集中拍照记录" : "上传一次照片同步至所选任务"}
+            <div className="text-caption text-text-tertiary truncate ml-2">
+              {aggregatedDrugs.length > 0
+                ? `需领 ${aggregatedDrugs.length} 种药品`
+                : "无需取药"}
             </div>
           </div>
-          <button
-            type="button"
-            disabled={count === 0}
-            onClick={() => setDone("batch")}
-            className="h-11 px-5 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
-          >
-            <Camera className="h-4 w-4" />
-            拍照记录
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={count === 0 || aggregatedDrugs.length === 0}
+              onClick={() => setDrugSheet(true)}
+              className="flex-1 h-11 rounded-full border border-warning/40 text-warning text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:bg-warning/10"
+            >
+              <Package className="h-4 w-4" />
+              汇总取药清单
+            </button>
+            <button
+              type="button"
+              disabled={count === 0}
+              onClick={() => setDone("batch")}
+              className="flex-1 h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
+            >
+              <Camera className="h-4 w-4" />
+              拍照记录
+            </button>
+          </div>
         </div>
       )}
 
