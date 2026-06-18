@@ -150,13 +150,8 @@ function TodayTasksPage() {
     [tabTasks, selectedBarns],
   );
 
-  // 当前范围内 需领药任务 & 聚合药品清单（仅"待执行"才涉及取药）
-  const pickupTasks = useMemo(
-    () => (activeTab === "待执行" ? tasks.filter((t) => pickupForWO(t.id)) : []),
-    [tasks, activeTab],
-  );
 
-  // (批量领药改为跳转独立页面，不再在此聚合)
+
 
 
   const toggleBarn = (b: string) =>
