@@ -291,7 +291,7 @@ function ReportPage() {
   // 复诊关联
   const fromRevisit = !!search.revisitFrom;
   const [isRevisit, setIsRevisit] = useState<boolean | null>(
-    fromRevisit ? true : null
+    fromRevisit ? true : false
   );
   const [relatedOrderId, setRelatedOrderId] = useState<string>(
     search.revisitFrom ?? ""
