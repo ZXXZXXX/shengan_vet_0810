@@ -127,10 +127,10 @@ function TodayTasksPage() {
     [tabTasks, selectedBarns],
   );
 
-  // 当前范围内 需领药任务 & 聚合药品清单
+  // 当前范围内 需领药任务 & 聚合药品清单（仅"待执行"才涉及取药）
   const pickupTasks = useMemo(
-    () => tasks.filter((t) => pickupForWO(t.id)),
-    [tasks],
+    () => (activeTab === "待执行" ? tasks.filter((t) => pickupForWO(t.id)) : []),
+    [tasks, activeTab],
   );
   const aggregatedDrugs = useMemo(() => {
     const map = new Map<
@@ -384,7 +384,7 @@ function TodayTasksPage() {
                 ? diseaseTaskMeta[t.id]?.task ?? null
                 : "待执行";
             const barn = inferBarn(t);
-            const needPickup = !!pickupForWO(t.id);
+            const needPickup = activeTab === "待执行" && !!pickupForWO(t.id);
             const title =
               t.type === "疾病治疗" && diseaseTaskMeta[t.id]
                 ? truncateCJK(diseaseTaskMeta[t.id].disease)
@@ -463,15 +463,19 @@ function TodayTasksPage() {
                   </div>
 
                   <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between">
-                    {needPickup ? (
-                      <span className="inline-flex items-center gap-1 text-caption text-warning">
-                        <Package className="h-3 w-3" />
-                        需先到药房取药
-                      </span>
+                    {activeTab === "待执行" ? (
+                      needPickup ? (
+                        <span className="inline-flex items-center gap-1 text-caption text-warning">
+                          <Package className="h-3 w-3" />
+                          需先到药房取药
+                        </span>
+                      ) : (
+                        <span className="text-caption text-text-tertiary">
+                          无需取药
+                        </span>
+                      )
                     ) : (
-                      <span className="text-caption text-text-tertiary">
-                        无需取药
-                      </span>
+                      <span />
                     )}
                     {!selectMode && (
                       <span className="inline-flex items-center gap-0.5 text-caption text-primary">
