@@ -231,7 +231,7 @@ function TodayTasksPage() {
             onClick={enterSelect}
             className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
           >
-            批量记录
+            批量执行
           </button>
         )}
         {selectMode && tasks.length > 0 && (
@@ -290,7 +290,7 @@ function TodayTasksPage() {
         <div className="px-4 pt-3">
           <div className="flex items-center gap-1.5 mb-2 text-caption text-text-tertiary">
             <Filter className="h-3 w-3" />
-            <span>按牛舍筛选 · 集中处理</span>
+            <span>按牛舍筛选</span>
             {selectedBarns.size > 0 && (
               <button
                 onClick={() => setSelectedBarns(new Set())}
@@ -333,31 +333,42 @@ function TodayTasksPage() {
         </div>
       )}
 
-      {/* 聚合操作卡：一次领药 / 批量记录 */}
+      {/* 聚合操作卡：引导批量执行 + 一次领药 */}
       {tasks.length > 0 && pickupTasks.length > 0 && !selectMode && (
         <div className="px-4 pt-3">
-          <button
-            type="button"
-            onClick={() => setDrugSheet(true)}
-            className="w-full rounded-2xl bg-warning/10 border border-warning/30 p-3.5 flex items-center gap-3 active:bg-warning/15"
-          >
-            <span className="h-10 w-10 rounded-lg bg-warning/20 text-warning inline-flex items-center justify-center shrink-0">
-              <Package className="h-5 w-5" />
-            </span>
-            <div className="flex-1 min-w-0 text-left">
-              <div className="text-body-sm font-medium text-foreground">
-                共 {pickupTasks.length} 项任务需领药 ·{" "}
-                {aggregatedDrugs.length} 种药品
-              </div>
-              <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                合并清单一次性领齐，避免多次往返药房
+          <div className="w-full rounded-2xl bg-warning/10 border border-warning/30 p-3.5">
+            <div className="flex items-center gap-3">
+              <span className="h-10 w-10 rounded-lg bg-warning/20 text-warning inline-flex items-center justify-center shrink-0">
+                <Package className="h-5 w-5" />
+              </span>
+              <div className="flex-1 min-w-0 text-left">
+                <div className="text-body-sm font-medium text-foreground">
+                  共 {pickupTasks.length} 项任务需领药 ·{" "}
+                  {aggregatedDrugs.length} 种药品
+                </div>
+                <div className="text-caption text-text-tertiary mt-0.5">
+                  建议「批量执行」合并取药，避免多次往返药房
+                </div>
               </div>
             </div>
-            <span className="text-caption text-warning inline-flex items-center shrink-0">
-              查看
-              <ChevronRight className="h-3.5 w-3.5" />
-            </span>
-          </button>
+            <div className="mt-2.5 pt-2.5 border-t border-warning/20 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setDrugSheet(true)}
+                className="flex-1 h-9 rounded-lg text-body-sm text-warning bg-warning/10 active:bg-warning/20 inline-flex items-center justify-center"
+              >
+                查看药品清单
+              </button>
+              <button
+                type="button"
+                onClick={enterSelect}
+                className="flex-1 h-9 rounded-lg text-body-sm font-medium text-white bg-warning active:opacity-90 inline-flex items-center justify-center gap-1"
+              >
+                批量执行
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
