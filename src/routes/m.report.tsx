@@ -925,51 +925,56 @@ function ReportPage() {
                     </Section>
 
                     {/* ===== 治疗方案 分组 ===== */}
-                    {selectedDisease && selectedPlan && (
-                      <>
-                        <div className="pt-1 pb-0.5 flex items-center gap-2">
-                          <span className="text-section-title text-foreground font-medium">治疗方案</span>
-                          <span className="text-caption text-text-tertiary inline-flex items-center gap-1">
-                            <Sparkles className="h-3 w-3 text-primary" />
-                            已自动匹配标准处方，仍可更换
-                          </span>
-                        </div>
+                    <div className="pt-1 pb-0.5 flex items-center gap-2">
+                      <span className="text-section-title text-foreground font-medium">治疗方案</span>
+                      <span className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                        <Sparkles className="h-3 w-3 text-primary" />
+                        {selectedDisease ? "已自动匹配标准处方，仍可更换" : "选择疑似疾病后自动匹配"}
+                      </span>
+                    </div>
 
-                        <Section
-                          title="标准处方"
-                          extra={
-                            selectedDisease.plans.length > 1 ? (
-                              <button
-                                type="button"
-                                onClick={() => setPlanPickerOpen(true)}
-                                className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
-                              >
-                                <RefreshCw className="h-3 w-3" />
-                                更换方案（{planIdx + 1}/{selectedDisease.plans.length}）
-                              </button>
-                            ) : undefined
-                          }
-                        >
-                          <div className="rounded-lg border border-primary/20 bg-brand-subtle/40 p-3 space-y-1.5">
-                            <div className="flex items-center gap-1.5 text-body-sm text-foreground">
-                              <FileText className="h-3.5 w-3.5 text-primary" />
-                              {selectedPlan.rx}
-                            </div>
-                            {selectedPlan.desc && (
-                              <div className="text-caption text-text-tertiary">
-                                {selectedPlan.desc}
-                              </div>
-                            )}
-                            <div className="text-caption text-text-secondary">
-                              用药：{selectedPlan.drugs.join("、")}
-                            </div>
-                            <div className="text-caption text-text-secondary">
-                              疗程：{selectedPlan.duration}
-                            </div>
+                    <Section
+                      title="标准处方"
+                      extra={
+                        selectedDisease && selectedDisease.plans.length > 1 ? (
+                          <button
+                            type="button"
+                            onClick={() => setPlanPickerOpen(true)}
+                            className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
+                          >
+                            <RefreshCw className="h-3 w-3" />
+                            更换方案（{planIdx + 1}/{selectedDisease.plans.length}）
+                          </button>
+                        ) : undefined
+                      }
+                    >
+                      {selectedDisease && selectedPlan ? (
+                        <div className="rounded-lg border border-primary/20 bg-brand-subtle/40 p-3 space-y-1.5">
+                          <div className="flex items-center gap-1.5 text-body-sm text-foreground">
+                            <FileText className="h-3.5 w-3.5 text-primary" />
+                            {selectedPlan.rx}
                           </div>
-                        </Section>
-                      </>
-                    )}
+                          {selectedPlan.desc && (
+                            <div className="text-caption text-text-tertiary">
+                              {selectedPlan.desc}
+                            </div>
+                          )}
+                          <div className="text-caption text-text-secondary">
+                            用药：{selectedPlan.drugs.join("、")}
+                          </div>
+                          <div className="text-caption text-text-secondary">
+                            疗程：{selectedPlan.duration}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-lg border border-dashed border-border bg-surface-2/40 p-4 text-center">
+                          <FileText className="h-5 w-5 text-text-tertiary mx-auto mb-1.5" />
+                          <div className="text-caption text-text-tertiary">
+                            请先在上方选择疑似疾病，系统将自动匹配标准处方
+                          </div>
+                        </div>
+                      )}
+                    </Section>
                   </>
                 )}
 
