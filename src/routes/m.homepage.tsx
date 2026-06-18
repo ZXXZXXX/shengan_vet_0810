@@ -304,6 +304,7 @@ export function getRoleTasks(role: Role): HomeTask[] {
   const filter = roleFilterMap[role];
   if (!filter) return [];
   if (role === "vet" || role === "manager") {
+    const diagnoses = homeTasks.filter((t) => t.status === "待诊断" && t.type === "疾病治疗");
     const executions = homeTasks.filter(
       (t) =>
         t.status === "进行中" &&
@@ -313,8 +314,8 @@ export function getRoleTasks(role: Role): HomeTask[] {
     const reviews = homeTasks.filter(
       (t) => t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查",
     );
-    const diagnoses = homeTasks.filter((t) => t.status === "待诊断" && t.type === "疾病治疗");
-    return [...executions, ...reviews, ...diagnoses];
+    // 保证三类都在首页露出:待诊断 3 / 待执行 2 / 待复查 2
+    return [...diagnoses.slice(0, 3), ...executions.slice(0, 2), ...reviews.slice(0, 2)];
   }
   const base = homeTasks.filter((t) => t.status === filter.status && t.type === filter.type);
   return base.filter((t) => diseaseTaskMeta[t.id]?.task !== "待复查");
