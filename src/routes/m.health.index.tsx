@@ -125,7 +125,7 @@ const diseaseMeta: Record<string, { visit: "初诊" | "复诊"; diagnosis?: stri
   "WO-2410": { visit: "复诊", suspected: "乳房炎" },
   "WO-2298": { visit: "复诊", diagnosis: "乳房炎" },
   "WO-2420": { visit: "初诊", diagnosis: "乳房炎" },
-  "WO-2430": { visit: "初诊", diagnosis: "乳房炎" },
+  
   "WO-2440": { visit: "初诊", diagnosis: "乳房炎" },
   "WO-2324": { visit: "初诊", suspected: "采食异常" },
   "WO-2199": { visit: "初诊", diagnosis: "乳房炎" },
