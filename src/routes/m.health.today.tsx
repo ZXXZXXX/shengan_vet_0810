@@ -497,7 +497,7 @@ function TodayTasksPage() {
                         <Package className="h-3 w-3" />
                         <span>领物</span>
                         <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-surface-subtle text-text-tertiary">
-                          无需取药
+                          无需
                         </span>
                       </span>
                     ) : pickupClaimed ? (
@@ -505,7 +505,7 @@ function TodayTasksPage() {
                         <Package className="h-3 w-3" />
                         <span>领物</span>
                         <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[color-mix(in_oklab,var(--state-success)_15%,transparent)] text-[var(--state-success)]">
-                          已取药
+                          已领
                         </span>
                       </span>
                     ) : (
@@ -513,7 +513,7 @@ function TodayTasksPage() {
                         <Package className="h-3 w-3 text-warning" />
                         <span>领物</span>
                         <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[var(--state-warning)]/25 text-[var(--state-alert)]">
-                          未取药
+                          未领
                         </span>
                       </span>
                     )
