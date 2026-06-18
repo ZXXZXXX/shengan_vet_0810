@@ -14,7 +14,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
-import { PICKUPS, parseQty } from "@/lib/pickup-store";
+import { PICKUPS, parseQty, useClaimed } from "@/lib/pickup-store";
 import {
   homeTasks,
   diseaseTaskMeta,
@@ -106,6 +106,7 @@ function TodayTasksPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [drugSheet, setDrugSheet] = useState(false);
   const [done, setDone] = useState<"claim" | "batch" | null>(null);
+  const claimed = useClaimed();
 
   // 当前 tab 下的任务，叠加牛舍筛选
   const tabTasks = useMemo(
@@ -464,16 +465,24 @@ function TodayTasksPage() {
 
                   <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between">
                     {activeTab === "待执行" ? (
-                      needPickup ? (
-                        <span className="inline-flex items-center gap-1 text-caption text-warning">
-                          <Package className="h-3 w-3" />
-                          需先到药房取药
-                        </span>
-                      ) : (
-                        <span className="text-caption text-text-tertiary">
-                          无需取药
-                        </span>
-                      )
+                      (() => {
+                        const pk = pickupForWO(t.id);
+                        if (!pk) {
+                          return <span className="text-caption text-text-tertiary">无需取药</span>;
+                        }
+                        const isClaimed = claimed.includes(pk.id);
+                        return isClaimed ? (
+                          <span className="inline-flex items-center gap-1 text-caption text-[var(--state-success)]">
+                            <CheckCircle2 className="h-3 w-3" />
+                            已取药
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-caption text-warning">
+                            <Package className="h-3 w-3" />
+                            未取药
+                          </span>
+                        );
+                      })()
                     ) : (
                       <span />
                     )}
