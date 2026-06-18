@@ -367,6 +367,8 @@ function ReportPage() {
   const cfg = workTypeConfig[workType];
   const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
   const [note, setNote] = useState<string>(draft?.note ?? "");
+  const [temperature, setTemperature] = useState<string>(draft?.temperature ?? "");
+  const [ketone, setKetone] = useState<string>(draft?.ketone ?? "");
   const [diseaseQ, setDiseaseQ] = useState("");
   const [diseaseFocused, setDiseaseFocused] = useState(false);
   const [diseasePickerOpen, setDiseasePickerOpen] = useState(false);
