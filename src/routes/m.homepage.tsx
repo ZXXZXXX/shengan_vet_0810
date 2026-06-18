@@ -180,13 +180,9 @@ function MHomePage() {
       {/* ============ 工作任务 ============ */}
       <section className="px-4 mt-5 mb-4">
         <SectionTitle
-          title="工作任务"
+          title="今日工作任务"
           hint={`共计 ${getTaskCount(role)} 项`}
-          to="/m/health"
-          search={{
-            tab: (roleFilterMap[role]?.status ?? "待诊断") === "进行中" ? "执行中" : "待诊断",
-            type: roleFilterMap[role]?.type ?? "疾病治疗",
-          }}
+          to="/m/health/today"
         />
         <TodayTaskList role={role} />
       </section>
@@ -247,7 +243,7 @@ function MHomePage() {
 }
 
 // ---------------- 数据 ----------------
-type HomeTask = {
+export type HomeTask = {
   id: string;
   target: string;
   conclusion: string;
@@ -256,7 +252,7 @@ type HomeTask = {
   minutesAgo: number;
 };
 
-const homeTasks: HomeTask[] = [
+export const homeTasks: HomeTask[] = [
   // 疾病治疗 · 待诊断
   { id: "WO-2381", target: "#01-24-2381", conclusion: "疑似乳房炎急性发作", type: "疾病治疗", status: "待诊断", minutesAgo: 2 },
   { id: "WO-2382", target: "#01-24-2270", conclusion: "持续高烧待诊", type: "疾病治疗", status: "待诊断", minutesAgo: 8 },
@@ -292,7 +288,7 @@ const homeTasks: HomeTask[] = [
 ];
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
-const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
+export const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
   manager: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
   vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" },
   vet_assistant: { status: "进行中", type: "疾病治疗", label: "执行中 · 疾病治疗" },
@@ -300,7 +296,7 @@ const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
   hoof_trimmer: { status: "进行中", type: "修蹄", label: "执行中 · 修蹄" },
 };
 
-function getRoleTasks(role: Role): HomeTask[] {
+export function getRoleTasks(role: Role): HomeTask[] {
   const filter = roleFilterMap[role];
   if (!filter) return [];
   const base = homeTasks.filter((t) => t.status === filter.status && t.type === filter.type);
@@ -319,7 +315,7 @@ function getTaskCount(role: Role) {
   return getRoleTasks(role).length;
 }
 
-function formatTimeAgo(minutes: number) {
+export function formatTimeAgo(minutes: number) {
   if (minutes < 60) return `${minutes}分钟前`;
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}小时前`;
@@ -327,7 +323,7 @@ function formatTimeAgo(minutes: number) {
   return `${days}天前`;
 }
 
-const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: string }> = {
+export const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: string }> = {
   "疾病治疗": { icon: Pill, bg: "bg-brand-subtle", text: "text-primary" },
   "疫苗免疫": { icon: Syringe, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
   "修蹄":     { icon: Footprints, bg: "bg-[#FFF5DF]", text: "text-[#F59E0B]" },
@@ -335,8 +331,8 @@ const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: string }> 
 };
 
 // 疾病治疗工单的疾病名称 + 任务类型（用于统一卡片文案）
-type TaskChip = "待诊断" | "待执行" | "待复查" | "待治愈";
-const diseaseTaskMeta: Record<string, { disease: string; task: TaskChip }> = {
+export type TaskChip = "待诊断" | "待执行" | "待复查" | "待治愈";
+export const diseaseTaskMeta: Record<string, { disease: string; task: TaskChip }> = {
   "WO-2381": { disease: "乳房炎", task: "待诊断" },
   "WO-2382": { disease: "疾病不详", task: "待诊断" },
   "WO-2383": { disease: "酮病", task: "待诊断" },
@@ -354,14 +350,14 @@ const diseaseTaskMeta: Record<string, { disease: string; task: TaskChip }> = {
 };
 
 // 任务类型 chip 颜色
-const taskChipStyle: Record<TaskChip, string> = {
+export const taskChipStyle: Record<TaskChip, string> = {
   "待诊断": "bg-[#FFF5DF] text-[#B45309]",
   "待执行": "bg-[#E6F7FE] text-[#0EA5E9]",
   "待复查": "bg-[#E6F7FE] text-[#0EA5E9]",
   "待治愈": "bg-[#F3E8FF] text-[#9333EA]",
 };
 
-function truncateCJK(s: string, max = 5) {
+export function truncateCJK(s: string, max = 5) {
   return [...s].length > max ? [...s].slice(0, max).join("") + "…" : s;
 }
 
