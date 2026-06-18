@@ -157,60 +157,8 @@ function TodayTasksPage() {
     [tasks, activeTab],
   );
 
-  // 选中(批量执行)态下,基于已选任务汇总;否则按全部 pickupTasks 预览
-  const aggregationTasks = useMemo(() => {
-    if (selectMode) {
-      return pickupTasks.filter((t) => selected.has(t.id));
-    }
-    return pickupTasks;
-  }, [pickupTasks, selectMode, selected]);
+  // (批量领药改为跳转独立页面，不再在此聚合)
 
-  type DrugBreakdown = {
-    cattle: string;
-    barn: string;
-    woId: string;
-    qty: number;
-    unit: string;
-  };
-  const aggregatedDrugs = useMemo(() => {
-    const map = new Map<
-      string,
-      {
-        name: string;
-        spec?: string;
-        unit: string;
-        qty: number;
-        from: Set<string>;
-        breakdown: DrugBreakdown[];
-      }
-    >();
-    aggregationTasks.forEach((t) => {
-      const pk = pickupForWO(t.id);
-      const barn = inferBarn(t);
-      const cattle = t.target.startsWith("#") ? t.target : t.target;
-      pk?.items.forEach((it) => {
-        const { num, unit } = parseQty(it.qty);
-        const key = it.name + "|" + (it.spec ?? "");
-        const cur = map.get(key);
-        const row: DrugBreakdown = { cattle, barn, woId: t.id, qty: num, unit };
-        if (cur) {
-          cur.qty += num;
-          cur.from.add(barn);
-          cur.breakdown.push(row);
-        } else {
-          map.set(key, {
-            name: it.name,
-            spec: it.spec,
-            unit,
-            qty: num,
-            from: new Set([barn]),
-            breakdown: [row],
-          });
-        }
-      });
-    });
-    return Array.from(map.values());
-  }, [aggregationTasks]);
 
   const toggleBarn = (b: string) =>
     setSelectedBarns((prev) => {
