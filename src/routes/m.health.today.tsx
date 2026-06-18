@@ -14,7 +14,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
-import { PICKUPS, parseQty, useClaimed } from "@/lib/pickup-store";
+import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import {
   homeTasks,
   diseaseTaskMeta,
@@ -127,8 +127,7 @@ function TodayTasksPage() {
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [drugSheet, setDrugSheet] = useState(false);
-  const [done, setDone] = useState<"claim" | "batch" | null>(null);
+  const [done, setDone] = useState<"batch" | null>(null);
   const claimed = useClaimed();
 
   // 当前 tab 下的任务，叠加牛舍筛选
@@ -151,66 +150,9 @@ function TodayTasksPage() {
     [tabTasks, selectedBarns],
   );
 
-  // 当前范围内 需领药任务 & 聚合药品清单（仅"待执行"才涉及取药）
-  const pickupTasks = useMemo(
-    () => (activeTab === "待执行" ? tasks.filter((t) => pickupForWO(t.id)) : []),
-    [tasks, activeTab],
-  );
 
-  // 选中(批量执行)态下,基于已选任务汇总;否则按全部 pickupTasks 预览
-  const aggregationTasks = useMemo(() => {
-    if (selectMode) {
-      return pickupTasks.filter((t) => selected.has(t.id));
-    }
-    return pickupTasks;
-  }, [pickupTasks, selectMode, selected]);
 
-  type DrugBreakdown = {
-    cattle: string;
-    barn: string;
-    woId: string;
-    qty: number;
-    unit: string;
-  };
-  const aggregatedDrugs = useMemo(() => {
-    const map = new Map<
-      string,
-      {
-        name: string;
-        spec?: string;
-        unit: string;
-        qty: number;
-        from: Set<string>;
-        breakdown: DrugBreakdown[];
-      }
-    >();
-    aggregationTasks.forEach((t) => {
-      const pk = pickupForWO(t.id);
-      const barn = inferBarn(t);
-      const cattle = t.target.startsWith("#") ? t.target : t.target;
-      pk?.items.forEach((it) => {
-        const { num, unit } = parseQty(it.qty);
-        const key = it.name + "|" + (it.spec ?? "");
-        const cur = map.get(key);
-        const row: DrugBreakdown = { cattle, barn, woId: t.id, qty: num, unit };
-        if (cur) {
-          cur.qty += num;
-          cur.from.add(barn);
-          cur.breakdown.push(row);
-        } else {
-          map.set(key, {
-            name: it.name,
-            spec: it.spec,
-            unit,
-            qty: num,
-            from: new Set([barn]),
-            breakdown: [row],
-          });
-        }
-      });
-    });
-    return Array.from(map.values());
-  }, [aggregationTasks]);
+
 
   const toggleBarn = (b: string) =>
     setSelectedBarns((prev) => {
@@ -581,7 +523,16 @@ function TodayTasksPage() {
               <button
                 type="button"
                 disabled={count === 0}
-                onClick={() => setDrugSheet(true)}
+                onClick={() => {
+                  const ids = selectedTasks
+                    .filter((t) => pickupForWO(t.id))
+                    .map((t) => t.id)
+                    .join(",");
+                  navigate({
+                    to: "/m/health/today/pickup",
+                    search: { ids },
+                  });
+                }}
                 className="w-full h-11 rounded-full bg-warning text-white text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:opacity-90"
               >
                 <Package className="h-4 w-4" />
@@ -603,113 +554,6 @@ function TodayTasksPage() {
         );
       })()}
 
-      {/* 药品合并清单 sheet */}
-      {drugSheet && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
-          onClick={() => setDrugSheet(false)}
-        >
-          <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[80vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-4 pt-4 pb-3 border-b border-border">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-card-title text-foreground">
-                    合并领药清单
-                  </div>
-                  <div className="text-caption text-text-tertiary mt-0.5">
-                    覆盖 {aggregationTasks.length} 头牛 · {aggregatedDrugs.length} 种药品
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setDrugSheet(false)}
-                  className="h-8 w-8 inline-flex items-center justify-center rounded-lg active:bg-surface-subtle"
-                  aria-label="关闭"
-                >
-                  <X className="h-4 w-4 text-text-secondary" />
-                </button>
-              </div>
-            </div>
-            <div className="overflow-y-auto px-4 py-3 space-y-2 flex-1">
-              {aggregatedDrugs.length === 0 ? (
-                <div className="py-8 text-center text-body-sm text-text-tertiary">
-                  当前范围无需领药
-                </div>
-              ) : (
-                aggregatedDrugs.map((d) => (
-                  <div
-                    key={d.name + (d.spec ?? "")}
-                    className="rounded-xl border border-border bg-card p-3"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="text-body font-medium text-foreground truncate">
-                          {d.name}
-                        </div>
-                        {d.spec && (
-                          <div className="text-caption text-text-tertiary mt-0.5 truncate">
-                            {d.spec}
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-right shrink-0">
-                        <div className="text-body font-semibold text-primary tabular-nums">
-                          {d.qty}
-                          <span className="text-caption text-text-tertiary font-normal ml-0.5">
-                            {d.unit}
-                          </span>
-                        </div>
-                        <div className="text-caption text-text-tertiary">
-                          共 {d.breakdown.length} 头
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-2 pt-2 border-t border-border/60 space-y-1">
-                      {d.breakdown.map((row, i) => (
-                        <div
-                          key={row.woId + i}
-                          className="flex items-center justify-between text-caption"
-                        >
-                          <span className="inline-flex items-center gap-1.5 min-w-0">
-                            <span className="font-mono text-text-secondary truncate">
-                              {row.cattle}
-                            </span>
-                            <span className="text-text-tertiary shrink-0">
-                              · {row.barn}
-                            </span>
-                          </span>
-                          <span className="text-text-secondary tabular-nums shrink-0">
-                            {row.qty}
-                            <span className="text-text-tertiary ml-0.5">
-                              {row.unit}
-                            </span>
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            <div className="px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] border-t border-border">
-              <button
-                type="button"
-                onClick={() => {
-                  setDrugSheet(false);
-                  setDone("claim");
-                }}
-                disabled={aggregatedDrugs.length === 0}
-                className="w-full h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
-              >
-                前往药房统一领取
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 完成弹窗 */}
       {done && (
@@ -726,14 +570,10 @@ function TodayTasksPage() {
                 <CheckCircle2 className="h-6 w-6" />
               </span>
               <div className="text-card-title text-foreground">
-                {done === "claim"
-                  ? `已生成 ${aggregatedDrugs.length} 种药品领取单`
-                  : `已为 ${count} 项任务上传执行照片`}
+                已为 {count} 项任务上传执行照片
               </div>
               <div className="text-caption text-text-tertiary mt-1">
-                {done === "claim"
-                  ? "请前往中央药房一次性领取"
-                  : "结果已同步至对应工单"}
+                结果已同步至对应工单
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2">

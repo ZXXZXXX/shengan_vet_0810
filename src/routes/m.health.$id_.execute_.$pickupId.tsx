@@ -156,7 +156,7 @@ function PickupDetailPage() {
   );
 }
 
-function PickupItemRow({
+export function PickupItemRow({
   item,
   pickupId,
   entries,
