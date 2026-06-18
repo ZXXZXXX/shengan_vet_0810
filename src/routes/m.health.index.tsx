@@ -280,7 +280,7 @@ function TaskListPage() {
                   const todayDone = o.status === "进行中" && todayDoneSet.has(o.id);
                   const canExecuteThis =
                     canExecute(role) && o.status === "进行中" && !isObserving && !todayDone &&
-                    (isReviewNode ? isVetView : !isVetView);
+                    (isReviewNode ? isVetView : true);
 
 
                   // 统一 Footer 元信息：左侧时间·人员

@@ -389,6 +389,12 @@ function TodayTasksPage() {
               t.type === "疾病治疗" && diseaseTaskMeta[t.id]
                 ? truncateCJK(diseaseTaskMeta[t.id].disease)
                 : t.conclusion;
+            const actionText = activeTab === "待执行" ? "执行" : activeTab === "待复查" ? "复查" : "诊断";
+            const linkTo = activeTab === "待执行"
+              ? "/m/health/$id/execute"
+              : activeTab === "待复查"
+                ? "/m/health/$id/review"
+                : "/m/health/$id";
 
             const inner = (
               <div className="flex">
@@ -469,7 +475,7 @@ function TodayTasksPage() {
                     )}
                     {!selectMode && (
                       <span className="inline-flex items-center gap-0.5 text-caption text-primary">
-                        详情
+                        {actionText}
                         <ChevronRight className="h-3 w-3" />
                       </span>
                     )}
@@ -496,7 +502,7 @@ function TodayTasksPage() {
             ) : (
               <Link
                 key={t.id}
-                to="/m/health/$id"
+                to={linkTo}
                 params={{ id: t.id }}
                 className={cls}
               >
