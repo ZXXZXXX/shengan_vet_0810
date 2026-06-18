@@ -291,6 +291,14 @@ function BatchPickupPage() {
 
       {!allAlreadyClaimed && aggregated.length > 0 && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+          <div className="flex items-center justify-between mb-2 px-0.5">
+            <span className="text-caption text-text-tertiary">
+              已选 <span className="text-primary font-medium">{woIds.length}</span> 项任务
+            </span>
+            <span className="text-caption text-text-tertiary">
+              核验进度 <span className="text-foreground tabular-nums">{doneCount}/{totalCount}</span>
+            </span>
+          </div>
           <button
             type="button"
             disabled={!allScanned}
