@@ -1,6 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ChevronLeft, Check, Inbox, CheckCircle2, Package, X } from "lucide-react";
+import {
+  ChevronLeft,
+  Check,
+  Inbox,
+  CheckCircle2,
+  Package,
+  X,
+  ChevronRight,
+} from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel } from "@/lib/mobile-role";
@@ -22,8 +30,6 @@ export const Route = createFileRoute("/m/health/today")({
   component: TodayTasksPage,
 });
 
-// 简单根据 target 推断牛栏/牛舍。若 target 已是牛舍描述（如 "3 号牛舍 · 24 头"）就直接展示；
-// 若是耳号（#01-24-XXXX）按耳号末位 mock 一个牛舍。
 function inferBarn(t: HomeTask): string {
   if (!t.target.startsWith("#")) return t.target.split(" · ")[0];
   const tail = t.target.slice(-1);
@@ -33,6 +39,12 @@ function inferBarn(t: HomeTask): string {
 
 function pickupForWO(woId: string) {
   return PICKUPS.find((p) => p.source === woId);
+}
+
+function todayLabel() {
+  const d = new Date();
+  const w = ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
+  return `${d.getMonth() + 1} 月 ${d.getDate()} 日 · 星期${w}`;
 }
 
 function TodayTasksPage() {
@@ -66,7 +78,6 @@ function TodayTasksPage() {
 
   const count = selected.size;
 
-  // 汇总：涉及牛舍数 & 需取药任务数
   const summary = useMemo(() => {
     const barns = new Set<string>();
     let pickupCount = 0;
@@ -74,7 +85,7 @@ function TodayTasksPage() {
       barns.add(inferBarn(t));
       if (pickupForWO(t.id)) pickupCount += 1;
     });
-    return { barns: Array.from(barns), pickupCount };
+    return { barnCount: barns.size, pickupCount };
   }, [tasks]);
 
   return (
@@ -121,47 +132,69 @@ function TodayTasksPage() {
           ))}
       </header>
 
-      {/* 顶部信息卡：涉及牛舍 / 需取药 */}
+      {/* 概览卡 */}
       {tasks.length > 0 && (
-        <div className="px-4 pt-3">
-          <div className="rounded-xl bg-card border border-border p-3 space-y-2">
-            <div className="flex items-start gap-2">
-              <span className="text-caption text-text-tertiary shrink-0 mt-0.5">涉及牛舍</span>
-              <div className="flex-1 flex flex-wrap gap-1.5">
-                {summary.barns.map((b) => (
-                  <span
-                    key={b}
-                    className="inline-flex items-center px-2 h-[22px] rounded-md bg-surface-subtle text-text-secondary text-caption"
-                  >
-                    {b}
-                  </span>
-                ))}
-              </div>
+        <div className="px-4 pt-4">
+          <div className="rounded-2xl bg-card border border-border p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-body-sm font-medium text-foreground">任务概览</span>
+              <span className="text-caption text-text-tertiary">{todayLabel()}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-caption text-text-tertiary shrink-0">取药提醒</span>
-              {summary.pickupCount > 0 ? (
-                <span className="inline-flex items-center gap-1 text-body-sm text-warning">
-                  <Package className="h-3.5 w-3.5" />
-                  <span>
-                    有 <span className="font-semibold tabular-nums">{summary.pickupCount}</span>{" "}
-                    项任务需先到药房取药
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-brand-subtle px-3 py-2.5">
+                <div className="text-caption text-primary/80 mb-0.5">涉及牛舍</div>
+                <div className="flex items-baseline gap-1 text-primary">
+                  <span className="text-[22px] leading-none font-semibold tabular-nums">
+                    {summary.barnCount}
                   </span>
-                </span>
-              ) : (
-                <span className="text-body-sm text-text-secondary">无需取药</span>
-              )}
+                  <span className="text-caption text-text-tertiary">个</span>
+                </div>
+              </div>
+              <div
+                className={`rounded-xl px-3 py-2.5 ${
+                  summary.pickupCount > 0
+                    ? "bg-warning/10"
+                    : "bg-surface-subtle"
+                }`}
+              >
+                <div
+                  className={`text-caption mb-0.5 flex items-center gap-1 ${
+                    summary.pickupCount > 0 ? "text-warning" : "text-text-tertiary"
+                  }`}
+                >
+                  <Package className="h-3 w-3" />
+                  需取药
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span
+                    className={`text-[22px] leading-none font-semibold tabular-nums ${
+                      summary.pickupCount > 0 ? "text-warning" : "text-text-tertiary"
+                    }`}
+                  >
+                    {summary.pickupCount}
+                  </span>
+                  <span className="text-caption text-text-tertiary">项</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* 分组标题 */}
+      {tasks.length > 0 && (
+        <div className="px-4 mt-4 mb-2 flex items-center gap-2">
+          <span className="h-3 w-[3px] rounded-full bg-primary" aria-hidden />
+          <span className="text-body-sm font-medium text-foreground">
+            待处理 <span className="text-text-tertiary font-normal">({tasks.length})</span>
+          </span>
+        </div>
+      )}
+
       {/* 列表 */}
-      <div
-        className={`px-4 pt-3 ${selectMode ? "pb-[120px]" : "pb-6"} space-y-2`}
-      >
+      <div className={`px-4 ${selectMode ? "pb-[120px]" : "pb-6"} space-y-2.5`}>
         {tasks.length === 0 ? (
-          <div className="mt-6 rounded-xl bg-card border border-border">
+          <div className="mt-6 rounded-2xl bg-card border border-border">
             <EmptyState icon={Inbox} size="sm" title="今日暂无工单" />
           </div>
         ) : (
@@ -179,64 +212,109 @@ function TodayTasksPage() {
                     : null;
             const barn = inferBarn(t);
             const needPickup = !!pickupForWO(t.id);
+            const title =
+              t.type === "疾病治疗" && diseaseTaskMeta[t.id]
+                ? truncateCJK(diseaseTaskMeta[t.id].disease)
+                : t.conclusion;
 
             const inner = (
-              <>
-                {selectMode && (
-                  <span
-                    className={`h-5 w-5 rounded-md inline-flex items-center justify-center shrink-0 border ${
-                      checked
-                        ? "bg-primary border-primary text-primary-foreground"
-                        : "border-border bg-card"
-                    }`}
-                    aria-hidden
-                  >
-                    {checked && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
-                  </span>
-                )}
+              <div className="flex">
+                {/* 左侧色条 */}
                 <span
-                  className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
-                >
-                  <Icon className="h-4 w-4" strokeWidth={1.75} />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-                    <span className="font-mono">{t.id}</span>
-                    <span>·</span>
-                    <span>{t.type}</span>
-                    {chip && (
+                  className={`w-[3px] shrink-0 rounded-l-2xl ${
+                    needPickup ? "bg-warning" : "bg-primary"
+                  }`}
+                  aria-hidden
+                />
+                <div className="flex-1 p-3.5">
+                  {/* 顶部：图标+标题 / 状态chip / 选择框 */}
+                  <div className="flex items-start gap-2.5">
+                    <span
+                      className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
+                    >
+                      <Icon className="h-4 w-4" strokeWidth={1.75} />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+                        <span className="font-mono">{t.id}</span>
+                        <span>·</span>
+                        <span>{t.type}</span>
+                      </div>
+                      <div className="text-body font-medium text-foreground truncate mt-0.5">
+                        {title}
+                      </div>
+                    </div>
+                    {selectMode ? (
                       <span
-                        className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
+                        className={`h-5 w-5 rounded-md inline-flex items-center justify-center shrink-0 border mt-1 ${
+                          checked
+                            ? "bg-primary border-primary text-primary-foreground"
+                            : "border-border bg-card"
+                        }`}
+                        aria-hidden
+                      >
+                        {checked && (
+                          <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                        )}
+                      </span>
+                    ) : chip ? (
+                      <span
+                        className={`inline-flex items-center px-1.5 h-[20px] rounded text-[11px] leading-none shrink-0 mt-1 ${taskChipStyle[chip]}`}
                       >
                         {chip}
                       </span>
-                    )}
-                    <span className="ml-auto">{formatTimeAgo(t.minutesAgo)}</span>
+                    ) : null}
                   </div>
-                  <div className="text-body text-foreground truncate mt-0.5">
-                    <span className="text-text-secondary">{t.target}</span>
-                    <span className="text-text-tertiary"> · </span>
-                    {t.type === "疾病治疗" && diseaseTaskMeta[t.id]
-                      ? truncateCJK(diseaseTaskMeta[t.id].disease)
-                      : t.conclusion}
+
+                  {/* 二列网格信息 */}
+                  <div className="mt-3 grid grid-cols-2 gap-y-1.5 gap-x-3">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-caption text-text-tertiary shrink-0">
+                        目标
+                      </span>
+                      <span className="text-body-sm text-text-secondary truncate">
+                        {t.target}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-caption text-text-tertiary shrink-0">
+                        牛舍
+                      </span>
+                      <span className="text-body-sm text-text-secondary truncate">
+                        {barn}
+                      </span>
+                    </div>
                   </div>
-                  <div className="mt-1 flex items-center gap-1.5">
-                    <span className="inline-flex items-center px-1.5 h-[18px] rounded bg-surface-subtle text-text-tertiary text-[11px] leading-none">
-                      {barn}
-                    </span>
-                    {needPickup && (
-                      <span className="inline-flex items-center gap-0.5 px-1.5 h-[18px] rounded bg-warning/10 text-warning text-[11px] leading-none">
-                        <Package className="h-3 w-3" />
-                        需取药
+
+                  {/* 底部分隔 */}
+                  <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {needPickup ? (
+                        <span className="inline-flex items-center gap-1 text-caption text-warning">
+                          <Package className="h-3 w-3" />
+                          需先到药房取药
+                        </span>
+                      ) : (
+                        <span className="text-caption text-text-tertiary">
+                          {formatTimeAgo(t.minutesAgo)}
+                        </span>
+                      )}
+                    </div>
+                    {!selectMode && (
+                      <span className="inline-flex items-center gap-0.5 text-caption text-primary">
+                        详情
+                        <ChevronRight className="h-3 w-3" />
                       </span>
                     )}
                   </div>
                 </div>
-              </>
+              </div>
             );
 
-            const cls = `flex items-center gap-3 p-3 rounded-xl border bg-card active:bg-surface-subtle ${
-              checked ? "border-primary ring-1 ring-primary/40" : "border-border"
+            const cls = `block rounded-2xl border bg-card overflow-hidden active:bg-surface-subtle ${
+              checked
+                ? "border-primary ring-1 ring-primary/30"
+                : "border-border"
             }`;
 
             return selectMode ? (
