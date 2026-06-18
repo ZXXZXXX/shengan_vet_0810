@@ -603,6 +603,12 @@ function DiagnosePage() {
         </div>
 
         <div className="px-4 space-y-3">
+          {/* ===== 牛只情况 分组 ===== */}
+          <div className="pt-1 pb-0.5 flex items-center gap-2">
+            <span className="text-section-title text-foreground font-medium">牛只情况</span>
+            <span className="text-caption text-text-tertiary">症状、体征数据与现场记录</span>
+          </div>
+
           {/* === 症状 === */}
           <Section
             title="症状"
@@ -767,10 +773,10 @@ function DiagnosePage() {
             </div>
           </Section>
 
-          {/* ===== 治疗方案 分组 ===== */}
+          {/* ===== 诊断结论 分组 ===== */}
           <div className="pt-1 pb-0.5 flex items-center gap-2">
-            <span className="text-section-title text-foreground font-medium">治疗方案</span>
-            <span className="text-caption text-text-tertiary">疾病名称、标准 / 特殊处方与执行设置</span>
+            <span className="text-section-title text-foreground font-medium">诊断结论</span>
+            <span className="text-caption text-text-tertiary">根据症状选择或新建疾病</span>
           </div>
 
           {/* === 疾病名称 === */}
@@ -834,6 +840,12 @@ function DiagnosePage() {
             </div>
 
           </Section>
+
+          {/* ===== 治疗方案 分组 ===== */}
+          <div className="pt-1 pb-0.5 flex items-center gap-2">
+            <span className="text-section-title text-foreground font-medium">治疗方案</span>
+            <span className="text-caption text-text-tertiary">标准 / 特殊处方与执行设置</span>
+          </div>
 
           {/* === 标准处方 === */}
           <Section
