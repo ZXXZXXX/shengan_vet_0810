@@ -397,102 +397,110 @@ function TodayTasksPage() {
                 ? "/m/health/$id/review"
                 : "/m/health/$id";
 
+            const diseaseName =
+              t.type === "疾病治疗"
+                ? diseaseTaskMeta[t.id]?.disease ?? "疾病不详"
+                : t.conclusion;
+            const cattleId = t.target.startsWith("#") ? t.target : null;
+            const groupTarget = cattleId ? null : t.target;
+            const pk = activeTab === "待执行" ? pickupForWO(t.id) : null;
+            const pickupClaimed = pk ? claimed.includes(pk.id) : false;
+
             const inner = (
-              <div className="flex">
-                <span
-                  className={`w-[3px] shrink-0 rounded-l-2xl ${
-                    needPickup ? "bg-warning" : "bg-primary"
-                  }`}
-                  aria-hidden
-                />
-                <div className="flex-1 p-3.5">
-                  <div className="flex items-start gap-2.5">
-                    <span
-                      className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
-                    >
-                      <Icon className="h-4 w-4" strokeWidth={1.75} />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-                        <span className="font-mono">{t.id}</span>
-                        <span>·</span>
-                        <span>{t.type}</span>
-                      </div>
-                      <div className="text-body font-medium text-foreground truncate mt-0.5">
-                        {title}
-                      </div>
-                    </div>
+              <div className="p-3.5">
+                {/* 顶部:icon + 工单类型 + 工单编号 + 状态 chip */}
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`h-7 w-7 rounded-full ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0 ring-1 ring-current/10`}
+                  >
+                    <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  </span>
+                  <span className="text-body font-medium text-foreground">{t.type}</span>
+                  <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
+                  <div className="ml-auto">
                     {selectMode ? (
                       <span
-                        className={`h-5 w-5 rounded-md inline-flex items-center justify-center shrink-0 border mt-1 ${
+                        className={`h-5 w-5 rounded-md inline-flex items-center justify-center shrink-0 border ${
                           checked
                             ? "bg-primary border-primary text-primary-foreground"
                             : "border-border bg-card"
                         }`}
                         aria-hidden
                       >
-                        {checked && (
-                          <Check className="h-3.5 w-3.5" strokeWidth={3} />
-                        )}
+                        {checked && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                       </span>
                     ) : chip ? (
                       <span
-                        className={`inline-flex items-center px-1.5 h-[20px] rounded text-[11px] leading-none shrink-0 mt-1 ${taskChipStyle[chip]}`}
+                        className={`inline-flex items-center px-1.5 h-[20px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
                       >
                         {chip}
                       </span>
                     ) : null}
                   </div>
+                </div>
 
-                  <div className="mt-3 grid grid-cols-2 gap-y-1.5 gap-x-3">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-caption text-text-tertiary shrink-0">
-                        目标
-                      </span>
-                      <span className="text-body-sm text-text-secondary truncate">
-                        {t.target}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-caption text-text-tertiary shrink-0">
-                        牛舍
-                      </span>
-                      <span className="text-body-sm text-text-secondary truncate">
-                        {barn}
-                      </span>
-                    </div>
+                {/* 主体:左侧绿色竖线 + 标签 + 疾病名称 */}
+                <div className="mt-2.5 pl-2 border-l-[3px] border-primary/80 rounded-sm">
+                  <div className="text-caption text-text-tertiary">
+                    {t.type === "疾病治疗" ? "疾病名称" : "诊断结论"}
                   </div>
+                  <div className="text-body font-medium text-foreground truncate mt-0.5">
+                    {diseaseName}
+                  </div>
+                </div>
 
-                  <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between">
-                    {activeTab === "待执行" ? (
-                      (() => {
-                        const pk = pickupForWO(t.id);
-                        if (!pk) {
-                          return <span className="text-caption text-text-tertiary">无需取药</span>;
-                        }
-                        const isClaimed = claimed.includes(pk.id);
-                        return isClaimed ? (
-                          <span className="inline-flex items-center gap-1 text-caption text-[var(--state-success)]">
-                            <CheckCircle2 className="h-3 w-3" />
-                            已取药
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-caption text-warning">
-                            <Package className="h-3 w-3" />
-                            未取药
-                          </span>
-                        );
-                      })()
+                {/* 牛只编号 · 牛舍 */}
+                <div className="mt-2.5 flex items-center gap-3 text-caption text-text-secondary">
+                  <span className="inline-flex items-center gap-1 min-w-0">
+                    <span className="text-text-tertiary">牛只</span>
+                    <span className="font-mono text-text-secondary truncate">
+                      {cattleId ?? groupTarget}
+                    </span>
+                  </span>
+                  <span className="text-border">·</span>
+                  <span className="inline-flex items-center gap-1 min-w-0">
+                    <span className="text-text-tertiary">牛舍</span>
+                    <span className="text-text-secondary truncate">{barn}</span>
+                  </span>
+                </div>
+
+                {/* 底部:取药状态 + 操作箭头 */}
+                <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between">
+                  {activeTab === "待执行" ? (
+                    !pk ? (
+                      <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                        <Package className="h-3 w-3" />
+                        <span>领物</span>
+                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-surface-subtle text-text-tertiary">
+                          无需取药
+                        </span>
+                      </span>
+                    ) : pickupClaimed ? (
+                      <span className="inline-flex items-center gap-1 text-caption text-text-secondary">
+                        <Package className="h-3 w-3" />
+                        <span>领物</span>
+                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[color-mix(in_oklab,var(--state-success)_15%,transparent)] text-[var(--state-success)]">
+                          已取药
+                        </span>
+                      </span>
                     ) : (
-                      <span />
-                    )}
-                    {!selectMode && (
-                      <span className="inline-flex items-center gap-0.5 text-caption text-primary">
-                        {actionText}
-                        <ChevronRight className="h-3 w-3" />
+                      <span className="inline-flex items-center gap-1 text-caption text-text-secondary">
+                        <Package className="h-3 w-3 text-warning" />
+                        <span>领物</span>
+                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[var(--state-warning)]/25 text-[var(--state-alert)]">
+                          未取药
+                        </span>
                       </span>
-                    )}
-                  </div>
+                    )
+                  ) : (
+                    <span />
+                  )}
+                  {!selectMode && (
+                    <span className="inline-flex items-center gap-0.5 text-caption text-primary">
+                      {actionText}
+                      <ChevronRight className="h-3 w-3" />
+                    </span>
+                  )}
                 </div>
               </div>
             );
