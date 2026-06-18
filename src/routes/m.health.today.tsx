@@ -328,51 +328,66 @@ function TodayTasksPage() {
         </div>
       )}
 
-      {/* 牛舍筛选 chip 横向滚动 */}
-      {allBarns.length > 1 && (
+      {/* 牛舍筛选 + 批量执行 入口 */}
+      {(allBarns.length > 1 || (activeTab === "待执行" && !selectMode && tasks.length > 0)) && (
         <div className="px-4 pt-3">
           <div className="flex items-center gap-1.5 mb-2 text-caption text-text-tertiary">
-            <Filter className="h-3 w-3" />
-            <span>按牛舍筛选</span>
-            {selectedBarns.size > 0 && (
+            {allBarns.length > 1 && (
+              <>
+                <Filter className="h-3 w-3" />
+                <span>按牛舍筛选</span>
+                {selectedBarns.size > 0 && (
+                  <button
+                    onClick={() => setSelectedBarns(new Set())}
+                    className="text-primary"
+                  >
+                    清除
+                  </button>
+                )}
+              </>
+            )}
+            {activeTab === "待执行" && !selectMode && tasks.length > 0 && (
               <button
-                onClick={() => setSelectedBarns(new Set())}
-                className="ml-auto text-primary"
+                type="button"
+                onClick={enterSelect}
+                className="ml-auto text-body-sm text-primary"
               >
-                清除
+                批量执行
               </button>
             )}
           </div>
-          <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
-            <div className="flex gap-1.5 w-max pr-4">
-              {allBarns.map((b) => {
-                const sel = selectedBarns.has(b);
-                const cnt = tabTasks.filter((t) => inferBarn(t) === b).length;
-                return (
-                  <button
-                    key={b}
-                    type="button"
-                    onClick={() => toggleBarn(b)}
-                    className={`shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-full border text-body-sm transition-colors ${
-                      sel
-                        ? "border-primary bg-brand-subtle text-primary"
-                        : "border-border bg-card text-text-secondary"
-                    }`}
-                  >
-                    <span>{b}</span>
-                    <span
-                      className={`text-caption tabular-nums ${
-                        sel ? "text-primary/80" : "text-text-tertiary"
+          {allBarns.length > 1 && (
+            <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
+              <div className="flex gap-1.5 w-max pr-4">
+                {allBarns.map((b) => {
+                  const sel = selectedBarns.has(b);
+                  const cnt = tabTasks.filter((t) => inferBarn(t) === b).length;
+                  return (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => toggleBarn(b)}
+                      className={`shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-full border text-body-sm transition-colors ${
+                        sel
+                          ? "border-primary bg-brand-subtle text-primary"
+                          : "border-border bg-card text-text-secondary"
                       }`}
                     >
-                      {cnt}
-                    </span>
-                    {sel && <Check className="h-3 w-3" strokeWidth={3} />}
-                  </button>
-                );
-              })}
+                      <span>{b}</span>
+                      <span
+                        className={`text-caption tabular-nums ${
+                          sel ? "text-primary/80" : "text-text-tertiary"
+                        }`}
+                      >
+                        {cnt}
+                      </span>
+                      {sel && <Check className="h-3 w-3" strokeWidth={3} />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
