@@ -16,6 +16,8 @@ import {
   Pencil,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { MAddMediaSheet } from "@/components/m-add-media-sheet";
+
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { TagPicker } from "@/components/m/tag-picker";
