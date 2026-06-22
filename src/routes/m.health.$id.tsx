@@ -1519,23 +1519,38 @@ function ChecklistDay({
           {medItems.length > 0 && (
             <div className={`px-4 pb-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
               <div className="text-caption text-text-tertiary">用药信息</div>
-              {medItems.map((it) => (
-                <div key={it.id} className="rounded-xl border border-border bg-card px-3 py-2.5">
-                  <div className="text-body text-foreground">{it.title}</div>
-                  <div className="mt-1 flex items-center gap-2 text-caption">
-                    <span className={pickupClaimed ? "text-primary font-medium" : "text-text-tertiary"}>
-                      {pickupClaimed ? (it.manufacturer ?? "-") : "-"}
-                    </span>
-                    <span className="text-text-tertiary">·</span>
-                    <span className={`font-mono ${pickupClaimed ? "text-text-secondary" : "text-text-tertiary"}`}>
-                      {pickupClaimed ? (it.batchNo ?? "-") : "-"}
-                    </span>
-                  </div>
-                  {it.desc && (
-                    <div className="text-caption text-text-tertiary mt-1">{it.desc}</div>
+          {medItems.map((it) => {
+            const entries = scannedMap[it.title] ?? [];
+            const canReplace = pickupClaimed && interactive && entries.length > 0;
+            return (
+              <div key={it.id} className="rounded-xl border border-border bg-card px-3 py-2.5">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="text-body text-foreground flex-1 min-w-0">{it.title}</div>
+                  {canReplace && (
+                    <button
+                      type="button"
+                      onClick={() => setReplaceState({ itemId: it.id, itemName: it.title, phase: "select" })}
+                      className="shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
+                    >
+                      <Repeat className="h-3 w-3" /> 更换
+                    </button>
                   )}
                 </div>
-              ))}
+                <div className="mt-1 flex items-center gap-2 text-caption">
+                  <span className={pickupClaimed ? "text-primary font-medium" : "text-text-tertiary"}>
+                    {pickupClaimed ? (it.manufacturer ?? "-") : "-"}
+                  </span>
+                  <span className="text-text-tertiary">·</span>
+                  <span className={`font-mono ${pickupClaimed ? "text-text-secondary" : "text-text-tertiary"}`}>
+                    {pickupClaimed ? (it.batchNo ?? "-") : "-"}
+                  </span>
+                </div>
+                {it.desc && (
+                  <div className="text-caption text-text-tertiary mt-1">{it.desc}</div>
+                )}
+              </div>
+            );
+          })}
             </div>
           )}
 
