@@ -25,6 +25,7 @@ import {
   Link2,
   Tag,
   AlertOctagon,
+  AlertCircle,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
@@ -283,10 +284,10 @@ function TaskDetailPage() {
               setAbortOther("");
               setAbortOpen(true);
             }}
-            className="-mr-1 h-8 px-2 inline-flex items-center gap-1 rounded-md text-caption text-destructive active:bg-destructive/10"
+            className="-mr-1 h-8 px-2 inline-flex items-center gap-1 rounded-md text-caption text-muted-foreground active:bg-surface-subtle"
             aria-label="异常终止"
           >
-            <AlertOctagon className="h-4 w-4" />
+            <AlertCircle className="h-4 w-4" />
             <span className="whitespace-nowrap">异常</span>
           </button>
         ) : undefined
