@@ -1583,7 +1583,7 @@ function ChecklistDay({
               <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
                 <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
                   <span>
-                    治疗证据照片 <span className="text-[var(--state-danger)]">*</span>
+                    治疗证据 <span className="text-[var(--state-danger)]">*</span>
                   </span>
                   <span className="text-caption text-text-tertiary">{evidencePhotos.length} / 6</span>
                 </div>
@@ -1601,31 +1601,53 @@ function ChecklistDay({
                     </div>
                   ))}
                   {evidencePhotos.length < 6 && (
-                    <label
-                      className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary transition-colors ${
-                        inputsLocked ? "cursor-not-allowed" : "cursor-pointer active:bg-border"
-                      }`}
-                    >
-                      <Camera className="h-5 w-5" />
-                      <span className="text-caption">拍照</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        multiple
-                        disabled={inputsLocked}
-                        className="hidden"
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files ?? []);
-                          files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
-                          e.target.value = "";
-                        }}
-                      />
-                    </label>
+                    <>
+                      <label
+                        className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary ${
+                          inputsLocked ? "cursor-not-allowed" : "cursor-pointer active:bg-border"
+                        }`}
+                      >
+                        <Camera className="h-5 w-5" />
+                        <span className="text-caption">拍摄</span>
+                        <input
+                          type="file"
+                          accept="image/*,video/*"
+                          capture="environment"
+                          multiple
+                          disabled={inputsLocked}
+                          className="hidden"
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files ?? []);
+                            files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                      <label
+                        className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary ${
+                          inputsLocked ? "cursor-not-allowed" : "cursor-pointer active:bg-border"
+                        }`}
+                      >
+                        <Video className="h-5 w-5" />
+                        <span className="text-caption">上传</span>
+                        <input
+                          type="file"
+                          accept="image/*,video/*"
+                          multiple
+                          disabled={inputsLocked}
+                          className="hidden"
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files ?? []);
+                            files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    </>
                   )}
                 </div>
                 <div className="mt-2 text-caption text-text-tertiary">
-                  请上传至少一张本次治疗的现场照片
+                  请上传至少一张本次治疗的现场照片或视频，支持拍照、录像或从相册选择
                 </div>
               </div>
             </div>
