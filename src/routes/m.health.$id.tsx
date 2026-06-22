@@ -1757,10 +1757,16 @@ function ReplaceScanOverlay({
 }) {
   const [phase, setPhase] = useState<"scanning" | "verified" | "failed">("scanning");
   const [matched, setMatched] = useState<ScannedEntry | null>(null);
+  const [attempts, setAttempts] = useState(0);
 
   useEffect(() => {
+    if (phase !== "scanning") return;
+    const isFirst = attempts === 0;
     const t1 = setTimeout(() => {
-      // 模拟扫描结果：优先匹配「与当前批号不同的已领条目」，否则取第一条；若无已领条目则失败
+      if (isFirst) {
+        setPhase("failed");
+        return;
+      }
       const candidate =
         entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
       if (candidate) {
@@ -1771,6 +1777,7 @@ function ReplaceScanOverlay({
       }
     }, 800);
     const t2 = setTimeout(() => {
+      if (isFirst) return;
       const candidate =
         entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
       onVerified(candidate);
@@ -1779,7 +1786,7 @@ function ReplaceScanOverlay({
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [entries, currentBatch, onVerified]);
+  }, [entries, currentBatch, onVerified, phase, attempts]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
@@ -1812,13 +1819,28 @@ function ReplaceScanOverlay({
             </span>
           )}
           {phase === "failed" && (
-            <span className="text-[var(--state-danger)]">该二维码不在当前账号已领药品中</span>
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-[var(--state-danger)]">
+                扫码失败：该药品不在你的"三级库"内，请确认无误后再扫码
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setAttempts((n) => n + 1);
+                  setPhase("scanning");
+                }}
+                className="h-9 px-4 rounded-full bg-white/15 text-white text-body-sm"
+              >
+                重新扫描
+              </button>
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 }
+
 
 function DayDot({ active, done }: { active: boolean; done: boolean }) {
   // 统一虚线圆环，颜色与右侧标签对应：已完成=绿，进行中=蓝，待执行=灰
