@@ -1717,10 +1717,15 @@ function ChecklistDay({
           itemName={replaceState.itemName}
           entries={scannedMap[replaceState.itemName] ?? []}
           currentBatch={items.find((i) => i.id === replaceState.itemId)?.batchNo}
+          attempt={replaceState.attempt}
           onCancel={() => setReplaceState(null)}
+          onFailed={() => {
+            const { itemId, itemName } = replaceState;
+            setReplaceState(null);
+            setReplaceFailed({ itemId, itemName });
+          }}
           onVerified={(target) => {
             if (!target) {
-              toast.error("扫描的二维码不在当前账号已领药品中，更换失败");
               setReplaceState(null);
               return;
             }
@@ -1741,6 +1746,31 @@ function ChecklistDay({
           }}
         />
       )}
+
+      <AlertDialog open={!!replaceFailed} onOpenChange={(o) => { if (!o) setReplaceFailed(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>扫码失败</AlertDialogTitle>
+            <AlertDialogDescription>
+              该药品不在你的"三级库"内，请确认无误后再扫码。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!replaceFailed) return;
+                const { itemId, itemName } = replaceFailed;
+                setReplaceFailed(null);
+                setReplaceState({ itemId, itemName, attempt: 1 });
+              }}
+            >
+              重新扫描
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
     </div>
   );
