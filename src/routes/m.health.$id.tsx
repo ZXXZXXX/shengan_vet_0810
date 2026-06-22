@@ -1519,7 +1519,8 @@ function ChecklistDay({
               <div className="text-caption text-text-tertiary">用药信息</div>
           {medItems.map((it) => {
             const entries = scannedMap[it.title] ?? [];
-            const canReplace = pickupClaimed && interactive && entries.length > 0;
+            const canReplace = pickupClaimed && interactive;
+
             return (
               <div key={it.id} className="rounded-xl border border-border bg-card px-3 py-2.5">
                 <div className="flex items-start justify-between gap-2">
