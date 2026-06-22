@@ -1527,7 +1527,10 @@ function ChecklistDay({
                   {canReplace && (
                     <button
                       type="button"
-                      onClick={() => setReplaceState({ itemId: it.id, itemName: it.title, phase: "select" })}
+                      onClick={() => {
+                        toast.message("需扫描药品二维码进行验证");
+                        setReplaceState({ itemId: it.id, itemName: it.title });
+                      }}
                       className="shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
                     >
                       <Repeat className="h-3 w-3" /> 更换
