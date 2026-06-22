@@ -1416,8 +1416,12 @@ function ChecklistDay({
   const [evidencePhotos, setEvidencePhotos] = useState<number[]>([]);
   const scannedMap = useScannedCodes(pickupCode ?? "");
   const [replaceState, setReplaceState] = useState<
+    { itemId: string; itemName: string; attempt: number } | null
+  >(null);
+  const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string } | null
   >(null);
+
 
   // 领药完成后，用药任务自动标记完成（信息从领取单同步）
   useEffect(() => {
@@ -1530,9 +1534,10 @@ function ChecklistDay({
                       type="button"
                       onClick={() => {
                         toast.message("需扫描药品二维码进行验证");
-                        setReplaceState({ itemId: it.id, itemName: it.title });
+                        setReplaceState({ itemId: it.id, itemName: it.title, attempt: 0 });
                       }}
                       className="shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
+
                     >
                       <Repeat className="h-3 w-3" /> 更换
                     </button>
@@ -1712,10 +1717,15 @@ function ChecklistDay({
           itemName={replaceState.itemName}
           entries={scannedMap[replaceState.itemName] ?? []}
           currentBatch={items.find((i) => i.id === replaceState.itemId)?.batchNo}
+          attempt={replaceState.attempt}
           onCancel={() => setReplaceState(null)}
+          onFailed={() => {
+            const { itemId, itemName } = replaceState;
+            setReplaceState(null);
+            setReplaceFailed({ itemId, itemName });
+          }}
           onVerified={(target) => {
             if (!target) {
-              toast.error("扫描的二维码不在当前账号已领药品中，更换失败");
               setReplaceState(null);
               return;
             }
@@ -1737,6 +1747,31 @@ function ChecklistDay({
         />
       )}
 
+      <AlertDialog open={!!replaceFailed} onOpenChange={(o) => { if (!o) setReplaceFailed(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>扫码失败</AlertDialogTitle>
+            <AlertDialogDescription>
+              该药品不在你的"三级库"内，请确认无误后再扫码。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!replaceFailed) return;
+                const { itemId, itemName } = replaceFailed;
+                setReplaceFailed(null);
+                setReplaceState({ itemId, itemName, attempt: 1 });
+              }}
+            >
+              重新扫描
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+
     </div>
   );
 
@@ -1747,47 +1782,45 @@ function ReplaceScanOverlay({
   itemName,
   entries,
   currentBatch,
+  attempt,
   onCancel,
+  onFailed,
   onVerified,
 }: {
   itemName: string;
   entries: ScannedEntry[];
   currentBatch?: string;
+  attempt: number;
   onCancel: () => void;
+  onFailed: () => void;
   onVerified: (target: ScannedEntry | null) => void;
 }) {
-  const [phase, setPhase] = useState<"scanning" | "verified" | "failed">("scanning");
+  const [phase, setPhase] = useState<"scanning" | "verified">("scanning");
   const [matched, setMatched] = useState<ScannedEntry | null>(null);
-  const [attempts, setAttempts] = useState(0);
 
   useEffect(() => {
-    if (phase !== "scanning") return;
-    const isFirst = attempts === 0;
+    const isFirst = attempt === 0;
+    const candidate =
+      entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
     const t1 = setTimeout(() => {
-      if (isFirst) {
-        setPhase("failed");
-        return;
-      }
-      const candidate =
-        entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
+      if (isFirst) return;
       if (candidate) {
         setMatched(candidate);
         setPhase("verified");
-      } else {
-        setPhase("failed");
       }
     }, 800);
     const t2 = setTimeout(() => {
-      if (isFirst) return;
-      const candidate =
-        entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
-      onVerified(candidate);
-    }, 1300);
+      if (isFirst) {
+        onFailed();
+      } else {
+        onVerified(candidate);
+      }
+    }, 1100);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [entries, currentBatch, onVerified, phase, attempts]);
+  }, [entries, currentBatch, attempt, onFailed, onVerified]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
@@ -1819,28 +1852,12 @@ function ReplaceScanOverlay({
               <CheckCircle2 className="h-4 w-4" /> 已验证：{itemName} · {matched.manufacturer ?? ""} · {matched.batch ?? matched.code}
             </span>
           )}
-          {phase === "failed" && (
-            <div className="flex flex-col items-center gap-3">
-              <span className="text-[var(--state-danger)]">
-                扫码失败：该药品不在你的"三级库"内，请确认无误后再扫码
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  setAttempts((n) => n + 1);
-                  setPhase("scanning");
-                }}
-                className="h-9 px-4 rounded-full bg-white/15 text-white text-body-sm"
-              >
-                重新扫描
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
 }
+
 
 
 function DayDot({ active, done }: { active: boolean; done: boolean }) {
