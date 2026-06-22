@@ -1775,7 +1775,7 @@ function ReplaceDrugSheet({
             <li className="text-caption text-text-tertiary py-6 text-center">暂无可更换的已领药品</li>
           ) : (
             entries.map((e, i) => {
-              const isCurrent = e.batch && e.batch === currentBatch;
+              const isCurrent = Boolean(e.batch && e.batch === currentBatch);
               return (
                 <li key={`${e.code}-${i}`}>
                   <button
