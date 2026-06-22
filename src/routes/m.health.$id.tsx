@@ -1443,7 +1443,7 @@ function ChecklistDay({
     );
   }, [pickupClaimed, interactive, pickupCode]);
 
-  // 提交就绪：领药完成 + 测温（若需要）已填 + 至少一张治疗证据照片
+  // 提交就绪：领药完成 + 测温（若需要）已填 + 至少一张治疗记录照片
   const tempItem = items.find((i) => i.title.includes("测温"));
   const tempReady = !withTemp || Boolean((temps[tempItem?.id ?? ""] ?? "").trim());
   const ready = interactive && pickupClaimed && tempReady && evidencePhotos.length > 0;
@@ -1597,7 +1597,7 @@ function ChecklistDay({
               <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
                 <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
                   <span>
-                    治疗证据 <span className="text-[var(--state-danger)]">*</span>
+                    治疗记录 <span className="text-[var(--state-danger)]">*</span>
                   </span>
                   <span className="text-caption text-text-tertiary">{evidencePhotos.length} / 6</span>
                 </div>
@@ -1672,7 +1672,7 @@ function ChecklistDay({
                 />
                 <MAddMediaSheet
                   open={evidenceSheetOpen}
-                  title="添加治疗证据"
+                  title="添加治疗记录"
                   onClose={() => setEvidenceSheetOpen(false)}
                   actions={[
                     { key: "photo", icon: Camera, label: "拍照", onClick: () => evidencePhotoRef.current?.click() },
