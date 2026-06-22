@@ -1722,24 +1722,42 @@ function ChecklistDay({
 
 function ReplaceScanOverlay({
   itemName,
-  target,
+  entries,
+  currentBatch,
   onCancel,
   onVerified,
 }: {
   itemName: string;
-  target: ScannedEntry;
+  entries: ScannedEntry[];
+  currentBatch?: string;
   onCancel: () => void;
-  onVerified: (ok: boolean) => void;
+  onVerified: (target: ScannedEntry | null) => void;
 }) {
-  const [phase, setPhase] = useState<"scanning" | "verified">("scanning");
+  const [phase, setPhase] = useState<"scanning" | "verified" | "failed">("scanning");
+  const [matched, setMatched] = useState<ScannedEntry | null>(null);
+
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase("verified"), 700);
-    const t2 = setTimeout(() => onVerified(true), 1100);
+    const t1 = setTimeout(() => {
+      // 模拟扫描结果：优先匹配「与当前批号不同的已领条目」，否则取第一条；若无已领条目则失败
+      const candidate =
+        entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
+      if (candidate) {
+        setMatched(candidate);
+        setPhase("verified");
+      } else {
+        setPhase("failed");
+      }
+    }, 800);
+    const t2 = setTimeout(() => {
+      const candidate =
+        entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
+      onVerified(candidate);
+    }, 1300);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [onVerified]);
+  }, [entries, currentBatch, onVerified]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
@@ -1764,13 +1782,15 @@ function ReplaceScanOverlay({
             <div className="absolute left-0 right-0 h-0.5 bg-primary shadow-[0_0_12px_2px_var(--brand)] animate-[scanline_1.2s_ease-in-out_infinite]" />
           )}
         </div>
-        <div className="text-center text-body-sm text-white/80">
-          {phase === "scanning" ? (
-            <>请将摄像头对准药品二维码…</>
-          ) : (
+        <div className="text-center text-body-sm text-white/80 px-4">
+          {phase === "scanning" && <>请将摄像头对准药品二维码…</>}
+          {phase === "verified" && matched && (
             <span className="inline-flex items-center gap-1.5 text-primary">
-              <CheckCircle2 className="h-4 w-4" /> 已验证：{itemName} · {target.manufacturer ?? ""} · {target.batch ?? target.code}
+              <CheckCircle2 className="h-4 w-4" /> 已验证：{itemName} · {matched.manufacturer ?? ""} · {matched.batch ?? matched.code}
             </span>
+          )}
+          {phase === "failed" && (
+            <span className="text-[var(--state-danger)]">该二维码不在当前账号已领药品中</span>
           )}
         </div>
       </div>
