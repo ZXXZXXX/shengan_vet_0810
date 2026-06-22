@@ -1684,34 +1684,15 @@ function ChecklistDay({
         </>
       )}
 
-      {replaceState?.phase === "select" && (
-        <ReplaceDrugSheet
+      {replaceState && (
+        <ReplaceScanOverlay
           itemName={replaceState.itemName}
           entries={scannedMap[replaceState.itemName] ?? []}
           currentBatch={items.find((i) => i.id === replaceState.itemId)?.batchNo}
-          onClose={() => setReplaceState(null)}
-          onPick={(target) => {
-            toast.message("需扫描药品二维码进行验证", {
-              description: `请扫描「${target.manufacturer ?? ""} · ${target.batch ?? target.code}」对应的二维码`,
-            });
-            setReplaceState({
-              itemId: replaceState.itemId,
-              itemName: replaceState.itemName,
-              phase: "scanning",
-              target,
-            });
-          }}
-        />
-      )}
-
-      {replaceState?.phase === "scanning" && (
-        <ReplaceScanOverlay
-          itemName={replaceState.itemName}
-          target={replaceState.target}
           onCancel={() => setReplaceState(null)}
-          onVerified={(ok) => {
-            if (!ok) {
-              toast.error("二维码与所选药品不一致，更换失败");
+          onVerified={(target) => {
+            if (!target) {
+              toast.error("扫描的二维码不在当前账号已领药品中，更换失败");
               setReplaceState(null);
               return;
             }
@@ -1720,14 +1701,14 @@ function ChecklistDay({
                 it.id === replaceState.itemId
                   ? {
                       ...it,
-                      manufacturer: replaceState.target.manufacturer ?? it.manufacturer,
-                      batchNo: replaceState.target.batch ?? it.batchNo,
-                      scanCode: replaceState.target.code,
+                      manufacturer: target.manufacturer ?? it.manufacturer,
+                      batchNo: target.batch ?? it.batchNo,
+                      scanCode: target.code,
                     }
                   : it,
               ),
             );
-            toast.success("已更换药品");
+            toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
             setReplaceState(null);
           }}
         />
@@ -1738,73 +1719,6 @@ function ChecklistDay({
 
 }
 
-function ReplaceDrugSheet({
-  itemName,
-  entries,
-  currentBatch,
-  onClose,
-  onPick,
-}: {
-  itemName: string;
-  entries: ScannedEntry[];
-  currentBatch?: string;
-  onClose: () => void;
-  onPick: (entry: ScannedEntry) => void;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={onClose}>
-      <div
-        className="w-full max-w-[440px] bg-card rounded-t-2xl pb-[calc(env(safe-area-inset-bottom)+12px)]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-          <div className="text-card-title text-foreground">更换药品</div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="h-7 w-7 inline-flex items-center justify-center text-text-tertiary"
-            aria-label="关闭"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-        <div className="px-4 pb-2 text-caption text-text-tertiary">
-          当前账号已领的「{itemName}」：
-        </div>
-        <ul className="px-4 pb-3 space-y-2 max-h-[60vh] overflow-y-auto">
-          {entries.length === 0 ? (
-            <li className="text-caption text-text-tertiary py-6 text-center">暂无可更换的已领药品</li>
-          ) : (
-            entries.map((e, i) => {
-              const isCurrent = Boolean(e.batch && e.batch === currentBatch);
-              return (
-                <li key={`${e.code}-${i}`}>
-                  <button
-                    type="button"
-                    disabled={isCurrent}
-                    onClick={() => onPick(e)}
-                    className="w-full text-left rounded-xl border border-border bg-card px-3 py-2.5 active:bg-surface-subtle disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-body-sm text-foreground inline-flex items-center gap-1.5">
-                        {e.manufacturer ?? "—"}
-                        {isCurrent && (
-                          <span className="text-caption text-text-tertiary">当前使用</span>
-                        )}
-                      </span>
-                      <span className="font-mono text-caption text-text-secondary">{e.batch ?? "—"}</span>
-                    </div>
-                    <div className="mt-1 font-mono text-caption text-text-tertiary truncate">{e.code}</div>
-                  </button>
-                </li>
-              );
-            })
-          )}
-        </ul>
-      </div>
-    </div>
-  );
-}
 
 function ReplaceScanOverlay({
   itemName,
