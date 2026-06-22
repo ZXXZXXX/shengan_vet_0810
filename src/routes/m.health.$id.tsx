@@ -26,8 +26,11 @@ import {
   Tag,
   AlertOctagon,
   AlertCircle,
+  ImagePlus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { MAddMediaSheet } from "@/components/m-add-media-sheet";
+
 
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
 import { useClaimed, useScannedCodes, type ScannedEntry } from "@/lib/pickup-store";
