@@ -1416,8 +1416,12 @@ function ChecklistDay({
   const [evidencePhotos, setEvidencePhotos] = useState<number[]>([]);
   const scannedMap = useScannedCodes(pickupCode ?? "");
   const [replaceState, setReplaceState] = useState<
+    { itemId: string; itemName: string; attempt: number } | null
+  >(null);
+  const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string } | null
   >(null);
+
 
   // 领药完成后，用药任务自动标记完成（信息从领取单同步）
   useEffect(() => {
