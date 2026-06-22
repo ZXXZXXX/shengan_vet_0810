@@ -1,5 +1,5 @@
 import { createFileRoute, useParams, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   ClipboardList,
@@ -26,8 +26,11 @@ import {
   Tag,
   AlertOctagon,
   AlertCircle,
+  ImagePlus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { MAddMediaSheet } from "@/components/m-add-media-sheet";
+
 
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
 import { useClaimed, useScannedCodes, type ScannedEntry } from "@/lib/pickup-store";
@@ -1414,6 +1417,11 @@ function ChecklistDay({
   const [noteEditing, setNoteEditing] = useState(false);
   const [temps, setTemps] = useState<Record<string, string>>({});
   const [evidencePhotos, setEvidencePhotos] = useState<number[]>([]);
+  const [evidenceSheetOpen, setEvidenceSheetOpen] = useState(false);
+  const evidencePhotoRef = useRef<HTMLInputElement>(null);
+  const evidenceVideoRef = useRef<HTMLInputElement>(null);
+  const evidenceAlbumRef = useRef<HTMLInputElement>(null);
+
   const scannedMap = useScannedCodes(pickupCode ?? "");
   const [replaceState, setReplaceState] = useState<
     { itemId: string; itemName: string; attempt: number } | null
@@ -1607,57 +1615,75 @@ function ChecklistDay({
                     </div>
                   ))}
                   {evidencePhotos.length < 6 && (
-                    <>
-                      <label
-                        className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary ${
-                          inputsLocked ? "cursor-not-allowed" : "cursor-pointer active:bg-border"
-                        }`}
-                      >
-                        <Camera className="h-5 w-5" />
-                        <span className="text-caption">拍摄</span>
-                        <input
-                          type="file"
-                          accept="image/*,video/*"
-                          capture="environment"
-                          multiple
-                          disabled={inputsLocked}
-                          className="hidden"
-                          onChange={(e) => {
-                            const files = Array.from(e.target.files ?? []);
-                            files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
-                            e.target.value = "";
-                          }}
-                        />
-                      </label>
-                      <label
-                        className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary ${
-                          inputsLocked ? "cursor-not-allowed" : "cursor-pointer active:bg-border"
-                        }`}
-                      >
-                        <Video className="h-5 w-5" />
-                        <span className="text-caption">上传</span>
-                        <input
-                          type="file"
-                          accept="image/*,video/*"
-                          multiple
-                          disabled={inputsLocked}
-                          className="hidden"
-                          onChange={(e) => {
-                            const files = Array.from(e.target.files ?? []);
-                            files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
-                            e.target.value = "";
-                          }}
-                        />
-                      </label>
-                    </>
+                    <button
+                      type="button"
+                      disabled={inputsLocked}
+                      onClick={() => setEvidenceSheetOpen(true)}
+                      className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary ${
+                        inputsLocked ? "cursor-not-allowed opacity-60" : "active:bg-border"
+                      }`}
+                    >
+                      <Camera className="h-5 w-5" />
+                      <span className="text-caption">添加</span>
+                    </button>
                   )}
+
                 </div>
                 <div className="mt-2 text-caption text-text-tertiary">
                   请上传至少一张本次治疗的现场照片或视频，支持拍照、录像或从相册选择
                 </div>
+                <input
+                  ref={evidencePhotoRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
+                    e.target.value = "";
+                  }}
+                />
+                <input
+                  ref={evidenceVideoRef}
+                  type="file"
+                  accept="video/*"
+                  capture="environment"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
+                    e.target.value = "";
+                  }}
+                />
+                <input
+                  ref={evidenceAlbumRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
+                    e.target.value = "";
+                  }}
+                />
+                <MAddMediaSheet
+                  open={evidenceSheetOpen}
+                  title="添加治疗证据"
+                  onClose={() => setEvidenceSheetOpen(false)}
+                  actions={[
+                    { key: "photo", icon: Camera, label: "拍照", onClick: () => evidencePhotoRef.current?.click() },
+                    { key: "video", icon: Video, label: "拍视频", onClick: () => evidenceVideoRef.current?.click() },
+                    { key: "album", icon: ImagePlus, label: "从相册选择", onClick: () => evidenceAlbumRef.current?.click() },
+                  ]}
+                />
               </div>
             </div>
           )}
+
 
           <ul className="px-4 pb-3 space-y-2">
 

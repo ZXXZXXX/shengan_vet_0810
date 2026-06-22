@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Camera,
   ScanLine,
@@ -16,6 +16,8 @@ import {
   Pencil,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { MAddMediaSheet } from "@/components/m-add-media-sheet";
+
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { TagPicker } from "@/components/m/tag-picker";
@@ -1351,6 +1353,10 @@ function EvidenceSection({
 
   const voiceCount = voiceSecs === null ? 0 : 1;
 
+  const [addSheetOpen, setAddSheetOpen] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <Section title="现场记录">
       <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-2">
@@ -1378,26 +1384,55 @@ function EvidenceSection({
           </div>
         ))}
         {remaining > 0 && (
-          <label className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-border transition-colors">
+          <button
+            type="button"
+            onClick={() => setAddSheetOpen(true)}
+            className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary active:bg-border transition-colors"
+          >
             <Camera className="h-5 w-5" />
             <span className="text-caption">添加</span>
-            <input
-              type="file"
-              accept={hideVideo ? "image/*" : "image/*,video/*"}
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                const files = Array.from(e.target.files ?? []);
-                files.forEach((f) => {
-                  if (f.type.startsWith("video/")) setVideos((p) => [...p, Date.now() + Math.random()]);
-                  else setPhotos((p) => [...p, Date.now() + Math.random()]);
-                });
-                e.target.value = "";
-              }}
-            />
-          </label>
+          </button>
         )}
       </div>
+
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []);
+          files.forEach(() => setPhotos((p) => [...p, Date.now() + Math.random()]));
+          e.target.value = "";
+        }}
+      />
+      <input
+        ref={videoInputRef}
+        type="file"
+        accept="video/*"
+        capture="environment"
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []);
+          files.forEach(() => setVideos((p) => [...p, Date.now() + Math.random()]));
+          e.target.value = "";
+        }}
+      />
+
+      <MAddMediaSheet
+        open={addSheetOpen}
+        onClose={() => setAddSheetOpen(false)}
+        actions={[
+          { key: "photo", icon: Camera, label: "拍照", onClick: () => photoInputRef.current?.click() },
+          ...(hideVideo
+            ? []
+            : [{ key: "video", icon: Video, label: "拍视频", onClick: () => videoInputRef.current?.click() }]),
+          { key: "voice", icon: Mic, label: "录音", onClick: () => { if (voiceSecs === null) onVoiceToggle(); } },
+        ]}
+      />
 
       <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mt-4 mb-2">
         <Mic className="h-3.5 w-3.5" /> 录音 · {voiceCount} 条
@@ -1429,6 +1464,7 @@ function EvidenceSection({
           </button>
         </div>
       )}
+
 
       <div className="mt-4">
         <div className="text-body-sm text-foreground mb-2">
