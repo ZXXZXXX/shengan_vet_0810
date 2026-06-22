@@ -1782,47 +1782,45 @@ function ReplaceScanOverlay({
   itemName,
   entries,
   currentBatch,
+  attempt,
   onCancel,
+  onFailed,
   onVerified,
 }: {
   itemName: string;
   entries: ScannedEntry[];
   currentBatch?: string;
+  attempt: number;
   onCancel: () => void;
+  onFailed: () => void;
   onVerified: (target: ScannedEntry | null) => void;
 }) {
-  const [phase, setPhase] = useState<"scanning" | "verified" | "failed">("scanning");
+  const [phase, setPhase] = useState<"scanning" | "verified">("scanning");
   const [matched, setMatched] = useState<ScannedEntry | null>(null);
-  const [attempts, setAttempts] = useState(0);
 
   useEffect(() => {
-    if (phase !== "scanning") return;
-    const isFirst = attempts === 0;
+    const isFirst = attempt === 0;
+    const candidate =
+      entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
     const t1 = setTimeout(() => {
-      if (isFirst) {
-        setPhase("failed");
-        return;
-      }
-      const candidate =
-        entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
+      if (isFirst) return;
       if (candidate) {
         setMatched(candidate);
         setPhase("verified");
-      } else {
-        setPhase("failed");
       }
     }, 800);
     const t2 = setTimeout(() => {
-      if (isFirst) return;
-      const candidate =
-        entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
-      onVerified(candidate);
-    }, 1300);
+      if (isFirst) {
+        onFailed();
+      } else {
+        onVerified(candidate);
+      }
+    }, 1100);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [entries, currentBatch, onVerified, phase, attempts]);
+  }, [entries, currentBatch, attempt, onFailed, onVerified]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
@@ -1854,28 +1852,12 @@ function ReplaceScanOverlay({
               <CheckCircle2 className="h-4 w-4" /> 已验证：{itemName} · {matched.manufacturer ?? ""} · {matched.batch ?? matched.code}
             </span>
           )}
-          {phase === "failed" && (
-            <div className="flex flex-col items-center gap-3">
-              <span className="text-[var(--state-danger)]">
-                扫码失败：该药品不在你的"三级库"内，请确认无误后再扫码
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  setAttempts((n) => n + 1);
-                  setPhase("scanning");
-                }}
-                className="h-9 px-4 rounded-full bg-white/15 text-white text-body-sm"
-              >
-                重新扫描
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
 }
+
 
 
 function DayDot({ active, done }: { active: boolean; done: boolean }) {
