@@ -76,6 +76,7 @@ function BatchPickupPage() {
   const { ids } = useSearch({ from: "/m/health/today_/pickup" });
   const navigate = useNavigate();
   const claimed = useClaimed();
+  const farm = useFarm();
 
   const woIds = useMemo(
     () => (ids ? ids.split(",").filter(Boolean) : []),
@@ -89,21 +90,15 @@ function BatchPickupPage() {
 
   const scannedMap = useScannedCodes(batchId);
 
-  const { aggregated, pickupIds, warehouse, cattleCount } = useMemo(() => {
+  const { aggregated, pickupIds } = useMemo(() => {
     const map = new Map<string, AggregatedItem>();
     const pids = new Set<string>();
-    const cattleSet = new Set<string>();
-    let wh = "";
     woIds.forEach((woId: string) => {
       const task = homeTasks.find((t) => t.id === woId);
       const pk = PICKUPS.find((p) => p.source === woId);
       if (!task || !pk) return;
       pids.add(pk.id);
-      if (!wh) wh = pk.warehouse;
-      const cattle = task.target.startsWith("#")
-        ? task.target
-        : task.target;
-      cattleSet.add(cattle);
+      const cattle = task.target;
       const barn = inferBarn(task);
       pk.items.forEach((it) => {
         const { num, unit } = parseQty(it.qty);
@@ -147,8 +142,6 @@ function BatchPickupPage() {
     return {
       aggregated: Array.from(map.values()),
       pickupIds: Array.from(pids),
-      warehouse: wh || "中央药房",
-      cattleCount: cattleSet.size,
     };
   }, [woIds]);
 
@@ -169,6 +162,11 @@ function BatchPickupPage() {
     navigate({ to: "/m/health/today", search: { capture: ids } });
   };
 
+  const headerId = woIds.length === 1 ? woIds[0] : `批量 ${woIds.length} 单`;
+  const titleSeq = pickupIds[0]
+    ? formatPickupTitle(pickupIds[0])
+    : "06/23药品领取单1";
+
   return (
     <MobileShell title="批量领药" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-3">
@@ -180,35 +178,23 @@ function BatchPickupPage() {
               : "bg-card border-primary/30"
           }`}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <PackageCheck
-                className={`h-4 w-4 ${allAlreadyClaimed ? "text-text-tertiary" : "text-primary"}`}
+                className={`h-4 w-4 shrink-0 ${allAlreadyClaimed ? "text-text-tertiary" : "text-primary"}`}
               />
-              <span className="text-section-title text-foreground">
-                共计 {pickupIds.length} 工单
+              <span className="font-mono text-body text-foreground truncate">
+                {headerId.length > 10 ? headerId.slice(0, 10) + "…" : headerId}
               </span>
             </div>
-            <span
-              className={
-                allAlreadyClaimed
-                  ? "tag tag-success"
-                  : allScanned
-                    ? "tag tag-brand"
-                    : "tag tag-muted"
-              }
-            >
-              {allAlreadyClaimed
-                ? "已领药"
-                : allScanned
-                  ? "可确认"
-                  : `${doneCount}/${totalCount}`}
+            <span className="text-caption text-text-tertiary shrink-0">
+              共计 {totalCount} 项
             </span>
           </div>
-          <div className="mt-2 inline-flex items-center gap-1.5 text-body text-foreground">
-            <Warehouse className="h-3.5 w-3.5 text-primary" />
-            {warehouse}
+          <div className="mt-2 text-section-title text-foreground">
+            {titleSeq}
           </div>
+          <div className="mt-1 text-caption text-text-tertiary">{farm.name}</div>
         </div>
 
 
@@ -217,8 +203,9 @@ function BatchPickupPage() {
           <div className="flex items-center justify-between mb-3">
             <div className="text-card-title text-foreground inline-flex items-center gap-1.5">
               <ClipboardList className="h-4 w-4 text-primary" />
-              合并领取清单
+              领取清单
             </div>
+
             <span className="text-caption text-text-tertiary">
               共 {totalCount} 种
             </span>
