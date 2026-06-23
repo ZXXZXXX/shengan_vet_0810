@@ -44,6 +44,21 @@ function entryQtySum(list: ScannedEntry[]) {
   return list.reduce((s, e) => s + (e.qty || 0), 0);
 }
 
+function truncateId(s: string): string {
+  return s.length > 10 ? s.slice(0, 10) + "…" : s;
+}
+
+/** PK-2299 → "06/23药品领取单1" */
+export function formatPickupTitle(pickupId: string): string {
+  const today = new Date();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const m = pickupId.match(/(\d+)$/);
+  const seq = m ? String((parseInt(m[1], 10) % 9) + 1) : "1";
+  return `${mm}/${dd}药品领取单${seq}`;
+}
+
+
 function PickupDetailPage() {
   const { id: workOrderId, pickupId } = useParams({
     from: "/m/health/$id_/execute_/$pickupId",
@@ -92,24 +107,25 @@ function PickupDetailPage() {
             isClaimed ? "bg-surface-subtle border-border" : "bg-card border-primary/30"
           }`}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <PackageCheck
-                className={`h-4 w-4 ${isClaimed ? "text-text-tertiary" : "text-primary"}`}
+                className={`h-4 w-4 shrink-0 ${isClaimed ? "text-text-tertiary" : "text-primary"}`}
               />
-              <span className="font-mono text-body text-foreground">{pickup.id}</span>
-              <span className="tag tag-muted">领取单</span>
+              <span className="font-mono text-body text-foreground truncate">
+                {truncateId(pickup.source)}
+              </span>
             </div>
-            <span className={isClaimed ? "tag tag-success" : "tag tag-brand"}>
-              {isClaimed ? "已领药" : allScanned ? "可确认" : `${doneCount}/${totalCount}`}
+            <span className="text-caption text-text-tertiary shrink-0">
+              共计 {totalCount} 项
             </span>
           </div>
-          <div className="mt-2 text-section-title text-foreground">{pickup.title}</div>
-          <div className="mt-2 inline-flex items-center gap-1.5 text-body text-foreground">
-            <Warehouse className="h-3.5 w-3.5 text-primary" />
-            {pickup.warehouse}
+          <div className="mt-2 text-section-title text-foreground">
+            {formatPickupTitle(pickup.id)}
           </div>
+          <div className="mt-1 text-caption text-text-tertiary">{farm.name}</div>
         </div>
+
 
         {/* 物品清单 */}
         <div className="rounded-xl bg-card border border-border p-4">
