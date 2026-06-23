@@ -184,10 +184,9 @@ function BatchPickupPage() {
               <PackageCheck
                 className={`h-4 w-4 ${allAlreadyClaimed ? "text-text-tertiary" : "text-primary"}`}
               />
-              <span className="font-mono text-body text-foreground">
-                {batchId.length > 18 ? batchId.slice(0, 18) + "…" : batchId}
+              <span className="text-section-title text-foreground">
+                共计 {pickupIds.length} 工单
               </span>
-              <span className="tag tag-muted">合并领取单</span>
             </div>
             <span
               className={
@@ -205,17 +204,12 @@ function BatchPickupPage() {
                   : `${doneCount}/${totalCount}`}
             </span>
           </div>
-          <div className="mt-2 text-section-title text-foreground">
-            合并 {pickupIds.length} 张领取单
-          </div>
-          <div className="mt-1 text-caption text-text-tertiary">
-            覆盖 {cattleCount} 头牛 · {totalCount} 种药品
-          </div>
           <div className="mt-2 inline-flex items-center gap-1.5 text-body text-foreground">
             <Warehouse className="h-3.5 w-3.5 text-primary" />
             {warehouse}
           </div>
         </div>
+
 
         {/* 药品清单 */}
         <div className="rounded-xl bg-card border border-border p-4">
