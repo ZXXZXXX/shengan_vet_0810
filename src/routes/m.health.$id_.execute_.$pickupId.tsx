@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import {
   CheckCircle2,
-  Warehouse,
   ClipboardList,
   PackageCheck,
   ScanLine,
@@ -13,6 +12,8 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useFarm } from "@/lib/farm-store";
+
 import { MobileShell } from "@/components/mobile-shell";
 import {
   addScannedEntry,
@@ -51,8 +52,10 @@ function PickupDetailPage() {
   const claimed = useClaimed();
   const scannedMap = useScannedCodes(pickupId);
   const pickup = getPickup(pickupId);
+  const farm = useFarm();
 
   const isClaimed = claimed.includes(pickupId);
+
 
   if (!pickup) {
     return (
