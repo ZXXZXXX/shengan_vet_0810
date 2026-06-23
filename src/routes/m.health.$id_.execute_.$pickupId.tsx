@@ -132,7 +132,7 @@ function PickupDetailPage() {
               <ClipboardList className="h-4 w-4 text-primary" />
               领取清单
             </div>
-            <span className="text-caption text-text-tertiary">共 {totalCount} 项</span>
+            <span className="text-caption text-text-tertiary">共 {totalCount} 种</span>
           </div>
 
           <div className="space-y-2.5">
