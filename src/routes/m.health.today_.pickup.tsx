@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-router";
 import {
   CheckCircle2,
-  Warehouse,
   ClipboardList,
   PackageCheck,
   AlertTriangle,
@@ -24,8 +23,10 @@ import {
   type StockSource,
   type ScannedEntry,
 } from "@/lib/pickup-store";
-import { PickupItemRow } from "./m.health.$id_.execute_.$pickupId";
+import { PickupItemRow, formatPickupTitle } from "./m.health.$id_.execute_.$pickupId";
 import { homeTasks, type HomeTask } from "./m.homepage";
+import { useFarm } from "@/lib/farm-store";
+
 
 export const Route = createFileRoute("/m/health/today_/pickup")({
   validateSearch: (s: Record<string, unknown>) => ({
