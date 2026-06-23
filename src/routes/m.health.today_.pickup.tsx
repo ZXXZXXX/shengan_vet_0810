@@ -72,7 +72,7 @@ function entryQtySum(list: ScannedEntry[]) {
 }
 
 function BatchPickupPage() {
-  const { ids } = useSearch({ from: "/m/health/today/pickup" });
+  const { ids } = useSearch({ from: "/m/health/today_/pickup" });
   const navigate = useNavigate();
   const claimed = useClaimed();
 
