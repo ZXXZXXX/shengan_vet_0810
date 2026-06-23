@@ -192,7 +192,87 @@ export const PICKUPS: Pickup[] = [
       },
     ],
   },
+  // ============ 疫苗免疫 工单领药 ============
+  ...([
+    { wo: "YM-1041", title: "口蹄疫加强免疫 疫苗领取", barn: "犊牛舍 A", vaccine: "口蹄疫疫苗 A 型", spec: "10ml / 支", qty: "9 支" },
+    { wo: "YM-1042", title: "布病强免疫 疫苗领取", barn: "2 号牛舍", vaccine: "布鲁氏菌活疫苗", spec: "5ml / 支", qty: "6 支" },
+    { wo: "YM-1043", title: "牛流行热免疫 疫苗领取", barn: "1 号牛舍", vaccine: "牛流行热灭活疫苗", spec: "10ml / 支", qty: "5 支" },
+    { wo: "YM-1044", title: "炭疽芽孢苗免疫 疫苗领取", barn: "3 号牛舍", vaccine: "无毒炭疽芽孢苗", spec: "5ml / 支", qty: "7 支" },
+    { wo: "YM-1045", title: "副伤寒免疫批次 疫苗领取", barn: "犊牛舍 B", vaccine: "副伤寒灭活疫苗", spec: "10ml / 支", qty: "4 支" },
+    { wo: "YM-1046", title: "漏针补免 疫苗领取", barn: "1 号牛舍", vaccine: "口蹄疫疫苗 A 型", spec: "10ml / 支", qty: "1 支" },
+    { wo: "YM-1047", title: "结核检疫排查 试剂领取", barn: "全场", vaccine: "牛型结核菌素", spec: "5ml / 支", qty: "8 支" },
+  ] as const).map((v, i) => ({
+    id: `PK-${v.wo}`,
+    title: v.title,
+    source: v.wo,
+    barn: v.barn,
+    approvedAt: "今日 08:30",
+    visitor: "李强(免疫员)",
+    warehouse: "冷链库 · 冷柜 #3",
+    items: [
+      {
+        name: v.vaccine,
+        spec: v.spec,
+        qty: v.qty,
+        stock: `${60 + i * 4} 支`,
+        usage: "颈部肌肉注射",
+        unitScannable: true,
+        allowMixManufacturer: false,
+        stockSources: [
+          { manufacturer: "中牧股份", qty: 30 + i * 2, unit: "支" },
+        ],
+      },
+    ],
+  })),
+  // ============ 修蹄 工单领药 ============
+  ...([
+    { wo: "HF-0702", title: "趾间皮炎处置 物资领取", barn: "1 号牛舍" },
+    { wo: "HF-0703", title: "批次修蹄 物资领取", barn: "1 号牛舍" },
+    { wo: "HF-0704", title: "异常步态修蹄 物资领取", barn: "2 号牛舍" },
+    { wo: "HF-0705", title: "蹄底溃疡处置 物资领取", barn: "3 号牛舍" },
+    { wo: "HF-0706", title: "干奶前修蹄 物资领取", barn: "3 号牛舍" },
+    { wo: "HF-0707", title: "复查修蹄效果 物资领取", barn: "4 号牛舍" },
+    { wo: "HF-0708", title: "蹄部清洁与浴蹄 物资领取", barn: "犊牛舍 A" },
+  ] as const).map((v) => ({
+    id: `PK-${v.wo}`,
+    title: v.title,
+    source: v.wo,
+    barn: v.barn,
+    approvedAt: "今日 08:50",
+    visitor: "周斌(修蹄工)",
+    warehouse: "中央药房 · A 区货架 05",
+    items: [
+      {
+        name: "硫酸铜溶液",
+        spec: "500ml / 瓶",
+        qty: "1 瓶",
+        stock: "20 瓶",
+        usage: "蹄浴",
+        unitScannable: true,
+        allowMixManufacturer: true,
+      },
+      {
+        name: "碘酊",
+        spec: "100ml / 瓶",
+        qty: "1 瓶",
+        stock: "30 瓶",
+        usage: "蹄部消毒",
+        unitScannable: true,
+        allowMixManufacturer: true,
+      },
+      {
+        name: "蹄绷带",
+        spec: "1 卷",
+        qty: "2 卷",
+        stock: "50 卷",
+        usage: "蹄部包扎",
+        unitScannable: true,
+        allowMixManufacturer: true,
+      },
+    ],
+  })),
 ];
+
 
 /** 既往记录（已领取 / 已失效） */
 export const PICKUP_HISTORY: Pickup[] = [
