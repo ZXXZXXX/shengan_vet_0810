@@ -209,6 +209,7 @@ function BatchPickupPage() {
             <span className="text-caption text-text-tertiary">
               共 {totalCount} 种
             </span>
+
           </div>
 
           {aggregated.length === 0 ? (
