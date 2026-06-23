@@ -50,13 +50,11 @@ function truncateId(s: string): string {
 
 /** PK-2299 → "06/23药品领取单1" */
 export function formatPickupTitle(pickupId: string): string {
-  const today = new Date();
-  const mm = String(today.getMonth() + 1).padStart(2, "0");
-  const dd = String(today.getDate()).padStart(2, "0");
   const m = pickupId.match(/(\d+)$/);
   const seq = m ? String((parseInt(m[1], 10) % 9) + 1) : "1";
-  return `${mm}/${dd}药品领取单${seq}`;
+  return `06/23药品领取单${seq}`;
 }
+
 
 
 function PickupDetailPage() {
