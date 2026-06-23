@@ -27,7 +27,7 @@ import {
 import { PickupItemRow } from "./m.health.$id_.execute_.$pickupId";
 import { homeTasks, type HomeTask } from "./m.homepage";
 
-export const Route = createFileRoute("/m/health/today/pickup")({
+export const Route = createFileRoute("/m/health/today_/pickup")({
   validateSearch: (s: Record<string, unknown>) => ({
     ids: typeof s.ids === "string" ? s.ids : "",
   }),

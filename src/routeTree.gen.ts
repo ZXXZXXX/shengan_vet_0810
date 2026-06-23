@@ -71,7 +71,7 @@ import { Route as MPensIdRouteImport } from './routes/m.pens.$id'
 import { Route as MHealthTodayRouteImport } from './routes/m.health.today'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
-import { Route as MHealthTodayPickupRouteImport } from './routes/m.health.today.pickup'
+import { Route as MHealthTodayPickupRouteImport } from './routes/m.health.today_.pickup'
 import { Route as MHealthIdReviewRouteImport } from './routes/m.health.$id_.review'
 import { Route as MHealthIdExecuteRouteImport } from './routes/m.health.$id_.execute'
 import { Route as MHealthIdDiagnoseRouteImport } from './routes/m.health.$id_.diagnose'
@@ -390,9 +390,9 @@ const MBarnsIdRoute = MBarnsIdRouteImport.update({
   getParentRoute: () => MRoute,
 } as any)
 const MHealthTodayPickupRoute = MHealthTodayPickupRouteImport.update({
-  id: '/pickup',
-  path: '/pickup',
-  getParentRoute: () => MHealthTodayRoute,
+  id: '/health/today_/pickup',
+  path: '/health/today/pickup',
+  getParentRoute: () => MRoute,
 } as any)
 const MHealthIdReviewRoute = MHealthIdReviewRouteImport.update({
   id: '/health/$id_/review',
@@ -481,7 +481,7 @@ export interface FileRoutesByFullPath {
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/today': typeof MHealthTodayRouteWithChildren
+  '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
@@ -546,7 +546,7 @@ export interface FileRoutesByTo {
   '/warehouse': typeof WarehouseIndexRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/today': typeof MHealthTodayRouteWithChildren
+  '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health': typeof MHealthIndexRoute
   '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
@@ -617,14 +617,14 @@ export interface FileRoutesById {
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
-  '/m/health/today': typeof MHealthTodayRouteWithChildren
+  '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/health/$id_/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id_/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id_/execute': typeof MHealthIdExecuteRoute
   '/m/health/$id_/review': typeof MHealthIdReviewRoute
-  '/m/health/today/pickup': typeof MHealthTodayPickupRoute
+  '/m/health/today_/pickup': typeof MHealthTodayPickupRoute
   '/m/health/$id_/execute_/$pickupId': typeof MHealthIdExecutePickupIdRoute
 }
 export interface FileRouteTypes {
@@ -831,7 +831,7 @@ export interface FileRouteTypes {
     | '/m/health/$id_/diagnose'
     | '/m/health/$id_/execute'
     | '/m/health/$id_/review'
-    | '/m/health/today/pickup'
+    | '/m/health/today_/pickup'
     | '/m/health/$id_/execute_/$pickupId'
   fileRoutesById: FileRoutesById
 }
@@ -1285,12 +1285,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MBarnsIdRouteImport
       parentRoute: typeof MRoute
     }
-    '/m/health/today/pickup': {
-      id: '/m/health/today/pickup'
-      path: '/pickup'
+    '/m/health/today_/pickup': {
+      id: '/m/health/today_/pickup'
+      path: '/health/today/pickup'
       fullPath: '/m/health/today/pickup'
       preLoaderRoute: typeof MHealthTodayPickupRouteImport
-      parentRoute: typeof MHealthTodayRoute
+      parentRoute: typeof MRoute
     }
     '/m/health/$id_/review': {
       id: '/m/health/$id_/review'
@@ -1361,18 +1361,6 @@ const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
   KnowledgeRouteChildren,
 )
 
-interface MHealthTodayRouteChildren {
-  MHealthTodayPickupRoute: typeof MHealthTodayPickupRoute
-}
-
-const MHealthTodayRouteChildren: MHealthTodayRouteChildren = {
-  MHealthTodayPickupRoute: MHealthTodayPickupRoute,
-}
-
-const MHealthTodayRouteWithChildren = MHealthTodayRoute._addFileChildren(
-  MHealthTodayRouteChildren,
-)
-
 interface MRouteChildren {
   MAccountSecurityRoute: typeof MAccountSecurityRoute
   MAnimalsChar123idChar125Route: typeof MAnimalsChar123idChar125Route
@@ -1395,13 +1383,14 @@ interface MRouteChildren {
   MIndexRoute: typeof MIndexRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
-  MHealthTodayRoute: typeof MHealthTodayRouteWithChildren
+  MHealthTodayRoute: typeof MHealthTodayRoute
   MPensIdRoute: typeof MPensIdRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
   MHealthIdConfirmCureRoute: typeof MHealthIdConfirmCureRoute
   MHealthIdDiagnoseRoute: typeof MHealthIdDiagnoseRoute
   MHealthIdExecuteRoute: typeof MHealthIdExecuteRoute
   MHealthIdReviewRoute: typeof MHealthIdReviewRoute
+  MHealthTodayPickupRoute: typeof MHealthTodayPickupRoute
   MHealthIdExecutePickupIdRoute: typeof MHealthIdExecutePickupIdRoute
 }
 
@@ -1427,13 +1416,14 @@ const MRouteChildren: MRouteChildren = {
   MIndexRoute: MIndexRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
-  MHealthTodayRoute: MHealthTodayRouteWithChildren,
+  MHealthTodayRoute: MHealthTodayRoute,
   MPensIdRoute: MPensIdRoute,
   MHealthIndexRoute: MHealthIndexRoute,
   MHealthIdConfirmCureRoute: MHealthIdConfirmCureRoute,
   MHealthIdDiagnoseRoute: MHealthIdDiagnoseRoute,
   MHealthIdExecuteRoute: MHealthIdExecuteRoute,
   MHealthIdReviewRoute: MHealthIdReviewRoute,
+  MHealthTodayPickupRoute: MHealthTodayPickupRoute,
   MHealthIdExecutePickupIdRoute: MHealthIdExecutePickupIdRoute,
 }
 
