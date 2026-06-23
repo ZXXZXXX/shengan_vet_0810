@@ -10,9 +10,9 @@ import {
   ClipboardList,
   PackageCheck,
   AlertTriangle,
-  Users,
 } from "lucide-react";
 import { toast } from "sonner";
+
 import { MobileShell } from "@/components/mobile-shell";
 import {
   PICKUPS,
@@ -234,46 +234,15 @@ function BatchPickupPage() {
               所选任务均无需领药
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {aggregated.map((a) => (
-                <div key={a.item.name + (a.item.spec ?? "")} className="space-y-1.5">
-                  {/* 关联牛只明细 */}
-                  <div className="rounded-lg bg-surface-subtle px-3 py-2">
-                    <div className="flex items-center gap-1.5 text-caption text-text-tertiary mb-1">
-                      <Users className="h-3 w-3" />
-                      <span>关联牛只 ({a.allocations.length})</span>
-                    </div>
-                    <ul className="space-y-1">
-                      {a.allocations.map((al, i) => (
-                        <li
-                          key={al.woId + i}
-                          className="flex items-center justify-between text-caption"
-                        >
-                          <span className="inline-flex items-center gap-1.5 min-w-0">
-                            <span className="font-mono text-text-secondary truncate">
-                              {al.cattle}
-                            </span>
-                            <span className="text-text-tertiary shrink-0">
-                              · {al.barn}
-                            </span>
-                          </span>
-                          <span className="text-text-secondary tabular-nums shrink-0">
-                            {al.qty}
-                            <span className="text-text-tertiary ml-0.5">
-                              {al.unit}
-                            </span>
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <PickupItemRow
-                    item={a.item}
-                    pickupId={batchId}
-                    entries={scannedMap[a.item.name] ?? []}
-                    disabled={allAlreadyClaimed}
-                  />
-                </div>
+                <PickupItemRow
+                  key={a.item.name + (a.item.spec ?? "")}
+                  item={a.item}
+                  pickupId={batchId}
+                  entries={scannedMap[a.item.name] ?? []}
+                  disabled={allAlreadyClaimed}
+                />
               ))}
             </div>
           )}
@@ -281,11 +250,10 @@ function BatchPickupPage() {
           {!allAlreadyClaimed && aggregated.length > 0 && (
             <div className="mt-3 rounded-lg bg-brand-subtle px-3 py-2 text-caption text-text-secondary inline-flex items-start gap-1.5 w-full">
               <AlertTriangle className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
-              <span>
-                按合并后的总数量扫描药品二维码，全部核验后确认领药，系统将自动按上方分配关联到对应牛只。
-              </span>
+              <span>按所需数量扫描药品二维码完成取药记录，全部核验后点击下方按钮确认领药。</span>
             </div>
           )}
+
         </div>
       </div>
 
