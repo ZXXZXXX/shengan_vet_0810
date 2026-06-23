@@ -272,21 +272,22 @@ export const homeTasks: HomeTask[] = [
   // 产后护理 · 进行中
   { id: "PP-2501", target: "#01-24-2710", conclusion: "产后 3 天护理执行", type: "产后护理", status: "进行中", minutesAgo: 28 },
   // 疫苗免疫 · 进行中
-  { id: "YM-1041", target: "犊牛舍 A · 84 头", conclusion: "口蹄疫加强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 5 },
-  { id: "YM-1042", target: "2 号牛舍 · 56 头", conclusion: "布病强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 18 },
-  { id: "YM-1043", target: "1 号牛舍 · 48 头", conclusion: "牛流行热免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 33 },
-  { id: "YM-1044", target: "3 号牛舍 · 62 头", conclusion: "炭疽芽孢苗免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 47 },
-  { id: "YM-1045", target: "犊牛舍 B · 40 头", conclusion: "副伤寒免疫批次", type: "疫苗免疫", status: "进行中", minutesAgo: 62 },
+  { id: "YM-1041", target: "#01-24-2041", conclusion: "口蹄疫加强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 5 },
+  { id: "YM-1042", target: "#01-24-2042", conclusion: "布病强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 18 },
+  { id: "YM-1043", target: "#01-24-2043", conclusion: "牛流行热免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 33 },
+  { id: "YM-1044", target: "#01-24-2044", conclusion: "炭疽芽孢苗免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 47 },
+  { id: "YM-1045", target: "#01-24-2045", conclusion: "副伤寒免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 62 },
   { id: "YM-1046", target: "#01-24-2120", conclusion: "漏针补免", type: "疫苗免疫", status: "进行中", minutesAgo: 78 },
-  { id: "YM-1047", target: "全场", conclusion: "结核检疫排查", type: "疫苗免疫", status: "进行中", minutesAgo: 95 },
+  { id: "YM-1047", target: "#01-24-2047", conclusion: "结核检疫排查", type: "疫苗免疫", status: "进行中", minutesAgo: 95 },
   // 修蹄 · 进行中
   { id: "HF-0702", target: "#01-24-2150", conclusion: "右后蹄趾间皮炎", type: "修蹄", status: "进行中", minutesAgo: 7 },
-  { id: "HF-0703", target: "1 号牛舍 · 32 头", conclusion: "批次修蹄 第 1 日", type: "修蹄", status: "进行中", minutesAgo: 22 },
+  { id: "HF-0703", target: "#01-24-2151", conclusion: "蹄叶炎修整", type: "修蹄", status: "进行中", minutesAgo: 22 },
   { id: "HF-0704", target: "#01-24-2188", conclusion: "异常步态修蹄", type: "修蹄", status: "进行中", minutesAgo: 36 },
   { id: "HF-0705", target: "#01-24-2298", conclusion: "蹄底溃疡处置", type: "修蹄", status: "进行中", minutesAgo: 49 },
-  { id: "HF-0706", target: "3 号牛舍 · 24 头", conclusion: "干奶前修蹄", type: "修蹄", status: "进行中", minutesAgo: 64 },
+  { id: "HF-0706", target: "#01-24-2199", conclusion: "干奶前修蹄", type: "修蹄", status: "进行中", minutesAgo: 64 },
   { id: "HF-0707", target: "#01-24-2210", conclusion: "复查修蹄效果", type: "修蹄", status: "进行中", minutesAgo: 80 },
-  { id: "HF-0708", target: "犊牛舍 A", conclusion: "蹄部清洁与浴蹄", type: "修蹄", status: "进行中", minutesAgo: 99 },
+  { id: "HF-0708", target: "#01-24-2211", conclusion: "蹄部清洁与浴蹄", type: "修蹄", status: "进行中", minutesAgo: 99 },
+
 ];
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
