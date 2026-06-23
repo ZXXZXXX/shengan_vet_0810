@@ -543,7 +543,7 @@ function TodayTasksPage() {
               onClick={() => {
                 if (needPickup) {
                   navigate({
-                    to: "/m/health/today/pickup",
+                    to: "/m/health/today_/pickup",
                     search: { ids: allIds },
                   });
                 } else {
