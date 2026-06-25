@@ -252,44 +252,43 @@ function TodayTasksPage() {
 
 
       {/* 状态 tab */}
-      {tabs.length > 1 && (
-        <div className="sticky top-12 z-20 bg-card/95 backdrop-blur border-b border-border px-2">
-          <div className="flex">
-            {tabs.map((tb) => {
-              const tabCount = allTasks.filter((t) => statusOf(t) === tb).length;
-              const active = activeTab === tb;
-              return (
-                <button
-                  key={tb}
-                  type="button"
-                  onClick={() => {
-                    setActiveTab(tb);
-                    setSelectedBarns(new Set());
-                    exitSelect();
-                  }}
-                  className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
-                    active
-                      ? "text-primary font-medium"
-                      : "text-text-secondary"
+      <div className="sticky top-12 z-20 bg-card/95 backdrop-blur border-b border-border px-2">
+        <div className="flex">
+          {tabs.map((tb) => {
+            const tabCount = allTasks.filter((t) => statusOf(t) === tb).length;
+            const active = activeTab === tb;
+            return (
+              <button
+                key={tb}
+                type="button"
+                onClick={() => {
+                  setActiveTab(tb);
+                  setSelectedBarns(new Set());
+                  exitSelect();
+                }}
+                className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
+                  active
+                    ? "text-primary font-medium"
+                    : "text-text-secondary"
+                }`}
+              >
+                <span>{tb}</span>
+                <span
+                  className={`text-caption tabular-nums ${
+                    active ? "text-primary" : "text-text-tertiary"
                   }`}
                 >
-                  <span>{tb}</span>
-                  <span
-                    className={`text-caption tabular-nums ${
-                      active ? "text-primary" : "text-text-tertiary"
-                    }`}
-                  >
-                    {tabCount}
-                  </span>
-                  {active && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full bg-primary" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                  {tabCount}
+                </span>
+                {active && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full bg-primary" />
+                )}
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
+
 
       {/* 牛舍筛选 + 批量执行 入口 */}
       {(allBarns.length > 1 || (activeTab === "待执行" && !selectMode && tasks.length > 0)) && (
