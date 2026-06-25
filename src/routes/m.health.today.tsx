@@ -77,9 +77,11 @@ const DIAG_BRIEF: Record<string, string> = {
 
 type StatusTab = "待诊断" | "待执行" | "待复查";
 
-function getRoleTabs(role: Role): StatusTab[] {
-  if (role === "vet" || role === "manager") return ["待诊断", "待执行", "待复查"];
-  return ["待执行"];
+const ALL_TABS: StatusTab[] = ["待诊断", "待执行", "待复查"];
+
+function tabHandledByRole(role: Role, tab: StatusTab): boolean {
+  if (role === "vet" || role === "manager") return true;
+  return tab === "待执行";
 }
 
 // 按角色获取候选任务全集（不区分状态 tab）
