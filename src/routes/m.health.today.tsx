@@ -233,12 +233,10 @@ function TodayTasksPage() {
         </button>
         <div className="flex-1 min-w-0">
           <div className="text-body font-medium text-foreground leading-tight truncate">
-            {selectMode ? `已选 ${count} 项` : "今日工作任务"}
-          </div>
-          <div className="text-caption text-text-tertiary leading-tight truncate">
-            {roleLabel[role]} · {barnLabel} · {tasks.length} 项
+            {selectMode ? `已选 ${count} 项` : "今日任务"}
           </div>
         </div>
+
         {selectMode && tasks.length > 0 && (
           <button
             type="button"
