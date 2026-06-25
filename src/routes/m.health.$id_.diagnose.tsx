@@ -1410,21 +1410,21 @@ function DiagnosePage() {
               </button>
             </div>
             <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden">
-              {WEIGHT_OPTIONS.map((w) => {
-                const active = cattleWeight === w;
+              {WEIGHT_OPTIONS.map((opt) => {
+                const active = cattleWeight === opt.value;
                 return (
-                  <li key={w}>
+                  <li key={opt.value}>
                     <button
                       type="button"
                       onClick={() => {
-                        setCattleWeight(w);
+                        setCattleWeight(opt.value);
                         setWeightSheetOpen(false);
                       }}
                       className={`w-full px-3 py-3 flex items-center justify-between text-left ${
                         active ? "bg-brand-subtle/40 text-primary" : "bg-card text-foreground"
                       }`}
                     >
-                      <span className="text-body">{w} kg</span>
+                      <span className="text-body">{opt.label}</span>
                       {active && <CheckCircle2 className="h-4 w-4 text-primary" />}
                     </button>
                   </li>
