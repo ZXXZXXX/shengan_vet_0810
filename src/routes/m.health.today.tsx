@@ -125,10 +125,10 @@ function statusOf(t: HomeTask): StatusTab {
 function TodayTasksPage() {
   const role = useRole();
   const navigate = useNavigate();
-  const tabs = useMemo(() => getRoleTabs(role), [role]);
+  const tabs = ALL_TABS;
   const allTasks = useMemo(() => getRoleAllTasks(role), [role]);
 
-  const [activeTab, setActiveTab] = useState<StatusTab>(tabs[0]);
+  const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
