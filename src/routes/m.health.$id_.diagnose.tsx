@@ -149,7 +149,14 @@ const diseaseLibrary: Disease[] = [
 ];
 
 // 牛只体重档位（用于自动计算剂量）
-const WEIGHT_OPTIONS = [350, 400, 450, 500, 550, 600, 650, 700];
+const WEIGHT_OPTIONS: { label: string; value: number }[] = [
+  { label: "200～400 kg", value: 300 },
+  { label: "400～600 kg", value: 500 },
+  { label: "600～900 kg", value: 750 },
+  { label: "900 kg 以上", value: 1000 },
+];
+const weightLabelOf = (v: number | null) =>
+  v == null ? null : WEIGHT_OPTIONS.find((o) => o.value === v)?.label ?? `${v} kg`;
 
 // 库存（仓库实时在册量；用于提交校验）
 const drugStock: Record<string, { qty: number; unit: string }> = {
@@ -876,7 +883,7 @@ function DiagnosePage() {
                     className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
                   >
                     <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
-                      {cattleWeight == null ? "请选择牛只体重" : `${cattleWeight} kg`}
+                      {cattleWeight == null ? "请选择牛只体重" : weightLabelOf(cattleWeight)}
                     </span>
                     <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
                   </button>
@@ -1403,21 +1410,21 @@ function DiagnosePage() {
               </button>
             </div>
             <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden">
-              {WEIGHT_OPTIONS.map((w) => {
-                const active = cattleWeight === w;
+              {WEIGHT_OPTIONS.map((opt) => {
+                const active = cattleWeight === opt.value;
                 return (
-                  <li key={w}>
+                  <li key={opt.value}>
                     <button
                       type="button"
                       onClick={() => {
-                        setCattleWeight(w);
+                        setCattleWeight(opt.value);
                         setWeightSheetOpen(false);
                       }}
                       className={`w-full px-3 py-3 flex items-center justify-between text-left ${
                         active ? "bg-brand-subtle/40 text-primary" : "bg-card text-foreground"
                       }`}
                     >
-                      <span className="text-body">{w} kg</span>
+                      <span className="text-body">{opt.label}</span>
                       {active && <CheckCircle2 className="h-4 w-4 text-primary" />}
                     </button>
                   </li>
