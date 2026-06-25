@@ -362,9 +362,11 @@ function TodayTasksPage() {
               icon={Inbox}
               size="sm"
               title={
-                selectedBarns.size > 0
-                  ? "所选牛舍暂无该状态任务"
-                  : "今日暂无该状态任务"
+                !tabHandledByRole(role, activeTab)
+                  ? `${activeTab}由兽医/场长处理`
+                  : selectedBarns.size > 0
+                    ? "所选牛舍暂无该状态任务"
+                    : "今日暂无该状态任务"
               }
             />
           </div>
