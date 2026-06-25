@@ -883,7 +883,7 @@ function DiagnosePage() {
                     className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
                   >
                     <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
-                      {cattleWeight == null ? "请选择牛只体重" : `${cattleWeight} kg`}
+                      {cattleWeight == null ? "请选择牛只体重" : weightLabelOf(cattleWeight)}
                     </span>
                     <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
                   </button>
