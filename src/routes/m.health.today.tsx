@@ -77,9 +77,11 @@ const DIAG_BRIEF: Record<string, string> = {
 
 type StatusTab = "待诊断" | "待执行" | "待复查";
 
-function getRoleTabs(role: Role): StatusTab[] {
-  if (role === "vet" || role === "manager") return ["待诊断", "待执行", "待复查"];
-  return ["待执行"];
+const ALL_TABS: StatusTab[] = ["待诊断", "待执行", "待复查"];
+
+function tabHandledByRole(role: Role, tab: StatusTab): boolean {
+  if (role === "vet" || role === "manager") return true;
+  return tab === "待执行";
 }
 
 // 按角色获取候选任务全集（不区分状态 tab）
@@ -123,10 +125,10 @@ function statusOf(t: HomeTask): StatusTab {
 function TodayTasksPage() {
   const role = useRole();
   const navigate = useNavigate();
-  const tabs = useMemo(() => getRoleTabs(role), [role]);
+  const tabs = ALL_TABS;
   const allTasks = useMemo(() => getRoleAllTasks(role), [role]);
 
-  const [activeTab, setActiveTab] = useState<StatusTab>(tabs[0]);
+  const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -250,44 +252,43 @@ function TodayTasksPage() {
 
 
       {/* 状态 tab */}
-      {tabs.length > 1 && (
-        <div className="sticky top-12 z-20 bg-card/95 backdrop-blur border-b border-border px-2">
-          <div className="flex">
-            {tabs.map((tb) => {
-              const tabCount = allTasks.filter((t) => statusOf(t) === tb).length;
-              const active = activeTab === tb;
-              return (
-                <button
-                  key={tb}
-                  type="button"
-                  onClick={() => {
-                    setActiveTab(tb);
-                    setSelectedBarns(new Set());
-                    exitSelect();
-                  }}
-                  className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
-                    active
-                      ? "text-primary font-medium"
-                      : "text-text-secondary"
+      <div className="sticky top-12 z-20 bg-card/95 backdrop-blur border-b border-border px-2">
+        <div className="flex">
+          {tabs.map((tb) => {
+            const tabCount = allTasks.filter((t) => statusOf(t) === tb).length;
+            const active = activeTab === tb;
+            return (
+              <button
+                key={tb}
+                type="button"
+                onClick={() => {
+                  setActiveTab(tb);
+                  setSelectedBarns(new Set());
+                  exitSelect();
+                }}
+                className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
+                  active
+                    ? "text-primary font-medium"
+                    : "text-text-secondary"
+                }`}
+              >
+                <span>{tb}</span>
+                <span
+                  className={`text-caption tabular-nums ${
+                    active ? "text-primary" : "text-text-tertiary"
                   }`}
                 >
-                  <span>{tb}</span>
-                  <span
-                    className={`text-caption tabular-nums ${
-                      active ? "text-primary" : "text-text-tertiary"
-                    }`}
-                  >
-                    {tabCount}
-                  </span>
-                  {active && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full bg-primary" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                  {tabCount}
+                </span>
+                {active && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full bg-primary" />
+                )}
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
+
 
       {/* 牛舍筛选 + 批量执行 入口 */}
       {(allBarns.length > 1 || (activeTab === "待执行" && !selectMode && tasks.length > 0)) && (
@@ -361,9 +362,11 @@ function TodayTasksPage() {
               icon={Inbox}
               size="sm"
               title={
-                selectedBarns.size > 0
-                  ? "所选牛舍暂无该状态任务"
-                  : "今日暂无该状态任务"
+                !tabHandledByRole(role, activeTab)
+                  ? `${activeTab}由兽医/场长处理`
+                  : selectedBarns.size > 0
+                    ? "所选牛舍暂无该状态任务"
+                    : "今日暂无该状态任务"
               }
             />
           </div>
