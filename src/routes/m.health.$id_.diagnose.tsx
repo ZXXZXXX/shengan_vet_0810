@@ -149,7 +149,14 @@ const diseaseLibrary: Disease[] = [
 ];
 
 // 牛只体重档位（用于自动计算剂量）
-const WEIGHT_OPTIONS = [350, 400, 450, 500, 550, 600, 650, 700];
+const WEIGHT_OPTIONS: { label: string; value: number }[] = [
+  { label: "200～400 kg", value: 300 },
+  { label: "400～600 kg", value: 500 },
+  { label: "600～900 kg", value: 750 },
+  { label: "900 kg 以上", value: 1000 },
+];
+const weightLabelOf = (v: number | null) =>
+  v == null ? null : WEIGHT_OPTIONS.find((o) => o.value === v)?.label ?? `${v} kg`;
 
 // 库存（仓库实时在册量；用于提交校验）
 const drugStock: Record<string, { qty: number; unit: string }> = {
