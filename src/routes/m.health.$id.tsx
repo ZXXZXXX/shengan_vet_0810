@@ -1538,29 +1538,32 @@ function ChecklistDay({
                   <button
                     type="button"
                     onClick={() => {
-                      const target =
-                        medItems.find((m) => !m.scanCode || m.scanCode === pickupCode) ?? medItems[0];
-                      if (!target) return;
+                      const target = medItems.find((m) => !m.scanCode);
+                      if (!target) {
+                        toast.message("所有药品均已完成扫码核验");
+                        return;
+                      }
                       toast.message(pickupClaimed ? "需扫描药品二维码进行验证" : "扫码核验现场药品");
                       setReplaceState({ itemId: target.id, itemName: target.title, attempt: 0 });
                     }}
                     className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
                   >
-                    <Repeat className="h-3 w-3" /> 扫码核验
+                    <ScanLine className="h-3.5 w-3.5" /> 扫码核验
                   </button>
                 )}
               </div>
           {medItems.map((it) => {
+            const scanned = Boolean(it.scanCode);
             return (
               <div key={it.id} className="rounded-xl border border-border bg-card px-3 py-2.5">
                 <div className="text-body text-foreground">{it.title}</div>
                 <div className="mt-1 flex items-center gap-2 text-caption">
-                  <span className={pickupClaimed ? "text-primary font-medium" : "text-text-tertiary"}>
-                    {pickupClaimed ? (it.manufacturer ?? "-") : "-"}
+                  <span className={scanned ? "text-primary font-medium" : "text-text-tertiary"}>
+                    {scanned ? (it.manufacturer ?? "-") : "-"}
                   </span>
                   <span className="text-text-tertiary">·</span>
-                  <span className={`font-mono ${pickupClaimed ? "text-text-secondary" : "text-text-tertiary"}`}>
-                    {pickupClaimed ? (it.batchNo ?? "-") : "-"}
+                  <span className={`font-mono ${scanned ? "text-text-secondary" : "text-text-tertiary"}`}>
+                    {scanned ? (it.batchNo ?? "-") : "-"}
                   </span>
                 </div>
                 {it.desc && (
