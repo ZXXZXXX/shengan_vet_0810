@@ -1557,9 +1557,9 @@ function ChecklistDay({
                         toast.message("所有药品均已完成扫码核验");
                         return;
                       }
-                      // 演示场景循环：第1次→情况2（无领取记录），第2次→情况3（关联药品），第3次→情况1（直接录入）
-                      const order: Array<1 | 2 | 3> = [2, 3, 1];
-                      const scenario = order[scanAttemptRef.current % 3];
+                      // 演示场景循环：1→情况2(无领取记录), 2→情况3(关联药品), 3→情况1(直接录入), 4→情况4(已被使用)
+                      const order: Array<1 | 2 | 3 | 4> = [2, 3, 1, 4];
+                      const scenario = order[scanAttemptRef.current % 4];
                       scanAttemptRef.current += 1;
                       toast.message(pickupClaimed ? "需扫描药品二维码进行验证" : "扫码核验现场药品");
                       setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
