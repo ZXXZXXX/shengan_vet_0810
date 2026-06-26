@@ -1429,7 +1429,6 @@ function ChecklistDay({
   const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string } | null
   >(null);
-  const [adhocScanOpen, setAdhocScanOpen] = useState(false);
   const [adhocConfirm, setAdhocConfirm] = useState<string | null>(null);
 
 
