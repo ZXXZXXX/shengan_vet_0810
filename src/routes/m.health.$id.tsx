@@ -1055,6 +1055,12 @@ type ExecItem = {
   batchNo?: string;
 };
 
+// 演示用：药品关联关系（例如同一组合包装/同处方关联领取）
+const DRUG_ASSOCIATIONS: Record<string, string[]> = {
+  "氟尼辛葡甲胺注射液": ["头孢噻呋钠"],
+  "头孢噻呋钠": ["复方氨基比林注射液"],
+};
+
 // 根据处方拆解每日任务：每种药品 = 一次任务，加上不需用药的常规任务（如测温）
 function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem[] {
   const items: ExecItem[] = [];
