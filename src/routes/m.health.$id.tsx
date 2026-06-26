@@ -1757,6 +1757,7 @@ function ChecklistDay({
               setReplaceState(null);
               return;
             }
+            const itemName = replaceState.itemName;
             setItems((arr) =>
               arr.map((it) =>
                 it.id === replaceState.itemId
@@ -1769,7 +1770,13 @@ function ChecklistDay({
                   : it,
               ),
             );
-            toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
+            const wasUnclaimed = !pickupClaimed && !!pickupCode;
+            if (wasUnclaimed && pickupCode) {
+              claimPickup(pickupCode);
+              setAdhocConfirm(itemName);
+            } else {
+              toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
+            }
             setReplaceState(null);
           }}
         />
