@@ -1856,7 +1856,7 @@ function ChecklistDay({
               <h3 className="text-card-title text-foreground">已自动补记领取</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              「{adhocConfirm}」当前未查询到本工单的领取记录，系统已自动补记领取留痕，该药品状态已更新为「已领取」。如该药品后续未实际使用，请自行在「药品记录」中登记退料。
+              该药品无领取记录，已自动补记。如未使用，请到「药品记录」登记退料。
             </p>
             <div className="flex items-center">
               <button
