@@ -1840,9 +1840,7 @@ function ChecklistDay({
                         : it,
                     ),
                   );
-                  toast.success(`已自动领取 · ${itemName}`, {
-                    description: "如未实际使用，请前往药品记录登记退料",
-                  });
+                  toast.success(`已自动领取 · ${itemName}`);
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
