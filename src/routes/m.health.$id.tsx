@@ -1812,9 +1812,99 @@ function ChecklistDay({
         </AlertDialogContent>
       </AlertDialog>
 
+      {adhocScanOpen && (
+        <AdhocScanOverlay
+          onCancel={() => setAdhocScanOpen(false)}
+          onScanned={(drugName) => {
+            setAdhocScanOpen(false);
+            const pickup = pickupCode ? getPickup(pickupCode) : null;
+            const inPickup = pickup?.items.some((it) => it.name === drugName);
+            if (inPickup && pickupCode) {
+              claimPickup(pickupCode);
+              toast.success(`已核验 · ${drugName}`);
+            } else {
+              setAdhocConfirm(drugName);
+            }
+          }}
+        />
+      )}
+
+      <AlertDialog open={!!adhocConfirm} onOpenChange={(o) => { if (!o) setAdhocConfirm(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>未查询到领取记录</AlertDialogTitle>
+            <AlertDialogDescription>
+              「{adhocConfirm}」当前未查询到本工单的领取记录。确认后系统将自动补记领取留痕，并将该药品状态更新为「已领取」。
+              <br />
+              如该药品后续未实际使用，请自行在「药品记录」中登记退料。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                const name = adhocConfirm;
+                setAdhocConfirm(null);
+                if (pickupCode) claimPickup(pickupCode);
+                toast.success(`已补记领取留痕 · ${name ?? ""}`, {
+                  description: "如未实际使用，请前往药品记录登记退料",
+                });
+              }}
+            >
+              确认补记
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );
+
+}
+
+function AdhocScanOverlay({
+  onCancel,
+  onScanned,
+}: {
+  onCancel: () => void;
+  onScanned: (drugName: string) => void;
+}) {
+  const [phase, setPhase] = useState<"scanning" | "verified">("scanning");
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase("verified"), 800);
+    // 模拟：扫到一个"不在本工单领取清单"的药品，触发补记流程
+    const t2 = setTimeout(() => onScanned("地塞米松磷酸钠注射液"), 1100);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [onScanned]);
+  return (
+    <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
+      <div className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top)] h-14">
+        <button type="button" onClick={onCancel} className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-white/10" aria-label="关闭">
+          <X className="h-5 w-5" />
+        </button>
+        <span className="text-body-sm">扫码核验药品</span>
+        <span className="w-9" />
+      </div>
+      <div className="flex-1 flex flex-col items-center justify-center px-6 gap-4">
+        <div className="relative h-56 w-56 rounded-2xl border-2 border-white/40 overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <ScanLine className="h-10 w-10 text-white/70" />
+          </div>
+          {phase === "scanning" && (
+            <div className="absolute left-0 right-0 h-0.5 bg-primary shadow-[0_0_12px_2px_var(--brand)] animate-[scanline_1.2s_ease-in-out_infinite]" />
+          )}
+        </div>
+        <div className="text-center text-body-sm text-white/80 px-4">
+          {phase === "scanning" ? <>请将摄像头对准药品二维码…</> : (
+            <span className="inline-flex items-center gap-1.5 text-primary">
+              <CheckCircle2 className="h-4 w-4" /> 已识别
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 }
 
