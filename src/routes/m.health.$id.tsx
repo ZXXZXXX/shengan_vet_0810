@@ -1429,8 +1429,9 @@ function ChecklistDay({
   const evidenceAlbumRef = useRef<HTMLInputElement>(null);
 
   const scannedMap = useScannedCodes(pickupCode ?? "");
+  const scanAttemptRef = useRef(0);
   const [replaceState, setReplaceState] = useState<
-    { itemId: string; itemName: string; attempt: number } | null
+    { itemId: string; itemName: string; attempt: number; scenario: 1 | 2 | 3 } | null
   >(null);
   const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string; reason: "tier3" | "unregistered" } | null
@@ -1555,8 +1556,12 @@ function ChecklistDay({
                         toast.message("所有药品均已完成扫码核验");
                         return;
                       }
+                      // 演示场景循环：第1次→情况2（无领取记录），第2次→情况3（关联药品），第3次→情况1（直接录入）
+                      const order: Array<1 | 2 | 3> = [2, 3, 1];
+                      const scenario = order[scanAttemptRef.current % 3];
+                      scanAttemptRef.current += 1;
                       toast.message(pickupClaimed ? "需扫描药品二维码进行验证" : "扫码核验现场药品");
-                      setReplaceState({ itemId: target.id, itemName: target.title, attempt: 0 });
+                      setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
                     }}
                     className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
                   >
@@ -1787,36 +1792,27 @@ function ChecklistDay({
           onFailed={() => {
             const { itemId, itemName } = replaceState;
             setReplaceState(null);
-            if (!pickupClaimed) {
-              // 未领药场景：不拦截，自动补记领取并提醒
-              if (pickupCode) claimPickup(pickupCode);
-              const stubBatch = `XC${Math.floor(100000 + Math.random() * 900000)}`;
-              setItems((arr) =>
-                arr.map((it) =>
-                  it.id === itemId
-                    ? { ...it, manufacturer: it.manufacturer ?? "现场扫码", batchNo: it.batchNo ?? stubBatch, scanCode: it.scanCode ?? stubBatch }
-                    : it,
-                ),
-              );
-              setAdhocConfirm(itemName);
-            } else {
-              setReplaceFailed({ itemId, itemName, reason: "tier3" });
-            }
+            // 情况二：无领取记录 → 弹窗提示，确认后自动领取
+            setReplaceFailed({ itemId, itemName, reason: "unregistered" });
           }}
           onVerified={(target) => {
             if (!target) {
               setReplaceState(null);
               return;
             }
-            const { itemId, itemName } = replaceState;
+            const { itemId, itemName, scenario } = replaceState;
             const wasUnclaimed = !pickupClaimed && !!pickupCode;
-            const associated = DRUG_ASSOCIATIONS[itemName] ?? [];
             setReplaceState(null);
 
             // 情况三：存在关联药品 → 询问是否一同录入
-            if (associated.length > 0 && pickupClaimed) {
-              setAssocConfirm({ itemId, itemName, target, associated });
-              return;
+            if (scenario === 3) {
+              const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
+              const fallback = medItems.find((m) => m.id !== itemId && !m.scanCode)?.title;
+              const associated = mapped.length > 0 ? mapped : fallback ? [fallback] : [];
+              if (associated.length > 0) {
+                setAssocConfirm({ itemId, itemName, target, associated });
+                return;
+              }
             }
 
             // 情况一：直接填入扫描结果
