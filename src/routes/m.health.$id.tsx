@@ -1783,58 +1783,94 @@ function ChecklistDay({
         />
       )}
 
-      <AlertDialog open={!!replaceFailed} onOpenChange={(o) => { if (!o) setReplaceFailed(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>扫码失败</AlertDialogTitle>
-            <AlertDialogDescription>
-              {replaceFailed?.reason === "unregistered"
+      {replaceFailed && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setReplaceFailed(null)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-primary" />
+              </span>
+              <h3 className="text-card-title text-foreground">扫码失败</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              {replaceFailed.reason === "unregistered"
                 ? "该药品当前未查询到领取记录，请确认是否已在药房办理领取后再扫码。"
-                : "该药品不在你的\"三级库\"内，请确认无误后再扫码。"}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (!replaceFailed) return;
-                const { itemId, itemName } = replaceFailed;
-                setReplaceFailed(null);
-                setReplaceState({ itemId, itemName, attempt: 1 });
-              }}
-            >
-              重新扫描
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+                : "该药品不在你的「三级库」内，请确认无误后再扫码。"}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setReplaceFailed(null)}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const { itemId, itemName } = replaceFailed;
+                  setReplaceFailed(null);
+                  setReplaceState({ itemId, itemName, attempt: 1 });
+                }}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                重新扫描
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      <AlertDialog open={!!adhocConfirm} onOpenChange={(o) => { if (!o) setAdhocConfirm(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>未查询到领取记录</AlertDialogTitle>
-            <AlertDialogDescription>
-              「{adhocConfirm}」当前未查询到本工单的领取记录。确认后系统将自动补记领取留痕，并将该药品状态更新为「已领取」。
-              <br />
-              如该药品后续未实际使用，请自行在「药品记录」中登记退料。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                const name = adhocConfirm;
-                setAdhocConfirm(null);
-                toast.success(`已补记领取留痕 · ${name ?? ""}`, {
-                  description: "如未实际使用，请前往药品记录登记退料",
-                });
-              }}
-            >
-              确认补记
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {adhocConfirm && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setAdhocConfirm(null)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
+                <PackagePlus className="h-4 w-4 text-primary" />
+              </span>
+              <h3 className="text-card-title text-foreground">未查询到领取记录</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              「{adhocConfirm}」当前未查询到本工单的领取记录。确认后系统将自动补记领取留痕，并将该药品状态更新为「已领取」。如该药品后续未实际使用，请自行在「药品记录」中登记退料。
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setAdhocConfirm(null)}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const name = adhocConfirm;
+                  setAdhocConfirm(null);
+                  toast.success(`已补记领取留痕 · ${name ?? ""}`, {
+                    description: "如未实际使用，请前往药品记录登记退料",
+                  });
+                }}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                确认补记
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
     </div>
   );
