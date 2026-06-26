@@ -1897,6 +1897,37 @@ function ChecklistDay({
         </div>
       )}
 
+      {usedAlert && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setUsedAlert(null)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-state-warning-subtle inline-flex items-center justify-center">
+                <PackagePlus className="h-4 w-4 text-state-warning" />
+              </span>
+              <h3 className="text-card-title text-foreground">药品已被使用</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              「{usedAlert}」该药品已被使用，请确认药品无误后重新核验。
+            </p>
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => setUsedAlert(null)}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                我知道了
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {adhocConfirm && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
