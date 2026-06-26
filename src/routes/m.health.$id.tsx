@@ -1749,9 +1749,22 @@ function ChecklistDay({
           onCancel={() => setReplaceState(null)}
           onFailed={() => {
             const { itemId, itemName } = replaceState;
-            const reason: "tier3" | "unregistered" = pickupClaimed ? "tier3" : "unregistered";
             setReplaceState(null);
-            setReplaceFailed({ itemId, itemName, reason });
+            if (!pickupClaimed) {
+              // 未领药场景：不拦截，自动补记领取并提醒
+              if (pickupCode) claimPickup(pickupCode);
+              const stubBatch = `XC${Math.floor(100000 + Math.random() * 900000)}`;
+              setItems((arr) =>
+                arr.map((it) =>
+                  it.id === itemId
+                    ? { ...it, manufacturer: it.manufacturer ?? "现场扫码", batchNo: it.batchNo ?? stubBatch, scanCode: it.scanCode ?? stubBatch }
+                    : it,
+                ),
+              );
+              setAdhocConfirm(itemName);
+            } else {
+              setReplaceFailed({ itemId, itemName, reason: "tier3" });
+            }
           }}
           onVerified={(target) => {
             if (!target) {
@@ -1840,19 +1853,12 @@ function ChecklistDay({
               <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
                 <PackagePlus className="h-4 w-4 text-primary" />
               </span>
-              <h3 className="text-card-title text-foreground">未查询到领取记录</h3>
+              <h3 className="text-card-title text-foreground">已自动补记领取</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              「{adhocConfirm}」当前未查询到本工单的领取记录。确认后系统将自动补记领取留痕，并将该药品状态更新为「已领取」。如该药品后续未实际使用，请自行在「药品记录」中登记退料。
+              「{adhocConfirm}」当前未查询到本工单的领取记录，系统已自动补记领取留痕，该药品状态已更新为「已领取」。如该药品后续未实际使用，请自行在「药品记录」中登记退料。
             </p>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setAdhocConfirm(null)}
-                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
-              >
-                取消
-              </button>
+            <div className="flex items-center">
               <button
                 type="button"
                 onClick={() => {
@@ -1864,7 +1870,7 @@ function ChecklistDay({
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
-                确认补记
+                我知道了
               </button>
             </div>
           </div>
