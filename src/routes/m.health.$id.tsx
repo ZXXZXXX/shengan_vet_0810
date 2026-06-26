@@ -1805,6 +1805,13 @@ function ChecklistDay({
             const wasUnclaimed = !pickupClaimed && !!pickupCode;
             setReplaceState(null);
 
+            // 情况四：该药品已被使用
+            if (scenario === 4) {
+              setUsedAlert(itemName);
+              return;
+            }
+
+
             // 情况三：存在关联药品 → 询问是否一同录入
             if (scenario === 3) {
               const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
