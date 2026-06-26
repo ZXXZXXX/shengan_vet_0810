@@ -1511,31 +1511,18 @@ function ChecklistDay({
                   <CheckCircle2 className="h-4 w-4" />
                 </div>
               ) : (
-                <div className="space-y-1.5">
-                  <Link
-                    to="/m/health/$id/execute/$pickupId"
-                    params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
-                    className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
-                    style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <PackagePlus className="h-3.5 w-3.5" />
-                      需领物 · 点击查看领物清单
-                    </span>
-                    <ChevronRight className="h-4 w-4 opacity-70" />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => setAdhocScanOpen(true)}
-                    className="w-full flex items-center justify-between px-3 h-9 rounded-lg text-caption border border-dashed border-border bg-card text-text-secondary active:bg-surface-subtle"
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <ScanLine className="h-3.5 w-3.5 text-primary" />
-                      未领药？直接扫码核验现场药品
-                    </span>
-                    <ChevronRight className="h-3.5 w-3.5 opacity-60" />
-                  </button>
-                </div>
+                <Link
+                  to="/m/health/$id/execute/$pickupId"
+                  params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
+                  className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
+                  style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <PackagePlus className="h-3.5 w-3.5" />
+                    需领物 · 点击查看领物清单
+                  </span>
+                  <ChevronRight className="h-4 w-4 opacity-70" />
+                </Link>
               )}
             </div>
           )}
