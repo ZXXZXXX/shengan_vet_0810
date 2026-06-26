@@ -33,7 +33,7 @@ import { MAddMediaSheet } from "@/components/m-add-media-sheet";
 
 
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
-import { useClaimed, useScannedCodes, claimPickup, getPickup, type ScannedEntry } from "@/lib/pickup-store";
+import { useClaimed, useScannedCodes, claimPickup, type ScannedEntry } from "@/lib/pickup-store";
 
 import {
   AlertDialog,
@@ -1429,7 +1429,6 @@ function ChecklistDay({
   const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string } | null
   >(null);
-  const [adhocScanOpen, setAdhocScanOpen] = useState(false);
   const [adhocConfirm, setAdhocConfirm] = useState<string | null>(null);
 
 
@@ -1511,31 +1510,18 @@ function ChecklistDay({
                   <CheckCircle2 className="h-4 w-4" />
                 </div>
               ) : (
-                <div className="space-y-1.5">
-                  <Link
-                    to="/m/health/$id/execute/$pickupId"
-                    params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
-                    className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
-                    style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <PackagePlus className="h-3.5 w-3.5" />
-                      需领物 · 点击查看领物清单
-                    </span>
-                    <ChevronRight className="h-4 w-4 opacity-70" />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => setAdhocScanOpen(true)}
-                    className="w-full flex items-center justify-between px-3 h-9 rounded-lg text-caption border border-dashed border-border bg-card text-text-secondary active:bg-surface-subtle"
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <ScanLine className="h-3.5 w-3.5 text-primary" />
-                      未领药？直接扫码核验现场药品
-                    </span>
-                    <ChevronRight className="h-3.5 w-3.5 opacity-60" />
-                  </button>
-                </div>
+                <Link
+                  to="/m/health/$id/execute/$pickupId"
+                  params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
+                  className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
+                  style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <PackagePlus className="h-3.5 w-3.5" />
+                    需领物 · 点击查看领物清单
+                  </span>
+                  <ChevronRight className="h-4 w-4 opacity-70" />
+                </Link>
               )}
             </div>
           )}
@@ -1546,7 +1532,7 @@ function ChecklistDay({
               <div className="text-caption text-text-tertiary">用药信息</div>
           {medItems.map((it) => {
             const entries = scannedMap[it.title] ?? [];
-            const canReplace = pickupClaimed && interactive;
+            const canReplace = interactive;
 
             return (
               <div key={it.id} className="rounded-xl border border-border bg-card px-3 py-2.5">
@@ -1556,13 +1542,13 @@ function ChecklistDay({
                     <button
                       type="button"
                       onClick={() => {
-                        toast.message("需扫描药品二维码进行验证");
+                        toast.message(pickupClaimed ? "需扫描药品二维码进行验证" : "扫码核验现场药品");
                         setReplaceState({ itemId: it.id, itemName: it.title, attempt: 0 });
                       }}
                       className="shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
 
                     >
-                      <Repeat className="h-3 w-3" /> 更换
+                      <Repeat className="h-3 w-3" /> {pickupClaimed ? "更换" : "扫码"}
                     </button>
                   )}
                 </div>
@@ -1770,6 +1756,7 @@ function ChecklistDay({
               setReplaceState(null);
               return;
             }
+            const itemName = replaceState.itemName;
             setItems((arr) =>
               arr.map((it) =>
                 it.id === replaceState.itemId
@@ -1782,7 +1769,13 @@ function ChecklistDay({
                   : it,
               ),
             );
-            toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
+            const wasUnclaimed = !pickupClaimed && !!pickupCode;
+            if (wasUnclaimed && pickupCode) {
+              claimPickup(pickupCode);
+              setAdhocConfirm(itemName);
+            } else {
+              toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
+            }
             setReplaceState(null);
           }}
         />
@@ -1812,23 +1805,6 @@ function ChecklistDay({
         </AlertDialogContent>
       </AlertDialog>
 
-      {adhocScanOpen && (
-        <AdhocScanOverlay
-          onCancel={() => setAdhocScanOpen(false)}
-          onScanned={(drugName) => {
-            setAdhocScanOpen(false);
-            const pickup = pickupCode ? getPickup(pickupCode) : null;
-            const inPickup = pickup?.items.some((it) => it.name === drugName);
-            if (inPickup && pickupCode) {
-              claimPickup(pickupCode);
-              toast.success(`已核验 · ${drugName}`);
-            } else {
-              setAdhocConfirm(drugName);
-            }
-          }}
-        />
-      )}
-
       <AlertDialog open={!!adhocConfirm} onOpenChange={(o) => { if (!o) setAdhocConfirm(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -1845,7 +1821,6 @@ function ChecklistDay({
               onClick={() => {
                 const name = adhocConfirm;
                 setAdhocConfirm(null);
-                if (pickupCode) claimPickup(pickupCode);
                 toast.success(`已补记领取留痕 · ${name ?? ""}`, {
                   description: "如未实际使用，请前往药品记录登记退料",
                 });
@@ -1862,49 +1837,6 @@ function ChecklistDay({
 
 }
 
-function AdhocScanOverlay({
-  onCancel,
-  onScanned,
-}: {
-  onCancel: () => void;
-  onScanned: (drugName: string) => void;
-}) {
-  const [phase, setPhase] = useState<"scanning" | "verified">("scanning");
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase("verified"), 800);
-    // 模拟：扫到一个"不在本工单领取清单"的药品，触发补记流程
-    const t2 = setTimeout(() => onScanned("地塞米松磷酸钠注射液"), 1100);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [onScanned]);
-  return (
-    <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
-      <div className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top)] h-14">
-        <button type="button" onClick={onCancel} className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-white/10" aria-label="关闭">
-          <X className="h-5 w-5" />
-        </button>
-        <span className="text-body-sm">扫码核验药品</span>
-        <span className="w-9" />
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center px-6 gap-4">
-        <div className="relative h-56 w-56 rounded-2xl border-2 border-white/40 overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <ScanLine className="h-10 w-10 text-white/70" />
-          </div>
-          {phase === "scanning" && (
-            <div className="absolute left-0 right-0 h-0.5 bg-primary shadow-[0_0_12px_2px_var(--brand)] animate-[scanline_1.2s_ease-in-out_infinite]" />
-          )}
-        </div>
-        <div className="text-center text-body-sm text-white/80 px-4">
-          {phase === "scanning" ? <>请将摄像头对准药品二维码…</> : (
-            <span className="inline-flex items-center gap-1.5 text-primary">
-              <CheckCircle2 className="h-4 w-4" /> 已识别
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 
 
