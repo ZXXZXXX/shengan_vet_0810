@@ -1055,6 +1055,12 @@ type ExecItem = {
   batchNo?: string;
 };
 
+// 演示用：药品关联关系（例如同一组合包装/同处方关联领取）
+const DRUG_ASSOCIATIONS: Record<string, string[]> = {
+  "氟尼辛葡甲胺注射液": ["头孢噻呋钠"],
+  "头孢噻呋钠": ["复方氨基比林注射液"],
+};
+
 // 根据处方拆解每日任务：每种药品 = 一次任务，加上不需用药的常规任务（如测温）
 function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem[] {
   const items: ExecItem[] = [];
@@ -1430,6 +1436,12 @@ function ChecklistDay({
     { itemId: string; itemName: string; reason: "tier3" | "unregistered" } | null
   >(null);
   const [adhocConfirm, setAdhocConfirm] = useState<string | null>(null);
+  const [assocConfirm, setAssocConfirm] = useState<
+    { itemId: string; itemName: string; target: ScannedEntry; associated: string[] } | null
+  >(null);
+  const [assocMismatch, setAssocMismatch] = useState<
+    { itemName: string; missing: string[] } | null
+  >(null);
 
 
   // 领药完成后，用药任务自动标记完成（信息从领取单同步）
@@ -1796,10 +1808,21 @@ function ChecklistDay({
               setReplaceState(null);
               return;
             }
-            const itemName = replaceState.itemName;
+            const { itemId, itemName } = replaceState;
+            const wasUnclaimed = !pickupClaimed && !!pickupCode;
+            const associated = DRUG_ASSOCIATIONS[itemName] ?? [];
+            setReplaceState(null);
+
+            // 情况三：存在关联药品 → 询问是否一同录入
+            if (associated.length > 0 && pickupClaimed) {
+              setAssocConfirm({ itemId, itemName, target, associated });
+              return;
+            }
+
+            // 情况一：直接填入扫描结果
             setItems((arr) =>
               arr.map((it) =>
-                it.id === replaceState.itemId
+                it.id === itemId
                   ? {
                       ...it,
                       manufacturer: target.manufacturer ?? it.manufacturer,
@@ -1809,14 +1832,12 @@ function ChecklistDay({
                   : it,
               ),
             );
-            const wasUnclaimed = !pickupClaimed && !!pickupCode;
             if (wasUnclaimed && pickupCode) {
               claimPickup(pickupCode);
               setAdhocConfirm(itemName);
             } else {
-              toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
+              toast.success(`已录入 · ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
             }
-            setReplaceState(null);
           }}
         />
       )}
@@ -1908,6 +1929,127 @@ function ChecklistDay({
           </div>
         </div>
       )}
+
+      {assocConfirm && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setAssocConfirm(null)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
+                <PackagePlus className="h-4 w-4 text-primary" />
+              </span>
+              <h3 className="text-card-title text-foreground">检测到关联药品</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              扫描到「{assocConfirm.itemName}」与「{assocConfirm.associated.join("、")}」属同组关联药品，是否一同录入？
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const { itemId, itemName, target } = assocConfirm;
+                  setAssocConfirm(null);
+                  setItems((arr) =>
+                    arr.map((it) =>
+                      it.id === itemId
+                        ? {
+                            ...it,
+                            manufacturer: target.manufacturer ?? it.manufacturer,
+                            batchNo: target.batch ?? it.batchNo,
+                            scanCode: target.code,
+                          }
+                        : it,
+                    ),
+                  );
+                  toast.success(`已录入 · ${itemName}`);
+                }}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                仅录入本药
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const { itemId, itemName, target, associated } = assocConfirm;
+                  // 校验关联药品是否均为本任务所需
+                  const taskNames = new Set(medItems.map((m) => m.title));
+                  const missing = associated.filter((n) => !taskNames.has(n));
+                  if (missing.length > 0) {
+                    setAssocConfirm(null);
+                    setAssocMismatch({ itemName, missing });
+                    return;
+                  }
+                  // 全部命中：一同录入
+                  setItems((arr) =>
+                    arr.map((it) => {
+                      if (it.id === itemId) {
+                        return {
+                          ...it,
+                          manufacturer: target.manufacturer ?? it.manufacturer,
+                          batchNo: target.batch ?? it.batchNo,
+                          scanCode: target.code,
+                        };
+                      }
+                      if (associated.includes(it.title) && !it.scanCode) {
+                        const stub = `AS${Math.floor(100000 + Math.random() * 900000)}`;
+                        return {
+                          ...it,
+                          manufacturer: it.manufacturer ?? "现场扫码",
+                          batchNo: it.batchNo ?? stub,
+                          scanCode: it.scanCode ?? stub,
+                        };
+                      }
+                      return it;
+                    }),
+                  );
+                  setAssocConfirm(null);
+                  toast.success(`已一同录入 · ${[itemName, ...associated].join("、")}`);
+                }}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                一同录入
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {assocMismatch && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setAssocMismatch(null)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-primary" />
+              </span>
+              <h3 className="text-card-title text-foreground">药品不符合任务需求</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              关联药品「{assocMismatch.missing.join("、")}」不在本任务所需范围内，请确认药品无误后重新核验。
+            </p>
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => setAssocMismatch(null)}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                我知道了
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
 
     </div>
