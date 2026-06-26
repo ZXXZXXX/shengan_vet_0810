@@ -1427,7 +1427,7 @@ function ChecklistDay({
     { itemId: string; itemName: string; attempt: number } | null
   >(null);
   const [replaceFailed, setReplaceFailed] = useState<
-    { itemId: string; itemName: string } | null
+    { itemId: string; itemName: string; reason: "tier3" | "unregistered" } | null
   >(null);
   const [adhocConfirm, setAdhocConfirm] = useState<string | null>(null);
 
