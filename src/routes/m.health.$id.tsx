@@ -1433,21 +1433,23 @@ function ChecklistDay({
 
 
   // 领药完成后，用药任务自动标记完成（信息从领取单同步）
+  // 领药完成后，用药任务自动标记完成（信息需逐条扫码回填）
   useEffect(() => {
     if (!interactive || !pickupClaimed) return;
     setItems((arr) =>
       arr.map((it) =>
         it.needMed && it.status !== "done"
-          ? { ...it, status: "done" as ItemStatus, scanCode: pickupCode ?? undefined }
+          ? { ...it, status: "done" as ItemStatus }
           : it,
       ),
     );
-  }, [pickupClaimed, interactive, pickupCode]);
+  }, [pickupClaimed, interactive]);
 
-  // 提交就绪：领药完成 + 测温（若需要）已填 + 至少一张治疗记录照片
+  // 提交就绪：领药完成 + 所有用药已扫码核验 + 测温（若需要）已填 + 至少一张治疗记录照片
   const tempItem = items.find((i) => i.title.includes("测温"));
   const tempReady = !withTemp || Boolean((temps[tempItem?.id ?? ""] ?? "").trim());
-  const ready = interactive && pickupClaimed && tempReady && evidencePhotos.length > 0;
+  const medScanReady = items.filter((i) => i.needMed).every((i) => Boolean(i.scanCode));
+  const ready = interactive && pickupClaimed && medScanReady && tempReady && evidencePhotos.length > 0;
   useEffect(() => {
     onReadyChange?.(ready);
   }, [ready, onReadyChange]);
