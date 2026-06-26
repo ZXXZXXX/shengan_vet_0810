@@ -1473,7 +1473,8 @@ function ChecklistDay({
 
   const pickupDone = isDone || (isActive && dayDone);
   // 仍需领物：所有填写禁用
-  const inputsLocked = interactive && Boolean(pickupCode) && !pickupClaimed;
+  // 未领药时不再拦截其他板块的输入；用药信息仍为必填，由 ready 判断
+  const inputsLocked = false;
   const medItems = items.filter((it) => it.needMed);
 
   return (
