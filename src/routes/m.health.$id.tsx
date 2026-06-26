@@ -1431,8 +1431,9 @@ function ChecklistDay({
   const scannedMap = useScannedCodes(pickupCode ?? "");
   const scanAttemptRef = useRef(0);
   const [replaceState, setReplaceState] = useState<
-    { itemId: string; itemName: string; attempt: number; scenario: 1 | 2 | 3 } | null
+    { itemId: string; itemName: string; attempt: number; scenario: 1 | 2 | 3 | 4 } | null
   >(null);
+  const [usedAlert, setUsedAlert] = useState<string | null>(null);
   const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string; reason: "tier3" | "unregistered" } | null
   >(null);
@@ -1556,9 +1557,9 @@ function ChecklistDay({
                         toast.message("所有药品均已完成扫码核验");
                         return;
                       }
-                      // 演示场景循环：第1次→情况2（无领取记录），第2次→情况3（关联药品），第3次→情况1（直接录入）
-                      const order: Array<1 | 2 | 3> = [2, 3, 1];
-                      const scenario = order[scanAttemptRef.current % 3];
+                      // 演示场景循环：1→情况2(无领取记录), 2→情况3(关联药品), 3→情况1(直接录入), 4→情况4(已被使用)
+                      const order: Array<1 | 2 | 3 | 4> = [2, 3, 1, 4];
+                      const scenario = order[scanAttemptRef.current % 4];
                       scanAttemptRef.current += 1;
                       toast.message(pickupClaimed ? "需扫描药品二维码进行验证" : "扫码核验现场药品");
                       setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
@@ -1804,6 +1805,13 @@ function ChecklistDay({
             const wasUnclaimed = !pickupClaimed && !!pickupCode;
             setReplaceState(null);
 
+            // 情况四：该药品已被使用
+            if (scenario === 4) {
+              setUsedAlert(itemName);
+              return;
+            }
+
+
             // 情况三：存在关联药品 → 询问是否一同录入
             if (scenario === 3) {
               const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
@@ -1883,6 +1891,37 @@ function ChecklistDay({
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
                 确认领取
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {usedAlert && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setUsedAlert(null)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-state-warning-subtle inline-flex items-center justify-center">
+                <PackagePlus className="h-4 w-4 text-state-warning" />
+              </span>
+              <h3 className="text-card-title text-foreground">药品已被使用</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
+              「{usedAlert}」该药品已被使用，请确认药品无误后重新核验。
+            </p>
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => setUsedAlert(null)}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                我知道了
               </button>
             </div>
           </div>
