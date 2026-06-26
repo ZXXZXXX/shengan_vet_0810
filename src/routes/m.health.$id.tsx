@@ -1749,9 +1749,22 @@ function ChecklistDay({
           onCancel={() => setReplaceState(null)}
           onFailed={() => {
             const { itemId, itemName } = replaceState;
-            const reason: "tier3" | "unregistered" = pickupClaimed ? "tier3" : "unregistered";
             setReplaceState(null);
-            setReplaceFailed({ itemId, itemName, reason });
+            if (!pickupClaimed) {
+              // 未领药场景：不拦截，自动补记领取并提醒
+              if (pickupCode) claimPickup(pickupCode);
+              const stubBatch = `XC${Math.floor(100000 + Math.random() * 900000)}`;
+              setItems((arr) =>
+                arr.map((it) =>
+                  it.id === itemId
+                    ? { ...it, manufacturer: it.manufacturer ?? "现场扫码", batchNo: it.batchNo ?? stubBatch, scanCode: it.scanCode ?? stubBatch }
+                    : it,
+                ),
+              );
+              setAdhocConfirm(itemName);
+            } else {
+              setReplaceFailed({ itemId, itemName, reason: "tier3" });
+            }
           }}
           onVerified={(target) => {
             if (!target) {
