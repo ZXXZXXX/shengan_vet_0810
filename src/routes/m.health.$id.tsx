@@ -1077,7 +1077,7 @@ function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem
     {
       id: `d${day}-t1`,
       title: "氟尼辛葡甲胺注射液",
-      desc: "2ml / 次 · 肌肉注射",
+      desc: "2ml",
       status: "pending",
       needMed: true,
       manufacturer: "齐鲁动保",
@@ -1086,7 +1086,7 @@ function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem
     {
       id: `d${day}-t2`,
       title: "头孢噻呋钠",
-      desc: "1g / 次 · 肌肉注射",
+      desc: "1g",
       status: "pending",
       needMed: true,
       manufacturer: "瑞普生物",
