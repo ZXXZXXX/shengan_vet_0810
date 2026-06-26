@@ -1749,8 +1749,9 @@ function ChecklistDay({
           onCancel={() => setReplaceState(null)}
           onFailed={() => {
             const { itemId, itemName } = replaceState;
+            const reason: "tier3" | "unregistered" = pickupClaimed ? "tier3" : "unregistered";
             setReplaceState(null);
-            setReplaceFailed({ itemId, itemName });
+            setReplaceFailed({ itemId, itemName, reason });
           }}
           onVerified={(target) => {
             if (!target) {
