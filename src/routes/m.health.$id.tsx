@@ -1513,35 +1513,6 @@ function ChecklistDay({
         <div className="px-4 pb-4 text-caption text-text-tertiary">尚未开始，到时间后开放填写</div>
       ) : (
         <>
-          {pickupCode && (
-            <div className="px-4 pb-2">
-              {pickupClaimed || pickupDone ? (
-                <div
-                  className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
-                  style={{ backgroundColor: "color-mix(in oklab, var(--brand) 10%, transparent)", color: "var(--brand)" }}
-                >
-                  <span className="inline-flex items-center gap-1.5">
-                    <PackagePlus className="h-3.5 w-3.5" />
-                    已领药 · {pickupCode}
-                  </span>
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-              ) : (
-                <Link
-                  to="/m/health/$id/execute/$pickupId"
-                  params={{ id: workOrderId ?? pickupCode.replace(/^PK-?/i, "WO-"), pickupId: pickupCode }}
-                  className="flex items-center justify-between px-3 h-10 rounded-lg text-body-sm"
-                  style={{ backgroundColor: "color-mix(in oklab, #F59E0B 12%, transparent)", color: "#8A5A0A" }}
-                >
-                  <span className="inline-flex items-center gap-1.5">
-                    <PackagePlus className="h-3.5 w-3.5" />
-                    需领物 · 点击查看领物清单
-                  </span>
-                  <ChevronRight className="h-4 w-4 opacity-70" />
-                </Link>
-              )}
-            </div>
-          )}
 
           {/* 用药信息（只读，无勾选） */}
           {medItems.length > 0 && (
