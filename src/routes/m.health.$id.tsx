@@ -1530,29 +1530,28 @@ function ChecklistDay({
           {/* 用药信息（只读，无勾选） */}
           {medItems.length > 0 && (
             <div className={`px-4 pb-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
-              <div className="text-caption text-text-tertiary">用药信息</div>
+              <div className="flex items-center justify-between">
+                <div className="text-caption text-text-tertiary">用药信息</div>
+                {interactive && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const target =
+                        medItems.find((m) => !m.scanCode || m.scanCode === pickupCode) ?? medItems[0];
+                      if (!target) return;
+                      toast.message(pickupClaimed ? "需扫描药品二维码进行验证" : "扫码核验现场药品");
+                      setReplaceState({ itemId: target.id, itemName: target.title, attempt: 0 });
+                    }}
+                    className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
+                  >
+                    <Repeat className="h-3 w-3" /> 扫码核验
+                  </button>
+                )}
+              </div>
           {medItems.map((it) => {
-            const entries = scannedMap[it.title] ?? [];
-            const canReplace = interactive;
-
             return (
               <div key={it.id} className="rounded-xl border border-border bg-card px-3 py-2.5">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="text-body text-foreground flex-1 min-w-0">{it.title}</div>
-                  {canReplace && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        toast.message(pickupClaimed ? "需扫描药品二维码进行验证" : "扫码核验现场药品");
-                        setReplaceState({ itemId: it.id, itemName: it.title, attempt: 0 });
-                      }}
-                      className="shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
-
-                    >
-                      <Repeat className="h-3 w-3" /> {pickupClaimed ? "更换" : "扫码"}
-                    </button>
-                  )}
-                </div>
+                <div className="text-body text-foreground">{it.title}</div>
                 <div className="mt-1 flex items-center gap-2 text-caption">
                   <span className={pickupClaimed ? "text-primary font-medium" : "text-text-tertiary"}>
                     {pickupClaimed ? (it.manufacturer ?? "-") : "-"}
