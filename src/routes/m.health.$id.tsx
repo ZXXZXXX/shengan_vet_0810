@@ -1792,36 +1792,27 @@ function ChecklistDay({
           onFailed={() => {
             const { itemId, itemName } = replaceState;
             setReplaceState(null);
-            if (!pickupClaimed) {
-              // 未领药场景：不拦截，自动补记领取并提醒
-              if (pickupCode) claimPickup(pickupCode);
-              const stubBatch = `XC${Math.floor(100000 + Math.random() * 900000)}`;
-              setItems((arr) =>
-                arr.map((it) =>
-                  it.id === itemId
-                    ? { ...it, manufacturer: it.manufacturer ?? "现场扫码", batchNo: it.batchNo ?? stubBatch, scanCode: it.scanCode ?? stubBatch }
-                    : it,
-                ),
-              );
-              setAdhocConfirm(itemName);
-            } else {
-              setReplaceFailed({ itemId, itemName, reason: "tier3" });
-            }
+            // 情况二：无领取记录 → 弹窗提示，确认后自动领取
+            setReplaceFailed({ itemId, itemName, reason: "unregistered" });
           }}
           onVerified={(target) => {
             if (!target) {
               setReplaceState(null);
               return;
             }
-            const { itemId, itemName } = replaceState;
+            const { itemId, itemName, scenario } = replaceState;
             const wasUnclaimed = !pickupClaimed && !!pickupCode;
-            const associated = DRUG_ASSOCIATIONS[itemName] ?? [];
             setReplaceState(null);
 
             // 情况三：存在关联药品 → 询问是否一同录入
-            if (associated.length > 0 && pickupClaimed) {
-              setAssocConfirm({ itemId, itemName, target, associated });
-              return;
+            if (scenario === 3) {
+              const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
+              const fallback = medItems.find((m) => m.id !== itemId && !m.scanCode)?.title;
+              const associated = mapped.length > 0 ? mapped : fallback ? [fallback] : [];
+              if (associated.length > 0) {
+                setAssocConfirm({ itemId, itemName, target, associated });
+                return;
+              }
             }
 
             // 情况一：直接填入扫描结果
