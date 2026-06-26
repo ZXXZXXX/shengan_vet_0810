@@ -1427,7 +1427,7 @@ function ChecklistDay({
     { itemId: string; itemName: string; attempt: number } | null
   >(null);
   const [replaceFailed, setReplaceFailed] = useState<
-    { itemId: string; itemName: string } | null
+    { itemId: string; itemName: string; reason: "tier3" | "unregistered" } | null
   >(null);
   const [adhocConfirm, setAdhocConfirm] = useState<string | null>(null);
 
@@ -1749,8 +1749,9 @@ function ChecklistDay({
           onCancel={() => setReplaceState(null)}
           onFailed={() => {
             const { itemId, itemName } = replaceState;
+            const reason: "tier3" | "unregistered" = pickupClaimed ? "tier3" : "unregistered";
             setReplaceState(null);
-            setReplaceFailed({ itemId, itemName });
+            setReplaceFailed({ itemId, itemName, reason });
           }}
           onVerified={(target) => {
             if (!target) {
@@ -1787,7 +1788,9 @@ function ChecklistDay({
           <AlertDialogHeader>
             <AlertDialogTitle>扫码失败</AlertDialogTitle>
             <AlertDialogDescription>
-              该药品不在你的"三级库"内，请确认无误后再扫码。
+              {replaceFailed?.reason === "unregistered"
+                ? "该药品未录入系统，未查询到该二维码对应的药品信息，请确认药品来源后再扫码。"
+                : "该药品不在你的\"三级库\"内，请确认无误后再扫码。"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
