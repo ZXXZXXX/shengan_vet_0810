@@ -1811,14 +1811,12 @@ function ChecklistDay({
           >
             <div className="flex items-center gap-2">
               <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
-                <AlertTriangle className="h-4 w-4 text-primary" />
+                <PackagePlus className="h-4 w-4 text-primary" />
               </span>
-              <h3 className="text-card-title text-foreground">扫码失败</h3>
+              <h3 className="text-card-title text-foreground">暂无领取记录</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              {replaceFailed.reason === "unregistered"
-                ? "该药品当前未查询到领取记录，请确认是否已在药房办理领取后再扫码。"
-                : "该药品不在你的「三级库」内，请确认无误后再扫码。"}
+              该药品当前无领取记录，确认后将自动领取该药品。如未实际使用，请前往「药品记录」登记退料。
             </p>
             <div className="flex items-center gap-2">
               <button
@@ -1833,11 +1831,22 @@ function ChecklistDay({
                 onClick={() => {
                   const { itemId, itemName } = replaceFailed;
                   setReplaceFailed(null);
-                  setReplaceState({ itemId, itemName, attempt: 1 });
+                  if (pickupCode) claimPickup(pickupCode);
+                  const stubBatch = `XC${Math.floor(100000 + Math.random() * 900000)}`;
+                  setItems((arr) =>
+                    arr.map((it) =>
+                      it.id === itemId
+                        ? { ...it, manufacturer: it.manufacturer ?? "现场扫码", batchNo: it.batchNo ?? stubBatch, scanCode: it.scanCode ?? stubBatch }
+                        : it,
+                    ),
+                  );
+                  toast.success(`已自动领取 · ${itemName}`, {
+                    description: "如未实际使用，请前往药品记录登记退料",
+                  });
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
-                重新扫描
+                确认领取
               </button>
             </div>
           </div>
