@@ -1806,23 +1806,6 @@ function ChecklistDay({
         </AlertDialogContent>
       </AlertDialog>
 
-      {adhocScanOpen && (
-        <AdhocScanOverlay
-          onCancel={() => setAdhocScanOpen(false)}
-          onScanned={(drugName) => {
-            setAdhocScanOpen(false);
-            const pickup = pickupCode ? getPickup(pickupCode) : null;
-            const inPickup = pickup?.items.some((it) => it.name === drugName);
-            if (inPickup && pickupCode) {
-              claimPickup(pickupCode);
-              toast.success(`已核验 · ${drugName}`);
-            } else {
-              setAdhocConfirm(drugName);
-            }
-          }}
-        />
-      )}
-
       <AlertDialog open={!!adhocConfirm} onOpenChange={(o) => { if (!o) setAdhocConfirm(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
