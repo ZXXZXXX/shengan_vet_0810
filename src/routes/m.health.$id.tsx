@@ -1429,8 +1429,9 @@ function ChecklistDay({
   const evidenceAlbumRef = useRef<HTMLInputElement>(null);
 
   const scannedMap = useScannedCodes(pickupCode ?? "");
+  const scanAttemptRef = useRef(0);
   const [replaceState, setReplaceState] = useState<
-    { itemId: string; itemName: string; attempt: number } | null
+    { itemId: string; itemName: string; attempt: number; scenario: 1 | 2 | 3 } | null
   >(null);
   const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string; reason: "tier3" | "unregistered" } | null
