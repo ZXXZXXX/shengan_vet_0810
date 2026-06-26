@@ -337,9 +337,9 @@ export const PICKUP_HISTORY: Pickup[] = [
   },
 ];
 
-const KEY = "mp:pickup-claimed";
-const INVALIDATED_KEY = "mp:pickup-invalidated";
-const SCANNED_CODES_KEY = "mp:pickup-scanned-codes";
+const KEY = "mp:pickup-claimed:v2";
+const INVALIDATED_KEY = "mp:pickup-invalidated:v2";
+const SCANNED_CODES_KEY = "mp:pickup-scanned-codes:v2";
 const listeners = new Set<() => void>();
 
 function readSet(key: string): Set<string> {
