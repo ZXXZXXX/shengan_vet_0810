@@ -33,7 +33,7 @@ import { MAddMediaSheet } from "@/components/m-add-media-sheet";
 
 
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
-import { useClaimed, useScannedCodes, type ScannedEntry } from "@/lib/pickup-store";
+import { useClaimed, useScannedCodes, claimPickup, type ScannedEntry } from "@/lib/pickup-store";
 
 import {
   AlertDialog,
@@ -1429,6 +1429,7 @@ function ChecklistDay({
   const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string } | null
   >(null);
+  const [adhocConfirm, setAdhocConfirm] = useState<string | null>(null);
 
 
   // 领药完成后，用药任务自动标记完成（信息从领取单同步）
@@ -1531,7 +1532,7 @@ function ChecklistDay({
               <div className="text-caption text-text-tertiary">用药信息</div>
           {medItems.map((it) => {
             const entries = scannedMap[it.title] ?? [];
-            const canReplace = pickupClaimed && interactive;
+            const canReplace = interactive;
 
             return (
               <div key={it.id} className="rounded-xl border border-border bg-card px-3 py-2.5">
@@ -1541,13 +1542,13 @@ function ChecklistDay({
                     <button
                       type="button"
                       onClick={() => {
-                        toast.message("需扫描药品二维码进行验证");
+                        toast.message(pickupClaimed ? "需扫描药品二维码进行验证" : "扫码核验现场药品");
                         setReplaceState({ itemId: it.id, itemName: it.title, attempt: 0 });
                       }}
                       className="shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption text-primary border border-primary/30 active:bg-brand-subtle"
 
                     >
-                      <Repeat className="h-3 w-3" /> 更换
+                      <Repeat className="h-3 w-3" /> {pickupClaimed ? "更换" : "扫码"}
                     </button>
                   )}
                 </div>
@@ -1755,6 +1756,7 @@ function ChecklistDay({
               setReplaceState(null);
               return;
             }
+            const itemName = replaceState.itemName;
             setItems((arr) =>
               arr.map((it) =>
                 it.id === replaceState.itemId
@@ -1767,7 +1769,13 @@ function ChecklistDay({
                   : it,
               ),
             );
-            toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
+            const wasUnclaimed = !pickupClaimed && !!pickupCode;
+            if (wasUnclaimed && pickupCode) {
+              claimPickup(pickupCode);
+              setAdhocConfirm(itemName);
+            } else {
+              toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
+            }
             setReplaceState(null);
           }}
         />
@@ -1797,11 +1805,40 @@ function ChecklistDay({
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={!!adhocConfirm} onOpenChange={(o) => { if (!o) setAdhocConfirm(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>未查询到领取记录</AlertDialogTitle>
+            <AlertDialogDescription>
+              「{adhocConfirm}」当前未查询到本工单的领取记录。确认后系统将自动补记领取留痕，并将该药品状态更新为「已领取」。
+              <br />
+              如该药品后续未实际使用，请自行在「药品记录」中登记退料。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                const name = adhocConfirm;
+                setAdhocConfirm(null);
+                toast.success(`已补记领取留痕 · ${name ?? ""}`, {
+                  description: "如未实际使用，请前往药品记录登记退料",
+                });
+              }}
+            >
+              确认补记
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );
 
 }
+
+
+
 
 
 function ReplaceScanOverlay({
