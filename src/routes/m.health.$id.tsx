@@ -1822,7 +1822,6 @@ function ChecklistDay({
               onClick={() => {
                 const name = adhocConfirm;
                 setAdhocConfirm(null);
-                if (pickupCode) claimPickup(pickupCode);
                 toast.success(`已补记领取留痕 · ${name ?? ""}`, {
                   description: "如未实际使用，请前往药品记录登记退料",
                 });
