@@ -33,7 +33,7 @@ import { MAddMediaSheet } from "@/components/m-add-media-sheet";
 
 
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
-import { useClaimed, useScannedCodes, claimPickup, getPickup, type ScannedEntry } from "@/lib/pickup-store";
+import { useClaimed, useScannedCodes, claimPickup, type ScannedEntry } from "@/lib/pickup-store";
 
 import {
   AlertDialog,
