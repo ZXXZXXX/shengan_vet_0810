@@ -1906,7 +1906,7 @@ function AdhocScanOverlay({
   );
 }
 
-}
+
 
 
 function ReplaceScanOverlay({
