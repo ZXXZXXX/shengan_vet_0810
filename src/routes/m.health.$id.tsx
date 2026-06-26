@@ -1808,10 +1808,21 @@ function ChecklistDay({
               setReplaceState(null);
               return;
             }
-            const itemName = replaceState.itemName;
+            const { itemId, itemName } = replaceState;
+            const wasUnclaimed = !pickupClaimed && !!pickupCode;
+            const associated = DRUG_ASSOCIATIONS[itemName] ?? [];
+            setReplaceState(null);
+
+            // 情况三：存在关联药品 → 询问是否一同录入
+            if (associated.length > 0 && pickupClaimed) {
+              setAssocConfirm({ itemId, itemName, target, associated });
+              return;
+            }
+
+            // 情况一：直接填入扫描结果
             setItems((arr) =>
               arr.map((it) =>
-                it.id === replaceState.itemId
+                it.id === itemId
                   ? {
                       ...it,
                       manufacturer: target.manufacturer ?? it.manufacturer,
@@ -1821,14 +1832,12 @@ function ChecklistDay({
                   : it,
               ),
             );
-            const wasUnclaimed = !pickupClaimed && !!pickupCode;
             if (wasUnclaimed && pickupCode) {
               claimPickup(pickupCode);
               setAdhocConfirm(itemName);
             } else {
-              toast.success(`已更换为 ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
+              toast.success(`已录入 · ${target.manufacturer ?? ""} · ${target.batch ?? target.code}`);
             }
-            setReplaceState(null);
           }}
         />
       )}
