@@ -1430,6 +1430,12 @@ function ChecklistDay({
     { itemId: string; itemName: string; reason: "tier3" | "unregistered" } | null
   >(null);
   const [adhocConfirm, setAdhocConfirm] = useState<string | null>(null);
+  const [assocConfirm, setAssocConfirm] = useState<
+    { itemId: string; itemName: string; target: ScannedEntry; associated: string[] } | null
+  >(null);
+  const [assocMismatch, setAssocMismatch] = useState<
+    { itemName: string; missing: string[] } | null
+  >(null);
 
 
   // 领药完成后，用药任务自动标记完成（信息从领取单同步）
