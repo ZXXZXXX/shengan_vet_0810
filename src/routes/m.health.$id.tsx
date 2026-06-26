@@ -1431,8 +1431,9 @@ function ChecklistDay({
   const scannedMap = useScannedCodes(pickupCode ?? "");
   const scanAttemptRef = useRef(0);
   const [replaceState, setReplaceState] = useState<
-    { itemId: string; itemName: string; attempt: number; scenario: 1 | 2 | 3 } | null
+    { itemId: string; itemName: string; attempt: number; scenario: 1 | 2 | 3 | 4 } | null
   >(null);
+  const [usedAlert, setUsedAlert] = useState<string | null>(null);
   const [replaceFailed, setReplaceFailed] = useState<
     { itemId: string; itemName: string; reason: "tier3" | "unregistered" } | null
   >(null);
