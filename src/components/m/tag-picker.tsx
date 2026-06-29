@@ -125,10 +125,11 @@ export function TagPicker({
                 <button
                   key={t}
                   type="button"
-                  onClick={() => toggle(t)}
+                  disabled={active}
+                  onClick={() => { if (!active) toggle(t); }}
                   className={`inline-flex items-center h-9 px-4 rounded-full text-body-sm border transition-colors ${
                     active
-                      ? "bg-primary text-primary-foreground border-primary"
+                      ? "bg-surface-subtle text-text-tertiary border-border cursor-not-allowed"
                       : "bg-card text-foreground border-border active:border-primary"
                   }`}
                 >
