@@ -76,10 +76,10 @@ export function TagPicker({
 
   return (
     <div className="space-y-3">
-      {/* 已选（自定义，未在常用池中的） */}
-      {selected.filter((t) => !presets.includes(t)).length > 0 && (
+      {/* 已选标签 - 全部展示，方便确认与移除 */}
+      {selected.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {selected.filter((t) => !presets.includes(t)).map((t) => (
+          {selected.map((t) => (
             <span
               key={t}
               className="inline-flex items-center gap-1 h-8 pl-3 pr-1.5 rounded-full bg-primary text-primary-foreground text-body-sm shadow-[0_2px_6px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
