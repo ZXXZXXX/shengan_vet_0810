@@ -15,16 +15,8 @@ import {
 import { toast } from "sonner";
 
 import { MobileShell } from "@/components/mobile-shell";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+
 import {
   PICKUPS,
   useClaimed,
@@ -522,27 +514,37 @@ function DrugCard({
         </div>
       </div>
 
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>组合用药确认</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Sheet open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <SheetContent
+          side="bottom"
+          className="m-scope p-0 rounded-t-2xl border-0 bg-surface-2"
+        >
+          <div className="px-5 pt-5 pb-3 text-center">
+            <div className="text-card-title font-semibold text-foreground">组合用药确认</div>
+            <p className="mt-2 text-body text-text-secondary leading-relaxed">
               是否关联其他药品组合用药？该功能仅适用于需配药的场景，请确认后再扫描。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmOpen(false)}>取消</AlertDialogCancel>
-            <AlertDialogAction
+            </p>
+          </div>
+          <div className="px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] space-y-2">
+            <button
               onClick={() => {
                 onScanMore();
                 setConfirmOpen(false);
               }}
+              className="w-full h-12 rounded-xl bg-primary text-primary-foreground text-body font-medium active:opacity-90"
             >
               确认扫描
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </button>
+            <button
+              onClick={() => setConfirmOpen(false)}
+              className="w-full h-12 rounded-xl bg-card text-foreground text-body font-medium active:opacity-90"
+            >
+              取消
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
     </>
   );
 }
