@@ -45,7 +45,7 @@ export function TagPicker({
   );
 
   const exactExists = pool.some((t) => t.toLowerCase() === lower);
-  const canCreate = !!kw && !exactExists;
+  const canCreate = !disableCreate && !!kw && !exactExists;
 
   const select = (t: string) => {
     if (singleSelect) {
