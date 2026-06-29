@@ -1832,6 +1832,7 @@ function ChecklistDay({
           code: targetItem?.scanCode ?? `SC${Math.floor(100000 + Math.random() * 900000)}`,
           manufacturer: targetItem?.manufacturer ?? "齐鲁动保",
           batch: targetItem?.batchNo ?? `L${Math.floor(20260000 + Math.random() * 10000)}`,
+          qty: 1,
         };
         return (
         <ReplaceScanOverlay
