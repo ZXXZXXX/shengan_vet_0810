@@ -47,6 +47,7 @@ import { Route as MScanRouteImport } from './routes/m.scan'
 import { Route as MReturnReportRouteImport } from './routes/m.return-report'
 import { Route as MRespondRouteImport } from './routes/m.respond'
 import { Route as MReportRouteImport } from './routes/m.report'
+import { Route as MPrepRouteImport } from './routes/m.prep'
 import { Route as MNotificationsRouteImport } from './routes/m.notifications'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLossReportRouteImport } from './routes/m.loss-report'
@@ -268,6 +269,11 @@ const MReportRoute = MReportRouteImport.update({
   path: '/report',
   getParentRoute: () => MRoute,
 } as any)
+const MPrepRoute = MPrepRouteImport.update({
+  id: '/prep',
+  path: '/prep',
+  getParentRoute: () => MRoute,
+} as any)
 const MNotificationsRoute = MNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -452,6 +458,7 @@ export interface FileRoutesByFullPath {
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
+  '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
@@ -517,6 +524,7 @@ export interface FileRoutesByTo {
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
+  '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
@@ -588,6 +596,7 @@ export interface FileRoutesById {
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
   '/m/notifications': typeof MNotificationsRoute
+  '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
   '/m/respond': typeof MRespondRoute
   '/m/return-report': typeof MReturnReportRoute
@@ -660,6 +669,7 @@ export interface FileRouteTypes {
     | '/m/loss-report'
     | '/m/me'
     | '/m/notifications'
+    | '/m/prep'
     | '/m/report'
     | '/m/respond'
     | '/m/return-report'
@@ -725,6 +735,7 @@ export interface FileRouteTypes {
     | '/m/loss-report'
     | '/m/me'
     | '/m/notifications'
+    | '/m/prep'
     | '/m/report'
     | '/m/respond'
     | '/m/return-report'
@@ -795,6 +806,7 @@ export interface FileRouteTypes {
     | '/m/loss-report'
     | '/m/me'
     | '/m/notifications'
+    | '/m/prep'
     | '/m/report'
     | '/m/respond'
     | '/m/return-report'
@@ -1117,6 +1129,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MReportRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/prep': {
+      id: '/m/prep'
+      path: '/prep'
+      fullPath: '/m/prep'
+      preLoaderRoute: typeof MPrepRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/notifications': {
       id: '/m/notifications'
       path: '/notifications'
@@ -1375,6 +1394,7 @@ interface MRouteChildren {
   MLossReportRoute: typeof MLossReportRoute
   MMeRoute: typeof MMeRoute
   MNotificationsRoute: typeof MNotificationsRoute
+  MPrepRoute: typeof MPrepRoute
   MReportRoute: typeof MReportRoute
   MRespondRoute: typeof MRespondRoute
   MReturnReportRoute: typeof MReturnReportRoute
@@ -1408,6 +1428,7 @@ const MRouteChildren: MRouteChildren = {
   MLossReportRoute: MLossReportRoute,
   MMeRoute: MMeRoute,
   MNotificationsRoute: MNotificationsRoute,
+  MPrepRoute: MPrepRoute,
   MReportRoute: MReportRoute,
   MRespondRoute: MRespondRoute,
   MReturnReportRoute: MReturnReportRoute,
