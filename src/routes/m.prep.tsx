@@ -412,30 +412,29 @@ function PrepPage() {
         )}
       </div>
 
-      <div className="px-4 pt-3 pb-36">
+      <div className="px-4 pt-4 pb-36 bg-card flex-1">
         {/* 已领药品 */}
-        <div className="mt-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-body-sm font-medium text-foreground inline-flex items-baseline gap-1.5">
-              已领药品
-              <span className="text-caption text-text-tertiary font-normal">
-                共 {totalCount} 项
-              </span>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Package className="h-4 w-4 text-primary" />
+              <span className="text-body font-medium text-foreground">已领药品</span>
             </div>
-            {groups.length > 0 && (
-              <button
-                onClick={() => setGroups([])}
-                className="text-caption text-text-tertiary active:opacity-70"
-              >
-                清空
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              <span className="text-caption text-text-tertiary">共 {totalCount} 项</span>
+              {groups.length > 0 && (
+                <button
+                  onClick={() => setGroups([])}
+                  className="text-caption text-text-tertiary active:opacity-70"
+                >
+                  清空
+                </button>
+              )}
+            </div>
           </div>
 
-
-
           {groups.length === 0 ? (
-            <div className="rounded-xl bg-card border border-dashed border-border p-8 flex flex-col items-center text-center">
+            <div className="rounded-xl border border-dashed border-border p-8 flex flex-col items-center text-center">
               <Inbox className="h-8 w-8 text-text-tertiary/60 mb-2" />
               <div className="text-caption text-text-tertiary">
                 点击下方按钮扫描药品二维码
@@ -455,30 +454,30 @@ function PrepPage() {
             </div>
           )}
         </div>
+      </div>
 
-        {/* 底部吸底操作栏 */}
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-40">
-          <div className="flex gap-3">
-            <button
-              onClick={handleScan}
-              className="flex-1 h-11 rounded-lg border border-primary text-primary text-body-sm font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
-            >
-              <ScanLine className="h-4 w-4" />
-              扫码领药
-            </button>
-            <button
-              onClick={() => {
-                toast.success(`已生成领药记录（${totalCount} 项）`);
-                setGroups([]);
-                setRequirements([]);
-              }}
-              disabled={totalCount === 0}
-              className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              完成领药
-              {totalCount > 0 && `（${totalCount} 项）`}
-            </button>
-          </div>
+      {/* 底部吸底操作栏 */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-40">
+        <div className="flex gap-3">
+          <button
+            onClick={handleScan}
+            className="flex-1 h-11 rounded-lg border border-primary text-primary text-body-sm font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
+          >
+            <ScanLine className="h-4 w-4" />
+            扫码领药
+          </button>
+          <button
+            onClick={() => {
+              toast.success(`已生成领药记录（${totalCount} 项）`);
+              setGroups([]);
+              setRequirements([]);
+            }}
+            disabled={totalCount === 0}
+            className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            完成领药
+            {totalCount > 0 && `（${totalCount} 项）`}
+          </button>
         </div>
       </div>
 
