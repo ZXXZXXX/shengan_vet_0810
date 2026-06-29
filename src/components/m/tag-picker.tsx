@@ -163,7 +163,7 @@ export function TagPicker({
                 autoFocus
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder={disableCreate ? "输入关键词搜索" : "搜索或直接输入新症状"}
+                placeholder={disableCreate ? "输入关键词搜索" : "输入关键词搜索，或直接创建"}
                 className="w-full h-10 pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
               />
             </div>
