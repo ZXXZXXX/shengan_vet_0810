@@ -392,15 +392,25 @@ function PrepPage() {
                 共 {totalCount} 项
               </span>
             </div>
-            {groups.length > 0 && (
+            <div className="flex items-center gap-3">
               <button
-                onClick={() => setGroups([])}
-                className="text-caption text-text-tertiary active:opacity-70"
+                onClick={() => setAggOpen(true)}
+                className="h-8 px-2.5 rounded-md text-caption text-primary inline-flex items-center gap-1 border border-primary/40 active:bg-brand-subtle"
               >
-                清空
+                <ClipboardList className="h-3.5 w-3.5" />
+                统计药品清单
               </button>
-            )}
+              {groups.length > 0 && (
+                <button
+                  onClick={() => setGroups([])}
+                  className="text-caption text-text-tertiary active:opacity-70"
+                >
+                  清空
+                </button>
+              )}
+            </div>
           </div>
+
 
           {groups.length === 0 ? (
             <div className="rounded-xl bg-card border border-dashed border-border p-8 flex flex-col items-center text-center">
