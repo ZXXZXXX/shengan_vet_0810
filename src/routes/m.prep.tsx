@@ -21,7 +21,6 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import {
   PICKUPS,
-  useClaimed,
   genScanCode,
   genBatch,
 } from "@/lib/pickup-store";
