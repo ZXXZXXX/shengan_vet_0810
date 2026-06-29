@@ -472,8 +472,8 @@ function TaskDetailPage() {
 
         <div className="px-4 pt-3 space-y-3">
           {tab === "report" && (
-            isPlatformPostpartum && o.status === "待诊断"
-              ? <PostpartumReportNotice id={id} />
+            isPlatformPostpartum
+              ? <EmptyTab label="平台下发工单，无上报记录" />
               : isPlatformIssued
                 ? <EmptyTab label="平台下发工单，无上报记录" />
                 : <ReportTab isLoss={isLoss} />
@@ -848,23 +848,6 @@ function PersonChip({ name }: { name: string }) {
   );
 }
 
-// === 产后护理 · 待诊断上报提示 ===
-function PostpartumReportNotice({ id }: { id: string }) {
-  const calvedAt: Record<string, string> = {
-    "PP-2601": "2026/05/25 06:42",
-    "PP-2602": "2026/05/25 14:08",
-  };
-  const time = calvedAt[id] ?? "2026/05/25 06:42";
-  return (
-    <div className="rounded-xl bg-card border border-border p-4">
-      <p className="text-body-sm text-foreground leading-relaxed">
-        牛只在 <span className="font-medium">{time}</span> 产犊，请前往诊断是否需要进行特殊的产后护理。
-      </p>
-    </div>
-  );
-}
-
-// === 上报记录 ===
 function EmptyTab({ label }: { label: string }) {
   return (
     <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
