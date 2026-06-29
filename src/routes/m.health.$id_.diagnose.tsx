@@ -29,8 +29,8 @@ import {
   Package,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { TransferBarnControl } from "@/components/m/transfer-barn-control";
-import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+
+
 import { TagPicker } from "@/components/m/tag-picker";
 import { Switch } from "@/components/ui/switch";
 import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
