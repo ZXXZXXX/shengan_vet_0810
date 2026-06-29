@@ -122,6 +122,7 @@ type Entry = {
 type Group = {
   id: string;
   entries: Entry[];
+  combo?: boolean; // 用户主动开启的组合用药模式
 };
 
 type Requirement = {
