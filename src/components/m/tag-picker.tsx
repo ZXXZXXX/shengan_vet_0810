@@ -9,6 +9,7 @@ export function TagPicker({
   hotLabel = "常用标签",
   maxHot = 8,
   singleSelect = false,
+  disableCreate = false,
 }: {
   selected: string[];
   onChange: (next: string[]) => void;
@@ -17,6 +18,7 @@ export function TagPicker({
   hotLabel?: string;
   maxHot?: number;
   singleSelect?: boolean;
+  disableCreate?: boolean;
 }) {
   const [q, setQ] = useState("");
 
@@ -43,7 +45,7 @@ export function TagPicker({
   );
 
   const exactExists = pool.some((t) => t.toLowerCase() === lower);
-  const canCreate = !!kw && !exactExists;
+  const canCreate = !disableCreate && !!kw && !exactExists;
 
   const select = (t: string) => {
     if (singleSelect) {

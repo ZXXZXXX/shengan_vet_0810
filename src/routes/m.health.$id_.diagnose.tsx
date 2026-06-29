@@ -167,6 +167,9 @@ const drugStock: Record<string, { qty: number; unit: string }> = {
   "50% 葡萄糖": { qty: 2000, unit: "ml" },
   "口服补液盐": { qty: 30, unit: "包" },
   "氟尼辛葡甲胺": { qty: 200, unit: "ml" },
+  "5% 盐酸头孢噻呋（畜可健）": { qty: 600, unit: "ml" },
+  "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）": { qty: 400, unit: "ml" },
+  "氟尼辛葡甲胺（福欣安）": { qty: 600, unit: "ml" },
 };
 
 // 用药/疾病规则限制（提交时触发二次确认）
@@ -212,6 +215,54 @@ type Prescription = {
   therapyMethod?: string;
   frequency?: string;
   desc?: string;
+  // 剂量换算方式：默认按 500kg 体重基准换算
+  dosePer?: "100kg" | "500kg" | "fixed";
+};
+
+// 体重相关剂量计算（mL/g 等）。fixed 表示单次固定剂量
+function computePerDose(r: Prescription, w: number): number {
+  const base = parseFloat(r.dose || "0");
+  if (Number.isNaN(base) || base <= 0) return 0;
+  if (r.dosePer === "fixed") return base;
+  if (r.dosePer === "100kg") return Math.round(base * (w / 100) * 10) / 10;
+  return Math.round(base * (w / 500) * 10) / 10;
+}
+
+// === 产后护理：固定症状池、固定结论、固定标准处方 ===
+const POSTPARTUM_SYMPTOMS = [
+  "产犊难易度 ≥ 3",
+  "产道损伤等级 ≥ 2",
+  "产犊数量 ≥ 2",
+  "犊牛体重 ≥ 45kg",
+  "犊牛为「死胎」",
+  "早产",
+  "双胎或以上",
+  "胎衣不下",
+  "其他",
+];
+const POSTPARTUM_DISEASE: Disease = {
+  name: "产后高危",
+  symptoms: POSTPARTUM_SYMPTOMS,
+  plans: [
+    {
+      id: "pp-1",
+      name: "方案 A · 5% 头孢噻呋 + 氟尼辛",
+      desc: "一般产后高危预防性治疗",
+      items: [
+        { id: "r1", kind: "drug", name: "5% 盐酸头孢噻呋（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "4.4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+        { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+      ],
+    },
+    {
+      id: "pp-2",
+      name: "方案 B · 10% 头孢噻呋 + 氟尼辛",
+      desc: "感染风险较高 / 体重较大牛只",
+      items: [
+        { id: "r1", kind: "drug", name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "1" },
+        { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+      ],
+    },
+  ],
 };
 
 // 药品库（用于编辑弹层中搜索匹配）
@@ -227,12 +278,16 @@ const drugLibrary: DrugItem[] = [
   { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射", "静脉注射"] },
   { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支", recommendedUse: "静脉注射", defaultUnit: "ml", allowedUses: ["静脉注射", "肌肉注射"] },
   { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射", "静脉注射"] },
+  { name: "5% 盐酸头孢噻呋（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射"] },
+  { name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射"] },
+  { name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", recommendedUse: "静脉推注", defaultUnit: "ml", allowedUses: ["静脉推注", "静脉注射", "肌肉注射"] },
 ];
 
 // 使用方式枚举
 const useMethods = [
   "肌肉注射",
   "静脉注射",
+  "静脉推注",
   "皮下注射",
   "乳房灌注",
   "口服",
@@ -263,8 +318,13 @@ function DiagnosePage() {
   const { id } = useParams({ from: "/m/health/$id_/diagnose" });
   const navigate = useNavigate();
 
-  // 症状（带入上报症状，可加减）
-  const [symptoms, setSymptoms] = useState<string[]>(reportedSymptoms);
+  // 工单类型判断
+  const isPostpartum = id.toUpperCase().startsWith("PP");
+  const effectiveSymptomLibrary = isPostpartum ? POSTPARTUM_SYMPTOMS : symptomLibrary;
+  const effectiveDiseaseLibrary = isPostpartum ? [POSTPARTUM_DISEASE] : diseaseLibrary;
+
+  // 症状（带入上报症状，可加减；产后护理无上报症状）
+  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum ? [] : reportedSymptoms));
   const [symptomInput, setSymptomInput] = useState("");
 
   // 疾病
@@ -354,23 +414,34 @@ function DiagnosePage() {
   // 按匹配症状数排序的候选疾病
   const rankedDiseases = useMemo(() => {
     const kw = diseaseQuery.trim().toLowerCase();
-    return diseaseLibrary
+    return effectiveDiseaseLibrary
       .map((d) => ({
         ...d,
         matched: d.symptoms.filter((s) => symptoms.includes(s)).length,
       }))
       .filter((d) => !kw || d.name.toLowerCase().includes(kw))
       .sort((a, b) => b.matched - a.matched);
-  }, [diseaseQuery, symptoms]);
+  }, [diseaseQuery, symptoms, effectiveDiseaseLibrary]);
 
   // 候选症状（去除已选）
   const symptomSuggestions = useMemo(() => {
     const kw = symptomInput.trim().toLowerCase();
-    return symptomLibrary
+    return effectiveSymptomLibrary
       .filter((s) => !symptoms.includes(s))
       .filter((s) => !kw || s.toLowerCase().includes(kw))
       .slice(0, 8);
-  }, [symptomInput, symptoms]);
+  }, [symptomInput, symptoms, effectiveSymptomLibrary]);
+
+  // 产后护理工单：自动预填诊断结论（仅一个可选）
+  useEffect(() => {
+    if (!isPostpartum) return;
+    if (disease) return;
+    const d = POSTPARTUM_DISEASE;
+    setDisease(d.name);
+    setDiseaseQuery(d.name);
+    setStdPlans(d.plans.map((p) => ({ ...p, items: p.items.map((it) => ({ ...it })) })));
+    setSelectedPlanId(d.plans[0]?.id ?? "");
+  }, [isPostpartum, disease]);
 
   const addSymptom = (s: string) => {
     if (!s || symptoms.includes(s)) return;
@@ -449,13 +520,20 @@ function DiagnosePage() {
       return;
     }
     const temp = parseFloat(temperature);
-    if (!temperature.trim() || Number.isNaN(temp)) {
-      toast.error("请填写牛只体温");
-      return;
-    }
-    if (temp < 30 || temp > 45) {
-      toast.error("体温应在 30 ~ 45 ℃ 之间");
-      return;
+    if (!isPostpartum) {
+      if (!temperature.trim() || Number.isNaN(temp)) {
+        toast.error("请填写牛只体温");
+        return;
+      }
+      if (temp < 30 || temp > 45) {
+        toast.error("体温应在 30 ~ 45 ℃ 之间");
+        return;
+      }
+    } else if (temperature.trim()) {
+      if (Number.isNaN(temp) || temp < 30 || temp > 45) {
+        toast.error("体温应在 30 ~ 45 ℃ 之间");
+        return;
+      }
     }
     if (ketone.trim()) {
       const k = parseFloat(ketone);
@@ -502,9 +580,8 @@ function DiagnosePage() {
     const shortages: Shortage[] = [];
     const need: Record<string, { qty: number; unit: string }> = {};
     for (const r of allDrugs) {
-      const base = parseFloat(r.dose || "0");
-      if (Number.isNaN(base) || base <= 0) continue;
-      const perDose = Math.round(base * (w / 500) * 10) / 10;
+      const perDose = computePerDose(r, w);
+      if (perDose <= 0) continue;
       const times = parseFloat(r.timesPerDay || "1") || 1;
       const days = parseFloat(r.days || "1") || 1;
       const total = Math.round(perDose * times * days * 10) / 10;
@@ -548,9 +625,8 @@ function DiagnosePage() {
       });
     }
     for (const r of allDrugs) {
-      const base = parseFloat(r.dose || "0");
-      if (Number.isNaN(base) || base <= 0) continue;
-      const perDose = Math.round(base * (w / 500) * 10) / 10;
+      const perDose = computePerDose(r, w);
+      if (perDose <= 0) continue;
       const times = parseFloat(r.timesPerDay || "1") || 1;
       const days = parseFloat(r.days || "1") || 1;
       const addDose = Math.round(perDose * times * days * 10) / 10;
@@ -560,7 +636,7 @@ function DiagnosePage() {
       const unit = hist.unit;
       const nextDose = Math.round((hist.totalDose + addDose) * 10) / 10;
       const nextCount = hist.count + addCount;
-      const doseCap = Math.round(RULES.drugTotalDoseFactorMax * (perDose || base) * 10) / 10;
+      const doseCap = Math.round(RULES.drugTotalDoseFactorMax * perDose * 10) / 10;
       if (nextDose > doseCap) {
         violations.push({
           kind: "drug",
@@ -605,7 +681,9 @@ function DiagnosePage() {
         <div className="px-4 pt-2 pb-1">
           <div className="flex items-center gap-1.5 text-caption text-primary">
             <Sparkles className="h-3 w-3" />
-            已自动将上报信息填写至下方，方便编辑更改
+            {isPostpartum
+              ? "平台下发的产后护理工单，请勾选高危因素并核对治疗方案"
+              : "已自动将上报信息填写至下方，方便编辑更改"}
           </div>
         </div>
 
@@ -618,22 +696,26 @@ function DiagnosePage() {
 
           {/* === 症状 === */}
           <Section
-            title="症状"
+            title={isPostpartum ? "高危因素" : "症状"}
             extra={<span className="text-caption text-text-tertiary">{symptoms.length} 个</span>}
           >
             <TagPicker
               selected={symptoms}
               onChange={setSymptoms}
-              presets={symptomLibrary}
+              presets={effectiveSymptomLibrary}
+              disableCreate={isPostpartum}
+              placeholder={isPostpartum ? "搜索高危因素" : "输入关键词搜索，或创建新标签"}
+              hotLabel={isPostpartum ? "可选高危因素" : "常用标签"}
+              maxHot={isPostpartum ? POSTPARTUM_SYMPTOMS.length : 8}
             />
           </Section>
 
           {/* === 体征数据 === */}
-          <Section title="体征数据">
+          <Section title={isPostpartum ? "体征数据（选填）" : "体征数据"}>
             <div className="grid grid-cols-2 gap-2">
               <label className="block">
                 <div className="text-caption text-text-tertiary mb-1">
-                  体温 <span className="text-[var(--state-danger)]">*</span>
+                  体温 {isPostpartum ? <span className="text-text-tertiary">(选填)</span> : <span className="text-[var(--state-danger)]">*</span>}
                 </div>
                 <div className="relative">
                   <input
@@ -922,9 +1004,15 @@ function DiagnosePage() {
                         const unit = r.doseUnit || "ml";
                         const baseDose = parseFloat(r.dose || "");
                         const w = cattleWeight ?? 0;
+                        const isFixed = r.dosePer === "fixed";
+                        const basisKg = r.dosePer === "100kg" ? 100 : 500;
                         const computedDose =
-                          !isTherapy && !Number.isNaN(baseDose) && w > 0
-                            ? Math.round(baseDose * (w / 500) * 10) / 10
+                          !isTherapy && !Number.isNaN(baseDose)
+                            ? isFixed
+                              ? baseDose
+                              : w > 0
+                                ? computePerDose(r, w)
+                                : null
                             : null;
                         return (
                           <li
@@ -948,14 +1036,16 @@ function DiagnosePage() {
                             <div className="text-caption text-text-tertiary mt-1">
                               {isTherapy
                                 ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                : [r.spec, r.use, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
+                                : [r.spec, r.use, r.timesPerDay && `${r.timesPerDay} 次 / 天`, r.days && `连用 ${r.days} 天`].filter(Boolean).join(" · ")}
                             </div>
                             {!isTherapy && (
                               <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
                                 <Sparkles className="h-3 w-3" />
-                                {computedDose !== null
-                                  ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
-                                  : `基准 ${r.dose}${unit} / 次 @ 500kg，请选择体重`}
+                                {isFixed
+                                  ? `固定剂量 ${baseDose}${unit} / 次`
+                                  : computedDose !== null
+                                    ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} / ${basisKg}kg）`
+                                    : `基准 ${r.dose}${unit} / ${basisKg}kg，请选择体重`}
                               </div>
                             )}
                           </li>
