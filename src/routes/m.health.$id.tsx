@@ -311,7 +311,7 @@ function TaskDetailPage() {
           </div>
           <div className="flex items-start gap-1.5 text-caption">
             <Tag className="h-3.5 w-3.5 text-text-tertiary mt-0.5 shrink-0" />
-            <span className="text-text-tertiary shrink-0">牛只编号</span>
+            <span className="text-text-tertiary shrink-0">{isPlatformImmune && !isSingle ? "执行范围" : "牛只编号"}</span>
             {isPlatformImmune && !isSingle ? (
               <span className="text-body-sm text-foreground">{o.target}</span>
             ) : (
