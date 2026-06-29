@@ -312,132 +312,166 @@ function PrepPage() {
 
 function DrugCard({
   group,
+  onScanMore,
   onUpdateQty,
   onRemove,
 }: {
   group: Group;
+  onScanMore: () => void;
   onUpdateQty: (ei: number, qty: number) => void;
   onRemove: (ei: number) => void;
 }) {
   const { drug, entries } = group;
   const totalQty = entries.reduce((s, e) => s + e.qty, 0);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // 按厂商汇总已扫数量
   const byMfr = new Map<string, number>();
   entries.forEach((e) => byMfr.set(e.manufacturer, (byMfr.get(e.manufacturer) ?? 0) + e.qty));
 
   return (
-    <div
-      className="rounded-xl bg-card border p-3.5"
-      style={{ borderColor: "#B8E0C2" }}
-    >
-      {/* 顶部：名称 */}
-      <div className="flex items-center gap-2">
-        <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-        <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
-          {drug.name}
+    <>
+      <div
+        className="rounded-xl bg-card border p-3.5"
+        style={{ borderColor: "#B8E0C2" }}
+      >
+        {/* 顶部：名称 + 卡片扫码入口 */}
+        <div className="flex items-center gap-2">
+          <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+          <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
+            {drug.name}
+          </div>
+          <button
+            onClick={() => setConfirmOpen(true)}
+            className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0 active:opacity-80"
+            aria-label="继续扫描"
+          >
+            <ScanLine className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* 规格 · 扫码单位 */}
+        <div className="mt-2 text-caption text-text-tertiary">
+          规格 <span className="text-text-secondary">{drug.spec}</span>
+          <span className="mx-2 text-border">·</span>
+          扫码单位 <span className="text-text-secondary">{drug.scanUnit}</span>
+        </div>
+
+        {/* 已扫数量 */}
+        <div className="mt-1 text-caption text-text-tertiary">
+          已扫 <span className="text-foreground font-medium">{totalQty}</span> {drug.countUnit}
+        </div>
+
+        {/* 已扫厂商 + 混用标签 */}
+        <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2 gap-y-1">
+          <span>厂商</span>
+          {Array.from(byMfr.entries()).map(([mfr, qty], i) => (
+            <span key={mfr} className="text-text-secondary">
+              {mfr} {qty}{drug.countUnit}
+              {i < byMfr.size - 1 && <span className="mx-1 text-border">·</span>}
+            </span>
+          ))}
+          {drug.allowMix ? (
+            <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-surface-subtle text-text-secondary border border-border">
+              允许混用
+            </span>
+          ) : (
+            <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]">
+              不可混用
+            </span>
+          )}
+        </div>
+
+        {/* 虚线分隔 */}
+        <div className="my-3 border-t border-dashed border-border" />
+
+        {/* 已领 总数 */}
+        <div className="text-caption text-primary text-right font-medium">
+          已领 {totalQty} {drug.countUnit}
+        </div>
+
+        {/* 扫描明细 */}
+        <div className="mt-2 space-y-2.5">
+          {entries.map((e, ei) => (
+            <div key={`${e.code}-${ei}`} className="flex items-center gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="text-caption text-text-secondary font-mono truncate">
+                  {e.code}
+                </div>
+                <div className="text-caption mt-0.5">
+                  <span className="text-primary">{e.manufacturer}</span>
+                  <span className="mx-2 text-border">·</span>
+                  <span className="text-text-tertiary font-mono">{e.batch}</span>
+                </div>
+                {!drug.unitScannable && e.packSize && (
+                  <div className="text-caption text-text-tertiary mt-0.5">
+                    包内剩余 <span className="text-text-secondary">{e.packSize - e.qty}</span>
+                    {" / "}
+                    <span className="text-text-secondary">{e.packSize}</span> {drug.countUnit}
+                  </div>
+                )}
+              </div>
+
+              {drug.unitScannable ? (
+                <div className="text-caption text-text-secondary shrink-0">
+                  ×{e.qty} {drug.countUnit}
+                </div>
+              ) : (
+                <div className="inline-flex items-center border border-border rounded-md shrink-0 h-8">
+                  <button
+                    onClick={() => onUpdateQty(ei, e.qty - 1)}
+                    disabled={e.qty <= 1}
+                    className="h-8 w-8 inline-flex items-center justify-center text-text-secondary disabled:opacity-30 active:bg-surface-subtle"
+                    aria-label="减少"
+                  >
+                    <Minus className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="w-8 text-center text-body-sm tabular-nums">{e.qty}</div>
+                  <button
+                    onClick={() => onUpdateQty(ei, e.qty + 1)}
+                    disabled={e.packSize ? e.qty >= e.packSize : false}
+                    className="h-8 w-8 inline-flex items-center justify-center text-text-secondary disabled:opacity-30 active:bg-surface-subtle"
+                    aria-label="增加"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+
+              <button
+                onClick={() => onRemove(ei)}
+                className="h-8 w-6 inline-flex items-center justify-center text-text-tertiary active:text-foreground shrink-0"
+                aria-label="移除"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* 规格 · 扫码单位 */}
-      <div className="mt-2 text-caption text-text-tertiary">
-        规格 <span className="text-text-secondary">{drug.spec}</span>
-        <span className="mx-2 text-border">·</span>
-        扫码单位 <span className="text-text-secondary">{drug.scanUnit}</span>
-      </div>
-
-      {/* 已扫数量 */}
-      <div className="mt-1 text-caption text-text-tertiary">
-        已扫 <span className="text-foreground font-medium">{totalQty}</span> {drug.countUnit}
-      </div>
-
-      {/* 已扫厂商 + 混用标签 */}
-      <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2 gap-y-1">
-        <span>厂商</span>
-        {Array.from(byMfr.entries()).map(([mfr, qty], i) => (
-          <span key={mfr} className="text-text-secondary">
-            {mfr} {qty}{drug.countUnit}
-            {i < byMfr.size - 1 && <span className="mx-1 text-border">·</span>}
-          </span>
-        ))}
-        {drug.allowMix ? (
-          <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-surface-subtle text-text-secondary border border-border">
-            允许混用
-          </span>
-        ) : (
-          <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]">
-            不可混用
-          </span>
-        )}
-      </div>
-
-      {/* 虚线分隔 */}
-      <div className="my-3 border-t border-dashed border-border" />
-
-      {/* 已领 总数 */}
-      <div className="text-caption text-primary text-right font-medium">
-        已领 {totalQty} {drug.countUnit}
-      </div>
-
-      {/* 扫描明细 */}
-      <div className="mt-2 space-y-2.5">
-        {entries.map((e, ei) => (
-          <div key={`${e.code}-${ei}`} className="flex items-center gap-2">
-            <div className="flex-1 min-w-0">
-              <div className="text-caption text-text-secondary font-mono truncate">
-                {e.code}
-              </div>
-              <div className="text-caption mt-0.5">
-                <span className="text-primary">{e.manufacturer}</span>
-                <span className="mx-2 text-border">·</span>
-                <span className="text-text-tertiary font-mono">{e.batch}</span>
-              </div>
-              {!drug.unitScannable && e.packSize && (
-                <div className="text-caption text-text-tertiary mt-0.5">
-                  包内剩余 <span className="text-text-secondary">{e.packSize - e.qty}</span>
-                  {" / "}
-                  <span className="text-text-secondary">{e.packSize}</span> {drug.countUnit}
-                </div>
-              )}
-            </div>
-
-            {drug.unitScannable ? (
-              <div className="text-caption text-text-secondary shrink-0">
-                ×{e.qty} {drug.countUnit}
-              </div>
-            ) : (
-              <div className="inline-flex items-center border border-border rounded-md shrink-0 h-8">
-                <button
-                  onClick={() => onUpdateQty(ei, e.qty - 1)}
-                  disabled={e.qty <= 1}
-                  className="h-8 w-8 inline-flex items-center justify-center text-text-secondary disabled:opacity-30 active:bg-surface-subtle"
-                  aria-label="减少"
-                >
-                  <Minus className="h-3.5 w-3.5" />
-                </button>
-                <div className="w-8 text-center text-body-sm tabular-nums">{e.qty}</div>
-                <button
-                  onClick={() => onUpdateQty(ei, e.qty + 1)}
-                  disabled={e.packSize ? e.qty >= e.packSize : false}
-                  className="h-8 w-8 inline-flex items-center justify-center text-text-secondary disabled:opacity-30 active:bg-surface-subtle"
-                  aria-label="增加"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            )}
-
-            <button
-              onClick={() => onRemove(ei)}
-              className="h-8 w-6 inline-flex items-center justify-center text-text-tertiary active:text-foreground shrink-0"
-              aria-label="移除"
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>组合用药确认</AlertDialogTitle>
+            <AlertDialogDescription>
+              是否关联其他药品组合用药？该功能仅适用于需配药的场景，请确认后再扫描。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmOpen(false)}>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onScanMore();
+                setConfirmOpen(false);
+              }}
             >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
+              确认扫描
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
