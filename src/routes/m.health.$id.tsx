@@ -2149,16 +2149,14 @@ function ChecklistDay({
 
 function ReplaceScanOverlay({
   itemName,
-  entries,
-  currentBatch,
+  forcedTarget,
   attempt,
   onCancel,
   onFailed,
   onVerified,
 }: {
   itemName: string;
-  entries: ScannedEntry[];
-  currentBatch?: string;
+  forcedTarget: ScannedEntry | null;
   attempt: number;
   onCancel: () => void;
   onFailed: () => void;
@@ -2169,12 +2167,10 @@ function ReplaceScanOverlay({
 
   useEffect(() => {
     const isFirst = attempt === 0;
-    const candidate =
-      entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
     const t1 = setTimeout(() => {
       if (isFirst) return;
-      if (candidate) {
-        setMatched(candidate);
+      if (forcedTarget) {
+        setMatched(forcedTarget);
         setPhase("verified");
       }
     }, 800);
@@ -2182,14 +2178,14 @@ function ReplaceScanOverlay({
       if (isFirst) {
         onFailed();
       } else {
-        onVerified(candidate);
+        onVerified(forcedTarget);
       }
     }, 1100);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [entries, currentBatch, attempt, onFailed, onVerified]);
+  }, [forcedTarget, attempt, onFailed, onVerified]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
