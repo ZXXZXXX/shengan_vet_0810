@@ -1594,27 +1594,24 @@ function ChecklistDay({
             <div className={`px-4 pb-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between">
                 <div className="text-caption text-text-tertiary">用药信息</div>
-                {interactive && (() => {
-                  const allScanned = medItems.every((m) => m.scanCode);
-                  return (
-                    <button
-                      type="button"
-                      disabled={allScanned}
-                      onClick={() => {
-                        const target = medItems.find((m) => !m.scanCode);
-                        if (!target) return;
-                        // 演示场景循环：1→情况2(无领取记录), 2→情况3(关联药品), 3→情况1(直接录入), 4→情况4(已被使用)
-                        const order: Array<1 | 2 | 3 | 4> = [2, 3, 1, 4];
-                        const scenario = order[scanAttemptRef.current % 4];
-                        scanAttemptRef.current += 1;
-                        setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
-                      }}
-                      className={`inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border ${allScanned ? "text-text-tertiary border-border bg-surface-subtle" : "text-primary border-primary/30 active:bg-brand-subtle"}`}
-                    >
-                      <ScanLine className="h-3.5 w-3.5" /> 扫码核验
-                    </button>
-                  );
-                })()}
+                {interactive && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 演示场景循环：2(无领取记录) → 3(关联药品) → 1(直接录入) → 4(已被使用) → 2 …
+                      const order: Array<1 | 2 | 3 | 4> = [2, 3, 1, 4];
+                      const scenario = order[scanAttemptRef.current % 4];
+                      scanAttemptRef.current += 1;
+                      // 优先未扫码的；若都扫码完，循环回第一个用于演示
+                      const target = medItems.find((m) => !m.scanCode) ?? medItems[0];
+                      if (!target) return;
+                      setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
+                    }}
+                    className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-primary border-primary/30 active:bg-brand-subtle"
+                  >
+                    <ScanLine className="h-3.5 w-3.5" /> 扫码核验
+                  </button>
+                )}
               </div>
           {medItems.map((it) => {
             const scanned = Boolean(it.scanCode);
@@ -1829,11 +1826,18 @@ function ChecklistDay({
         </>
       )}
 
-      {replaceState && (
+      {replaceState && (() => {
+        const targetItem = items.find((i) => i.id === replaceState.itemId);
+        const demoTarget: ScannedEntry = {
+          code: targetItem?.scanCode ?? `SC${Math.floor(100000 + Math.random() * 900000)}`,
+          manufacturer: targetItem?.manufacturer ?? "齐鲁动保",
+          batch: targetItem?.batchNo ?? `L${Math.floor(20260000 + Math.random() * 10000)}`,
+          qty: 1,
+        };
+        return (
         <ReplaceScanOverlay
           itemName={replaceState.itemName}
-          entries={scannedMap[replaceState.itemName] ?? []}
-          currentBatch={items.find((i) => i.id === replaceState.itemId)?.batchNo}
+          forcedTarget={demoTarget}
           attempt={replaceState.attempt}
           onCancel={() => setReplaceState(null)}
           onFailed={() => {
@@ -1861,7 +1865,7 @@ function ChecklistDay({
             // 情况三：存在关联药品 → 询问是否一同录入
             if (scenario === 3) {
               const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
-              const fallback = medItems.find((m) => m.id !== itemId && !m.scanCode)?.title;
+              const fallback = medItems.find((m) => m.id !== itemId)?.title;
               const associated = mapped.length > 0 ? mapped : fallback ? [fallback] : [];
               if (associated.length > 0) {
                 setAssocConfirm({ itemId, itemName, target, associated });
@@ -1890,7 +1894,8 @@ function ChecklistDay({
             }
           }}
         />
-      )}
+        );
+      })()}
 
       {replaceFailed && (
         <div
@@ -2144,16 +2149,14 @@ function ChecklistDay({
 
 function ReplaceScanOverlay({
   itemName,
-  entries,
-  currentBatch,
+  forcedTarget,
   attempt,
   onCancel,
   onFailed,
   onVerified,
 }: {
   itemName: string;
-  entries: ScannedEntry[];
-  currentBatch?: string;
+  forcedTarget: ScannedEntry | null;
   attempt: number;
   onCancel: () => void;
   onFailed: () => void;
@@ -2164,12 +2167,10 @@ function ReplaceScanOverlay({
 
   useEffect(() => {
     const isFirst = attempt === 0;
-    const candidate =
-      entries.find((e) => e.batch && e.batch !== currentBatch) ?? entries[0] ?? null;
     const t1 = setTimeout(() => {
       if (isFirst) return;
-      if (candidate) {
-        setMatched(candidate);
+      if (forcedTarget) {
+        setMatched(forcedTarget);
         setPhase("verified");
       }
     }, 800);
@@ -2177,14 +2178,14 @@ function ReplaceScanOverlay({
       if (isFirst) {
         onFailed();
       } else {
-        onVerified(candidate);
+        onVerified(forcedTarget);
       }
     }, 1100);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [entries, currentBatch, attempt, onFailed, onVerified]);
+  }, [forcedTarget, attempt, onFailed, onVerified]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col">
