@@ -11,7 +11,7 @@ export function TagPicker({
   selected,
   onChange,
   presets,
-  placeholder = "点击选择或搜索",
+  placeholder = "输入关键词搜索，或创建新标签",
   hotLabel = "常用标签",
   singleSelect = false,
   disableCreate = false,
