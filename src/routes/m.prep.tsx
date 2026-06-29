@@ -208,7 +208,17 @@ function PrepPage() {
   };
 
   const handleScan = () => {
-    const d = drugPool[scanIdx % drugPool.length];
+    // 演示合并：若已有单药品卡片，每隔一次扫描就再扫一次同一药品
+    const singleDrugGroups = groups.filter(
+      (g) => !g.combo && g.entries.length > 0 && new Set(g.entries.map((e) => e.drug.name)).size === 1,
+    );
+    let d: DrugDef;
+    if (singleDrugGroups.length > 0 && scanIdx % 2 === 1) {
+      const target = singleDrugGroups[singleDrugGroups.length - 1].entries[0].drug;
+      d = target;
+    } else {
+      d = drugPool[scanIdx % drugPool.length];
+    }
     setScanIdx((i) => i + 1);
     addScan(d);
   };
