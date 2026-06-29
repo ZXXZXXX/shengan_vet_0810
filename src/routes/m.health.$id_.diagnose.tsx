@@ -520,13 +520,20 @@ function DiagnosePage() {
       return;
     }
     const temp = parseFloat(temperature);
-    if (!temperature.trim() || Number.isNaN(temp)) {
-      toast.error("请填写牛只体温");
-      return;
-    }
-    if (temp < 30 || temp > 45) {
-      toast.error("体温应在 30 ~ 45 ℃ 之间");
-      return;
+    if (!isPostpartum) {
+      if (!temperature.trim() || Number.isNaN(temp)) {
+        toast.error("请填写牛只体温");
+        return;
+      }
+      if (temp < 30 || temp > 45) {
+        toast.error("体温应在 30 ~ 45 ℃ 之间");
+        return;
+      }
+    } else if (temperature.trim()) {
+      if (Number.isNaN(temp) || temp < 30 || temp > 45) {
+        toast.error("体温应在 30 ~ 45 ℃ 之间");
+        return;
+      }
     }
     if (ketone.trim()) {
       const k = parseFloat(ketone);
