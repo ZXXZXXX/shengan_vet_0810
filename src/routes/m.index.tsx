@@ -108,7 +108,7 @@ function MWorkspacePage() {
                       {ACCOUNT.name}
                     </span>
                     <span
-                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium shrink-0"
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-caption font-medium shrink-0"
                       style={{
                         background: "color-mix(in oklab, #00A85A 10%, transparent)",
                         color: "#00A85A",

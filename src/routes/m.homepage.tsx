@@ -103,7 +103,7 @@ function MHomePage() {
                 onClick={() => setRoleOpen(true)}
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 active:scale-95 transition-transform"
               >
-                <span className="text-[11px] text-white/95">{roleLabel[role]}</span>
+                <span className="text-caption text-white/95">{roleLabel[role]}</span>
               </button>
               <div className="text-[18px] leading-tight font-semibold text-white mt-1.5 drop-shadow-sm">李师傅</div>
               <div className="text-caption text-white/85 mt-0.5 inline-flex items-center gap-1">
@@ -130,7 +130,7 @@ function MHomePage() {
               { label: "执行中", value: "14" },
             ].map((s) => (
               <div key={s.label} className="text-center">
-                <div className="text-[11px] text-white/85 font-bold" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{s.label}</div>
+                <div className="text-caption text-white/85 font-bold" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{s.label}</div>
                 <div className="text-[26px] leading-none font-black text-white tabular-nums mt-1" style={{ fontFamily: '"SF Pro Display", "Helvetica Neue", Arial, sans-serif', letterSpacing: "-0.02em", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{s.value}</div>
               </div>
             ))}
@@ -435,7 +435,7 @@ function TodayTaskList({ role }: { role: Role }) {
                 <span>{t.type}</span>
                 {chip && (
                   <span
-                    className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
+                    className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none ${taskChipStyle[chip]}`}
                   >
                     {chip}
                   </span>
@@ -628,7 +628,7 @@ function DataCard({
         </span>
         {trend && (
           <span
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium tabular-nums"
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-caption font-medium tabular-nums"
             style={{
               backgroundColor: `color-mix(in oklab, ${accent} 14%, transparent)`,
               color: accent,
@@ -650,7 +650,7 @@ function DataCard({
       {/* 标签 + 子说明 */}
       <div className="relative mt-1.5 flex items-center justify-between">
         <span className="text-caption text-text-secondary truncate">{label}</span>
-        {sub && <span className="text-[11px] text-text-tertiary shrink-0 ml-2">{sub}</span>}
+        {sub && <span className="text-caption text-text-tertiary shrink-0 ml-2">{sub}</span>}
       </div>
     </div>
   );
@@ -766,7 +766,7 @@ function KBShortcut({
         />
         <div className="relative h-full px-2.5 pt-1.5 pb-2 flex flex-col justify-between text-white">
           <div className="text-[13px] font-semibold leading-tight drop-shadow-sm">{label}</div>
-          <div className="flex items-center justify-between text-[10px] text-white/90 leading-none">
+          <div className="flex items-center justify-between text-caption text-white/90 leading-none">
             <span className="truncate max-w-[7em] font-medium">{trendName}</span>
             <span className="shrink-0 inline-flex items-center gap-0.5 tabular-nums font-semibold">
               <TrendingUp className="h-2 w-2" />

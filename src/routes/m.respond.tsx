@@ -256,7 +256,7 @@ function RespondListPage() {
               <span>计划 <span className="text-text-secondary">{c.execLabel}</span></span>
               <span>·</span>
               <span className="inline-flex items-center gap-1">
-                <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
+                <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-caption inline-flex items-center justify-center">
                   {c.visitor.charAt(0)}
                 </span>
                 诊断 <span className="text-text-secondary">{c.visitor}</span>
