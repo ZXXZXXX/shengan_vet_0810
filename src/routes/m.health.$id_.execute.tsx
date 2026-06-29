@@ -38,8 +38,11 @@ function ExecuteRecordPage() {
     <MobileShell title="执行记录" back hideTabBar>
       <div className="pb-28">
         <div className="px-4 pt-3 pb-2">
-          <div className="text-caption text-text-tertiary">
-            工单 <span className="font-mono text-text-secondary">{id}</span>
+          <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
+            <span>工单</span>
+            <span className="font-mono text-text-secondary">{id}</span>
+            <span className="text-text-tertiary">·</span>
+            <span className="font-mono text-text-secondary">{earTag}</span>
           </div>
         </div>
         <div className="px-4 space-y-3">
