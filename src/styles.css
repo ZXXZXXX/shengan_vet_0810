@@ -297,7 +297,8 @@
   --m-gutter: 12px;
   --m-card-padding: 16px;
   --m-touch: 48px;
-  font-size: 15px;
+  /* 正文文本：14-16px，取 16px 保证移动端长文本可读性 */
+  font-size: 16px;
   line-height: 26px;
 
   /* === M 端配色规范覆盖 ===
