@@ -29,8 +29,8 @@ import {
   Package,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { TransferBarnControl } from "@/components/m/transfer-barn-control";
-import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+
+
 import { TagPicker } from "@/components/m/tag-picker";
 import { Switch } from "@/components/ui/switch";
 import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
@@ -354,13 +354,6 @@ function DiagnosePage() {
   >(null);
 
 
-  // 终止工单
-  const [confirmTerminate, setConfirmTerminate] = useState(false);
-  const [termReason, setTermReason] = useState("");
-  const [termReasonOther, setTermReasonOther] = useState("");
-  const [needTransfer, setNeedTransfer] = useState(false);
-  const [transferTo, setTransferTo] = useState("");
-  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
   const earTagLabel = getOrderEarTagLabel(id);
 
   // 体征数据
@@ -655,16 +648,13 @@ function DiagnosePage() {
     <MobileShell title="诊断记录" back hideTabBar>
       <div className="pb-28">
         {/* 工单号（吸顶） */}
-        <div className="sticky top-12 z-20 bg-[var(--bg-page)] px-4 pt-3 pb-2 flex items-center justify-between gap-2 border-b border-border">
-          <div className="text-caption text-text-tertiary">
-            工单 <span className="font-mono text-text-secondary">{id}</span>
+        <div className="sticky top-12 z-20 bg-[var(--bg-page)] px-4 pt-3 pb-2 border-b border-border">
+          <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
+            <span>工单</span>
+            <span className="font-mono text-text-secondary">{id}</span>
+            <span className="text-text-tertiary">·</span>
+            <span className="font-mono text-text-secondary">{earTagLabel}</span>
           </div>
-          <button
-            onClick={() => setConfirmTerminate(true)}
-            className="text-caption text-[var(--state-danger)] font-medium hover:underline"
-          >
-            终止工单
-          </button>
         </div>
 
         {/* 顶部提示 */}
@@ -1269,128 +1259,8 @@ function DiagnosePage() {
         </button>
       </div>
 
-      {/* 终止工单确认 — M 端底部弹层 */}
-      {confirmTerminate && (
-        <div
-          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
-          onClick={() => {
-            setConfirmTerminate(false);
-            setTermReason("");
-            setTermReasonOther("");
-            setNeedTransfer(false);
-            setTransferTo("");
-          }}
-        >
-          <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[85vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-4 h-12 flex items-center justify-between border-b border-border">
-              <div className="text-body font-medium text-[var(--state-danger)]">终止工单</div>
-              <button
-                type="button"
-                onClick={() => {
-                  setConfirmTerminate(false);
-                  setTermReason("");
-                  setTermReasonOther("");
-                  setNeedTransfer(false);
-                  setTransferTo("");
-                }}
-                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
 
-            <div className="p-4 space-y-4">
-              <div>
-                <div className="text-caption text-text-tertiary mb-2">终止原因</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {["牛只健康，无需治疗", "牛只已死亡", "牛只已淘汰", "已转交其他工单", "其他"].map((r) => {
-                    const active = termReason === r;
-                    return (
-                      <button
-                        key={r}
-                        type="button"
-                        onClick={() => setTermReason(r)}
-                        className={`h-8 px-3 rounded-full text-body-sm border ${
-                          active
-                            ? "bg-brand-subtle text-primary border-primary/40"
-                            : "bg-card text-text-secondary border-border"
-                        }`}
-                      >
-                        {r}
-                      </button>
-                    );
-                  })}
-                </div>
-                {termReason === "其他" && (
-                  <textarea
-                    value={termReasonOther}
-                    onChange={(e) => setTermReasonOther(e.target.value)}
-                    placeholder="请输入其他终止原因"
-                    className="mt-2 h-20 w-full rounded-lg bg-white border border-border p-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
-                  />
-                )}
-              </div>
 
-              <TransferBarnControl
-                enabled={needTransfer}
-                onEnabledChange={setNeedTransfer}
-                value={transferTo}
-                onValueChange={setTransferTo}
-                bordered={false}
-              />
-            </div>
-
-            <div className="p-4 pt-0 pb-[calc(env(safe-area-inset-bottom)+16px)] flex gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setConfirmTerminate(false);
-                  setTermReason("");
-                  setTermReasonOther("");
-                  setNeedTransfer(false);
-                  setTransferTo("");
-                }}
-                className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
-              >
-                取消
-              </button>
-              <button
-                type="button"
-                disabled={!termReason || (termReason === "其他" && !termReasonOther.trim()) || (needTransfer && !transferTo.trim())}
-                onClick={() => {
-                  const reason = termReason === "其他" ? termReasonOther.trim() : termReason;
-                  if (!reason) return;
-                  if (needTransfer && !transferTo.trim()) return;
-                  if (needTransfer) {
-                    setTransferConfirmOpen(true);
-                    return;
-                  }
-                  toast.success("工单已终止");
-                  navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
-                }}
-                className="flex-1 h-11 rounded-lg bg-[var(--state-danger)] text-white text-body disabled:opacity-50"
-              >
-                确认终止
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <ConfirmTransferDialog
-        open={transferConfirmOpen}
-        earTag={earTagLabel}
-        barn={transferTo}
-        onCancel={() => setTransferConfirmOpen(false)}
-        onConfirm={() => {
-          setTransferConfirmOpen(false);
-          toast.success(`工单已终止，已安排转栏至 ${transferTo}`);
-          navigate({ to: "/m/health/$id", params: { id }, search: { tab: "review" } });
-        }}
-      />
 
       {/* 添加媒体选择弹层 */}
       {showMediaPicker && (
