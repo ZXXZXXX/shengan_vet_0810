@@ -287,6 +287,7 @@ const drugLibrary: DrugItem[] = [
 const useMethods = [
   "肌肉注射",
   "静脉注射",
+  "静脉推注",
   "皮下注射",
   "乳房灌注",
   "口服",
