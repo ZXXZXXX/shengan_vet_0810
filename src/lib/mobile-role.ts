@@ -67,7 +67,7 @@ export function canExecute(r: Role) {
 }
 // 诊断权限：兽医/场长可诊断疾病；管理员仅查看
 export function canDiagnose(r: Role, type?: string) {
-  if (r === "vet" || r === "manager") return type === "疾病治疗";
+  if (r === "vet" || r === "manager") return type === "疾病治疗" || type === "产后护理";
   return false;
 }
 // 是否能查看全场/经营级数据：兽医与场长一致

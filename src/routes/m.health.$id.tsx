@@ -96,6 +96,8 @@ const statusById: Record<string, StatusKey> = {
   "WO-2430": "进行中",
   "WO-2440": "进行中",
   "PP-2501": "进行中",
+  "PP-2601": "待诊断",
+  "PP-2602": "待诊断",
   "WO-2324": "已终止",
   "WO-2199": "已完成",
   "HF-0702": "进行中",
@@ -192,6 +194,8 @@ function TaskDetailPage() {
     "HF-0702": "#01-24-2150",
     "HF-0688": "#01-24-2270",
     "PP-2501": "#01-24-2710",
+    "PP-2601": "#01-24-2801",
+    "PP-2602": "#01-24-2815",
   };
   const singleEar = singleEarMap[id];
   const isSingle = !isPlatformImmune;
@@ -467,7 +471,13 @@ function TaskDetailPage() {
         </div>
 
         <div className="px-4 pt-3 space-y-3">
-          {tab === "report" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无上报记录" /> : <ReportTab isLoss={isLoss} />)}
+          {tab === "report" && (
+            isPlatformPostpartum && o.status === "待诊断"
+              ? <PostpartumReportNotice id={id} />
+              : isPlatformIssued
+                ? <EmptyTab label="平台下发工单，无上报记录" />
+                : <ReportTab isLoss={isLoss} />
+          )}
           {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} />)}
           {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} />}
         </div>
@@ -835,6 +845,22 @@ function PersonChip({ name }: { name: string }) {
       </span>
       <span className="text-body-sm text-foreground">{n}</span>
     </span>
+  );
+}
+
+// === 产后护理 · 待诊断上报提示 ===
+function PostpartumReportNotice({ id }: { id: string }) {
+  const calvedAt: Record<string, string> = {
+    "PP-2601": "2026/05/25 06:42",
+    "PP-2602": "2026/05/25 14:08",
+  };
+  const time = calvedAt[id] ?? "2026/05/25 06:42";
+  return (
+    <div className="rounded-xl bg-card border border-border p-4">
+      <p className="text-body-sm text-foreground leading-relaxed">
+        牛只在 <span className="font-medium">{time}</span> 产犊，请前往诊断是否需要进行特殊的产后护理。
+      </p>
+    </div>
   );
 }
 
