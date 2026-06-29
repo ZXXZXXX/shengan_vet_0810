@@ -278,6 +278,9 @@ const drugLibrary: DrugItem[] = [
   { name: "土霉素注射液", maker: "齐鲁动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射", "静脉注射"] },
   { name: "维生素 C 注射液", maker: "石药集团", spec: "10ml / 支", recommendedUse: "静脉注射", defaultUnit: "ml", allowedUses: ["静脉注射", "肌肉注射"] },
   { name: "地塞米松磷酸钠", maker: "瑞普生物", spec: "5ml / 支", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射", "静脉注射"] },
+  { name: "5% 盐酸头孢噻呋（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射"] },
+  { name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", recommendedUse: "肌肉注射", defaultUnit: "ml", allowedUses: ["肌肉注射"] },
+  { name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", recommendedUse: "静脉推注", defaultUnit: "ml", allowedUses: ["静脉推注", "静脉注射", "肌肉注射"] },
 ];
 
 // 使用方式枚举
