@@ -212,6 +212,54 @@ type Prescription = {
   therapyMethod?: string;
   frequency?: string;
   desc?: string;
+  // 剂量换算方式：默认按 500kg 体重基准换算
+  dosePer?: "100kg" | "500kg" | "fixed";
+};
+
+// 体重相关剂量计算（mL/g 等）。fixed 表示单次固定剂量
+function computePerDose(r: Prescription, w: number): number {
+  const base = parseFloat(r.dose || "0");
+  if (Number.isNaN(base) || base <= 0) return 0;
+  if (r.dosePer === "fixed") return base;
+  if (r.dosePer === "100kg") return Math.round(base * (w / 100) * 10) / 10;
+  return Math.round(base * (w / 500) * 10) / 10;
+}
+
+// === 产后护理：固定症状池、固定结论、固定标准处方 ===
+const POSTPARTUM_SYMPTOMS = [
+  "产犊难易度 ≥ 3",
+  "产道损伤等级 ≥ 2",
+  "产犊数量 ≥ 2",
+  "犊牛体重 ≥ 45kg",
+  "犊牛为「死胎」",
+  "早产",
+  "双胎或以上",
+  "胎衣不下",
+  "其他",
+];
+const POSTPARTUM_DISEASE: Disease = {
+  name: "产后高危",
+  symptoms: POSTPARTUM_SYMPTOMS,
+  plans: [
+    {
+      id: "pp-1",
+      name: "方案 A · 5% 头孢噻呋 + 氟尼辛",
+      desc: "一般产后高危预防性治疗",
+      items: [
+        { id: "r1", kind: "drug", name: "5% 盐酸头孢噻呋（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "4.4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+        { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+      ],
+    },
+    {
+      id: "pp-2",
+      name: "方案 B · 10% 头孢噻呋 + 氟尼辛",
+      desc: "感染风险较高 / 体重较大牛只",
+      items: [
+        { id: "r1", kind: "drug", name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "1" },
+        { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+      ],
+    },
+  ],
 };
 
 // 药品库（用于编辑弹层中搜索匹配）
