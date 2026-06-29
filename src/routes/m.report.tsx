@@ -686,47 +686,23 @@ function ReportPage() {
                     </div>
                   );
                 })}
-                {targets.length > 0 && (
+                {targets.length > 0 ? (
                   <div className="text-caption text-text-tertiary">
-                    牛舍信息根据牛只编号自动获取，不可更改
+                    单次仅可上报一头牛只；如需更换，请先删除已选牛只
                   </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAddQuery("");
+                      setCowPickerOpen(true);
+                    }}
+                    className="w-full h-12 px-3 rounded-xl bg-card border border-border text-left text-body text-text-tertiary flex items-center gap-2"
+                  >
+                    <Search className="h-4 w-4 text-text-tertiary" />
+                    <span className="flex-1">输入牛只耳号搜索并选择</span>
+                  </button>
                 )}
-                <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                    <input
-                      autoFocus={targets.length === 0}
-                      value={addQuery}
-                      onChange={(e) => setAddQuery(e.target.value)}
-                      placeholder="输入牛只编号搜索并选择"
-                      className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
-                    />
-                  </div>
-                  {addQuery.trim() && addMatches.length === 0 && (
-                    <div className="text-caption text-text-tertiary px-1">无匹配结果</div>
-                  )}
-                  {addMatches.length > 0 && (
-                    <div className="max-h-48 overflow-y-auto space-y-1">
-                      {addMatches.map((cowId) => (
-                        <button
-                          key={cowId}
-                          type="button"
-                          onClick={() => {
-                            addTarget(cowId);
-                            setAddQuery("");
-                          }}
-                          className="w-full flex items-center justify-between h-11 px-3 rounded-lg bg-surface-subtle text-body text-foreground active:bg-brand-subtle"
-                        >
-                          <span className="font-mono">#{cowId}</span>
-                          <span className="text-caption text-text-tertiary">{barnOfCattle(cowId)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  <div className="text-caption text-text-tertiary">
-                    输入牛只编号后，将自动获取所属牛舍信息
-                  </div>
-                </div>
               </div>
               )}
 
