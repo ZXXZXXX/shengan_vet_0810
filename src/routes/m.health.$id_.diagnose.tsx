@@ -694,22 +694,26 @@ function DiagnosePage() {
 
           {/* === 症状 === */}
           <Section
-            title="症状"
+            title={isPostpartum ? "高危因素" : "症状"}
             extra={<span className="text-caption text-text-tertiary">{symptoms.length} 个</span>}
           >
             <TagPicker
               selected={symptoms}
               onChange={setSymptoms}
-              presets={symptomLibrary}
+              presets={effectiveSymptomLibrary}
+              disableCreate={isPostpartum}
+              placeholder={isPostpartum ? "搜索高危因素" : "输入关键词搜索，或创建新标签"}
+              hotLabel={isPostpartum ? "可选高危因素" : "常用标签"}
+              maxHot={isPostpartum ? POSTPARTUM_SYMPTOMS.length : 8}
             />
           </Section>
 
           {/* === 体征数据 === */}
-          <Section title="体征数据">
+          <Section title={isPostpartum ? "体征数据（选填）" : "体征数据"}>
             <div className="grid grid-cols-2 gap-2">
               <label className="block">
                 <div className="text-caption text-text-tertiary mb-1">
-                  体温 <span className="text-[var(--state-danger)]">*</span>
+                  体温 {isPostpartum ? <span className="text-text-tertiary">(选填)</span> : <span className="text-[var(--state-danger)]">*</span>}
                 </div>
                 <div className="relative">
                   <input
