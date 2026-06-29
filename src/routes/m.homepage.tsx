@@ -277,7 +277,8 @@ export const homeTasks: HomeTask[] = [
   { id: "WO-2303", target: "#01-24-2233", conclusion: "酮病补液+葡萄糖", type: "疾病治疗", status: "进行中", minutesAgo: 82 },
   { id: "WO-2440", target: "#01-24-2440", conclusion: "乳房炎 · 观察期满复查", type: "疾病治疗", status: "进行中", minutesAgo: 95 },
   // 产后护理 · 进行中
-  { id: "PP-2501", target: "#01-24-2710", conclusion: "产后 3 天护理执行", type: "产后护理", status: "进行中", minutesAgo: 28 },
+  { id: "PP-2501", target: "#01-24-2710", conclusion: "产后用药护理", type: "产后护理", status: "进行中", minutesAgo: 28 },
+  { id: "PP-2502", target: "#01-24-2725", conclusion: "产后检查记录", type: "产后护理", status: "进行中", minutesAgo: 44 },
   // 疫苗免疫 · 进行中
   { id: "YM-1041", target: "#01-24-2041", conclusion: "口蹄疫加强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 5 },
   { id: "YM-1042", target: "#01-24-2042", conclusion: "布病强免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 18 },
