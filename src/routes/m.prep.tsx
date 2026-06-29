@@ -414,46 +414,44 @@ function PrepPage() {
 
       <div className="px-4 pt-4 pb-36 bg-card flex-1">
         {/* 已领药品 */}
-        <div className="rounded-xl border border-border bg-card p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-primary" />
-              <span className="text-body font-medium text-foreground">已领药品</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-caption text-text-tertiary">共 {totalCount} 项</span>
-              {groups.length > 0 && (
-                <button
-                  onClick={() => setGroups([])}
-                  className="text-caption text-text-tertiary active:opacity-70"
-                >
-                  清空
-                </button>
-              )}
+        <div className="flex items-center justify-between h-8 mb-3">
+          <div className="flex items-center gap-2">
+            <Package className="h-4 w-4 text-primary" />
+            <span className="text-body font-medium text-foreground">已领药品</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-caption text-text-tertiary">共 {totalCount} 项</span>
+            {groups.length > 0 && (
+              <button
+                onClick={() => setGroups([])}
+                className="text-caption text-text-tertiary active:opacity-70"
+              >
+                清空
+              </button>
+            )}
+          </div>
+        </div>
+
+        {groups.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border bg-surface-2 p-8 flex flex-col items-center text-center">
+            <Inbox className="h-8 w-8 text-text-tertiary/60 mb-2" />
+            <div className="text-caption text-text-tertiary">
+              点击下方按钮扫描药品二维码
             </div>
           </div>
-
-          {groups.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border p-8 flex flex-col items-center text-center">
-              <Inbox className="h-8 w-8 text-text-tertiary/60 mb-2" />
-              <div className="text-caption text-text-tertiary">
-                点击下方按钮扫描药品二维码
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-3 pb-4">
-              {groups.map((g, gi) => (
-                <DrugCard
-                  key={g.id}
-                  group={g}
-                  onScanMore={() => addComboScan(gi)}
-                  onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
-                  onRemove={(ei) => removeEntry(gi, ei)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        ) : (
+          <div className="space-y-3 pb-4">
+            {groups.map((g, gi) => (
+              <DrugCard
+                key={g.id}
+                group={g}
+                onScanMore={() => addComboScan(gi)}
+                onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
+                onRemove={(ei) => removeEntry(gi, ei)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 底部吸底操作栏 */}
