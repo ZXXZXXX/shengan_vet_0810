@@ -213,6 +213,14 @@ function PrepPage() {
     addScan(d);
   };
 
+  const enableCombo = (gi: number) => {
+    setGroups((prev) => {
+      const next = [...prev];
+      next[gi] = { ...next[gi], combo: true };
+      return next;
+    });
+  };
+
   const addComboScan = (gi: number) => {
     const group = groups[gi];
     const existingNames = new Set(group.entries.map((e) => e.drug.name));
