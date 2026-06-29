@@ -656,13 +656,12 @@ function DiagnosePage() {
       <div className="pb-28">
         {/* 工单号（吸顶） */}
         <div className="sticky top-12 z-20 bg-[var(--bg-page)] px-4 pt-3 pb-2 flex items-center justify-between gap-2 border-b border-border">
-          <div className="flex items-baseline gap-2 min-w-0">
-            <span className="text-body font-semibold text-text-primary truncate">耳号 {earTagLabel || "-"}</span>
-            <span className="text-caption text-text-tertiary shrink-0">工单 <span className="font-mono">{id}</span></span>
+          <div className="text-caption text-text-tertiary">
+            工单 <span className="font-mono text-text-secondary">{id}</span>
           </div>
           <button
             onClick={() => setConfirmTerminate(true)}
-            className="text-caption text-[var(--state-danger)] font-medium hover:underline shrink-0"
+            className="text-caption text-[var(--state-danger)] font-medium hover:underline"
           >
             终止工单
           </button>
