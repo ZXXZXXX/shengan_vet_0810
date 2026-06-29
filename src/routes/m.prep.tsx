@@ -546,12 +546,6 @@ function DrugCard({
     return `用药组合：${parts.join(" + ")}${distinctDrugs.length > 3 ? " + …" : ""}`;
   }, [distinctDrugs]);
 
-  // 按厂商汇总已扫数量（仅单药品卡片展示）
-  const byMfr = useMemo(() => {
-    const map = new Map<string, number>();
-    entries.forEach((e) => map.set(e.manufacturer, (map.get(e.manufacturer) ?? 0) + e.qty));
-    return map;
-  }, [entries]);
 
   return (
     <>
