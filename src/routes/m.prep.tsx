@@ -252,6 +252,54 @@ function PrepPage() {
 
   const totalCount = groups.reduce((sum, g) => sum + g.entries.length, 0);
 
+  // 当前已取（按药品名 + 规格聚合）
+  const claimedMap = useMemo(() => {
+    const m = new Map<string, number>();
+    groups.forEach((g) =>
+      g.entries.forEach((e) => {
+        const k = `${e.drug.name}|${e.drug.spec}`;
+        m.set(k, (m.get(k) ?? 0) + e.qty);
+      }),
+    );
+    return m;
+  }, [groups]);
+
+  const handleAggregateConfirm = (ids: string[]) => {
+    setAggOpen(false);
+    // 聚合所选任务对应 pickup 的药品需求
+    const map = new Map<string, Requirement>();
+    ids.forEach((tid) => {
+      const pk = PICKUPS.find((p) => p.source === tid);
+      if (!pk) return;
+      pk.items.forEach((it) => {
+        const { n, unit } = parseQtyNum(it.qty);
+        const key = `${it.name}|${it.spec ?? ""}`;
+        const existing = map.get(key);
+        const mfr =
+          it.allowMixManufacturer === false
+            ? it.stockSources?.[0]?.manufacturer ?? "指定厂商"
+            : "不限";
+        if (existing) {
+          existing.total += n;
+          if (!existing.taskIds.includes(tid)) existing.taskIds.push(tid);
+        } else {
+          map.set(key, {
+            key,
+            name: it.name,
+            spec: it.spec ?? "",
+            unit: unit || "",
+            total: n,
+            mfrRequired: mfr,
+            taskIds: [tid],
+          });
+        }
+      });
+    });
+    setRequirements(Array.from(map.values()));
+    setChecklistCollapsed(false);
+    toast.success(`已生成药品清单（${map.size} 种）`);
+  };
+
   return (
     <MobileShell hideTabBar>
       {/* 顶部栏 */}
@@ -274,6 +322,72 @@ function PrepPage() {
           </button>
         </div>
       </header>
+
+      {/* 吸顶药品清单 */}
+      {requirements.length > 0 && (
+        <div className="sticky top-12 z-20 bg-card border-b border-border">
+          <button
+            type="button"
+            onClick={() => setChecklistCollapsed((v) => !v)}
+            className="w-full h-10 px-4 flex items-center gap-2 active:bg-surface-subtle"
+          >
+            <ClipboardList className="h-4 w-4 text-primary" />
+            <span className="text-body-sm font-medium text-foreground">
+              领取清单
+            </span>
+            <span className="text-caption text-text-tertiary">
+              共 {requirements.length} 种
+            </span>
+            <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+              {checklistCollapsed ? "展开" : "收起"}
+              {checklistCollapsed ? (
+                <ChevronDown className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronUp className="h-3.5 w-3.5" />
+              )}
+            </span>
+          </button>
+          {!checklistCollapsed && (
+            <div className="max-h-[50vh] overflow-y-auto px-4 pb-3 space-y-2">
+              {requirements.map((r) => {
+                const got = claimedMap.get(r.key) ?? 0;
+                const done = got >= r.total;
+                return (
+                  <div
+                    key={r.key}
+                    className="rounded-lg border border-border bg-surface-2 px-3 py-2"
+                  >
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-body-sm font-medium text-foreground truncate">
+                        {r.name}
+                      </span>
+                      <span
+                        className={`ml-auto text-caption tabular-nums shrink-0 ${
+                          done ? "text-primary font-medium" : "text-[#E5751A] font-medium"
+                        }`}
+                      >
+                        {got} / {r.total} {r.unit}
+                      </span>
+                    </div>
+                    <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2">
+                      <span>
+                        厂商
+                        <span
+                          className={`ml-1 ${r.mfrRequired === "不限" ? "text-text-secondary" : "text-[#E5751A]"}`}
+                        >
+                          {r.mfrRequired}
+                        </span>
+                      </span>
+                      <span className="text-border">·</span>
+                      <span>规格 <span className="text-text-secondary">{r.spec}</span></span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="px-4 pt-3 pb-36">
         {/* 已扫描列表 */}
@@ -331,6 +445,7 @@ function PrepPage() {
               onClick={() => {
                 toast.success(`已生成领药记录（${totalCount} 项）`);
                 setGroups([]);
+                setRequirements([]);
               }}
               disabled={totalCount === 0}
               className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -345,18 +460,13 @@ function PrepPage() {
       {aggOpen && (
         <AggregateDrawer
           onClose={() => setAggOpen(false)}
-          onConfirm={(ids) => {
-            setAggOpen(false);
-            navigate({
-              to: "/m/health/today_/pickup",
-              search: { ids: ids.join(",") },
-            });
-          }}
+          onConfirm={handleAggregateConfirm}
         />
       )}
     </MobileShell>
   );
 }
+
 
 function DrugCard({
   group,
