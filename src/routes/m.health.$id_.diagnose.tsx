@@ -1667,21 +1667,32 @@ function Section({
   title,
   children,
   extra,
+  required,
+  hint,
 }: {
   title: string;
   children: React.ReactNode;
   extra?: React.ReactNode;
+  required?: boolean;
+  hint?: string;
 }) {
   return (
     <div className="rounded-xl bg-card border border-border p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="text-card-title text-foreground">{title}</div>
+      <div className="flex items-center justify-between mb-3 gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="text-card-title text-foreground">
+            {title}
+            {required && <span className="text-[var(--state-danger)] ml-1">*</span>}
+          </div>
+          {hint && <span className="text-caption text-text-tertiary truncate">{hint}</span>}
+        </div>
         {extra}
       </div>
       {children}
     </div>
   );
 }
+
 
 function Input({
   label,
