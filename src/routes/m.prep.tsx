@@ -5,8 +5,6 @@ import {
   ClipboardList,
   ScanLine,
   Package,
-  Pill,
-  Check,
   X,
   Minus,
   Plus,
@@ -15,6 +13,16 @@ import {
 import { toast } from "sonner";
 
 import { MobileShell } from "@/components/mobile-shell";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import {
   PICKUPS,
   useClaimed,
