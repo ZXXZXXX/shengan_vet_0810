@@ -316,100 +316,118 @@ function PrepPage() {
       </header>
 
 
-      {/* 吸顶药品清单 */}
-      {requirements.length > 0 && (
-        <div className="sticky top-12 z-20 bg-card border-b border-border">
-          <button
-            type="button"
-            onClick={() => setChecklistCollapsed((v) => !v)}
-            className="w-full h-10 px-4 flex items-center gap-2 active:bg-surface-subtle"
-          >
-            <ClipboardList className="h-4 w-4 text-primary" />
-            <span className="text-body-sm font-medium text-foreground">
-              领取清单
-            </span>
-            <span className="text-caption text-text-tertiary">
-              共 {requirements.length} 种
-            </span>
-            <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
-              {checklistCollapsed ? "展开" : "收起"}
-              {checklistCollapsed ? (
-                <ChevronDown className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronUp className="h-3.5 w-3.5" />
-              )}
-            </span>
-          </button>
-          {!checklistCollapsed && (
-            <div className="max-h-[50vh] overflow-y-auto px-4 pb-3 space-y-2">
-              {requirements.map((r) => {
-                const got = claimedMap.get(r.key) ?? 0;
-                const done = got >= r.total;
-                return (
-                  <div
-                    key={r.key}
-                    className="rounded-lg border border-border bg-surface-2 px-3 py-2"
-                  >
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-body-sm font-medium text-foreground truncate">
-                        {r.name}
-                      </span>
-                      <span
-                        className={`ml-auto text-caption tabular-nums shrink-0 ${
-                          done ? "text-primary font-medium" : "text-[#E5751A] font-medium"
-                        }`}
-                      >
-                        {got} / {r.total} {r.unit}
-                      </span>
-                    </div>
-                    <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2">
-                      <span>
-                        厂商
-                        <span
-                          className={`ml-1 ${r.mfrRequired === "不限" ? "text-text-secondary" : "text-[#E5751A]"}`}
-                        >
-                          {r.mfrRequired}
+      {/* 顶部 1/4 区域：统计药品清单按钮 / 领取清单 */}
+      <div className="min-h-[25vh] border-b border-border bg-card flex flex-col">
+        {requirements.length > 0 ? (
+          <div className="flex-1 flex flex-col min-h-0">
+            <button
+              type="button"
+              onClick={() => setChecklistCollapsed((v) => !v)}
+              className="w-full h-12 px-4 flex items-center gap-2 active:bg-surface-subtle shrink-0"
+            >
+              <ClipboardList className="h-4 w-4 text-primary" />
+              <span className="text-body font-medium text-foreground">领取清单</span>
+              <span className="text-caption text-text-tertiary">
+                共 {requirements.length} 种
+              </span>
+              <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+                {checklistCollapsed ? "展开" : "收起"}
+                {checklistCollapsed ? (
+                  <ChevronDown className="h-3.5 w-3.5" />
+                ) : (
+                  <ChevronUp className="h-3.5 w-3.5" />
+                )}
+              </span>
+            </button>
+            {!checklistCollapsed && (
+              <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-3 space-y-2 max-h-[50vh]">
+                {requirements.map((r) => {
+                  const got = claimedMap.get(r.key) ?? 0;
+                  const done = got >= r.total;
+                  return (
+                    <div
+                      key={r.key}
+                      className="rounded-lg border border-border bg-surface-2 px-3 py-2"
+                    >
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-body-sm font-medium text-foreground truncate">
+                          {r.name}
                         </span>
-                      </span>
-                      <span className="text-border">·</span>
-                      <span>规格 <span className="text-text-secondary">{r.spec}</span></span>
+                        <span
+                          className={`ml-auto text-caption tabular-nums shrink-0 ${
+                            done ? "text-primary font-medium" : "text-[#E5751A] font-medium"
+                          }`}
+                        >
+                          {got} / {r.total} {r.unit}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2">
+                        <span>
+                          厂商
+                          <span
+                            className={`ml-1 ${r.mfrRequired === "不限" ? "text-text-secondary" : "text-[#E5751A]"}`}
+                          >
+                            {r.mfrRequired}
+                          </span>
+                        </span>
+                        <span className="text-border">·</span>
+                        <span>规格 <span className="text-text-secondary">{r.spec}</span></span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+            )}
+            {checklistCollapsed && (
+              <div className="flex-1 flex items-center justify-center px-4">
+                <div className="text-caption text-text-tertiary">
+                  已折叠，点击上方“展开”查看清单
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center px-6">
+            <div className="w-full max-w-xs rounded-xl border border-dashed border-border bg-surface-2 p-6 flex flex-col items-center text-center">
+              <ClipboardList className="h-8 w-8 text-primary/60 mb-2" />
+              <div className="text-body-sm font-medium text-foreground mb-1">
+                统计今日待执行任务的药品清单
+              </div>
+              <div className="text-caption text-text-tertiary mb-4">
+                选择需要备药的工单，自动生成药品清单
+              </div>
+              <button
+                onClick={() => setAggOpen(true)}
+                className="h-9 px-4 rounded-lg text-body-sm text-primary inline-flex items-center gap-1.5 border border-primary active:bg-brand-subtle"
+              >
+                <ClipboardList className="h-4 w-4" />
+                统计药品清单
+              </button>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       <div className="px-4 pt-3 pb-36">
-        {/* 已扫描列表 */}
+        {/* 已领药品 */}
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
             <div className="text-body-sm font-medium text-foreground inline-flex items-baseline gap-1.5">
-              本次已扫描
+              已领药品
               <span className="text-caption text-text-tertiary font-normal">
                 共 {totalCount} 项
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            {groups.length > 0 && (
               <button
-                onClick={() => setAggOpen(true)}
-                className="h-8 px-2.5 rounded-md text-caption text-primary inline-flex items-center gap-1 border border-primary/40 active:bg-brand-subtle"
+                onClick={() => setGroups([])}
+                className="text-caption text-text-tertiary active:opacity-70"
               >
-                <ClipboardList className="h-3.5 w-3.5" />
-                统计药品清单
+                清空
               </button>
-              {groups.length > 0 && (
-                <button
-                  onClick={() => setGroups([])}
-                  className="text-caption text-text-tertiary active:opacity-70"
-                >
-                  清空
-                </button>
-              )}
-            </div>
+            )}
           </div>
+
 
 
           {groups.length === 0 ? (
