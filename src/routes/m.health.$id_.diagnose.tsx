@@ -684,21 +684,20 @@ function DiagnosePage() {
             <span className="text-caption text-text-tertiary">症状、体征数据与现场记录</span>
           </div>
 
-          {/* === 症状 === */}
+          {/* === 症状标签 === */}
           <Section
-            title="症状"
-            extra={<span className="text-caption text-text-tertiary">{symptoms.length} 个</span>}
+            title="症状标签"
+            required
+            hint="可多选；输入关键词搜索，未命中可直接新建"
           >
             <TagPicker
               selected={symptoms}
               onChange={setSymptoms}
               presets={effectiveSymptomLibrary}
               disableCreate={isPostpartum}
-              placeholder={isPostpartum ? "输入关键词搜索" : "输入关键词搜索，或创建新标签"}
-              hotLabel="常用标签"
-              maxHot={isPostpartum ? 4 : 8}
             />
           </Section>
+
 
           {/* === 体征数据 === */}
           <Section title="体征数据">
@@ -1668,21 +1667,32 @@ function Section({
   title,
   children,
   extra,
+  required,
+  hint,
 }: {
   title: string;
   children: React.ReactNode;
   extra?: React.ReactNode;
+  required?: boolean;
+  hint?: string;
 }) {
   return (
     <div className="rounded-xl bg-card border border-border p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="text-card-title text-foreground">{title}</div>
+      <div className="flex items-center justify-between mb-3 gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="text-card-title text-foreground">
+            {title}
+            {required && <span className="text-[var(--state-danger)] ml-1">*</span>}
+          </div>
+          {hint && <span className="text-caption text-text-tertiary truncate">{hint}</span>}
+        </div>
         {extra}
       </div>
       {children}
     </div>
   );
 }
+
 
 function Input({
   label,
