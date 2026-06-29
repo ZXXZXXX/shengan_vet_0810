@@ -79,7 +79,8 @@ const tasks: Task[] = [
   { id: "WO-2401", target: "犊牛舍 A", barn: "犊牛舍 A", kind: "健康", type: "免疫", event: "口蹄疫加强免疫", proposer: "周凯", who: "周凯", visitor: "王主管", status: "进行中", createdAt: "2025-05-29", executedAt: "2025-05-29", scope: { type: "batch", label: "犊牛舍 A 全群" }, conclusion: "口蹄疫加强免疫", desc: "犊牛批次 B-07", needPickup: true, symptoms: [] },
   { id: "YM-2501", target: "1 号牛舍", barn: "1 号牛舍", kind: "健康", type: "免疫", event: "口蹄疫常规免疫（平台下发）", proposer: "平台下发", who: "李雨晴", visitor: "—", status: "进行中", createdAt: "2025-05-28", executedAt: "2025-05-28", scope: { type: "batch", label: "1 号牛舍 全群" }, conclusion: "口蹄疫常规免疫", desc: "平台统一下发的免疫计划，按批次注射免疫药物", needPickup: true, symptoms: [] },
 
-  { id: "PP-2501", target: "#01-24-2710", barn: "产房 1 号", kind: "健康", type: "产后护理", event: "产后 3 天复查（平台下发）", proposer: "平台下发", who: "周凯", visitor: "—", status: "进行中", createdAt: "2025-05-28", executedAt: "2025-05-28", scope: { type: "single", ear: "#01-24-2710" }, conclusion: "产后复查", desc: "平台下发的产后修护计划，复查恶露与体温并补充营养", needPickup: true, symptoms: [] },
+  { id: "PP-2501", target: "#01-24-2710", barn: "产房 1 号", kind: "健康", type: "产后护理", event: "高危新产护理（平台下发）", proposer: "平台下发", who: "周凯", visitor: "—", status: "进行中", createdAt: "2025-05-28", executedAt: "2025-05-28", scope: { type: "single", ear: "#01-24-2710" }, conclusion: "高危新产", desc: "肌注头孢噻呋 + 静推氟尼辛，测温并记录恶露", needPickup: true, symptoms: [] },
+  { id: "PP-2502", target: "#01-24-2722", barn: "产房 1 号", kind: "健康", type: "产后护理", event: "正常新产护理（平台下发）", proposer: "平台下发", who: "周凯", visitor: "—", status: "进行中", createdAt: "2025-05-28", executedAt: "2025-05-28", scope: { type: "single", ear: "#01-24-2722" }, conclusion: "正常新产", desc: "灌服补液 + 测温记录，观察恶露与采食", needPickup: false, symptoms: [] },
   { id: "PP-2601", target: "#01-24-2801", barn: "产房 1 号", kind: "健康", type: "产后护理", event: "产犊后待诊断", proposer: "平台下发", who: "—", visitor: "王主管", status: "待诊断", createdAt: "2026-05-25", reportedAt: "2026-05-25 06:42", scope: { type: "single", ear: "#01-24-2801" }, conclusion: "产犊后待诊断", desc: "牛只在 2026/05/25 06:42 产犊，请前往诊断是否需要进行特殊的产后护理", needPickup: false, symptoms: [] },
   { id: "PP-2602", target: "#01-24-2815", barn: "产房 2 号", kind: "健康", type: "产后护理", event: "产犊后待诊断", proposer: "平台下发", who: "—", visitor: "王主管", status: "待诊断", createdAt: "2026-05-25", reportedAt: "2026-05-25 14:08", scope: { type: "single", ear: "#01-24-2815" }, conclusion: "产犊后待诊断", desc: "牛只在 2026/05/25 14:08 产犊，请前往诊断是否需要进行特殊的产后护理", needPickup: false, symptoms: [] },
   { id: "WO-2324", target: "#01-24-2324", barn: "5 号牛舍", kind: "健康", type: "普修", event: "采食量持续下降", proposer: "张伟", who: "王建国", visitor: "王主管", status: "已终止", createdAt: "2025-05-26", terminatedAt: "2025-05-26", scope: { type: "single", ear: "#01-24-2324" }, conclusion: "采食量持续下降", desc: "精神沉郁，需复查", needPickup: false, symptoms: ["采食下降", "精神沉郁"] },
@@ -349,6 +350,15 @@ function TaskListPage() {
                                 {head}
                                 <span className="text-text-tertiary"> · </span>
                                 {segs.join(" · ")}
+                              </>
+                            );
+                          }
+                          if (o.type === "产后护理" && o.status === "进行中") {
+                            return (
+                              <>
+                                {head}
+                                <span className="text-text-tertiary"> · </span>
+                                {`初诊 · ${o.conclusion} · 执行`}
                               </>
                             );
                           }
