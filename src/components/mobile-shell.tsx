@@ -95,7 +95,7 @@ function MobileTopBar({
   );
 }
 
-function MobileTabBar() {
+export function MobileTabBar() {
   const { pathname } = useLocation();
   const renderTab = (t: (typeof leftTabs)[number]) => {
     const active = t.exact

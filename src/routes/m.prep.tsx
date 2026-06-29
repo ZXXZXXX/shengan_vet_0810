@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { MobileShell } from "@/components/mobile-shell";
+import { MobileShell, MobileTabBar } from "@/components/mobile-shell";
 import {
   PICKUPS,
   useClaimed,
@@ -82,7 +82,7 @@ function PrepPage() {
 
 
   return (
-    <MobileShell>
+    <MobileShell hideTabBar>
       {/* 顶部栏 */}
       <header className="sticky top-0 z-30 bg-card border-b border-border">
         <div className="h-12 px-2 flex items-center gap-1">
@@ -224,6 +224,7 @@ function PrepPage() {
           </div>
         )}
       </div>
+      <MobileTabBar />
 
       {aggOpen && (
         <AggregateDrawer
