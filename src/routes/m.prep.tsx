@@ -122,6 +122,7 @@ type Entry = {
 type Group = {
   id: string;
   entries: Entry[];
+  combo?: boolean; // 用户主动开启的组合用药模式
 };
 
 type Requirement = {
@@ -210,6 +211,14 @@ function PrepPage() {
     const d = drugPool[scanIdx % drugPool.length];
     setScanIdx((i) => i + 1);
     addScan(d);
+  };
+
+  const enableCombo = (gi: number) => {
+    setGroups((prev) => {
+      const next = [...prev];
+      next[gi] = { ...next[gi], combo: true };
+      return next;
+    });
   };
 
   const addComboScan = (gi: number) => {
@@ -450,6 +459,7 @@ function PrepPage() {
                 key={g.id}
                 group={g}
                 onScanMore={() => addComboScan(gi)}
+                onEnableCombo={() => enableCombo(gi)}
                 onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
                 onRemove={(ei) => removeEntry(gi, ei)}
               />
@@ -497,11 +507,13 @@ function PrepPage() {
 function DrugCard({
   group,
   onScanMore,
+  onEnableCombo,
   onUpdateQty,
   onRemove,
 }: {
   group: Group;
   onScanMore: () => void;
+  onEnableCombo: () => void;
   onUpdateQty: (ei: number, qty: number) => void;
   onRemove: (ei: number) => void;
 }) {
@@ -513,7 +525,7 @@ function DrugCard({
     () => Array.from(new Map(entries.map((e) => [e.drug.name, e.drug])).values()),
     [entries],
   );
-  const isCombo = distinctDrugs.length > 1;
+  const isCombo = !!group.combo || distinctDrugs.length > 1;
   const firstDrug = distinctDrugs[0];
 
   const comboTitle = useMemo(() => {
@@ -550,17 +562,22 @@ function DrugCard({
           <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
             {isCombo ? comboTitle : firstDrug.name}
           </div>
-          <button
-            onClick={() => setConfirmOpen(true)}
-            className={`h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 active:opacity-80 ${
-              isCombo
-                ? "bg-[#FFF1E6] text-[#E5751A]"
-                : "bg-brand-subtle text-primary"
-            }`}
-            aria-label="继续扫描"
-          >
-            <ScanLine className="h-4 w-4" />
-          </button>
+          {isCombo ? (
+            <button
+              onClick={onScanMore}
+              className="h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 active:opacity-80 bg-[#FFF1E6] text-[#E5751A]"
+              aria-label="继续扫描"
+            >
+              <ScanLine className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              onClick={() => setConfirmOpen(true)}
+              className="h-7 px-2.5 rounded-md inline-flex items-center justify-center shrink-0 active:opacity-80 text-caption font-medium bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]"
+            >
+              组合用药
+            </button>
+          )}
         </div>
 
         {/* 单药品专有信息 */}
@@ -692,7 +709,7 @@ function DrugCard({
               <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              是否关联其他药品组合用药？该功能仅适用于需配药的场景，请确认后再扫描。
+              开启「组合用药」后，可继续扫描其他药品并合并到本卡片，用于需配药的场景。开启后无法恢复为单项药品卡片，请谨慎操作。
             </p>
             <div className="flex items-center gap-2">
               <button
@@ -705,12 +722,12 @@ function DrugCard({
               <button
                 type="button"
                 onClick={() => {
-                  onScanMore();
+                  onEnableCombo();
                   setConfirmOpen(false);
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
-                确认扫描
+                确认开启
               </button>
             </div>
           </div>
