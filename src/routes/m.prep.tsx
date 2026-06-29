@@ -312,15 +312,9 @@ function PrepPage() {
             <ChevronLeft className="h-5 w-5" />
           </button>
           <div className="flex-1 text-body font-semibold text-foreground">备药</div>
-          <button
-            onClick={() => setAggOpen(true)}
-            className="h-8 px-2.5 rounded-md text-caption text-primary inline-flex items-center gap-1 active:bg-brand-subtle"
-          >
-            <ClipboardList className="h-4 w-4" />
-            统计药品清单
-          </button>
         </div>
       </header>
+
 
       {/* 吸顶药品清单 */}
       {requirements.length > 0 && (
