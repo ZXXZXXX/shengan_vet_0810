@@ -143,8 +143,8 @@ export function TagPicker({
 
 
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="px-0">
-          <DrawerHeader className="px-4 pt-2 pb-3 text-left">
+        <DrawerContent className="px-0 h-[75vh] max-h-[75vh] flex flex-col">
+          <DrawerHeader className="px-4 pt-2 pb-3 text-left shrink-0">
             <div className="flex items-center justify-between">
               <DrawerTitle className="text-section-title">{drawerTitle}</DrawerTitle>
               <button
@@ -157,7 +157,7 @@ export function TagPicker({
             </div>
           </DrawerHeader>
 
-          <div className="px-4 pb-2">
+          <div className="px-4 pb-2 shrink-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
               <input
@@ -170,14 +170,13 @@ export function TagPicker({
             </div>
           </div>
 
-          <div className="px-4 pt-1 pb-2 flex items-center gap-1 text-caption text-text-tertiary">
+          <div className="px-4 pt-1 pb-2 flex items-center gap-1 text-caption text-text-tertiary shrink-0">
             <Sparkles className="h-3 w-3 text-primary" />
             <span>{hotLabel}</span>
             <span className="ml-auto">{filtered.length} 项</span>
           </div>
 
-          {/* 一屏最多 6 行，超出滚动；一行一个 */}
-          <div className="px-4 pb-4 max-h-[calc(6*52px+24px)] overflow-y-auto">
+          <div className="px-4 pb-4 flex-1 min-h-0 overflow-y-auto">
             {filtered.length > 0 ? (
               <div className="flex flex-col">
                 {filtered.map((t) => {
@@ -220,6 +219,7 @@ export function TagPicker({
           </div>
 
         </DrawerContent>
+
       </Drawer>
     </div>
   );

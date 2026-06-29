@@ -1346,7 +1346,7 @@ function DiagnosePage() {
       {weightSheetOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setWeightSheetOpen(false)}>
           <div
-            className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[70vh] overflow-y-auto"
+            className="w-full bg-card rounded-t-2xl p-4 space-y-3 h-[75vh] max-h-[75vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -1390,7 +1390,7 @@ function DiagnosePage() {
 
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setPlanSheetOpen(false)}>
           <div
-            className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[80vh] overflow-y-auto"
+            className="w-full bg-card rounded-t-2xl p-4 space-y-3 h-[75vh] max-h-[75vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -1454,7 +1454,7 @@ function DiagnosePage() {
           onClick={() => setSubmitCheck(null)}
         >
           <div
-            className="w-full max-w-sm bg-card rounded-2xl p-4 space-y-3 max-h-[80vh] overflow-y-auto"
+            className="w-full max-w-sm bg-card rounded-2xl p-4 space-y-3 max-h-[75vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-2">
@@ -1626,7 +1626,7 @@ function DrugEditor({
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={onCancel}>
       <div
-        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-4 max-h-[85vh] overflow-y-auto"
+        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-4 h-[75vh] max-h-[75vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-section-title text-foreground">
