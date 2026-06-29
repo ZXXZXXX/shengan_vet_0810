@@ -1,55 +1,60 @@
 import { useMemo, useState } from "react";
-import { Search, Plus, X, Sparkles } from "lucide-react";
+import { Search, Plus, X, Sparkles, ChevronDown, Check } from "lucide-react";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 export function TagPicker({
   selected,
   onChange,
   presets,
-  placeholder = "输入关键词搜索，或创建新标签",
+  placeholder = "点击选择或搜索",
   hotLabel = "常用标签",
-  maxHot = 8,
   singleSelect = false,
   disableCreate = false,
+  triggerLabel,
+  drawerTitle = "选择标签",
 }: {
   selected: string[];
   onChange: (next: string[]) => void;
   presets: string[];
   placeholder?: string;
   hotLabel?: string;
+  /** @deprecated 不再控制内联展示数量；池由抽屉承载 */
   maxHot?: number;
   singleSelect?: boolean;
   disableCreate?: boolean;
+  triggerLabel?: string;
+  drawerTitle?: string;
 }) {
+  const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
 
   const kw = q.trim();
   const lower = kw.toLowerCase();
 
-  // 全部可见候选（预设 + 已自定义的）
+  // 池：预设 + 已自定义的（已选的非预设也并入，保证保留可见）
   const pool = useMemo(() => {
     const set = new Set<string>(presets);
     selected.forEach((s) => set.add(s));
     return Array.from(set);
   }, [presets, selected]);
 
-  // 搜索命中（已选项也参与匹配以便取消）
-  const matches = useMemo(() => {
-    if (!kw) return [];
+  const filtered = useMemo(() => {
+    if (!kw) return pool;
     return pool.filter((t) => t.toLowerCase().includes(lower));
   }, [pool, kw, lower]);
-
-  // 无关键词时：展示常用标签（去掉已选）
-  const hot = useMemo(
-    () => presets.filter((t) => !selected.includes(t)).slice(0, maxHot),
-    [presets, selected, maxHot]
-  );
 
   const exactExists = pool.some((t) => t.toLowerCase() === lower);
   const canCreate = !disableCreate && !!kw && !exactExists;
 
-  const select = (t: string) => {
+  const toggle = (t: string) => {
     if (singleSelect) {
       onChange(selected[0] === t ? [] : [t]);
+      setOpen(false);
     } else {
       if (selected.includes(t)) onChange(selected.filter((x) => x !== t));
       else onChange([...selected, t]);
@@ -60,28 +65,14 @@ export function TagPicker({
 
   const create = () => {
     if (!canCreate) return;
-    onChange(singleSelect ? [kw] : [...selected, kw]);
+    if (singleSelect) {
+      onChange([kw]);
+      setOpen(false);
+    } else {
+      onChange([...selected, kw]);
+    }
     setQ("");
   };
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
-    if (!kw) return;
-    const exact = pool.find((t) => t.toLowerCase() === lower);
-    if (exact) {
-      select(exact);
-      setQ("");
-      return;
-    }
-    if (matches.length > 0) {
-      select(matches[0]);
-      setQ("");
-      return;
-    }
-    create();
-  };
-
 
   return (
     <div className="space-y-3">
@@ -107,78 +98,102 @@ export function TagPicker({
         </div>
       )}
 
-      {/* 搜索框 */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder={placeholder}
-          className="w-full h-10 pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-        />
-      </div>
+      {/* 触发器 */}
+      <button
+        type="button"
+        onClick={() => {
+          setQ("");
+          setOpen(true);
+        }}
+        className="w-full h-10 px-3 inline-flex items-center justify-between rounded-lg bg-card border border-border text-body-sm text-text-tertiary active:border-primary"
+      >
+        <span className="inline-flex items-center gap-2">
+          <Search className="h-4 w-4" />
+          {triggerLabel || placeholder}
+        </span>
+        <ChevronDown className="h-4 w-4" />
+      </button>
 
-      {/* 搜索结果 / 常用标签 / 新建 */}
-      {kw ? (
-        <div className="space-y-2">
-          {matches.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {matches.map((t) => {
-                const active = selected.includes(t);
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => select(t)}
-                    className={`h-8 px-3 rounded-full text-body-sm border transition-colors ${
-                      active
-                        ? "bg-brand-subtle text-primary border-primary/40"
-                        : "bg-card text-text-secondary border-border active:scale-[0.97]"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                );
-              })}
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerContent className="px-0">
+          <DrawerHeader className="px-4 pt-2 pb-3 text-left">
+            <div className="flex items-center justify-between">
+              <DrawerTitle className="text-section-title">{drawerTitle}</DrawerTitle>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="h-9 px-3 rounded-lg text-body-sm text-primary font-medium"
+              >
+                完成{selected.length > 0 ? `（${selected.length}）` : ""}
+              </button>
             </div>
-          )}
-          {canCreate && (
-            <button
-              type="button"
-              onClick={create}
-              className="inline-flex items-center gap-1 h-8 px-3 rounded-full border border-dashed border-primary/50 bg-brand-subtle text-primary text-body-sm"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              新建标签「{kw}」
-            </button>
-          )}
-          {matches.length === 0 && !canCreate && (
-            <div className="text-caption text-text-tertiary">无匹配结果</div>
-          )}
-        </div>
-      ) : (
-        hot.length > 0 && (
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1 text-caption text-text-tertiary">
-              <Sparkles className="h-3 w-3 text-primary" />
-              {hotLabel}
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {hot.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => select(t)}
-                  className="h-8 px-3 rounded-full text-body-sm border border-border bg-card text-text-secondary active:scale-[0.97]"
-                >
-                  {t}
-                </button>
-              ))}
+          </DrawerHeader>
+
+          <div className="px-4 pb-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+              <input
+                autoFocus
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder={disableCreate ? "输入关键词搜索" : "搜索或直接输入新症状"}
+                className="w-full h-10 pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+              />
             </div>
           </div>
-        )
-      )}
+
+          <div className="px-4 pt-1 pb-3 flex items-center gap-1 text-caption text-text-tertiary">
+            <Sparkles className="h-3 w-3 text-primary" />
+            <span>{kw ? "搜索结果" : hotLabel}</span>
+            <span className="ml-auto">{filtered.length} 项</span>
+          </div>
+
+          {/* 一屏最多 6 行，超出滚动 */}
+          <div className="px-4 pb-4 max-h-[calc(6*44px+24px)] overflow-y-auto">
+            {filtered.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {filtered.map((t) => {
+                  const active = selected.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => toggle(t)}
+                      className={`h-9 px-3 rounded-full text-body-sm border inline-flex items-center gap-1 transition-colors ${
+                        active
+                          ? "bg-brand-subtle text-primary border-primary/50"
+                          : "bg-card text-text-secondary border-border active:scale-[0.97]"
+                      }`}
+                    >
+                      {active && <Check className="h-3.5 w-3.5" />}
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              !canCreate && (
+                <div className="py-6 text-center text-caption text-text-tertiary">
+                  无匹配结果
+                </div>
+              )
+            )}
+
+            {canCreate && (
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={create}
+                  className="inline-flex items-center gap-1 h-9 px-3 rounded-full border border-dashed border-primary/60 bg-brand-subtle text-primary text-body-sm"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  新建「{kw}」
+                </button>
+              </div>
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
