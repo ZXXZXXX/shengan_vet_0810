@@ -559,7 +559,7 @@ function SummaryCard({
       </div>
       {trend && (
         <div className="mt-2.5">
-          <span className={`inline-flex items-center gap-0.5 h-5 px-1.5 rounded-md text-[11px] font-medium tabular-nums ${trendTone}`}>
+          <span className={`inline-flex items-center gap-0.5 h-5 px-1.5 rounded-md text-caption font-medium tabular-nums ${trendTone}`}>
             {trendDir === "down" ? "↘" : "↗"} {trend}
           </span>
         </div>
