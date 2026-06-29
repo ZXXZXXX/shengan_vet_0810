@@ -297,7 +297,8 @@
   --m-gutter: 12px;
   --m-card-padding: 16px;
   --m-touch: 48px;
-  font-size: 15px;
+  /* 正文文本：14-16px，取 16px 保证移动端长文本可读性 */
+  font-size: 16px;
   line-height: 26px;
 
   /* === M 端配色规范覆盖 ===
@@ -336,13 +337,13 @@
 .m-scope .tag-muted   { background-color: #F0F2F4; color: #475569; }
 .m-scope .tag-brand   { background-color: #E6F8EC; color: #00A85A; }
 
-.m-scope .text-page-title    { font-size: 22px; line-height: 32px; font-weight: 500; }
+.m-scope .text-page-title    { font-size: 24px; line-height: 34px; font-weight: 500; }
 .m-scope .text-section-title { font-size: 18px; line-height: 28px; font-weight: 500; }
 .m-scope .text-card-title    { font-size: 16px; line-height: 26px; font-weight: 500; }
-.m-scope .text-body          { font-size: 15px; line-height: 26px; font-weight: 400; }
-.m-scope .text-body-strong   { font-size: 15px; line-height: 26px; font-weight: 500; }
+.m-scope .text-body          { font-size: 16px; line-height: 26px; font-weight: 400; }
+.m-scope .text-body-strong   { font-size: 16px; line-height: 26px; font-weight: 500; }
 .m-scope .text-body-sm       { font-size: 13px; line-height: 22px; font-weight: 400; }
 .m-scope .text-caption       { font-size: 12px; line-height: 20px; font-weight: 400; }
-.m-scope .text-button        { font-size: 15px; line-height: 24px; font-weight: 500; }
-.m-scope .text-state-title   { font-size: 20px; line-height: 30px; font-weight: 600; }
+.m-scope .text-button        { font-size: 16px; line-height: 26px; font-weight: 500; }
+.m-scope .text-state-title   { font-size: 24px; line-height: 34px; font-weight: 600; }
 .m-scope .text-state-desc    { font-size: 14px; line-height: 24px; font-weight: 400; }

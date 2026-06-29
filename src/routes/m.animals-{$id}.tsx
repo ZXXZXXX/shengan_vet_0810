@@ -137,7 +137,7 @@ function AnimalDetailPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-section-title font-mono leading-tight">#{a.id}</div>
-                <div className="mt-1 inline-flex items-center gap-1 text-[11px] opacity-90 font-medium">
+                <div className="mt-1 inline-flex items-center gap-1 text-caption opacity-90 font-medium">
                   <MapPin className="h-3 w-3 opacity-85 shrink-0" />
                   <span className="truncate">{a.farm} · {a.barn} · {a.pen}</span>
                 </div>
@@ -187,7 +187,7 @@ function AnimalDetailPage() {
                 <Clock className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">休药期至 {a.withdrawalUntil}</span>
               </span>
-              <span className="ml-2 shrink-0 bg-[#FF4D4F] text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+              <span className="ml-2 shrink-0 bg-[#FF4D4F] text-white text-caption px-1.5 py-0.5 rounded-full font-bold">
                 剩 {a.withdrawalDays} 天
               </span>
             </div>
@@ -277,7 +277,7 @@ function AnimalDetailPage() {
                             <span className="text-text-tertiary/60">·</span>
                             <span className="flex items-center gap-1 min-w-0">
                               <span className="shrink-0">{personLabel}</span>
-                              <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center shrink-0">
+                              <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-caption inline-flex items-center justify-center shrink-0">
                                 {o.person.charAt(0)}
                               </span>
                               <span className="text-text-secondary truncate">{o.person}</span>
@@ -498,7 +498,7 @@ function Brief({
 }) {
   return (
     <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-2">
-      <div className="text-[10px] opacity-75 inline-flex items-center gap-1 font-medium">
+      <div className="text-caption opacity-75 inline-flex items-center gap-1 font-medium">
         {icon}
         {label}
       </div>
@@ -705,10 +705,10 @@ function HeaderStat({
     <div
       className={`px-2 ${divider ? "border-l border-white/20" : ""}`}
     >
-      <div className="text-[11px] opacity-80 leading-none">{label}</div>
+      <div className="text-caption opacity-80 leading-none">{label}</div>
       <div className="mt-1.5 leading-none">
         <span className="text-[20px] font-semibold tabular-nums">{value}</span>
-        {unit && <span className="text-[11px] opacity-80 ml-0.5">{unit}</span>}
+        {unit && <span className="text-caption opacity-80 ml-0.5">{unit}</span>}
       </div>
     </div>
   );

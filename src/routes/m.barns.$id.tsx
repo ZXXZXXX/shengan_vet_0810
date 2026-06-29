@@ -163,7 +163,7 @@ function BarnDetailPage() {
                             <span className="text-text-tertiary/60">·</span>
                             <span className="flex items-center gap-1 min-w-0">
                               <span className="shrink-0">{personLabel}</span>
-                              <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center shrink-0">
+                              <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-caption inline-flex items-center justify-center shrink-0">
                                 {o.person.charAt(0)}
                               </span>
                               <span className="text-text-secondary truncate">{o.person}</span>

@@ -329,7 +329,7 @@ export function PickupItemRow({
                   </span>
                 ))}
                 <span
-                  className={`ml-1 px-1.5 rounded text-[10px] leading-4 border ${
+                  className={`ml-1 px-1.5 rounded text-caption leading-4 border ${
                     allowMix
                       ? "border-border text-text-tertiary"
                       : "border-[#FFD591] text-[#AD4E00] bg-[#FFF7E6]"

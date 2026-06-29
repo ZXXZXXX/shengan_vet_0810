@@ -104,7 +104,7 @@ function DrugKBMobile() {
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-body text-foreground tabular-nums">{d.out7d}</div>
-                  <div className="text-[10px] text-text-tertiary">近7天出库{d.unit}</div>
+                  <div className="text-caption text-text-tertiary">近7天出库{d.unit}</div>
                 </div>
                 <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
               </button>
@@ -132,7 +132,7 @@ function DrugKBMobile() {
                 </div>
                 <div className="text-right shrink-0">
                   <div className={`text-body tabular-nums ${stockTone(d.stock)}`}>{d.stock}</div>
-                  <div className="text-[10px] text-text-tertiary">库存{d.unit}</div>
+                  <div className="text-caption text-text-tertiary">库存{d.unit}</div>
                 </div>
               </button>
             ))}
