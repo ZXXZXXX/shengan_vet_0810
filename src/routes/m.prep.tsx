@@ -126,10 +126,29 @@ type Group = {
   entries: Entry[];
 };
 
+type Requirement = {
+  key: string;            // name + spec
+  name: string;
+  spec: string;
+  unit: string;
+  total: number;          // 所需总数
+  mfrRequired: string;    // 厂商要求："不限" 或 具体厂商
+  taskIds: string[];      // 来源任务
+};
+
+/** 从 "2 瓶" 解析数字 */
+function parseQtyNum(qty: string): { n: number; unit: string } {
+  const m = qty.match(/^\s*(\d+(?:\.\d+)?)\s*(.*)$/);
+  if (!m) return { n: 0, unit: "" };
+  return { n: Number(m[1]), unit: (m[2] ?? "").trim() };
+}
+
 function PrepPage() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
   const [aggOpen, setAggOpen] = useState(false);
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [checklistCollapsed, setChecklistCollapsed] = useState(false);
 
   // 模拟扫描：循环演示药品池
   const [scanIdx, setScanIdx] = useState(0);
