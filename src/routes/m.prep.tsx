@@ -393,19 +393,15 @@ function PrepPage() {
               <span className="text-body font-medium text-foreground">药品清单</span>
             </div>
             <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface-2 p-6 text-center min-h-0">
-              <ClipboardList className="h-8 w-8 text-primary/60 mb-2" />
-              <div className="text-body-sm font-medium text-foreground mb-1">
-                统计今日待执行任务的药品清单
-              </div>
-              <div className="text-caption text-text-tertiary mb-4">
-                选择需要备药的工单，自动生成药品清单
+              <div className="text-body-sm text-text-tertiary mb-4">
+                选择任务，快速统计药品清单
               </div>
               <button
                 onClick={() => setAggOpen(true)}
                 className="h-9 px-4 rounded-lg text-body-sm text-primary inline-flex items-center gap-1.5 border border-primary active:bg-brand-subtle"
               >
                 <ClipboardList className="h-4 w-4" />
-                统计药品清单
+                选择任务
               </button>
             </div>
           </div>
