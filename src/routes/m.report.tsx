@@ -15,6 +15,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+
 import { MAddMediaSheet } from "@/components/m-add-media-sheet";
 
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
@@ -476,19 +477,23 @@ function ReportPage() {
   };
 
   // 同牛舍其他牛只（mock 数据，规模 30+ 头，需搜索/扫码添加）
-  const sameBarnPool = useMemo(
+  // 全牧场牛只池（mock；跨牛舍）
+  const farmCattlePool = useMemo(
     () =>
-      Array.from({ length: 36 }, (_, i) => `A${2382 + i}`).filter(
-        (x) => !targets.includes(x)
-      ),
-    [targets]
+      Array.from({ length: 240 }, (_, i) => {
+        const num = 2100 + i;
+        return `A${num}`;
+      }),
+    []
   );
   const [addQuery, setAddQuery] = useState("");
+  const [cowPickerOpen, setCowPickerOpen] = useState(false);
   const addMatches = useMemo(() => {
     const kw = addQuery.trim().toLowerCase();
-    const base = kw ? sameBarnPool.filter((x) => x.toLowerCase().includes(kw)) : sameBarnPool;
-    return base.slice(0, 8);
-  }, [addQuery, sameBarnPool]);
+    const pool = farmCattlePool.filter((x) => !targets.includes(x));
+    const base = kw ? pool.filter((x) => x.toLowerCase().includes(kw)) : pool;
+    return base.slice(0, 30);
+  }, [addQuery, farmCattlePool, targets]);
   
 
   return (
@@ -681,47 +686,23 @@ function ReportPage() {
                     </div>
                   );
                 })}
-                {targets.length > 0 && (
+                {targets.length > 0 ? (
                   <div className="text-caption text-text-tertiary">
-                    牛舍信息根据牛只编号自动获取，不可更改
+                    单次仅可上报一头牛只；如需更换，请先删除已选牛只
                   </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAddQuery("");
+                      setCowPickerOpen(true);
+                    }}
+                    className="w-full h-12 px-3 rounded-xl bg-card border border-border text-left text-body text-text-tertiary flex items-center gap-2"
+                  >
+                    <Search className="h-4 w-4 text-text-tertiary" />
+                    <span className="flex-1">输入牛只耳号搜索并选择</span>
+                  </button>
                 )}
-                <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                    <input
-                      autoFocus={targets.length === 0}
-                      value={addQuery}
-                      onChange={(e) => setAddQuery(e.target.value)}
-                      placeholder="输入牛只编号搜索并选择"
-                      className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
-                    />
-                  </div>
-                  {addQuery.trim() && addMatches.length === 0 && (
-                    <div className="text-caption text-text-tertiary px-1">无匹配结果</div>
-                  )}
-                  {addMatches.length > 0 && (
-                    <div className="max-h-48 overflow-y-auto space-y-1">
-                      {addMatches.map((cowId) => (
-                        <button
-                          key={cowId}
-                          type="button"
-                          onClick={() => {
-                            addTarget(cowId);
-                            setAddQuery("");
-                          }}
-                          className="w-full flex items-center justify-between h-11 px-3 rounded-lg bg-surface-subtle text-body text-foreground active:bg-brand-subtle"
-                        >
-                          <span className="font-mono">#{cowId}</span>
-                          <span className="text-caption text-text-tertiary">{barnOfCattle(cowId)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  <div className="text-caption text-text-tertiary">
-                    输入牛只编号后，将自动获取所属牛舍信息
-                  </div>
-                </div>
               </div>
               )}
 
@@ -1354,6 +1335,70 @@ function ReportPage() {
                       className="w-full text-left px-2 h-12 flex items-center text-body text-foreground active:bg-surface-subtle"
                     >
                       {b}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 牛只选择弹层（按牛只 - 全牧场搜索） */}
+      {cowPickerOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          onClick={() => setCowPickerOpen(false)}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[75vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border shrink-0">
+              <div className="text-body font-medium text-foreground">选择牛只</div>
+              <button
+                type="button"
+                onClick={() => setCowPickerOpen(false)}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
+                aria-label="关闭"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="px-4 pt-3 shrink-0">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                <input
+                  autoFocus
+                  inputMode="numeric"
+                  value={addQuery}
+                  onChange={(e) => setAddQuery(e.target.value)}
+                  placeholder="输入耳号数字，搜索整个牧场"
+                  className="w-full h-10 pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary"
+                />
+              </div>
+              <div className="mt-2 text-caption text-text-tertiary">
+                搜索范围为整个牧场；选定后将自动获取所属牛舍
+              </div>
+            </div>
+            <div className="p-3 overflow-y-auto flex-1">
+              {addQuery.trim() && addMatches.length === 0 ? (
+                <div className="text-center py-12 text-body-sm text-text-tertiary">无匹配牛只</div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {addMatches.map((cowId) => (
+                    <button
+                      key={cowId}
+                      type="button"
+                      onClick={() => {
+                        addTarget(cowId);
+                        setAddQuery("");
+                        setCowPickerOpen(false);
+                      }}
+                      className="w-full px-2 h-12 flex items-center justify-between text-body text-foreground active:bg-surface-subtle"
+                    >
+                      <span className="font-mono">#{cowId}</span>
+                      <span className="text-caption text-text-tertiary">{barnOfCattle(cowId)}</span>
                     </button>
                   ))}
                 </div>
