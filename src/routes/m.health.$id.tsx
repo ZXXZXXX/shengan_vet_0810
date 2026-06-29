@@ -848,6 +848,22 @@ function PersonChip({ name }: { name: string }) {
   );
 }
 
+// === 产后护理 · 待诊断上报提示 ===
+function PostpartumReportNotice({ id }: { id: string }) {
+  const calvedAt: Record<string, string> = {
+    "PP-2601": "2026/05/25 06:42",
+    "PP-2602": "2026/05/25 14:08",
+  };
+  const time = calvedAt[id] ?? "2026/05/25 06:42";
+  return (
+    <div className="rounded-xl bg-card border border-border p-4">
+      <p className="text-body-sm text-foreground leading-relaxed">
+        牛只在 <span className="font-medium">{time}</span> 产犊，请前往诊断是否需要进行特殊的产后护理。
+      </p>
+    </div>
+  );
+}
+
 // === 上报记录 ===
 function EmptyTab({ label }: { label: string }) {
   return (
