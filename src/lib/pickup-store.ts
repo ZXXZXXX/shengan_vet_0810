@@ -192,6 +192,52 @@ export const PICKUPS: Pickup[] = [
       },
     ],
   },
+  // 更多疾病治疗 待执行（覆盖多牛舍，便于"统计药品清单"演示）
+  ...([
+    { wo: "WO-2298", title: "乳房炎复诊处置药品领取", barn: "2 号牛舍",
+      items: [
+        { name: "头孢噻呋钠", spec: "1g / 支", qty: "4 支", stock: "48 支", usage: "1g / 次 · 肌肉注射",
+          unitScannable: false, packRemain: 16, allowMixManufacturer: true,
+          stockSources: [{ manufacturer: "中牧股份", qty: 30, unit: "支" }] },
+      ] },
+    { wo: "WO-2300", title: "子宫炎第 2 日疗程药品领取", barn: "4 号牛舍",
+      items: [
+        { name: "氯前列烯醇注射液", spec: "2ml / 支", qty: "2 支", stock: "20 支", usage: "2ml / 次 · 肌肉注射",
+          unitScannable: true, allowMixManufacturer: false,
+          stockSources: [{ manufacturer: "齐鲁动保", qty: 10, unit: "支" }] },
+        { name: "宫炎清", spec: "100ml / 瓶", qty: "1 瓶", stock: "8 瓶", usage: "子宫灌注",
+          unitScannable: true, allowMixManufacturer: true },
+      ] },
+    { wo: "WO-2302", title: "蹄部脓肿排脓物资领取", barn: "5 号牛舍",
+      items: [
+        { name: "碘酊", spec: "100ml / 瓶", qty: "1 瓶", stock: "30 瓶", usage: "蹄部消毒",
+          unitScannable: true, allowMixManufacturer: true },
+        { name: "蹄绷带", spec: "1 卷", qty: "2 卷", stock: "50 卷", usage: "蹄部包扎",
+          unitScannable: true, allowMixManufacturer: true },
+      ] },
+    { wo: "WO-2303", title: "酮病补液药品领取", barn: "6 号牛舍",
+      items: [
+        { name: "葡萄糖注射液", spec: "500ml / 瓶", qty: "2 瓶", stock: "40 瓶", usage: "静脉注射",
+          unitScannable: true, allowMixManufacturer: true },
+        { name: "丙二醇", spec: "1L / 瓶", qty: "1 瓶", stock: "12 瓶", usage: "灌服",
+          unitScannable: true, allowMixManufacturer: true },
+      ] },
+    { wo: "WO-2440", title: "乳房炎复查药品领取", barn: "3 号牛舍",
+      items: [
+        { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "1 瓶", stock: "12 瓶", usage: "2ml / 次 · 肌肉注射",
+          unitScannable: true, allowMixManufacturer: false,
+          stockSources: [{ manufacturer: "齐鲁动保", qty: 8, unit: "瓶" }] },
+      ] },
+  ] as const).map((v) => ({
+    id: `PK-${v.wo}`,
+    title: v.title,
+    source: v.wo,
+    barn: v.barn,
+    approvedAt: "今日 09:00",
+    visitor: "王芳(兽医)",
+    warehouse: "中央药房 · A 区",
+    items: [...v.items] as PickupItem[],
+  })),
   // ============ 疫苗免疫 工单领药 ============
   ...([
     { wo: "YM-1041", title: "口蹄疫加强免疫 疫苗领取", barn: "犊牛舍 A", vaccine: "口蹄疫疫苗 A 型", spec: "10ml / 支", qty: "9 支" },
