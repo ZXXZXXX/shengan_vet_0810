@@ -1594,27 +1594,24 @@ function ChecklistDay({
             <div className={`px-4 pb-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between">
                 <div className="text-caption text-text-tertiary">用药信息</div>
-                {interactive && (() => {
-                  const allScanned = medItems.every((m) => m.scanCode);
-                  return (
-                    <button
-                      type="button"
-                      disabled={allScanned}
-                      onClick={() => {
-                        const target = medItems.find((m) => !m.scanCode);
-                        if (!target) return;
-                        // 演示场景循环：1→情况2(无领取记录), 2→情况3(关联药品), 3→情况1(直接录入), 4→情况4(已被使用)
-                        const order: Array<1 | 2 | 3 | 4> = [2, 3, 1, 4];
-                        const scenario = order[scanAttemptRef.current % 4];
-                        scanAttemptRef.current += 1;
-                        setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
-                      }}
-                      className={`inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border ${allScanned ? "text-text-tertiary border-border bg-surface-subtle" : "text-primary border-primary/30 active:bg-brand-subtle"}`}
-                    >
-                      <ScanLine className="h-3.5 w-3.5" /> 扫码核验
-                    </button>
-                  );
-                })()}
+                {interactive && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 演示场景循环：2(无领取记录) → 3(关联药品) → 1(直接录入) → 4(已被使用) → 2 …
+                      const order: Array<1 | 2 | 3 | 4> = [2, 3, 1, 4];
+                      const scenario = order[scanAttemptRef.current % 4];
+                      scanAttemptRef.current += 1;
+                      // 优先未扫码的；若都扫码完，循环回第一个用于演示
+                      const target = medItems.find((m) => !m.scanCode) ?? medItems[0];
+                      if (!target) return;
+                      setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
+                    }}
+                    className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-primary border-primary/30 active:bg-brand-subtle"
+                  >
+                    <ScanLine className="h-3.5 w-3.5" /> 扫码核验
+                  </button>
+                )}
               </div>
           {medItems.map((it) => {
             const scanned = Boolean(it.scanCode);
