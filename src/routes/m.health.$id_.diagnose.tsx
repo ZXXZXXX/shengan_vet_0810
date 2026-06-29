@@ -681,7 +681,9 @@ function DiagnosePage() {
         <div className="px-4 pt-2 pb-1">
           <div className="flex items-center gap-1.5 text-caption text-primary">
             <Sparkles className="h-3 w-3" />
-            已自动将上报信息填写至下方，方便编辑更改
+            {isPostpartum
+              ? "平台下发的产后护理工单，请勾选高危因素并核对治疗方案"
+              : "已自动将上报信息填写至下方，方便编辑更改"}
           </div>
         </div>
 
