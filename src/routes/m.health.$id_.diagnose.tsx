@@ -706,7 +706,7 @@ function DiagnosePage() {
               disableCreate={isPostpartum}
               placeholder={isPostpartum ? "输入关键词搜索" : "输入关键词搜索，或创建新标签"}
               hotLabel="常用标签"
-              maxHot={8}
+              maxHot={isPostpartum ? 5 : 8}
             />
           </Section>
 
