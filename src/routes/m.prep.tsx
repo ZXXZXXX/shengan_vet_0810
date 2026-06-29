@@ -507,11 +507,13 @@ function PrepPage() {
 function DrugCard({
   group,
   onScanMore,
+  onEnableCombo,
   onUpdateQty,
   onRemove,
 }: {
   group: Group;
   onScanMore: () => void;
+  onEnableCombo: () => void;
   onUpdateQty: (ei: number, qty: number) => void;
   onRemove: (ei: number) => void;
 }) {
@@ -523,7 +525,7 @@ function DrugCard({
     () => Array.from(new Map(entries.map((e) => [e.drug.name, e.drug])).values()),
     [entries],
   );
-  const isCombo = distinctDrugs.length > 1;
+  const isCombo = !!group.combo || distinctDrugs.length > 1;
   const firstDrug = distinctDrugs[0];
 
   const comboTitle = useMemo(() => {
