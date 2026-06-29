@@ -329,7 +329,17 @@ function PrepPage() {
               <span className="text-caption text-text-tertiary">
                 共 {requirements.length} 种
               </span>
-              <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAggOpen(true);
+                }}
+                className="ml-auto inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
+              >
+                选择任务
+              </button>
+              <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
                 {checklistCollapsed ? "展开" : "收起"}
                 {checklistCollapsed ? (
                   <ChevronDown className="h-3.5 w-3.5" />
