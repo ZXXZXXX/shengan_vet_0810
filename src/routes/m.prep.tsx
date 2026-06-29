@@ -150,10 +150,10 @@ function PrepPage() {
           ) : (
             <div className="space-y-2 pb-4">
               {scans.map((s, i) => (
-                <div
-                  key={`${s.code}-${i}`}
-                  className="rounded-xl bg-card border border-border p-3"
-                >
+              <div
+                key={`${s.code}-${i}`}
+                className="rounded-xl bg-card border border-primary p-3"
+              >
                   {/* 顶部：图标 + 名称 + 右上角已领/库存 */}
                   <div className="flex items-start gap-2">
                     <Package className="h-4 w-4 text-primary mt-1 shrink-0" />
