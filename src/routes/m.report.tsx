@@ -477,19 +477,23 @@ function ReportPage() {
   };
 
   // 同牛舍其他牛只（mock 数据，规模 30+ 头，需搜索/扫码添加）
-  const sameBarnPool = useMemo(
+  // 全牧场牛只池（mock；跨牛舍）
+  const farmCattlePool = useMemo(
     () =>
-      Array.from({ length: 36 }, (_, i) => `A${2382 + i}`).filter(
-        (x) => !targets.includes(x)
-      ),
-    [targets]
+      Array.from({ length: 240 }, (_, i) => {
+        const num = 2100 + i;
+        return `A${num}`;
+      }),
+    []
   );
   const [addQuery, setAddQuery] = useState("");
+  const [cowPickerOpen, setCowPickerOpen] = useState(false);
   const addMatches = useMemo(() => {
     const kw = addQuery.trim().toLowerCase();
-    const base = kw ? sameBarnPool.filter((x) => x.toLowerCase().includes(kw)) : sameBarnPool;
-    return base.slice(0, 8);
-  }, [addQuery, sameBarnPool]);
+    const pool = farmCattlePool.filter((x) => !targets.includes(x));
+    const base = kw ? pool.filter((x) => x.toLowerCase().includes(kw)) : pool;
+    return base.slice(0, 30);
+  }, [addQuery, farmCattlePool, targets]);
   
 
   return (
