@@ -166,6 +166,10 @@ function TaskDetailPage() {
   const [abortOpen, setAbortOpen] = useState(false);
   const [abortReason, setAbortReason] = useState<string>("");
   const [abortOther, setAbortOther] = useState<string>("");
+  const [abortNeedTransfer, setAbortNeedTransfer] = useState(false);
+  const [abortTransferTo, setAbortTransferTo] = useState("");
+  const [abortTransferConfirmOpen, setAbortTransferConfirmOpen] = useState(false);
+
   
   
 
