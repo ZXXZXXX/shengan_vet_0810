@@ -15,16 +15,8 @@ import {
 import { toast } from "sonner";
 
 import { MobileShell } from "@/components/mobile-shell";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+
 import {
   PICKUPS,
   useClaimed,
