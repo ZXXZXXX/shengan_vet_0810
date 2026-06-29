@@ -121,7 +121,7 @@ function MHomePage() {
               </button>
               <Link
                 to="/m/prep"
-                className="h-9 px-3 rounded-full bg-white/15 backdrop-blur-sm border border-white/30 text-white inline-flex items-center gap-1 text-caption font-semibold active:scale-[.97] transition-transform"
+                className="h-9 px-3 rounded-full bg-white text-primary inline-flex items-center gap-1 text-caption font-semibold shadow-[0_6px_18px_-4px_rgba(0,0,0,0.35)] ring-2 ring-white/40 active:scale-[.97] transition-transform"
               >
                 <Pill className="h-3.5 w-3.5" />
                 备药
