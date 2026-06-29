@@ -250,7 +250,6 @@ function PrepPage() {
                 <DrugCard
                   key={g.drug.name}
                   group={g}
-                  onScanMore={() => addOneScan(g.drug)}
                   onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
                   onRemove={(ei) => removeEntry(gi, ei)}
                 />
