@@ -541,7 +541,7 @@ function DrugCard({
               <Pill className="h-4 w-4" />
             </span>
           ) : (
-            <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+            <Pill className="h-5 w-5 text-primary mt-0.5 shrink-0" />
           )}
           <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
             {isCombo ? comboTitle : firstDrug.name}
