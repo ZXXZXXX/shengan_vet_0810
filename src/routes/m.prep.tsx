@@ -104,7 +104,7 @@ function PrepPage() {
         </div>
       </header>
 
-      <div className="px-4 pt-3">
+      <div className="px-4 pt-3 pb-24">
         {/* 扫码按钮 */}
         <button
           onClick={handleScan}
@@ -211,15 +211,17 @@ function PrepPage() {
         </div>
 
         {scans.length > 0 && (
-          <button
-            onClick={() => {
-              toast.success(`已生成领药记录（${scans.length} 项）`);
-              setScans([]);
-            }}
-            className="mb-6 w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90"
-          >
-            提交领药（{scans.length} 项）
-          </button>
+          <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 z-40">
+            <button
+              onClick={() => {
+                toast.success(`已生成领药记录（${scans.length} 项）`);
+                setScans([]);
+              }}
+              className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90"
+            >
+              完成领药（{scans.length} 项）
+            </button>
+          </div>
         )}
       </div>
 
