@@ -192,17 +192,6 @@ function AnimalDetailPage() {
           </section>
         )}
 
-        {/* 生产信息 */}
-        <section className="px-4 mt-5">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">近 14 天产奶</h3>
-          </div>
-          <div className="rounded-xl bg-card border border-border p-3">
-            <MilkChart values={a.milk14d} />
-          </div>
-        </section>
-
-
         {/* 当前相关工单 */}
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-2">
