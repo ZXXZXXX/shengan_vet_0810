@@ -874,9 +874,9 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
           <Field
             label="疑似疾病"
             value={
-              <div className="flex flex-wrap gap-1 justify-end">
+              <div className="flex flex-wrap items-center gap-1 justify-end">
                 <span className="tag tag-warning">呼吸道感染</span>
-                <span className="tag tag-muted">符合症状 2 项</span>
+                <span className="text-caption text-text-tertiary">（符合症状 2 项）</span>
               </div>
             }
           />
