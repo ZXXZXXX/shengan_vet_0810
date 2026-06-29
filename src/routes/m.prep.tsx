@@ -709,7 +709,7 @@ function DrugCard({
               <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              是否关联其他药品组合用药？该功能仅适用于需配药的场景，请确认后再扫描。
+              开启「组合用药」后，可继续扫描其他药品并合并到本卡片，用于需配药的场景。开启后无法恢复为单项药品卡片，请谨慎操作。
             </p>
             <div className="flex items-center gap-2">
               <button
@@ -722,12 +722,12 @@ function DrugCard({
               <button
                 type="button"
                 onClick={() => {
-                  onScanMore();
+                  onEnableCombo();
                   setConfirmOpen(false);
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
-                确认扫描
+                确认开启
               </button>
             </div>
           </div>
