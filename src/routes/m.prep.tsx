@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ChevronLeft,
+  ChevronDown,
+  ChevronUp,
   ClipboardList,
   ScanLine,
   Package,
@@ -19,7 +21,6 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import {
   PICKUPS,
-  useClaimed,
   genScanCode,
   genBatch,
 } from "@/lib/pickup-store";
@@ -124,10 +125,29 @@ type Group = {
   entries: Entry[];
 };
 
+type Requirement = {
+  key: string;            // name + spec
+  name: string;
+  spec: string;
+  unit: string;
+  total: number;          // 所需总数
+  mfrRequired: string;    // 厂商要求："不限" 或 具体厂商
+  taskIds: string[];      // 来源任务
+};
+
+/** 从 "2 瓶" 解析数字 */
+function parseQtyNum(qty: string): { n: number; unit: string } {
+  const m = qty.match(/^\s*(\d+(?:\.\d+)?)\s*(.*)$/);
+  if (!m) return { n: 0, unit: "" };
+  return { n: Number(m[1]), unit: (m[2] ?? "").trim() };
+}
+
 function PrepPage() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
   const [aggOpen, setAggOpen] = useState(false);
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [checklistCollapsed, setChecklistCollapsed] = useState(false);
 
   // 模拟扫描：循环演示药品池
   const [scanIdx, setScanIdx] = useState(0);
@@ -231,6 +251,54 @@ function PrepPage() {
 
   const totalCount = groups.reduce((sum, g) => sum + g.entries.length, 0);
 
+  // 当前已取（按药品名 + 规格聚合）
+  const claimedMap = useMemo(() => {
+    const m = new Map<string, number>();
+    groups.forEach((g) =>
+      g.entries.forEach((e) => {
+        const k = `${e.drug.name}|${e.drug.spec}`;
+        m.set(k, (m.get(k) ?? 0) + e.qty);
+      }),
+    );
+    return m;
+  }, [groups]);
+
+  const handleAggregateConfirm = (ids: string[]) => {
+    setAggOpen(false);
+    // 聚合所选任务对应 pickup 的药品需求
+    const map = new Map<string, Requirement>();
+    ids.forEach((tid) => {
+      const pk = PICKUPS.find((p) => p.source === tid);
+      if (!pk) return;
+      pk.items.forEach((it) => {
+        const { n, unit } = parseQtyNum(it.qty);
+        const key = `${it.name}|${it.spec ?? ""}`;
+        const existing = map.get(key);
+        const mfr =
+          it.allowMixManufacturer === false
+            ? it.stockSources?.[0]?.manufacturer ?? "指定厂商"
+            : "不限";
+        if (existing) {
+          existing.total += n;
+          if (!existing.taskIds.includes(tid)) existing.taskIds.push(tid);
+        } else {
+          map.set(key, {
+            key,
+            name: it.name,
+            spec: it.spec ?? "",
+            unit: unit || "",
+            total: n,
+            mfrRequired: mfr,
+            taskIds: [tid],
+          });
+        }
+      });
+    });
+    setRequirements(Array.from(map.values()));
+    setChecklistCollapsed(false);
+    toast.success(`已生成药品清单（${map.size} 种）`);
+  };
+
   return (
     <MobileShell hideTabBar>
       {/* 顶部栏 */}
@@ -253,6 +321,72 @@ function PrepPage() {
           </button>
         </div>
       </header>
+
+      {/* 吸顶药品清单 */}
+      {requirements.length > 0 && (
+        <div className="sticky top-12 z-20 bg-card border-b border-border">
+          <button
+            type="button"
+            onClick={() => setChecklistCollapsed((v) => !v)}
+            className="w-full h-10 px-4 flex items-center gap-2 active:bg-surface-subtle"
+          >
+            <ClipboardList className="h-4 w-4 text-primary" />
+            <span className="text-body-sm font-medium text-foreground">
+              领取清单
+            </span>
+            <span className="text-caption text-text-tertiary">
+              共 {requirements.length} 种
+            </span>
+            <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary">
+              {checklistCollapsed ? "展开" : "收起"}
+              {checklistCollapsed ? (
+                <ChevronDown className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronUp className="h-3.5 w-3.5" />
+              )}
+            </span>
+          </button>
+          {!checklistCollapsed && (
+            <div className="max-h-[50vh] overflow-y-auto px-4 pb-3 space-y-2">
+              {requirements.map((r) => {
+                const got = claimedMap.get(r.key) ?? 0;
+                const done = got >= r.total;
+                return (
+                  <div
+                    key={r.key}
+                    className="rounded-lg border border-border bg-surface-2 px-3 py-2"
+                  >
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-body-sm font-medium text-foreground truncate">
+                        {r.name}
+                      </span>
+                      <span
+                        className={`ml-auto text-caption tabular-nums shrink-0 ${
+                          done ? "text-primary font-medium" : "text-[#E5751A] font-medium"
+                        }`}
+                      >
+                        {got} / {r.total} {r.unit}
+                      </span>
+                    </div>
+                    <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2">
+                      <span>
+                        厂商
+                        <span
+                          className={`ml-1 ${r.mfrRequired === "不限" ? "text-text-secondary" : "text-[#E5751A]"}`}
+                        >
+                          {r.mfrRequired}
+                        </span>
+                      </span>
+                      <span className="text-border">·</span>
+                      <span>规格 <span className="text-text-secondary">{r.spec}</span></span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="px-4 pt-3 pb-36">
         {/* 已扫描列表 */}
@@ -310,6 +444,7 @@ function PrepPage() {
               onClick={() => {
                 toast.success(`已生成领药记录（${totalCount} 项）`);
                 setGroups([]);
+                setRequirements([]);
               }}
               disabled={totalCount === 0}
               className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -324,18 +459,13 @@ function PrepPage() {
       {aggOpen && (
         <AggregateDrawer
           onClose={() => setAggOpen(false)}
-          onConfirm={(ids) => {
-            setAggOpen(false);
-            navigate({
-              to: "/m/health/today_/pickup",
-              search: { ids: ids.join(",") },
-            });
-          }}
+          onConfirm={handleAggregateConfirm}
         />
       )}
     </MobileShell>
   );
 }
+
 
 function DrugCard({
   group,
@@ -557,16 +687,39 @@ function AggregateDrawer({
   onConfirm: (ids: string[]) => void;
 }) {
   const role = useRole();
-  const claimed = useClaimed();
-  const tasks: HomeTask[] = useMemo(() => {
+  const allTasks: HomeTask[] = useMemo(() => {
     const roleTasks = getRoleTasks(role);
-    return roleTasks.filter((t) =>
-      PICKUPS.some((p) => p.source === t.id && !claimed.includes(p.id)),
-    );
-  }, [role, claimed]);
+    // 今日待执行任务（有领药需求的）
+    return roleTasks.filter((t) => PICKUPS.some((p) => p.source === t.id));
+  }, [role]);
+
+  // 推断牛舍：优先取 pickup.barn，否则取 t.target 前缀
+  const barnOf = (t: HomeTask): string => {
+    const pk = PICKUPS.find((p) => p.source === t.id);
+    if (pk) return pk.barn;
+    if (!t.target.startsWith("#")) return t.target.split(" · ")[0];
+    return "未分配";
+  };
+
+  const allBarns = useMemo(() => {
+    const s = new Set<string>();
+    allTasks.forEach((t) => s.add(barnOf(t)));
+    return Array.from(s);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allTasks]);
+
+  const [barnFilter, setBarnFilter] = useState<Set<string>>(new Set());
+  const tasks = useMemo(
+    () =>
+      barnFilter.size === 0
+        ? allTasks
+        : allTasks.filter((t) => barnFilter.has(barnOf(t))),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [allTasks, barnFilter],
+  );
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const allOn = tasks.length > 0 && selected.size === tasks.length;
+  const allOn = tasks.length > 0 && tasks.every((t) => selected.has(t.id));
   const toggle = (id: string) =>
     setSelected((s) => {
       const n = new Set(s);
@@ -574,7 +727,18 @@ function AggregateDrawer({
       return n;
     });
   const toggleAll = () =>
-    setSelected(allOn ? new Set() : new Set(tasks.map((t) => t.id)));
+    setSelected((s) => {
+      const n = new Set(s);
+      if (allOn) tasks.forEach((t) => n.delete(t.id));
+      else tasks.forEach((t) => n.add(t.id));
+      return n;
+    });
+  const toggleBarn = (b: string) =>
+    setBarnFilter((s) => {
+      const n = new Set(s);
+      n.has(b) ? n.delete(b) : n.add(b);
+      return n;
+    });
 
   return (
     <div
@@ -587,7 +751,7 @@ function AggregateDrawer({
       >
         <div className="h-12 px-4 flex items-center justify-between border-b border-border shrink-0">
           <div className="text-body font-medium text-foreground">
-            选择任务统计药品
+            统计药品清单
           </div>
           <button
             onClick={onClose}
@@ -597,6 +761,47 @@ function AggregateDrawer({
             <X className="h-4 w-4" />
           </button>
         </div>
+
+        {/* 牛舍筛选 */}
+        {allBarns.length > 1 && (
+          <div className="px-4 py-2 border-b border-border shrink-0">
+            <div className="flex items-center gap-1.5 text-caption text-text-tertiary mb-1.5">
+              <span>按牛舍筛选</span>
+              {barnFilter.size > 0 && (
+                <button
+                  onClick={() => setBarnFilter(new Set())}
+                  className="text-primary ml-auto"
+                >
+                  清除
+                </button>
+              )}
+            </div>
+            <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
+              <div className="flex gap-1.5 w-max pr-4">
+                {allBarns.map((b) => {
+                  const on = barnFilter.has(b);
+                  const cnt = allTasks.filter((t) => barnOf(t) === b).length;
+                  return (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => toggleBarn(b)}
+                      className={`shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full border text-caption transition-colors ${
+                        on
+                          ? "border-primary bg-brand-subtle text-primary"
+                          : "border-border bg-card text-text-secondary"
+                      }`}
+                    >
+                      <span>{b}</span>
+                      <span className="tabular-nums opacity-70">{cnt}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="px-4 py-2 border-b border-border flex items-center justify-between shrink-0">
           <button
             onClick={toggleAll}
@@ -610,7 +815,7 @@ function AggregateDrawer({
             >
               {allOn && <Check className="h-3 w-3 text-white" />}
             </span>
-            全选
+            {allOn ? "取消全选" : "全选"}
           </button>
           <span className="text-caption text-text-tertiary">
             已选 {selected.size} / {tasks.length}
@@ -619,13 +824,14 @@ function AggregateDrawer({
         <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-border">
           {tasks.length === 0 && (
             <div className="p-10 text-center text-caption text-text-tertiary">
-              暂无待领药的今日任务
+              暂无今日待执行任务
             </div>
           )}
           {tasks.map((t) => {
             const on = selected.has(t.id);
             const meta = typeMeta[t.type];
             const Icon = meta?.icon ?? Pill;
+            const barn = barnOf(t);
             return (
               <button
                 key={t.id}
@@ -650,6 +856,8 @@ function AggregateDrawer({
                   <div className="text-caption text-text-tertiary">
                     <span className="font-mono">{t.id}</span>
                     <span className="mx-1.5 text-border">·</span>
+                    {barn}
+                    <span className="mx-1.5 text-border">·</span>
                     {diseaseTaskMeta[t.id]?.disease ?? t.type}
                   </div>
                   <div className="text-body-sm text-foreground truncate mt-0.5">
@@ -666,10 +874,11 @@ function AggregateDrawer({
             onClick={() => onConfirm(Array.from(selected))}
             className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold disabled:opacity-40 active:opacity-90"
           >
-            生成领药清单（{selected.size}）
+            确认统计（{selected.size}）
           </button>
         </div>
       </div>
     </div>
   );
 }
+
