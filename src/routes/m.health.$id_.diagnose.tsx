@@ -580,9 +580,8 @@ function DiagnosePage() {
     const shortages: Shortage[] = [];
     const need: Record<string, { qty: number; unit: string }> = {};
     for (const r of allDrugs) {
-      const base = parseFloat(r.dose || "0");
-      if (Number.isNaN(base) || base <= 0) continue;
-      const perDose = Math.round(base * (w / 500) * 10) / 10;
+      const perDose = computePerDose(r, w);
+      if (perDose <= 0) continue;
       const times = parseFloat(r.timesPerDay || "1") || 1;
       const days = parseFloat(r.days || "1") || 1;
       const total = Math.round(perDose * times * days * 10) / 10;
