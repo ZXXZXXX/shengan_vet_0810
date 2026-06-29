@@ -432,16 +432,7 @@ function DiagnosePage() {
       .slice(0, 8);
   }, [symptomInput, symptoms, effectiveSymptomLibrary]);
 
-  // 产后护理工单：自动预填诊断结论（仅一个可选）
-  useEffect(() => {
-    if (!isPostpartum) return;
-    if (disease) return;
-    const d = POSTPARTUM_DISEASE;
-    setDisease(d.name);
-    setDiseaseQuery(d.name);
-    setStdPlans(d.plans.map((p) => ({ ...p, items: p.items.map((it) => ({ ...it })) })));
-    setSelectedPlanId(d.plans[0]?.id ?? "");
-  }, [isPostpartum, disease]);
+  // 产后护理工单：症状、疾病、处方均不预填，由兽医人工选择
 
   const addSymptom = (s: string) => {
     if (!s || symptoms.includes(s)) return;
