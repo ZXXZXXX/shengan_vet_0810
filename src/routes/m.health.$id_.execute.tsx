@@ -37,10 +37,9 @@ function ExecuteRecordPage() {
   return (
     <MobileShell title="执行记录" back hideTabBar>
       <div className="pb-28">
-        <div className="px-4 pt-3 pb-2">
-          <div className="text-caption text-text-tertiary">
-            工单 <span className="font-mono text-text-secondary">{id}</span>
-          </div>
+        <div className="px-4 pt-3 pb-2 flex items-baseline gap-2 min-w-0">
+          <span className="text-body font-semibold text-text-primary truncate">耳号 {earTag}</span>
+          <span className="text-caption text-text-tertiary shrink-0">工单 <span className="font-mono">{id}</span></span>
         </div>
         <div className="px-4 space-y-3">
           <ActiveDayExecute pickupCode={pickupCode} tags={execTags} workOrderId={id} onReadyChange={handleReady} />
