@@ -4,8 +4,7 @@ import {
   ChevronLeft,
   ClipboardList,
   ScanLine,
-  Pill,
-  Check,
+  Package,
   X,
   Inbox,
 } from "lucide-react";
