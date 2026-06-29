@@ -366,7 +366,7 @@ function DirectFlow() {
           onClick={() => setPickerOpen(false)}
         >
           <div
-            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl max-h-[80vh] flex flex-col"
+            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl max-h-[75vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="h-12 px-4 flex items-center justify-between border-b border-border">
