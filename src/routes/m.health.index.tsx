@@ -353,6 +353,15 @@ function TaskListPage() {
                               </>
                             );
                           }
+                          if (o.type === "产后护理" && o.status === "进行中") {
+                            return (
+                              <>
+                                {head}
+                                <span className="text-text-tertiary"> · </span>
+                                {`初诊 · ${o.conclusion} · 执行`}
+                              </>
+                            );
+                          }
                           return (
                             <>
                               {head}
