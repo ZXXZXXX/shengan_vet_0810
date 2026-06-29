@@ -622,7 +622,7 @@ function DrugCard({
                   {e.code}
                 </div>
                 <div className="text-caption mt-0.5">
-                  <span className="text-primary">{e.manufacturer}</span>
+                  <span className={isCombo ? "text-[#E5751A]" : "text-primary"}>{e.manufacturer}</span>
                   <span className="mx-2 text-border">·</span>
                   <span className="text-text-tertiary font-mono">{e.batch}</span>
                 </div>
