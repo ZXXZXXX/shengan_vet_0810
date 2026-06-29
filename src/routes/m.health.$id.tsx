@@ -1826,11 +1826,17 @@ function ChecklistDay({
         </>
       )}
 
-      {replaceState && (
+      {replaceState && (() => {
+        const targetItem = items.find((i) => i.id === replaceState.itemId);
+        const demoTarget: ScannedEntry = {
+          code: targetItem?.scanCode ?? `SC${Math.floor(100000 + Math.random() * 900000)}`,
+          manufacturer: targetItem?.manufacturer ?? "齐鲁动保",
+          batch: targetItem?.batchNo ?? `L${Math.floor(20260000 + Math.random() * 10000)}`,
+        };
+        return (
         <ReplaceScanOverlay
           itemName={replaceState.itemName}
-          entries={scannedMap[replaceState.itemName] ?? []}
-          currentBatch={items.find((i) => i.id === replaceState.itemId)?.batchNo}
+          forcedTarget={demoTarget}
           attempt={replaceState.attempt}
           onCancel={() => setReplaceState(null)}
           onFailed={() => {
@@ -1858,7 +1864,7 @@ function ChecklistDay({
             // 情况三：存在关联药品 → 询问是否一同录入
             if (scenario === 3) {
               const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
-              const fallback = medItems.find((m) => m.id !== itemId && !m.scanCode)?.title;
+              const fallback = medItems.find((m) => m.id !== itemId)?.title;
               const associated = mapped.length > 0 ? mapped : fallback ? [fallback] : [];
               if (associated.length > 0) {
                 setAssocConfirm({ itemId, itemName, target, associated });
@@ -1887,7 +1893,8 @@ function ChecklistDay({
             }
           }}
         />
-      )}
+        );
+      })()}
 
       {replaceFailed && (
         <div
