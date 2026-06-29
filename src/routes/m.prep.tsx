@@ -562,17 +562,22 @@ function DrugCard({
           <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
             {isCombo ? comboTitle : firstDrug.name}
           </div>
-          <button
-            onClick={() => setConfirmOpen(true)}
-            className={`h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 active:opacity-80 ${
-              isCombo
-                ? "bg-[#FFF1E6] text-[#E5751A]"
-                : "bg-brand-subtle text-primary"
-            }`}
-            aria-label="继续扫描"
-          >
-            <ScanLine className="h-4 w-4" />
-          </button>
+          {isCombo ? (
+            <button
+              onClick={onScanMore}
+              className="h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 active:opacity-80 bg-[#FFF1E6] text-[#E5751A]"
+              aria-label="继续扫描"
+            >
+              <ScanLine className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              onClick={() => setConfirmOpen(true)}
+              className="h-7 px-2.5 rounded-md inline-flex items-center justify-center shrink-0 active:opacity-80 text-caption font-medium bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]"
+            >
+              组合用药
+            </button>
+          )}
         </div>
 
         {/* 单药品专有信息 */}
