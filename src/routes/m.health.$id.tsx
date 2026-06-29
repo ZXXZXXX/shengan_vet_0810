@@ -194,6 +194,8 @@ function TaskDetailPage() {
     "HF-0702": "#01-24-2150",
     "HF-0688": "#01-24-2270",
     "PP-2501": "#01-24-2710",
+    "PP-2601": "#01-24-2801",
+    "PP-2602": "#01-24-2815",
   };
   const singleEar = singleEarMap[id];
   const isSingle = !isPlatformImmune;
