@@ -97,7 +97,7 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
   },
   修蹄: {
     tags: {
-      label: "问题 / 症状标签",
+      label: "症状标签",
       required: true,
       presets: ["跛行", "蹄底溃疡", "趾间皮炎", "蹄叶炎", "蹄壁裂", "白线病", "蹄过长", "腐蹄"],
     },
@@ -105,7 +105,7 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
   },
   产后护理: {
     tags: {
-      label: "护理 / 异常标签",
+      label: "症状标签",
       required: true,
       presets: ["胎衣不下", "产道损伤", "子宫复旧异常", "低血钙", "酮病风险", "产后发热", "BCS 偏低", "恶露异常"],
     },
@@ -125,7 +125,7 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
   },
   普修: {
     tags: {
-      label: "问题标签",
+      label: "症状标签",
       required: true,
       presets: ["采食下降", "精神沉郁", "外伤", "卧地不起", "体况下降", "行为异常", "其他异常"],
     },
