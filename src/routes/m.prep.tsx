@@ -154,39 +154,55 @@ function PrepPage() {
                   key={`${s.code}-${i}`}
                   className="rounded-xl bg-card border border-border p-3"
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
-                      <Pill className="h-4 w-4" />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-body-sm font-medium text-foreground truncate">
-                        {s.name}
-                      </div>
-                      <div className="text-caption text-text-tertiary mt-1 space-y-0.5">
-                        <div>
-                          厂商{" "}
-                          <span className="text-text-secondary">{s.manufacturer}</span>
-                          <span className="mx-1.5 text-border">·</span>
-                          规格 <span className="text-text-secondary">{s.spec}</span>
-                        </div>
-                        <div className="font-mono">
-                          追溯码{" "}
-                          <span className="text-text-secondary">{s.code}</span>
-                        </div>
-                        <div className="font-mono">
-                          批号 <span className="text-text-secondary">{s.batch}</span>
-                        </div>
-                      </div>
+                  {/* 顶部：图标 + 名称 + 右上角已领/库存 */}
+                  <div className="flex items-start gap-2">
+                    <Package className="h-4 w-4 text-primary mt-1 shrink-0" />
+                    <div className="flex-1 min-w-0 text-body-sm font-semibold text-foreground truncate">
+                      {s.name}
+                    </div>
+                    <div className="text-caption text-text-tertiary shrink-0 text-right leading-tight">
+                      已领{" "}
+                      <span className="text-text-secondary">
+                        {s.claimed}
+                      </span>{" "}
+                      {s.scanUnit}
+                      <span className="mx-1 text-border">·</span>
+                      库存{" "}
+                      <span className="text-text-secondary">{s.stock}</span>{" "}
+                      {s.scanUnit}
                     </div>
                     <button
                       onClick={() =>
                         setScans((arr) => arr.filter((_, j) => j !== i))
                       }
-                      className="h-7 w-7 inline-flex items-center justify-center text-text-tertiary active:text-foreground shrink-0"
+                      className="h-6 w-6 -mr-1 inline-flex items-center justify-center text-text-tertiary active:text-foreground shrink-0"
                       aria-label="移除"
                     >
                       <X className="h-4 w-4" />
                     </button>
+                  </div>
+
+                  {/* 规格 + 扫码单位 */}
+                  <div className="mt-1.5 text-caption text-text-tertiary">
+                    规格{" "}
+                    <span className="text-text-secondary">{s.spec}</span>
+                    <span className="mx-2 text-border">·</span>
+                    扫码单位{" "}
+                    <span className="text-text-secondary">{s.scanUnit}</span>
+                  </div>
+
+                  {/* 厂商 chip */}
+                  <div className="mt-1.5">
+                    <span className="inline-flex items-center text-caption px-1.5 py-0.5 rounded bg-surface-subtle text-text-secondary">
+                      厂商 {s.manufacturer}
+                    </span>
+                  </div>
+
+                  {/* 追溯码 / 批号 */}
+                  <div className="mt-1.5 text-caption text-text-tertiary font-mono">
+                    {s.code}
+                    <span className="mx-2 text-border">·</span>
+                    {s.batch}
                   </div>
                 </div>
               ))}
