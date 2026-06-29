@@ -250,7 +250,6 @@ function PrepPage() {
                 <DrugCard
                   key={g.drug.name}
                   group={g}
-                  onScanMore={() => addOneScan(g.drug)}
                   onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
                   onRemove={(ei) => removeEntry(gi, ei)}
                 />
@@ -302,18 +301,15 @@ function PrepPage() {
 
 function DrugCard({
   group,
-  onScanMore,
   onUpdateQty,
   onRemove,
 }: {
   group: Group;
-  onScanMore: () => void;
   onUpdateQty: (ei: number, qty: number) => void;
   onRemove: (ei: number) => void;
 }) {
   const { drug, entries } = group;
   const totalQty = entries.reduce((s, e) => s + e.qty, 0);
-  const stockTotal = drug.stockSources.reduce((s, x) => s + x.qty, 0);
 
   // 按厂商汇总已扫数量
   const byMfr = new Map<string, number>();
@@ -324,19 +320,12 @@ function DrugCard({
       className="rounded-xl bg-card border p-3.5"
       style={{ borderColor: "#B8E0C2" }}
     >
-      {/* 顶部：名称 + 扫码按钮 */}
-      <div className="flex items-start gap-2">
+      {/* 顶部：名称 */}
+      <div className="flex items-center gap-2">
         <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
         <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
           {drug.name}
         </div>
-        <button
-          onClick={onScanMore}
-          className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0 active:opacity-80"
-          aria-label="继续扫描"
-        >
-          <ScanLine className="h-4 w-4" />
-        </button>
       </div>
 
       {/* 规格 · 扫码单位 */}
@@ -346,20 +335,18 @@ function DrugCard({
         扫码单位 <span className="text-text-secondary">{drug.scanUnit}</span>
       </div>
 
-      {/* 已扫 · 库存 */}
+      {/* 已扫数量 */}
       <div className="mt-1 text-caption text-text-tertiary">
         已扫 <span className="text-foreground font-medium">{totalQty}</span> {drug.countUnit}
-        <span className="ml-3" />
-        库存 <span className="text-text-secondary">{stockTotal}</span> {drug.countUnit}
       </div>
 
-      {/* 厂商分布 + 混用标签 */}
+      {/* 已扫厂商 + 混用标签 */}
       <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2 gap-y-1">
         <span>厂商</span>
-        {drug.stockSources.map((s, i) => (
-          <span key={s.manufacturer} className="text-text-secondary">
-            {s.manufacturer} {s.qty}{drug.countUnit}
-            {i < drug.stockSources.length - 1 && <span className="mx-1 text-border">·</span>}
+        {Array.from(byMfr.entries()).map(([mfr, qty], i) => (
+          <span key={mfr} className="text-text-secondary">
+            {mfr} {qty}{drug.countUnit}
+            {i < byMfr.size - 1 && <span className="mx-1 text-border">·</span>}
           </span>
         ))}
         {drug.allowMix ? (
