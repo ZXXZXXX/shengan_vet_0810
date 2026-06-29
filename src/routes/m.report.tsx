@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Camera,
-  ScanLine,
   X,
   Mic,
   Video,
@@ -485,7 +484,6 @@ function ReportPage() {
     [targets]
   );
   const [addQuery, setAddQuery] = useState("");
-  const [showAddPanel, setShowAddPanel] = useState(false);
   const addMatches = useMemo(() => {
     const kw = addQuery.trim().toLowerCase();
     const base = kw ? sameBarnPool.filter((x) => x.toLowerCase().includes(kw)) : sameBarnPool;
@@ -688,35 +686,42 @@ function ReportPage() {
                     牛舍信息根据牛只编号自动获取，不可更改
                   </div>
                 )}
-                {targets.length === 0 && (
-                  <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
-                    <div className="flex gap-2">
-                      <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                        <input
-                          autoFocus
-                          value={addQuery}
-                          onChange={(e) => setAddQuery(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && addQuery.trim()) {
-                              e.preventDefault();
-                              addTarget(addQuery.trim());
-                              setAddQuery("");
-                            }
-                          }}
-                          placeholder="输入牛只编号回车添加"
-                          className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
-                        />
-                      </div>
-                      <button className="h-11 px-3 rounded-lg bg-brand-subtle text-primary inline-flex items-center gap-1 text-body-sm font-medium active:scale-[0.97] transition-transform">
-                        <ScanLine className="h-4 w-4" /> 扫码
-                      </button>
-                    </div>
-                    <div className="text-caption text-text-tertiary">
-                      输入牛只编号后，将自动获取所属牛舍信息
-                    </div>
+                <div className="rounded-xl border border-border bg-card p-2.5 space-y-2.5">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                    <input
+                      autoFocus={targets.length === 0}
+                      value={addQuery}
+                      onChange={(e) => setAddQuery(e.target.value)}
+                      placeholder="输入牛只编号搜索并选择"
+                      className="w-full h-11 pl-9 pr-2 rounded-lg bg-surface-subtle border border-border text-body"
+                    />
                   </div>
-                )}
+                  {addQuery.trim() && addMatches.length === 0 && (
+                    <div className="text-caption text-text-tertiary px-1">无匹配结果</div>
+                  )}
+                  {addMatches.length > 0 && (
+                    <div className="max-h-48 overflow-y-auto space-y-1">
+                      {addMatches.map((cowId) => (
+                        <button
+                          key={cowId}
+                          type="button"
+                          onClick={() => {
+                            addTarget(cowId);
+                            setAddQuery("");
+                          }}
+                          className="w-full flex items-center justify-between h-11 px-3 rounded-lg bg-surface-subtle text-body text-foreground active:bg-brand-subtle"
+                        >
+                          <span className="font-mono">#{cowId}</span>
+                          <span className="text-caption text-text-tertiary">{barnOfCattle(cowId)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <div className="text-caption text-text-tertiary">
+                    输入牛只编号后，将自动获取所属牛舍信息
+                  </div>
+                </div>
               </div>
               )}
 
