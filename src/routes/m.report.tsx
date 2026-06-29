@@ -484,7 +484,6 @@ function ReportPage() {
     [targets]
   );
   const [addQuery, setAddQuery] = useState("");
-  const [showAddPanel, setShowAddPanel] = useState(false);
   const addMatches = useMemo(() => {
     const kw = addQuery.trim().toLowerCase();
     const base = kw ? sameBarnPool.filter((x) => x.toLowerCase().includes(kw)) : sameBarnPool;
