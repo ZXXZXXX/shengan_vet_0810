@@ -1343,6 +1343,70 @@ function ReportPage() {
           </div>
         </div>
       )}
+
+      {/* 牛只选择弹层（按牛只 - 全牧场搜索） */}
+      {cowPickerOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          onClick={() => setCowPickerOpen(false)}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[75vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border shrink-0">
+              <div className="text-body font-medium text-foreground">选择牛只</div>
+              <button
+                type="button"
+                onClick={() => setCowPickerOpen(false)}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
+                aria-label="关闭"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="px-4 pt-3 shrink-0">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                <input
+                  autoFocus
+                  inputMode="numeric"
+                  value={addQuery}
+                  onChange={(e) => setAddQuery(e.target.value)}
+                  placeholder="输入耳号数字，搜索整个牧场"
+                  className="w-full h-10 pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary"
+                />
+              </div>
+              <div className="mt-2 text-caption text-text-tertiary">
+                搜索范围为整个牧场；选定后将自动获取所属牛舍
+              </div>
+            </div>
+            <div className="p-3 overflow-y-auto flex-1">
+              {addQuery.trim() && addMatches.length === 0 ? (
+                <div className="text-center py-12 text-body-sm text-text-tertiary">无匹配牛只</div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {addMatches.map((cowId) => (
+                    <button
+                      key={cowId}
+                      type="button"
+                      onClick={() => {
+                        addTarget(cowId);
+                        setAddQuery("");
+                        setCowPickerOpen(false);
+                      }}
+                      className="w-full px-2 h-12 flex items-center justify-between text-body text-foreground active:bg-surface-subtle"
+                    >
+                      <span className="font-mono">#{cowId}</span>
+                      <span className="text-caption text-text-tertiary">{barnOfCattle(cowId)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </MobileShell>
 
   );
