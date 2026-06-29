@@ -1292,7 +1292,7 @@ function ReportPage() {
           onClick={() => setBarnPickerOpen(false)}
         >
           <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[75vh] flex flex-col"
+            className="w-full max-w-[440px] bg-card rounded-t-2xl h-[75vh] max-h-[75vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-4 h-12 flex items-center justify-between border-b border-border shrink-0">
@@ -1351,7 +1351,7 @@ function ReportPage() {
           onClick={() => setCowPickerOpen(false)}
         >
           <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[75vh] flex flex-col"
+            className="w-full max-w-[440px] bg-card rounded-t-2xl h-[75vh] max-h-[75vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-4 h-12 flex items-center justify-between border-b border-border shrink-0">

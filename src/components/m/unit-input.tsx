@@ -15,7 +15,7 @@ function UnitSheet({ open, onClose, value, onChange, options, title = "选择单
   return (
     <div className="fixed inset-0 z-[60] bg-black/40 flex items-end" onClick={onClose}>
       <div
-        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl pb-2 pt-3 max-h-[75vh] overflow-y-auto"
+        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl pb-2 pt-3 h-[75vh] max-h-[75vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-4 pb-2 text-caption text-text-tertiary">{title}</div>

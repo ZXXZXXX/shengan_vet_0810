@@ -767,7 +767,7 @@ function TaskDetailPage() {
           }}
         >
           <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[75vh] overflow-y-auto"
+            className="w-full max-w-[440px] bg-card rounded-t-2xl h-[75vh] max-h-[75vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-4 h-12 flex items-center justify-between border-b border-border">
@@ -1371,7 +1371,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
           onClick={() => setPickupOpen(false)}
         >
           <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl sm:rounded-2xl max-h-[75vh] overflow-y-auto"
+            className="w-full max-w-[440px] bg-card rounded-t-2xl sm:rounded-2xl h-[75vh] max-h-[75vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-4 h-12 flex items-center justify-between border-b border-border">
