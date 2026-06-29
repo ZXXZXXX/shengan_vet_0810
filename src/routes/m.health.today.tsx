@@ -423,7 +423,7 @@ function TodayTasksPage() {
                       </span>
                     ) : chip ? (
                       <span
-                        className={`inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none ${taskChipStyle[chip]}`}
+                        className={`inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none ${taskChipStyle[chip]}`}
                       >
                         {chip}
                       </span>
@@ -454,15 +454,15 @@ function TodayTasksPage() {
                       <Package className="h-3 w-3" />
                       <span>领物</span>
                       {!pk ? (
-                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-surface-subtle text-text-tertiary">
+                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none bg-surface-subtle text-text-tertiary">
                           无需
                         </span>
                       ) : pickupClaimed ? (
-                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[color-mix(in_oklab,var(--state-success)_15%,transparent)] text-[var(--state-success)]">
+                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none bg-[color-mix(in_oklab,var(--state-success)_15%,transparent)] text-[var(--state-success)]">
                           已领
                         </span>
                       ) : (
-                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-[11px] leading-none bg-[#FFF1E0] text-[#E07B1F]">
+                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none bg-[#FFF1E0] text-[#E07B1F]">
                           未领
                         </span>
                       )}

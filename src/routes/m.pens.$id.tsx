@@ -230,7 +230,7 @@ function PenDetailPage() {
                       <span className="text-text-tertiary/60 mx-1.5">·</span>
                       <span className="flex items-center gap-1">
                         执行
-                        <span className="h-4 w-4 rounded-full bg-primary/10 text-primary text-[9px] inline-flex items-center justify-center">
+                        <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-caption inline-flex items-center justify-center">
                           {o.person.charAt(0)}
                         </span>
                         <span className="text-text-secondary">{o.person}</span>

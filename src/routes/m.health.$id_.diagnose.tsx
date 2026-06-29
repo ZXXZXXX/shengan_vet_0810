@@ -712,7 +712,7 @@ function DiagnosePage() {
                   className="aspect-square rounded-lg border border-dashed border-border bg-surface-subtle text-text-tertiary inline-flex flex-col items-center justify-center gap-0.5"
                 >
                   <Camera className="h-4 w-4" />
-                  <span className="text-[10px]">添加</span>
+                  <span className="text-caption">添加</span>
                 </button>
               </div>
             </div>
@@ -1831,7 +1831,7 @@ function DrugEditor({
                       <span>{m}</span>
                       {recommended && (
                         <span
-                          className={`text-[10px] px-1 rounded ${
+                          className={`text-caption px-1 rounded ${
                             active
                               ? "bg-white/20 text-primary-foreground"
                               : "bg-brand-subtle text-primary"

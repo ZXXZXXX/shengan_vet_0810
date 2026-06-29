@@ -829,7 +829,7 @@ function PersonChip({ name }: { name: string }) {
   const n = cleanName(name);
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-[10px] inline-flex items-center justify-center">
+      <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-caption inline-flex items-center justify-center">
         {n.charAt(0)}
       </span>
       <span className="text-body-sm text-foreground">{n}</span>
