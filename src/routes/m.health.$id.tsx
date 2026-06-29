@@ -471,7 +471,13 @@ function TaskDetailPage() {
         </div>
 
         <div className="px-4 pt-3 space-y-3">
-          {tab === "report" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无上报记录" /> : <ReportTab isLoss={isLoss} />)}
+          {tab === "report" && (
+            isPlatformPostpartum && o.status === "待诊断"
+              ? <PostpartumReportNotice id={id} />
+              : isPlatformIssued
+                ? <EmptyTab label="平台下发工单，无上报记录" />
+                : <ReportTab isLoss={isLoss} />
+          )}
           {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} />)}
           {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} />}
         </div>
