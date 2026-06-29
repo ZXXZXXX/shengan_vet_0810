@@ -648,36 +648,47 @@ function DrugCard({
         </div>
       </div>
 
-      <Sheet open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <SheetContent
-          side="bottom"
-          className="m-scope p-0 rounded-t-2xl border-0 bg-surface-2"
+      {confirmOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setConfirmOpen(false)}
         >
-          <div className="px-5 pt-5 pb-3 text-center">
-            <div className="text-card-title font-semibold text-foreground">组合用药确认</div>
-            <p className="mt-2 text-body text-text-secondary leading-relaxed">
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
+                <Pill className="h-4 w-4 text-primary" />
+              </span>
+              <h3 className="text-card-title text-foreground">组合用药确认</h3>
+            </div>
+            <p className="text-body-sm text-text-secondary leading-relaxed">
               是否关联其他药品组合用药？该功能仅适用于需配药的场景，请确认后再扫描。
             </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onScanMore();
+                  setConfirmOpen(false);
+                }}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                确认扫描
+              </button>
+            </div>
           </div>
-          <div className="px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] space-y-2">
-            <button
-              onClick={() => {
-                onScanMore();
-                setConfirmOpen(false);
-              }}
-              className="w-full h-12 rounded-xl bg-primary text-primary-foreground text-body font-medium active:opacity-90"
-            >
-              确认扫描
-            </button>
-            <button
-              onClick={() => setConfirmOpen(false)}
-              className="w-full h-12 rounded-xl bg-card text-foreground text-body font-medium active:opacity-90"
-            >
-              取消
-            </button>
-          </div>
-        </SheetContent>
-      </Sheet>
+        </div>
+      )}
+
 
     </>
   );
