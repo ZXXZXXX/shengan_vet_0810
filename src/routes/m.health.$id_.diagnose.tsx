@@ -998,9 +998,15 @@ function DiagnosePage() {
                         const unit = r.doseUnit || "ml";
                         const baseDose = parseFloat(r.dose || "");
                         const w = cattleWeight ?? 0;
+                        const isFixed = r.dosePer === "fixed";
+                        const basisKg = r.dosePer === "100kg" ? 100 : 500;
                         const computedDose =
-                          !isTherapy && !Number.isNaN(baseDose) && w > 0
-                            ? Math.round(baseDose * (w / 500) * 10) / 10
+                          !isTherapy && !Number.isNaN(baseDose)
+                            ? isFixed
+                              ? baseDose
+                              : w > 0
+                                ? computePerDose(r, w)
+                                : null
                             : null;
                         return (
                           <li
@@ -1024,14 +1030,16 @@ function DiagnosePage() {
                             <div className="text-caption text-text-tertiary mt-1">
                               {isTherapy
                                 ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                : [r.spec, r.use, r.days && `${r.days} 天`].filter(Boolean).join(" · ")}
+                                : [r.spec, r.use, r.timesPerDay && `${r.timesPerDay} 次 / 天`, r.days && `连用 ${r.days} 天`].filter(Boolean).join(" · ")}
                             </div>
                             {!isTherapy && (
                               <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
                                 <Sparkles className="h-3 w-3" />
-                                {computedDose !== null
-                                  ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} @ 500kg）`
-                                  : `基准 ${r.dose}${unit} / 次 @ 500kg，请选择体重`}
+                                {isFixed
+                                  ? `固定剂量 ${baseDose}${unit} / 次`
+                                  : computedDose !== null
+                                    ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} / ${basisKg}kg）`
+                                    : `基准 ${r.dose}${unit} / ${basisKg}kg，请选择体重`}
                               </div>
                             )}
                           </li>
