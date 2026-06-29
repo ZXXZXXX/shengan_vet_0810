@@ -850,7 +850,7 @@ function ReportPage() {
                   <Section
                     title={cfg.tags.label}
                     required={cfg.tags.required}
-                    hint="可多选；输入关键词搜索，未命中可直接新建"
+                    hint="输入关键词搜索，或直接创建"
                   >
                     <TagPicker
                       selected={symptoms}
