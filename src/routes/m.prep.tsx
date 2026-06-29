@@ -533,7 +533,7 @@ function DrugCard({
     <>
       <div
         className="rounded-xl bg-card border p-3.5"
-        style={{ borderColor: "#B8E0C2" }}
+        style={{ borderColor: isCombo ? "#FFD2A8" : "#B8E0C2" }}
       >
         {/* 顶部：名称 + 卡片扫码入口 */}
         <div className="flex items-center gap-2">
@@ -550,7 +550,11 @@ function DrugCard({
           </div>
           <button
             onClick={() => setConfirmOpen(true)}
-            className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0 active:opacity-80"
+            className={`h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 active:opacity-80 ${
+              isCombo
+                ? "bg-[#FFF1E6] text-[#E5751A]"
+                : "bg-brand-subtle text-primary"
+            }`}
             aria-label="继续扫描"
           >
             <ScanLine className="h-4 w-4" />
@@ -599,9 +603,10 @@ function DrugCard({
         <div className="my-3 border-t border-dashed border-border" />
 
         {/* 已领 总数 */}
-        <div className="text-caption text-primary text-right font-medium">
+        <div className={`text-caption text-right font-medium ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
           已领 {totalQty} 项
         </div>
+
 
         {/* 扫描明细 */}
         <div className="mt-2 space-y-2.5">
@@ -617,7 +622,7 @@ function DrugCard({
                   {e.code}
                 </div>
                 <div className="text-caption mt-0.5">
-                  <span className="text-primary">{e.manufacturer}</span>
+                  <span className={isCombo ? "text-[#E5751A]" : "text-primary"}>{e.manufacturer}</span>
                   <span className="mx-2 text-border">·</span>
                   <span className="text-text-tertiary font-mono">{e.batch}</span>
                 </div>
