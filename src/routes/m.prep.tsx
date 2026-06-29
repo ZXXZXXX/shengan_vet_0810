@@ -217,23 +217,7 @@ function PrepPage() {
         </div>
       </header>
 
-      <div className="px-4 pt-3 pb-24">
-        {/* 扫码按钮 */}
-        <button
-          onClick={handleScan}
-          className="w-full rounded-2xl bg-gradient-to-br from-primary to-[#008C44] text-white p-5 flex items-center gap-3 active:scale-[.98] transition-transform shadow-[0_8px_22px_-8px_rgba(0,161,79,.55)]"
-        >
-          <span className="h-12 w-12 rounded-xl bg-white/15 inline-flex items-center justify-center shrink-0">
-            <ScanLine className="h-6 w-6" />
-          </span>
-          <div className="text-left flex-1 min-w-0">
-            <div className="text-body font-semibold">扫码领药</div>
-            <div className="text-caption text-white/85 mt-0.5">
-              扫描药品二维码登记本次领取
-            </div>
-          </div>
-        </button>
-
+      <div className="px-4 pt-3 pb-36">
         {/* 已扫描列表 */}
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
@@ -257,7 +241,7 @@ function PrepPage() {
             <div className="rounded-xl bg-card border border-dashed border-border p-8 flex flex-col items-center text-center">
               <Inbox className="h-8 w-8 text-text-tertiary/60 mb-2" />
               <div className="text-caption text-text-tertiary">
-                点击上方按钮扫描药品二维码
+                点击下方按钮扫描药品二维码
               </div>
             </div>
           ) : (
@@ -275,19 +259,29 @@ function PrepPage() {
           )}
         </div>
 
-        {totalCount > 0 && (
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-40">
+        {/* 底部吸底操作栏 */}
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-40">
+          <div className="flex gap-3">
+            <button
+              onClick={handleScan}
+              className="flex-1 h-11 rounded-lg border border-primary text-primary text-body-sm font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
+            >
+              <ScanLine className="h-4 w-4" />
+              扫码领药
+            </button>
             <button
               onClick={() => {
                 toast.success(`已生成领药记录（${totalCount} 项）`);
                 setGroups([]);
               }}
-              className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90"
+              disabled={totalCount === 0}
+              className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              完成领药（{totalCount} 项）
+              完成领药
+              {totalCount > 0 && `（${totalCount} 项）`}
             </button>
           </div>
-        )}
+        </div>
       </div>
 
       {aggOpen && (
