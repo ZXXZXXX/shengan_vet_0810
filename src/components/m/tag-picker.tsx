@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, Plus, X, Sparkles, ChevronDown, Check } from "lucide-react";
+import { Search, Plus, X, Sparkles, Check } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -11,7 +11,7 @@ export function TagPicker({
   selected,
   onChange,
   presets,
-  placeholder = "点击选择或搜索",
+  placeholder = "输入关键词搜索，或创建新标签",
   hotLabel = "常用标签",
   singleSelect = false,
   disableCreate = false,
@@ -75,7 +75,7 @@ export function TagPicker({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {/* 已选（自定义，未在常用池中的） */}
       {selected.filter((t) => !presets.includes(t)).length > 0 && (
         <div className="flex flex-wrap gap-1.5">
@@ -98,45 +98,48 @@ export function TagPicker({
         </div>
       )}
 
-      {/* 常用标签快选（两行内，超出在抽屉内查看） */}
-      {presets.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 max-h-[76px] overflow-hidden">
-          {presets.map((t) => {
-            const active = selected.includes(t);
-            return (
-              <button
-                key={t}
-                type="button"
-                onClick={() => toggle(t)}
-                className={`inline-flex items-center h-8 px-3 rounded-full text-body-sm border transition-colors ${
-                  active
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-foreground border-border active:border-primary"
-                }`}
-              >
-                {t}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-
-      {/* 触发器 */}
+      {/* 搜索/创建触发器 */}
       <button
         type="button"
         onClick={() => {
           setQ("");
           setOpen(true);
         }}
-        className="w-full h-10 px-3 inline-flex items-center justify-between rounded-lg bg-card border border-border text-body-sm text-text-tertiary active:border-primary"
+        className="w-full h-11 px-3 inline-flex items-center rounded-lg bg-card border border-border text-body-sm text-text-tertiary active:border-primary"
       >
-        <span className="inline-flex items-center gap-2">
-          <Search className="h-4 w-4" />
-          {triggerLabel || placeholder}
-        </span>
-        <ChevronDown className="h-4 w-4" />
+        <Search className="h-4 w-4 mr-2" />
+        <span className="flex-1 text-left">{triggerLabel || placeholder}</span>
       </button>
+
+      {/* 常用标签区 */}
+      {presets.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-1 text-caption text-text-tertiary">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span>{hotLabel}</span>
+          </div>
+          <div className="flex flex-wrap gap-2 max-h-[88px] overflow-hidden">
+            {presets.map((t) => {
+              const active = selected.includes(t);
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => toggle(t)}
+                  className={`inline-flex items-center h-9 px-4 rounded-full text-body-sm border transition-colors ${
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-card text-foreground border-border active:border-primary"
+                  }`}
+                >
+                  {t}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
 
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent className="px-0">
