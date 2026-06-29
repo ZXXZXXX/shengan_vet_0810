@@ -625,9 +625,8 @@ function DiagnosePage() {
       });
     }
     for (const r of allDrugs) {
-      const base = parseFloat(r.dose || "0");
-      if (Number.isNaN(base) || base <= 0) continue;
-      const perDose = Math.round(base * (w / 500) * 10) / 10;
+      const perDose = computePerDose(r, w);
+      if (perDose <= 0) continue;
       const times = parseFloat(r.timesPerDay || "1") || 1;
       const days = parseFloat(r.days || "1") || 1;
       const addDose = Math.round(perDose * times * days * 10) / 10;
@@ -637,7 +636,7 @@ function DiagnosePage() {
       const unit = hist.unit;
       const nextDose = Math.round((hist.totalDose + addDose) * 10) / 10;
       const nextCount = hist.count + addCount;
-      const doseCap = Math.round(RULES.drugTotalDoseFactorMax * (perDose || base) * 10) / 10;
+      const doseCap = Math.round(RULES.drugTotalDoseFactorMax * perDose * 10) / 10;
       if (nextDose > doseCap) {
         violations.push({
           kind: "drug",
