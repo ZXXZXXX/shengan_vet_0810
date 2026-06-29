@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { MobileShell, MobileTabBar } from "@/components/mobile-shell";
+import { MobileShell } from "@/components/mobile-shell";
 import {
   PICKUPS,
   useClaimed,
@@ -211,7 +211,7 @@ function PrepPage() {
         </div>
 
         {scans.length > 0 && (
-          <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 z-40">
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-40">
             <button
               onClick={() => {
                 toast.success(`已生成领药记录（${scans.length} 项）`);
@@ -224,8 +224,6 @@ function PrepPage() {
           </div>
         )}
       </div>
-      <MobileTabBar />
-
       {aggOpen && (
         <AggregateDrawer
           onClose={() => setAggOpen(false)}
