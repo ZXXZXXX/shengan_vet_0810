@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, Plus, X, Sparkles, ChevronDown, Check } from "lucide-react";
+import { Search, Plus, X, Sparkles, Check } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
