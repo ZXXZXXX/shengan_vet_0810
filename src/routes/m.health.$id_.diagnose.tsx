@@ -238,7 +238,6 @@ const POSTPARTUM_SYMPTOMS = [
   "早产",
   "双胎或以上",
   "胎衣不下",
-  "其他",
 ];
 const POSTPARTUM_DISEASE: Disease = {
   name: "产后高危",
