@@ -75,7 +75,7 @@ export function TagPicker({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* 已选 */}
       {selected.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
@@ -97,6 +97,30 @@ export function TagPicker({
           ))}
         </div>
       )}
+
+      {/* 常用标签快选（两行内，超出在抽屉内查看） */}
+      {presets.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 max-h-[76px] overflow-hidden">
+          {presets.map((t) => {
+            const active = selected.includes(t);
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => toggle(t)}
+                className={`inline-flex items-center h-8 px-3 rounded-full text-body-sm border transition-colors ${
+                  active
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card text-foreground border-border active:border-primary"
+                }`}
+              >
+                {t}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
 
       {/* 触发器 */}
       <button
