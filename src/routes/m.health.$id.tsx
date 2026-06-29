@@ -194,9 +194,9 @@ function TaskDetailPage() {
     "PP-2501": "#01-24-2710",
   };
   const singleEar = singleEarMap[id];
-  const isSingle = isHoof || Boolean(singleEar);
+  const isSingle = !isPlatformImmune;
   const earTag = singleEar ?? (isHoof ? "#01-24-2150" : "#01-24-2381");
-  const execTags: string[] = isSingle ? [earTag] : ["#01-24-2381", "#01-24-2382", "#01-24-2383"];
+  const execTags: string[] = [earTag];
 
   const fallbackStatus: StatusKey =
     role === "hoof_trimmer" || role === "vet_assistant" || role === "immunizer" ? "进行中" : "待诊断";
@@ -204,7 +204,8 @@ function TaskDetailPage() {
     id,
     farm: "奇点示范牧场",
     barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : isPlatformImmune ? "1 号牛舍" : isPlatformPostpartum ? "产房 1 号" : "3 号牛舍",
-    target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : isPlatformImmune ? "24 头" : "3 只",
+    target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : "1 号牛舍 全群",
+
     type: isLoss ? "物资损耗" : isHoof ? "修蹄" : isPlatformImmune ? "免疫" : isPlatformPostpartum ? "产后护理" : "疾病治疗",
     status: ((search.obs && !search.obsExpired) || search.obsExpired
       ? "进行中"
@@ -310,7 +311,7 @@ function TaskDetailPage() {
           </div>
           <div className="flex items-start gap-1.5 text-caption">
             <Tag className="h-3.5 w-3.5 text-text-tertiary mt-0.5 shrink-0" />
-            <span className="text-text-tertiary shrink-0">牛只编号</span>
+            <span className="text-text-tertiary shrink-0">{isPlatformImmune && !isSingle ? "执行范围" : "牛只编号"}</span>
             {isPlatformImmune && !isSingle ? (
               <span className="text-body-sm text-foreground">{o.target}</span>
             ) : (

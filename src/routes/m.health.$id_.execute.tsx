@@ -25,9 +25,10 @@ function ExecuteRecordPage() {
     "HF-0688": "#01-24-2270",
   };
   const singleEar = singleEarMap[id];
-  const isSingle = isHoof || Boolean(singleEar);
+  const isSingle = true;
   const earTag = singleEar ?? (isHoof ? "#01-24-2150" : "#01-24-2381");
-  const execTags: string[] = isSingle ? [earTag] : ["#01-24-2381", "#01-24-2382", "#01-24-2383"];
+  const execTags: string[] = [earTag];
+
   const pickupCode = isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`;
 
   const [ready, setReady] = useState(false);

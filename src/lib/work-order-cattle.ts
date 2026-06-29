@@ -14,6 +14,7 @@ const singleEarMap: Record<string, string> = {
 export function getOrderEarTagLabel(id: string): string {
   if (singleEarMap[id]) return singleEarMap[id];
   if (id.startsWith("HF")) return "#01-24-2150";
-  // 默认多头工单
-  return "#01-24-2381 等 3 头";
+  // 默认单只工单
+  return "#01-24-2381";
+
 }
