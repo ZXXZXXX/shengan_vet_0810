@@ -8,6 +8,8 @@ import {
   Pill,
   Check,
   X,
+  Minus,
+  Plus,
   Inbox,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -18,7 +20,6 @@ import {
   useClaimed,
   genScanCode,
   genBatch,
-  pickManufacturer,
 } from "@/lib/pickup-store";
 import {
   getRoleTasks,
@@ -33,53 +34,165 @@ export const Route = createFileRoute("/m/prep")({
   component: PrepPage,
 });
 
-// 演示药品池
-const drugPool = [
-  { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶" },
-  { name: "头孢噻呋钠", spec: "1g / 支" },
-  { name: "青霉素钠", spec: "80 万 IU / 支" },
-  { name: "钙注射液", spec: "500ml / 瓶" },
-  { name: "硫酸铜溶液", spec: "500ml / 瓶" },
-  { name: "碘酊", spec: "100ml / 瓶" },
-  { name: "维生素 C 注射液", spec: "10ml / 支" },
-  { name: "口蹄疫疫苗 A 型", spec: "10ml / 支" },
-  { name: "复合维生素 B", spec: "100ml / 瓶" },
-  { name: "50% 葡萄糖", spec: "500ml / 瓶" },
-];
-
-type Scan = {
+// 演示药品池：包含三类典型场景
+type DrugDef = {
   name: string;
   spec: string;
+  scanUnit: "瓶" | "支" | "包装";
+  countUnit: "瓶" | "支";
+  unitScannable: boolean; // false 表示仅外包装可扫码（情况三）
+  packSize?: number; // 情况三：每个外包装容量
+  allowMix: boolean;
+  stockSources: { manufacturer: string; qty: number }[];
+};
+
+const drugPool: DrugDef[] = [
+  {
+    name: "氟尼辛葡甲胺注射液",
+    spec: "100ml / 瓶",
+    scanUnit: "瓶",
+    countUnit: "瓶",
+    unitScannable: true,
+    allowMix: false,
+    stockSources: [
+      { manufacturer: "齐鲁动保", qty: 8 },
+      { manufacturer: "瑞普生物", qty: 4 },
+    ],
+  },
+  {
+    name: "头孢噻呋钠",
+    spec: "1g / 支",
+    scanUnit: "包装",
+    countUnit: "支",
+    unitScannable: false,
+    packSize: 4,
+    allowMix: true,
+    stockSources: [
+      { manufacturer: "中牧股份", qty: 30 },
+      { manufacturer: "辉瑞动保", qty: 18 },
+    ],
+  },
+  {
+    name: "青霉素钠",
+    spec: "80 万 IU / 支",
+    scanUnit: "包装",
+    countUnit: "支",
+    unitScannable: false,
+    packSize: 10,
+    allowMix: true,
+    stockSources: [{ manufacturer: "勃林格", qty: 60 }],
+  },
+  {
+    name: "钙注射液",
+    spec: "500ml / 瓶",
+    scanUnit: "瓶",
+    countUnit: "瓶",
+    unitScannable: true,
+    allowMix: true,
+    stockSources: [{ manufacturer: "中牧股份", qty: 22 }],
+  },
+  {
+    name: "维生素 C 注射液",
+    spec: "10ml / 支",
+    scanUnit: "支",
+    countUnit: "支",
+    unitScannable: true,
+    allowMix: true,
+    stockSources: [
+      { manufacturer: "齐鲁动保", qty: 40 },
+      { manufacturer: "瑞普生物", qty: 25 },
+    ],
+  },
+];
+
+type Entry = {
+  code: string;
   manufacturer: string;
   batch: string;
-  code: string;
-  scanUnit: string;
-  claimed: number;
-  stock: number;
+  qty: number;       // 取数（按 countUnit 计）
+  packSize?: number; // PACK 时该包装总容量
+};
+
+type Group = {
+  drug: DrugDef;
+  entries: Entry[];
 };
 
 function PrepPage() {
   const navigate = useNavigate();
-  const [scans, setScans] = useState<Scan[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
   const [aggOpen, setAggOpen] = useState(false);
 
+  // 模拟扫描：循环演示三种情况
+  const [scanIdx, setScanIdx] = useState(0);
   const handleScan = () => {
-    const d = drugPool[Math.floor(Math.random() * drugPool.length)];
-    const manufacturer = pickManufacturer(d.name, scans.length);
-    const batch = genBatch();
-    const code = genScanCode(d.spec.includes("瓶") ? "UNIT" : "PACK");
-    const scanUnit = d.spec.includes("瓶") ? "瓶" : "支";
-    const stock = 8 + Math.floor(Math.random() * 20);
-    setScans((s) => {
-      const sameCount = s.filter((x) => x.name === d.name).length + 1;
-      return [
-        { ...d, manufacturer, batch, code, scanUnit, claimed: sameCount, stock },
-        ...s,
-      ];
-    });
-    toast.success(`已识别 · ${d.name}`);
+    const d = drugPool[scanIdx % drugPool.length];
+    setScanIdx((i) => i + 1);
+    addOneScan(d);
   };
 
+  const addOneScan = (d: DrugDef, forceMfr?: string) => {
+    setGroups((prev) => {
+      const idx = prev.findIndex((g) => g.drug.name === d.name);
+      const existing = idx >= 0 ? prev[idx] : null;
+
+      // 不可混用校验
+      let mfr = forceMfr ?? d.stockSources[0].manufacturer;
+      if (existing && existing.entries.length > 0) {
+        const used = existing.entries[0].manufacturer;
+        if (!d.allowMix) {
+          mfr = used; // 锁定首个厂商
+        } else if (!forceMfr) {
+          // 允许混用：交替选取已有的两个厂商之一以演示情况二
+          const opts = d.stockSources.map((s) => s.manufacturer);
+          mfr = opts[existing.entries.length % opts.length];
+        }
+      }
+
+      const entry: Entry = {
+        code: genScanCode(d.unitScannable ? "UNIT" : "PACK"),
+        manufacturer: mfr,
+        batch: genBatch(),
+        qty: d.unitScannable ? 1 : (d.packSize ?? 1),
+        packSize: d.unitScannable ? undefined : d.packSize,
+      };
+
+      if (!existing) {
+        toast.success(`已识别 · ${d.name}`);
+        return [{ drug: d, entries: [entry] }, ...prev];
+      }
+      toast.success(`已追加 · ${d.name}`);
+      const next = [...prev];
+      next[idx] = { ...existing, entries: [...existing.entries, entry] };
+      return next;
+    });
+  };
+
+  const updateQty = (gi: number, ei: number, qty: number) => {
+    setGroups((prev) => {
+      const next = [...prev];
+      const g = next[gi];
+      const max = g.entries[ei].packSize ?? 1;
+      const v = Math.max(1, Math.min(max, qty));
+      const entries = [...g.entries];
+      entries[ei] = { ...entries[ei], qty: v };
+      next[gi] = { ...g, entries };
+      return next;
+    });
+  };
+
+  const removeEntry = (gi: number, ei: number) => {
+    setGroups((prev) => {
+      const next = [...prev];
+      const g = next[gi];
+      const entries = g.entries.filter((_, i) => i !== ei);
+      if (entries.length === 0) return next.filter((_, i) => i !== gi);
+      next[gi] = { ...g, entries };
+      return next;
+    });
+  };
+
+  const totalCount = groups.reduce((sum, g) => sum + g.entries.length, 0);
 
   return (
     <MobileShell hideTabBar>
@@ -127,12 +240,12 @@ function PrepPage() {
             <div className="text-body-sm font-medium text-foreground inline-flex items-baseline gap-1.5">
               本次已扫描
               <span className="text-caption text-text-tertiary font-normal">
-                共 {scans.length} 项
+                共 {totalCount} 项
               </span>
             </div>
-            {scans.length > 0 && (
+            {groups.length > 0 && (
               <button
-                onClick={() => setScans([])}
+                onClick={() => setGroups([])}
                 className="text-caption text-text-tertiary active:opacity-70"
               >
                 清空
@@ -140,7 +253,7 @@ function PrepPage() {
             )}
           </div>
 
-          {scans.length === 0 ? (
+          {groups.length === 0 ? (
             <div className="rounded-xl bg-card border border-dashed border-border p-8 flex flex-col items-center text-center">
               <Inbox className="h-8 w-8 text-text-tertiary/60 mb-2" />
               <div className="text-caption text-text-tertiary">
@@ -148,94 +261,35 @@ function PrepPage() {
               </div>
             </div>
           ) : (
-            <div className="space-y-2 pb-4">
-              {scans.map((s, i) => (
-              <div
-                key={`${s.code}-${i}`}
-                className="rounded-xl bg-card border p-3.5"
-                style={{ borderColor: "#B8E0C2" }}
-              >
-                  {/* 顶部：图标 + 名称 */}
-                  <div className="flex items-start gap-2">
-                    <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                    <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
-                      {s.name}
-                    </div>
-                  </div>
-
-                  {/* 规格 + 扫码单位 */}
-                  <div className="mt-2 text-caption text-text-tertiary">
-                    规格 <span className="text-text-secondary">{s.spec}</span>
-                    <span className="mx-2 text-border">·</span>
-                    扫码单位 <span className="text-text-secondary">{s.scanUnit}</span>
-                  </div>
-
-                  {/* 已领 / 库存 */}
-                  <div className="mt-1 text-caption text-text-tertiary">
-                    已领<span className="text-foreground font-medium">{s.claimed}</span> {s.scanUnit}
-                    <span className="ml-3" />
-                    库存 <span className="text-text-secondary">{s.stock}</span> {s.scanUnit}
-                  </div>
-
-                  {/* 厂商 */}
-                  <div className="mt-1 text-caption text-text-tertiary">
-                    厂商 <span className="text-text-secondary">{s.manufacturer}</span>
-                  </div>
-
-                  {/* 虚线分隔 */}
-                  <div className="my-3 border-t border-dashed border-border" />
-
-                  {/* 已取 右对齐 */}
-                  <div className="text-caption text-text-tertiary text-right">
-                    已取 <span className="text-foreground font-medium">{s.claimed}/{s.claimed}</span> {s.scanUnit}
-                  </div>
-
-                  {/* 追溯码 + 数量 + 删除 */}
-                  <div className="mt-1 flex items-center gap-2">
-                    <div className="flex-1 min-w-0 text-caption text-text-secondary font-mono truncate">
-                      {s.code}
-                    </div>
-                    <div className="text-caption text-text-secondary shrink-0">
-                      ×{s.claimed} {s.scanUnit}
-                    </div>
-                    <button
-                      onClick={() =>
-                        setScans((arr) => arr.filter((_, j) => j !== i))
-                      }
-                      className="h-6 w-6 inline-flex items-center justify-center text-text-tertiary active:text-foreground shrink-0"
-                      aria-label="移除"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  {/* 厂商 · 批号 */}
-                  <div className="mt-1 text-caption">
-                    <span className="text-primary">{s.manufacturer}</span>
-                    <span className="mx-2 text-border">·</span>
-                    <span className="text-text-tertiary font-mono">{s.batch}</span>
-                  </div>
-                </div>
+            <div className="space-y-3 pb-4">
+              {groups.map((g, gi) => (
+                <DrugCard
+                  key={g.drug.name}
+                  group={g}
+                  onScanMore={() => addOneScan(g.drug)}
+                  onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
+                  onRemove={(ei) => removeEntry(gi, ei)}
+                />
               ))}
             </div>
-
           )}
         </div>
 
-        {scans.length > 0 && (
+        {totalCount > 0 && (
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-40">
             <button
               onClick={() => {
-                toast.success(`已生成领药记录（${scans.length} 项）`);
-                setScans([]);
+                toast.success(`已生成领药记录（${totalCount} 项）`);
+                setGroups([]);
               }}
               className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90"
             >
-              完成领药（{scans.length} 项）
+              完成领药（{totalCount} 项）
             </button>
           </div>
         )}
       </div>
+
       {aggOpen && (
         <AggregateDrawer
           onClose={() => setAggOpen(false)}
@@ -249,6 +303,149 @@ function PrepPage() {
         />
       )}
     </MobileShell>
+  );
+}
+
+function DrugCard({
+  group,
+  onScanMore,
+  onUpdateQty,
+  onRemove,
+}: {
+  group: Group;
+  onScanMore: () => void;
+  onUpdateQty: (ei: number, qty: number) => void;
+  onRemove: (ei: number) => void;
+}) {
+  const { drug, entries } = group;
+  const totalQty = entries.reduce((s, e) => s + e.qty, 0);
+  const stockTotal = drug.stockSources.reduce((s, x) => s + x.qty, 0);
+
+  // 按厂商汇总已扫数量
+  const byMfr = new Map<string, number>();
+  entries.forEach((e) => byMfr.set(e.manufacturer, (byMfr.get(e.manufacturer) ?? 0) + e.qty));
+
+  return (
+    <div
+      className="rounded-xl bg-card border p-3.5"
+      style={{ borderColor: "#B8E0C2" }}
+    >
+      {/* 顶部：名称 + 扫码按钮 */}
+      <div className="flex items-start gap-2">
+        <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+        <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
+          {drug.name}
+        </div>
+        <button
+          onClick={onScanMore}
+          className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0 active:opacity-80"
+          aria-label="继续扫描"
+        >
+          <ScanLine className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* 规格 · 扫码单位 */}
+      <div className="mt-2 text-caption text-text-tertiary">
+        规格 <span className="text-text-secondary">{drug.spec}</span>
+        <span className="mx-2 text-border">·</span>
+        扫码单位 <span className="text-text-secondary">{drug.scanUnit}</span>
+      </div>
+
+      {/* 已扫 · 库存 */}
+      <div className="mt-1 text-caption text-text-tertiary">
+        已扫 <span className="text-foreground font-medium">{totalQty}</span> {drug.countUnit}
+        <span className="ml-3" />
+        库存 <span className="text-text-secondary">{stockTotal}</span> {drug.countUnit}
+      </div>
+
+      {/* 厂商分布 + 混用标签 */}
+      <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2 gap-y-1">
+        <span>厂商</span>
+        {drug.stockSources.map((s, i) => (
+          <span key={s.manufacturer} className="text-text-secondary">
+            {s.manufacturer} {s.qty}{drug.countUnit}
+            {i < drug.stockSources.length - 1 && <span className="mx-1 text-border">·</span>}
+          </span>
+        ))}
+        {drug.allowMix ? (
+          <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-surface-subtle text-text-secondary border border-border">
+            允许混用
+          </span>
+        ) : (
+          <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]">
+            不可混用
+          </span>
+        )}
+      </div>
+
+      {/* 虚线分隔 */}
+      <div className="my-3 border-t border-dashed border-border" />
+
+      {/* 已取 总览（右对齐） */}
+      <div className="text-caption text-primary text-right font-medium">
+        已取 {totalQty}/{totalQty} {drug.countUnit}
+      </div>
+
+      {/* 扫描明细 */}
+      <div className="mt-2 space-y-2.5">
+        {entries.map((e, ei) => (
+          <div key={`${e.code}-${ei}`} className="flex items-center gap-2">
+            <div className="flex-1 min-w-0">
+              <div className="text-caption text-text-secondary font-mono truncate">
+                {e.code}
+              </div>
+              <div className="text-caption mt-0.5">
+                <span className="text-primary">{e.manufacturer}</span>
+                <span className="mx-2 text-border">·</span>
+                <span className="text-text-tertiary font-mono">{e.batch}</span>
+              </div>
+              {!drug.unitScannable && e.packSize && (
+                <div className="text-caption text-text-tertiary mt-0.5">
+                  包内剩余 <span className="text-text-secondary">{e.packSize - e.qty}</span>
+                  {" / "}
+                  <span className="text-text-secondary">{e.packSize}</span> {drug.countUnit}
+                </div>
+              )}
+            </div>
+
+            {drug.unitScannable ? (
+              <div className="text-caption text-text-secondary shrink-0">
+                ×{e.qty} {drug.countUnit}
+              </div>
+            ) : (
+              <div className="inline-flex items-center border border-border rounded-md shrink-0 h-8">
+                <button
+                  onClick={() => onUpdateQty(ei, e.qty - 1)}
+                  disabled={e.qty <= 1}
+                  className="h-8 w-8 inline-flex items-center justify-center text-text-secondary disabled:opacity-30 active:bg-surface-subtle"
+                  aria-label="减少"
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                </button>
+                <div className="w-8 text-center text-body-sm tabular-nums">{e.qty}</div>
+                <button
+                  onClick={() => onUpdateQty(ei, e.qty + 1)}
+                  disabled={e.packSize ? e.qty >= e.packSize : false}
+                  className="h-8 w-8 inline-flex items-center justify-center text-text-secondary disabled:opacity-30 active:bg-surface-subtle"
+                  aria-label="增加"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+
+            <button
+              onClick={() => onRemove(ei)}
+              className="h-8 w-6 inline-flex items-center justify-center text-text-tertiary active:text-foreground shrink-0"
+              aria-label="移除"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
