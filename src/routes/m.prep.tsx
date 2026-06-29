@@ -152,61 +152,73 @@ function PrepPage() {
               {scans.map((s, i) => (
               <div
                 key={`${s.code}-${i}`}
-                className="rounded-xl bg-card border border-primary p-3"
+                className="rounded-xl bg-card border p-3.5"
+                style={{ borderColor: "#B8E0C2" }}
               >
-                  {/* 顶部：图标 + 名称 + 右上角已领/库存 */}
+                  {/* 顶部：图标 + 名称 */}
                   <div className="flex items-start gap-2">
-                    <Package className="h-4 w-4 text-primary mt-1 shrink-0" />
-                    <div className="flex-1 min-w-0 text-body-sm font-semibold text-foreground truncate">
+                    <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                    <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
                       {s.name}
                     </div>
-                    <div className="text-caption text-text-tertiary shrink-0 text-right leading-tight">
-                      已领{" "}
-                      <span className="text-text-secondary">
-                        {s.claimed}
-                      </span>{" "}
-                      {s.scanUnit}
-                      <span className="mx-1 text-border">·</span>
-                      库存{" "}
-                      <span className="text-text-secondary">{s.stock}</span>{" "}
-                      {s.scanUnit}
+                  </div>
+
+                  {/* 规格 + 扫码单位 */}
+                  <div className="mt-2 text-caption text-text-tertiary">
+                    规格 <span className="text-text-secondary">{s.spec}</span>
+                    <span className="mx-2 text-border">·</span>
+                    扫码单位 <span className="text-text-secondary">{s.scanUnit}</span>
+                  </div>
+
+                  {/* 已领 / 库存 */}
+                  <div className="mt-1 text-caption text-text-tertiary">
+                    已领<span className="text-foreground font-medium">{s.claimed}</span> {s.scanUnit}
+                    <span className="ml-3" />
+                    库存 <span className="text-text-secondary">{s.stock}</span> {s.scanUnit}
+                  </div>
+
+                  {/* 厂商 */}
+                  <div className="mt-1 text-caption text-text-tertiary">
+                    厂商 <span className="text-text-secondary">{s.manufacturer}</span>
+                  </div>
+
+                  {/* 虚线分隔 */}
+                  <div className="my-3 border-t border-dashed border-border" />
+
+                  {/* 已取 右对齐 */}
+                  <div className="text-caption text-text-tertiary text-right">
+                    已取 <span className="text-foreground font-medium">{s.claimed}/{s.claimed}</span> {s.scanUnit}
+                  </div>
+
+                  {/* 追溯码 + 数量 + 删除 */}
+                  <div className="mt-1 flex items-center gap-2">
+                    <div className="flex-1 min-w-0 text-caption text-text-secondary font-mono truncate">
+                      {s.code}
+                    </div>
+                    <div className="text-caption text-text-secondary shrink-0">
+                      ×{s.claimed} {s.scanUnit}
                     </div>
                     <button
                       onClick={() =>
                         setScans((arr) => arr.filter((_, j) => j !== i))
                       }
-                      className="h-6 w-6 -mr-1 inline-flex items-center justify-center text-text-tertiary active:text-foreground shrink-0"
+                      className="h-6 w-6 inline-flex items-center justify-center text-text-tertiary active:text-foreground shrink-0"
                       aria-label="移除"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
 
-                  {/* 规格 + 扫码单位 */}
-                  <div className="mt-1.5 text-caption text-text-tertiary">
-                    规格{" "}
-                    <span className="text-text-secondary">{s.spec}</span>
+                  {/* 厂商 · 批号 */}
+                  <div className="mt-1 text-caption">
+                    <span className="text-primary">{s.manufacturer}</span>
                     <span className="mx-2 text-border">·</span>
-                    扫码单位{" "}
-                    <span className="text-text-secondary">{s.scanUnit}</span>
-                  </div>
-
-                  {/* 厂商 chip */}
-                  <div className="mt-1.5">
-                    <span className="inline-flex items-center text-caption px-1.5 py-0.5 rounded bg-surface-subtle text-text-secondary">
-                      厂商 {s.manufacturer}
-                    </span>
-                  </div>
-
-                  {/* 追溯码 / 批号 */}
-                  <div className="mt-1.5 text-caption text-text-tertiary font-mono">
-                    {s.code}
-                    <span className="mx-2 text-border">·</span>
-                    {s.batch}
+                    <span className="text-text-tertiary font-mono">{s.batch}</span>
                   </div>
                 </div>
               ))}
             </div>
+
           )}
         </div>
 
