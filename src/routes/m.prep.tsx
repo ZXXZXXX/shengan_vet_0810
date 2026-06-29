@@ -598,33 +598,6 @@ function DrugCard({
               <span className="mx-2 text-border">·</span>
               扫码单位 <span className="text-text-secondary">{firstDrug.scanUnit}</span>
             </div>
-
-            <div className="mt-1 text-caption text-text-tertiary">
-              已扫 <span className="text-foreground font-medium">{totalQty}</span>{" "}
-              {firstDrug.countUnit}
-            </div>
-
-            <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2 gap-y-1">
-              <span>厂商</span>
-              {Array.from(byMfr.entries()).map(([mfr, qty], i) => (
-                <span key={mfr} className="text-text-secondary">
-                  {mfr} {qty}
-                  {firstDrug.countUnit}
-                  {i < byMfr.size - 1 && (
-                    <span className="mx-1 text-border">·</span>
-                  )}
-                </span>
-              ))}
-              {firstDrug.allowMix ? (
-                <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-surface-subtle text-text-secondary border border-border">
-                  允许混用
-                </span>
-              ) : (
-                <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]">
-                  不可混用
-                </span>
-              )}
-            </div>
           </>
         )}
 
