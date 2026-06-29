@@ -364,9 +364,13 @@ function ReportPage() {
   }, [targets, barnMode, fromRevisit, detectedFor, isRevisit]);
 
   // 健康
-  // 仅支持疾病治疗类型工单
-  const [workType] = useState<WorkType>("疾病治疗");
+  // 工单类型：疾病治疗 / 干奶 / 修蹄；修蹄工固定为修蹄且不可改
+  const [workType, setWorkType] = useState<WorkType>(
+    role === "hoof_trimmer" ? "修蹄" : "疾病治疗"
+  );
+  const lockWorkType = role === "hoof_trimmer";
   const cfg = workTypeConfig[workType];
+
   const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
   const [note, setNote] = useState<string>(draft?.note ?? "");
   const [temperature, setTemperature] = useState<string>(draft?.temperature ?? "");
@@ -495,11 +499,54 @@ function ReportPage() {
         {kind === "health" ? (
           <>
 
+            {/* 工单类型 */}
+            <Section title="工单类型" required>
+              <div className="grid grid-cols-3 gap-2">
+                {([
+                  { v: "疾病治疗" as WorkType, label: "疾病治疗" },
+                  { v: "干奶" as WorkType, label: "干奶工单" },
+                  { v: "修蹄" as WorkType, label: "修蹄工单" },
+                ]).map((opt) => {
+                  const active = workType === opt.v;
+                  const disabled = lockWorkType && opt.v !== "修蹄";
+                  return (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => {
+                        if (disabled || workType === opt.v) return;
+                        setWorkType(opt.v);
+                        setSymptoms([]);
+                        setSuspectedDisease("");
+                        setNote("");
+                      }}
+                      className={`h-10 rounded-lg text-body-sm transition-colors border ${
+                        active
+                          ? "bg-brand-subtle text-primary border-primary/40 font-medium"
+                          : disabled
+                          ? "bg-surface-subtle text-text-tertiary border-border opacity-50"
+                          : "bg-card text-text-secondary border-border"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {lockWorkType && (
+                <div className="mt-2 text-caption text-text-tertiary">
+                  当前角色为修蹄工，仅可上报修蹄工单
+                </div>
+              )}
+            </Section>
+
             {/* 上报对象 */}
             <Section
               title="上报对象"
               required
             >
+
 
               {!lockMode && (
                 <div className="mb-2.5 inline-flex rounded-full border border-border bg-surface-subtle p-0.5">
