@@ -53,6 +53,9 @@ type Scan = {
   manufacturer: string;
   batch: string;
   code: string;
+  scanUnit: string;
+  claimed: number;
+  stock: number;
 };
 
 function PrepPage() {
@@ -65,9 +68,18 @@ function PrepPage() {
     const manufacturer = pickManufacturer(d.name, scans.length);
     const batch = genBatch();
     const code = genScanCode(d.spec.includes("瓶") ? "UNIT" : "PACK");
-    setScans((s) => [{ ...d, manufacturer, batch, code }, ...s]);
+    const scanUnit = d.spec.includes("瓶") ? "瓶" : "支";
+    const stock = 8 + Math.floor(Math.random() * 20);
+    setScans((s) => {
+      const sameCount = s.filter((x) => x.name === d.name).length + 1;
+      return [
+        { ...d, manufacturer, batch, code, scanUnit, claimed: sameCount, stock },
+        ...s,
+      ];
+    });
     toast.success(`已识别 · ${d.name}`);
   };
+
 
   return (
     <MobileShell>
