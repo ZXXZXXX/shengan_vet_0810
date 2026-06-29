@@ -316,7 +316,7 @@ function PrepPage() {
       </header>
 
 
-      {/* 顶部 1/4 区域：统计药品清单按钮 / 领取清单 */}
+      {/* 顶部 1/4 区域：药品清单 */}
       <div className="min-h-[25vh] border-b border-border bg-card flex flex-col">
         {requirements.length > 0 ? (
           <div className="flex-1 flex flex-col min-h-0">
@@ -326,7 +326,7 @@ function PrepPage() {
               className="w-full h-12 px-4 flex items-center gap-2 active:bg-surface-subtle shrink-0"
             >
               <ClipboardList className="h-4 w-4 text-primary" />
-              <span className="text-body font-medium text-foreground">领取清单</span>
+              <span className="text-body font-medium text-foreground">药品清单</span>
               <span className="text-caption text-text-tertiary">
                 共 {requirements.length} 种
               </span>
@@ -387,8 +387,12 @@ function PrepPage() {
             )}
           </div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center px-6">
-            <div className="w-full max-w-xs rounded-xl border border-dashed border-border bg-surface-2 p-6 flex flex-col items-center text-center">
+          <div className="flex-1 flex flex-col px-4 pt-3 pb-4 min-h-0">
+            <div className="flex items-center gap-2 h-8 mb-2 shrink-0">
+              <ClipboardList className="h-4 w-4 text-primary" />
+              <span className="text-body font-medium text-foreground">药品清单</span>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface-2 p-6 text-center min-h-0">
               <ClipboardList className="h-8 w-8 text-primary/60 mb-2" />
               <div className="text-body-sm font-medium text-foreground mb-1">
                 统计今日待执行任务的药品清单
