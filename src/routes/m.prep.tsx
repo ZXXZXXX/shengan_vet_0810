@@ -5,6 +5,8 @@ import {
   ClipboardList,
   ScanLine,
   Package,
+  Pill,
+  Check,
   X,
   Inbox,
 } from "lucide-react";
