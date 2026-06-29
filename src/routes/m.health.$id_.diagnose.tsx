@@ -318,8 +318,13 @@ function DiagnosePage() {
   const { id } = useParams({ from: "/m/health/$id_/diagnose" });
   const navigate = useNavigate();
 
-  // 症状（带入上报症状，可加减）
-  const [symptoms, setSymptoms] = useState<string[]>(reportedSymptoms);
+  // 工单类型判断
+  const isPostpartum = id.toUpperCase().startsWith("PP");
+  const effectiveSymptomLibrary = isPostpartum ? POSTPARTUM_SYMPTOMS : symptomLibrary;
+  const effectiveDiseaseLibrary = isPostpartum ? [POSTPARTUM_DISEASE] : diseaseLibrary;
+
+  // 症状（带入上报症状，可加减；产后护理无上报症状）
+  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum ? [] : reportedSymptoms));
   const [symptomInput, setSymptomInput] = useState("");
 
   // 疾病
