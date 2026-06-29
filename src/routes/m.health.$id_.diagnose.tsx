@@ -673,7 +673,7 @@ function DiagnosePage() {
           <div className="flex items-center gap-1.5 text-caption text-primary">
             <Sparkles className="h-3 w-3" />
             {isPostpartum
-              ? "平台下发的产后护理工单，请勾选高危因素并核对治疗方案"
+              ? "平台下发的产后护理工单，请勾选症状并核对治疗方案"
               : "已自动将上报信息填写至下方，方便编辑更改"}
           </div>
         </div>
@@ -697,7 +697,7 @@ function DiagnosePage() {
               disableCreate={isPostpartum}
               placeholder={isPostpartum ? "输入关键词搜索" : "输入关键词搜索，或创建新标签"}
               hotLabel="常用标签"
-              maxHot={isPostpartum ? 5 : 8}
+              maxHot={isPostpartum ? 4 : 8}
             />
           </Section>
 
