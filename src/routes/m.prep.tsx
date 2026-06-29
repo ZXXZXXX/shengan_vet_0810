@@ -691,13 +691,33 @@ function AggregateDrawer({
   onConfirm: (ids: string[]) => void;
 }) {
   const role = useRole();
-  const allTasks: HomeTask[] = useMemo(() => {
-    const roleTasks = getRoleTasks(role);
-    // 今日待执行任务（有领药需求的）
-    return roleTasks.filter((t) => PICKUPS.some((p) => p.source === t.id));
-  }, [role]);
+  const homeTaskMap = useMemo(() => {
+    const m = new Map<string, HomeTask>();
+    homeTasks.forEach((t) => m.set(t.id, t));
+    return m;
+  }, []);
 
-  // 推断牛舍：优先取 pickup.barn，否则取 t.target 前缀
+  // 全部今日可备药任务：基于 PICKUPS 中存在的工单 + 当前角色可视
+  const allTasks: HomeTask[] = useMemo(() => {
+    const roleType: Record<string, string[]> = {
+      vet: ["疾病治疗", "产后护理"],
+      manager: ["疾病治疗", "产后护理"],
+      vet_assistant: ["疾病治疗", "产后护理"],
+      immunizer: ["疫苗免疫"],
+      hoof_trimmer: ["修蹄"],
+    };
+    const types = roleType[role] ?? ["疾病治疗", "产后护理", "疫苗免疫", "修蹄"];
+    const out: HomeTask[] = [];
+    PICKUPS.forEach((p) => {
+      const t = homeTaskMap.get(p.source);
+      if (!t) return;
+      if (t.status !== "进行中") return;
+      if (!types.includes(t.type)) return;
+      out.push(t);
+    });
+    return out;
+  }, [role, homeTaskMap]);
+
   const barnOf = (t: HomeTask): string => {
     const pk = PICKUPS.find((p) => p.source === t.id);
     if (pk) return pk.barn;
@@ -708,11 +728,12 @@ function AggregateDrawer({
   const allBarns = useMemo(() => {
     const s = new Set<string>();
     allTasks.forEach((t) => s.add(barnOf(t)));
-    return Array.from(s);
+    return Array.from(s).sort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allTasks]);
 
   const [barnFilter, setBarnFilter] = useState<Set<string>>(new Set());
+  const [barnOpen, setBarnOpen] = useState(false);
   const tasks = useMemo(
     () =>
       barnFilter.size === 0
@@ -744,6 +765,11 @@ function AggregateDrawer({
       return n;
     });
 
+  const barnLabel =
+    barnFilter.size === 0
+      ? `全部牛舍（${allBarns.length}）`
+      : `已选 ${barnFilter.size} 个牛舍`;
+
   return (
     <div
       className="fixed inset-0 z-50 bg-black/50 flex items-end"
@@ -766,22 +792,39 @@ function AggregateDrawer({
           </button>
         </div>
 
-        {/* 牛舍筛选 */}
+        {/* 牛舍筛选 —— 下拉式 */}
         {allBarns.length > 1 && (
           <div className="px-4 py-2 border-b border-border shrink-0">
-            <div className="flex items-center gap-1.5 text-caption text-text-tertiary mb-1.5">
-              <span>按牛舍筛选</span>
+            <button
+              type="button"
+              onClick={() => setBarnOpen((v) => !v)}
+              className="w-full h-9 px-3 rounded-lg border border-border bg-card flex items-center gap-2 active:bg-surface-subtle"
+            >
+              <span className="text-caption text-text-tertiary">按牛舍筛选</span>
+              <span className="text-body-sm text-foreground truncate">
+                {barnLabel}
+              </span>
               {barnFilter.size > 0 && (
-                <button
-                  onClick={() => setBarnFilter(new Set())}
-                  className="text-primary ml-auto"
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setBarnFilter(new Set());
+                  }}
+                  className="ml-1 text-caption text-primary"
                 >
                   清除
-                </button>
+                </span>
               )}
-            </div>
-            <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
-              <div className="flex gap-1.5 w-max pr-4">
+              {barnOpen ? (
+                <ChevronUp className="ml-auto h-4 w-4 text-text-tertiary" />
+              ) : (
+                <ChevronDown className="ml-auto h-4 w-4 text-text-tertiary" />
+              )}
+            </button>
+            {barnOpen && (
+              <div className="mt-2 max-h-44 overflow-y-auto rounded-lg border border-border divide-y divide-border bg-card">
                 {allBarns.map((b) => {
                   const on = barnFilter.has(b);
                   const cnt = allTasks.filter((t) => barnOf(t) === b).length;
@@ -790,21 +833,32 @@ function AggregateDrawer({
                       key={b}
                       type="button"
                       onClick={() => toggleBarn(b)}
-                      className={`shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full border text-caption transition-colors ${
-                        on
-                          ? "border-primary bg-brand-subtle text-primary"
-                          : "border-border bg-card text-text-secondary"
+                      className={`w-full h-10 px-3 flex items-center gap-2 text-left active:bg-surface-subtle ${
+                        on ? "bg-brand-subtle/50" : ""
                       }`}
                     >
-                      <span>{b}</span>
-                      <span className="tabular-nums opacity-70">{cnt}</span>
+                      <span
+                        className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
+                          on ? "bg-primary border-primary" : "border-border bg-card"
+                        }`}
+                      >
+                        {on && <Check className="h-3 w-3 text-white" />}
+                      </span>
+                      <span className="text-body-sm text-foreground flex-1 truncate">
+                        {b}
+                      </span>
+                      <span className="text-caption text-text-tertiary tabular-nums">
+                        {cnt}
+                      </span>
                     </button>
                   );
                 })}
               </div>
-            </div>
+            )}
           </div>
         )}
+
+
 
         <div className="px-4 py-2 border-b border-border flex items-center justify-between shrink-0">
           <button
