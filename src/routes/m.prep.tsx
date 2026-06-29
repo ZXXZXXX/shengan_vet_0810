@@ -583,7 +583,7 @@ function DrugCard({
           ) : (
             <button
               onClick={() => setConfirmOpen(true)}
-              className="h-7 px-2.5 rounded-md inline-flex items-center justify-center shrink-0 active:opacity-80 text-caption font-medium bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]"
+              className="text-caption text-primary active:opacity-70 shrink-0"
             >
               组合用药
             </button>
