@@ -684,21 +684,20 @@ function DiagnosePage() {
             <span className="text-caption text-text-tertiary">症状、体征数据与现场记录</span>
           </div>
 
-          {/* === 症状 === */}
+          {/* === 症状标签 === */}
           <Section
-            title="症状"
-            extra={<span className="text-caption text-text-tertiary">{symptoms.length} 个</span>}
+            title="症状标签"
+            required
+            hint="可多选；输入关键词搜索，未命中可直接新建"
           >
             <TagPicker
               selected={symptoms}
               onChange={setSymptoms}
               presets={effectiveSymptomLibrary}
               disableCreate={isPostpartum}
-              placeholder={isPostpartum ? "输入关键词搜索" : "输入关键词搜索，或创建新标签"}
-              hotLabel="常用标签"
-              maxHot={isPostpartum ? 4 : 8}
             />
           </Section>
+
 
           {/* === 体征数据 === */}
           <Section title="体征数据">
