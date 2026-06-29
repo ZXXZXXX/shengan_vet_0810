@@ -472,8 +472,8 @@ function TaskDetailPage() {
 
         <div className="px-4 pt-3 space-y-3">
           {tab === "report" && (
-            isPlatformPostpartum && o.status === "待诊断"
-              ? <PostpartumReportNotice id={id} />
+            isPlatformPostpartum
+              ? <EmptyTab label="平台下发工单，无上报记录" />
               : isPlatformIssued
                 ? <EmptyTab label="平台下发工单，无上报记录" />
                 : <ReportTab isLoss={isLoss} />
