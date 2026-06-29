@@ -142,16 +142,16 @@ export function TagPicker({
             </div>
           </div>
 
-          <div className="px-4 pt-1 pb-3 flex items-center gap-1 text-caption text-text-tertiary">
+          <div className="px-4 pt-1 pb-2 flex items-center gap-1 text-caption text-text-tertiary">
             <Sparkles className="h-3 w-3 text-primary" />
-            <span>{kw ? "搜索结果" : hotLabel}</span>
+            <span>{hotLabel}</span>
             <span className="ml-auto">{filtered.length} 项</span>
           </div>
 
-          {/* 一屏最多 6 行，超出滚动 */}
-          <div className="px-4 pb-4 max-h-[calc(6*44px+24px)] overflow-y-auto">
+          {/* 一屏最多 6 行，超出滚动；一行一个 */}
+          <div className="px-4 pb-4 max-h-[calc(6*52px+24px)] overflow-y-auto">
             {filtered.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-col">
                 {filtered.map((t) => {
                   const active = selected.includes(t);
                   return (
@@ -159,14 +159,12 @@ export function TagPicker({
                       key={t}
                       type="button"
                       onClick={() => toggle(t)}
-                      className={`h-9 px-3 rounded-full text-body-sm border inline-flex items-center gap-1 transition-colors ${
-                        active
-                          ? "bg-brand-subtle text-primary border-primary/50"
-                          : "bg-card text-text-secondary border-border active:scale-[0.97]"
+                      className={`h-12 px-1 flex items-center justify-between text-body border-b border-border/60 last:border-b-0 ${
+                        active ? "text-primary" : "text-foreground"
                       }`}
                     >
-                      {active && <Check className="h-3.5 w-3.5" />}
-                      {t}
+                      <span className="truncate">{t}</span>
+                      {active && <Check className="h-4 w-4 text-primary shrink-0" />}
                     </button>
                   );
                 })}
@@ -184,7 +182,7 @@ export function TagPicker({
                 <button
                   type="button"
                   onClick={create}
-                  className="inline-flex items-center gap-1 h-9 px-3 rounded-full border border-dashed border-primary/60 bg-brand-subtle text-primary text-body-sm"
+                  className="inline-flex items-center gap-1 h-10 px-3 rounded-lg border border-dashed border-primary/60 bg-brand-subtle text-primary text-body-sm"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   新建「{kw}」
@@ -192,6 +190,7 @@ export function TagPicker({
               </div>
             )}
           </div>
+
         </DrawerContent>
       </Drawer>
     </div>
