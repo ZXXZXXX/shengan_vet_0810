@@ -61,8 +61,6 @@ function AnimalDetailPage() {
     lactationDays: 168,
     pregnancyDays: 92,
     parity: 3,
-    // 近 14 天产奶量 (kg/天)
-    milk14d: [32, 33, 31, 30, 28, 27, 26, 25, 24, 22, 23, 24, 25, 26],
   };
 
   // 转栏弹窗状态
