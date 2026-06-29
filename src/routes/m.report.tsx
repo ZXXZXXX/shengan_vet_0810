@@ -40,7 +40,7 @@ type ReportSearch = {
 };
 
 export const Route = createFileRoute("/m/report")({
-  head: () => ({ meta: [{ title: "疾病上报 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "健康上报 · 奇点智牧" }] }),
   validateSearch: (s: Record<string, unknown>): ReportSearch => ({
     target: typeof s.target === "string" ? s.target : undefined,
     barn: typeof s.barn === "string" ? s.barn : undefined,
@@ -494,13 +494,13 @@ function ReportPage() {
   
 
   return (
-    <MobileShell title="疾病上报" back hideTabBar>
+    <MobileShell title="健康上报" back hideTabBar>
       <div className="px-4 pt-3 pb-28 space-y-5">
         {kind === "health" ? (
           <>
 
-            {/* 工单类型 */}
-            <Section title="工单类型" required>
+            {/* 上报类型 */}
+            <Section title="上报类型" required>
               <div className="grid grid-cols-3 gap-2">
                 {([
                   { v: "疾病治疗" as WorkType, label: "疾病治疗" },
