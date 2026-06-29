@@ -75,11 +75,11 @@ export function TagPicker({
   };
 
   return (
-    <div className="space-y-3">
-      {/* 已选 */}
-      {selected.length > 0 && (
+    <div className="space-y-2">
+      {/* 已选（自定义，未在常用池中的） */}
+      {selected.filter((t) => !presets.includes(t)).length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {selected.map((t) => (
+          {selected.filter((t) => !presets.includes(t)).map((t) => (
             <span
               key={t}
               className="inline-flex items-center gap-1 h-8 pl-3 pr-1.5 rounded-full bg-primary text-primary-foreground text-body-sm shadow-[0_2px_6px_-2px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
@@ -97,6 +97,30 @@ export function TagPicker({
           ))}
         </div>
       )}
+
+      {/* 常用标签快选（两行内，超出在抽屉内查看） */}
+      {presets.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 max-h-[76px] overflow-hidden">
+          {presets.map((t) => {
+            const active = selected.includes(t);
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => toggle(t)}
+                className={`inline-flex items-center h-8 px-3 rounded-full text-body-sm border transition-colors ${
+                  active
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card text-foreground border-border active:border-primary"
+                }`}
+              >
+                {t}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
 
       {/* 触发器 */}
       <button
