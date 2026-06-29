@@ -319,81 +319,81 @@ function PrepPage() {
       <div className="min-h-[25vh] border-b border-border bg-card flex flex-col">
         {requirements.length > 0 ? (
           <div className="flex-1 flex flex-col min-h-0">
-            <button
-              type="button"
-              onClick={() => setChecklistCollapsed((v) => !v)}
+            <div
               className="w-full h-12 px-4 flex items-center gap-2 active:bg-surface-subtle shrink-0"
             >
-              <ClipboardList className="h-4 w-4 text-primary" />
-              <span className="text-body font-medium text-foreground">药品清单</span>
-              <span className="text-caption text-text-tertiary">
-                共 {requirements.length} 种
-              </span>
+              <div
+                className="flex-1 flex items-center gap-2 min-w-0"
+                onClick={() => setChecklistCollapsed((v) => !v)}
+              >
+                <ClipboardList className="h-4 w-4 text-primary shrink-0" />
+                <span className="text-body font-medium text-foreground whitespace-nowrap">药品清单</span>
+                <span className="text-caption text-text-tertiary whitespace-nowrap">
+                  共 {requirements.length} 种
+                </span>
+                <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary whitespace-nowrap">
+                  {checklistCollapsed ? "展开" : "收起"}
+                  {checklistCollapsed ? (
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  ) : (
+                    <ChevronUp className="h-3.5 w-3.5" />
+                  )}
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   setAggOpen(true);
                 }}
-                className="ml-auto inline-flex items-center gap-1 text-caption text-primary active:opacity-70"
+                className="ml-3 inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
               >
                 选择任务
               </button>
-              <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
-                {checklistCollapsed ? "展开" : "收起"}
-                {checklistCollapsed ? (
-                  <ChevronDown className="h-3.5 w-3.5" />
-                ) : (
-                  <ChevronUp className="h-3.5 w-3.5" />
-                )}
-              </span>
-            </button>
-            {!checklistCollapsed && (
-              <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-3 space-y-2 max-h-[50vh]">
-                {requirements.map((r) => {
-                  const got = claimedMap.get(r.key) ?? 0;
-                  const done = got >= r.total;
-                  return (
-                    <div
-                      key={r.key}
-                      className="rounded-lg border border-border bg-surface-2 px-3 py-2"
-                    >
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-body-sm font-medium text-foreground truncate">
-                          {r.name}
-                        </span>
-                        <span
-                          className={`ml-auto text-caption tabular-nums shrink-0 ${
-                            done ? "text-primary font-medium" : "text-[#E5751A] font-medium"
-                          }`}
-                        >
-                          {got} / {r.total} {r.unit}
-                        </span>
-                      </div>
-                      <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2">
-                        <span>
-                          厂商
-                          <span
-                            className={`ml-1 ${r.mfrRequired === "不限" ? "text-text-secondary" : "text-[#E5751A]"}`}
-                          >
-                            {r.mfrRequired}
-                          </span>
-                        </span>
-                        <span className="text-border">·</span>
-                        <span>规格 <span className="text-text-secondary">{r.spec}</span></span>
-                      </div>
+            </div>
+            <div className="px-4 pb-3 space-y-2">
+              {requirements.map((r, idx) => {
+                if (checklistCollapsed && idx > 0) return null;
+                const got = claimedMap.get(r.key) ?? 0;
+                const done = got >= r.total;
+                return (
+                  <div
+                    key={r.key}
+                    className="rounded-lg border border-border bg-surface-2 px-3 py-2"
+                  >
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-body-sm font-medium text-foreground truncate">
+                        {r.name}
+                      </span>
+                      <span
+                        className={`ml-auto text-caption tabular-nums shrink-0 ${
+                          done ? "text-primary font-medium" : "text-[#E5751A] font-medium"
+                        }`}
+                      >
+                        {got} / {r.total} {r.unit}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-            {checklistCollapsed && (
-              <div className="flex-1 flex items-center justify-center px-4">
-                <div className="text-caption text-text-tertiary">
-                  已折叠，点击上方“展开”查看清单
+                    <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2">
+                      <span>
+                        厂商
+                        <span
+                          className={`ml-1 ${r.mfrRequired === "不限" ? "text-text-secondary" : "text-[#E5751A]"}`}
+                        >
+                          {r.mfrRequired}
+                        </span>
+                      </span>
+                      <span className="text-border">·</span>
+                      <span>规格 <span className="text-text-secondary">{r.spec}</span></span>
+                    </div>
+                  </div>
+                );
+              })}
+              {checklistCollapsed && requirements.length > 1 && (
+                <div className="text-center text-caption text-text-tertiary py-2">
+                  已折叠 {requirements.length - 1} 条
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ) : (
           <div className="flex-1 flex flex-col px-4 pt-3 pb-4 min-h-0">
