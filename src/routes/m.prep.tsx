@@ -376,9 +376,9 @@ function DrugCard({
       {/* 虚线分隔 */}
       <div className="my-3 border-t border-dashed border-border" />
 
-      {/* 已取 总览（右对齐） */}
+      {/* 已领 总数 */}
       <div className="text-caption text-primary text-right font-medium">
-        已取 {totalQty}/{totalQty} {drug.countUnit}
+        已领 {totalQty} {drug.countUnit}
       </div>
 
       {/* 扫描明细 */}
