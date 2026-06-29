@@ -364,9 +364,13 @@ function ReportPage() {
   }, [targets, barnMode, fromRevisit, detectedFor, isRevisit]);
 
   // 健康
-  // 仅支持疾病治疗类型工单
-  const [workType] = useState<WorkType>("疾病治疗");
+  // 工单类型：疾病治疗 / 干奶 / 修蹄；修蹄工固定为修蹄且不可改
+  const [workType, setWorkType] = useState<WorkType>(
+    role === "hoof_trimmer" ? "修蹄" : "疾病治疗"
+  );
+  const lockWorkType = role === "hoof_trimmer";
   const cfg = workTypeConfig[workType];
+
   const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
   const [note, setNote] = useState<string>(draft?.note ?? "");
   const [temperature, setTemperature] = useState<string>(draft?.temperature ?? "");
