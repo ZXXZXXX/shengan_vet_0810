@@ -25,7 +25,7 @@ import {
   genBatch,
 } from "@/lib/pickup-store";
 import {
-  getRoleTasks,
+  homeTasks,
   diseaseTaskMeta,
   typeMeta,
   type HomeTask,
