@@ -12,7 +12,6 @@ import {
   X,
   Minus,
   Plus,
-  Inbox,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -430,7 +429,6 @@ function PrepPage() {
 
         {groups.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border bg-surface-2 p-8 flex flex-col items-center text-center">
-            <Inbox className="h-8 w-8 text-primary/60 mb-2" />
             <div className="text-caption text-text-tertiary">
               点击下方按钮扫描药品二维码
             </div>
