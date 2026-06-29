@@ -44,6 +44,9 @@ export const Route = createFileRoute("/m/prep")({
   component: PrepPage,
 });
 
+let groupIdCounter = 0;
+const genGroupId = () => `group-${++groupIdCounter}`;
+
 // 演示药品池：包含三类典型场景
 type DrugDef = {
   name: string;
@@ -117,6 +120,7 @@ const drugPool: DrugDef[] = [
 
 type Entry = {
   code: string;
+  drug: DrugDef;
   manufacturer: string;
   batch: string;
   qty: number;       // 取数（按 countUnit 计）
@@ -124,7 +128,7 @@ type Entry = {
 };
 
 type Group = {
-  drug: DrugDef;
+  id: string;
   entries: Entry[];
 };
 
@@ -133,49 +137,80 @@ function PrepPage() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [aggOpen, setAggOpen] = useState(false);
 
-  // 模拟扫描：循环演示三种情况
+  // 模拟扫描：循环演示药品池
   const [scanIdx, setScanIdx] = useState(0);
+
+  const makeEntry = (d: DrugDef, existing?: Group): Entry => {
+    const sameDrugEntries = existing?.entries.filter((e) => e.drug.name === d.name) ?? [];
+    let mfr = d.stockSources[0].manufacturer;
+    if (sameDrugEntries.length > 0) {
+      const used = sameDrugEntries[0].manufacturer;
+      if (!d.allowMix) {
+        mfr = used; // 锁定首个厂商
+      } else {
+        // 允许混用：交替选取已有的厂商以演示情况二
+        const opts = d.stockSources.map((s) => s.manufacturer);
+        mfr = opts[sameDrugEntries.length % opts.length];
+      }
+    }
+    return {
+      code: genScanCode(d.unitScannable ? "UNIT" : "PACK"),
+      drug: d,
+      manufacturer: mfr,
+      batch: genBatch(),
+      qty: d.unitScannable ? 1 : (d.packSize ?? 1),
+      packSize: d.unitScannable ? undefined : d.packSize,
+    };
+  };
+
+  const addScan = (d: DrugDef, groupId?: string) => {
+    setGroups((prev) => {
+      if (groupId !== undefined) {
+        const idx = prev.findIndex((g) => g.id === groupId);
+        if (idx < 0) return prev;
+        const existing = prev[idx];
+        const entry = makeEntry(d, existing);
+        const next = [...prev];
+        next[idx] = { ...existing, entries: [...existing.entries, entry] };
+        toast.success(`已追加 · ${d.name}`);
+        return next;
+      }
+
+      // 未指定分组：同类单药品自动聚合到已有卡片
+      const sameDrugIdx = prev.findIndex(
+        (g) => g.entries.length > 0 && g.entries.every((e) => e.drug.name === d.name),
+      );
+      if (sameDrugIdx >= 0) {
+        const existing = prev[sameDrugIdx];
+        const entry = makeEntry(d, existing);
+        const next = [...prev];
+        next[sameDrugIdx] = { ...existing, entries: [...existing.entries, entry] };
+        toast.success(`已追加 · ${d.name}`);
+        return next;
+      }
+
+      const entry = makeEntry(d);
+      toast.success(`已识别 · ${d.name}`);
+      return [{ id: genGroupId(), entries: [entry] }, ...prev];
+    });
+  };
+
   const handleScan = () => {
     const d = drugPool[scanIdx % drugPool.length];
     setScanIdx((i) => i + 1);
-    addOneScan(d);
+    addScan(d);
   };
 
-  const addOneScan = (d: DrugDef, forceMfr?: string) => {
-    setGroups((prev) => {
-      const idx = prev.findIndex((g) => g.drug.name === d.name);
-      const existing = idx >= 0 ? prev[idx] : null;
-
-      // 不可混用校验
-      let mfr = forceMfr ?? d.stockSources[0].manufacturer;
-      if (existing && existing.entries.length > 0) {
-        const used = existing.entries[0].manufacturer;
-        if (!d.allowMix) {
-          mfr = used; // 锁定首个厂商
-        } else if (!forceMfr) {
-          // 允许混用：交替选取已有的两个厂商之一以演示情况二
-          const opts = d.stockSources.map((s) => s.manufacturer);
-          mfr = opts[existing.entries.length % opts.length];
-        }
-      }
-
-      const entry: Entry = {
-        code: genScanCode(d.unitScannable ? "UNIT" : "PACK"),
-        manufacturer: mfr,
-        batch: genBatch(),
-        qty: d.unitScannable ? 1 : (d.packSize ?? 1),
-        packSize: d.unitScannable ? undefined : d.packSize,
-      };
-
-      if (!existing) {
-        toast.success(`已识别 · ${d.name}`);
-        return [{ drug: d, entries: [entry] }, ...prev];
-      }
-      toast.success(`已追加 · ${d.name}`);
-      const next = [...prev];
-      next[idx] = { ...existing, entries: [...existing.entries, entry] };
-      return next;
-    });
+  const addComboScan = (gi: number) => {
+    const group = groups[gi];
+    const existingNames = new Set(group.entries.map((e) => e.drug.name));
+    const candidates = drugPool.filter((d) => !existingNames.has(d.name));
+    const d =
+      candidates.length > 0
+        ? candidates[scanIdx % candidates.length]
+        : drugPool[scanIdx % drugPool.length];
+    setScanIdx((i) => i + 1);
+    addScan(d, group.id);
   };
 
   const updateQty = (gi: number, ei: number, qty: number) => {
@@ -258,9 +293,9 @@ function PrepPage() {
             <div className="space-y-3 pb-4">
               {groups.map((g, gi) => (
                 <DrugCard
-                  key={g.drug.name}
+                  key={g.id}
                   group={g}
-                  onScanMore={() => addOneScan(g.drug)}
+                  onScanMore={() => addComboScan(gi)}
                   onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
                   onRemove={(ei) => removeEntry(gi, ei)}
                 />
@@ -321,13 +356,31 @@ function DrugCard({
   onUpdateQty: (ei: number, qty: number) => void;
   onRemove: (ei: number) => void;
 }) {
-  const { drug, entries } = group;
+  const { entries } = group;
   const totalQty = entries.reduce((s, e) => s + e.qty, 0);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  // 按厂商汇总已扫数量
-  const byMfr = new Map<string, number>();
-  entries.forEach((e) => byMfr.set(e.manufacturer, (byMfr.get(e.manufacturer) ?? 0) + e.qty));
+  const distinctDrugs = useMemo(
+    () => Array.from(new Map(entries.map((e) => [e.drug.name, e.drug])).values()),
+    [entries],
+  );
+  const isCombo = distinctDrugs.length > 1;
+  const firstDrug = distinctDrugs[0];
+
+  const comboTitle = useMemo(() => {
+    const parts = distinctDrugs.slice(0, 3).map((d) => {
+      const abbr = d.name.slice(0, 3);
+      return d.name.length > 3 ? `${abbr}…` : abbr;
+    });
+    return `用药组合：${parts.join(" + ")}${distinctDrugs.length > 3 ? " + …" : ""}`;
+  }, [distinctDrugs]);
+
+  // 按厂商汇总已扫数量（仅单药品卡片展示）
+  const byMfr = useMemo(() => {
+    const map = new Map<string, number>();
+    entries.forEach((e) => map.set(e.manufacturer, (map.get(e.manufacturer) ?? 0) + e.qty));
+    return map;
+  }, [entries]);
 
   return (
     <>
@@ -337,9 +390,16 @@ function DrugCard({
       >
         {/* 顶部：名称 + 卡片扫码入口 */}
         <div className="flex items-center gap-2">
-          <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+          {isCombo ? (
+            <span className="inline-flex -space-x-1 text-warning mt-0.5 shrink-0">
+              <Pill className="h-4 w-4" />
+              <Pill className="h-4 w-4" />
+            </span>
+          ) : (
+            <Package className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+          )}
           <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
-            {drug.name}
+            {isCombo ? comboTitle : firstDrug.name}
           </div>
           <button
             onClick={() => setConfirmOpen(true)}
@@ -350,44 +410,50 @@ function DrugCard({
           </button>
         </div>
 
-        {/* 规格 · 扫码单位 */}
-        <div className="mt-2 text-caption text-text-tertiary">
-          规格 <span className="text-text-secondary">{drug.spec}</span>
-          <span className="mx-2 text-border">·</span>
-          扫码单位 <span className="text-text-secondary">{drug.scanUnit}</span>
-        </div>
+        {/* 单药品专有信息 */}
+        {!isCombo && firstDrug && (
+          <>
+            <div className="mt-2 text-caption text-text-tertiary">
+              规格 <span className="text-text-secondary">{firstDrug.spec}</span>
+              <span className="mx-2 text-border">·</span>
+              扫码单位 <span className="text-text-secondary">{firstDrug.scanUnit}</span>
+            </div>
 
-        {/* 已扫数量 */}
-        <div className="mt-1 text-caption text-text-tertiary">
-          已扫 <span className="text-foreground font-medium">{totalQty}</span> {drug.countUnit}
-        </div>
+            <div className="mt-1 text-caption text-text-tertiary">
+              已扫 <span className="text-foreground font-medium">{totalQty}</span>{" "}
+              {firstDrug.countUnit}
+            </div>
 
-        {/* 已扫厂商 + 混用标签 */}
-        <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2 gap-y-1">
-          <span>厂商</span>
-          {Array.from(byMfr.entries()).map(([mfr, qty], i) => (
-            <span key={mfr} className="text-text-secondary">
-              {mfr} {qty}{drug.countUnit}
-              {i < byMfr.size - 1 && <span className="mx-1 text-border">·</span>}
-            </span>
-          ))}
-          {drug.allowMix ? (
-            <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-surface-subtle text-text-secondary border border-border">
-              允许混用
-            </span>
-          ) : (
-            <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]">
-              不可混用
-            </span>
-          )}
-        </div>
+            <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2 gap-y-1">
+              <span>厂商</span>
+              {Array.from(byMfr.entries()).map(([mfr, qty], i) => (
+                <span key={mfr} className="text-text-secondary">
+                  {mfr} {qty}
+                  {firstDrug.countUnit}
+                  {i < byMfr.size - 1 && (
+                    <span className="mx-1 text-border">·</span>
+                  )}
+                </span>
+              ))}
+              {firstDrug.allowMix ? (
+                <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-surface-subtle text-text-secondary border border-border">
+                  允许混用
+                </span>
+              ) : (
+                <span className="ml-1 px-1.5 py-0.5 rounded text-caption bg-[#FFF1E6] text-[#E5751A] border border-[#FFD2A8]">
+                  不可混用
+                </span>
+              )}
+            </div>
+          </>
+        )}
 
         {/* 虚线分隔 */}
         <div className="my-3 border-t border-dashed border-border" />
 
         {/* 已领 总数 */}
         <div className="text-caption text-primary text-right font-medium">
-          已领 {totalQty} {drug.countUnit}
+          已领 {totalQty} 项
         </div>
 
         {/* 扫描明细 */}
@@ -395,6 +461,11 @@ function DrugCard({
           {entries.map((e, ei) => (
             <div key={`${e.code}-${ei}`} className="flex items-center gap-2">
               <div className="flex-1 min-w-0">
+                {isCombo && (
+                  <div className="text-caption text-foreground font-medium truncate">
+                    {e.drug.name}
+                  </div>
+                )}
                 <div className="text-caption text-text-secondary font-mono truncate">
                   {e.code}
                 </div>
@@ -403,18 +474,19 @@ function DrugCard({
                   <span className="mx-2 text-border">·</span>
                   <span className="text-text-tertiary font-mono">{e.batch}</span>
                 </div>
-                {!drug.unitScannable && e.packSize && (
+                {!e.drug.unitScannable && e.packSize && (
                   <div className="text-caption text-text-tertiary mt-0.5">
                     包内剩余 <span className="text-text-secondary">{e.packSize - e.qty}</span>
                     {" / "}
-                    <span className="text-text-secondary">{e.packSize}</span> {drug.countUnit}
+                    <span className="text-text-secondary">{e.packSize}</span>{" "}
+                    {e.drug.countUnit}
                   </div>
                 )}
               </div>
 
-              {drug.unitScannable ? (
+              {e.drug.unitScannable ? (
                 <div className="text-caption text-text-secondary shrink-0">
-                  ×{e.qty} {drug.countUnit}
+                  ×{e.qty} {e.drug.countUnit}
                 </div>
               ) : (
                 <div className="inline-flex items-center border border-border rounded-md shrink-0 h-8">
