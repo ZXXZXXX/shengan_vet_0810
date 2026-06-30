@@ -515,17 +515,20 @@ function PrepPage() {
                     return (
                       <div
                         key={c.earTag}
-                        className="py-2.5 border-b border-border last:border-0"
+                        className="rounded-lg bg-surface-subtle px-3 py-2.5"
                       >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-body-sm font-semibold text-foreground font-mono">
-                            {c.earTag}
-                          </span>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="inline-flex items-center gap-1.5 rounded-md bg-brand-subtle px-2 py-0.5">
+                            <EarTagIcon className="h-4 w-4 text-primary" />
+                            <span className="text-body font-semibold text-primary font-mono tracking-wide">
+                              {c.earTag}
+                            </span>
+                          </div>
                           <span className="text-caption text-text-tertiary">
                             {c.items.length} 种药品
                           </span>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           {c.items.map((it) => (
                             <div
                               key={it.key}
