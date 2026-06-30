@@ -429,42 +429,40 @@ function PrepPage() {
             </div>
 
             {/* 视图切换 + 任务统计 */}
-            {!checklistCollapsed && (
-              <div className="px-4 pb-3 flex items-center justify-between gap-2">
-                <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-caption">
-                  <button
-                    type="button"
-                    onClick={() => setChecklistView("drug")}
-                    className={`px-2.5 h-7 rounded ${checklistView === "drug" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
-                  >
-                    药品维度
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setChecklistView("cattle")}
-                    className={`px-2.5 h-7 rounded ${checklistView === "cattle" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
-                  >
-                    牛只维度
-                  </button>
-                </div>
-                <div className="inline-flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedTaskIds([])}
-                    className="inline-flex items-center gap-1 text-body-sm text-text-tertiary active:opacity-70 shrink-0"
-                  >
-                    全部清除
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAggOpen(true)}
-                    className="inline-flex items-center gap-1 text-body-sm text-primary active:opacity-70 shrink-0"
-                  >
-                    更换任务（{selectedTaskIds.length}）
-                  </button>
-                </div>
+            <div className="px-4 pb-3 flex items-center justify-between gap-2">
+              <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-caption">
+                <button
+                  type="button"
+                  onClick={() => setChecklistView("drug")}
+                  className={`px-2.5 h-7 rounded ${checklistView === "drug" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
+                >
+                  药品维度
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setChecklistView("cattle")}
+                  className={`px-2.5 h-7 rounded ${checklistView === "cattle" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
+                >
+                  牛只维度
+                </button>
               </div>
-            )}
+              <div className="inline-flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setAggOpen(true)}
+                  className="inline-flex items-center gap-1 text-body-sm text-primary active:opacity-70 shrink-0"
+                >
+                  更换任务（{selectedTaskIds.length}）
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTaskIds([])}
+                  className="inline-flex items-center gap-1 text-body-sm text-text-tertiary active:opacity-70 shrink-0"
+                >
+                  清除
+                </button>
+              </div>
+            </div>
 
 
             <div className="px-4 pb-3">
