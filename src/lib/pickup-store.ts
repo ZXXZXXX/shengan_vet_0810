@@ -20,6 +20,8 @@ export type PickupItem = {
   stockSources?: StockSource[];
   /** 后台规则：是否允许多厂商混用，默认 true */
   allowMixManufacturer?: boolean;
+  /** 是否属于药品；false 表示物料/耗材，不进入药品清单统计 */
+  isMedicine?: boolean;
 };
 
 export type ScannedEntry = {
@@ -213,7 +215,7 @@ export const PICKUPS: Pickup[] = [
         { name: "碘酊", spec: "100ml / 瓶", qty: "1 瓶", stock: "30 瓶", usage: "蹄部消毒",
           unitScannable: true, allowMixManufacturer: true },
         { name: "蹄绷带", spec: "1 卷", qty: "2 卷", stock: "50 卷", usage: "蹄部包扎",
-          unitScannable: true, allowMixManufacturer: true },
+          unitScannable: true, allowMixManufacturer: true, isMedicine: false },
       ] },
     { wo: "WO-2303", title: "酮病补液药品领取", barn: "病牛舍 A",
       items: [
@@ -314,6 +316,7 @@ export const PICKUPS: Pickup[] = [
         usage: "蹄部包扎",
         unitScannable: true,
         allowMixManufacturer: true,
+        isMedicine: false,
       },
     ],
   })),
