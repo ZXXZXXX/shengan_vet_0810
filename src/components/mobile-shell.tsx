@@ -79,7 +79,7 @@ function MobileTopBar({
         {back ? (
           <button
             onClick={goParent}
-            className="-ml-1 h-8 px-2 inline-flex items-center text-body-sm text-text-secondary hover:text-primary"
+            className="-ml-1 h-8 px-2 inline-flex items-center text-body text-text-secondary hover:text-primary"
           >
             ‹ 返回
           </button>
@@ -111,7 +111,7 @@ export function MobileTabBar() {
         }`}
       >
         <Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.6} />
-        <span className="text-caption leading-none">{t.label}</span>
+        <span className="text-body-sm leading-none">{t.label}</span>
       </Link>
     );
   };
