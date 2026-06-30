@@ -111,7 +111,7 @@ export function MobileTabBar() {
         }`}
       >
         <Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.6} />
-        <span className="text-body-sm leading-none">{t.label}</span>
+        <span className="text-[13px] leading-[18px] font-normal">{t.label}</span>
       </Link>
     );
   };
