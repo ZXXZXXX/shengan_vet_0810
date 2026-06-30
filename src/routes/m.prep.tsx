@@ -16,9 +16,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { ConfirmPickupDialog } from "@/components/m/confirm-pickup-dialog";
 import { cn } from "@/lib/utils";
 
 import {
@@ -165,6 +165,7 @@ function PrepPage() {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
   const [checklistCollapsed, setChecklistCollapsed] = useState(false);
   const [checklistView, setChecklistView] = useState<"drug" | "cattle">("drug");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const computeRequirements = (ids: string[]): Requirement[] => {
     const map = new Map<string, Requirement>();
@@ -646,11 +647,7 @@ function PrepPage() {
             扫码领药
           </button>
           <button
-            onClick={() => {
-              toast.success(`已生成领药记录（${totalCount} 项）`);
-              setGroups([]);
-              setSelectedTaskIds([]);
-            }}
+            onClick={() => setConfirmOpen(true)}
             disabled={totalCount === 0}
             className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -659,6 +656,18 @@ function PrepPage() {
           </button>
         </div>
       </div>
+
+      <ConfirmPickupDialog
+        open={confirmOpen}
+        comboCount={groups.filter((g) => g.combo).length}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          toast.success(`已生成领药记录（${totalCount} 项）`);
+          setGroups([]);
+          setSelectedTaskIds([]);
+        }}
+      />
 
       {aggOpen && (
         <AggregateDrawer
