@@ -722,7 +722,7 @@ function DrugCard({
                 />
                 <div className="flex-1">
                   <div className="text-body-sm text-foreground font-medium">多头牛共用</div>
-                  <div className="text-caption text-text-tertiary">同一组合可在多头牛治疗中复用</div>
+                  <div className="text-caption text-text-tertiary">该组合内药品，将共用于治疗多头牛</div>
                 </div>
               </label>
               <label className="flex items-center gap-3 rounded-xl border border-border p-3 active:bg-surface-subtle cursor-pointer">
@@ -735,7 +735,7 @@ function DrugCard({
                 />
                 <div className="flex-1">
                   <div className="text-body-sm text-foreground font-medium">单头牛使用</div>
-                  <div className="text-caption text-text-tertiary">该组合仅用于当前一头牛的治疗</div>
+                  <div className="text-caption text-text-tertiary">该组合内药品，仅用于治疗单独一头牛</div>
                 </div>
               </label>
             </div>
