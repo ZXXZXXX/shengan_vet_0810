@@ -464,7 +464,7 @@ function PrepPage() {
             )}
 
 
-            <div className="px-4 pb-3">
+            <div className="px-4 pb-3 space-y-2">
               {checklistView === "drug" ? (
                 <>
                   {requirements.map((r, idx) => {
@@ -474,27 +474,31 @@ function PrepPage() {
                     return (
                       <div
                         key={r.key}
-                        className="flex items-start gap-3 py-2.5 border-b border-border last:border-0"
+                        className="rounded-lg bg-surface-subtle px-3 py-2.5 flex items-center justify-between gap-3"
                       >
-                        <span className="flex-1 min-w-0 text-body-sm font-medium text-foreground break-words">
-                          {r.name}
-                        </span>
-                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                        <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
-                          {r.mfrRequired}
-                        </span>
-                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                        <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
-                          {r.spec}
-                        </span>
-                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                        <span
-                          className={`flex-1 min-w-0 text-body-sm font-medium tabular-nums text-right break-words ${
-                            done ? "text-primary" : "text-[#E5751A]"
-                          }`}
-                        >
-                          {got}/{r.total} {r.unit}
-                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-body font-medium text-foreground truncate">
+                            {r.name}
+                          </div>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                            <span className="tag tag-outline">{r.spec}</span>
+                            {r.mfrRequired !== "不限" && (
+                              <span className="tag tag-brand">{r.mfrRequired}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="shrink-0 text-right min-w-[72px]">
+                          <div
+                            className={`text-body font-semibold tabular-nums ${
+                              done ? "text-primary" : "text-foreground"
+                            }`}
+                          >
+                            {got}/{r.total}
+                          </div>
+                          <div className="text-caption text-text-tertiary">
+                            {r.unit} {done ? "已领齐" : "待领取"}
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
