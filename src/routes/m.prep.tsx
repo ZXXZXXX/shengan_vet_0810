@@ -396,22 +396,22 @@ function PrepPage() {
                 return (
                   <div
                     key={r.key}
-                    className="flex items-center gap-3 py-2.5 border-b border-border last:border-0"
+                    className="flex items-start gap-3 py-2.5 border-b border-border last:border-0"
                   >
-                    <span className="flex-1 min-w-0 text-body-sm font-medium text-foreground truncate">
+                    <span className="flex-1 min-w-0 text-body-sm font-medium text-foreground break-words">
                       {r.name}
                     </span>
-                    <span className="w-px h-3 bg-border shrink-0" />
-                    <span className="flex-1 min-w-0 text-body-sm text-text-secondary truncate text-center">
+                    <span className="w-px h-3 bg-border shrink-0 mt-1" />
+                    <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
                       {r.mfrRequired}
                     </span>
-                    <span className="w-px h-3 bg-border shrink-0" />
-                    <span className="flex-1 min-w-0 text-body-sm text-text-secondary truncate text-center">
+                    <span className="w-px h-3 bg-border shrink-0 mt-1" />
+                    <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
                       {r.spec}
                     </span>
-                    <span className="w-px h-3 bg-border shrink-0" />
+                    <span className="w-px h-3 bg-border shrink-0 mt-1" />
                     <span
-                      className={`flex-1 min-w-0 text-body-sm font-medium tabular-nums text-right truncate ${
+                      className={`flex-1 min-w-0 text-body-sm font-medium tabular-nums text-right break-words ${
                         done ? "text-primary" : "text-[#E5751A]"
                       }`}
                     >
