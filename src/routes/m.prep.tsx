@@ -361,7 +361,7 @@ function PrepPage() {
                 <ClipboardList className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-body font-medium text-foreground whitespace-nowrap">药品清单</span>
                 <span className="text-caption text-text-tertiary whitespace-nowrap">
-                  共 {requirements.length} 种
+                  来自 {selectedTaskIds.length} 个任务 · {requirements.length} 种
                 </span>
                 <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary whitespace-nowrap">
                   {checklistCollapsed ? "展开" : "收起"}
@@ -380,9 +380,32 @@ function PrepPage() {
                 }}
                 className="ml-3 inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
               >
-                选择任务
+                更换任务
               </button>
             </div>
+
+            {/* 已选任务 chips —— 可删除单个任务以重新聚合 */}
+            {!checklistCollapsed && (
+              <div className="px-4 pb-2 -mt-1 flex flex-wrap gap-1.5">
+                {selectedTaskIds.map((tid) => (
+                  <span
+                    key={tid}
+                    className="inline-flex items-center gap-1 h-7 pl-2.5 pr-1 rounded-full bg-brand-subtle text-primary text-caption"
+                  >
+                    <span className="font-mono">{tid}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeTaskFromChecklist(tid)}
+                      className="h-5 w-5 inline-flex items-center justify-center rounded-full active:bg-primary/10"
+                      aria-label={`移除 ${tid}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
             <div className="px-4 pb-3 space-y-2">
               {requirements.map((r, idx) => {
                 if (checklistCollapsed && idx > 0) return null;
