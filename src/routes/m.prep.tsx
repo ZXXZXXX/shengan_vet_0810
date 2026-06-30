@@ -553,7 +553,7 @@ function CattleIcon({ className }: { className?: string }) {
     <img
       src={cattleIconAsset.url}
       alt="牛只"
-      className={className}
+      className={`grayscale opacity-60 ${className ?? ""}`}
     />
   );
 }
