@@ -391,7 +391,7 @@ function PrepPage() {
             )}
 
 
-            <div className="px-4 pb-3 space-y-2">
+            <div className="px-4 pb-3">
               {requirements.map((r, idx) => {
                 if (checklistCollapsed && idx > 0) return null;
                 const got = claimedMap.get(r.key) ?? 0;
@@ -399,32 +399,27 @@ function PrepPage() {
                 return (
                   <div
                     key={r.key}
-                    className="rounded-lg border border-border bg-surface-2 px-3 py-2"
+                    className="flex items-center gap-3 py-2.5 border-b border-border last:border-0"
                   >
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-body-sm font-medium text-foreground truncate">
-                        {r.name}
-                      </span>
-                      <span
-                        className={`ml-auto text-caption tabular-nums shrink-0 ${
-                          done ? "text-primary font-medium" : "text-[#E5751A] font-medium"
-                        }`}
-                      >
-                        {got} / {r.total} {r.unit}
-                      </span>
-                    </div>
-                    <div className="mt-1 text-caption text-text-tertiary flex items-center flex-wrap gap-x-2">
-                      <span>
-                        厂商
-                        <span
-                          className={`ml-1 ${r.mfrRequired === "不限" ? "text-text-secondary" : "text-[#E5751A]"}`}
-                        >
-                          {r.mfrRequired}
-                        </span>
-                      </span>
-                      <span className="text-border">·</span>
-                      <span>规格 <span className="text-text-secondary">{r.spec}</span></span>
-                    </div>
+                    <span className="flex-1 min-w-0 text-body-sm font-medium text-foreground truncate">
+                      {r.name}
+                    </span>
+                    <span className="w-px h-3 bg-border shrink-0" />
+                    <span className="flex-1 min-w-0 text-body-sm text-text-secondary truncate text-center">
+                      {r.mfrRequired}
+                    </span>
+                    <span className="w-px h-3 bg-border shrink-0" />
+                    <span className="flex-1 min-w-0 text-body-sm text-text-secondary truncate text-center">
+                      {r.spec}
+                    </span>
+                    <span className="w-px h-3 bg-border shrink-0" />
+                    <span
+                      className={`flex-1 min-w-0 text-body-sm font-medium tabular-nums text-right truncate ${
+                        done ? "text-primary" : "text-[#E5751A]"
+                      }`}
+                    >
+                      {got}/{r.total} {r.unit}
+                    </span>
                   </div>
                 );
               })}
