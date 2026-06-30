@@ -730,6 +730,21 @@ function DrugCard({
                 <div className="flex-1">
                   <div className="text-body-sm text-foreground font-medium">多头牛共用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，将共用于治疗多头牛</div>
+                  {comboScope === "shared" && (
+                    <div className="mt-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                      <span className="text-caption text-text-secondary shrink-0">牛只数量</span>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        min={2}
+                        value={cattleCount}
+                        onChange={(e) => setCattleCount(e.target.value.replace(/[^0-9]/g, ""))}
+                        placeholder="请输入"
+                        className="flex-1 h-8 rounded-md border border-border px-2 text-body-sm focus:outline-none focus:border-primary"
+                      />
+                      <span className="text-caption text-text-secondary shrink-0">头</span>
+                    </div>
+                  )}
                 </div>
               </label>
               <label className="flex items-center gap-3 rounded-xl border border-border p-3 active:bg-surface-subtle cursor-pointer">
