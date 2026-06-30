@@ -33,6 +33,7 @@ import {
   type HomeTask,
 } from "./m.homepage";
 import { useRole } from "@/lib/mobile-role";
+import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
 
 export const Route = createFileRoute("/m/prep")({
   head: () => ({ meta: [{ title: "备药 · 奇点智牧" }] }),
