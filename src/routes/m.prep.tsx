@@ -434,14 +434,20 @@ function PrepPage() {
               <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-caption">
                 <button
                   type="button"
-                  onClick={() => setChecklistView("drug")}
+                  onClick={() => {
+                    setChecklistView("drug");
+                    setChecklistCollapsed(false);
+                  }}
                   className={`px-2.5 h-7 rounded ${checklistView === "drug" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
                 >
                   药品维度
                 </button>
                 <button
                   type="button"
-                  onClick={() => setChecklistView("cattle")}
+                  onClick={() => {
+                    setChecklistView("cattle");
+                    setChecklistCollapsed(false);
+                  }}
                   className={`px-2.5 h-7 rounded ${checklistView === "cattle" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
                 >
                   牛只维度
