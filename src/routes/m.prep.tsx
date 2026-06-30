@@ -521,7 +521,7 @@ function PrepPage() {
                                 {it.name}
                               </div>
                               <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
-                                {it.usage || "-"}
+                                {extractUsageMethod(it.usage)}
                               </div>
                               <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
                                 {it.metricTotal} {it.metricUnit}
