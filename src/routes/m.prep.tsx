@@ -361,7 +361,7 @@ function PrepPage() {
 
 
       {/* 顶部 1/4 区域：药品清单 */}
-      <div className="min-h-[25vh] border-b border-border bg-card flex flex-col">
+      <div className="min-h-[25vh] bg-card flex flex-col">
         {requirements.length > 0 ? (
           <div className="flex-1 flex flex-col min-h-0">
             <div
