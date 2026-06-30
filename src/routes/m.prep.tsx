@@ -264,10 +264,10 @@ function PrepPage() {
     addScan(d);
   };
 
-  const enableCombo = (gi: number) => {
+  const enableCombo = (gi: number, scope: "shared" | "single") => {
     setGroups((prev) => {
       const next = [...prev];
-      next[gi] = { ...next[gi], combo: true };
+      next[gi] = { ...next[gi], combo: true, comboScope: scope };
       return next;
     });
   };
