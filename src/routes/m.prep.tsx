@@ -315,11 +315,11 @@ function PrepPage() {
     });
   };
 
-  // 已领药品项数：按药品名称去重统计
+  // 已领药品项数：按药品名称+厂商去重统计
   const totalCount = useMemo(() => {
-    const names = new Set<string>();
-    groups.forEach((g) => g.entries.forEach((e) => names.add(e.drug.name)));
-    return names.size;
+    const keys = new Set<string>();
+    groups.forEach((g) => g.entries.forEach((e) => keys.add(`${e.drug.name}|${e.manufacturer}`)));
+    return keys.size;
   }, [groups]);
 
   // 当前已取（按药品名 + 规格聚合）
@@ -564,6 +564,11 @@ function DrugCard({
 }) {
   const { entries } = group;
   const totalQty = entries.reduce((s, e) => s + e.qty, 0);
+  const comboItemCount = useMemo(() => {
+    const keys = new Set<string>();
+    entries.forEach((e) => keys.add(`${e.drug.name}|${e.manufacturer}`));
+    return keys.size;
+  }, [entries]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [comboScope, setComboScope] = useState<"shared" | "single">("single");
   const [cattleCount, setCattleCount] = useState<string>("2");
@@ -645,7 +650,7 @@ function DrugCard({
             ) : null}
           </div>
           <div className={`font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
-            已领 {totalQty} {isCombo ? "项" : firstDrug.countUnit}
+            已领 {isCombo ? comboItemCount : totalQty} {isCombo ? "项" : firstDrug.countUnit}
           </div>
         </div>
 
