@@ -20,6 +20,8 @@ export type PickupItem = {
   stockSources?: StockSource[];
   /** 后台规则：是否允许多厂商混用，默认 true */
   allowMixManufacturer?: boolean;
+  /** 是否属于药品；false 表示物料/耗材，不进入药品清单统计 */
+  isMedicine?: boolean;
 };
 
 export type ScannedEntry = {
