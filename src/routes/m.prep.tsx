@@ -208,7 +208,7 @@ function PrepPage() {
   type CattleGroup = {
     earTag: string;
     taskIds: string[];
-    items: { key: string; name: string; spec: string; metricTotal: number; metricUnit: string }[];
+    items: { key: string; name: string; spec: string; usage?: string; metricTotal: number; metricUnit: string }[];
   };
   const cattleGroups = useMemo<CattleGroup[]>(() => {
     const map = new Map<string, CattleGroup>();
@@ -235,12 +235,14 @@ function PrepPage() {
             key,
             name: it.name,
             spec: it.spec ?? "",
+            usage: it.usage,
             metricTotal: metric ? metric.amount * n : n,
             metricUnit: metric ? metric.unit : "",
           });
         }
       });
     });
+
     return Array.from(map.values());
   }, [selectedTaskIds]);
 
