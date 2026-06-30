@@ -11,7 +11,7 @@ export type PickupItem = {
   spec?: string;
   qty: string;
   stock?: string; // 当前库存
-  usage?: string; // 用法，如 "2ml / 次 · 肌肉注射"
+  usage?: string; // 用法，仅：皮下注射、肌肉注射、静脉注射、局部用药、口服、乳注、子宫灌注
   /** 情况一：最小单位有二维码，每个都可单独扫码录入。情况二（false）：仅上级包装有码，按包扫描后输入数量。 */
   unitScannable?: boolean;
   /** 情况二专用：该药品当前打开包装内剩余数量（用于限定最大可取数量） */
@@ -73,7 +73,7 @@ export const PICKUPS: Pickup[] = [
         spec: "100ml / 瓶",
         qty: "2 瓶",
         stock: "12 瓶",
-        usage: "2ml / 次 · 肌肉注射",
+        usage: "肌肉注射",
         unitScannable: true,
         allowMixManufacturer: false,
         stockSources: [
@@ -86,7 +86,7 @@ export const PICKUPS: Pickup[] = [
         spec: "1g / 支",
         qty: "6 支",
         stock: "48 支",
-        usage: "1g / 次 · 肌肉注射",
+        usage: "肌肉注射",
         unitScannable: false,
         packRemain: 20,
         allowMixManufacturer: true,
@@ -123,7 +123,7 @@ export const PICKUPS: Pickup[] = [
         spec: "100ml / 瓶",
         qty: "1 瓶",
         stock: "12 瓶",
-        usage: "2ml / 次 · 肌肉注射",
+        usage: "肌肉注射",
         unitScannable: true,
         allowMixManufacturer: false,
         stockSources: [
@@ -135,7 +135,7 @@ export const PICKUPS: Pickup[] = [
         spec: "500ml / 瓶",
         qty: "1 瓶",
         stock: "20 瓶",
-        usage: "蹄浴",
+        usage: "局部用药",
         unitScannable: true,
         allowMixManufacturer: true,
       },
@@ -155,7 +155,7 @@ export const PICKUPS: Pickup[] = [
         spec: "1g / 支",
         qty: "5 支",
         stock: "48 支",
-        usage: "1g / 次 · 肌肉注射",
+        usage: "肌肉注射",
         unitScannable: false,
         packRemain: 20,
         allowMixManufacturer: true,
@@ -198,13 +198,13 @@ export const PICKUPS: Pickup[] = [
   ...([
     { wo: "WO-2298", title: "乳房炎复诊处置药品领取", barn: "病牛舍 A",
       items: [
-        { name: "头孢噻呋钠", spec: "1g / 支", qty: "4 支", stock: "48 支", usage: "1g / 次 · 肌肉注射",
+        { name: "头孢噻呋钠", spec: "1g / 支", qty: "4 支", stock: "48 支", usage: "肌肉注射",
           unitScannable: false, packRemain: 16, allowMixManufacturer: true,
           stockSources: [{ manufacturer: "中牧股份", qty: 30, unit: "支" }] },
       ] },
     { wo: "WO-2300", title: "子宫炎第 2 日疗程药品领取", barn: "病牛舍 B",
       items: [
-        { name: "氯前列烯醇注射液", spec: "2ml / 支", qty: "2 支", stock: "20 支", usage: "2ml / 次 · 肌肉注射",
+        { name: "氯前列烯醇注射液", spec: "2ml / 支", qty: "2 支", stock: "20 支", usage: "肌肉注射",
           unitScannable: true, allowMixManufacturer: false,
           stockSources: [{ manufacturer: "齐鲁动保", qty: 10, unit: "支" }] },
         { name: "宫炎清", spec: "100ml / 瓶", qty: "1 瓶", stock: "8 瓶", usage: "子宫灌注",
@@ -212,21 +212,21 @@ export const PICKUPS: Pickup[] = [
       ] },
     { wo: "WO-2302", title: "蹄部脓肿排脓物资领取", barn: "病牛舍 B",
       items: [
-        { name: "碘酊", spec: "100ml / 瓶", qty: "1 瓶", stock: "30 瓶", usage: "蹄部消毒",
+        { name: "碘酊", spec: "100ml / 瓶", qty: "1 瓶", stock: "30 瓶", usage: "局部用药",
           unitScannable: true, allowMixManufacturer: true },
-        { name: "蹄绷带", spec: "1 卷", qty: "2 卷", stock: "50 卷", usage: "蹄部包扎",
+        { name: "蹄绷带", spec: "1 卷", qty: "2 卷", stock: "50 卷", usage: "局部用药",
           unitScannable: true, allowMixManufacturer: true, isMedicine: false },
       ] },
     { wo: "WO-2303", title: "酮病补液药品领取", barn: "病牛舍 A",
       items: [
         { name: "葡萄糖注射液", spec: "500ml / 瓶", qty: "2 瓶", stock: "40 瓶", usage: "静脉注射",
           unitScannable: true, allowMixManufacturer: true },
-        { name: "丙二醇", spec: "1L / 瓶", qty: "1 瓶", stock: "12 瓶", usage: "灌服",
+        { name: "丙二醇", spec: "1L / 瓶", qty: "1 瓶", stock: "12 瓶", usage: "口服",
           unitScannable: true, allowMixManufacturer: true },
       ] },
     { wo: "WO-2440", title: "乳房炎复查药品领取", barn: "病牛舍 B",
       items: [
-        { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "1 瓶", stock: "12 瓶", usage: "2ml / 次 · 肌肉注射",
+        { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", qty: "1 瓶", stock: "12 瓶", usage: "肌肉注射",
           unitScannable: true, allowMixManufacturer: false,
           stockSources: [{ manufacturer: "齐鲁动保", qty: 8, unit: "瓶" }] },
       ] },
@@ -263,7 +263,7 @@ export const PICKUPS: Pickup[] = [
         spec: v.spec,
         qty: v.qty,
         stock: `${60 + i * 4} 支`,
-        usage: "颈部肌肉注射",
+        usage: "肌肉注射",
         unitScannable: true,
         allowMixManufacturer: false,
         stockSources: [
@@ -295,7 +295,7 @@ export const PICKUPS: Pickup[] = [
         spec: "500ml / 瓶",
         qty: "1 瓶",
         stock: "20 瓶",
-        usage: "蹄浴",
+        usage: "局部用药",
         unitScannable: true,
         allowMixManufacturer: true,
       },
@@ -304,7 +304,7 @@ export const PICKUPS: Pickup[] = [
         spec: "100ml / 瓶",
         qty: "1 瓶",
         stock: "30 瓶",
-        usage: "蹄部消毒",
+        usage: "局部用药",
         unitScannable: true,
         allowMixManufacturer: true,
       },
@@ -313,7 +313,7 @@ export const PICKUPS: Pickup[] = [
         spec: "1 卷",
         qty: "2 卷",
         stock: "50 卷",
-        usage: "蹄部包扎",
+        usage: "局部用药",
         unitScannable: true,
         allowMixManufacturer: true,
         isMedicine: false,
@@ -605,7 +605,7 @@ export function getPickup(id: string): Pickup | null {
         spec: "100ml / 瓶",
         qty: "2 瓶",
         stock: "12 瓶",
-        usage: "2ml / 次 · 肌肉注射",
+        usage: "肌肉注射",
         unitScannable: true,
         allowMixManufacturer: false,
         stockSources: [
@@ -618,7 +618,7 @@ export function getPickup(id: string): Pickup | null {
         spec: "1g / 支",
         qty: "6 支",
         stock: "48 支",
-        usage: "1g / 次 · 肌肉注射",
+        usage: "肌肉注射",
         unitScannable: false,
         packRemain: 20,
         allowMixManufacturer: true,
