@@ -316,6 +316,7 @@ export const PICKUPS: Pickup[] = [
         usage: "蹄部包扎",
         unitScannable: true,
         allowMixManufacturer: true,
+        isMedicine: false,
       },
     ],
   })),
