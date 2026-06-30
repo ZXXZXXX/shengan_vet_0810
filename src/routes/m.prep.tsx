@@ -516,10 +516,10 @@ function PrepPage() {
                       if (checklistCollapsed && idx > 0) return null;
                       return (
                         <div key={c.earTag} className="px-1 py-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="inline-flex items-center gap-1.5 rounded-md bg-brand-subtle px-2 py-0.5">
+                          <div className="flex items-center justify-between mb-2.5">
+                            <div className="inline-flex items-center gap-1.5">
                               <EarTagIcon className="h-4 w-4 text-primary" />
-                              <span className="text-body font-semibold text-primary font-mono tracking-wide">
+                              <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
                                 {c.earTag}
                               </span>
                             </div>
@@ -527,26 +527,21 @@ function PrepPage() {
                               {c.items.length} 项药品
                             </span>
                           </div>
-                          <div className="space-y-2">
+                          <div className="space-y-2.5">
                             {c.items.map((it) => (
-                              <div key={it.key} className="flex items-start gap-2">
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-body-sm text-foreground truncate">
-                                    {it.name}
-                                  </div>
-                                  {it.usage && (
-                                    <div className="mt-0.5 text-caption text-text-tertiary truncate">
-                                      {it.usage}
-                                    </div>
-                                  )}
+                              <div key={it.key} className="flex items-center gap-2 text-body-sm">
+                                <div className="flex-1 min-w-0 truncate text-foreground">
+                                  {it.name}
                                 </div>
-                                <span className="text-primary text-body-sm font-medium tabular-nums shrink-0 text-right">
+                                <div className="shrink-0 text-text-tertiary tabular-nums">
+                                  {it.spec}
+                                </div>
+                                <div className="shrink-0 w-[72px] text-right text-primary font-medium tabular-nums">
                                   {it.metricTotal} {it.metricUnit}
-                                </span>
+                                </div>
                               </div>
                             ))}
                           </div>
-
                         </div>
                       );
                     })}
