@@ -375,7 +375,21 @@ export function PickupItemRow({
                   className="flex items-start gap-2 text-caption"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="font-mono text-text-secondary truncate">{e.code}</div>
+                    <div className="text-body text-foreground font-medium truncate">
+                      {item.name}
+                    </div>
+                    {!unitScannable && (
+                      <div className="text-caption text-text-tertiary mt-0.5">
+                        包内剩余{" "}
+                        <span className="font-mono text-text-secondary">
+                          {Math.max(0, (e.packRemain ?? 0) - e.qty)}
+                        </span>{" "}
+                        / {e.packRemain ?? "—"} {unit}
+                      </div>
+                    )}
+                    <div className="font-mono text-text-secondary truncate mt-0.5">
+                      {e.code}
+                    </div>
                     <div className="mt-0.5 text-text-tertiary inline-flex items-center gap-1.5 flex-wrap">
                       {e.manufacturer && (
                         <span className="text-primary">{e.manufacturer}</span>
@@ -387,15 +401,6 @@ export function PickupItemRow({
                         </>
                       )}
                     </div>
-                    {!unitScannable && (
-                      <div className="text-text-tertiary mt-0.5">
-                        包内剩余{" "}
-                        <span className="font-mono text-text-secondary">
-                          {Math.max(0, (e.packRemain ?? 0) - e.qty)}
-                        </span>{" "}
-                        / {e.packRemain ?? "—"} {unit}
-                      </div>
-                    )}
                   </div>
                   {unitScannable ? (
                     <span className="font-mono text-foreground shrink-0 pt-0.5">
