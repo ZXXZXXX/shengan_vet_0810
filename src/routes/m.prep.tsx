@@ -541,6 +541,7 @@ function PrepPage() {
 
       {aggOpen && (
         <AggregateDrawer
+          initialSelected={selectedTaskIds}
           onClose={() => setAggOpen(false)}
           onConfirm={handleAggregateConfirm}
         />
