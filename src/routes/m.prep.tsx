@@ -505,7 +505,7 @@ function PrepPage() {
             onClick={() => {
               toast.success(`已生成领药记录（${totalCount} 项）`);
               setGroups([]);
-              setRequirements([]);
+              setSelectedTaskIds([]);
             }}
             disabled={totalCount === 0}
             className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
