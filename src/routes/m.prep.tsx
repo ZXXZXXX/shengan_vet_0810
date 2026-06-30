@@ -577,6 +577,13 @@ function DrugCard({
   const [comboScope, setComboScope] = useState<"shared" | "single">("single");
   const [cattleCount, setCattleCount] = useState<string>("2");
 
+  useEffect(() => {
+    if (confirmOpen) {
+      setComboScope("single");
+      setCattleCount("2");
+    }
+  }, [confirmOpen]);
+
   const distinctDrugs = useMemo(
     () => Array.from(new Map(entries.map((e) => [e.drug.name, e.drug])).values()),
     [entries],
