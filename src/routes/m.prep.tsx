@@ -326,9 +326,6 @@ function PrepPage() {
     toast.success(`已生成药品清单（${count} 种）`);
   };
 
-  const removeTaskFromChecklist = (tid: string) => {
-    setSelectedTaskIds((prev) => prev.filter((id) => id !== tid));
-  };
 
   return (
     <MobileShell hideTabBar>
