@@ -208,7 +208,7 @@ function PrepPage() {
   type CattleGroup = {
     earTag: string;
     taskIds: string[];
-    items: { key: string; name: string; spec: string; metricTotal: number; metricUnit: string }[];
+    items: { key: string; name: string; spec: string; usage?: string; metricTotal: number; metricUnit: string }[];
   };
   const cattleGroups = useMemo<CattleGroup[]>(() => {
     const map = new Map<string, CattleGroup>();
@@ -235,12 +235,14 @@ function PrepPage() {
             key,
             name: it.name,
             spec: it.spec ?? "",
+            usage: it.usage,
             metricTotal: metric ? metric.amount * n : n,
             metricUnit: metric ? metric.unit : "",
           });
         }
       });
     });
+
     return Array.from(map.values());
   }, [selectedTaskIds]);
 
@@ -524,21 +526,26 @@ function PrepPage() {
                               {c.items.length} 项药品
                             </span>
                           </div>
-                          <div className="space-y-1.5">
+                          <div className="space-y-2">
                             {c.items.map((it) => (
-                              <div
-                                key={it.key}
-                                className="flex items-center gap-2 text-body-sm"
-                              >
-                                <span className="flex-1 min-w-0 text-foreground truncate">
-                                  {it.name}
-                                </span>
-                                <span className="text-primary font-medium tabular-nums shrink-0 w-20 text-right">
+                              <div key={it.key} className="flex items-start gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-body-sm text-foreground truncate">
+                                    {it.name}
+                                  </div>
+                                  {it.usage && (
+                                    <div className="mt-0.5 text-caption text-text-tertiary truncate">
+                                      {it.usage}
+                                    </div>
+                                  )}
+                                </div>
+                                <span className="text-primary text-body-sm font-medium tabular-nums shrink-0 text-right">
                                   {it.metricTotal} {it.metricUnit}
                                 </span>
                               </div>
                             ))}
                           </div>
+
                         </div>
                       );
                     })}
