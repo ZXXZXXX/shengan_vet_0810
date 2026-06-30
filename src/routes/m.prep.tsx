@@ -477,27 +477,22 @@ function PrepPage() {
                       return (
                         <div
                           key={r.key}
-                          className="px-1 py-2.5 flex items-center justify-between gap-3"
+                          className="px-1 py-3 flex items-center gap-2 text-body-sm"
                         >
-                          <div className="flex-1 min-w-0">
-                            <div className="text-body font-medium text-foreground truncate">
-                              {r.name}
-                            </div>
-                            <div className="mt-1 flex flex-wrap items-center gap-2">
-                              <span className="tag tag-outline">{r.spec}</span>
-                              {r.mfrRequired !== "不限" && (
-                                <span className="tag tag-brand">{r.mfrRequired}</span>
-                              )}
-                            </div>
+                          <div className="flex-1 min-w-0 truncate text-foreground font-medium">
+                            {r.name}
                           </div>
-                          <div className="shrink-0 text-right min-w-[72px]">
-                            <div className="text-body font-semibold tabular-nums text-foreground">
-                              {r.total}
-                              <span className="ml-0.5 text-caption font-normal text-text-tertiary">
-                                {r.unit}
-                              </span>
-                            </div>
-                            <div className="text-caption text-text-tertiary">需领取</div>
+                          <div className="w-[72px] shrink-0 text-center text-text-secondary truncate">
+                            {r.mfrRequired}
+                          </div>
+                          <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
+                            {r.spec}
+                          </div>
+                          <div className="w-[72px] shrink-0 text-right text-primary font-semibold tabular-nums">
+                            {r.total}
+                            <span className="text-caption font-normal text-text-tertiary ml-0.5">
+                              {r.unit}
+                            </span>
                           </div>
                         </div>
                       );
