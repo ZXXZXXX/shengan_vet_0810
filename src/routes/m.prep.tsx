@@ -479,7 +479,7 @@ function PrepPage() {
                     {requirements.map((r) => (
                       <div
                         key={r.key}
-                        className="px-1 py-3 flex items-center gap-2 text-body"
+                        className="px-1 py-3 flex items-center gap-2 text-list"
                       >
                         <div className="flex-1 min-w-0 truncate text-foreground font-medium">
                           {r.name}
