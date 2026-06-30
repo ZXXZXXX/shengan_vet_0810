@@ -861,37 +861,39 @@ function AggregateDrawer({
           </button>
         </div>
 
-        {/* 联动筛选/选择头部 */}
-        <div className="px-4 pt-3 pb-2 border-b border-border flex items-center justify-between gap-3 shrink-0">
+        {/* 牛舍筛选 */}
+        <div className="px-4 pt-3 pb-3 border-b border-border shrink-0">
           <button
             type="button"
             onClick={() => setBarnDropdownOpen(true)}
-            className="h-10 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left min-w-0 flex-1"
+            className="w-full h-10 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left"
           >
             <span className="text-body-sm text-foreground truncate">
               {barnDisplayText}
             </span>
             <ChevronDown className="h-4 w-4 text-text-tertiary shrink-0" />
           </button>
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={toggleAll}
-              disabled={tasks.length === 0}
-              className="text-caption text-primary inline-flex items-center gap-1.5 disabled:opacity-40"
+        </div>
+
+        {/* 全选 / 已选计数 */}
+        <div className="px-4 h-11 flex items-center justify-between shrink-0 bg-surface-subtle">
+          <button
+            onClick={toggleAll}
+            disabled={tasks.length === 0}
+            className="inline-flex items-center gap-2 text-body-sm text-foreground disabled:opacity-40"
+          >
+            <span
+              className={`h-4 w-4 rounded border inline-flex items-center justify-center ${
+                allOn ? "bg-primary border-primary" : "border-border bg-card"
+              }`}
             >
-              <span
-                className={`h-4 w-4 rounded border inline-flex items-center justify-center ${
-                  allOn ? "bg-primary border-primary" : "border-border bg-card"
-                }`}
-              >
-                {allOn && <Check className="h-3 w-3 text-white" />}
-              </span>
-              {allOn ? "取消全选" : "全选"}
-            </button>
-            <span className="text-caption text-text-tertiary">
-              已选 {selected.size} / {tasks.length}
+              {allOn && <Check className="h-3 w-3 text-white" />}
             </span>
-          </div>
+            全选
+          </button>
+          <span className="text-caption text-text-tertiary">
+            已选 <span className="text-primary font-medium">{selected.size}</span> / {tasks.length}
+          </span>
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-border">
