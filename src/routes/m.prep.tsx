@@ -538,7 +538,7 @@ function PrepPage() {
                             </span>
                           </div>
                           <span className="text-caption text-text-tertiary">
-                            {c.items.length} 种药品
+                            {c.items.length} 项药品
                           </span>
                         </div>
                         <div className="space-y-1.5">
