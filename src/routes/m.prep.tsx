@@ -265,10 +265,15 @@ function PrepPage() {
     addScan(d);
   };
 
-  const enableCombo = (gi: number, scope: "shared" | "single") => {
+  const enableCombo = (gi: number, scope: "shared" | "single", cattleCount?: number) => {
     setGroups((prev) => {
       const next = [...prev];
-      next[gi] = { ...next[gi], combo: true, comboScope: scope };
+      next[gi] = {
+        ...next[gi],
+        combo: true,
+        comboScope: scope,
+        comboCattleCount: scope === "shared" ? cattleCount : undefined,
+      };
       return next;
     });
   };
