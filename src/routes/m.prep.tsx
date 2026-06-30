@@ -360,7 +360,7 @@ function PrepPage() {
                 <ClipboardList className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-body font-medium text-foreground whitespace-nowrap">药品清单</span>
                 <span className="text-caption text-text-tertiary whitespace-nowrap">
-                  来自 {selectedTaskIds.length} 个任务 · {requirements.length} 种
+                  来自 {selectedTaskIds.length} 个任务 · {requirements.length} 项
                 </span>
                 <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary whitespace-nowrap">
                   {checklistCollapsed ? "展开" : "收起"}
@@ -386,7 +386,7 @@ function PrepPage() {
             {/* 任务统计：保留数量，不展示工单编号 */}
             {!checklistCollapsed && (
               <div className="px-4 pb-3 text-caption text-text-tertiary">
-                已选 {selectedTaskIds.length} 个任务，{requirements.length} 种药品
+                已选 {selectedTaskIds.length} 个任务，{requirements.length}{"\u00a0"}项药品
               </div>
             )}
 
