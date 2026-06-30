@@ -468,7 +468,7 @@ function PrepPage() {
             <div className="px-4 pb-3">
               {checklistView === "drug" ? (
                 <>
-                  <div className="divide-y divide-border">
+                  <div className={cn("divide-y divide-border", checklistCollapsed && "max-h-[96px] overflow-hidden")}>
                     {requirements.map((r, idx) => {
                       if (checklistCollapsed && idx > 0) return null;
                       const displayName = r.name.length > 15 ? `${r.name.slice(0, 15)}...` : r.name;
@@ -506,7 +506,7 @@ function PrepPage() {
                 </>
               ) : (
                 <>
-                  <div className="divide-y divide-border">
+                  <div className={cn("divide-y divide-border", checklistCollapsed && "max-h-[96px] overflow-hidden")}>
                     {cattleGroups.map((c, idx) => {
                       if (checklistCollapsed && idx > 0) return null;
                       return (
@@ -523,19 +523,22 @@ function PrepPage() {
                             </span>
                           </div>
                           <div className="space-y-2.5">
-                            {c.items.map((it) => (
-                              <div key={it.key} className="flex items-center gap-2 text-body-sm">
-                                <div className="flex-1 min-w-0 truncate text-foreground font-medium">
-                                  {it.name}
+                            {c.items.map((it, itIdx) => {
+                              if (checklistCollapsed && itIdx > 0) return null;
+                              return (
+                                <div key={it.key} className="flex items-center gap-2 text-body-sm">
+                                  <div className="flex-1 min-w-0 truncate text-foreground font-medium">
+                                    {it.name}
+                                  </div>
+                                  <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
+                                    {it.usage || "-"}
+                                  </div>
+                                  <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
+                                    {it.metricTotal} {it.metricUnit}
+                                  </div>
                                 </div>
-                                <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
-                                  {it.usage || "-"}
-                                </div>
-                                <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
-                                  {it.metricTotal} {it.metricUnit}
-                                </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                       );
