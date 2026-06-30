@@ -804,6 +804,7 @@ function AggregateDrawer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allTasks]);
 
+  const [barnDropdownOpen, setBarnDropdownOpen] = useState(false);
   const [barnFilter, setBarnFilter] = useState<Set<string>>(new Set());
   const tasks = useMemo(
     () =>
@@ -846,6 +847,13 @@ function AggregateDrawer({
       return n;
     });
 
+  const barnDisplayText = useMemo(() => {
+    if (barnFilter.size === 0) return "不限牛舍";
+    const names = allBarns.filter((b) => barnFilter.has(b));
+    if (barnFilter.size === 1) return names[0];
+    return `已选 ${barnFilter.size} 个牛舍`;
+  }, [barnFilter, allBarns]);
+
   return (
     <div
       className="fixed inset-0 z-50 bg-black/50 flex items-end"
@@ -870,51 +878,19 @@ function AggregateDrawer({
 
         {/* 第一步：牛舍范围 */}
         <div className="px-4 pt-3 pb-2 border-b border-border shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-caption text-text-tertiary">
-              第一步 · 选择牛舍范围
-            </div>
-            {barnFilter.size > 0 && (
-              <button
-                type="button"
-                onClick={() => setBarnFilter(new Set())}
-                className="text-caption text-primary"
-              >
-                清除
-              </button>
-            )}
+          <div className="text-caption text-text-tertiary mb-2">
+            第一步 · 选择牛舍范围
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setBarnFilter(new Set())}
-              className={`h-8 px-3 rounded-full border text-body-sm ${
-                barnFilter.size === 0
-                  ? "bg-brand-subtle border-primary text-primary"
-                  : "bg-card border-border text-foreground"
-              }`}
-            >
-              全部牛舍（{allTasks.length}）
-            </button>
-            {allBarns.map((b) => {
-              const on = barnFilter.has(b);
-              const cnt = allTasks.filter((t) => barnOf(t) === b).length;
-              return (
-                <button
-                  key={b}
-                  type="button"
-                  onClick={() => toggleBarn(b)}
-                  className={`h-8 px-3 rounded-full border text-body-sm ${
-                    on
-                      ? "bg-brand-subtle border-primary text-primary"
-                      : "bg-card border-border text-foreground"
-                  }`}
-                >
-                  {b}（{cnt}）
-                </button>
-              );
-            })}
-          </div>
+          <button
+            type="button"
+            onClick={() => setBarnDropdownOpen(true)}
+            className="w-full h-11 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left"
+          >
+            <span className="text-body-sm text-foreground truncate">
+              {barnDisplayText}
+            </span>
+            <ChevronDown className="h-4 w-4 text-text-tertiary shrink-0" />
+          </button>
         </div>
 
         {/* 第二步：任务选择 */}
@@ -997,7 +973,94 @@ function AggregateDrawer({
           </button>
         </div>
       </div>
+
+      {/* 牛舍多选下拉抽屉 */}
+      {barnDropdownOpen && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/50 flex items-end"
+          onClick={() => setBarnDropdownOpen(false)}
+        >
+          <div
+            className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl h-[75vh] max-h-[75vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="h-12 px-4 flex items-center justify-between border-b border-border shrink-0">
+              <div className="text-body font-medium text-foreground">选择牛舍</div>
+              <button
+                onClick={() => setBarnDropdownOpen(false)}
+                className="h-8 w-8 inline-flex items-center justify-center text-text-secondary"
+                aria-label="关闭"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {/* 不限牛舍 */}
+              <button
+                type="button"
+                onClick={() => setBarnFilter(new Set())}
+                className="w-full text-left rounded-xl border border-border bg-card p-3 flex items-center justify-between gap-2 active:bg-surface-subtle"
+              >
+                <span className="text-body-sm text-foreground">不限牛舍</span>
+                <span
+                  className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
+                    barnFilter.size === 0
+                      ? "bg-primary border-primary"
+                      : "border-border bg-card"
+                  }`}
+                >
+                  {barnFilter.size === 0 && <Check className="h-3 w-3 text-white" />}
+                </span>
+              </button>
+
+              {/* 分隔线 */}
+              <div className="py-1">
+                <div className="text-caption text-text-tertiary">按牛舍筛选</div>
+              </div>
+
+              {allBarns.map((b) => {
+                const on = barnFilter.has(b);
+                const cnt = allTasks.filter((t) => barnOf(t) === b).length;
+                return (
+                  <button
+                    key={b}
+                    type="button"
+                    onClick={() => toggleBarn(b)}
+                    className={`w-full text-left rounded-xl border p-3 bg-card transition-colors flex items-center justify-between gap-2 ${
+                      on ? "border-primary" : "border-border active:bg-surface-subtle"
+                    }`}
+                  >
+                    <span className="text-body-sm text-foreground">{b}</span>
+                    <span className="inline-flex items-center gap-2">
+                      <span className="text-caption text-text-tertiary">{cnt} 个任务</span>
+                      <span
+                        className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
+                          on ? "bg-primary border-primary" : "border-border bg-card"
+                        }`}
+                      >
+                        {on && <Check className="h-3 w-3 text-white" />}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] border-t border-border shrink-0">
+              <button
+                type="button"
+                onClick={() => setBarnDropdownOpen(false)}
+                className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90"
+              >
+                确认（{barnFilter.size === 0 ? "不限牛舍" : `${barnFilter.size} 个牛舍`}）
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 
