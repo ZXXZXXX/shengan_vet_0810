@@ -451,14 +451,14 @@ function PrepPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedTaskIds([])}
-                    className="inline-flex items-center gap-1 text-caption text-text-tertiary active:opacity-70 shrink-0"
+                    className="inline-flex items-center gap-1 text-body-sm text-text-tertiary active:opacity-70 shrink-0"
                   >
                     全部清除
                   </button>
                   <button
                     type="button"
                     onClick={() => setAggOpen(true)}
-                    className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
+                    className="inline-flex items-center gap-1 text-body-sm text-primary active:opacity-70 shrink-0"
                   >
                     更换任务（{selectedTaskIds.length}）
                   </button>
@@ -476,7 +476,7 @@ function PrepPage() {
                       return (
                         <div
                           key={r.key}
-                          className="px-1 py-3 flex items-center gap-2 text-body-sm"
+                          className="px-1 py-3 flex items-center gap-2 text-body"
                         >
                           <div className="flex-1 min-w-0 truncate text-foreground font-medium">
                             {r.name}
@@ -523,7 +523,7 @@ function PrepPage() {
                           </div>
                           <div className="space-y-2.5">
                             {c.items.map((it) => (
-                              <div key={it.key} className="flex items-center gap-2 text-body-sm">
+                              <div key={it.key} className="flex items-center gap-2 text-body">
                                 <div className="flex-1 min-w-0 truncate text-foreground">
                                   {it.name}
                                 </div>
@@ -557,12 +557,12 @@ function PrepPage() {
               <span className="text-body font-medium text-foreground">药品清单</span>
             </div>
             <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface-2 p-6 text-center min-h-0">
-              <div className="text-body-sm text-text-tertiary mb-4">
+              <div className="text-body text-text-tertiary mb-4">
                 选择任务，快速统计药品清单
               </div>
               <button
                 onClick={() => setAggOpen(true)}
-                className="h-9 px-4 rounded-lg text-body-sm text-primary inline-flex items-center gap-1.5 border border-primary active:bg-brand-subtle"
+                className="h-9 px-4 rounded-lg text-button text-primary inline-flex items-center gap-1.5 border border-primary active:bg-brand-subtle"
               >
                 <ClipboardList className="h-4 w-4" />
                 选择任务
