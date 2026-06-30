@@ -861,27 +861,19 @@ function AggregateDrawer({
           </button>
         </div>
 
-        {/* 第一步：牛舍范围 */}
-        <div className="px-4 pt-3 pb-2 border-b border-border shrink-0">
-          <div className="text-caption text-text-tertiary mb-2">
-            第一步 · 选择牛舍范围
-          </div>
+        {/* 联动筛选/选择头部 */}
+        <div className="px-4 pt-3 pb-2 border-b border-border flex items-center justify-between gap-3 shrink-0">
           <button
             type="button"
             onClick={() => setBarnDropdownOpen(true)}
-            className="w-full h-11 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left"
+            className="h-10 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left min-w-0 flex-1"
           >
             <span className="text-body-sm text-foreground truncate">
               {barnDisplayText}
             </span>
             <ChevronDown className="h-4 w-4 text-text-tertiary shrink-0" />
           </button>
-        </div>
-
-        {/* 第二步：任务选择 */}
-        <div className="px-4 py-2 border-b border-border flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="text-caption text-text-tertiary">第二步 · 选择任务</div>
+          <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={toggleAll}
               disabled={tasks.length === 0}
@@ -896,11 +888,12 @@ function AggregateDrawer({
               </span>
               {allOn ? "取消全选" : "全选"}
             </button>
+            <span className="text-caption text-text-tertiary">
+              已选 {selected.size} / {tasks.length}
+            </span>
           </div>
-          <span className="text-caption text-text-tertiary">
-            已选 {selected.size} / {tasks.length}
-          </span>
         </div>
+
         <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-border">
           {tasks.length === 0 && (
             <div className="p-10 text-center text-caption text-text-tertiary">
