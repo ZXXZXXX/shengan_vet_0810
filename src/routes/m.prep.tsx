@@ -42,6 +42,13 @@ export const Route = createFileRoute("/m/prep")({
 let groupIdCounter = 0;
 const genGroupId = () => `group-${++groupIdCounter}`;
 
+// 从 usage 中仅提取使用方式（如 "肌肉注射"）
+const extractUsageMethod = (usage?: string) => {
+  if (!usage) return "-";
+  const parts = usage.split("·");
+  return parts[parts.length - 1]?.trim() || usage.trim();
+};
+
 // 演示药品池：包含三类典型场景
 type DrugDef = {
   name: string;
