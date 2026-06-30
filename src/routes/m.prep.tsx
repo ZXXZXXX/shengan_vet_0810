@@ -512,7 +512,7 @@ function PrepPage() {
                         <div key={c.earTag} className="px-1 py-3">
                           <div className="flex items-center justify-between mb-2.5">
                             <div className="inline-flex items-center gap-1.5">
-                              <EarTagIcon className="h-4 w-4 text-primary" />
+                              <Beef className="h-4 w-4 text-primary" />
                               <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
                                 {c.earTag}
                               </span>
