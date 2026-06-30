@@ -487,7 +487,7 @@ function PrepPage() {
                           <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
                             {r.spec}
                           </div>
-                          <div className="w-[72px] shrink-0 text-right text-primary font-semibold tabular-nums">
+                          <div className="w-[72px] shrink-0 text-right text-foreground font-semibold tabular-nums">
                             {r.total}
                             <span className="text-caption font-normal text-text-tertiary ml-0.5">
                               {r.unit}
@@ -530,7 +530,7 @@ function PrepPage() {
                                 <div className="shrink-0 text-text-tertiary tabular-nums">
                                   {it.spec}
                                 </div>
-                                <div className="shrink-0 w-[72px] text-right text-primary font-medium tabular-nums">
+                                <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
                                   {it.metricTotal} {it.metricUnit}
                                 </div>
                               </div>
