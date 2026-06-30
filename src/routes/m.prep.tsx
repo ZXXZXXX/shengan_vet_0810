@@ -374,17 +374,6 @@ function PrepPage() {
     return keys.size;
   }, [groups]);
 
-  // 当前已取（按药品名 + 规格聚合）
-  const claimedMap = useMemo(() => {
-    const m = new Map<string, number>();
-    groups.forEach((g) =>
-      g.entries.forEach((e) => {
-        const k = `${e.drug.name}|${e.drug.spec}`;
-        m.set(k, (m.get(k) ?? 0) + e.qty);
-      }),
-    );
-    return m;
-  }, [groups]);
 
   const handleAggregateConfirm = (ids: string[]) => {
     setAggOpen(false);
@@ -482,8 +471,6 @@ function PrepPage() {
                 <>
                   {requirements.map((r, idx) => {
                     if (checklistCollapsed && idx > 0) return null;
-                    const got = claimedMap.get(r.key) ?? 0;
-                    const done = got >= r.total;
                     return (
                       <div
                         key={r.key}
@@ -501,15 +488,11 @@ function PrepPage() {
                           </div>
                         </div>
                         <div className="shrink-0 text-right min-w-[72px]">
-                          <div
-                            className={`text-body font-semibold tabular-nums ${
-                              done ? "text-primary" : "text-foreground"
-                            }`}
-                          >
-                            {got}/{r.total}
+                          <div className="text-body font-semibold tabular-nums text-foreground">
+                            {r.total}
                           </div>
                           <div className="text-caption text-text-tertiary">
-                            {r.unit} {done ? "已领齐" : "待领取"}
+                            {r.unit} 需领取
                           </div>
                         </div>
                       </div>
