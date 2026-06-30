@@ -484,10 +484,10 @@ function PrepPage() {
                         <div className="flex-1 min-w-0 truncate text-foreground font-medium">
                           {r.name}
                         </div>
-                        <div className="w-[72px] shrink-0 text-center text-text-secondary truncate">
+                        <div className="w-[72px] shrink-0 text-center text-caption text-text-secondary truncate">
                           {r.mfrRequired}
                         </div>
-                        <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
+                        <div className="w-[80px] shrink-0 text-center text-caption text-text-tertiary tabular-nums">
                           {r.spec}
                         </div>
                         <div className="w-[72px] shrink-0 text-right text-foreground font-semibold tabular-nums">
