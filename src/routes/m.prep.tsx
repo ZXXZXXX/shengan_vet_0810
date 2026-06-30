@@ -553,19 +553,25 @@ function CattleIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
     >
-      {/* 牛角 */}
-      <path d="M5 7c-1.5-1.5-3-1-4 1M19 7c1.5-1.5 3-1 4 1" />
-      {/* 牛耳 */}
-      <path d="M3 10l2-1M21 10l-2-1" />
-      {/* 牛头轮廓 + 鼻部 */}
-      <path d="M6 8c0-2 2.5-3 6-3s6 1 6 3v5c0 2-2 4-6 4s-6-2-6-4V8z" />
-      {/* 牛鼻孔 */}
-      <path d="M10 14h.01M14 14h.01" />
+      {/* 左耳：圆润外扩 */}
+      <path d="M4.5 9c-2.2-1-3.5 0.2-3.5 2.2s1.6 2.6 3.5 1.6" />
+      {/* 右耳 + 牛耳标 */}
+      <path d="M19.5 9c2.2-1 3.5 0.2 3.5 2.2s-1.6 2.6-3.5 1.6" />
+      <circle cx="21" cy="10" r="0.9" fill="currentColor" />
+      {/* 牛头轮廓 */}
+      <path d="M7 10c0-2.8 2.5-4.5 5-4.5s5 1.7 5 4.5v4.5c0 2.8-2.5 5-5 5s-5-2.2-5-5V10z" />
+      {/* 眼睛 */}
+      <circle cx="9.5" cy="12" r="1" fill="currentColor" />
+      <circle cx="14.5" cy="12" r="1" fill="currentColor" />
+      {/* 牛鼻 */}
+      <path d="M9.8 16.5c0 1.2 1.5 1.8 2.7 1.8s2.7-.6 2.7-1.8" />
+      <circle cx="11.2" cy="16.8" r="0.6" fill="currentColor" />
+      <circle cx="13.8" cy="16.8" r="0.6" fill="currentColor" />
     </svg>
   );
 }
