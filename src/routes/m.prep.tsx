@@ -371,19 +371,26 @@ function PrepPage() {
               </div>
             </div>
 
-            {/* 任务统计：保留数量，不展示工单编号 */}
+            {/* 任务统计：仅展示所选任务数量，可更改任务或清空列表 */}
             {!checklistCollapsed && (
               <div className="px-4 pb-3 flex items-center justify-between text-caption text-text-tertiary">
-                <span>
-                  已选 {selectedTaskIds.length} 个任务，{requirements.length}{"\u00a0"}项药品
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setAggOpen(true)}
-                  className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
-                >
-                  更换任务
-                </button>
+                <span>已选 {selectedTaskIds.length} 个任务</span>
+                <div className="inline-flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTaskIds([])}
+                    className="inline-flex items-center gap-1 text-caption text-text-tertiary active:opacity-70 shrink-0"
+                  >
+                    清空
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAggOpen(true)}
+                    className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
+                  >
+                    更换任务
+                  </button>
+                </div>
               </div>
             )}
 
