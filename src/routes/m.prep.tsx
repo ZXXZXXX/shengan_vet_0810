@@ -776,33 +776,25 @@ function DrugCard({
                   <div className="text-body-sm text-foreground font-medium">多头牛共用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，将共用于治疗多头牛</div>
                   {comboScope === "shared" && (
-                    <div className="mt-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="mt-3 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       <span className="text-caption text-text-secondary shrink-0">牛只数量</span>
-                      <div className="inline-flex items-center border border-border rounded-md h-8">
+                      <div className="inline-flex items-center border border-border rounded-lg h-9 overflow-hidden">
                         <button
                           type="button"
                           onClick={() => setCattleCount((v) => Math.max(2, parseInt(v || "2", 10) - 1).toString())}
-                          className="h-8 w-8 inline-flex items-center justify-center text-text-secondary active:bg-surface-subtle"
+                          disabled={cattleCount === "2"}
+                          className="h-9 w-9 inline-flex items-center justify-center text-text-secondary active:bg-surface-subtle disabled:opacity-30"
                           aria-label="减少"
                         >
                           <Minus className="h-3.5 w-3.5" />
                         </button>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          value={cattleCount}
-                          onChange={(e) => setCattleCount(e.target.value.replace(/[^0-9]/g, ""))}
-                          onBlur={(e) => {
-                            const n = parseInt(e.target.value, 10);
-                            if (!n || n < 2) setCattleCount("2");
-                            else setCattleCount(n.toString());
-                          }}
-                          className="w-10 text-center text-body-sm tabular-nums focus:outline-none bg-transparent"
-                        />
+                        <span className="w-10 text-center text-body-sm font-medium tabular-nums text-foreground">
+                          {cattleCount}
+                        </span>
                         <button
                           type="button"
                           onClick={() => setCattleCount((v) => (parseInt(v || "2", 10) + 1).toString())}
-                          className="h-8 w-8 inline-flex items-center justify-center text-text-secondary active:bg-surface-subtle"
+                          className="h-9 w-9 inline-flex items-center justify-center text-text-secondary active:bg-surface-subtle"
                           aria-label="增加"
                         >
                           <Plus className="h-3.5 w-3.5" />
