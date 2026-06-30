@@ -522,7 +522,7 @@ function PrepPage() {
                           <div className="space-y-2.5">
                             {c.items.map((it) => (
                               <div key={it.key} className="flex items-center gap-2 text-body-sm">
-                                <div className="flex-1 min-w-0 truncate text-foreground">
+                                <div className="flex-1 min-w-0 truncate text-foreground font-medium">
                                   {it.name}
                                 </div>
                                 <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
