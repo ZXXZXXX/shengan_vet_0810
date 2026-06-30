@@ -815,7 +815,7 @@ function AggregateDrawer({
     [allTasks, barnFilter],
   );
 
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(initialSelected));
   const allOn = tasks.length > 0 && tasks.every((t) => selected.has(t.id));
   const toggle = (id: string) =>
     setSelected((s) => {
