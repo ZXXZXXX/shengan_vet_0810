@@ -550,11 +550,8 @@ function PrepPage() {
                               <span className="flex-1 min-w-0 text-foreground truncate">
                                 {it.name}
                               </span>
-                              <span className="text-text-tertiary text-caption shrink-0">
-                                {it.spec}
-                              </span>
-                              <span className="text-primary font-medium tabular-nums shrink-0 w-16 text-right">
-                                {it.total} {it.unit}
+                              <span className="text-primary font-medium tabular-nums shrink-0 w-20 text-right">
+                                {it.metricTotal} {it.metricUnit}
                               </span>
                             </div>
                           ))}
