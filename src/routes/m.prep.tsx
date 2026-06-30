@@ -547,6 +547,24 @@ function PrepPage() {
 }
 
 
+function CattleIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M12 2c-4 0-6 2-7 5 0 0-2 1-2 3 0 1 1 2 2 2h1v3c0 3 2 5 6 5s6-2 6-5v-3h1c1 0 2-1 2-2 0-2-2-3-2-3-1-3-3-5-7-5z" />
+      <path d="M9 10h.01M15 10h.01" />
+      <path d="M4 11l-2-2M20 11l2-2" />
+    </svg>
+  );
+}
+
 function DrugCard({
   group,
   onScanMore,
