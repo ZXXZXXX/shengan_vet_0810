@@ -551,7 +551,7 @@ function DrugCard({
 }: {
   group: Group;
   onScanMore: () => void;
-  onEnableCombo: (scope: "shared" | "single") => void;
+  onEnableCombo: (scope: "shared" | "single", cattleCount?: number) => void;
   onUpdateQty: (ei: number, qty: number) => void;
   onRemove: (ei: number) => void;
 }) {
