@@ -634,7 +634,7 @@ function DrugCard({
           <div className="flex items-center min-w-0">
             {isCombo && group.comboScope ? (
             <div className="text-text-tertiary">
-                治疗牛只 {group.comboScope === "single" ? 1 : group.comboCattleCount}头
+                治疗牛只 {group.comboScope === "single" ? 1 : group.comboCattleCount} 头
               </div>
             ) : !isCombo && firstDrug ? (
               <div className="text-text-tertiary truncate">
