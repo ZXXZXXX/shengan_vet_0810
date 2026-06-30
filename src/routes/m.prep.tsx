@@ -165,6 +165,7 @@ function PrepPage() {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
   const [checklistCollapsed, setChecklistCollapsed] = useState(false);
   const [checklistView, setChecklistView] = useState<"drug" | "cattle">("drug");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const computeRequirements = (ids: string[]): Requirement[] => {
     const map = new Map<string, Requirement>();
