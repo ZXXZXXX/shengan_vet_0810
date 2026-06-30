@@ -386,7 +386,7 @@ function PrepPage() {
             {/* 任务统计：保留数量，不展示工单编号 */}
             {!checklistCollapsed && (
               <div className="px-4 pb-3 text-caption text-text-tertiary">
-                已选 {selectedTaskIds.length} 个任务，{requirements.length} 种药品
+                已选 {selectedTaskIds.length} 个任务，{requirements.length}{"\u00a0"}项药品
               </div>
             )}
 
