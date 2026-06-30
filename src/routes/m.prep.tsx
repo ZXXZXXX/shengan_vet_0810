@@ -126,6 +126,7 @@ type Group = {
   entries: Entry[];
   combo?: boolean; // 用户主动开启的组合用药模式
   comboScope?: "shared" | "single"; // 组合用药使用范围
+  comboCattleCount?: number; // 多头牛共用时的牛只数量
 };
 
 type Requirement = {
