@@ -374,17 +374,6 @@ function PrepPage() {
     return keys.size;
   }, [groups]);
 
-  // 当前已取（按药品名 + 规格聚合）
-  const claimedMap = useMemo(() => {
-    const m = new Map<string, number>();
-    groups.forEach((g) =>
-      g.entries.forEach((e) => {
-        const k = `${e.drug.name}|${e.drug.spec}`;
-        m.set(k, (m.get(k) ?? 0) + e.qty);
-      }),
-    );
-    return m;
-  }, [groups]);
 
   const handleAggregateConfirm = (ids: string[]) => {
     setAggOpen(false);
