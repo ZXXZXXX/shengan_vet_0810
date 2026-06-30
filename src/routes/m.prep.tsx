@@ -413,7 +413,9 @@ function PrepPage() {
                 <ClipboardList className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-body font-medium text-foreground whitespace-nowrap">药品清单</span>
                 <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary whitespace-nowrap">
-                  共 {requirements.length} 项
+                  {checklistView === "drug"
+                    ? `共 ${requirements.length} 项`
+                    : `共 ${cattleGroups.length} 头`}
                   {checklistCollapsed ? (
                     <ChevronDown className="h-3.5 w-3.5" />
                   ) : (
@@ -423,10 +425,25 @@ function PrepPage() {
               </div>
             </div>
 
-            {/* 任务统计：合并为“更换任务（n）”，进入后可重选或全不选；右侧可全部清除清单 */}
+            {/* 视图切换 + 任务统计 */}
             {!checklistCollapsed && (
-              <div className="px-4 pb-3 flex items-center justify-between text-caption text-text-tertiary">
-                <span />
+              <div className="px-4 pb-3 flex items-center justify-between gap-2">
+                <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-caption">
+                  <button
+                    type="button"
+                    onClick={() => setChecklistView("drug")}
+                    className={`px-2.5 h-7 rounded ${checklistView === "drug" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
+                  >
+                    药品维度
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChecklistView("cattle")}
+                    className={`px-2.5 h-7 rounded ${checklistView === "cattle" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
+                  >
+                    牛只维度
+                  </button>
+                </div>
                 <div className="inline-flex items-center gap-3">
                   <button
                     type="button"
@@ -448,41 +465,89 @@ function PrepPage() {
 
 
             <div className="px-4 pb-3">
-              {requirements.map((r, idx) => {
-                if (checklistCollapsed && idx > 0) return null;
-                const got = claimedMap.get(r.key) ?? 0;
-                const done = got >= r.total;
-                return (
-                  <div
-                    key={r.key}
-                    className="flex items-start gap-3 py-2.5 border-b border-border last:border-0"
-                  >
-                    <span className="flex-1 min-w-0 text-body-sm font-medium text-foreground break-words">
-                      {r.name}
-                    </span>
-                    <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                    <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
-                      {r.mfrRequired}
-                    </span>
-                    <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                    <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
-                      {r.spec}
-                    </span>
-                    <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                    <span
-                      className={`flex-1 min-w-0 text-body-sm font-medium tabular-nums text-right break-words ${
-                        done ? "text-primary" : "text-[#E5751A]"
-                      }`}
-                    >
-                      {got}/{r.total} {r.unit}
-                    </span>
-                  </div>
-                );
-              })}
-              {checklistCollapsed && requirements.length > 1 && (
-                <div className="text-center text-caption text-text-tertiary py-2">
-                  已折叠 {requirements.length - 1} 条
-                </div>
+              {checklistView === "drug" ? (
+                <>
+                  {requirements.map((r, idx) => {
+                    if (checklistCollapsed && idx > 0) return null;
+                    const got = claimedMap.get(r.key) ?? 0;
+                    const done = got >= r.total;
+                    return (
+                      <div
+                        key={r.key}
+                        className="flex items-start gap-3 py-2.5 border-b border-border last:border-0"
+                      >
+                        <span className="flex-1 min-w-0 text-body-sm font-medium text-foreground break-words">
+                          {r.name}
+                        </span>
+                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
+                        <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
+                          {r.mfrRequired}
+                        </span>
+                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
+                        <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
+                          {r.spec}
+                        </span>
+                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
+                        <span
+                          className={`flex-1 min-w-0 text-body-sm font-medium tabular-nums text-right break-words ${
+                            done ? "text-primary" : "text-[#E5751A]"
+                          }`}
+                        >
+                          {got}/{r.total} {r.unit}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  {checklistCollapsed && requirements.length > 1 && (
+                    <div className="text-center text-caption text-text-tertiary py-2">
+                      已折叠 {requirements.length - 1} 条
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {cattleGroups.map((c, idx) => {
+                    if (checklistCollapsed && idx > 0) return null;
+                    return (
+                      <div
+                        key={c.earTag}
+                        className="py-2.5 border-b border-border last:border-0"
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-body-sm font-semibold text-foreground font-mono">
+                            {c.earTag}
+                          </span>
+                          <span className="text-caption text-text-tertiary">
+                            {c.items.length} 种药品
+                          </span>
+                        </div>
+                        <div className="space-y-1">
+                          {c.items.map((it) => (
+                            <div
+                              key={it.key}
+                              className="flex items-center gap-2 text-body-sm"
+                            >
+                              <span className="flex-1 min-w-0 text-foreground truncate">
+                                {it.name}
+                              </span>
+                              <span className="text-text-tertiary text-caption shrink-0">
+                                {it.spec}
+                              </span>
+                              <span className="text-primary font-medium tabular-nums shrink-0 w-16 text-right">
+                                {it.total} {it.unit}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {checklistCollapsed && cattleGroups.length > 1 && (
+                    <div className="text-center text-caption text-text-tertiary py-2">
+                      已折叠 {cattleGroups.length - 1} 条
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
