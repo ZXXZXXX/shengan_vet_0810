@@ -371,17 +371,26 @@ function PrepPage() {
               </div>
             </div>
 
-            {/* 任务统计：合并为“更换任务（n）”，进入后可重选或全不选 */}
+            {/* 任务统计：合并为“更换任务（n）”，进入后可重选或全不选；右侧可全部清除清单 */}
             {!checklistCollapsed && (
               <div className="px-4 pb-3 flex items-center justify-between text-caption text-text-tertiary">
                 <span />
-                <button
-                  type="button"
-                  onClick={() => setAggOpen(true)}
-                  className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
-                >
-                  更换任务（{selectedTaskIds.length}）
-                </button>
+                <div className="inline-flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTaskIds([])}
+                    className="inline-flex items-center gap-1 text-caption text-text-tertiary active:opacity-70 shrink-0"
+                  >
+                    全部清除
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAggOpen(true)}
+                    className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
+                  >
+                    更换任务（{selectedTaskIds.length}）
+                  </button>
+                </div>
               </div>
             )}
 
