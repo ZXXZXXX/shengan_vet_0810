@@ -359,9 +359,6 @@ function PrepPage() {
               >
                 <ClipboardList className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-body font-medium text-foreground whitespace-nowrap">药品清单</span>
-                <span className="text-caption text-text-tertiary whitespace-nowrap">
-                  来自 {selectedTaskIds.length} 个任务 · {requirements.length} 项
-                </span>
                 <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary whitespace-nowrap">
                   {checklistCollapsed ? "展开" : "收起"}
                   {checklistCollapsed ? (
