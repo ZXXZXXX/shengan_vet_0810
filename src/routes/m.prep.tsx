@@ -766,7 +766,7 @@ function DrugCard({
             <div key={`${e.code}-${ei}`} className="flex items-center gap-2">
               <div className="flex-1 min-w-0">
                 {isCombo && (
-                  <div className="text-caption text-foreground font-medium truncate">
+                  <div className="text-body-sm text-foreground font-medium truncate">
                     {e.drug.name}
                   </div>
                 )}
