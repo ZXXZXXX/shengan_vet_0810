@@ -69,6 +69,7 @@ function PickupDetailPage() {
   const farm = useFarm();
 
   const isClaimed = claimed.includes(pickupId);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
 
   if (!pickup) {
@@ -87,7 +88,7 @@ function PickupDetailPage() {
   ).length;
   const allScanned = doneCount === totalCount;
 
-  const onConfirm = () => {
+  const doClaim = () => {
     if (!allScanned) return;
     claimPickup(pickupId);
     toast.success("已完成领药");
@@ -95,6 +96,11 @@ function PickupDetailPage() {
       to: "/m/health/$id/execute",
       params: { id: workOrderId },
     });
+  };
+
+  const onConfirm = () => {
+    if (!allScanned) return;
+    setConfirmOpen(true);
   };
 
   return (
