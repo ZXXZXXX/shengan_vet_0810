@@ -496,7 +496,7 @@ function PrepPage() {
                 key={g.id}
                 group={g}
                 onScanMore={() => addComboScan(gi)}
-                onEnableCombo={(scope) => enableCombo(gi, scope)}
+                onEnableCombo={(scope, count) => enableCombo(gi, scope, count)}
                 onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
                 onRemove={(ei) => removeEntry(gi, ei)}
               />
