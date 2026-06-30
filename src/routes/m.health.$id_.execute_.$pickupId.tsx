@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useFarm } from "@/lib/farm-store";
 
 import { MobileShell } from "@/components/mobile-shell";
+import { ConfirmPickupDialog } from "@/components/m/confirm-pickup-dialog";
 import {
   addScannedEntry,
   claimPickup,
