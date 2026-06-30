@@ -468,32 +468,29 @@ function PrepPage() {
             <div className="px-4 pb-3">
               {checklistView === "drug" ? (
                 <>
-                  <div className="divide-y divide-border">
-                    {requirements.map((r, idx) => {
-                      if (checklistCollapsed && idx > 0) return null;
-                      return (
-                        <div
-                          key={r.key}
-                          className="px-1 py-3 flex items-center gap-2 text-body"
-                        >
-                          <div className="flex-1 min-w-0 truncate text-foreground font-medium">
-                            {r.name}
-                          </div>
-                          <div className="w-[72px] shrink-0 text-center text-text-secondary truncate">
-                            {r.mfrRequired}
-                          </div>
-                          <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
-                            {r.spec}
-                          </div>
-                          <div className="w-[72px] shrink-0 text-right text-foreground font-semibold tabular-nums">
-                            {r.total}
-                            <span className="text-caption font-normal text-text-tertiary ml-0.5">
-                              {r.unit}
-                            </span>
-                          </div>
+                  <div className={`divide-y divide-border ${checklistCollapsed ? "max-h-[140px] overflow-hidden" : ""}`}>
+                    {requirements.map((r) => (
+                      <div
+                        key={r.key}
+                        className="px-1 py-3 flex items-center gap-2 text-body"
+                      >
+                        <div className="flex-1 min-w-0 truncate text-foreground font-medium">
+                          {r.name}
                         </div>
-                      );
-                    })}
+                        <div className="w-[72px] shrink-0 text-center text-text-secondary truncate">
+                          {r.mfrRequired}
+                        </div>
+                        <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
+                          {r.spec}
+                        </div>
+                        <div className="w-[72px] shrink-0 text-right text-foreground font-semibold tabular-nums">
+                          {r.total}
+                          <span className="text-caption font-normal text-text-tertiary ml-0.5">
+                            {r.unit}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   {checklistCollapsed && requirements.length > 1 && (
                     <div className="text-center text-caption text-text-tertiary py-2">
@@ -503,40 +500,37 @@ function PrepPage() {
                 </>
               ) : (
                 <>
-                  <div className="divide-y divide-border">
-                    {cattleGroups.map((c, idx) => {
-                      if (checklistCollapsed && idx > 0) return null;
-                      return (
-                        <div key={c.earTag} className="px-1 py-3">
-                          <div className="flex items-center justify-between mb-2.5">
-                            <div className="inline-flex items-center gap-1.5">
-                              <Beef className="h-4 w-4 text-primary" />
-                              <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
-                                {c.earTag}
-                              </span>
-                            </div>
-                            <span className="text-caption text-text-tertiary">
-                              {c.items.length} 项药品
+                  <div className={`divide-y divide-border ${checklistCollapsed ? "max-h-[140px] overflow-hidden" : ""}`}>
+                    {cattleGroups.map((c) => (
+                      <div key={c.earTag} className="px-1 py-3">
+                        <div className="flex items-center justify-between mb-2.5">
+                          <div className="inline-flex items-center gap-1.5">
+                            <Beef className="h-4 w-4 text-primary" />
+                            <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
+                              {c.earTag}
                             </span>
                           </div>
-                          <div className="space-y-2.5">
-                            {c.items.map((it) => (
-                              <div key={it.key} className="flex items-center gap-2 text-body">
-                                <div className="flex-1 min-w-0 truncate text-foreground">
-                                  {it.name}
-                                </div>
-                                <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
-                                  {it.usage || "-"}
-                                </div>
-                                <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
-                                  {it.metricTotal} {it.metricUnit}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                          <span className="text-caption text-text-tertiary">
+                            {c.items.length} 项药品
+                          </span>
                         </div>
-                      );
-                    })}
+                        <div className="space-y-2.5">
+                          {c.items.map((it) => (
+                            <div key={it.key} className="flex items-center gap-2 text-body">
+                              <div className="flex-1 min-w-0 truncate text-foreground">
+                                {it.name}
+                              </div>
+                              <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
+                                {it.usage || "-"}
+                              </div>
+                              <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
+                                {it.metricTotal} {it.metricUnit}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   {checklistCollapsed && cattleGroups.length > 1 && (
                     <div className="text-center text-caption text-text-tertiary py-2">
