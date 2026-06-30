@@ -668,6 +668,8 @@ function PrepPage() {
           setSelectedTaskIds([]);
         }}
       />
+
+      {aggOpen && (
         <AggregateDrawer
           initialSelected={selectedTaskIds}
           onClose={() => setAggOpen(false)}
