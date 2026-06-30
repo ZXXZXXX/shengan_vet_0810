@@ -148,6 +148,16 @@ function parseQtyNum(qty: string): { n: number; unit: string } {
   return { n: Number(m[1]), unit: (m[2] ?? "").trim() };
 }
 
+/** 从 "100ml / 瓶" 解析每单位剂量与单位，如 ml / g / IU */
+function parseSpecMetric(spec: string): { amount: number; unit: string } | null {
+  const pre = spec.split("/")[0].trim();
+  if (!pre) return null;
+  const m = pre.match(/(\d+(?:\.\d+)?)\s*([^\d].*?)\s*$/);
+  if (!m) return null;
+  return { amount: Number(m[1]), unit: m[2].trim() };
+}
+
+
 function PrepPage() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
@@ -198,7 +208,7 @@ function PrepPage() {
   type CattleGroup = {
     earTag: string;
     taskIds: string[];
-    items: { key: string; name: string; spec: string; total: number; unit: string }[];
+    items: { key: string; name: string; spec: string; metricTotal: number; metricUnit: string }[];
   };
   const cattleGroups = useMemo<CattleGroup[]>(() => {
     const map = new Map<string, CattleGroup>();
@@ -214,18 +224,21 @@ function PrepPage() {
       if (!g.taskIds.includes(tid)) g.taskIds.push(tid);
       pk.items.forEach((it) => {
         if (it.isMedicine === false) return;
-        const { n, unit } = parseQtyNum(it.qty);
+        const { n } = parseQtyNum(it.qty);
+        const metric = parseSpecMetric(it.spec ?? "");
         const key = `${it.name}|${it.spec ?? ""}`;
         const exist = g!.items.find((x) => x.key === key);
-        if (exist) exist.total += n;
-        else
+        if (exist) {
+          exist.metricTotal += metric ? metric.amount * n : n;
+        } else {
           g!.items.push({
             key,
             name: it.name,
             spec: it.spec ?? "",
-            total: n,
-            unit: unit || "",
+            metricTotal: metric ? metric.amount * n : n,
+            metricUnit: metric ? metric.unit : "",
           });
+        }
       });
     });
     return Array.from(map.values());
@@ -537,11 +550,8 @@ function PrepPage() {
                               <span className="flex-1 min-w-0 text-foreground truncate">
                                 {it.name}
                               </span>
-                              <span className="text-text-tertiary text-caption shrink-0">
-                                {it.spec}
-                              </span>
-                              <span className="text-primary font-medium tabular-nums shrink-0 w-16 text-right">
-                                {it.total} {it.unit}
+                              <span className="text-primary font-medium tabular-nums shrink-0 w-20 text-right">
+                                {it.metricTotal} {it.metricUnit}
                               </span>
                             </div>
                           ))}
