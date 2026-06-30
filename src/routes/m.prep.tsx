@@ -146,8 +146,45 @@ function PrepPage() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
   const [aggOpen, setAggOpen] = useState(false);
-  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
   const [checklistCollapsed, setChecklistCollapsed] = useState(false);
+
+  const computeRequirements = (ids: string[]): Requirement[] => {
+    const map = new Map<string, Requirement>();
+    ids.forEach((tid) => {
+      const pk = PICKUPS.find((p) => p.source === tid);
+      if (!pk) return;
+      pk.items.forEach((it) => {
+        const { n, unit } = parseQtyNum(it.qty);
+        const key = `${it.name}|${it.spec ?? ""}`;
+        const existing = map.get(key);
+        const mfr =
+          it.allowMixManufacturer === false
+            ? it.stockSources?.[0]?.manufacturer ?? "指定厂商"
+            : "不限";
+        if (existing) {
+          existing.total += n;
+          if (!existing.taskIds.includes(tid)) existing.taskIds.push(tid);
+        } else {
+          map.set(key, {
+            key,
+            name: it.name,
+            spec: it.spec ?? "",
+            unit: unit || "",
+            total: n,
+            mfrRequired: mfr,
+            taskIds: [tid],
+          });
+        }
+      });
+    });
+    return Array.from(map.values());
+  };
+
+  const requirements = useMemo(
+    () => computeRequirements(selectedTaskIds),
+    [selectedTaskIds],
+  );
 
   // 模拟扫描：循环演示药品池
   const [scanIdx, setScanIdx] = useState(0);
