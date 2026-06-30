@@ -482,8 +482,6 @@ function PrepPage() {
                 <>
                   {requirements.map((r, idx) => {
                     if (checklistCollapsed && idx > 0) return null;
-                    const got = claimedMap.get(r.key) ?? 0;
-                    const done = got >= r.total;
                     return (
                       <div
                         key={r.key}
@@ -501,15 +499,11 @@ function PrepPage() {
                           </div>
                         </div>
                         <div className="shrink-0 text-right min-w-[72px]">
-                          <div
-                            className={`text-body font-semibold tabular-nums ${
-                              done ? "text-primary" : "text-foreground"
-                            }`}
-                          >
-                            {got}/{r.total}
+                          <div className="text-body font-semibold tabular-nums text-foreground">
+                            {r.total}
                           </div>
                           <div className="text-caption text-text-tertiary">
-                            {r.unit} {done ? "已领齐" : "待领取"}
+                            {r.unit} 需领取
                           </div>
                         </div>
                       </div>
