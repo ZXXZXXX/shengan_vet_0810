@@ -754,9 +754,11 @@ function DrugCard({
 }
 
 function AggregateDrawer({
+  initialSelected = [],
   onClose,
   onConfirm,
 }: {
+  initialSelected?: string[];
   onClose: () => void;
   onConfirm: (ids: string[]) => void;
 }) {
