@@ -320,38 +320,14 @@ function PrepPage() {
 
   const handleAggregateConfirm = (ids: string[]) => {
     setAggOpen(false);
-    // 聚合所选任务对应 pickup 的药品需求
-    const map = new Map<string, Requirement>();
-    ids.forEach((tid) => {
-      const pk = PICKUPS.find((p) => p.source === tid);
-      if (!pk) return;
-      pk.items.forEach((it) => {
-        const { n, unit } = parseQtyNum(it.qty);
-        const key = `${it.name}|${it.spec ?? ""}`;
-        const existing = map.get(key);
-        const mfr =
-          it.allowMixManufacturer === false
-            ? it.stockSources?.[0]?.manufacturer ?? "指定厂商"
-            : "不限";
-        if (existing) {
-          existing.total += n;
-          if (!existing.taskIds.includes(tid)) existing.taskIds.push(tid);
-        } else {
-          map.set(key, {
-            key,
-            name: it.name,
-            spec: it.spec ?? "",
-            unit: unit || "",
-            total: n,
-            mfrRequired: mfr,
-            taskIds: [tid],
-          });
-        }
-      });
-    });
-    setRequirements(Array.from(map.values()));
+    setSelectedTaskIds(ids);
     setChecklistCollapsed(false);
-    toast.success(`已生成药品清单（${map.size} 种）`);
+    const count = computeRequirements(ids).length;
+    toast.success(`已生成药品清单（${count} 种）`);
+  };
+
+  const removeTaskFromChecklist = (tid: string) => {
+    setSelectedTaskIds((prev) => prev.filter((id) => id !== tid));
   };
 
   return (
