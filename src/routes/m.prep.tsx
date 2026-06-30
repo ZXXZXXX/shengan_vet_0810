@@ -464,7 +464,7 @@ function PrepPage() {
             )}
 
 
-            <div className="px-4 pb-3">
+            <div className="px-4 pb-3 space-y-2">
               {checklistView === "drug" ? (
                 <>
                   {requirements.map((r, idx) => {
@@ -474,27 +474,31 @@ function PrepPage() {
                     return (
                       <div
                         key={r.key}
-                        className="flex items-start gap-3 py-2.5 border-b border-border last:border-0"
+                        className="rounded-lg bg-surface-subtle px-3 py-2.5 flex items-center justify-between gap-3"
                       >
-                        <span className="flex-1 min-w-0 text-body-sm font-medium text-foreground break-words">
-                          {r.name}
-                        </span>
-                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                        <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
-                          {r.mfrRequired}
-                        </span>
-                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                        <span className="flex-1 min-w-0 text-body-sm text-text-secondary break-words text-center">
-                          {r.spec}
-                        </span>
-                        <span className="w-px h-3 bg-border shrink-0 mt-1" />
-                        <span
-                          className={`flex-1 min-w-0 text-body-sm font-medium tabular-nums text-right break-words ${
-                            done ? "text-primary" : "text-[#E5751A]"
-                          }`}
-                        >
-                          {got}/{r.total} {r.unit}
-                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-body font-medium text-foreground truncate">
+                            {r.name}
+                          </div>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                            <span className="tag tag-outline">{r.spec}</span>
+                            {r.mfrRequired !== "不限" && (
+                              <span className="tag tag-brand">{r.mfrRequired}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="shrink-0 text-right min-w-[72px]">
+                          <div
+                            className={`text-body font-semibold tabular-nums ${
+                              done ? "text-primary" : "text-foreground"
+                            }`}
+                          >
+                            {got}/{r.total}
+                          </div>
+                          <div className="text-caption text-text-tertiary">
+                            {r.unit} {done ? "已领齐" : "待领取"}
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
@@ -511,17 +515,20 @@ function PrepPage() {
                     return (
                       <div
                         key={c.earTag}
-                        className="py-2.5 border-b border-border last:border-0"
+                        className="rounded-lg bg-surface-subtle px-3 py-2.5"
                       >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-body-sm font-semibold text-foreground font-mono">
-                            {c.earTag}
-                          </span>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="inline-flex items-center gap-1.5 rounded-md bg-brand-subtle px-2 py-0.5">
+                            <EarTagIcon className="h-4 w-4 text-primary" />
+                            <span className="text-body font-semibold text-primary font-mono tracking-wide">
+                              {c.earTag}
+                            </span>
+                          </div>
                           <span className="text-caption text-text-tertiary">
                             {c.items.length} 种药品
                           </span>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           {c.items.map((it) => (
                             <div
                               key={it.key}
@@ -1245,5 +1252,23 @@ function AggregateDrawer({
     </div>
   );
 }
+
+function EarTagIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 2 4 7v7c0 4.5 4 9 8 10 4-1 8-5.5 8-10V7l-8-5z" />
+      <circle cx="12" cy="8" r="2" />
+    </svg>
+  );
+}
+
 
 
