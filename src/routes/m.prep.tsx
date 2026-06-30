@@ -686,7 +686,7 @@ function DrugCard({
               <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              开启后，组合内任意二维码在用药时都会带出全部药品信息并快速填入。组合用药暂不支持拆分为单药品卡片，如需调整可删除该组合后重新录入。
+              开启后，组合内任意药品二维码在用药核验时，都会带出全部组合药品。组合暂不支持拆分，如需调整请删除后重新录入。
             </p>
             <div className="flex items-center gap-2">
               <button
