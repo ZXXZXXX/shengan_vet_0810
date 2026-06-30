@@ -666,7 +666,7 @@ function DrugCard({
             ) : null}
           </div>
           <div className={`font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
-            已领 {totalQty} 项
+            已领 {totalQty} {isCombo ? "项" : firstDrug.countUnit}
           </div>
         </div>
 
