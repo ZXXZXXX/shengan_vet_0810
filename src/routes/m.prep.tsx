@@ -1082,7 +1082,7 @@ function AggregateDrawer({
           <button
             onClick={toggleAll}
             disabled={tasks.length === 0}
-            className="inline-flex items-center gap-2 text-body-sm text-foreground disabled:opacity-40"
+            className="inline-flex items-center gap-2 text-body text-foreground disabled:opacity-40"
           >
             <span
               className={`h-4 w-4 rounded border inline-flex items-center justify-center ${
@@ -1137,7 +1137,7 @@ function AggregateDrawer({
                     <span className="mx-1.5 text-border">·</span>
                     {diseaseTaskMeta[t.id]?.disease ?? t.type}
                   </div>
-                  <div className="text-body-sm text-foreground truncate mt-0.5">
+                  <div className="text-body text-foreground truncate mt-0.5">
                     {t.target} · {t.conclusion}
                   </div>
                 </div>
@@ -1149,7 +1149,7 @@ function AggregateDrawer({
           <button
             disabled={selected.size === 0}
             onClick={() => onConfirm(Array.from(selected))}
-            className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold disabled:opacity-40 active:opacity-90"
+            className="w-full h-11 rounded-lg bg-primary text-white text-button font-semibold disabled:opacity-40 active:opacity-90"
           >
             确认统计（{selected.size}）
           </button>
@@ -1184,7 +1184,7 @@ function AggregateDrawer({
                 onClick={() => setBarnFilter(new Set())}
                 className="w-full text-left rounded-xl border border-border bg-card p-3 flex items-center justify-between gap-2 active:bg-surface-subtle"
               >
-                <span className="text-body-sm text-foreground">不限牛舍</span>
+                <span className="text-body text-foreground">不限牛舍</span>
                 <span
                   className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
                     barnFilter.size === 0
@@ -1213,7 +1213,7 @@ function AggregateDrawer({
                       on ? "border-primary" : "border-border active:bg-surface-subtle"
                     }`}
                   >
-                    <span className="text-body-sm text-foreground">{b}</span>
+                    <span className="text-body text-foreground">{b}</span>
                     <span className="inline-flex items-center gap-2">
                       <span className="text-caption text-text-tertiary">{cnt} 个任务</span>
                       <span
@@ -1233,7 +1233,7 @@ function AggregateDrawer({
               <button
                 type="button"
                 onClick={() => setBarnDropdownOpen(false)}
-                className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90"
+                className="w-full h-11 rounded-lg bg-primary text-white text-button font-semibold active:opacity-90"
               >
                 确认（{barnFilter.size === 0 ? "不限牛舍" : `${barnFilter.size} 个牛舍`}）
               </button>
