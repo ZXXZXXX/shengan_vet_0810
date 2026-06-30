@@ -42,13 +42,6 @@ export const Route = createFileRoute("/m/prep")({
 let groupIdCounter = 0;
 const genGroupId = () => `group-${++groupIdCounter}`;
 
-// 从 usage 中仅提取使用方式（如 "肌肉注射"）
-const extractUsageMethod = (usage?: string) => {
-  if (!usage) return "-";
-  const parts = usage.split("·");
-  return parts[parts.length - 1]?.trim() || usage.trim();
-};
-
 // 演示药品池：包含三类典型场景
 type DrugDef = {
   name: string;
@@ -422,7 +415,7 @@ function PrepPage() {
               >
                 <ClipboardList className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-body font-medium text-foreground whitespace-nowrap">药品清单</span>
-                <span className="ml-auto inline-flex items-center gap-1 text-body-sm text-text-tertiary whitespace-nowrap">
+                <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary whitespace-nowrap">
                   {checklistView === "drug"
                     ? `共 ${requirements.length} 项`
                     : `共 ${cattleGroups.length} 头`}
@@ -436,68 +429,73 @@ function PrepPage() {
             </div>
 
             {/* 视图切换 + 任务统计 */}
-            <div className="px-4 pb-3 flex items-center justify-between gap-2">
-              <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-body-sm">
-                <button
-                  type="button"
-                  onClick={() => setChecklistView("drug")}
-                  className={`px-2.5 h-7 rounded ${checklistView === "drug" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
-                >
-                  药品维度
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setChecklistView("cattle")}
-                  className={`px-2.5 h-7 rounded ${checklistView === "cattle" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
-                >
-                  牛只维度
-                </button>
+            {!checklistCollapsed && (
+              <div className="px-4 pb-3 flex items-center justify-between gap-2">
+                <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-caption">
+                  <button
+                    type="button"
+                    onClick={() => setChecklistView("drug")}
+                    className={`px-2.5 h-7 rounded ${checklistView === "drug" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
+                  >
+                    药品维度
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChecklistView("cattle")}
+                    className={`px-2.5 h-7 rounded ${checklistView === "cattle" ? "bg-card text-primary font-medium shadow-sm" : "text-text-tertiary"}`}
+                  >
+                    牛只维度
+                  </button>
+                </div>
+                <div className="inline-flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTaskIds([])}
+                    className="inline-flex items-center gap-1 text-caption text-text-tertiary active:opacity-70 shrink-0"
+                  >
+                    全部清除
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAggOpen(true)}
+                    className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
+                  >
+                    更换任务（{selectedTaskIds.length}）
+                  </button>
+                </div>
               </div>
-              <div className="inline-flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setAggOpen(true)}
-                  className="inline-flex items-center gap-1 text-body-sm text-primary active:opacity-70 shrink-0"
-                >
-                  更换任务（{selectedTaskIds.length}）
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedTaskIds([])}
-                  className="inline-flex items-center gap-1 text-body-sm text-text-tertiary active:opacity-70 shrink-0"
-                >
-                  清除
-                </button>
-              </div>
-            </div>
+            )}
 
 
             <div className="px-4 pb-3">
               {checklistView === "drug" ? (
                 <>
-                  <div className={`divide-y divide-border ${checklistCollapsed ? "max-h-[140px] overflow-hidden" : ""}`}>
-                    {requirements.map((r) => (
-                      <div
-                        key={r.key}
-                        className="px-1 py-3 flex items-center gap-2 text-list"
-                      >
-                        <div className="flex-1 min-w-0 truncate text-foreground font-medium">
-                          {r.name}
+                  <div className="divide-y divide-border">
+                    {requirements.map((r, idx) => {
+                      if (checklistCollapsed && idx > 0) return null;
+                      return (
+                        <div
+                          key={r.key}
+                          className="px-1 py-3 flex items-center gap-2 text-body-sm"
+                        >
+                          <div className="flex-1 min-w-0 truncate text-foreground font-medium">
+                            {r.name}
+                          </div>
+                          <div className="w-[72px] shrink-0 text-center text-text-secondary truncate">
+                            {r.mfrRequired}
+                          </div>
+                          <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
+                            {r.spec}
+                          </div>
+                          <div className="w-[72px] shrink-0 text-right text-foreground font-semibold tabular-nums">
+                            {r.total}
+                            <span className="text-caption font-normal text-text-tertiary ml-0.5">
+                              {r.unit}
+                            </span>
+                          </div>
                         </div>
-                        <div className="w-[72px] shrink-0 text-center text-caption text-text-secondary truncate">
-                          {r.mfrRequired}
-                        </div>
-                        <div className="w-[80px] shrink-0 text-center text-caption text-text-tertiary tabular-nums">
-                          {r.spec}
-                        </div>
-                        <div className="w-[72px] shrink-0 text-right text-foreground font-semibold tabular-nums">
-                          {r.total}
-                          <span className="text-caption font-normal text-text-tertiary ml-0.5">
-                            {r.unit}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   {checklistCollapsed && requirements.length > 1 && (
                     <div className="text-center text-caption text-text-tertiary py-2">
@@ -507,38 +505,40 @@ function PrepPage() {
                 </>
               ) : (
                 <>
-                  <div className={`divide-y divide-border ${checklistCollapsed ? "max-h-[140px] overflow-hidden" : ""}`}>
-                    {cattleGroups.map((c) => (
-                      <div key={c.earTag} className="px-1 py-3">
-                        <div className="flex items-center justify-between mb-2.5">
-                          <div className="inline-flex items-center gap-1.5">
-                            <Beef className="h-4 w-4 text-primary" />
-                            <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
-                              {c.earTag}
+                  <div className="divide-y divide-border">
+                    {cattleGroups.map((c, idx) => {
+                      if (checklistCollapsed && idx > 0) return null;
+                      return (
+                        <div key={c.earTag} className="px-1 py-3">
+                          <div className="flex items-center justify-between mb-2.5">
+                            <div className="inline-flex items-center gap-1.5">
+                              <Beef className="h-4 w-4 text-primary" />
+                              <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
+                                {c.earTag}
+                              </span>
+                            </div>
+                            <span className="text-caption text-text-tertiary">
+                              {c.items.length} 项药品
                             </span>
                           </div>
-                          <span className="text-body-sm text-text-tertiary">
-                            {c.items.length} 项药品
-                          </span>
+                          <div className="space-y-2.5">
+                            {c.items.map((it) => (
+                              <div key={it.key} className="flex items-center gap-2 text-body-sm">
+                                <div className="flex-1 min-w-0 truncate text-foreground">
+                                  {it.name}
+                                </div>
+                                <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
+                                  {it.usage || "-"}
+                                </div>
+                                <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
+                                  {it.metricTotal} {it.metricUnit}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                        <div className="space-y-2.5">
-                          {c.items.map((it) => (
-                            <div key={it.key} className="flex items-center gap-2 text-body">
-                              <div className="flex-1 min-w-0 truncate text-foreground">
-                                {it.name}
-                              </div>
-                              <div className="shrink-0 text-caption text-text-secondary truncate max-w-[120px]">
-                                {extractUsageMethod(it.usage)}
-                              </div>
-                              <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
-                                {it.metricTotal}
-                                <span className="text-caption text-text-tertiary ml-0.5">{it.metricUnit}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   {checklistCollapsed && cattleGroups.length > 1 && (
                     <div className="text-center text-caption text-text-tertiary py-2">
@@ -557,12 +557,12 @@ function PrepPage() {
               <span className="text-body font-medium text-foreground">药品清单</span>
             </div>
             <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface-2 p-6 text-center min-h-0">
-              <div className="text-body text-text-tertiary mb-4">
+              <div className="text-body-sm text-text-tertiary mb-4">
                 选择任务，快速统计药品清单
               </div>
               <button
                 onClick={() => setAggOpen(true)}
-                className="h-9 px-4 rounded-lg text-button text-primary inline-flex items-center gap-1.5 border border-primary active:bg-brand-subtle"
+                className="h-9 px-4 rounded-lg text-body-sm text-primary inline-flex items-center gap-1.5 border border-primary active:bg-brand-subtle"
               >
                 <ClipboardList className="h-4 w-4" />
                 选择任务
@@ -580,11 +580,11 @@ function PrepPage() {
             <span className="text-body font-medium text-foreground">已领药品</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-body-sm text-text-tertiary">共 {totalCount} 项</span>
+            <span className="text-caption text-text-tertiary">共 {totalCount} 项</span>
             {groups.length > 0 && (
               <button
                 onClick={() => setGroups([])}
-                className="text-body-sm text-text-tertiary active:opacity-70"
+                className="text-caption text-text-tertiary active:opacity-70"
               >
                 清空
               </button>
@@ -619,7 +619,7 @@ function PrepPage() {
         <div className="flex gap-3">
           <button
             onClick={handleScan}
-            className="flex-1 h-11 rounded-lg border border-primary text-primary text-button font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
+            className="flex-1 h-11 rounded-lg border border-primary text-primary text-body-sm font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
           >
             <ScanLine className="h-4 w-4" />
             扫码领药
@@ -631,7 +631,7 @@ function PrepPage() {
               setSelectedTaskIds([]);
             }}
             disabled={totalCount === 0}
-            className="flex-1 h-11 rounded-lg bg-primary text-white text-button font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             完成领药
             {totalCount > 0 && `（${totalCount} 项）`}
@@ -729,7 +729,7 @@ function DrugCard({
           ) : (
             <button
               onClick={() => setConfirmOpen(true)}
-              className="text-body-sm text-primary active:opacity-70 shrink-0"
+              className="text-caption text-primary active:opacity-70 shrink-0"
             >
               组合用药
             </button>
@@ -738,21 +738,21 @@ function DrugCard({
 
 
         {/* 第二行：规格/扫码单位/牛只数 + 已领总数 */}
-        <div className="mt-2 flex items-center justify-between gap-2">
-          <div className="flex items-center min-w-0 text-caption text-text-tertiary">
+        <div className="mt-2 flex items-center justify-between gap-2 text-caption">
+          <div className="flex items-center min-w-0">
             {isCombo && group.comboScope ? (
-              <div>
-                治疗牛只 <span className="text-text-secondary">{group.comboScope === "single" ? 1 : group.comboCattleCount}</span> 头
+            <div className="text-text-tertiary">
+                治疗牛只 {group.comboScope === "single" ? 1 : group.comboCattleCount} 头
               </div>
             ) : !isCombo && firstDrug ? (
-              <div className="truncate">
+              <div className="text-text-tertiary truncate">
                 规格 <span className="text-text-secondary">{firstDrug.spec}</span>
                 <span className="mx-2 text-border">·</span>
                 扫码单位 <span className="text-text-secondary">{firstDrug.scanUnit}</span>
               </div>
             ) : null}
           </div>
-          <div className={`text-body-sm font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
+          <div className={`font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
             已领 {isCombo ? comboItemCount : totalQty} {isCombo ? "项" : firstDrug.countUnit}
           </div>
         </div>
@@ -766,7 +766,7 @@ function DrugCard({
             <div key={`${e.code}-${ei}`} className="flex items-center gap-2">
               <div className="flex-1 min-w-0">
                 {isCombo && (
-                  <div className="text-body-sm text-foreground font-medium truncate">
+                  <div className="text-caption text-foreground font-medium truncate">
                     {e.drug.name}
                   </div>
                 )}
@@ -802,7 +802,7 @@ function DrugCard({
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </button>
-                  <div className="w-8 text-center text-body tabular-nums">{e.qty}</div>
+                  <div className="w-8 text-center text-body-sm tabular-nums">{e.qty}</div>
                   <button
                     onClick={() => onUpdateQty(ei, e.qty + 1)}
                     disabled={e.packSize ? e.qty >= e.packSize : false}
@@ -841,7 +841,7 @@ function DrugCard({
               </span>
             <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
-            <p className="text-body text-text-secondary leading-relaxed">
+            <p className="text-body-sm text-text-secondary leading-relaxed">
               组合内任意药品在用药核验时将整组录入，请选择本组药品的使用方式：
             </p>
             <div className="space-y-2">
@@ -857,7 +857,7 @@ function DrugCard({
                   }}
                 />
                 <div className="flex-1">
-                  <div className="text-body text-foreground font-medium">多头牛共用</div>
+                  <div className="text-body-sm text-foreground font-medium">多头牛共用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，将共用于治疗多头牛</div>
                   {comboScope === "shared" && (
                     <div className="mt-3 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -898,7 +898,7 @@ function DrugCard({
                   onChange={() => setComboScope("single")}
                 />
                 <div className="flex-1">
-                  <div className="text-body text-foreground font-medium">单头牛使用</div>
+                  <div className="text-body-sm text-foreground font-medium">单头牛使用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，仅用于治疗单独一头牛</div>
                 </div>
               </label>
@@ -907,7 +907,7 @@ function DrugCard({
               <button
                 type="button"
                 onClick={() => setConfirmOpen(false)}
-                className="flex-1 h-10 rounded-lg border border-border bg-card text-button text-text-secondary"
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
               >
                 取消
               </button>
@@ -926,7 +926,7 @@ function DrugCard({
                   }
                   setConfirmOpen(false);
                 }}
-                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-button"
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
                 确认开启
               </button>
@@ -1070,7 +1070,7 @@ function AggregateDrawer({
             onClick={() => setBarnDropdownOpen(true)}
             className="w-full h-10 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left"
           >
-            <span className="text-body text-foreground truncate">
+            <span className="text-body-sm text-foreground truncate">
               {barnDisplayText}
             </span>
             <ChevronDown className="h-4 w-4 text-text-tertiary shrink-0" />
@@ -1093,7 +1093,7 @@ function AggregateDrawer({
             </span>
             全选
           </button>
-          <span className="text-body-sm text-text-tertiary">
+          <span className="text-caption text-text-tertiary">
             已选 <span className="text-primary font-medium">{selected.size}</span> / {tasks.length}
           </span>
         </div>
@@ -1137,7 +1137,7 @@ function AggregateDrawer({
                     <span className="mx-1.5 text-border">·</span>
                     {diseaseTaskMeta[t.id]?.disease ?? t.type}
                   </div>
-                  <div className="text-body text-foreground truncate mt-0.5">
+                  <div className="text-body-sm text-foreground truncate mt-0.5">
                     {t.target} · {t.conclusion}
                   </div>
                 </div>
@@ -1149,7 +1149,7 @@ function AggregateDrawer({
           <button
             disabled={selected.size === 0}
             onClick={() => onConfirm(Array.from(selected))}
-            className="w-full h-11 rounded-lg bg-primary text-white text-button font-semibold disabled:opacity-40 active:opacity-90"
+            className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold disabled:opacity-40 active:opacity-90"
           >
             确认统计（{selected.size}）
           </button>
@@ -1184,7 +1184,7 @@ function AggregateDrawer({
                 onClick={() => setBarnFilter(new Set())}
                 className="w-full text-left rounded-xl border border-border bg-card p-3 flex items-center justify-between gap-2 active:bg-surface-subtle"
               >
-                <span className="text-body text-foreground">不限牛舍</span>
+                <span className="text-body-sm text-foreground">不限牛舍</span>
                 <span
                   className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
                     barnFilter.size === 0
@@ -1213,9 +1213,9 @@ function AggregateDrawer({
                       on ? "border-primary" : "border-border active:bg-surface-subtle"
                     }`}
                   >
-                    <span className="text-body text-foreground">{b}</span>
+                    <span className="text-body-sm text-foreground">{b}</span>
                     <span className="inline-flex items-center gap-2">
-                      <span className="text-body-sm text-text-tertiary">{cnt} 个任务</span>
+                      <span className="text-caption text-text-tertiary">{cnt} 个任务</span>
                       <span
                         className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
                           on ? "bg-primary border-primary" : "border-border bg-card"
@@ -1233,7 +1233,7 @@ function AggregateDrawer({
               <button
                 type="button"
                 onClick={() => setBarnDropdownOpen(false)}
-                className="w-full h-11 rounded-lg bg-primary text-white text-button font-semibold active:opacity-90"
+                className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90"
               >
                 确认（{barnFilter.size === 0 ? "不限牛舍" : `${barnFilter.size} 个牛舍`}）
               </button>
