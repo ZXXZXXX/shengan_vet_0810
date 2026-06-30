@@ -126,6 +126,7 @@ type Group = {
   entries: Entry[];
   combo?: boolean; // 用户主动开启的组合用药模式
   comboScope?: "shared" | "single"; // 组合用药使用范围
+  comboCattleCount?: number; // 多头牛共用时的牛只数量
 };
 
 type Requirement = {
@@ -264,10 +265,15 @@ function PrepPage() {
     addScan(d);
   };
 
-  const enableCombo = (gi: number, scope: "shared" | "single") => {
+  const enableCombo = (gi: number, scope: "shared" | "single", cattleCount?: number) => {
     setGroups((prev) => {
       const next = [...prev];
-      next[gi] = { ...next[gi], combo: true, comboScope: scope };
+      next[gi] = {
+        ...next[gi],
+        combo: true,
+        comboScope: scope,
+        comboCattleCount: scope === "shared" ? cattleCount : undefined,
+      };
       return next;
     });
   };
@@ -490,7 +496,7 @@ function PrepPage() {
                 key={g.id}
                 group={g}
                 onScanMore={() => addComboScan(gi)}
-                onEnableCombo={(scope) => enableCombo(gi, scope)}
+                onEnableCombo={(scope, count) => enableCombo(gi, scope, count)}
                 onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
                 onRemove={(ei) => removeEntry(gi, ei)}
               />
@@ -545,7 +551,7 @@ function DrugCard({
 }: {
   group: Group;
   onScanMore: () => void;
-  onEnableCombo: (scope: "shared" | "single") => void;
+  onEnableCombo: (scope: "shared" | "single", cattleCount?: number) => void;
   onUpdateQty: (ei: number, qty: number) => void;
   onRemove: (ei: number) => void;
 }) {
@@ -553,6 +559,7 @@ function DrugCard({
   const totalQty = entries.reduce((s, e) => s + e.qty, 0);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [comboScope, setComboScope] = useState<"shared" | "single">("shared");
+  const [cattleCount, setCattleCount] = useState<string>("");
 
   const distinctDrugs = useMemo(
     () => Array.from(new Map(entries.map((e) => [e.drug.name, e.drug])).values()),
@@ -606,6 +613,15 @@ function DrugCard({
             </button>
           )}
         </div>
+
+        {/* 组合用药范围信息 */}
+        {isCombo && group.comboScope && (
+          <div className="mt-1.5 text-caption text-[#E5751A]">
+            {group.comboScope === "shared"
+              ? `多头牛共用${group.comboCattleCount ? ` · ${group.comboCattleCount} 头` : ""}`
+              : "单头牛使用"}
+          </div>
+        )}
 
         {/* 单药品专有信息 */}
         {!isCombo && firstDrug && (
@@ -723,6 +739,21 @@ function DrugCard({
                 <div className="flex-1">
                   <div className="text-body-sm text-foreground font-medium">多头牛共用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，将共用于治疗多头牛</div>
+                  {comboScope === "shared" && (
+                    <div className="mt-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                      <span className="text-caption text-text-secondary shrink-0">牛只数量</span>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        min={2}
+                        value={cattleCount}
+                        onChange={(e) => setCattleCount(e.target.value.replace(/[^0-9]/g, ""))}
+                        placeholder="请输入"
+                        className="flex-1 h-8 rounded-md border border-border px-2 text-body-sm focus:outline-none focus:border-primary"
+                      />
+                      <span className="text-caption text-text-secondary shrink-0">头</span>
+                    </div>
+                  )}
                 </div>
               </label>
               <label className="flex items-center gap-3 rounded-xl border border-border p-3 active:bg-surface-subtle cursor-pointer">
@@ -750,7 +781,16 @@ function DrugCard({
               <button
                 type="button"
                 onClick={() => {
-                  onEnableCombo(comboScope);
+                  if (comboScope === "shared") {
+                    const n = parseInt(cattleCount, 10);
+                    if (!n || n < 2) {
+                      toast.error("请输入牛只数量（≥2）");
+                      return;
+                    }
+                    onEnableCombo("shared", n);
+                  } else {
+                    onEnableCombo("single");
+                  }
                   setConfirmOpen(false);
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
