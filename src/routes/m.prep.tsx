@@ -471,16 +471,19 @@ function PrepPage() {
                   <div className="divide-y divide-border">
                     {requirements.map((r, idx) => {
                       if (checklistCollapsed && idx > 0) return null;
+                      const displayName = r.name.length > 15 ? `${r.name.slice(0, 15)}...` : r.name;
                       return (
                         <div
                           key={r.key}
                           className="px-1 py-3 flex items-center gap-2 text-body-sm"
                         >
-                          <div className="flex-1 min-w-0 truncate text-foreground font-medium">
-                            {r.name}
-                          </div>
-                          <div className="w-[72px] shrink-0 text-center text-text-secondary truncate">
-                            {r.mfrRequired}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-foreground font-medium truncate">
+                              {displayName}
+                            </div>
+                            <div className="text-[11px] text-text-secondary truncate mt-0.5">
+                              {r.mfrRequired}
+                            </div>
                           </div>
                           <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
                             {r.spec}
