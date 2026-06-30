@@ -469,85 +469,95 @@ function PrepPage() {
             <div className="px-4 pb-3">
               {checklistView === "drug" ? (
                 <>
-                  <div className={cn("divide-y divide-border", checklistCollapsed && "max-h-[96px] overflow-hidden")}>
-                    {requirements.map((r, idx) => {
-                      if (checklistCollapsed && idx > 0) return null;
-                      const displayName = r.name.length > 15 ? `${r.name.slice(0, 15)}...` : r.name;
-                      return (
-                        <div
-                          key={r.key}
-                          className="px-1 py-3 flex items-center gap-2 text-body-sm"
-                        >
-                          <div className="flex-1 min-w-0">
-                            <div className="text-foreground font-medium truncate">
-                              {displayName}
+                  <div className="relative">
+                    <div className={cn("divide-y divide-border", checklistCollapsed && "max-h-[96px] overflow-hidden")}>
+                      {requirements.map((r, idx) => {
+                        if (checklistCollapsed && idx > 0) return null;
+                        const displayName = r.name.length > 15 ? `${r.name.slice(0, 15)}...` : r.name;
+                        return (
+                          <div
+                            key={r.key}
+                            className="px-1 py-3 flex items-center gap-2 text-body-sm"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <div className="text-foreground font-medium truncate">
+                                {displayName}
+                              </div>
+                              <div className="text-[11px] text-text-secondary truncate mt-0.5">
+                                {r.mfrRequired}
+                              </div>
                             </div>
-                            <div className="text-[11px] text-text-secondary truncate mt-0.5">
-                              {r.mfrRequired}
+                            <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
+                              {r.spec}
+                            </div>
+                            <div className="w-[72px] shrink-0 text-right text-foreground font-semibold tabular-nums">
+                              {r.total}
+                              <span className="text-caption font-normal text-text-tertiary ml-0.5">
+                                {r.unit}
+                              </span>
                             </div>
                           </div>
-                          <div className="w-[80px] shrink-0 text-center text-text-tertiary tabular-nums">
-                            {r.spec}
-                          </div>
-                          <div className="w-[72px] shrink-0 text-right text-foreground font-semibold tabular-nums">
-                            {r.total}
-                            <span className="text-caption font-normal text-text-tertiary ml-0.5">
-                              {r.unit}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
+                    {checklistCollapsed && (
+                      <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-b from-transparent to-card pointer-events-none" />
+                    )}
                   </div>
-                  {checklistCollapsed && requirements.length > 1 && (
+                  {checklistCollapsed && (
                     <div className="text-center text-caption text-text-tertiary py-2">
-                      已折叠 {requirements.length - 1} 条
+                      共 {requirements.length} 项
                     </div>
                   )}
                 </>
               ) : (
                 <>
-                  <div className={cn("divide-y divide-border", checklistCollapsed && "max-h-[96px] overflow-hidden")}>
-                    {cattleGroups.map((c, idx) => {
-                      if (checklistCollapsed && idx > 0) return null;
-                      return (
-                        <div key={c.earTag} className="px-1 py-3">
-                          <div className="flex items-center justify-between mb-2.5">
-                            <div className="inline-flex items-center gap-1.5">
-                              <Beef className="h-4 w-4 text-primary" />
-                              <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
-                                {c.earTag}
+                  <div className="relative">
+                    <div className={cn("divide-y divide-border", checklistCollapsed && "max-h-[96px] overflow-hidden")}>
+                      {cattleGroups.map((c, idx) => {
+                        if (checklistCollapsed && idx > 0) return null;
+                        return (
+                          <div key={c.earTag} className="px-1 py-3">
+                            <div className="flex items-center justify-between mb-2.5">
+                              <div className="inline-flex items-center gap-1.5">
+                                <Beef className="h-4 w-4 text-primary" />
+                                <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
+                                  {c.earTag}
+                                </span>
+                              </div>
+                              <span className="text-caption text-text-tertiary">
+                                {c.items.length} 项药品
                               </span>
                             </div>
-                            <span className="text-caption text-text-tertiary">
-                              {c.items.length} 项药品
-                            </span>
+                            <div className="space-y-2.5">
+                              {c.items.map((it, itIdx) => {
+                                if (checklistCollapsed && itIdx > 0) return null;
+                                return (
+                                  <div key={it.key} className="flex items-center gap-2 text-body-sm">
+                                    <div className="flex-1 min-w-0 truncate text-foreground font-medium">
+                                      {it.name}
+                                    </div>
+                                    <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
+                                      {it.usage || "-"}
+                                    </div>
+                                    <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
+                                      {it.metricTotal} {it.metricUnit}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                          <div className="space-y-2.5">
-                            {c.items.map((it, itIdx) => {
-                              if (checklistCollapsed && itIdx > 0) return null;
-                              return (
-                                <div key={it.key} className="flex items-center gap-2 text-body-sm">
-                                  <div className="flex-1 min-w-0 truncate text-foreground font-medium">
-                                    {it.name}
-                                  </div>
-                                  <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
-                                    {it.usage || "-"}
-                                  </div>
-                                  <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
-                                    {it.metricTotal} {it.metricUnit}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
+                    {checklistCollapsed && (
+                      <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-b from-transparent to-card pointer-events-none" />
+                    )}
                   </div>
-                  {checklistCollapsed && cattleGroups.length > 1 && (
+                  {checklistCollapsed && (
                     <div className="text-center text-caption text-text-tertiary py-2">
-                      已折叠 {cattleGroups.length - 1} 条
+                      共 {cattleGroups.length} 头
                     </div>
                   )}
                 </>
