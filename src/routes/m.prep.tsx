@@ -208,7 +208,7 @@ function PrepPage() {
   type CattleGroup = {
     earTag: string;
     taskIds: string[];
-    items: { key: string; name: string; spec: string; total: number; unit: string }[];
+    items: { key: string; name: string; spec: string; metricTotal: number; metricUnit: string }[];
   };
   const cattleGroups = useMemo<CattleGroup[]>(() => {
     const map = new Map<string, CattleGroup>();
@@ -224,18 +224,21 @@ function PrepPage() {
       if (!g.taskIds.includes(tid)) g.taskIds.push(tid);
       pk.items.forEach((it) => {
         if (it.isMedicine === false) return;
-        const { n, unit } = parseQtyNum(it.qty);
+        const { n } = parseQtyNum(it.qty);
+        const metric = parseSpecMetric(it.spec ?? "");
         const key = `${it.name}|${it.spec ?? ""}`;
         const exist = g!.items.find((x) => x.key === key);
-        if (exist) exist.total += n;
-        else
+        if (exist) {
+          exist.metricTotal += metric ? metric.amount * n : n;
+        } else {
           g!.items.push({
             key,
             name: it.name,
             spec: it.spec ?? "",
-            total: n,
-            unit: unit || "",
+            metricTotal: metric ? metric.amount * n : n,
+            metricUnit: metric ? metric.unit : "",
           });
+        }
       });
     });
     return Array.from(map.values());
