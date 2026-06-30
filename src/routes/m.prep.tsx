@@ -194,6 +194,43 @@ function PrepPage() {
     [selectedTaskIds],
   );
 
+  // 按牛只耳号聚合：每个任务对应一只牛，列出该牛所需药品
+  type CattleGroup = {
+    earTag: string;
+    taskIds: string[];
+    items: { key: string; name: string; spec: string; total: number; unit: string }[];
+  };
+  const cattleGroups = useMemo<CattleGroup[]>(() => {
+    const map = new Map<string, CattleGroup>();
+    selectedTaskIds.forEach((tid) => {
+      const pk = PICKUPS.find((p) => p.source === tid);
+      if (!pk) return;
+      const earTag = getOrderEarTagLabel(tid);
+      let g = map.get(earTag);
+      if (!g) {
+        g = { earTag, taskIds: [], items: [] };
+        map.set(earTag, g);
+      }
+      if (!g.taskIds.includes(tid)) g.taskIds.push(tid);
+      pk.items.forEach((it) => {
+        if (it.isMedicine === false) return;
+        const { n, unit } = parseQtyNum(it.qty);
+        const key = `${it.name}|${it.spec ?? ""}`;
+        const exist = g!.items.find((x) => x.key === key);
+        if (exist) exist.total += n;
+        else
+          g!.items.push({
+            key,
+            name: it.name,
+            spec: it.spec ?? "",
+            total: n,
+            unit: unit || "",
+          });
+      });
+    });
+    return Array.from(map.values());
+  }, [selectedTaskIds]);
+
   // 模拟扫描：循环演示药品池
   const [scanIdx, setScanIdx] = useState(0);
 
