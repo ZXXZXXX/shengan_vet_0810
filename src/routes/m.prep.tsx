@@ -564,6 +564,11 @@ function DrugCard({
 }) {
   const { entries } = group;
   const totalQty = entries.reduce((s, e) => s + e.qty, 0);
+  const comboItemCount = useMemo(() => {
+    const keys = new Set<string>();
+    entries.forEach((e) => keys.add(`${e.drug.name}|${e.manufacturer}`));
+    return keys.size;
+  }, [entries]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [comboScope, setComboScope] = useState<"shared" | "single">("single");
   const [cattleCount, setCattleCount] = useState<string>("2");
