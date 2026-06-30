@@ -422,7 +422,7 @@ function PrepPage() {
               >
                 <ClipboardList className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-body font-medium text-foreground whitespace-nowrap">药品清单</span>
-                <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary whitespace-nowrap">
+                <span className="ml-auto inline-flex items-center gap-1 text-body-sm text-text-tertiary whitespace-nowrap">
                   {checklistView === "drug"
                     ? `共 ${requirements.length} 项`
                     : `共 ${cattleGroups.length} 头`}
@@ -437,7 +437,7 @@ function PrepPage() {
 
             {/* 视图切换 + 任务统计 */}
             <div className="px-4 pb-3 flex items-center justify-between gap-2">
-              <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-caption">
+              <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-body-sm">
                 <button
                   type="button"
                   onClick={() => setChecklistView("drug")}
@@ -517,7 +517,7 @@ function PrepPage() {
                               {c.earTag}
                             </span>
                           </div>
-                          <span className="text-caption text-text-tertiary">
+                          <span className="text-body-sm text-text-tertiary">
                             {c.items.length} 项药品
                           </span>
                         </div>
@@ -527,11 +527,12 @@ function PrepPage() {
                               <div className="flex-1 min-w-0 truncate text-foreground">
                                 {it.name}
                               </div>
-                              <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
+                              <div className="shrink-0 text-caption text-text-secondary truncate max-w-[120px]">
                                 {extractUsageMethod(it.usage)}
                               </div>
                               <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
-                                {it.metricTotal} {it.metricUnit}
+                                {it.metricTotal}
+                                <span className="text-caption text-text-tertiary ml-0.5">{it.metricUnit}</span>
                               </div>
                             </div>
                           ))}
@@ -579,7 +580,7 @@ function PrepPage() {
             <span className="text-body font-medium text-foreground">已领药品</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-caption text-text-tertiary">共 {totalCount} 项</span>
+            <span className="text-body-sm text-text-tertiary">共 {totalCount} 项</span>
             {groups.length > 0 && (
               <button
                 onClick={() => setGroups([])}
@@ -737,21 +738,21 @@ function DrugCard({
 
 
         {/* 第二行：规格/扫码单位/牛只数 + 已领总数 */}
-        <div className="mt-2 flex items-center justify-between gap-2 text-body-sm">
-          <div className="flex items-center min-w-0">
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <div className="flex items-center min-w-0 text-caption text-text-tertiary">
             {isCombo && group.comboScope ? (
-            <div className="text-text-tertiary">
-                治疗牛只 {group.comboScope === "single" ? 1 : group.comboCattleCount} 头
+              <div>
+                治疗牛只 <span className="text-text-secondary">{group.comboScope === "single" ? 1 : group.comboCattleCount}</span> 头
               </div>
             ) : !isCombo && firstDrug ? (
-              <div className="text-text-tertiary truncate">
+              <div className="truncate">
                 规格 <span className="text-text-secondary">{firstDrug.spec}</span>
                 <span className="mx-2 text-border">·</span>
                 扫码单位 <span className="text-text-secondary">{firstDrug.scanUnit}</span>
               </div>
             ) : null}
           </div>
-          <div className={`font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
+          <div className={`text-body-sm font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
             已领 {isCombo ? comboItemCount : totalQty} {isCombo ? "项" : firstDrug.countUnit}
           </div>
         </div>
@@ -765,7 +766,7 @@ function DrugCard({
             <div key={`${e.code}-${ei}`} className="flex items-center gap-2">
               <div className="flex-1 min-w-0">
                 {isCombo && (
-                  <div className="text-caption text-foreground font-medium truncate">
+                  <div className="text-body-sm text-foreground font-medium truncate">
                     {e.drug.name}
                   </div>
                 )}
@@ -1081,7 +1082,7 @@ function AggregateDrawer({
           <button
             onClick={toggleAll}
             disabled={tasks.length === 0}
-            className="inline-flex items-center gap-2 text-body text-foreground disabled:opacity-40"
+            className="inline-flex items-center gap-2 text-body-sm text-foreground disabled:opacity-40"
           >
             <span
               className={`h-4 w-4 rounded border inline-flex items-center justify-center ${
@@ -1092,7 +1093,7 @@ function AggregateDrawer({
             </span>
             全选
           </button>
-          <span className="text-caption text-text-tertiary">
+          <span className="text-body-sm text-text-tertiary">
             已选 <span className="text-primary font-medium">{selected.size}</span> / {tasks.length}
           </span>
         </div>
@@ -1214,7 +1215,7 @@ function AggregateDrawer({
                   >
                     <span className="text-body text-foreground">{b}</span>
                     <span className="inline-flex items-center gap-2">
-                      <span className="text-caption text-text-tertiary">{cnt} 个任务</span>
+                      <span className="text-body-sm text-text-tertiary">{cnt} 个任务</span>
                       <span
                         className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
                           on ? "bg-primary border-primary" : "border-border bg-card"
