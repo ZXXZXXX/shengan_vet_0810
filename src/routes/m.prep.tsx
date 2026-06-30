@@ -735,7 +735,7 @@ function DrugCard({
                 />
                 <div className="flex-1">
                   <div className="text-body-sm text-foreground font-medium">单头牛使用</div>
-                  <div className="text-caption text-text-tertiary">该组合仅用于当前一头牛的治疗</div>
+                  <div className="text-caption text-text-tertiary">该组合内药品，仅用于治疗单独一头牛</div>
                 </div>
               </label>
             </div>
