@@ -761,7 +761,7 @@ function DrugCard({
             <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              开启后，组合内任意药品二维码在用药核验时，都会带出全部组合药品。组合暂不支持拆分，如需调整请删除后重新录入。
+              组合内任意药品在用药核验时将整组录入，请选择本组药品的使用方式：
             </p>
             <div className="space-y-2">
               <label className="flex items-center gap-3 rounded-xl border border-border p-3 active:bg-surface-subtle cursor-pointer">
