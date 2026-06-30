@@ -686,7 +686,7 @@ function DrugCard({
               <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              开启「组合用药」后，可继续扫描其他药品并合并到本卡片，用于需配药的场景。开启后无法恢复为单项药品卡片，请谨慎操作。
+              开启后不可恢复为单项药品卡片，请谨慎操作。
             </p>
             <div className="flex items-center gap-2">
               <button
