@@ -265,7 +265,7 @@ function PrepPage() {
       drug: d,
       manufacturer: mfr,
       batch: genBatch(),
-      qty: d.unitScannable ? 1 : (d.packSize ?? 1),
+      qty: 1,
       packSize: d.unitScannable ? undefined : d.packSize,
     };
   };
