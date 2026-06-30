@@ -453,7 +453,7 @@ function PrepPage() {
                   onClick={() => setAggOpen(true)}
                   className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
                 >
-                  更换任务（{selectedTaskIds.length}）
+                  选择任务 ({selectedTaskIds.length}项)
                 </button>
                 <button
                   type="button"
