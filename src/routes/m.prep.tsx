@@ -157,6 +157,7 @@ function PrepPage() {
       const pk = PICKUPS.find((p) => p.source === tid);
       if (!pk) return;
       pk.items.forEach((it) => {
+        if (it.isMedicine === false) return; // 物料不进入药品清单
         const { n, unit } = parseQtyNum(it.qty);
         const key = `${it.name}|${it.spec ?? ""}`;
         const existing = map.get(key);
