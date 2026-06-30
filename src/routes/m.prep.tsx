@@ -314,7 +314,12 @@ function PrepPage() {
     });
   };
 
-  const totalCount = groups.reduce((sum, g) => sum + g.entries.length, 0);
+  // 已领药品项数：按药品名称去重统计
+  const totalCount = useMemo(() => {
+    const names = new Set<string>();
+    groups.forEach((g) => g.entries.forEach((e) => names.add(e.drug.name)));
+    return names.size;
+  }, [groups]);
 
   // 当前已取（按药品名 + 规格聚合）
   const claimedMap = useMemo(() => {
