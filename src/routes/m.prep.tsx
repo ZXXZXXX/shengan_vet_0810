@@ -12,8 +12,7 @@ import {
   X,
   Minus,
   Plus,
-
-
+  Beef,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -513,7 +512,7 @@ function PrepPage() {
                         <div key={c.earTag} className="px-1 py-3">
                           <div className="flex items-center justify-between mb-2.5">
                             <div className="inline-flex items-center gap-1.5">
-                              <EarTagIcon className="h-4 w-4 text-primary" />
+                              <Beef className="h-4 w-4 text-primary" />
                               <span className="text-card-title font-semibold text-primary font-mono tracking-wide">
                                 {c.earTag}
                               </span>
@@ -1246,22 +1245,6 @@ function AggregateDrawer({
   );
 }
 
-function EarTagIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 2 4 7v7c0 4.5 4 9 8 10 4-1 8-5.5 8-10V7l-8-5z" />
-      <circle cx="12" cy="8" r="2" />
-    </svg>
-  );
-}
 
 
 
