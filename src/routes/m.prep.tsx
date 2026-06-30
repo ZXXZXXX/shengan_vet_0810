@@ -315,11 +315,11 @@ function PrepPage() {
     });
   };
 
-  // 已领药品项数：按药品名称去重统计
+  // 已领药品项数：按药品名称+厂商去重统计
   const totalCount = useMemo(() => {
-    const names = new Set<string>();
-    groups.forEach((g) => g.entries.forEach((e) => names.add(e.drug.name)));
-    return names.size;
+    const keys = new Set<string>();
+    groups.forEach((g) => g.entries.forEach((e) => keys.add(`${e.drug.name}|${e.manufacturer}`)));
+    return keys.size;
   }, [groups]);
 
   // 当前已取（按药品名 + 规格聚合）
