@@ -1245,22 +1245,6 @@ function AggregateDrawer({
   );
 }
 
-function EarTagIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 2 4 7v7c0 4.5 4 9 8 10 4-1 8-5.5 8-10V7l-8-5z" />
-      <circle cx="12" cy="8" r="2" />
-    </svg>
-  );
-}
 
 
 
