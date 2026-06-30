@@ -176,6 +176,15 @@ function PickupDetailPage() {
           </button>
         </div>
       )}
+
+      <ConfirmPickupDialog
+        open={confirmOpen}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          doClaim();
+        }}
+      />
     </MobileShell>
   );
 }
