@@ -371,22 +371,21 @@ function PrepPage() {
                   )}
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setAggOpen(true);
-                }}
-                className="ml-3 inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
-              >
-                更换任务
-              </button>
             </div>
 
             {/* 任务统计：保留数量，不展示工单编号 */}
             {!checklistCollapsed && (
-              <div className="px-4 pb-3 text-caption text-text-tertiary">
-                已选 {selectedTaskIds.length} 个任务，{requirements.length}{"\u00a0"}项药品
+              <div className="px-4 pb-3 flex items-center justify-between text-caption text-text-tertiary">
+                <span>
+                  已选 {selectedTaskIds.length} 个任务，{requirements.length}{"\u00a0"}项药品
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setAggOpen(true)}
+                  className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
+                >
+                  更换任务
+                </button>
               </div>
             )}
 
