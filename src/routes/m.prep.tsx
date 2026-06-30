@@ -12,8 +12,7 @@ import {
   X,
   Minus,
   Plus,
-
-
+  Beef,
 } from "lucide-react";
 import { toast } from "sonner";
 
