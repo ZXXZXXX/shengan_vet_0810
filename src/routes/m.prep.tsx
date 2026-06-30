@@ -643,9 +643,22 @@ function DrugCard({
         <div className="my-3 border-t border-dashed border-border" />
 
         {/* 已领 总数 */}
-        <div className={`text-caption text-right font-medium ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
-          已领 {totalQty} 项
-        </div>
+        {isCombo && group.comboScope ? (
+          <div className="flex items-center justify-between">
+            <div className="inline-flex items-center gap-1.5 text-caption text-text-tertiary">
+              <CattleIcon className="h-4 w-4" />
+              <span>{group.comboScope === "single" ? 1 : group.comboCattleCount}</span>
+            </div>
+            <div className="text-caption font-medium text-[#E5751A]">
+              已领 {totalQty} 项
+            </div>
+          </div>
+        ) : (
+          <div className={`text-caption text-right font-medium ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
+            已领 {totalQty} 项
+          </div>
+        )}
+
 
 
         {/* 扫描明细 */}
