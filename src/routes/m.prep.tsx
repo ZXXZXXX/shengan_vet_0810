@@ -614,6 +614,15 @@ function DrugCard({
           )}
         </div>
 
+        {/* 组合用药范围信息 */}
+        {isCombo && group.comboScope && (
+          <div className="mt-1.5 text-caption text-[#E5751A]">
+            {group.comboScope === "shared"
+              ? `多头牛共用${group.comboCattleCount ? ` · ${group.comboCattleCount} 头` : ""}`
+              : "单头牛使用"}
+          </div>
+        )}
+
         {/* 单药品专有信息 */}
         {!isCombo && firstDrug && (
           <>
