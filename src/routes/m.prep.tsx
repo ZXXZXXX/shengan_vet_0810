@@ -19,6 +19,7 @@ import { toast } from "sonner";
 
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 import {
   PICKUPS,
