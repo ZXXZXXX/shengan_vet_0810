@@ -12,6 +12,8 @@ import {
   X,
   Minus,
   Plus,
+
+
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -326,9 +328,6 @@ function PrepPage() {
     toast.success(`已生成药品清单（${count} 种）`);
   };
 
-  const removeTaskFromChecklist = (tid: string) => {
-    setSelectedTaskIds((prev) => prev.filter((id) => id !== tid));
-  };
 
   return (
     <MobileShell hideTabBar>
@@ -384,27 +383,13 @@ function PrepPage() {
               </button>
             </div>
 
-            {/* 已选任务 chips —— 可删除单个任务以重新聚合 */}
+            {/* 任务统计：保留数量，不展示工单编号 */}
             {!checklistCollapsed && (
-              <div className="px-4 pb-2 -mt-1 flex flex-wrap gap-1.5">
-                {selectedTaskIds.map((tid) => (
-                  <span
-                    key={tid}
-                    className="inline-flex items-center gap-1 h-7 pl-2.5 pr-1 rounded-full bg-brand-subtle text-primary text-caption"
-                  >
-                    <span className="font-mono">{tid}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeTaskFromChecklist(tid)}
-                      className="h-5 w-5 inline-flex items-center justify-center rounded-full active:bg-primary/10"
-                      aria-label={`移除 ${tid}`}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
+              <div className="px-4 pb-3 text-caption text-text-tertiary">
+                已选 {selectedTaskIds.length} 个任务，{requirements.length} 种药品
               </div>
             )}
+
 
             <div className="px-4 pb-3 space-y-2">
               {requirements.map((r, idx) => {
