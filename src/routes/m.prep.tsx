@@ -738,21 +738,21 @@ function DrugCard({
 
 
         {/* 第二行：规格/扫码单位/牛只数 + 已领总数 */}
-        <div className="mt-2 flex items-center justify-between gap-2 text-body-sm">
-          <div className="flex items-center min-w-0">
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <div className="flex items-center min-w-0 text-caption text-text-tertiary">
             {isCombo && group.comboScope ? (
-            <div className="text-text-tertiary">
-                治疗牛只 {group.comboScope === "single" ? 1 : group.comboCattleCount} 头
+              <div>
+                治疗牛只 <span className="text-text-secondary">{group.comboScope === "single" ? 1 : group.comboCattleCount}</span> 头
               </div>
             ) : !isCombo && firstDrug ? (
-              <div className="text-text-tertiary truncate">
+              <div className="truncate">
                 规格 <span className="text-text-secondary">{firstDrug.spec}</span>
                 <span className="mx-2 text-border">·</span>
                 扫码单位 <span className="text-text-secondary">{firstDrug.scanUnit}</span>
               </div>
             ) : null}
           </div>
-          <div className={`font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
+          <div className={`text-body-sm font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
             已领 {isCombo ? comboItemCount : totalQty} {isCombo ? "项" : firstDrug.countUnit}
           </div>
         </div>
