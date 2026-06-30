@@ -148,6 +148,16 @@ function parseQtyNum(qty: string): { n: number; unit: string } {
   return { n: Number(m[1]), unit: (m[2] ?? "").trim() };
 }
 
+/** 从 "100ml / 瓶" 解析每单位剂量与单位，如 ml / g / IU */
+function parseSpecMetric(spec: string): { amount: number; unit: string } | null {
+  const pre = spec.split("/")[0].trim();
+  if (!pre) return null;
+  const m = pre.match(/(\d+(?:\.\d+)?)\s*([^\d].*?)\s*$/);
+  if (!m) return null;
+  return { amount: Number(m[1]), unit: m[2].trim() };
+}
+
+
 function PrepPage() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
