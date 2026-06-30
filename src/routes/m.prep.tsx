@@ -493,10 +493,11 @@ function PrepPage() {
                           <div className="shrink-0 text-right min-w-[72px]">
                             <div className="text-body font-semibold tabular-nums text-foreground">
                               {r.total}
+                              <span className="ml-0.5 text-caption font-normal text-text-tertiary">
+                                {r.unit}
+                              </span>
                             </div>
-                            <div className="text-caption text-text-tertiary">
-                              {r.unit} 需领取
-                            </div>
+                            <div className="text-caption text-text-tertiary">需领取</div>
                           </div>
                         </div>
                       );
