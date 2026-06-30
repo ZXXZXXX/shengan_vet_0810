@@ -527,8 +527,8 @@ function PrepPage() {
                                 <div className="flex-1 min-w-0 truncate text-foreground">
                                   {it.name}
                                 </div>
-                                <div className="shrink-0 text-text-tertiary tabular-nums">
-                                  {it.spec}
+                                <div className="shrink-0 text-text-secondary truncate max-w-[120px]">
+                                  {it.usage || "-"}
                                 </div>
                                 <div className="shrink-0 w-[72px] text-right text-foreground font-medium tabular-nums">
                                   {it.metricTotal} {it.metricUnit}
