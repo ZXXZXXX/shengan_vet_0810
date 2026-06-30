@@ -649,41 +649,32 @@ function DrugCard({
         </div>
 
 
-        {/* 单药品专有信息 */}
-        {!isCombo && firstDrug && (
-          <>
-            <div className="mt-2 text-caption text-text-tertiary">
-              规格 <span className="text-text-secondary">{firstDrug.spec}</span>
-              <span className="mx-2 text-border">·</span>
-              扫码单位 <span className="text-text-secondary">{firstDrug.scanUnit}</span>
-            </div>
-          </>
-        )}
+        {/* 第二行：规格/扫码单位/牛只数 + 已领总数 */}
+        <div className="mt-2 flex items-center justify-between gap-2 text-caption">
+          <div className="flex items-center min-w-0">
+            {isCombo && group.comboScope ? (
+              <div className="inline-flex items-center gap-1.5 text-text-tertiary">
+                <CattleIcon className="h-4 w-4" />
+                <span>{group.comboScope === "single" ? 1 : group.comboCattleCount}</span>
+              </div>
+            ) : !isCombo && firstDrug ? (
+              <div className="text-text-tertiary truncate">
+                规格 <span className="text-text-secondary">{firstDrug.spec}</span>
+                <span className="mx-2 text-border">·</span>
+                扫码单位 <span className="text-text-secondary">{firstDrug.scanUnit}</span>
+              </div>
+            ) : null}
+          </div>
+          <div className={`font-medium shrink-0 ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
+            已领 {totalQty} 项
+          </div>
+        </div>
 
         {/* 虚线分隔 */}
         <div className="my-3 border-t border-dashed border-border" />
 
-        {/* 已领 总数 */}
-        {isCombo && group.comboScope ? (
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-1.5 text-caption text-text-tertiary">
-              <CattleIcon className="h-4 w-4" />
-              <span>{group.comboScope === "single" ? 1 : group.comboCattleCount}</span>
-            </div>
-            <div className="text-caption font-medium text-[#E5751A]">
-              已领 {totalQty} 项
-            </div>
-          </div>
-        ) : (
-          <div className={`text-caption text-right font-medium ${isCombo ? "text-[#E5751A]" : "text-primary"}`}>
-            已领 {totalQty} 项
-          </div>
-        )}
-
-
-
         {/* 扫描明细 */}
-        <div className="mt-2 space-y-2.5">
+        <div className="space-y-2.5">
           {entries.map((e, ei) => (
             <div key={`${e.code}-${ei}`} className="flex items-center gap-2">
               <div className="flex-1 min-w-0">
