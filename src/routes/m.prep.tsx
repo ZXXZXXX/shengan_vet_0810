@@ -146,8 +146,45 @@ function PrepPage() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
   const [aggOpen, setAggOpen] = useState(false);
-  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
   const [checklistCollapsed, setChecklistCollapsed] = useState(false);
+
+  const computeRequirements = (ids: string[]): Requirement[] => {
+    const map = new Map<string, Requirement>();
+    ids.forEach((tid) => {
+      const pk = PICKUPS.find((p) => p.source === tid);
+      if (!pk) return;
+      pk.items.forEach((it) => {
+        const { n, unit } = parseQtyNum(it.qty);
+        const key = `${it.name}|${it.spec ?? ""}`;
+        const existing = map.get(key);
+        const mfr =
+          it.allowMixManufacturer === false
+            ? it.stockSources?.[0]?.manufacturer ?? "指定厂商"
+            : "不限";
+        if (existing) {
+          existing.total += n;
+          if (!existing.taskIds.includes(tid)) existing.taskIds.push(tid);
+        } else {
+          map.set(key, {
+            key,
+            name: it.name,
+            spec: it.spec ?? "",
+            unit: unit || "",
+            total: n,
+            mfrRequired: mfr,
+            taskIds: [tid],
+          });
+        }
+      });
+    });
+    return Array.from(map.values());
+  };
+
+  const requirements = useMemo(
+    () => computeRequirements(selectedTaskIds),
+    [selectedTaskIds],
+  );
 
   // 模拟扫描：循环演示药品池
   const [scanIdx, setScanIdx] = useState(0);
@@ -283,38 +320,14 @@ function PrepPage() {
 
   const handleAggregateConfirm = (ids: string[]) => {
     setAggOpen(false);
-    // 聚合所选任务对应 pickup 的药品需求
-    const map = new Map<string, Requirement>();
-    ids.forEach((tid) => {
-      const pk = PICKUPS.find((p) => p.source === tid);
-      if (!pk) return;
-      pk.items.forEach((it) => {
-        const { n, unit } = parseQtyNum(it.qty);
-        const key = `${it.name}|${it.spec ?? ""}`;
-        const existing = map.get(key);
-        const mfr =
-          it.allowMixManufacturer === false
-            ? it.stockSources?.[0]?.manufacturer ?? "指定厂商"
-            : "不限";
-        if (existing) {
-          existing.total += n;
-          if (!existing.taskIds.includes(tid)) existing.taskIds.push(tid);
-        } else {
-          map.set(key, {
-            key,
-            name: it.name,
-            spec: it.spec ?? "",
-            unit: unit || "",
-            total: n,
-            mfrRequired: mfr,
-            taskIds: [tid],
-          });
-        }
-      });
-    });
-    setRequirements(Array.from(map.values()));
+    setSelectedTaskIds(ids);
     setChecklistCollapsed(false);
-    toast.success(`已生成药品清单（${map.size} 种）`);
+    const count = computeRequirements(ids).length;
+    toast.success(`已生成药品清单（${count} 种）`);
+  };
+
+  const removeTaskFromChecklist = (tid: string) => {
+    setSelectedTaskIds((prev) => prev.filter((id) => id !== tid));
   };
 
   return (
@@ -348,7 +361,7 @@ function PrepPage() {
                 <ClipboardList className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-body font-medium text-foreground whitespace-nowrap">药品清单</span>
                 <span className="text-caption text-text-tertiary whitespace-nowrap">
-                  共 {requirements.length} 种
+                  来自 {selectedTaskIds.length} 个任务 · {requirements.length} 种
                 </span>
                 <span className="ml-auto inline-flex items-center gap-1 text-caption text-text-tertiary whitespace-nowrap">
                   {checklistCollapsed ? "展开" : "收起"}
@@ -367,9 +380,32 @@ function PrepPage() {
                 }}
                 className="ml-3 inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
               >
-                选择任务
+                更换任务
               </button>
             </div>
+
+            {/* 已选任务 chips —— 可删除单个任务以重新聚合 */}
+            {!checklistCollapsed && (
+              <div className="px-4 pb-2 -mt-1 flex flex-wrap gap-1.5">
+                {selectedTaskIds.map((tid) => (
+                  <span
+                    key={tid}
+                    className="inline-flex items-center gap-1 h-7 pl-2.5 pr-1 rounded-full bg-brand-subtle text-primary text-caption"
+                  >
+                    <span className="font-mono">{tid}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeTaskFromChecklist(tid)}
+                      className="h-5 w-5 inline-flex items-center justify-center rounded-full active:bg-primary/10"
+                      aria-label={`移除 ${tid}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
             <div className="px-4 pb-3 space-y-2">
               {requirements.map((r, idx) => {
                 if (checklistCollapsed && idx > 0) return null;
@@ -492,7 +528,7 @@ function PrepPage() {
             onClick={() => {
               toast.success(`已生成领药记录（${totalCount} 项）`);
               setGroups([]);
-              setRequirements([]);
+              setSelectedTaskIds([]);
             }}
             disabled={totalCount === 0}
             className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -505,6 +541,7 @@ function PrepPage() {
 
       {aggOpen && (
         <AggregateDrawer
+          initialSelected={selectedTaskIds}
           onClose={() => setAggOpen(false)}
           onConfirm={handleAggregateConfirm}
         />
@@ -717,9 +754,11 @@ function DrugCard({
 }
 
 function AggregateDrawer({
+  initialSelected = [],
   onClose,
   onConfirm,
 }: {
+  initialSelected?: string[];
   onClose: () => void;
   onConfirm: (ids: string[]) => void;
 }) {
@@ -776,7 +815,7 @@ function AggregateDrawer({
     [allTasks, barnFilter],
   );
 
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(initialSelected));
   const allOn = tasks.length > 0 && tasks.every((t) => selected.has(t.id));
   const toggle = (id: string) =>
     setSelected((s) => {
