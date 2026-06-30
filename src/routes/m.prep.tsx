@@ -584,7 +584,7 @@ function PrepPage() {
             {groups.length > 0 && (
               <button
                 onClick={() => setGroups([])}
-                className="text-caption text-text-tertiary active:opacity-70"
+                className="text-body-sm text-text-tertiary active:opacity-70"
               >
                 清空
               </button>
@@ -619,7 +619,7 @@ function PrepPage() {
         <div className="flex gap-3">
           <button
             onClick={handleScan}
-            className="flex-1 h-11 rounded-lg border border-primary text-primary text-body-sm font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
+            className="flex-1 h-11 rounded-lg border border-primary text-primary text-button font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
           >
             <ScanLine className="h-4 w-4" />
             扫码领药
@@ -631,7 +631,7 @@ function PrepPage() {
               setSelectedTaskIds([]);
             }}
             disabled={totalCount === 0}
-            className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 h-11 rounded-lg bg-primary text-white text-button font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             完成领药
             {totalCount > 0 && `（${totalCount} 项）`}
@@ -729,7 +729,7 @@ function DrugCard({
           ) : (
             <button
               onClick={() => setConfirmOpen(true)}
-              className="text-caption text-primary active:opacity-70 shrink-0"
+              className="text-body-sm text-primary active:opacity-70 shrink-0"
             >
               组合用药
             </button>
@@ -738,7 +738,7 @@ function DrugCard({
 
 
         {/* 第二行：规格/扫码单位/牛只数 + 已领总数 */}
-        <div className="mt-2 flex items-center justify-between gap-2 text-caption">
+        <div className="mt-2 flex items-center justify-between gap-2 text-body-sm">
           <div className="flex items-center min-w-0">
             {isCombo && group.comboScope ? (
             <div className="text-text-tertiary">
@@ -802,7 +802,7 @@ function DrugCard({
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </button>
-                  <div className="w-8 text-center text-body-sm tabular-nums">{e.qty}</div>
+                  <div className="w-8 text-center text-body tabular-nums">{e.qty}</div>
                   <button
                     onClick={() => onUpdateQty(ei, e.qty + 1)}
                     disabled={e.packSize ? e.qty >= e.packSize : false}
