@@ -451,14 +451,14 @@ function PrepPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedTaskIds([])}
-                    className="inline-flex items-center gap-1 text-caption text-text-tertiary active:opacity-70 shrink-0"
+                    className="inline-flex items-center gap-1 text-body-sm text-text-tertiary active:opacity-70 shrink-0"
                   >
                     全部清除
                   </button>
                   <button
                     type="button"
                     onClick={() => setAggOpen(true)}
-                    className="inline-flex items-center gap-1 text-caption text-primary active:opacity-70 shrink-0"
+                    className="inline-flex items-center gap-1 text-body-sm text-primary active:opacity-70 shrink-0"
                   >
                     更换任务（{selectedTaskIds.length}）
                   </button>
@@ -476,7 +476,7 @@ function PrepPage() {
                       return (
                         <div
                           key={r.key}
-                          className="px-1 py-3 flex items-center gap-2 text-body-sm"
+                          className="px-1 py-3 flex items-center gap-2 text-body"
                         >
                           <div className="flex-1 min-w-0 truncate text-foreground font-medium">
                             {r.name}
@@ -523,7 +523,7 @@ function PrepPage() {
                           </div>
                           <div className="space-y-2.5">
                             {c.items.map((it) => (
-                              <div key={it.key} className="flex items-center gap-2 text-body-sm">
+                              <div key={it.key} className="flex items-center gap-2 text-body">
                                 <div className="flex-1 min-w-0 truncate text-foreground">
                                   {it.name}
                                 </div>
@@ -557,12 +557,12 @@ function PrepPage() {
               <span className="text-body font-medium text-foreground">药品清单</span>
             </div>
             <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface-2 p-6 text-center min-h-0">
-              <div className="text-body-sm text-text-tertiary mb-4">
+              <div className="text-body text-text-tertiary mb-4">
                 选择任务，快速统计药品清单
               </div>
               <button
                 onClick={() => setAggOpen(true)}
-                className="h-9 px-4 rounded-lg text-body-sm text-primary inline-flex items-center gap-1.5 border border-primary active:bg-brand-subtle"
+                className="h-9 px-4 rounded-lg text-button text-primary inline-flex items-center gap-1.5 border border-primary active:bg-brand-subtle"
               >
                 <ClipboardList className="h-4 w-4" />
                 选择任务
@@ -584,7 +584,7 @@ function PrepPage() {
             {groups.length > 0 && (
               <button
                 onClick={() => setGroups([])}
-                className="text-caption text-text-tertiary active:opacity-70"
+                className="text-body-sm text-text-tertiary active:opacity-70"
               >
                 清空
               </button>
@@ -619,7 +619,7 @@ function PrepPage() {
         <div className="flex gap-3">
           <button
             onClick={handleScan}
-            className="flex-1 h-11 rounded-lg border border-primary text-primary text-body-sm font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
+            className="flex-1 h-11 rounded-lg border border-primary text-primary text-button font-semibold inline-flex items-center justify-center gap-1.5 active:bg-brand-subtle"
           >
             <ScanLine className="h-4 w-4" />
             扫码领药
@@ -631,7 +631,7 @@ function PrepPage() {
               setSelectedTaskIds([]);
             }}
             disabled={totalCount === 0}
-            className="flex-1 h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 h-11 rounded-lg bg-primary text-white text-button font-semibold active:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             完成领药
             {totalCount > 0 && `（${totalCount} 项）`}
@@ -729,7 +729,7 @@ function DrugCard({
           ) : (
             <button
               onClick={() => setConfirmOpen(true)}
-              className="text-caption text-primary active:opacity-70 shrink-0"
+              className="text-body-sm text-primary active:opacity-70 shrink-0"
             >
               组合用药
             </button>
@@ -738,7 +738,7 @@ function DrugCard({
 
 
         {/* 第二行：规格/扫码单位/牛只数 + 已领总数 */}
-        <div className="mt-2 flex items-center justify-between gap-2 text-caption">
+        <div className="mt-2 flex items-center justify-between gap-2 text-body-sm">
           <div className="flex items-center min-w-0">
             {isCombo && group.comboScope ? (
             <div className="text-text-tertiary">
@@ -802,7 +802,7 @@ function DrugCard({
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </button>
-                  <div className="w-8 text-center text-body-sm tabular-nums">{e.qty}</div>
+                  <div className="w-8 text-center text-body tabular-nums">{e.qty}</div>
                   <button
                     onClick={() => onUpdateQty(ei, e.qty + 1)}
                     disabled={e.packSize ? e.qty >= e.packSize : false}
@@ -841,7 +841,7 @@ function DrugCard({
               </span>
             <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
-            <p className="text-body-sm text-text-secondary leading-relaxed">
+            <p className="text-body text-text-secondary leading-relaxed">
               组合内任意药品在用药核验时将整组录入，请选择本组药品的使用方式：
             </p>
             <div className="space-y-2">
@@ -857,7 +857,7 @@ function DrugCard({
                   }}
                 />
                 <div className="flex-1">
-                  <div className="text-body-sm text-foreground font-medium">多头牛共用</div>
+                  <div className="text-body text-foreground font-medium">多头牛共用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，将共用于治疗多头牛</div>
                   {comboScope === "shared" && (
                     <div className="mt-3 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -898,7 +898,7 @@ function DrugCard({
                   onChange={() => setComboScope("single")}
                 />
                 <div className="flex-1">
-                  <div className="text-body-sm text-foreground font-medium">单头牛使用</div>
+                  <div className="text-body text-foreground font-medium">单头牛使用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，仅用于治疗单独一头牛</div>
                 </div>
               </label>
@@ -907,7 +907,7 @@ function DrugCard({
               <button
                 type="button"
                 onClick={() => setConfirmOpen(false)}
-                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-button text-text-secondary"
               >
                 取消
               </button>
@@ -926,7 +926,7 @@ function DrugCard({
                   }
                   setConfirmOpen(false);
                 }}
-                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-button"
               >
                 确认开启
               </button>
@@ -1070,7 +1070,7 @@ function AggregateDrawer({
             onClick={() => setBarnDropdownOpen(true)}
             className="w-full h-10 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left"
           >
-            <span className="text-body-sm text-foreground truncate">
+            <span className="text-body text-foreground truncate">
               {barnDisplayText}
             </span>
             <ChevronDown className="h-4 w-4 text-text-tertiary shrink-0" />
@@ -1082,7 +1082,7 @@ function AggregateDrawer({
           <button
             onClick={toggleAll}
             disabled={tasks.length === 0}
-            className="inline-flex items-center gap-2 text-body-sm text-foreground disabled:opacity-40"
+            className="inline-flex items-center gap-2 text-body text-foreground disabled:opacity-40"
           >
             <span
               className={`h-4 w-4 rounded border inline-flex items-center justify-center ${
@@ -1137,7 +1137,7 @@ function AggregateDrawer({
                     <span className="mx-1.5 text-border">·</span>
                     {diseaseTaskMeta[t.id]?.disease ?? t.type}
                   </div>
-                  <div className="text-body-sm text-foreground truncate mt-0.5">
+                  <div className="text-body text-foreground truncate mt-0.5">
                     {t.target} · {t.conclusion}
                   </div>
                 </div>
@@ -1149,7 +1149,7 @@ function AggregateDrawer({
           <button
             disabled={selected.size === 0}
             onClick={() => onConfirm(Array.from(selected))}
-            className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold disabled:opacity-40 active:opacity-90"
+            className="w-full h-11 rounded-lg bg-primary text-white text-button font-semibold disabled:opacity-40 active:opacity-90"
           >
             确认统计（{selected.size}）
           </button>
@@ -1184,7 +1184,7 @@ function AggregateDrawer({
                 onClick={() => setBarnFilter(new Set())}
                 className="w-full text-left rounded-xl border border-border bg-card p-3 flex items-center justify-between gap-2 active:bg-surface-subtle"
               >
-                <span className="text-body-sm text-foreground">不限牛舍</span>
+                <span className="text-body text-foreground">不限牛舍</span>
                 <span
                   className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
                     barnFilter.size === 0
@@ -1213,7 +1213,7 @@ function AggregateDrawer({
                       on ? "border-primary" : "border-border active:bg-surface-subtle"
                     }`}
                   >
-                    <span className="text-body-sm text-foreground">{b}</span>
+                    <span className="text-body text-foreground">{b}</span>
                     <span className="inline-flex items-center gap-2">
                       <span className="text-caption text-text-tertiary">{cnt} 个任务</span>
                       <span
@@ -1233,7 +1233,7 @@ function AggregateDrawer({
               <button
                 type="button"
                 onClick={() => setBarnDropdownOpen(false)}
-                className="w-full h-11 rounded-lg bg-primary text-white text-body-sm font-semibold active:opacity-90"
+                className="w-full h-11 rounded-lg bg-primary text-white text-button font-semibold active:opacity-90"
               >
                 确认（{barnFilter.size === 0 ? "不限牛舍" : `${barnFilter.size} 个牛舍`}）
               </button>
