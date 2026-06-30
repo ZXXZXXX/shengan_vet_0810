@@ -772,7 +772,16 @@ function DrugCard({
               <button
                 type="button"
                 onClick={() => {
-                  onEnableCombo(comboScope);
+                  if (comboScope === "shared") {
+                    const n = parseInt(cattleCount, 10);
+                    if (!n || n < 2) {
+                      toast.error("请输入牛只数量（≥2）");
+                      return;
+                    }
+                    onEnableCombo("shared", n);
+                  } else {
+                    onEnableCombo("single");
+                  }
                   setConfirmOpen(false);
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
