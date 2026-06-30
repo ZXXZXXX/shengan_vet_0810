@@ -548,33 +548,6 @@ function PrepPage() {
 }
 
 
-function CattleIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-label="牛只"
-    >
-      {/* horns */}
-      <path d="M5 6c-1 -1.5 -1.5 -3 -1 -4c1.5 0.5 2.8 1.8 3.2 3.2" />
-      <path d="M19 6c1 -1.5 1.5 -3 1 -4c-1.5 0.5 -2.8 1.8 -3.2 3.2" />
-      {/* head */}
-      <path d="M5 11c0 -3.3 3.1 -6 7 -6s7 2.7 7 6v2c0 3.3 -3.1 6 -7 6s-7 -2.7 -7 -6z" />
-      {/* snout */}
-      <ellipse cx="12" cy="14.5" rx="3.2" ry="2.2" />
-      <circle cx="10.7" cy="14.5" r="0.4" fill="currentColor" />
-      <circle cx="13.3" cy="14.5" r="0.4" fill="currentColor" />
-      {/* eyes */}
-      <circle cx="9.5" cy="11" r="0.5" fill="currentColor" />
-      <circle cx="14.5" cy="11" r="0.5" fill="currentColor" />
-    </svg>
-  );
-}
 
 function DrugCard({
   group,
@@ -660,9 +633,8 @@ function DrugCard({
         <div className="mt-2 flex items-center justify-between gap-2 text-caption">
           <div className="flex items-center min-w-0">
             {isCombo && group.comboScope ? (
-              <div className="inline-flex items-center gap-1.5 text-text-tertiary">
-                <CattleIcon className="h-4 w-4" />
-                <span>{group.comboScope === "single" ? 1 : group.comboCattleCount}</span>
+            <div className="text-text-tertiary">
+                治疗牛只 {group.comboScope === "single" ? 1 : group.comboCattleCount}头
               </div>
             ) : !isCombo && firstDrug ? (
               <div className="text-text-tertiary truncate">
