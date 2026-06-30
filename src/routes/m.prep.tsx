@@ -490,7 +490,7 @@ function PrepPage() {
                 key={g.id}
                 group={g}
                 onScanMore={() => addComboScan(gi)}
-                onEnableCombo={() => enableCombo(gi)}
+                onEnableCombo={(scope) => enableCombo(gi, scope)}
                 onUpdateQty={(ei, qty) => updateQty(gi, ei, qty)}
                 onRemove={(ei) => removeEntry(gi, ei)}
               />
@@ -545,7 +545,7 @@ function DrugCard({
 }: {
   group: Group;
   onScanMore: () => void;
-  onEnableCombo: () => void;
+  onEnableCombo: (scope: "shared" | "single") => void;
   onUpdateQty: (ei: number, qty: number) => void;
   onRemove: (ei: number) => void;
 }) {
