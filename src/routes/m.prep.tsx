@@ -591,8 +591,8 @@ function PrepPage() {
         </div>
 
         {groups.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border bg-surface-2 p-8 flex flex-col items-center text-center">
-            <div className="text-caption text-text-tertiary">
+          <div className="rounded-xl border border-dashed border-border bg-surface-2 p-6 flex flex-col items-center justify-center text-center">
+            <div className="text-body-sm text-text-tertiary">
               点击下方按钮扫描药品二维码
             </div>
           </div>
