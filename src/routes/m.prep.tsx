@@ -706,11 +706,39 @@ function DrugCard({
               <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
                 <Pill className="h-4 w-4 text-primary" />
               </span>
-              <h3 className="text-card-title text-foreground">组合用药确认</h3>
+            <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
               开启后，组合内任意药品二维码在用药核验时，都会带出全部组合药品。组合暂不支持拆分，如需调整请删除后重新录入。
             </p>
+            <div className="space-y-2">
+              <label className="flex items-center gap-3 rounded-xl border border-border p-3 active:bg-surface-subtle cursor-pointer">
+                <input
+                  type="radio"
+                  name={`combo-scope-${group.id}`}
+                  className="h-4 w-4 accent-primary shrink-0"
+                  checked={comboScope === "shared"}
+                  onChange={() => setComboScope("shared")}
+                />
+                <div className="flex-1">
+                  <div className="text-body-sm text-foreground font-medium">多头牛共用</div>
+                  <div className="text-caption text-text-tertiary">同一组合可在多头牛治疗中复用</div>
+                </div>
+              </label>
+              <label className="flex items-center gap-3 rounded-xl border border-border p-3 active:bg-surface-subtle cursor-pointer">
+                <input
+                  type="radio"
+                  name={`combo-scope-${group.id}`}
+                  className="h-4 w-4 accent-primary shrink-0"
+                  checked={comboScope === "single"}
+                  onChange={() => setComboScope("single")}
+                />
+                <div className="flex-1">
+                  <div className="text-body-sm text-foreground font-medium">单头牛使用</div>
+                  <div className="text-caption text-text-tertiary">该组合仅用于当前一头牛的治疗</div>
+                </div>
+              </label>
+            </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -722,7 +750,7 @@ function DrugCard({
               <button
                 type="button"
                 onClick={() => {
-                  onEnableCombo();
+                  onEnableCombo(comboScope);
                   setConfirmOpen(false);
                 }}
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
