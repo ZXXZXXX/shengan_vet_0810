@@ -841,7 +841,7 @@ function DrugCard({
               </span>
             <h3 className="text-card-title text-foreground">组合用药确认</h3>
             </div>
-            <p className="text-body-sm text-text-secondary leading-relaxed">
+            <p className="text-body text-text-secondary leading-relaxed">
               组合内任意药品在用药核验时将整组录入，请选择本组药品的使用方式：
             </p>
             <div className="space-y-2">
@@ -857,7 +857,7 @@ function DrugCard({
                   }}
                 />
                 <div className="flex-1">
-                  <div className="text-body-sm text-foreground font-medium">多头牛共用</div>
+                  <div className="text-body text-foreground font-medium">多头牛共用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，将共用于治疗多头牛</div>
                   {comboScope === "shared" && (
                     <div className="mt-3 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -898,7 +898,7 @@ function DrugCard({
                   onChange={() => setComboScope("single")}
                 />
                 <div className="flex-1">
-                  <div className="text-body-sm text-foreground font-medium">单头牛使用</div>
+                  <div className="text-body text-foreground font-medium">单头牛使用</div>
                   <div className="text-caption text-text-tertiary">该组合内药品，仅用于治疗单独一头牛</div>
                 </div>
               </label>
@@ -907,7 +907,7 @@ function DrugCard({
               <button
                 type="button"
                 onClick={() => setConfirmOpen(false)}
-                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-button text-text-secondary"
               >
                 取消
               </button>
@@ -926,7 +926,7 @@ function DrugCard({
                   }
                   setConfirmOpen(false);
                 }}
-                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-button"
               >
                 确认开启
               </button>
@@ -1070,7 +1070,7 @@ function AggregateDrawer({
             onClick={() => setBarnDropdownOpen(true)}
             className="w-full h-10 px-3 rounded-lg bg-card border border-border flex items-center justify-between gap-2 text-left"
           >
-            <span className="text-body-sm text-foreground truncate">
+            <span className="text-body text-foreground truncate">
               {barnDisplayText}
             </span>
             <ChevronDown className="h-4 w-4 text-text-tertiary shrink-0" />
