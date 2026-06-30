@@ -453,7 +453,7 @@ function PrepPage() {
               <ClipboardList className="h-4 w-4 text-primary" />
               <span className="text-body font-medium text-foreground">药品清单</span>
             </div>
-            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface-2 p-6 text-center min-h-0">
+            <div className="flex-1 flex flex-col items-center justify-center rounded-xl bg-surface-2 p-6 text-center min-h-0">
               <div className="text-body-sm text-text-tertiary mb-4">
                 选择任务，快速统计药品清单
               </div>
