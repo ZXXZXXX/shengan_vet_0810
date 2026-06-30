@@ -466,38 +466,40 @@ function PrepPage() {
             )}
 
 
-            <div className="px-4 pb-3 space-y-2">
+            <div className="px-4 pb-3">
               {checklistView === "drug" ? (
                 <>
-                  {requirements.map((r, idx) => {
-                    if (checklistCollapsed && idx > 0) return null;
-                    return (
-                      <div
-                        key={r.key}
-                        className="rounded-lg bg-surface-subtle px-3 py-2.5 flex items-center justify-between gap-3"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="text-body font-medium text-foreground truncate">
-                            {r.name}
+                  <div className="divide-y divide-border">
+                    {requirements.map((r, idx) => {
+                      if (checklistCollapsed && idx > 0) return null;
+                      return (
+                        <div
+                          key={r.key}
+                          className="px-1 py-2.5 flex items-center justify-between gap-3"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="text-body font-medium text-foreground truncate">
+                              {r.name}
+                            </div>
+                            <div className="mt-1 flex flex-wrap items-center gap-2">
+                              <span className="tag tag-outline">{r.spec}</span>
+                              {r.mfrRequired !== "不限" && (
+                                <span className="tag tag-brand">{r.mfrRequired}</span>
+                              )}
+                            </div>
                           </div>
-                          <div className="mt-1 flex flex-wrap items-center gap-2">
-                            <span className="tag tag-outline">{r.spec}</span>
-                            {r.mfrRequired !== "不限" && (
-                              <span className="tag tag-brand">{r.mfrRequired}</span>
-                            )}
+                          <div className="shrink-0 text-right min-w-[72px]">
+                            <div className="text-body font-semibold tabular-nums text-foreground">
+                              {r.total}
+                            </div>
+                            <div className="text-caption text-text-tertiary">
+                              {r.unit} 需领取
+                            </div>
                           </div>
                         </div>
-                        <div className="shrink-0 text-right min-w-[72px]">
-                          <div className="text-body font-semibold tabular-nums text-foreground">
-                            {r.total}
-                          </div>
-                          <div className="text-caption text-text-tertiary">
-                            {r.unit} 需领取
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                   {checklistCollapsed && requirements.length > 1 && (
                     <div className="text-center text-caption text-text-tertiary py-2">
                       已折叠 {requirements.length - 1} 条
@@ -506,42 +508,41 @@ function PrepPage() {
                 </>
               ) : (
                 <>
-                  {cattleGroups.map((c, idx) => {
-                    if (checklistCollapsed && idx > 0) return null;
-                    return (
-                      <div
-                        key={c.earTag}
-                        className="rounded-lg bg-surface-subtle px-3 py-2.5"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="inline-flex items-center gap-1.5 rounded-md bg-brand-subtle px-2 py-0.5">
-                            <EarTagIcon className="h-4 w-4 text-primary" />
-                            <span className="text-body font-semibold text-primary font-mono tracking-wide">
-                              {c.earTag}
-                            </span>
-                          </div>
-                          <span className="text-caption text-text-tertiary">
-                            {c.items.length} 项药品
-                          </span>
-                        </div>
-                        <div className="space-y-1.5">
-                          {c.items.map((it) => (
-                            <div
-                              key={it.key}
-                              className="flex items-center gap-2 text-body-sm"
-                            >
-                              <span className="flex-1 min-w-0 text-foreground truncate">
-                                {it.name}
-                              </span>
-                              <span className="text-primary font-medium tabular-nums shrink-0 w-20 text-right">
-                                {it.metricTotal} {it.metricUnit}
+                  <div className="divide-y divide-border">
+                    {cattleGroups.map((c, idx) => {
+                      if (checklistCollapsed && idx > 0) return null;
+                      return (
+                        <div key={c.earTag} className="px-1 py-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="inline-flex items-center gap-1.5 rounded-md bg-brand-subtle px-2 py-0.5">
+                              <EarTagIcon className="h-4 w-4 text-primary" />
+                              <span className="text-body font-semibold text-primary font-mono tracking-wide">
+                                {c.earTag}
                               </span>
                             </div>
-                          ))}
+                            <span className="text-caption text-text-tertiary">
+                              {c.items.length} 项药品
+                            </span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {c.items.map((it) => (
+                              <div
+                                key={it.key}
+                                className="flex items-center gap-2 text-body-sm"
+                              >
+                                <span className="flex-1 min-w-0 text-foreground truncate">
+                                  {it.name}
+                                </span>
+                                <span className="text-primary font-medium tabular-nums shrink-0 w-20 text-right">
+                                  {it.metricTotal} {it.metricUnit}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                   {checklistCollapsed && cattleGroups.length > 1 && (
                     <div className="text-center text-caption text-text-tertiary py-2">
                       已折叠 {cattleGroups.length - 1} 条
@@ -550,6 +551,7 @@ function PrepPage() {
                 </>
               )}
             </div>
+
           </div>
         ) : (
           <div className="flex-1 flex flex-col px-4 pt-3 pb-4 min-h-0">
