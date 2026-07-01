@@ -40,12 +40,7 @@ export function ConfirmPickupDialog({
           <p className="inline-flex items-start gap-1.5">
             <AlertTriangle className="h-4 w-4 text-[#E5751A] shrink-0 mt-0.5" />
             <span>
-              注意：组合用药提交后不可解除，请确认后提交。
-              {comboCount && comboCount > 0 && (
-                <span className="text-foreground font-medium">
-                  （当前含 {comboCount} 组组合用药）
-                </span>
-              )}
+              组合用药提交后不可解除，请确认后再提交
             </span>
           </p>
         </div>
