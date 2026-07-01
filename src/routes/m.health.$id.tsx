@@ -1096,7 +1096,11 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 <li key={m.name} className="px-1">
                   <div className="flex flex-wrap items-center gap-1.5 mb-1">
                     <span className="text-body font-medium text-foreground">{m.name}</span>
-                    {m.isPrescription && <span className="tag tag-info">处方药</span>}
+                    {m.isPrescription ? (
+                      <span className="tag tag-info">处方药</span>
+                    ) : (
+                      <span className="tag tag-muted">非处方药</span>
+                    )}
                     {m.isSpecial && <span className="tag tag-warning">特殊</span>}
                   </div>
                   <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-body-sm">
