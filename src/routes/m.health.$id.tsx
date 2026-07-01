@@ -1580,9 +1580,9 @@ function ChecklistDay({
   const medItems = items.filter((it) => it.needMed);
 
   return (
-    <div className="rounded-2xl bg-card border border-border overflow-hidden">
+    <div className="space-y-3">
       {/* Day header */}
-      <div className="px-4 h-12 flex items-center justify-between">
+      <div className="px-1 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <DayDot active={isActive} done={dayDone} />
           <span className={`text-body font-medium ${isPending ? "text-text-tertiary" : "text-foreground"}`}>
@@ -1594,6 +1594,7 @@ function ChecklistDay({
           {dayStatusText}
         </span>
       </div>
+
 
       {isPending ? (
         <div className="px-4 pb-4 text-caption text-text-tertiary">尚未开始，到时间后开放填写</div>
