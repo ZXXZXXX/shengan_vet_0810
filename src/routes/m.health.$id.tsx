@@ -1096,7 +1096,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 <li key={m.name} className="px-1 py-3 space-y-1.5">
                   <div className="flex items-center justify-between gap-2">
                     <div className="text-body-sm font-medium text-foreground">{m.name}</div>
-                    <div className="text-body-sm text-text-tertiary shrink-0">{m.spec}</div>
+                    <div className="text-caption font-mono text-text-tertiary shrink-0">{m.spec}</div>
                   </div>
                   <div className="grid grid-cols-2 gap-y-1 gap-x-3">
                     <Field label="给药方式" value={m.use} />
