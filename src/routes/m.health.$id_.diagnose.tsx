@@ -1003,7 +1003,7 @@ function DiagnosePage() {
                           >
                             <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
                               {isTherapy ? (
-                                <Activity className="h-3.5 w-3.5 text-primary" />
+                                <Activity className="h-3.5 w-3.5 text-[var(--state-warning)]" />
                               ) : (
                                 <Pill className="h-3.5 w-3.5 text-primary" />
                               )}
@@ -1011,7 +1011,7 @@ function DiagnosePage() {
                               {!isTherapy && r.maker && (
                                 <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
                               )}
-                              <span className={`tag ${isTherapy ? "tag-muted" : "tag-brand"}`}>
+                              <span className={`tag ${isTherapy ? "tag-warning" : "tag-brand"}`}>
                                 {isTherapy ? "理疗" : "用药"}
                               </span>
                             </div>
@@ -1093,7 +1093,7 @@ function DiagnosePage() {
                             <div className="min-w-0 flex-1">
                               <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
                                 {isTherapy ? (
-                                  <Activity className="h-3.5 w-3.5 text-primary" />
+                                  <Activity className="h-3.5 w-3.5 text-[var(--state-warning)]" />
                                 ) : (
                                   <Pill className="h-3.5 w-3.5 text-primary" />
                                 )}
@@ -1185,7 +1185,7 @@ function DiagnosePage() {
                               : "border-border/60 text-text-tertiary opacity-60 cursor-not-allowed"
                           }`}
                         >
-                          <Activity className="h-3.5 w-3.5 text-primary" /> 新增理疗
+                          <Activity className="h-3.5 w-3.5 text-[var(--state-warning)]" /> 新增理疗
                         </button>
                       </div>
                       {!reasonReady && (
