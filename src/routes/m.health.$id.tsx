@@ -1601,9 +1601,9 @@ function ChecklistDay({
                   <button
                     type="button"
                     onClick={() => {
-                      // 演示场景循环：2(无领取记录) → 3(关联药品) → 1(直接录入) → 4(已被使用) → 2 …
-                      const order: Array<1 | 2 | 3 | 4> = [2, 3, 1, 4];
-                      const scenario = order[scanAttemptRef.current % 4];
+                      // 演示场景循环：2(无领取记录) → 3(关联药品) → 5(药品异常) → 1(直接录入) → 4(已被使用) → 2 …
+                      const order: Array<1 | 2 | 3 | 4 | 5> = [2, 3, 5, 1, 4];
+                      const scenario = order[scanAttemptRef.current % 5];
                       scanAttemptRef.current += 1;
                       // 优先未扫码的；若都扫码完，循环回第一个用于演示
                       const target = medItems.find((m) => !m.scanCode) ?? medItems[0];
