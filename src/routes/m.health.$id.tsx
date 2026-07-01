@@ -2134,6 +2134,40 @@ function ChecklistDay({
         </div>
       )}
 
+      {assocInvalid && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setAssocInvalid(null)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-[#E5751A]" />
+              </span>
+              <h3 className="text-card-title text-foreground">药品异常</h3>
+            </div>
+            <div className="space-y-2 text-body-sm text-text-secondary leading-relaxed">
+              <p>组合内含非本任务允许药品，请检查后重新录入</p>
+              <p className="text-text-tertiary">
+                非允许药品：<span className="text-foreground">{assocInvalid.disallowed.join("、")}</span>
+              </p>
+            </div>
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => setAssocInvalid(null)}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                确认
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
 
     </div>
