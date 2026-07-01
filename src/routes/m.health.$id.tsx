@@ -1799,8 +1799,8 @@ function ChecklistDay({
 
 
           {interactive && (
-            <div className="px-4 pb-3">
-              <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
+            <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
+
                 <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
                   <span>
                     治疗记录 <span className="text-[var(--state-danger)]">*</span>
