@@ -962,9 +962,9 @@ function DiagnosePage() {
                         <div className="text-body text-foreground font-medium">
                           {selectedPlan.name}
                         </div>
-                        {selectedPlan.desc && (
-                          <div className="text-caption text-text-tertiary mt-0.5">{selectedPlan.desc}</div>
-                        )}
+                        <div className="text-caption text-text-tertiary mt-0.5">
+                          {selectedPlan.desc || "-"}
+                        </div>
                       </div>
                       {stdPlans.length > 1 && (
                         <button
@@ -1020,12 +1020,10 @@ function DiagnosePage() {
                                 ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
                                 : [r.spec, r.use, r.timesPerDay && `${r.timesPerDay} 次 / 天`, r.days && `连用 ${r.days} 天`].filter(Boolean).join(" · ")}
                             </div>
-                            {r.desc && (
-                              <div className="text-caption text-text-tertiary mt-1 inline-flex items-start gap-1">
-                                <FileText className="h-3 w-3 shrink-0 mt-0.5" />
-                                {r.desc}
-                              </div>
-                            )}
+                            <div className="text-caption text-text-tertiary mt-1 inline-flex items-start gap-1">
+                              <FileText className="h-3 w-3 shrink-0 mt-0.5" />
+                              <span>补充说明：{r.desc || "-"}</span>
+                            </div>
                             {!isTherapy && (
                               <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
                                 <Sparkles className="h-3 w-3" />
@@ -1116,12 +1114,10 @@ function DiagnosePage() {
                                       r.days && `${r.days} 天`,
                                     ].filter(Boolean).join(" · ")}
                               </div>
-                              {r.desc && (
-                                <div className="text-caption text-text-tertiary mt-1 inline-flex items-start gap-1">
-                                  <FileText className="h-3 w-3 shrink-0 mt-0.5" />
-                                  {r.desc}
-                                </div>
-                              )}
+                              <div className="text-caption text-text-tertiary mt-1 inline-flex items-start gap-1">
+                                <FileText className="h-3 w-3 shrink-0 mt-0.5" />
+                                <span>补充说明：{r.desc || "-"}</span>
+                              </div>
                             </div>
                             <div className="flex items-center gap-0.5 shrink-0">
                               <button
@@ -1437,9 +1433,7 @@ function DiagnosePage() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0">
                           <div className="text-body text-foreground font-medium">{plan.name}</div>
-                          {plan.desc && (
-                            <div className="text-caption text-text-tertiary mt-0.5">{plan.desc}</div>
-                          )}
+                          <div className="text-caption text-text-tertiary mt-0.5">{plan.desc || "-"}</div>
                           <div className="text-caption text-text-tertiary mt-1">
                             包含 {plan.items.length} 项 ·{" "}
                             {plan.items.filter((i) => i.kind === "drug").length} 用药 /{" "}
