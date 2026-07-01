@@ -1887,8 +1887,8 @@ function ChecklistDay({
                   ]}
                 />
               </div>
-            </div>
           )}
+
 
 
           <ul className="px-4 pb-3 space-y-2">
