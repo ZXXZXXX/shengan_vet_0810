@@ -88,19 +88,19 @@ const diseaseLibrary: Disease[] = [
       {
         id: "p1",
         name: "处方1 · 药物 + 物理治疗",
-        desc: "联合用药 + 热敷按摩",
+        desc: "联合用药 + 热敷按摩；每次 10 分钟，促进炎症消散",
         items: [
           { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1", doseUnit: "g", days: "3" },
           { id: "r2", kind: "drug", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2", doseUnit: "ml", days: "2" },
-          { id: "r3", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "2 次 / 天", desc: "每次 10 分钟，促进炎症消散", days: "3" },
+          { id: "r3", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "2 次 / 天", days: "3" },
         ],
       },
       {
         id: "p2",
         name: "处方2 · 仅物理治疗",
-        desc: "轻症或孕期禁用抗生素时",
+        desc: "轻症或孕期禁用抗生素时；每次 15 分钟，配合人工挤奶",
         items: [
-          { id: "r1", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "3 次 / 天", desc: "每次 15 分钟，配合人工挤奶", days: "5" },
+          { id: "r1", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "3 次 / 天", days: "5" },
         ],
       },
     ],
@@ -139,9 +139,10 @@ const diseaseLibrary: Disease[] = [
       {
         id: "p1",
         name: "处方1 · 补液护理",
+        desc: "干燥温暖环境，单独看护",
         items: [
           { id: "r1", kind: "drug", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1", doseUnit: "包", days: "3" },
-          { id: "r2", kind: "therapy", name: "保温隔离", therapyMethod: "隔离观察", frequency: "全天", desc: "干燥温暖环境，单独看护", days: "5" },
+          { id: "r2", kind: "therapy", name: "保温隔离", therapyMethod: "隔离观察", frequency: "全天", days: "5" },
         ],
       },
     ],
@@ -214,7 +215,6 @@ type Prescription = {
   // 治疗手段
   therapyMethod?: string;
   frequency?: string;
-  desc?: string;
   // 剂量换算方式：默认按 500kg 体重基准换算
   dosePer?: "100kg" | "500kg" | "fixed";
   // 是否属于特殊药品（仅在特殊处方中显示「特殊」标签）
@@ -340,6 +340,7 @@ function DiagnosePage() {
   const [cattleWeight, setCattleWeight] = useState<number | null>(null);
   // 特殊处方（需填原因，可自由编辑）
   const [specialReason, setSpecialReason] = useState("");
+  const [specialPlanDesc, setSpecialPlanDesc] = useState("");
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
   const [planSheetOpen, setPlanSheetOpen] = useState(false);
@@ -483,7 +484,6 @@ function DiagnosePage() {
             name: "",
             therapyMethod: "",
             frequency: "",
-            desc: "",
             days: "3",
           };
     setEditingRx(base);
@@ -962,8 +962,9 @@ function DiagnosePage() {
                         <div className="text-body text-foreground font-medium">
                           {selectedPlan.name}
                         </div>
-                        <div className="text-caption text-text-tertiary mt-0.5">
-                          {selectedPlan.desc || "-"}
+                        <div className="text-caption text-text-tertiary mt-0.5 inline-flex items-start gap-1">
+                          <FileText className="h-3 w-3 shrink-0 mt-0.5" />
+                          <span>补充说明：{selectedPlan.desc || "-"}</span>
                         </div>
                       </div>
                       {stdPlans.length > 1 && (
@@ -1019,10 +1020,6 @@ function DiagnosePage() {
                               {isTherapy
                                 ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
                                 : [r.spec, r.use, r.timesPerDay && `${r.timesPerDay} 次 / 天`, r.days && `连用 ${r.days} 天`].filter(Boolean).join(" · ")}
-                            </div>
-                            <div className="text-caption text-text-tertiary mt-1 inline-flex items-start gap-1">
-                              <FileText className="h-3 w-3 shrink-0 mt-0.5" />
-                              <span>补充说明：{r.desc || "-"}</span>
                             </div>
                             {!isTherapy && (
                               <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
@@ -1080,6 +1077,19 @@ function DiagnosePage() {
                   <div className="text-caption text-text-tertiary text-right">{specialReason.length} / 200</div>
                 </label>
 
+                <label className="block">
+                  <div className="text-caption text-text-tertiary mb-1">补充说明</div>
+                  <textarea
+                    value={specialPlanDesc}
+                    onChange={(e) => setSpecialPlanDesc(e.target.value)}
+                    maxLength={200}
+                    rows={2}
+                    placeholder="如：用药前后需监测体温、注意过敏反应、理疗操作细节等"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+                  />
+                  <div className="text-caption text-text-tertiary text-right">{specialPlanDesc.length} / 200</div>
+                </label>
+
                 {specialList.length > 0 && (
                   <ul className="space-y-2">
                     {specialList.map((r) => {
@@ -1113,10 +1123,6 @@ function DiagnosePage() {
                                       r.timesPerDay && `${r.timesPerDay} 次 / 天`,
                                       r.days && `${r.days} 天`,
                                     ].filter(Boolean).join(" · ")}
-                              </div>
-                              <div className="text-caption text-text-tertiary mt-1 inline-flex items-start gap-1">
-                                <FileText className="h-3 w-3 shrink-0 mt-0.5" />
-                                <span>补充说明：{r.desc || "-"}</span>
                               </div>
                             </div>
                             <div className="flex items-center gap-0.5 shrink-0">
@@ -1711,17 +1717,6 @@ function DrugEditor({
                 </div>
               </label>
             </div>
-
-            {/* 操作说明 */}
-            <label className="block space-y-1">
-              <span className="text-caption text-text-tertiary">操作说明</span>
-              <textarea
-                value={value.desc || ""}
-                onChange={(e) => onChange({ ...value, desc: e.target.value })}
-                placeholder="如：每次 10 分钟，注意力度，观察反应"
-                className="h-20 w-full p-3 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
-              />
-            </label>
           </>
         ) : (
           <>
@@ -1915,18 +1910,6 @@ function DrugEditor({
 
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">天</span>
               </div>
-            </label>
-
-            {/* 补充说明 */}
-            <label className="block space-y-1">
-              <span className="text-caption text-text-tertiary">补充说明</span>
-              <textarea
-                value={value.desc || ""}
-                onChange={(e) => onChange({ ...value, desc: e.target.value })}
-                placeholder="如：用药前后需监测体温、注意过敏反应等"
-                rows={2}
-                className="w-full p-3 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
-              />
             </label>
           </>
         )}
