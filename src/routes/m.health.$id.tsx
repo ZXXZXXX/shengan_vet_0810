@@ -1101,6 +1101,8 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                   <div className="grid grid-cols-2 gap-y-1 gap-x-3">
                     <Field label="给药方式" value={m.use} />
                     <Field label="单次剂量" value={m.dose} />
+                  </div>
+                  <div className="pt-1">
                     <Field label="用药方法" value={m.method} />
                   </div>
                 </li>
