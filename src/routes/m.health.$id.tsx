@@ -2228,8 +2228,8 @@ function ChecklistDay({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-2">
-              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
-                <AlertTriangle className="h-4 w-4 text-primary" />
+              <span className="h-9 w-9 rounded-full bg-[#FFF5DF] inline-flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-[#F59E0B]" />
               </span>
               <h3 className="text-card-title text-foreground">药品不符合任务需求</h3>
             </div>
@@ -2240,7 +2240,7 @@ function ChecklistDay({
               <button
                 type="button"
                 onClick={() => setAssocMismatch(null)}
-                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+                className="flex-1 h-10 rounded-lg bg-[#F59E0B] text-white text-body-sm"
               >
                 我知道了
               </button>
