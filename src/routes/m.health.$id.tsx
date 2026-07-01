@@ -1260,7 +1260,6 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
         const statusLabel = isDone ? "已完成" : isActive ? "进行中" : "未开始";
         const statusClass = isDone ? "tag-success" : isActive ? "tag-info" : "tag-muted";
 
-        const pickupDone = needPickup && isDone;
         return (
           <div key={d.day} className={`rounded-2xl bg-card border border-border p-4 ${d.phase === "pending" ? "opacity-50" : ""}`}>
             <div className="flex items-center justify-between mb-2 min-h-6">
@@ -1287,8 +1286,8 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               <div className="flex items-center gap-1.5">
                 <PackagePlus className="h-3.5 w-3.5" />
                 <span>领物</span>
-                <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full text-caption font-medium ${pickupDone ? "tag-success" : "tag-muted"}`}>
-                  {!needPickup ? "无需" : pickupDone ? "已领" : "未领"}
+                <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full text-caption font-medium ${needPickup ? "tag-info" : "tag-muted"}`}>
+                  {needPickup ? "需领物" : "无需"}
                 </span>
               </div>
               {isDone && (
