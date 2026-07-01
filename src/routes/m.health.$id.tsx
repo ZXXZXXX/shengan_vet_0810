@@ -1600,74 +1600,7 @@ function ChecklistDay({
       ) : (
         <>
 
-          {/* 用药信息（只读，无勾选） */}
-          {medItems.length > 0 && (
-            <div className={`px-4 pb-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
-              <div className="flex items-center justify-between">
-                <div className="text-caption text-text-tertiary">用药信息</div>
-                {interactive && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // 演示场景循环：2(无领取记录) → 3(组合用药) → 5(药品异常) → 1(直接录入) → 4(已被使用) → 2 …
-                      const order: Array<1 | 2 | 3 | 4 | 5> = [2, 3, 5, 1, 4];
-                      const scenario = order[scanAttemptRef.current % 5];
-                      scanAttemptRef.current += 1;
-                      // 优先未扫码的；若都扫码完，循环回第一个用于演示
-                      const target = medItems.find((m) => !m.scanCode) ?? medItems[0];
-                      if (!target) return;
-                      setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
-                    }}
-                    className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-primary border-primary/30 active:bg-brand-subtle"
-                  >
-                    <ScanLine className="h-3.5 w-3.5" /> 扫码核验
-                  </button>
-                )}
-              </div>
-          {medItems.map((it) => {
-            const scanned = Boolean(it.scanCode);
-            return (
-              <div key={it.id} className="rounded-xl border border-primary bg-card px-3 py-2.5">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="text-body text-foreground">{it.title}</div>
-                    <div className="mt-1 flex items-center gap-2 text-caption">
-                      <span className={scanned ? "text-primary font-medium" : "text-text-tertiary"}>
-                        {scanned ? (it.manufacturer ?? "-") : "-"}
-                      </span>
-                      <span className="text-text-tertiary">·</span>
-                      <span className={`font-mono ${scanned ? "text-text-secondary" : "text-text-tertiary"}`}>
-                        {scanned ? (it.batchNo ?? "-") : "-"}
-                      </span>
-                    </div>
-                  </div>
-                  {interactive && scanned && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setItems((arr) =>
-                          arr.map((x) =>
-                            x.id === it.id
-                              ? { ...x, scanCode: undefined, manufacturer: undefined, batchNo: undefined }
-                              : x,
-                          ),
-                        )
-                      }
-                      className="shrink-0 text-caption text-text-tertiary hover:text-primary px-2 py-1 -mr-1"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-                {it.desc && (
-                  <div className="text-caption text-text-tertiary mt-1">{it.desc}</div>
-                )}
-              </div>
-            );
-          })}
-            </div>
-          )}
-
+          {/* 1. 每日测温 */}
           {interactive && withTemp && tempItem && (
             <div className="px-4 pb-3">
               <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
@@ -1690,6 +1623,177 @@ function ChecklistDay({
               </div>
             </div>
           )}
+
+          {/* 2. 用药信息（只读，无勾选；支持切换"无法正常用药"） */}
+          {medItems.length > 0 && (
+            <div className={`px-4 pb-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
+              <div className="flex items-center justify-between">
+                <div className="text-caption text-text-tertiary">用药信息</div>
+                {interactive && (
+                  unableMed ? (
+                    <button
+                      type="button"
+                      onClick={() => { setUnableMed(false); setUnableReason(""); setUnablePhotos([]); }}
+                      className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-text-secondary border-border active:bg-surface-subtle"
+                    >
+                      恢复正常用药
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setUnableMed(true)}
+                        className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-text-secondary border-border active:bg-surface-subtle"
+                      >
+                        无法正常用药
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // 演示场景循环：2(无领取记录) → 3(组合用药) → 5(药品异常) → 1(直接录入) → 4(已被使用) → 2 …
+                          const order: Array<1 | 2 | 3 | 4 | 5> = [2, 3, 5, 1, 4];
+                          const scenario = order[scanAttemptRef.current % 5];
+                          scanAttemptRef.current += 1;
+                          const target = medItems.find((m) => !m.scanCode) ?? medItems[0];
+                          if (!target) return;
+                          setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
+                        }}
+                        className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-primary border-primary/30 active:bg-brand-subtle"
+                      >
+                        <ScanLine className="h-3.5 w-3.5" /> 扫码核验
+                      </button>
+                    </div>
+                  )
+                )}
+              </div>
+
+              {unableMed ? (
+                <div className="rounded-xl border border-[var(--state-warning)]/40 bg-[var(--state-warning)]/5 px-3 py-3 space-y-3">
+                  <div>
+                    <div className="text-body-sm text-foreground mb-2">
+                      未用药原因 <span className="text-[var(--state-danger)]">*</span>
+                    </div>
+                    <textarea
+                      value={unableReason}
+                      onChange={(e) => setUnableReason(e.target.value)}
+                      placeholder="例如：牛只应激严重无法保定 / 现场药品损坏 / 兽医到场评估后暂缓用药…"
+                      rows={3}
+                      className="w-full rounded-lg border border-border bg-card px-3 py-2 text-body-sm resize-none"
+                    />
+                  </div>
+                  <div>
+                    <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
+                      <span>现场留档 <span className="text-[var(--state-danger)]">*</span></span>
+                      <span className="text-caption text-text-tertiary">{unablePhotos.length} / 6</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                      {unablePhotos.map((pid) => (
+                        <div key={pid} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                          <button
+                            type="button"
+                            onClick={() => setUnablePhotos((p) => p.filter((x) => x !== pid))}
+                            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                      {unablePhotos.length < 6 && (
+                        <button
+                          type="button"
+                          onClick={() => setUnableSheetOpen(true)}
+                          className="aspect-square rounded-lg bg-card border border-dashed border-border flex flex-col items-center justify-center gap-1 text-text-tertiary active:bg-surface-subtle"
+                        >
+                          <Camera className="h-5 w-5" />
+                          <span className="text-caption">添加</span>
+                        </button>
+                      )}
+                    </div>
+                    <div className="mt-2 text-caption text-text-tertiary">
+                      请上传现场照片留档，作为未用药执行留痕
+                    </div>
+                    <input
+                      ref={unablePhotoRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files ?? []);
+                        files.forEach(() => setUnablePhotos((p) => [...p, Date.now() + Math.random()]));
+                        e.target.value = "";
+                      }}
+                    />
+                    <input
+                      ref={unableAlbumRef}
+                      type="file"
+                      accept="image/*,video/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files ?? []);
+                        files.forEach(() => setUnablePhotos((p) => [...p, Date.now() + Math.random()]));
+                        e.target.value = "";
+                      }}
+                    />
+                    <MAddMediaSheet
+                      open={unableSheetOpen}
+                      title="添加现场留档"
+                      onClose={() => setUnableSheetOpen(false)}
+                      actions={[
+                        { key: "photo", icon: Camera, label: "拍照", onClick: () => unablePhotoRef.current?.click() },
+                        { key: "album", icon: ImagePlus, label: "从相册选择", onClick: () => unableAlbumRef.current?.click() },
+                      ]}
+                    />
+                  </div>
+                </div>
+              ) : (
+                medItems.map((it) => {
+                  const scanned = Boolean(it.scanCode);
+                  return (
+                    <div key={it.id} className="rounded-xl border border-primary bg-card px-3 py-2.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="text-body text-foreground">{it.title}</div>
+                          <div className="mt-1 flex items-center gap-2 text-caption">
+                            <span className={scanned ? "text-primary font-medium" : "text-text-tertiary"}>
+                              {scanned ? (it.manufacturer ?? "-") : "-"}
+                            </span>
+                            <span className="text-text-tertiary">·</span>
+                            <span className={`font-mono ${scanned ? "text-text-secondary" : "text-text-tertiary"}`}>
+                              {scanned ? (it.batchNo ?? "-") : "-"}
+                            </span>
+                          </div>
+                        </div>
+                        {interactive && scanned && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setItems((arr) =>
+                                arr.map((x) =>
+                                  x.id === it.id
+                                    ? { ...x, scanCode: undefined, manufacturer: undefined, batchNo: undefined }
+                                    : x,
+                                ),
+                              )
+                            }
+                            className="shrink-0 text-caption text-text-tertiary hover:text-primary px-2 py-1 -mr-1"
+                          >
+                            清除
+                          </button>
+                        )}
+                      </div>
+                      {it.desc && (
+                        <div className="text-caption text-text-tertiary mt-1">{it.desc}</div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+
 
           {interactive && (
             <div className="px-4 pb-3">
