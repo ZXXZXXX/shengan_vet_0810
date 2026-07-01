@@ -2043,10 +2043,10 @@ function ChecklistDay({
               <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
                 <PackagePlus className="h-4 w-4 text-primary" />
               </span>
-              <h3 className="text-card-title text-foreground">检测到关联药品</h3>
+              <h3 className="text-card-title text-foreground">组合用药</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              扫描到「{assocConfirm.itemName}」与「{assocConfirm.associated.join("、")}」属同组关联药品，是否一同录入？
+              扫码识别到「{assocConfirm.itemName}」为组合用药，组合内药品（{assocConfirm.associated.join("、")}）将会一起录入。
             </p>
             <div className="flex items-center gap-2">
               <button
