@@ -1601,7 +1601,7 @@ function ChecklistDay({
                   <button
                     type="button"
                     onClick={() => {
-                      // 演示场景循环：2(无领取记录) → 3(关联药品) → 5(药品异常) → 1(直接录入) → 4(已被使用) → 2 …
+                      // 演示场景循环：2(无领取记录) → 3(组合用药) → 5(药品异常) → 1(直接录入) → 4(已被使用) → 2 …
                       const order: Array<1 | 2 | 3 | 4 | 5> = [2, 3, 5, 1, 4];
                       const scenario = order[scanAttemptRef.current % 5];
                       scanAttemptRef.current += 1;
@@ -1876,7 +1876,7 @@ function ChecklistDay({
 
 
 
-            // 情况三：存在关联药品 → 询问是否一同录入
+            // 情况三：识别到组合用药 → 提醒组合内药品将一起录入
             if (scenario === 3) {
               const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
               const fallback = medItems.find((m) => m.id !== itemId)?.title;
@@ -2043,10 +2043,10 @@ function ChecklistDay({
               <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
                 <PackagePlus className="h-4 w-4 text-primary" />
               </span>
-              <h3 className="text-card-title text-foreground">检测到关联药品</h3>
+              <h3 className="text-card-title text-foreground">组合用药</h3>
             </div>
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              扫描到「{assocConfirm.itemName}」与「{assocConfirm.associated.join("、")}」属同组关联药品，是否一同录入？
+              扫码识别到「{assocConfirm.itemName}」为组合用药，组合内药品（{assocConfirm.associated.join("、")}）将会一起录入。
             </p>
             <div className="flex items-center gap-2">
               <button
