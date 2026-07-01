@@ -1876,7 +1876,7 @@ function ChecklistDay({
 
 
 
-            // 情况三：存在关联药品 → 询问是否一同录入
+            // 情况三：识别到组合用药 → 提醒组合内药品将一起录入
             if (scenario === 3) {
               const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
               const fallback = medItems.find((m) => m.id !== itemId)?.title;
