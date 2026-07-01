@@ -1223,6 +1223,25 @@ function getExecSummary(status: StatusKey): DaySummary[] {
 }
 
 
+function PickupStatus({ needPickup }: { needPickup: boolean }) {
+  return needPickup ? (
+    <div className="inline-flex items-center gap-1.5 text-caption text-foreground">
+      <PackagePlus className="h-3.5 w-3.5" />
+      <span>需要领物</span>
+    </div>
+  ) : (
+    <div className="inline-flex items-center gap-1.5 text-caption text-text-tertiary">
+      <span className="relative inline-flex items-center justify-center">
+        <PackagePlus className="h-3.5 w-3.5 opacity-60" />
+        <span className="absolute inset-0 flex items-center justify-center">
+          <span className="h-4 w-[1px] bg-current rotate-45" />
+        </span>
+      </span>
+      <span>无需领物</span>
+    </div>
+  );
+}
+
 export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
@@ -1284,11 +1303,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
             </div>
             <div className="flex items-center justify-between gap-2 text-caption text-text-tertiary">
               <div className="flex items-center gap-1.5">
-                <PackagePlus className="h-3.5 w-3.5" />
-                <span>领物</span>
-                <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full text-caption font-medium ${needPickup ? "tag-info" : "tag-muted"}`}>
-                  {needPickup ? "需领物" : "无需"}
-                </span>
+                <PickupStatus needPickup={needPickup} />
               </div>
               {isDone && (
                 <div className="flex items-center gap-1.5">
@@ -1379,9 +1394,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
               })()
             ) : null}
             <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-              <PackagePlus className="h-3.5 w-3.5" />
-              <span>领物</span>
-              <span className="ml-1 inline-flex items-center h-5 px-2 rounded-full bg-surface-subtle text-text-tertiary">无需</span>
+              <PickupStatus needPickup={false} />
             </div>
 
           </div>
