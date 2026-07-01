@@ -1077,6 +1077,19 @@ function DiagnosePage() {
                   <div className="text-caption text-text-tertiary text-right">{specialReason.length} / 200</div>
                 </label>
 
+                <label className="block">
+                  <div className="text-caption text-text-tertiary mb-1">补充说明</div>
+                  <textarea
+                    value={specialPlanDesc}
+                    onChange={(e) => setSpecialPlanDesc(e.target.value)}
+                    maxLength={200}
+                    rows={2}
+                    placeholder="如：用药前后需监测体温、注意过敏反应、理疗操作细节等"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+                  />
+                  <div className="text-caption text-text-tertiary text-right">{specialPlanDesc.length} / 200</div>
+                </label>
+
                 {specialList.length > 0 && (
                   <ul className="space-y-2">
                     {specialList.map((r) => {
