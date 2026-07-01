@@ -1303,11 +1303,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
             </div>
             <div className="flex items-center justify-between gap-2 text-caption text-text-tertiary">
               <div className="flex items-center gap-1.5">
-                <PackagePlus className="h-3.5 w-3.5" />
-                <span>领物</span>
-                <span className={`ml-1 inline-flex items-center h-5 px-2 rounded-full text-caption font-medium ${needPickup ? "tag-info" : "tag-muted"}`}>
-                  {needPickup ? "需领物" : "无需"}
-                </span>
+                <PickupStatus needPickup={needPickup} />
               </div>
               {isDone && (
                 <div className="flex items-center gap-1.5">
