@@ -1106,13 +1106,15 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 </li>
               ))}
             </ul>
+            <div className="pt-3 border-t border-border">
+              <Field label="备注" value="如出现严重过敏立即停药并上报。" />
+            </div>
           </Section>
 
 
           <Section title="执行安排">
             <Field label="指定执行人" value={<PersonChip name="李雨晴" />} />
             <Field label="复查 / 验收" value="第 4 天复测体温与采食情况" />
-            <Field label="备注" value="如出现严重过敏立即停药并上报。" />
           </Section>
         </>
     </>
