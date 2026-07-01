@@ -1003,7 +1003,7 @@ function DiagnosePage() {
                           >
                             <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
                               {isTherapy ? (
-                                <Activity className="h-3.5 w-3.5 text-[var(--state-warning)]" />
+                                <Activity className="h-3.5 w-3.5 text-[#22ACEB]" />
                               ) : (
                                 <Pill className="h-3.5 w-3.5 text-primary" />
                               )}
@@ -1011,7 +1011,7 @@ function DiagnosePage() {
                               {!isTherapy && r.maker && (
                                 <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
                               )}
-                              <span className={`tag ${isTherapy ? "tag-warning" : "tag-brand"}`}>
+                              <span className={`tag ${isTherapy ? "tag-info" : "tag-brand"}`}>
                                 {isTherapy ? "理疗" : "用药"}
                               </span>
                             </div>
