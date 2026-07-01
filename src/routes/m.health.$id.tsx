@@ -2034,30 +2034,7 @@ function ChecklistDay({
             <p className="text-body-sm text-text-secondary leading-relaxed">
               扫描到「{assocConfirm.itemName}」与「{assocConfirm.associated.join("、")}」属同组关联药品，是否一同录入？
             </p>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const { itemId, itemName, target } = assocConfirm;
-                  setAssocConfirm(null);
-                  setItems((arr) =>
-                    arr.map((it) =>
-                      it.id === itemId
-                        ? {
-                            ...it,
-                            manufacturer: target.manufacturer ?? it.manufacturer,
-                            batchNo: target.batch ?? it.batchNo,
-                            scanCode: target.code,
-                          }
-                        : it,
-                    ),
-                  );
-                  toast.success(`已录入 · ${itemName}`);
-                }}
-                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
-              >
-                仅录入本药
-              </button>
+            <div className="flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -2096,9 +2073,16 @@ function ChecklistDay({
                   setAssocConfirm(null);
                   toast.success(`已一同录入 · ${[itemName, ...associated].join("、")}`);
                 }}
-                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+                className="w-full h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
                 一同录入
+              </button>
+              <button
+                type="button"
+                onClick={() => setAssocConfirm(null)}
+                className="w-full h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                取消
               </button>
             </div>
           </div>
