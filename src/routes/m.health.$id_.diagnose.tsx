@@ -1185,7 +1185,7 @@ function DiagnosePage() {
                               : "border-border/60 text-text-tertiary opacity-60 cursor-not-allowed"
                           }`}
                         >
-                          <Activity className="h-3.5 w-3.5 text-[var(--state-warning)]" /> 新增理疗
+                          <Activity className="h-3.5 w-3.5 text-[#22ACEB]" /> 新增理疗
                         </button>
                       </div>
                       {!reasonReady && (
