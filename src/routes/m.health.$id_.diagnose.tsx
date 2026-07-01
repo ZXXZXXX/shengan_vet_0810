@@ -217,6 +217,8 @@ type Prescription = {
   desc?: string;
   // 剂量换算方式：默认按 500kg 体重基准换算
   dosePer?: "100kg" | "500kg" | "fixed";
+  // 是否属于特殊药品（仅在特殊处方中显示「特殊」标签）
+  isSpecialDrug?: boolean;
 };
 
 // 体重相关剂量计算（mL/g 等）。fixed 表示单次固定剂量
