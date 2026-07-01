@@ -136,17 +136,12 @@ function TodayTasksPage() {
   const claimed = useClaimed();
   const { capture } = Route.useSearch();
 
-  // 领药完成后回到此页：自动进入多选 + 触发拍照记录步骤
+  // 领药完成后回到此页：直接跳转到批量执行页
   useEffect(() => {
     if (!capture) return;
-    const ids = capture.split(",").filter(Boolean);
-    setActiveTab("待执行");
-    setSelectMode(true);
-    setSelected(new Set(ids));
-    setDone("batch");
     navigate({
-      to: "/m/health/today",
-      search: { capture: undefined },
+      to: "/m/health/today_/batch",
+      search: { ids: capture },
       replace: true,
     });
   }, [capture, navigate]);
