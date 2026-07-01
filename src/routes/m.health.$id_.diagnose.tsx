@@ -1095,7 +1095,9 @@ function DiagnosePage() {
                                 {!isTherapy && r.maker && (
                                   <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
                                 )}
-                                <span className="tag tag-muted">特殊</span>
+                                {!isTherapy && r.isSpecialDrug && (
+                                  <span className="tag tag-muted">特殊</span>
+                                )}
                               </div>
                               <div className="text-caption text-text-tertiary mt-1">
                                 {isTherapy
