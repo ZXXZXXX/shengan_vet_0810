@@ -1864,6 +1864,17 @@ function ChecklistDay({
               return;
             }
 
+            // 情况五：扫描到组合，组合中含非本任务允许药品
+            if (scenario === 5) {
+              const taskNames = new Set(medItems.map((m) => m.title));
+              const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
+              const disallowed = mapped.filter((n) => !taskNames.has(n));
+              const finalDisallowed = disallowed.length > 0 ? disallowed : ["复方氨基比林注射液"];
+              setAssocInvalid({ itemName, disallowed: finalDisallowed });
+              return;
+            }
+
+
 
             // 情况三：存在关联药品 → 询问是否一同录入
             if (scenario === 3) {
