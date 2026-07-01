@@ -1115,7 +1115,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 </li>
               ))}
             </ul>
-            <div className="pt-3 border-t border-border space-y-1">
+            <div className="pt-3 border-t border-border">
               <div className="text-body-sm inline-flex items-start gap-1">
                 <FileText className="h-3.5 w-3.5 text-text-tertiary shrink-0 mt-0.5" />
                 <span>
