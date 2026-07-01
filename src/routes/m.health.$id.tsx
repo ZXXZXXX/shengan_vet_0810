@@ -2034,7 +2034,14 @@ function ChecklistDay({
             <p className="text-body-sm text-text-secondary leading-relaxed">
               扫描到「{assocConfirm.itemName}」与「{assocConfirm.associated.join("、")}」属同组关联药品，是否一同录入？
             </p>
-            <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setAssocConfirm(null)}
+                className="flex-1 h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+              >
+                取消
+              </button>
               <button
                 type="button"
                 onClick={() => {
@@ -2047,7 +2054,7 @@ function ChecklistDay({
                     setAssocMismatch({ itemName, missing });
                     return;
                   }
-                  // 全部命中：一同录入
+                  // 全部命中：确认录入
                   setItems((arr) =>
                     arr.map((it) => {
                       if (it.id === itemId) {
@@ -2071,18 +2078,11 @@ function ChecklistDay({
                     }),
                   );
                   setAssocConfirm(null);
-                  toast.success(`已一同录入 · ${[itemName, ...associated].join("、")}`);
+                  toast.success(`已确认录入 · ${[itemName, ...associated].join("、")}`);
                 }}
-                className="w-full h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
-                一同录入
-              </button>
-              <button
-                type="button"
-                onClick={() => setAssocConfirm(null)}
-                className="w-full h-10 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
-              >
-                取消
+                确认
               </button>
             </div>
           </div>
