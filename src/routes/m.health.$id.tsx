@@ -1506,7 +1506,7 @@ function ChecklistDay({
   const scannedMap = useScannedCodes(pickupCode ?? "");
   const scanAttemptRef = useRef(0);
   const [replaceState, setReplaceState] = useState<
-    { itemId: string; itemName: string; attempt: number; scenario: 1 | 2 | 3 | 4 } | null
+    { itemId: string; itemName: string; attempt: number; scenario: 1 | 2 | 3 | 4 | 5 } | null
   >(null);
   const [usedAlert, setUsedAlert] = useState<string | null>(null);
   const [replaceFailed, setReplaceFailed] = useState<
@@ -1518,6 +1518,9 @@ function ChecklistDay({
   >(null);
   const [assocMismatch, setAssocMismatch] = useState<
     { itemName: string; missing: string[] } | null
+  >(null);
+  const [assocInvalid, setAssocInvalid] = useState<
+    { itemName: string; disallowed: string[] } | null
   >(null);
 
 
@@ -1598,9 +1601,9 @@ function ChecklistDay({
                   <button
                     type="button"
                     onClick={() => {
-                      // 演示场景循环：2(无领取记录) → 3(关联药品) → 1(直接录入) → 4(已被使用) → 2 …
-                      const order: Array<1 | 2 | 3 | 4> = [2, 3, 1, 4];
-                      const scenario = order[scanAttemptRef.current % 4];
+                      // 演示场景循环：2(无领取记录) → 3(关联药品) → 5(药品异常) → 1(直接录入) → 4(已被使用) → 2 …
+                      const order: Array<1 | 2 | 3 | 4 | 5> = [2, 3, 5, 1, 4];
+                      const scenario = order[scanAttemptRef.current % 5];
                       scanAttemptRef.current += 1;
                       // 优先未扫码的；若都扫码完，循环回第一个用于演示
                       const target = medItems.find((m) => !m.scanCode) ?? medItems[0];
@@ -1861,6 +1864,17 @@ function ChecklistDay({
               return;
             }
 
+            // 情况五：扫描到组合，组合中含非本任务允许药品
+            if (scenario === 5) {
+              const taskNames = new Set(medItems.map((m) => m.title));
+              const mapped = DRUG_ASSOCIATIONS[itemName] ?? [];
+              const disallowed = mapped.filter((n) => !taskNames.has(n));
+              const finalDisallowed = disallowed.length > 0 ? disallowed : ["复方氨基比林注射液"];
+              setAssocInvalid({ itemName, disallowed: finalDisallowed });
+              return;
+            }
+
+
 
             // 情况三：存在关联药品 → 询问是否一同录入
             if (scenario === 3) {
@@ -2114,6 +2128,40 @@ function ChecklistDay({
                 className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
               >
                 我知道了
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {assocInvalid && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setAssocInvalid(null)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-9 w-9 rounded-full bg-brand-subtle inline-flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-[#E5751A]" />
+              </span>
+              <h3 className="text-card-title text-foreground">药品异常</h3>
+            </div>
+            <div className="space-y-2 text-body-sm text-text-secondary leading-relaxed">
+              <p>组合内含非本任务允许药品，请检查后重新录入</p>
+              <p className="text-text-tertiary">
+                非允许药品：<span className="text-foreground">{assocInvalid.disallowed.join("、")}</span>
+              </p>
+            </div>
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => setAssocInvalid(null)}
+                className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+              >
+                确认
               </button>
             </div>
           </div>
