@@ -340,6 +340,7 @@ function DiagnosePage() {
   const [cattleWeight, setCattleWeight] = useState<number | null>(null);
   // 特殊处方（需填原因，可自由编辑）
   const [specialReason, setSpecialReason] = useState("");
+  const [specialPlanDesc, setSpecialPlanDesc] = useState("");
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
   const [planSheetOpen, setPlanSheetOpen] = useState(false);
