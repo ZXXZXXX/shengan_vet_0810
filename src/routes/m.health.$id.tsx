@@ -1543,11 +1543,13 @@ function ChecklistDay({
     );
   }, [pickupClaimed, interactive]);
 
-  // 提交就绪：领药完成 + 所有用药已扫码核验 + 测温（若需要）已填 + 至少一张治疗记录照片
+  // 提交就绪：测温（若需要）已填 + 用药信息（正常：领药完成 + 所有用药已扫码核验；异常：填写原因 + 至少一张照片）+ 至少一张治疗记录照片
   const tempItem = items.find((i) => i.title.includes("测温"));
   const tempReady = !withTemp || Boolean((temps[tempItem?.id ?? ""] ?? "").trim());
-  const medScanReady = items.filter((i) => i.needMed).every((i) => Boolean(i.scanCode));
-  const ready = interactive && pickupClaimed && medScanReady && tempReady && evidencePhotos.length > 0;
+  const medScanReady = unableMed
+    ? unableReason.trim().length > 0 && unablePhotos.length > 0
+    : pickupClaimed && items.filter((i) => i.needMed).every((i) => Boolean(i.scanCode));
+  const ready = interactive && medScanReady && tempReady && evidencePhotos.length > 0;
   useEffect(() => {
     onReadyChange?.(ready);
   }, [ready, onReadyChange]);
