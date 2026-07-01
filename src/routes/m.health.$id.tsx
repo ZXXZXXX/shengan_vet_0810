@@ -1597,33 +1597,32 @@ function ChecklistDay({
 
 
       {isPending ? (
-        <div className="px-4 pb-4 text-caption text-text-tertiary">尚未开始，到时间后开放填写</div>
+        <div className="text-caption text-text-tertiary">尚未开始，到时间后开放填写</div>
       ) : (
         <>
 
           {/* 1. 每日测温 */}
           {interactive && withTemp && tempItem && (
-            <div className="px-4 pb-3">
-              <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
-                <div className="text-body-sm text-foreground mb-2">
-                  每日测温 <span className="text-[var(--state-danger)]">*</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    pattern="[0-9]*\.?[0-9]*"
-                    disabled={inputsLocked}
-                    value={temps[tempItem.id] ?? ""}
-                    onChange={(e) => setTemps((m) => ({ ...m, [tempItem.id]: e.target.value.replace(/[^0-9.]/g, "") }))}
-                    placeholder="输入直肠温度"
-                    className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm disabled:bg-surface-subtle disabled:cursor-not-allowed"
-                  />
-                  <span className="text-caption text-text-tertiary">℃</span>
-                </div>
+            <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
+              <div className="text-body-sm text-foreground mb-2">
+                每日测温 <span className="text-[var(--state-danger)]">*</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  pattern="[0-9]*\.?[0-9]*"
+                  disabled={inputsLocked}
+                  value={temps[tempItem.id] ?? ""}
+                  onChange={(e) => setTemps((m) => ({ ...m, [tempItem.id]: e.target.value.replace(/[^0-9.]/g, "") }))}
+                  placeholder="输入直肠温度"
+                  className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm disabled:bg-surface-subtle disabled:cursor-not-allowed"
+                />
+                <span className="text-caption text-text-tertiary">℃</span>
               </div>
             </div>
           )}
+
 
           {/* 2. 用药信息（只读，无勾选；支持切换"无法正常用药"） */}
           {medItems.length > 0 && (
