@@ -64,7 +64,7 @@ const diseaseLibrary: Disease[] = [
     plans: [
       {
         id: "p1",
-        name: "方案 A · 抗炎 + 抗生素",
+        name: "处方1 · 抗炎 + 抗生素",
         desc: "适用于高烧伴明显呼吸道症状",
         items: [
           { id: "r1", kind: "drug", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2", doseUnit: "ml", days: "3" },
@@ -73,7 +73,7 @@ const diseaseLibrary: Disease[] = [
       },
       {
         id: "p2",
-        name: "方案 B · 单用抗生素",
+        name: "处方2 · 单用抗生素",
         desc: "无明显高烧时的简化方案",
         items: [
           { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1", doseUnit: "g", days: "5" },
@@ -87,7 +87,7 @@ const diseaseLibrary: Disease[] = [
     plans: [
       {
         id: "p1",
-        name: "方案 A · 药物 + 物理治疗",
+        name: "处方1 · 药物 + 物理治疗",
         desc: "联合用药 + 热敷按摩",
         items: [
           { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1", doseUnit: "g", days: "3" },
@@ -97,7 +97,7 @@ const diseaseLibrary: Disease[] = [
       },
       {
         id: "p2",
-        name: "方案 B · 仅物理治疗",
+        name: "处方2 · 仅物理治疗",
         desc: "轻症或孕期禁用抗生素时",
         items: [
           { id: "r1", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "3 次 / 天", desc: "每次 15 分钟，配合人工挤奶", days: "5" },
@@ -111,7 +111,7 @@ const diseaseLibrary: Disease[] = [
     plans: [
       {
         id: "p1",
-        name: "方案 A · 常规治疗",
+        name: "处方1 · 常规治疗",
         items: [
           { id: "r1", kind: "drug", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200", doseUnit: "g", days: "2" },
           { id: "r2", kind: "drug", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10", doseUnit: "ml", days: "3" },
@@ -125,7 +125,7 @@ const diseaseLibrary: Disease[] = [
     plans: [
       {
         id: "p1",
-        name: "方案 A · 静脉补糖",
+        name: "处方1 · 静脉补糖",
         items: [
           { id: "r1", kind: "drug", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500", doseUnit: "ml", days: "2" },
         ],
@@ -138,7 +138,7 @@ const diseaseLibrary: Disease[] = [
     plans: [
       {
         id: "p1",
-        name: "方案 A · 补液护理",
+        name: "处方1 · 补液护理",
         items: [
           { id: "r1", kind: "drug", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1", doseUnit: "包", days: "3" },
           { id: "r2", kind: "therapy", name: "保温隔离", therapyMethod: "隔离观察", frequency: "全天", desc: "干燥温暖环境，单独看护", days: "5" },
@@ -247,7 +247,7 @@ const POSTPARTUM_DISEASE: Disease = {
   plans: [
     {
       id: "pp-1",
-      name: "方案 A · 5% 头孢噻呋 + 氟尼辛",
+      name: "处方1 · 5% 头孢噻呋 + 氟尼辛",
       desc: "一般产后高危预防性治疗",
       items: [
         { id: "r1", kind: "drug", name: "5% 盐酸头孢噻呋（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "4.4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
@@ -256,7 +256,7 @@ const POSTPARTUM_DISEASE: Disease = {
     },
     {
       id: "pp-2",
-      name: "方案 B · 10% 头孢噻呋 + 氟尼辛",
+      name: "处方2 · 10% 头孢噻呋 + 氟尼辛",
       desc: "感染风险较高 / 体重较大牛只",
       items: [
         { id: "r1", kind: "drug", name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "1" },
