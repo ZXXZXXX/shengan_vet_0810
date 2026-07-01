@@ -1090,17 +1090,14 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
           <Section title="治疗方案 / 执行方案">
             <ul className="-mx-1 space-y-3">
               {[
-                { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", method: "1天1次，连用3天" },
-                { name: "头孢噻呋钠", spec: "1g / 支", use: "肌肉注射", dose: "1g / 次", method: "1天1次，连用3天" },
+                { name: "氟尼辛葡甲胺注射液", use: "肌肉注射", dose: "2ml / 次", method: "1天1次，连用3天" },
+                { name: "头孢噻呋钠", use: "肌肉注射", dose: "1g / 次", method: "1天1次，连用3天" },
               ].map((m) => (
                 <li key={m.name} className="px-1">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <div className="text-body-sm font-medium text-foreground">{m.name}</div>
-                    <div className="text-caption font-mono text-text-tertiary shrink-0">{m.spec}</div>
-                  </div>
+                  <div className="text-body font-medium text-foreground mb-1">{m.name}</div>
                   <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-body-sm">
                     <div className="min-w-0">
-                      <span className="text-text-tertiary">给药方式</span>
+                      <span className="text-text-tertiary">给药方法</span>
                       <span className="text-foreground ml-1">{m.use}</span>
                     </div>
                     <div className="min-w-0">
