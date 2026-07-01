@@ -1093,7 +1093,7 @@ function DiagnosePage() {
                             <div className="min-w-0 flex-1">
                               <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
                                 {isTherapy ? (
-                                  <Activity className="h-3.5 w-3.5 text-[var(--state-warning)]" />
+                                  <Activity className="h-3.5 w-3.5 text-[#22ACEB]" />
                                 ) : (
                                   <Pill className="h-3.5 w-3.5 text-primary" />
                                 )}
