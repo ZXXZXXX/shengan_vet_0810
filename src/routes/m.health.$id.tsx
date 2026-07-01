@@ -1088,28 +1088,38 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
           </Section>
 
           <Section title="治疗方案 / 执行方案">
-            <ul className="divide-y divide-border -mx-1">
+            <ul className="-mx-1 space-y-3">
               {[
                 { name: "氟尼辛葡甲胺注射液", spec: "100ml / 瓶", use: "肌肉注射", dose: "2ml / 次", method: "1天1次，连用3天" },
                 { name: "头孢噻呋钠", spec: "1g / 支", use: "肌肉注射", dose: "1g / 次", method: "1天1次，连用3天" },
               ].map((m) => (
-                <li key={m.name} className="px-1 py-3 space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
+                <li key={m.name} className="px-1">
+                  <div className="flex items-center justify-between gap-2 mb-1">
                     <div className="text-body-sm font-medium text-foreground">{m.name}</div>
                     <div className="text-caption font-mono text-text-tertiary shrink-0">{m.spec}</div>
                   </div>
-                  <div className="grid grid-cols-2 gap-y-1 gap-x-3">
-                    <Field label="给药方式" value={m.use} />
-                    <Field label="单次剂量" value={m.dose} />
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-body-sm">
+                    <div className="min-w-0">
+                      <span className="text-text-tertiary">给药方式</span>
+                      <span className="text-foreground ml-1">{m.use}</span>
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-text-tertiary">单次剂量</span>
+                      <span className="text-foreground ml-1">{m.dose}</span>
+                    </div>
                   </div>
-                  <div className="pt-1">
-                    <Field label="用药方法" value={m.method} />
+                  <div className="text-body-sm mt-0.5">
+                    <span className="text-text-tertiary">用药方法</span>
+                    <span className="text-foreground ml-1">{m.method}</span>
                   </div>
                 </li>
               ))}
             </ul>
             <div className="pt-3 border-t border-border">
-              <Field label="备注" value="如出现严重过敏立即停药并上报。" />
+              <div className="text-body-sm">
+                <span className="text-text-tertiary">备注</span>
+                <span className="text-foreground ml-1">如出现严重过敏立即停药并上报。</span>
+              </div>
             </div>
           </Section>
 
