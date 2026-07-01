@@ -1628,7 +1628,7 @@ function ChecklistDay({
           {medItems.length > 0 && (
             <div className={`rounded-xl border border-border bg-card px-3 py-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between">
-                <div className="text-caption text-text-tertiary">用药信息</div>
+                <div className="text-body-sm text-foreground">用药信息</div>
                 {interactive && (
                   unableMed ? (
                     <button
