@@ -73,6 +73,7 @@ import { Route as MHealthTodayRouteImport } from './routes/m.health.today'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
 import { Route as MHealthTodayPickupRouteImport } from './routes/m.health.today_.pickup'
+import { Route as MHealthTodayBatchRouteImport } from './routes/m.health.today_.batch'
 import { Route as MHealthIdReviewRouteImport } from './routes/m.health.$id_.review'
 import { Route as MHealthIdExecuteRouteImport } from './routes/m.health.$id_.execute'
 import { Route as MHealthIdDiagnoseRouteImport } from './routes/m.health.$id_.diagnose'
@@ -400,6 +401,11 @@ const MHealthTodayPickupRoute = MHealthTodayPickupRouteImport.update({
   path: '/health/today/pickup',
   getParentRoute: () => MRoute,
 } as any)
+const MHealthTodayBatchRoute = MHealthTodayBatchRouteImport.update({
+  id: '/health/today_/batch',
+  path: '/health/today/batch',
+  getParentRoute: () => MRoute,
+} as any)
 const MHealthIdReviewRoute = MHealthIdReviewRouteImport.update({
   id: '/health/$id_/review',
   path: '/health/$id/review',
@@ -495,6 +501,7 @@ export interface FileRoutesByFullPath {
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRoute
   '/m/health/$id/review': typeof MHealthIdReviewRoute
+  '/m/health/today/batch': typeof MHealthTodayBatchRoute
   '/m/health/today/pickup': typeof MHealthTodayPickupRoute
   '/m/health/$id/execute/$pickupId': typeof MHealthIdExecutePickupIdRoute
 }
@@ -561,6 +568,7 @@ export interface FileRoutesByTo {
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRoute
   '/m/health/$id/review': typeof MHealthIdReviewRoute
+  '/m/health/today/batch': typeof MHealthTodayBatchRoute
   '/m/health/today/pickup': typeof MHealthTodayPickupRoute
   '/m/health/$id/execute/$pickupId': typeof MHealthIdExecutePickupIdRoute
 }
@@ -633,6 +641,7 @@ export interface FileRoutesById {
   '/m/health/$id_/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id_/execute': typeof MHealthIdExecuteRoute
   '/m/health/$id_/review': typeof MHealthIdReviewRoute
+  '/m/health/today_/batch': typeof MHealthTodayBatchRoute
   '/m/health/today_/pickup': typeof MHealthTodayPickupRoute
   '/m/health/$id_/execute_/$pickupId': typeof MHealthIdExecutePickupIdRoute
 }
@@ -706,6 +715,7 @@ export interface FileRouteTypes {
     | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
     | '/m/health/$id/review'
+    | '/m/health/today/batch'
     | '/m/health/today/pickup'
     | '/m/health/$id/execute/$pickupId'
   fileRoutesByTo: FileRoutesByTo
@@ -772,6 +782,7 @@ export interface FileRouteTypes {
     | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
     | '/m/health/$id/review'
+    | '/m/health/today/batch'
     | '/m/health/today/pickup'
     | '/m/health/$id/execute/$pickupId'
   id:
@@ -843,6 +854,7 @@ export interface FileRouteTypes {
     | '/m/health/$id_/diagnose'
     | '/m/health/$id_/execute'
     | '/m/health/$id_/review'
+    | '/m/health/today_/batch'
     | '/m/health/today_/pickup'
     | '/m/health/$id_/execute_/$pickupId'
   fileRoutesById: FileRoutesById
@@ -1311,6 +1323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MHealthTodayPickupRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/health/today_/batch': {
+      id: '/m/health/today_/batch'
+      path: '/health/today/batch'
+      fullPath: '/m/health/today/batch'
+      preLoaderRoute: typeof MHealthTodayBatchRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/health/$id_/review': {
       id: '/m/health/$id_/review'
       path: '/health/$id/review'
@@ -1410,6 +1429,7 @@ interface MRouteChildren {
   MHealthIdDiagnoseRoute: typeof MHealthIdDiagnoseRoute
   MHealthIdExecuteRoute: typeof MHealthIdExecuteRoute
   MHealthIdReviewRoute: typeof MHealthIdReviewRoute
+  MHealthTodayBatchRoute: typeof MHealthTodayBatchRoute
   MHealthTodayPickupRoute: typeof MHealthTodayPickupRoute
   MHealthIdExecutePickupIdRoute: typeof MHealthIdExecutePickupIdRoute
 }
@@ -1444,6 +1464,7 @@ const MRouteChildren: MRouteChildren = {
   MHealthIdDiagnoseRoute: MHealthIdDiagnoseRoute,
   MHealthIdExecuteRoute: MHealthIdExecuteRoute,
   MHealthIdReviewRoute: MHealthIdReviewRoute,
+  MHealthTodayBatchRoute: MHealthTodayBatchRoute,
   MHealthTodayPickupRoute: MHealthTodayPickupRoute,
   MHealthIdExecutePickupIdRoute: MHealthIdExecutePickupIdRoute,
 }
@@ -1548,13 +1569,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

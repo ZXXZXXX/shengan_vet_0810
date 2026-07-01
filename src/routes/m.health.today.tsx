@@ -136,17 +136,12 @@ function TodayTasksPage() {
   const claimed = useClaimed();
   const { capture } = Route.useSearch();
 
-  // 领药完成后回到此页：自动进入多选 + 触发拍照记录步骤
+  // 领药完成后回到此页：直接跳转到批量执行页
   useEffect(() => {
     if (!capture) return;
-    const ids = capture.split(",").filter(Boolean);
-    setActiveTab("待执行");
-    setSelectMode(true);
-    setSelected(new Set(ids));
-    setDone("batch");
     navigate({
-      to: "/m/health/today",
-      search: { capture: undefined },
+      to: "/m/health/today_/batch",
+      search: { ids: capture },
       replace: true,
     });
   }, [capture, navigate]);
@@ -548,7 +543,10 @@ function TodayTasksPage() {
                     search: { ids: allIds },
                   });
                 } else {
-                  setDone("batch");
+                  navigate({
+                    to: "/m/health/today_/batch",
+                    search: { ids: allIds },
+                  });
                 }
               }}
               className="w-full h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
