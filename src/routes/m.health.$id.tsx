@@ -1502,6 +1502,12 @@ function ChecklistDay({
   const evidencePhotoRef = useRef<HTMLInputElement>(null);
   const evidenceVideoRef = useRef<HTMLInputElement>(null);
   const evidenceAlbumRef = useRef<HTMLInputElement>(null);
+  const [unableMed, setUnableMed] = useState(false);
+  const [unableReason, setUnableReason] = useState("");
+  const [unablePhotos, setUnablePhotos] = useState<number[]>([]);
+  const [unableSheetOpen, setUnableSheetOpen] = useState(false);
+  const unablePhotoRef = useRef<HTMLInputElement>(null);
+  const unableAlbumRef = useRef<HTMLInputElement>(null);
 
   const scannedMap = useScannedCodes(pickupCode ?? "");
   const scanAttemptRef = useRef(0);
