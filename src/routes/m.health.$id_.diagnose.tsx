@@ -1922,6 +1922,18 @@ function DrugEditor({
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">天</span>
               </div>
             </label>
+
+            {/* 补充说明 */}
+            <label className="block space-y-1">
+              <span className="text-caption text-text-tertiary">补充说明</span>
+              <textarea
+                value={value.desc || ""}
+                onChange={(e) => onChange({ ...value, desc: e.target.value })}
+                placeholder="如：用药前后需监测体温、注意过敏反应等"
+                rows={2}
+                className="w-full p-3 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+              />
+            </label>
           </>
         )}
 
