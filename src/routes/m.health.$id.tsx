@@ -1115,7 +1115,11 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 </li>
               ))}
             </ul>
-            <div className="pt-3 border-t border-border">
+            <div className="pt-3 border-t border-border space-y-1">
+              <div className="text-body-sm">
+                <span className="text-text-tertiary">补充说明</span>
+                <span className="text-foreground ml-1">每次 10 分钟，促进炎症消散；如出现严重过敏立即停药并上报。</span>
+              </div>
               <div className="text-body-sm">
                 <span className="text-text-tertiary">备注</span>
                 <span className="text-foreground ml-1">如出现严重过敏立即停药并上报。</span>
