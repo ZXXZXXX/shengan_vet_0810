@@ -1616,6 +1616,7 @@ function DrugEditor({
       spec: d.spec,
       use: value.use || d.recommendedUse,
       doseUnit: value.doseUnit || d.defaultUnit,
+      isSpecialDrug: d.isSpecial ?? false,
     });
     setQuery(d.name);
     setFocused(false);
