@@ -1626,7 +1626,7 @@ function ChecklistDay({
 
           {/* 2. 用药信息（只读，无勾选；支持切换"无法正常用药"） */}
           {medItems.length > 0 && (
-            <div className={`px-4 pb-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
+            <div className={`rounded-xl border border-border bg-card px-3 py-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between">
                 <div className="text-caption text-text-tertiary">用药信息</div>
                 {interactive && (
