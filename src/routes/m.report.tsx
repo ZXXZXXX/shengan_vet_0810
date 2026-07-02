@@ -134,45 +134,32 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
 };
 
 
-// 疾病知识库 + 自动治疗方案（每个疾病支持多个处方方案）
+// 疾病知识库 + 自动治疗方案（来源：晟安标准处方 · 子宫炎类）
 type DiseasePlan = { id: string; rx: string; desc?: string; drugs: string[]; duration: string };
 const diseaseKB: { name: string; symptoms: string[]; plans: DiseasePlan[] }[] = [
   {
-    name: "乳房炎",
-    symptoms: ["乳房红肿", "体温升高", "产奶量骤降"],
+    name: "产道创伤",
+    symptoms: ["阴道黏膜层撕裂", "助产 3 分及以上"],
     plans: [
-      { id: "p1", rx: "RX-001 乳房炎标准处方 A", desc: "抗生素 + 消炎", drugs: ["乳房炎抗生素 5mg ×2", "消炎药 ×1"], duration: "5 天" },
-      { id: "p2", rx: "RX-001B 乳房炎简化方案", desc: "轻症首选", drugs: ["乳房炎抗生素 5mg ×1"], duration: "3 天" },
+      { id: "p1", rx: "处方 1 · 5% 头孢噻呋 + 氟尼辛", desc: "疗程 3-5 天，配合外阴冲洗与碘甘油局部处理", drugs: ["5% 盐酸头孢噻呋（畜可健） 4.4mL/100kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3-5 天" },
+      { id: "p2", rx: "处方 2 · 10% 头孢噻呋 + 氟尼辛", desc: "3 天 1 次给药；损伤 >5cm 须 PGA 缝合", drugs: ["10% 盐酸头孢噻呋 20mL/次 3 天 1 次", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3-5 天" },
     ],
   },
   {
-    name: "口蹄疫",
-    symptoms: ["体温升高", "口腔水疱", "跛行"],
+    name: "产后子宫炎",
+    symptoms: ["体温 > 39.5℃", "分泌物恶臭", "分泌物含 >50% 脓"],
     plans: [
-      { id: "p1", rx: "RX-002 口蹄疫紧急处方", desc: "立即隔离 + 疫苗", drugs: ["口蹄疫疫苗 A 型 ×1", "消毒液 ×5L"], duration: "立即" },
+      { id: "p1", rx: "处方 1 · 青霉素钠 + 氟尼辛", desc: "产后 10 天内，早晚各 1 次", drugs: ["注射用青霉素钠（联治灵） 2.2 万 IU/kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3 天" },
+      { id: "p2", rx: "处方 2 · 5% 头孢噻呋 + 氟尼辛", desc: "产后 10 天内，1 天 1 次", drugs: ["5% 盐酸头孢噻呋（畜可健） 4.4mL/100kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3 天" },
+      { id: "p3", rx: "处方 3 · 10% 头孢噻呋 + 利福昔明灌注", desc: "产后 5 天以上；利福昔明子宫灌注 2-3 次", drugs: ["10% 盐酸头孢噻呋 20mL 3 天 1 次", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推", "利福昔明子宫注入剂（澳利舒） 100mL/次"], duration: "3 天" },
     ],
   },
   {
-    name: "蹄叶炎",
-    symptoms: ["跛行", "卧地不起"],
+    name: "子宫内膜炎",
+    symptoms: ["直肠检查子宫异常", "分泌物含 >50% 脓", "产后 21-28 天"],
     plans: [
-      { id: "p1", rx: "RX-003 蹄叶炎康复处方", desc: "消炎 + 蹄部护理", drugs: ["消炎止痛剂 ×1", "蹄部护理液 ×1"], duration: "7 天" },
-      { id: "p2", rx: "RX-003B 物理治疗方案", desc: "禁用药物时使用", drugs: ["蹄浴 1 次/天"], duration: "10 天" },
-    ],
-  },
-  {
-    name: "酮病",
-    symptoms: ["采食下降", "产奶量骤降", "体温偏低"],
-    plans: [
-      { id: "p1", rx: "RX-004 酮病调理处方", desc: "静脉补糖", drugs: ["丙二醇 500ml ×1", "葡萄糖注射液"], duration: "3 天" },
-    ],
-  },
-  {
-    name: "瘤胃酸中毒",
-    symptoms: ["采食下降", "腹泻", "精神沉郁"],
-    plans: [
-      { id: "p1", rx: "RX-005 瘤胃调理处方", desc: "缓冲 + 调理", drugs: ["碳酸氢钠", "瘤胃缓冲剂"], duration: "3 天" },
-      { id: "p2", rx: "RX-005B 强化方案", desc: "重症加补液", drugs: ["碳酸氢钠", "瘤胃缓冲剂", "口服补液盐"], duration: "5 天" },
+      { id: "p1", rx: "处方 1 · 青霉素钠 + 氟尼辛", desc: "直肠按压排脓后用药，早晚各 1 次", drugs: ["注射用青霉素钠（联治灵） 2.2 万 IU/kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3 天" },
+      { id: "p2", rx: "处方 2 · 利福昔明子宫灌注", desc: "利福昔明 100 mL/次，2 天一次", drugs: ["利福昔明子宫注入剂（澳利舒） 100mL/次"], duration: "2-3 次" },
     ],
   },
 ];
