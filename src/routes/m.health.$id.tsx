@@ -1625,6 +1625,7 @@ function ChecklistDay({
   // 未领药时不再拦截其他板块的输入；用药信息仍为必填，由 ready 判断
   const inputsLocked = false;
   const medItems = items.filter((it) => it.needMed);
+  const therapyItems = items.filter((it) => !it.needMed && !it.title.includes("测温"));
 
   return (
     <div className="space-y-3">
