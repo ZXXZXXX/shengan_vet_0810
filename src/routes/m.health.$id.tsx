@@ -1835,16 +1835,19 @@ function ChecklistDay({
                     className={`rounded-xl border bg-card px-3 py-2.5 ${scanned ? "border-primary" : "border-border"}`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="text-body text-foreground">{it.title}</div>
-                        <div className="mt-1 flex items-center gap-2 text-caption">
-                          <span className={scanned ? "text-primary font-medium" : "text-text-tertiary"}>
-                            {scanned ? (it.manufacturer ?? "-") : "-"}
-                          </span>
-                          <span className="text-text-tertiary">·</span>
-                          <span className={`font-mono ${scanned ? "text-text-secondary" : "text-text-tertiary"}`}>
-                            {scanned ? (it.batchNo ?? "-") : "-"}
-                          </span>
+                      <div className="min-w-0 flex-1 flex items-start gap-1.5">
+                        <Pill className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-body text-foreground">{it.title}</div>
+                          <div className="mt-1 flex items-center gap-2 text-caption">
+                            <span className={scanned ? "text-primary font-medium" : "text-text-tertiary"}>
+                              {scanned ? (it.manufacturer ?? "-") : "-"}
+                            </span>
+                            <span className="text-text-tertiary">·</span>
+                            <span className={`font-mono ${scanned ? "text-text-secondary" : "text-text-tertiary"}`}>
+                              {scanned ? (it.batchNo ?? "-") : "-"}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       {interactive && scanned && (
