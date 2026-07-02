@@ -1206,24 +1206,25 @@ function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
   const allDone = status === "已完成";
   const terminated = status === "已终止";
   const action = buildActionText(plan);
-  const days = Math.max(1, plan.days);
-  const genDate = (i: number) => {
-    const base = new Date(2026, 4, 12, 13, 8); // 2026-05-12 13:08
-    const d = new Date(base.getTime() + i * 86400000);
+  const sessions = computeSessions(plan);
+  const total = sessions.length;
+  const genDate = (dayIdx: number, slot: number) => {
+    const base = new Date(2026, 4, 12, slot === 2 ? 19 : 8, 0);
+    const d = new Date(base.getTime() + (dayIdx - 1) * 86400000);
     const pad = (n: number) => String(n).padStart(2, "0");
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
   if (terminated) {
-    return Array.from({ length: Math.min(2, days) }).map((_, i) => ({
-      day: i + 1, date: genDate(i), action, pickup: true, phase: "done" as DayPhase,
+    return sessions.slice(0, Math.min(2, total)).map((s, i) => ({
+      day: i + 1, date: genDate(s.day, s.slot), action, pickup: true, phase: "done" as DayPhase,
     }));
   }
-  return Array.from({ length: days }).map((_, i) => {
+  return sessions.map((s, i) => {
     let phase: DayPhase = "pending";
     if (allDone) phase = "done";
     else if (i === 0) phase = "done";
     else if (i === 1) phase = "active";
-    return { day: i + 1, date: genDate(i), action, pickup: true, phase };
+    return { day: i + 1, date: genDate(s.day, s.slot), action, pickup: true, phase };
   });
 }
 
