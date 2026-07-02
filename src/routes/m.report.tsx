@@ -1619,6 +1619,7 @@ function EvidenceSection({
   const [addSheetOpen, setAddSheetOpen] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const albumInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <Section title="现场记录">
