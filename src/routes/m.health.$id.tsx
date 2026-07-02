@@ -1215,10 +1215,15 @@ function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
   const terminated = status === "已终止";
   const action = buildActionText(plan);
   const days = Math.max(1, plan.days);
-  const baseDates = ["2026-05-12 13:08", "2026-05-13 13:22", "2026-05-14 13:15", "2026-05-15 13:05", "2026-05-16 13:10"];
+  const genDate = (i: number) => {
+    const base = new Date(2026, 4, 12, 13, 8); // 2026-05-12 13:08
+    const d = new Date(base.getTime() + i * 86400000);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
   if (terminated) {
     return Array.from({ length: Math.min(2, days) }).map((_, i) => ({
-      day: i + 1, date: baseDates[i], action, pickup: true, phase: "done" as DayPhase,
+      day: i + 1, date: genDate(i), action, pickup: true, phase: "done" as DayPhase,
     }));
   }
   return Array.from({ length: days }).map((_, i) => {
@@ -1226,7 +1231,7 @@ function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
     if (allDone) phase = "done";
     else if (i === 0) phase = "done";
     else if (i === 1) phase = "active";
-    return { day: i + 1, date: baseDates[i], action, pickup: true, phase };
+    return { day: i + 1, date: genDate(i), action, pickup: true, phase };
   });
 }
 
