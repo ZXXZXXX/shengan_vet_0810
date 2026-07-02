@@ -328,7 +328,7 @@ function DiagnosePage() {
   // 疾病
   const [disease, setDisease] = useState<string>("");
   const [diseaseQuery, setDiseaseQuery] = useState("");
-  const [diseaseFocused, setDiseaseFocused] = useState(false);
+  const [diseasePickerOpen, setDiseasePickerOpen] = useState(false);
 
 
   // 标准处方（系统内置，按疾病提供多个完整方案，二选一/三选一；按体重自动算量）
