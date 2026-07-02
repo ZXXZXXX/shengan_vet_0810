@@ -1342,7 +1342,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
             <Field label="操作人" value={<PersonChip name="李雨晴" />} />
           </div>
         </div>
-      ) : isPlatformIssued ? null : (() => {
+      ) : isPlatformIssued || !id.startsWith("WO-") ? null : (() => {
         const isAutoArchived = autoArchivedOrders.has(id);
         const reviewPhase: DayPhase = reviewDone || status === "已完成" ? "done" : reviewActive ? "active" : "pending";
         const isReviewDone = reviewPhase === "done";
