@@ -221,7 +221,27 @@ type Prescription = {
   usageMethod?: string;
   // 按体重区间给药（覆盖自动/固定剂量显示）
   doseByWeight?: string;
+  // 药品品牌备选（当同一处方允许多个厂商 / 品牌互替时提供）
+  alternatives?: string[];
 };
+
+// 解析 "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）" -> 前缀 + 多品牌
+function parseBrandAlternatives(name: string): { prefix: string; brands: string[] } | null {
+  const m = name.match(/^(.*?)（([^（）]+)）\s*$/);
+  if (!m) return null;
+  const inner = m[2];
+  if (!/[\/／]/.test(inner)) return null;
+  const brands = inner.split(/[\/／]/).map((s) => s.trim()).filter(Boolean);
+  if (brands.length < 2) return null;
+  return { prefix: m[1].trim(), brands };
+}
+
+function pickDefaultBrand(prefix: string, brands: string[]): string {
+  const withStock = brands.filter((b) => (drugStock[`${prefix}（${b}）`]?.qty ?? 0) > 0);
+  const pool = withStock.length > 0 ? withStock : [...brands];
+  pool.sort((a, b) => a.localeCompare(b, "zh"));
+  return pool[0];
+}
 
 // 体重相关剂量计算（mL/g 等）。fixed 表示单次固定剂量
 function computePerDose(r: Prescription, w: number): number {
