@@ -466,23 +466,24 @@ function ReportPage() {
   // 是否完成"线索上传"——之后才显示疑似疾病（照片/视频必填）
   const evidenceReady = photos.length > 0 || videos.length > 0;
 
+  const activeDiseaseKB = diseaseKBByType[workType] ?? [];
   const diseaseMatches = useMemo(() => {
     const kw = diseaseQ.trim().toLowerCase();
     const base = kw
-      ? diseaseKB.filter((d) => d.name.toLowerCase().includes(kw))
-      : // 没有关键词时，按症状重合度排序
-        [...diseaseKB].sort((a, b) => {
+      ? activeDiseaseKB.filter((d) => d.name.toLowerCase().includes(kw))
+      : [...activeDiseaseKB].sort((a, b) => {
           const ai = a.symptoms.filter((s) => symptoms.includes(s)).length;
           const bi = b.symptoms.filter((s) => symptoms.includes(s)).length;
           return bi - ai;
         });
     return base.slice(0, 6);
-  }, [diseaseQ, symptoms]);
+  }, [diseaseQ, symptoms, activeDiseaseKB]);
 
   const selectedDisease = useMemo(
-    () => diseaseKB.find((d) => d.name === suspectedDisease) ?? null,
-    [suspectedDisease]
+    () => activeDiseaseKB.find((d) => d.name === suspectedDisease) ?? null,
+    [suspectedDisease, activeDiseaseKB]
   );
+
   const [planIdx, setPlanIdx] = useState(0);
   const [planPickerOpen, setPlanPickerOpen] = useState(false);
   useEffect(() => { setPlanIdx(0); }, [suspectedDisease]);
