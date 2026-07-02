@@ -1199,21 +1199,24 @@ type DaySummary = {
   phase: DayPhase;
 };
 
-function getExecSummary(status: StatusKey): DaySummary[] {
+function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
   const allDone = status === "已完成";
   const terminated = status === "已终止";
-  const action = "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录";
+  const action = buildActionText(plan);
+  const days = Math.max(1, plan.days);
+  const baseDates = ["2026-05-12 13:08", "2026-05-13 13:22", "2026-05-14 13:15", "2026-05-15 13:05", "2026-05-16 13:10"];
   if (terminated) {
-    return [
-      { day: 1, date: "2026-05-12 13:08", action, pickup: true, phase: "done" },
-      { day: 2, date: "2026-05-13 13:22", action, pickup: true, phase: "done" },
-    ];
+    return Array.from({ length: Math.min(2, days) }).map((_, i) => ({
+      day: i + 1, date: baseDates[i], action, pickup: true, phase: "done" as DayPhase,
+    }));
   }
-  return [
-    { day: 1, date: "2026-05-12 13:08", action, pickup: true, phase: "done" },
-    { day: 2, date: "2026-05-13 13:22", action, pickup: true, phase: allDone ? "done" : "active" },
-    { day: 3, date: "2026-05-14 13:15", action, pickup: true, phase: allDone ? "done" : "pending" },
-  ];
+  return Array.from({ length: days }).map((_, i) => {
+    let phase: DayPhase = "pending";
+    if (allDone) phase = "done";
+    else if (i === 0) phase = "done";
+    else if (i === 1) phase = "active";
+    return { day: i + 1, date: baseDates[i], action, pickup: true, phase };
+  });
 }
 
 
@@ -1236,7 +1239,7 @@ function PickupStatus({ needPickup }: { needPickup: boolean }) {
   );
 }
 
-export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
+export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, plan, reviewAction }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string; plan?: WoPlan; reviewAction?: string }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
