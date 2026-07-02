@@ -152,39 +152,62 @@ const D = {
     isSpecial: false,
     kind: "therapy",
   } satisfies PlanDrug,
-  drying_cefquinome: {
-    name: "头孢喹肟乳房注入剂（牧全欣）",
-    spec: "8g / 支",
-    manufacturer: "勃林格",
-    use: "乳房灌注",
-    dose: "1 支 / 乳区",
-    method: "干奶当日 1 次，共 4 支 / 头",
-    qty: "4 支",
-    isPrescription: true,
-    isSpecial: true,
-  } satisfies PlanDrug,
-  drying_ceftiofur: {
-    name: "头孢噻呋乳房注入剂（茹通）",
-    spec: "8g / 支",
+  drying_muquanxin: {
+    name: "硫酸头孢喹肟乳房注入剂干乳期（牧全欣）",
+    spec: "3g / 支",
     manufacturer: "礼蓝动保",
     use: "乳房灌注",
-    dose: "1 支 / 乳区",
-    method: "干奶当日 1 次，共 4 支 / 头",
+    dose: "4 支 / 次（非盲乳数 = 4）",
+    method: "干奶当日 1 次（一次量）",
     qty: "4 支",
     isPrescription: true,
-    isSpecial: true,
-  } satisfies PlanDrug,
-  drying_sealant: {
-    name: "乳头内封剂（次硝酸铋）",
-    spec: "4g / 支",
-    manufacturer: "硕腾",
-    use: "乳头封闭",
-    dose: "1 支 / 乳区",
-    method: "干奶当日 1 次，共 4 支 / 头",
-    qty: "4 支",
-    isPrescription: false,
     isSpecial: false,
   } satisfies PlanDrug,
+  drying_rutong: {
+    name: "硫酸头孢喹肟乳房注入剂（干乳期）（茹通）",
+    spec: "3g / 支",
+    manufacturer: "瑞普生物",
+    use: "乳房灌注",
+    dose: "4 支 / 次（非盲乳数 = 4）",
+    method: "干奶当日 1 次（一次量）",
+    qty: "4 支",
+    isPrescription: true,
+    isSpecial: false,
+  } satisfies PlanDrug,
+  drying_haikuining: {
+    name: "硫酸头孢喹肟乳房注入剂（干乳期）（海喹宁）",
+    spec: "3g / 支",
+    manufacturer: "海正动保",
+    use: "乳房灌注",
+    dose: "4 支 / 次（非盲乳数 = 4）",
+    method: "干奶当日 1 次（一次量）",
+    qty: "4 支",
+    isPrescription: true,
+    isSpecial: false,
+  } satisfies PlanDrug,
+  drying_xukejian: {
+    name: "盐酸头孢噻呋乳房注入剂干乳期（畜可健）",
+    spec: "8ml / 支",
+    manufacturer: "硕腾",
+    use: "乳房灌注",
+    dose: "4 支 / 次（非盲乳数 = 4）",
+    method: "干奶当日 1 次（一次量）",
+    qty: "4 支",
+    isPrescription: true,
+    isSpecial: false,
+  } satisfies PlanDrug,
+  drying_saifukui: {
+    name: "硫酸头孢喹肟乳房注入剂干乳期（赛福魁）",
+    spec: "3g / 支",
+    manufacturer: "回盛生物",
+    use: "乳房灌注",
+    dose: "4 支 / 次（非盲乳数 = 4）",
+    method: "干奶当日 1 次（一次量）",
+    qty: "4 支",
+    isPrescription: true,
+    isSpecial: false,
+  } satisfies PlanDrug,
+
 };
 
 // 非药物任务：疗程中每天都要做，但不涉及药品的具体执行项
@@ -360,21 +383,49 @@ const PLANS = {
   drying_p1: {
     disease: "常规干奶",
     prescription: {
-      name: "处方 1 · 头孢喹肟乳房注入剂（牧全欣）+ 乳头内封剂",
-      note: "干奶当日每乳区 1 支，配合乳头封闭剂。",
+      name: "处方 1 · 硫酸头孢喹肟乳房注入剂干乳期（牧全欣）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
     },
-    drugs: [D.drying_cefquinome, D.drying_sealant],
+    drugs: [D.drying_muquanxin],
     days: 1,
   },
   drying_p2: {
     disease: "常规干奶",
     prescription: {
-      name: "处方 2 · 头孢噻呋乳房注入剂（茹通）+ 乳头内封剂",
-      note: "干奶当日每乳区 1 支。",
+      name: "处方 2 · 硫酸头孢喹肟乳房注入剂（干乳期）（茹通）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
     },
-    drugs: [D.drying_ceftiofur, D.drying_sealant],
+    drugs: [D.drying_rutong],
     days: 1,
   },
+  drying_p3: {
+    disease: "常规干奶",
+    prescription: {
+      name: "处方 3 · 硫酸头孢喹肟乳房注入剂（干乳期）（海喹宁）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
+    },
+    drugs: [D.drying_haikuining],
+    days: 1,
+  },
+  drying_p4: {
+    disease: "常规干奶",
+    prescription: {
+      name: "处方 4 · 盐酸头孢噻呋乳房注入剂干乳期（畜可健）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
+    },
+    drugs: [D.drying_xukejian],
+    days: 1,
+  },
+  drying_p5: {
+    disease: "常规干奶",
+    prescription: {
+      name: "处方 5 · 硫酸头孢喹肟乳房注入剂干乳期（赛福魁）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
+    },
+    drugs: [D.drying_saifukui],
+    days: 1,
+  },
+
   postpartum: {
     disease: "产后保健",
     prescription: {
@@ -549,6 +600,25 @@ const WO_MAP: Record<string, {
     diagnoser: "王医生",
     diagnoseTime: "2026-05-25 10:00",
   },
+  "GN-0185": {
+    key: "drying_p2",
+    subType: "低风险",
+    symptoms: ["达到干奶日龄", "预产 58 天", "泌乳量 14kg"],
+    description: "常规干奶：低风险牛只。",
+    reviewAction: "干奶后 7 天复查乳区。",
+    diagnoser: "王医生",
+    diagnoseTime: "2026-05-24 09:30",
+  },
+  "GN-0120": {
+    key: "drying_p4",
+    subType: "低风险",
+    symptoms: ["达到干奶日龄", "预产 56 天", "泌乳量 13kg"],
+    description: "常规干奶：低风险牛只。",
+    reviewAction: "干奶后 7 天复查乳区。",
+    diagnoser: "王医生",
+    diagnoseTime: "2026-05-23 15:20",
+  },
+
 };
 
 // 疾病 → 默认处方（用于未在表内映射的 WO）
