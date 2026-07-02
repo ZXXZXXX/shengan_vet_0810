@@ -437,8 +437,21 @@ function DiagnosePage() {
   const pickDisease = (d: (typeof rankedDiseases)[number]) => {
     setDisease(d.name);
     setDiseaseQuery(d.name);
-    setStdPlans(d.plans.map((p) => ({ ...p, items: p.items.map((it) => ({ ...it })) })));
-    setSelectedPlanId(d.plans[0]?.id ?? "");
+    // 优先选择所有药品都有库存的方案；若都齐全或都缺，则按方案名称升序排序
+    const cloned = d.plans.map((p) => ({ ...p, items: p.items.map((it) => ({ ...it })) }));
+    const scored = cloned
+      .map((p) => {
+        const drugItems = p.items.filter((it) => it.kind === "drug");
+        const allInStock = drugItems.length > 0 && drugItems.every((it) => !!drugStock[it.name]);
+        return { p, allInStock };
+      })
+      .sort((a, b) => {
+        if (a.allInStock !== b.allInStock) return a.allInStock ? -1 : 1;
+        return a.p.name.localeCompare(b.p.name, "zh");
+      });
+    const sortedPlans = scored.map((s) => s.p);
+    setStdPlans(sortedPlans);
+    setSelectedPlanId(sortedPlans[0]?.id ?? "");
     setDiseaseFocused(false);
   };
 
