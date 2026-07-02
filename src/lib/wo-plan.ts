@@ -403,20 +403,23 @@ const WO_MAP: Record<string, {
   // 产后护理
   "PP-2501": {
     key: "postpartum",
+    subType: "产后 3 天例检",
     symptoms: ["产后 3 天", "恶露正常", "体温 38.9℃"],
-    description: "产后 3 天例行检查：胎衣已排出，恶露正常，体温体征正常；执行常规产后保健。",
+    description: "产后 3 天例行检查：胎衣已排出，恶露正常，体温体征正常。",
     reviewAction: "产后 14 天例检。",
     diagnoser: "王医生",
     diagnoseTime: "2026-05-24 09:20",
   },
   "PP-2601": {
     key: "postpartum",
+    subType: "产后 5 天例检",
     symptoms: ["产后 5 天", "轻度水肿"],
-    description: "产后 5 天体况良好，执行例行保健。",
+    description: "产后 5 天体况良好。",
     reviewAction: "产后 14 天例检。",
   },
   "PP-2602": {
     key: "postpartum",
+    subType: "产后 2 天例检",
     symptoms: ["产后 2 天"],
     description: "产后例检 · 常规护理。",
     reviewAction: "产后 7 天例检。",
