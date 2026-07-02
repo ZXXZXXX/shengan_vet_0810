@@ -1594,14 +1594,38 @@ function ChecklistDay({
     );
   }, [pickupClaimed, interactive]);
 
-  // 提交就绪：测温（若需要）已填 + 用药信息（正常：领药完成 + 所有用药已扫码核验；异常：填写原因 + 至少一张照片）+ 至少一张治疗记录照片
-  const tempItem = items.find((i) => i.title.includes("测温"));
-  const tempReady = !withTemp || Boolean((temps[tempItem?.id ?? ""] ?? "").trim());
-  const medScanReady = unableMed
-    ? unableReason.trim().length > 0 && unablePhotos.length > 0
-    : pickupClaimed && items.filter((i) => i.needMed).every((i) => Boolean(i.scanCode));
-  const evidenceRequired = !unableMed;
-  const ready = interactive && medScanReady && tempReady && (!evidenceRequired || evidencePhotos.length > 0);
+  // 非药物任务：优先使用 plan.tasks；否则若需要每日测温，合成一个 直肠体温 任务
+  const defaultTempTask: PlanTask = {
+    type: "检查",
+    name: "直肠体温",
+    desc: "测量并记录牛只直肠体温",
+    record: "number",
+    unit: "℃",
+    placeholder: "输入直肠温度",
+    required: true,
+  };
+  const planTasks: PlanTask[] = activePlan?.tasks ?? (withTemp ? [defaultTempTask] : []);
+  const [taskValues, setTaskValues] = useState<Record<string, string>>({});
+  const [taskPhotos, setTaskPhotos] = useState<Record<string, number[]>>({});
+  const taskFileRef = useRef<Record<string, HTMLInputElement | null>>({});
+
+  const tasksReady = planTasks.every((t, i) => {
+    if (!t.required) return true;
+    const key = `task-${i}`;
+    if (t.record === "number" || t.record === "text") return Boolean((taskValues[key] ?? "").trim());
+    if (t.record === "photo") return (taskPhotos[key]?.length ?? 0) > 0;
+    return true;
+  });
+  const medItems = items.filter((it) => it.needMed);
+  const therapyItems = items.filter((it) => !it.needMed && !it.title.includes("测温"));
+  const hasMed = medItems.length > 0;
+  const medScanReady = !hasMed
+    ? true
+    : unableMed
+      ? unableReason.trim().length > 0 && unablePhotos.length > 0
+      : pickupClaimed && items.filter((i) => i.needMed).every((i) => Boolean(i.scanCode));
+  const evidenceRequired = hasMed && !unableMed;
+  const ready = interactive && medScanReady && tasksReady && (!evidenceRequired || evidencePhotos.length > 0);
   useEffect(() => {
     onReadyChange?.(ready);
   }, [ready, onReadyChange]);
@@ -1629,8 +1653,6 @@ function ChecklistDay({
   // 仍需领物：所有填写禁用
   // 未领药时不再拦截其他板块的输入；用药信息仍为必填，由 ready 判断
   const inputsLocked = false;
-  const medItems = items.filter((it) => it.needMed);
-  const therapyItems = items.filter((it) => !it.needMed && !it.title.includes("测温"));
 
   return (
     <div className="space-y-3">
