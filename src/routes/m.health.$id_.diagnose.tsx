@@ -1091,15 +1091,17 @@ function DiagnosePage() {
                         <li key={r.id} className="rounded-lg border border-border bg-card p-3">
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0 flex-1">
-                              <div className="text-body text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                              <div className="flex items-start gap-1.5">
                                 {isTherapy ? (
-                                  <Activity className="h-3.5 w-3.5 text-[#22ACEB]" />
+                                  <Activity className="h-3.5 w-3.5 text-[#22ACEB] shrink-0 mt-0.5" />
                                 ) : (
-                                  <Pill className="h-3.5 w-3.5 text-primary" />
+                                  <Pill className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
                                 )}
-                                {r.name || (isTherapy ? "未填写治疗手段" : "未填写药品")}
+                                <span className="text-body text-foreground min-w-0 flex-1">
+                                  {r.name || (isTherapy ? "未填写治疗手段" : "未填写药品")}
+                                </span>
                                 {!isTherapy && r.isSpecialDrug && (
-                                  <span className="tag tag-muted">特殊</span>
+                                  <span className="tag tag-muted shrink-0">特殊</span>
                                 )}
                               </div>
                               <div className="text-caption text-text-tertiary mt-1">
