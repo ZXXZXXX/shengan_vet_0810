@@ -1014,7 +1014,7 @@ function DiagnosePage() {
                                 <Sparkles className="h-3 w-3 mt-0.5 shrink-0" />
                                 <span>
                                 {r.doseByWeight
-                                  ? `按体重区间：${r.doseByWeight}`
+                                  ? "按体重区间计算"
                                   : isFixed
                                     ? `固定剂量 ${baseDose}${unit} / 次`
                                     : computedDose !== null
