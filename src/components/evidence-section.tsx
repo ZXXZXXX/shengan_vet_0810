@@ -38,13 +38,19 @@ export function EvidenceSection({
   descPlaceholder?: string;
   title?: string;
 }) {
-  type MediaItem = { id: number; type: "photo" | "video" };
-  const media: MediaItem[] = [
-    ...photos.map((id) => ({ id, type: "photo" as const })),
-    ...videos.map((id) => ({ id, type: "video" as const })),
-  ];
-  const maxMedia = 9;
-  const remaining = maxMedia - media.length;
+  // 合并 photos + videos 为统一 items，便于用 MediaGrid 展示
+  // 上传时统一按 photo 记录（保留 setPhotos setter），videos 仅在既有数据展示时保留
+  const items = [...photos, ...videos];
+  const setItems: React.Dispatch<React.SetStateAction<number[]>> = (updater) => {
+    const cur = [...photos, ...videos];
+    const next = typeof updater === "function" ? (updater as (p: number[]) => number[])(cur) : updater;
+    // 删除：从 photos / videos 中过滤
+    setPhotos((p) => p.filter((id) => next.includes(id)));
+    setVideos((v) => v.filter((id) => next.includes(id)));
+    // 新增：附加到 photos
+    const added = next.filter((id) => !cur.includes(id));
+    if (added.length) setPhotos((p) => [...p, ...added]);
+  };
   const voiceCount = voiceSecs === null ? 0 : 1;
 
   return (
@@ -52,52 +58,14 @@ export function EvidenceSection({
       <div className="flex items-baseline justify-between mb-3">
         <h3 className="text-card-title text-foreground">{title}</h3>
       </div>
-      <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mb-2">
-        <Camera className="h-3.5 w-3.5" /> 照片 / 视频
-        {mediaRequired && <span className="text-[var(--state-danger)]">*</span>}
-        <span>· {media.length} 条</span>
-      </div>
-      <div className="grid grid-cols-4 gap-2">
-        {media.map((m) => (
-          <div
-            key={`${m.type}-${m.id}`}
-            className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center"
-          >
-            {m.type === "video" && <Video className="h-5 w-5 text-text-tertiary" />}
-            <button
-              onClick={() =>
-                m.type === "photo"
-                  ? setPhotos((prev) => prev.filter((x) => x !== m.id))
-                  : setVideos((prev) => prev.filter((x) => x !== m.id))
-              }
-              className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          </div>
-        ))}
-        {remaining > 0 && (
-          <label className="aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary cursor-pointer active:bg-border transition-colors">
-            <Camera className="h-5 w-5" />
-            <span className="text-caption">添加</span>
-            <input
-              type="file"
-              accept={hideVideo ? "image/*" : "image/*,video/*"}
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                const files = Array.from(e.target.files ?? []);
-                files.forEach((f) => {
-                  if (f.type.startsWith("video/"))
-                    setVideos((p) => [...p, Date.now() + Math.random()]);
-                  else setPhotos((p) => [...p, Date.now() + Math.random()]);
-                });
-                e.target.value = "";
-              }}
-            />
-          </label>
-        )}
-      </div>
+      <MediaGrid
+        items={items}
+        setItems={setItems}
+        max={9}
+        hideVideo={hideVideo}
+        required={mediaRequired}
+      />
+
 
       <div className="text-caption text-text-tertiary inline-flex items-center gap-1 mt-4 mb-2">
         <Mic className="h-3.5 w-3.5" /> 录音 · {voiceCount} 条
