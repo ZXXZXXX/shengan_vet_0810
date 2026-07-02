@@ -216,6 +216,10 @@ type Prescription = {
   dosePer?: "100kg" | "500kg" | "fixed";
   // 是否属于特殊药品（仅在特殊处方中显示「特殊」标签）
   isSpecialDrug?: boolean;
+  // 用药方法（覆盖 "N 次/天 · 连用 M 天" 的默认显示，例如 "3 天 1 次"）
+  usageMethod?: string;
+  // 按体重区间给药（覆盖自动/固定剂量显示）
+  doseByWeight?: string;
 };
 
 // 体重相关剂量计算（mL/g 等）。fixed 表示单次固定剂量
@@ -245,19 +249,21 @@ const POSTPARTUM_DISEASE: Disease = {
     {
       id: "pp-1",
       name: "处方1 · 5% 头孢噻呋 + 氟尼辛",
-      desc: "一般产后高危预防性治疗",
+      desc: "-",
+      note: "产后 7 天体温监测异常牛只，进一步体格检查确定病因，按照产后子宫炎、肺炎、乳房炎等相应方案进行治疗。",
       items: [
-        { id: "r1", kind: "drug", name: "5% 盐酸头孢噻呋（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "4.4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
-        { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+        { id: "r1", kind: "drug", name: "5% 盐酸头孢噻呋注射液（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射 / 皮下注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "3", usageMethod: "1 天 1 次，连用 3 天", doseByWeight: "200–400kg=10ml；400–600kg=20ml；600–900kg=30ml；≥900kg=35ml" },
+        { id: "r2", kind: "drug", name: "氟尼辛葡甲胺注射液（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "3", usageMethod: "1 天 1 次，连用 3 天", doseByWeight: "200–400kg=10ml；400–600kg=20ml；600–900kg=30ml；≥900kg=35ml" },
       ],
     },
     {
       id: "pp-2",
       name: "处方2 · 10% 头孢噻呋 + 氟尼辛",
-      desc: "感染风险较高 / 体重较大牛只",
+      desc: "-",
+      note: "产后 7 天体温监测异常牛只，进一步体格检查确定病因，按照产后子宫炎、肺炎、乳房炎等相应方案进行治疗。",
       items: [
-        { id: "r1", kind: "drug", name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "1" },
-        { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+        { id: "r1", kind: "drug", name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射 / 皮下注射", dose: "10", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "3", usageMethod: "3 天 1 次", doseByWeight: "200–400kg=5ml；400–600kg=10ml；600–900kg=15ml；≥900kg=20ml" },
+        { id: "r2", kind: "drug", name: "氟尼辛葡甲胺注射液（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "3", usageMethod: "1 天 1 次，连用 3 天", doseByWeight: "200–400kg=10ml；400–600kg=20ml；600–900kg=30ml；≥900kg=35ml" },
       ],
     },
   ],
@@ -1001,16 +1007,20 @@ function DiagnosePage() {
                             <div className="text-caption text-text-tertiary mt-1">
                               {isTherapy
                                 ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                : [r.spec, r.use, r.timesPerDay && `${r.timesPerDay} 次 / 天`, r.days && `连用 ${r.days} 天`].filter(Boolean).join(" · ")}
+                                : [r.spec, r.use, r.usageMethod || [r.timesPerDay && `${r.timesPerDay} 次 / 天`, r.days && `连用 ${r.days} 天`].filter(Boolean).join(" · ")].filter(Boolean).join(" · ")}
                             </div>
                             {!isTherapy && (
-                              <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                                <Sparkles className="h-3 w-3" />
-                                {isFixed
-                                  ? `固定剂量 ${baseDose}${unit} / 次`
-                                  : computedDose !== null
-                                    ? `自动剂量 ${computedDose}${unit} / 次`
-                                    : `请选择体重以计算剂量`}
+                              <div className="text-caption text-primary mt-1 inline-flex items-start gap-1">
+                                <Sparkles className="h-3 w-3 mt-0.5 shrink-0" />
+                                <span>
+                                {r.doseByWeight
+                                  ? `按体重区间：${r.doseByWeight}`
+                                  : isFixed
+                                    ? `固定剂量 ${baseDose}${unit} / 次`
+                                    : computedDose !== null
+                                      ? `自动剂量 ${computedDose}${unit} / 次`
+                                      : `请选择体重以计算剂量`}
+                                </span>
                               </div>
                             )}
                           </li>
