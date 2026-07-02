@@ -352,20 +352,20 @@ export const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: str
 // 疾病治疗工单的疾病名称 + 任务类型（用于统一卡片文案）
 export type TaskChip = "待诊断" | "待执行" | "待复查" | "待治愈";
 export const diseaseTaskMeta: Record<string, { disease: string; task: TaskChip }> = {
-  "WO-2381": { disease: "乳房炎", task: "待诊断" },
+  "WO-2381": { disease: "产道创伤", task: "待诊断" },
   "WO-2382": { disease: "疾病不详", task: "待诊断" },
-  "WO-2383": { disease: "酮病", task: "待诊断" },
-  "WO-2384": { disease: "乳房炎", task: "待诊断" },
-  "WO-2385": { disease: "子宫炎", task: "待诊断" },
-  "WO-2386": { disease: "蹄部脓肿", task: "待诊断" },
-  "WO-2387": { disease: "腹泻", task: "待诊断" },
-  "WO-2298": { disease: "乳房炎", task: "待复查" },
-  "WO-2299": { disease: "蹄叶炎", task: "待执行" },
-  "WO-2300": { disease: "子宫炎", task: "待执行" },
-  "WO-2301": { disease: "肺炎", task: "待执行" },
-  "WO-2302": { disease: "蹄部脓肿", task: "待执行" },
-  "WO-2303": { disease: "酮病", task: "待执行" },
-  "WO-2440": { disease: "乳房炎", task: "待复查" },
+  "WO-2383": { disease: "产后子宫炎", task: "待诊断" },
+  "WO-2384": { disease: "产后子宫炎", task: "待诊断" },
+  "WO-2385": { disease: "子宫内膜炎", task: "待诊断" },
+  "WO-2386": { disease: "子宫内膜炎", task: "待诊断" },
+  "WO-2387": { disease: "产后子宫炎", task: "待诊断" },
+  "WO-2298": { disease: "产后子宫炎", task: "待复查" },
+  "WO-2299": { disease: "产后子宫炎", task: "待执行" },
+  "WO-2300": { disease: "子宫内膜炎", task: "待执行" },
+  "WO-2301": { disease: "产后子宫炎", task: "待执行" },
+  "WO-2302": { disease: "产道创伤", task: "待执行" },
+  "WO-2303": { disease: "子宫内膜炎", task: "待执行" },
+  "WO-2440": { disease: "产后子宫炎", task: "待复查" },
 };
 
 // 任务类型 chip 颜色
