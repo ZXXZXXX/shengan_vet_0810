@@ -34,7 +34,7 @@ import { MAddMediaSheet } from "@/components/m-add-media-sheet";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
-import { getWoPlan, buildActionText, type WoPlan, type PlanTask } from "@/lib/wo-plan";
+import { getWoPlan, buildActionText, computeSessions, type WoPlan, type PlanTask } from "@/lib/wo-plan";
 
 
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
