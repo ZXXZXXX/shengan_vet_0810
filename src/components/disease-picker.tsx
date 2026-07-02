@@ -48,7 +48,7 @@ export function DiseasePicker({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[440px] bg-card rounded-t-2xl max-h-[85vh] flex flex-col"
+        className="w-full max-w-[440px] bg-card rounded-t-2xl h-[75vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-4 h-12 flex items-center justify-between border-b border-border shrink-0">
