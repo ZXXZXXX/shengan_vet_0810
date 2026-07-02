@@ -998,15 +998,14 @@ function DiagnosePage() {
                             key={r.id}
                             className="rounded-md border border-border bg-card p-2.5"
                           >
-                            <div className="text-body-sm text-foreground inline-flex items-center gap-1.5 flex-wrap">
+                            <div className="flex items-start gap-1.5">
                               {isTherapy ? (
-                                <Activity className="h-3.5 w-3.5 text-[#22ACEB]" />
+                                <Activity className="h-3.5 w-3.5 text-[#22ACEB] shrink-0 mt-0.5" />
                               ) : (
-                                <Pill className="h-3.5 w-3.5 text-primary" />
+                                <Pill className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
                               )}
-                              {r.name}
-                              <span className={`tag ${isTherapy ? "tag-info" : "tag-brand"}`}>
-                                {isTherapy ? "理疗" : "用药"}
+                              <span className="text-body text-foreground min-w-0 flex-1">
+                                {r.name}
                               </span>
                             </div>
                             <div className="text-caption text-text-tertiary mt-1">
