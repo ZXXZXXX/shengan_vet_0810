@@ -1624,7 +1624,8 @@ function ChecklistDay({
   const total = items.length;
   const doneCount = items.filter((i) => i.status === "done").length;
   const allSettled = total > 0 && doneCount === total && tasksReady;
-  const dayDone = isDone || (isActive && allSettled);
+  // 仅在外部标记为已完成时才显示"已完成"；填写完成不自动切换状态，需点击"提交记录"
+  const dayDone = isDone;
 
   // 状态标签
   let dayStatusTag: string;
