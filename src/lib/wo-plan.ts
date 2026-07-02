@@ -605,3 +605,63 @@ function useShort(use: string) {
   if (use.includes("蹄浴")) return " 蹄浴";
   return ` ${use}`;
 }
+
+// ============ 排期计算 ============
+// 依据"每天 n 次 × 疗程天数"或"每 N 天 1 次 × 共 X 次"生成 (day, slot) 序列，
+// 多个药品/任务的排期取并集：同一天不同 slot 各算一条执行任务。
+export type Session = { day: number; slot: number };
+
+function parseSchedule(method: string): Session[] {
+  if (!method) return [{ day: 1, slot: 1 }];
+  let perDay = 1;
+  let everyN = 1;
+  let treatmentDays: number | null = null;
+  let totalTimes: number | null = null;
+
+  if (/早晚各/.test(method)) perDay = Math.max(perDay, 2);
+  const mPerDay = method.match(/1\s*天\s*(\d+)\s*次/) || method.match(/日\s*(\d+)\s*次/);
+  if (mPerDay) perDay = Math.max(perDay, parseInt(mPerDay[1], 10));
+
+  const mEvery = method.match(/(\d+)\s*天\s*1\s*次/);
+  if (mEvery) everyN = parseInt(mEvery[1], 10);
+  if (/隔日/.test(method)) everyN = Math.max(everyN, 2);
+
+  const mDays = method.match(/(?:连用|连续|共)\s*(\d+)\s*天/);
+  if (mDays) treatmentDays = parseInt(mDays[1], 10);
+
+  const mTotalRange = method.match(/共[^次]*?(\d+)(?:\s*[-–—~至]\s*(\d+))?\s*次/);
+  if (mTotalRange) {
+    totalTimes = parseInt(mTotalRange[2] ?? mTotalRange[1], 10);
+  }
+
+  if ((/单次|干奶当日/.test(method)) && !treatmentDays && !totalTimes) {
+    return [{ day: 1, slot: 1 }];
+  }
+
+  const sessions: Session[] = [];
+  if (totalTimes && !treatmentDays) {
+    for (let i = 0; i < totalTimes; i++) sessions.push({ day: 1 + i * everyN, slot: 1 });
+  } else {
+    const days = treatmentDays ?? 1;
+    for (let d = 1; d <= days; d += everyN) {
+      for (let s = 1; s <= perDay; s++) sessions.push({ day: d, slot: s });
+    }
+  }
+  return sessions.length ? sessions : [{ day: 1, slot: 1 }];
+}
+
+export function computeSessions(plan: WoPlan): Session[] {
+  const methods: string[] = [];
+  plan.drugs.forEach((d) => { if (d.method) methods.push(d.method); });
+  (plan.tasks ?? []).forEach((t) => {
+    // PlanTask 没有 method 字段，按 plan.days 每天 1 次生成
+    methods.push(`1 天 1 次，连用 ${plan.days} 天`);
+    void t;
+  });
+  if (methods.length === 0) {
+    methods.push(`1 天 1 次，连用 ${Math.max(1, plan.days)} 天`);
+  }
+  const set = new Map<string, Session>();
+  methods.forEach((m) => parseSchedule(m).forEach((s) => set.set(`${s.day}-${s.slot}`, s)));
+  return Array.from(set.values()).sort((a, b) => a.day - b.day || a.slot - b.slot);
+}
