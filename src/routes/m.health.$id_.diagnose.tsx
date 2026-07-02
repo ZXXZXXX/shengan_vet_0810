@@ -1539,7 +1539,7 @@ function DiagnosePage() {
         return (
           <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setBrandSheet(null)}>
             <div
-              className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[75vh] overflow-y-auto"
+              className="w-full bg-card rounded-t-2xl p-4 space-y-3 h-[75vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between">
