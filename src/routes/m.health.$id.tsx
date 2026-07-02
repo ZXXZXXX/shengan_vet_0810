@@ -1654,12 +1654,17 @@ function ChecklistDay({
       ) : (
         <>
 
-          {/* 1. 每日测温 */}
+          {/* 1. 直肠体温 */}
           {interactive && withTemp && tempItem && (
             <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
-              <div className="text-body-sm text-foreground mb-2">
-                每日测温 <span className="text-[var(--state-danger)]">*</span>
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-body-sm text-foreground">
+                  直肠体温 <span className="text-[var(--state-danger)]">*</span>
+                </div>
+                <span className="text-caption text-text-tertiary">检查</span>
               </div>
+              <div className="text-caption text-text-tertiary mb-2">测量并记录牛只直肠体温</div>
+              <div className="text-caption text-text-tertiary mb-2">记录方式：数字输入</div>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
