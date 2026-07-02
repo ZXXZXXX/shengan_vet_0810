@@ -569,6 +569,7 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
     disease: disease ?? p.disease,
     prescription: p.prescription,
     drugs: p.drugs.slice(),
+    tasks: "tasks" in p ? (p as { tasks?: PlanTask[] }).tasks?.slice() : undefined,
     days: p.days,
     symptoms: ["体温升高", "采食下降"],
     description: `${p.disease}·${p.prescription.name}`,
