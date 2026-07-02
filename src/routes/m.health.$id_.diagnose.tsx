@@ -157,19 +157,33 @@ const weightLabelOf = (v: number | null) =>
   v == null ? null : WEIGHT_OPTIONS.find((o) => o.value === v)?.label ?? `${v} kg`;
 
 // 库存（仓库实时在册量；用于提交校验）
-const drugStock: Record<string, { qty: number; unit: string }> = {
-  "氟尼辛葡甲胺注射液": { qty: 120, unit: "ml" },
-  "头孢噻呋钠": { qty: 2, unit: "g" }, // 故意偏少，触发缺药提示
-  "碳酸氢钠": { qty: 5000, unit: "g" },
-  "复合维生素 B": { qty: 800, unit: "ml" },
-  "50% 葡萄糖": { qty: 2000, unit: "ml" },
-  "口服补液盐": { qty: 30, unit: "包" },
-  "氟尼辛葡甲胺": { qty: 200, unit: "ml" },
-  "5% 盐酸头孢噻呋（畜可健）": { qty: 600, unit: "ml" },
-  "10% 盐酸头孢噻呋注射液（畜可健）": { qty: 400, unit: "ml" },
-  "10% 盐酸头孢噻呋注射液（欣利达）": { qty: 0, unit: "ml" },
-  "氟尼辛葡甲胺（福欣安）": { qty: 600, unit: "ml" },
+// packSize / packUnit 用于按规格换算展示（如 "6 瓶"、"2 支"）
+const drugStock: Record<string, { qty: number; unit: string; packSize?: number; packUnit?: string }> = {
+  "氟尼辛葡甲胺注射液": { qty: 120, unit: "ml", packSize: 100, packUnit: "瓶" },
+  "头孢噻呋钠": { qty: 2, unit: "g", packSize: 1, packUnit: "支" }, // 故意偏少，触发缺药提示
+  "碳酸氢钠": { qty: 5000, unit: "g", packSize: 500, packUnit: "袋" },
+  "复合维生素 B": { qty: 800, unit: "ml", packSize: 100, packUnit: "瓶" },
+  "50% 葡萄糖": { qty: 2000, unit: "ml", packSize: 500, packUnit: "瓶" },
+  "口服补液盐": { qty: 30, unit: "包", packSize: 1, packUnit: "包" },
+  "氟尼辛葡甲胺": { qty: 200, unit: "ml", packSize: 100, packUnit: "瓶" },
+  "5% 盐酸头孢噻呋（畜可健）": { qty: 600, unit: "ml", packSize: 100, packUnit: "瓶" },
+  "10% 盐酸头孢噻呋注射液（畜可健）": { qty: 400, unit: "ml", packSize: 100, packUnit: "瓶" },
+  "10% 盐酸头孢噻呋注射液（欣利达）": { qty: 0, unit: "ml", packSize: 100, packUnit: "瓶" },
+  "氟尼辛葡甲胺（福欣安）": { qty: 600, unit: "ml", packSize: 100, packUnit: "瓶" },
 };
+
+// 库存展示：优先按规格换算成整数包装数量（如 "6 瓶"），无 packSize 时回退到原始量
+function formatStockDisplay(name: string): string {
+  const s = drugStock[name];
+  if (!s) return "暂无库存";
+  if (s.qty <= 0) return "暂无库存";
+  if (s.packSize && s.packUnit) {
+    const packs = Math.floor(s.qty / s.packSize);
+    if (packs > 0) return `库存 ${packs} ${s.packUnit}`;
+  }
+  return `库存 ${s.qty}${s.unit}`;
+}
+
 
 // 用药/疾病规则限制（提交时触发二次确认）
 const RULES = {
@@ -1556,7 +1570,6 @@ function DiagnosePage() {
                 {rx.alternatives.map((name) => {
                   const active = name === rx.name;
                   const qty = drugStock[name]?.qty ?? 0;
-                  const unit = drugStock[name]?.unit ?? "";
                   const inStock = qty > 0;
                   return (
                     <li key={name}>
@@ -1572,7 +1585,7 @@ function DiagnosePage() {
                             <div className="text-body text-foreground">{name}</div>
                             <div className="text-caption mt-0.5">
                               {inStock ? (
-                                <span className="text-primary">库存 {qty}{unit}</span>
+                                <span className="text-primary">{formatStockDisplay(name)}</span>
                               ) : (
                                 <span className="text-[var(--state-danger)]">暂无库存</span>
                               )}
