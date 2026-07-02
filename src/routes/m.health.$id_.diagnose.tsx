@@ -1056,6 +1056,15 @@ function DiagnosePage() {
                               <span className="text-body text-foreground min-w-0 flex-1">
                                 {r.name}
                               </span>
+                              {!isTherapy && r.alternatives && r.alternatives.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setBrandSheet({ planId: selectedPlan.id, rxId: r.id })}
+                                  className="shrink-0 inline-flex items-center gap-0.5 h-6 px-1.5 rounded-md text-caption text-primary hover:bg-brand-subtle"
+                                >
+                                  更换 <ChevronDown className="h-3 w-3" />
+                                </button>
+                              )}
                             </div>
                             <div className="text-caption text-text-tertiary mt-1">
                               {isTherapy
