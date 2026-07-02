@@ -515,6 +515,7 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
     const p = PLANS[mapped.key];
     return {
       disease: p.disease,
+      subType: mapped.subType,
       prescription: p.prescription,
       drugs: p.drugs.slice(),
       days: p.days,
