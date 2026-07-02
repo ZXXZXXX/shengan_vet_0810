@@ -182,13 +182,13 @@ function TaskDetailPage() {
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
   const isPlatformImmune = id === "YM-2501";
   const isPlatformPostpartum = id.startsWith("PP");
+  // 产后护理走多天疗程计划（14 天例检），不再合并为单条 platformAction
   const platformAction: string | undefined = isPlatformImmune
     ? "注射免疫药物（口蹄疫疫苗）"
-    : isPlatformPostpartum
-      ? "产后修护：复查恶露与体温，补充营养"
-      : isHoof
-        ? "修蹄护理：削蹄、检查蹄底、必要时贴蹄垫"
-        : undefined;
+    : isHoof
+      ? "修蹄护理：削蹄、检查蹄底、必要时贴蹄垫"
+      : undefined;
+  void isPlatformPostpartum;
   const isPlatformIssued = Boolean(platformAction);
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
 
