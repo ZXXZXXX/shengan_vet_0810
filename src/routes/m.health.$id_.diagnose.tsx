@@ -1014,7 +1014,22 @@ function DiagnosePage() {
                                 <Sparkles className="h-3 w-3 mt-0.5 shrink-0" />
                                 <span>
                                 {r.doseByWeight
-                                  ? "按体重区间计算"
+                                  ? (cattleWeight != null
+                                      ? (() => {
+                                          const seg = r.doseByWeight!.split(/[；;]/).find((s) => {
+                                            const m = s.match(/(\d+)\s*[-–~]\s*(\d+)/);
+                                            if (m) {
+                                              const lo = +m[1], hi = +m[2];
+                                              return cattleWeight >= lo && cattleWeight < hi;
+                                            }
+                                            const ge = s.match(/[≥>]=?\s*(\d+)/);
+                                            if (ge) return cattleWeight >= +ge[1];
+                                            return false;
+                                          });
+                                          const dv = seg?.split("=")[1]?.trim();
+                                          return dv ? `按体重区间：${dv} / 次` : "按体重区间计算";
+                                        })()
+                                      : "按体重区间计算 · 请选择体重")
                                   : isFixed
                                     ? `固定剂量 ${baseDose}${unit} / 次`
                                     : computedDose !== null
