@@ -357,6 +357,11 @@ const PLANS = {
       note: "产后 14 天连续例行检查：每日直肠测温 + 正前/正后照片采集；如出现异常按子宫炎处方另开工单处理。",
     },
     drugs: [],
+    tasks: [
+      { type: "检查", name: "直肠体温", desc: "测量并记录牛只直肠体温", record: "number", unit: "℃", placeholder: "输入直肠温度", required: true },
+      { type: "采集", name: "正前照片", desc: "拍摄牛只正前方全身照片，用于体况归档", record: "photo", required: true },
+      { type: "采集", name: "正后照片", desc: "拍摄牛只正后方全身照片，观察恶露/水肿", record: "photo", required: true },
+    ],
     days: 14,
   },
 } as const satisfies Record<string, Omit<WoPlan, "symptoms" | "description" | "reviewAction" | "diagnoser" | "diagnoseTime" | "subType">>;
