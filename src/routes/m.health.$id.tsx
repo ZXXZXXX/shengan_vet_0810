@@ -1676,32 +1676,103 @@ function ChecklistDay({
       ) : (
         <>
 
-          {/* 1. 直肠体温 */}
-          {interactive && withTemp && tempItem && (
-            <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
-              <div className="flex items-center justify-between mb-1">
-                <div className="text-body-sm text-foreground">
-                  直肠体温 <span className="text-[var(--state-danger)]">*</span>
+          {/* 非药物任务卡片：按 plan.tasks 逐项渲染（每张卡片 = 一个任务） */}
+          {interactive && planTasks.map((t, i) => {
+            const key = `task-${i}`;
+            const photos = taskPhotos[key] ?? [];
+            const setInputRef = (el: HTMLInputElement | null) => { taskFileRef.current[key] = el; };
+            const recordLabel =
+              t.record === "number" ? "数字输入" :
+              t.record === "photo" ? "图片 / 视频" :
+              "文本输入";
+            return (
+              <div key={key} className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-body-sm font-medium text-foreground">
+                    {t.name} {t.required && <span className="text-[var(--state-danger)]">*</span>}
+                  </div>
+                  <span className="text-caption text-text-tertiary">{t.type}</span>
                 </div>
-                <span className="text-caption text-text-tertiary">检查</span>
+                <div className="text-caption text-text-tertiary mb-1">{t.desc}</div>
+                <div className="text-caption text-text-tertiary mb-2">记录方式：{recordLabel}</div>
+
+                {t.record === "number" && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*\.?[0-9]*"
+                      disabled={inputsLocked}
+                      value={taskValues[key] ?? ""}
+                      onChange={(e) => setTaskValues((m) => ({ ...m, [key]: e.target.value.replace(/[^0-9.]/g, "") }))}
+                      placeholder={t.placeholder ?? "输入数值"}
+                      className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm disabled:bg-surface-subtle disabled:cursor-not-allowed"
+                    />
+                    {t.unit && <span className="text-caption text-text-tertiary">{t.unit}</span>}
+                  </div>
+                )}
+
+                {t.record === "text" && (
+                  <textarea
+                    disabled={inputsLocked}
+                    value={taskValues[key] ?? ""}
+                    onChange={(e) => setTaskValues((m) => ({ ...m, [key]: e.target.value }))}
+                    placeholder={t.placeholder ?? "填写内容"}
+                    className="w-full min-h-[64px] rounded-lg border border-border bg-card px-3 py-2 text-body-sm resize-none disabled:bg-surface-subtle disabled:cursor-not-allowed"
+                  />
+                )}
+
+                {t.record === "photo" && (
+                  <>
+                    <div className="grid grid-cols-4 gap-2">
+                      {photos.map((pid) => (
+                        <div key={pid} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
+                          <button
+                            type="button"
+                            disabled={inputsLocked}
+                            onClick={() => setTaskPhotos((m) => ({ ...m, [key]: (m[key] ?? []).filter((x) => x !== pid) }))}
+                            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow disabled:opacity-50"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                      {photos.length < 6 && (
+                        <button
+                          type="button"
+                          disabled={inputsLocked}
+                          onClick={() => taskFileRef.current[key]?.click()}
+                          className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary ${
+                            inputsLocked ? "cursor-not-allowed opacity-60" : "active:bg-border"
+                          }`}
+                        >
+                          <Camera className="h-5 w-5" />
+                          <span className="text-caption">添加</span>
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      ref={setInputRef}
+                      type="file"
+                      accept="image/*,video/*"
+                      capture="environment"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files ?? []);
+                        if (files.length === 0) return;
+                        setTaskPhotos((m) => ({
+                          ...m,
+                          [key]: [...(m[key] ?? []), ...files.map(() => Date.now() + Math.random())],
+                        }));
+                        e.target.value = "";
+                      }}
+                    />
+                  </>
+                )}
               </div>
-              <div className="text-caption text-text-tertiary mb-2">测量并记录牛只直肠体温</div>
-              <div className="text-caption text-text-tertiary mb-2">记录方式：数字输入</div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  pattern="[0-9]*\.?[0-9]*"
-                  disabled={inputsLocked}
-                  value={temps[tempItem.id] ?? ""}
-                  onChange={(e) => setTemps((m) => ({ ...m, [tempItem.id]: e.target.value.replace(/[^0-9.]/g, "") }))}
-                  placeholder="输入直肠温度"
-                  className="flex-1 h-9 rounded-lg border border-border bg-card px-3 text-body-sm disabled:bg-surface-subtle disabled:cursor-not-allowed"
-                />
-                <span className="text-caption text-text-tertiary">℃</span>
-              </div>
-            </div>
-          )}
+            );
+          })}
 
           {/* 理疗任务（如修蹄清创、蹄块粘接）不涉及药品，独立展示 */}
           {therapyItems.length > 0 && (
