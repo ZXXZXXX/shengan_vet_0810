@@ -7,7 +7,8 @@ import {
   CheckCircle2,
   PlayCircle,
   Camera,
-  
+  Pill,
+  Activity,
   Mic,
   Video,
   FileText,
