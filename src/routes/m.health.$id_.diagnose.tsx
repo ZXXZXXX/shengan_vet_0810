@@ -1523,6 +1523,18 @@ function DiagnosePage() {
           </div>
         </div>
       )}
+
+      <DiseasePicker
+        open={diseasePickerOpen}
+        onClose={() => setDiseasePickerOpen(false)}
+        diseases={effectiveDiseaseLibrary.map((d) => ({ name: d.name, symptoms: d.symptoms }))}
+        selectedName={disease || undefined}
+        matchedSymptoms={symptoms}
+        onSelect={(d) => {
+          const full = rankedDiseases.find((x) => x.name === d.name);
+          if (full) pickDisease(full);
+        }}
+      />
     </MobileShell>
 
 
