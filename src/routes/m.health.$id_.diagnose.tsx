@@ -1539,7 +1539,7 @@ function DiagnosePage() {
         return (
           <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setBrandSheet(null)}>
             <div
-              className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[75vh] overflow-y-auto"
+              className="w-full bg-card rounded-t-2xl p-4 space-y-3 h-[75vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between">
@@ -1552,7 +1552,7 @@ function DiagnosePage() {
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <ul className="space-y-2">
+              <ul className="space-y-2 flex-1 overflow-y-auto -mx-1 px-1">
                 {rx.alternatives.map((name) => {
                   const active = name === rx.name;
                   const qty = drugStock[name]?.qty ?? 0;
