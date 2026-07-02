@@ -1623,7 +1623,7 @@ function ChecklistDay({
 
   const total = items.length;
   const doneCount = items.filter((i) => i.status === "done").length;
-  const allSettled = doneCount === total;
+  const allSettled = total > 0 && doneCount === total && tasksReady;
   const dayDone = isDone || (isActive && allSettled);
 
   // 状态标签
