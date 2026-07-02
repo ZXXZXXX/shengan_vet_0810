@@ -1104,7 +1104,6 @@ function ReviewTab({ isLoss, status, plan }: { isLoss: boolean; status: StatusKe
                     <span className="text-body font-medium text-foreground min-w-0 flex-1">
                       {m.name}
                     </span>
-                    {m.kind === "therapy" && <span className="tag tag-muted shrink-0">理疗</span>}
                     {m.isSpecial && <span className="tag tag-warning shrink-0">特殊</span>}
                   </div>
                   <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-body-sm">
