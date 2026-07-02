@@ -1005,9 +1005,6 @@ function DiagnosePage() {
                                 <Pill className="h-3.5 w-3.5 text-primary" />
                               )}
                               {r.name}
-                              {!isTherapy && r.maker && (
-                                <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
-                              )}
                               <span className={`tag ${isTherapy ? "tag-info" : "tag-brand"}`}>
                                 {isTherapy ? "理疗" : "用药"}
                               </span>
