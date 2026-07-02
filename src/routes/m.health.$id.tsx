@@ -1174,7 +1174,18 @@ function buildDayItems(day: number, _tags: string[], withTemp = false, plan?: Wo
       needMed: false,
     });
   }
-  const drugs = (plan?.drugs ?? []).filter((d) => d.kind !== "therapy");
+  const allDrugs = plan?.drugs ?? [];
+  const therapies = allDrugs.filter((d) => d.kind === "therapy");
+  therapies.forEach((t, idx) => {
+    items.push({
+      id: `d${day}-th${idx + 1}`,
+      title: t.name,
+      desc: `${t.method}`,
+      status: "pending",
+      needMed: false,
+    });
+  });
+  const drugs = allDrugs.filter((d) => d.kind !== "therapy");
   drugs.forEach((d, idx) => {
     items.push({
       id: `d${day}-t${idx + 1}`,
@@ -1472,8 +1483,9 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
 
 // === 执行页：仅显示当前进行中的当天 checklist ===
 export function ActiveDayExecute({ pickupCode, tags, day = 2, date = "05/13", workOrderId, onReadyChange }: { pickupCode: string | null; tags: string[]; day?: number; date?: string; workOrderId: string; onReadyChange?: (ready: boolean) => void }) {
-  // 疾病治疗工单（WO 前缀，非 HF/LS）默认需要每日测温；可被诊断页开关覆盖
-  let withTemp = !workOrderId || (!workOrderId.startsWith("HF") && !workOrderId.startsWith("LS"));
+  // 疾病治疗（WO）/ 产后护理（PP）默认每日测温；修蹄（HF）/ 干奶（GN）/ 损耗（LS）无需测温
+  const noTempPrefix = ["HF", "GN", "LS"].some((p) => workOrderId?.startsWith(p));
+  let withTemp = !workOrderId || !noTempPrefix;
   if (typeof window !== "undefined") {
     const flag = window.localStorage.getItem(`health:dailyTemp:${workOrderId}`);
     if (flag === "1") withTemp = true;
@@ -1613,6 +1625,7 @@ function ChecklistDay({
   // 未领药时不再拦截其他板块的输入；用药信息仍为必填，由 ready 判断
   const inputsLocked = false;
   const medItems = items.filter((it) => it.needMed);
+  const therapyItems = items.filter((it) => !it.needMed && !it.title.includes("测温"));
 
   return (
     <div className="space-y-3">
@@ -1657,6 +1670,20 @@ function ChecklistDay({
               </div>
             </div>
           )}
+
+          {/* 理疗任务（如修蹄清创、蹄块粘接）不涉及药品，独立展示 */}
+          {therapyItems.length > 0 && (
+            <div className={`rounded-xl border border-border bg-card px-3 py-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
+              <div className="text-body-sm text-foreground">理疗操作</div>
+              {therapyItems.map((t) => (
+                <div key={t.id} className="rounded-lg border border-border bg-surface-subtle px-3 py-2">
+                  <div className="text-body-sm font-medium text-foreground">{t.title}</div>
+                  <div className="text-caption text-text-tertiary mt-0.5">{t.desc}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
 
 
           {/* 用药状态切换（异常分支入口，影响下方"用药信息"与"治疗记录"两张卡片形态） */}
