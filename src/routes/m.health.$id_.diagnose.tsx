@@ -178,10 +178,10 @@ const RULES = {
 
 // 本牛只历史用药/上报（模拟）
 const cattleHistory = {
-  diseaseCount: { "支气管肺炎": 2, "急性乳房炎": 1 } as Record<string, number>,
+  diseaseCount: { "产后子宫炎": 1, "子宫内膜炎": 1 } as Record<string, number>,
   drugUsage: {
-    "头孢噻呋钠": { totalDose: 4, unit: "g", count: 5 }, // 已达上限，触发规则
-    "氟尼辛葡甲胺注射液": { totalDose: 6, unit: "ml", count: 3 },
+    "注射用青霉素钠（联治灵）": { totalDose: 4.8, unit: "g", count: 4 },
+    "氟尼辛葡甲胺（福欣安）": { totalDose: 24, unit: "ml", count: 3 },
   } as Record<string, { totalDose: number; unit: string; count: number }>,
 };
 
