@@ -166,7 +166,8 @@ const drugStock: Record<string, { qty: number; unit: string }> = {
   "口服补液盐": { qty: 30, unit: "包" },
   "氟尼辛葡甲胺": { qty: 200, unit: "ml" },
   "5% 盐酸头孢噻呋（畜可健）": { qty: 600, unit: "ml" },
-  "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）": { qty: 400, unit: "ml" },
+  "10% 盐酸头孢噻呋注射液（畜可健）": { qty: 400, unit: "ml" },
+  "10% 盐酸头孢噻呋注射液（欣利达）": { qty: 0, unit: "ml" },
   "氟尼辛葡甲胺（福欣安）": { qty: 600, unit: "ml" },
 };
 
