@@ -114,7 +114,7 @@ const statusById: Record<string, StatusKey> = {
 };
 
 // 已触发复查任务（处方执行完成，待兽医复查验收）的工单
-const reviewTaskOrders = new Set<string>(["WO-2420", "WO-2440"]);
+const reviewTaskOrders = new Set<string>(["WO-2298", "WO-2420", "WO-2440"]);
 // 已完成复查 → 继续观察中（静态 mock：剩余天数）
 const observingOrdersMap: Record<string, number> = { "WO-2430": 5 };
 // 观察期已满 → 待助理已治愈
