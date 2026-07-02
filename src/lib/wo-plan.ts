@@ -328,11 +328,11 @@ const PLANS = {
   postpartum: {
     disease: "产后保健",
     prescription: {
-      name: "产后保健方案 · 抗炎 + 补钙",
-      note: "产后 14 天例行检查；异常牛按子宫炎处方处理。",
+      name: "产后 14 天例检方案",
+      note: "产后 14 天连续例行检查：每日直肠测温 + 正前/正后照片采集；如出现异常按子宫炎处方另开工单处理。",
     },
-    drugs: [D.flunixin],
-    days: 3,
+    drugs: [D.pp_check],
+    days: 14,
   },
 } as const satisfies Record<string, Omit<WoPlan, "symptoms" | "description" | "reviewAction" | "diagnoser" | "diagnoseTime" | "subType">>;
 
