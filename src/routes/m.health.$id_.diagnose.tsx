@@ -1019,8 +1019,8 @@ function DiagnosePage() {
                                 {isFixed
                                   ? `固定剂量 ${baseDose}${unit} / 次`
                                   : computedDose !== null
-                                    ? `自动剂量 ${computedDose}${unit} / 次（基准 ${r.dose}${unit} / ${basisKg}kg）`
-                                    : `基准 ${r.dose}${unit} / ${basisKg}kg，请选择体重`}
+                                    ? `自动剂量 ${computedDose}${unit} / 次`
+                                    : `请选择体重以计算剂量`}
                               </div>
                             )}
                           </li>
