@@ -359,8 +359,7 @@ const PLANS = {
     drugs: [],
     tasks: [
       { type: "检查", name: "直肠体温", desc: "测量并记录牛只直肠体温", record: "number", unit: "℃", placeholder: "输入直肠温度", required: true },
-      { type: "采集", name: "正前照片", desc: "拍摄牛只正前方全身照片，用于体况归档", record: "photo", required: true },
-      { type: "采集", name: "正后照片", desc: "拍摄牛只正后方全身照片，观察恶露/水肿", record: "photo", required: true },
+      { type: "检查", name: "情况评估", desc: "拍摄牛只正前方、正后方照片，用于体况归档与恶露/水肿观察", record: "photo", required: true },
     ],
     days: 14,
   },
