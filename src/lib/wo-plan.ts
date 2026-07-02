@@ -334,12 +334,13 @@ const PLANS = {
     drugs: [D.flunixin],
     days: 3,
   },
-} as const satisfies Record<string, Omit<WoPlan, "symptoms" | "description" | "reviewAction" | "diagnoser" | "diagnoseTime">>;
+} as const satisfies Record<string, Omit<WoPlan, "symptoms" | "description" | "reviewAction" | "diagnoser" | "diagnoseTime" | "subType">>;
 
 type PlanKey = keyof typeof PLANS;
 
 const WO_MAP: Record<string, {
   key: PlanKey;
+  subType?: string;
   symptoms: string[];
   description: string;
   reviewAction?: string;
