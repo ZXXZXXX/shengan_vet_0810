@@ -187,6 +187,18 @@ const D = {
   } satisfies PlanDrug,
 };
 
+// 非药物任务：疗程中每天都要做，但不涉及药品的具体执行项
+// type 会作为卡片标题；name 是小标题；desc 是辅助文本；record 决定填写组件
+export type PlanTask = {
+  type: string;                          // 卡片名称：检查 / 采集 / 理疗 / 记录
+  name: string;                          // 小标题（任务名称）
+  desc: string;                          // 辅助描述文本（具体方式/要求）
+  record: "number" | "photo" | "text";   // 填写组件类型
+  unit?: string;                         // 数字输入单位（如 ℃）
+  placeholder?: string;
+  required?: boolean;
+};
+
 export type WoPlan = {
   disease: string;
   subType?: string;                  // 子类型，如 "阴道黏膜层撕裂"
@@ -194,6 +206,7 @@ export type WoPlan = {
   description: string;               // 具体诊断描述
   prescription: { name: string; note: string };
   drugs: PlanDrug[];
+  tasks?: PlanTask[];                // 非药物任务清单
   days: number;                      // 疗程天数（决定"执行任务 01/02/03"数量）
   reviewAction: string;              // 复查具体动作
   diagnoser?: string;
