@@ -1264,7 +1264,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
   const platformPhase: DayPhase = status === "已完成" ? "done" : "active";
   const platformDate = status === "已完成" ? "2026-05-12 10:00" : "2026-05-28 09:00";
   // 复查任务进行中（处方已全部完成，待兽医复查）/ 已完成观察中
-  const reviewActive = id === "WO-2420";
+  const reviewActive = id === "WO-2298" || id === "WO-2420" || id === "WO-2440";
   const reviewDone = id === "WO-2430";
   const allPrescriptionsDone = reviewActive || reviewDone;
   const days: DaySummary[] = isTerminated
