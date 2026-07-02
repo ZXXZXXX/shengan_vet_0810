@@ -1840,7 +1840,12 @@ function ChecklistDay({
 
                 <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
                   <span>
-                    治疗记录 <span className="text-[var(--state-danger)]">*</span>
+                    治疗记录{" "}
+                    {evidenceRequired ? (
+                      <span className="text-[var(--state-danger)]">*</span>
+                    ) : (
+                      <span className="text-caption text-text-tertiary">（选填）</span>
+                    )}
                   </span>
                   <span className="text-caption text-text-tertiary">{evidencePhotos.length} / 6</span>
                 </div>
