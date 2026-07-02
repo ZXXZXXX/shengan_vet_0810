@@ -6,7 +6,7 @@ import {
   Mic,
   Video,
   Search,
-
+  Image,
   Sparkles,
   FileText,
   RefreshCw,
