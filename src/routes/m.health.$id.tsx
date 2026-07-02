@@ -1712,53 +1712,20 @@ function ChecklistDay({
                 )}
 
                 {t.record === "photo" && (
-                  <>
-                    <div className="grid grid-cols-4 gap-2">
-                      {photos.map((pid) => (
-                        <div key={pid} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
-                          <button
-                            type="button"
-                            disabled={inputsLocked}
-                            onClick={() => setTaskPhotos((m) => ({ ...m, [key]: (m[key] ?? []).filter((x) => x !== pid) }))}
-                            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow disabled:opacity-50"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                      {photos.length < 6 && (
-                        <button
-                          type="button"
-                          disabled={inputsLocked}
-                          onClick={() => taskFileRef.current[key]?.click()}
-                          className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary ${
-                            inputsLocked ? "cursor-not-allowed opacity-60" : "active:bg-border"
-                          }`}
-                        >
-                          <Camera className="h-5 w-5" />
-                          <span className="text-caption">添加</span>
-                        </button>
-                      )}
-                    </div>
-                    <input
-                      ref={setInputRef}
-                      type="file"
-                      accept="image/*,video/*"
-                      capture="environment"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => {
-                        const files = Array.from(e.target.files ?? []);
-                        if (files.length === 0) return;
-                        setTaskPhotos((m) => ({
-                          ...m,
-                          [key]: [...(m[key] ?? []), ...files.map(() => Date.now() + Math.random())],
-                        }));
-                        e.target.value = "";
-                      }}
-                    />
-                  </>
+                  <MediaGrid
+                    items={photos}
+                    setItems={(updater) =>
+                      setTaskPhotos((m) => {
+                        const cur = m[key] ?? [];
+                        const next = typeof updater === "function" ? (updater as (p: number[]) => number[])(cur) : updater;
+                        return { ...m, [key]: next };
+                      })
+                    }
+                    max={9}
+                    disabled={inputsLocked}
+                  />
                 )}
+
               </div>
             );
           })}
