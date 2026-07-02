@@ -1531,6 +1531,71 @@ function DiagnosePage() {
         </div>
       )}
 
+      {/* 品牌替换抽屉 */}
+      {brandSheet && (() => {
+        const plan = stdPlans.find((p) => p.id === brandSheet.planId);
+        const rx = plan?.items.find((i) => i.id === brandSheet.rxId);
+        if (!plan || !rx || !rx.alternatives) return null;
+        return (
+          <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setBrandSheet(null)}>
+            <div
+              className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[75vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between">
+                <div className="text-section text-foreground font-medium">更换药品</div>
+                <button
+                  onClick={() => setBrandSheet(null)}
+                  className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                  aria-label="关闭"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <ul className="space-y-2">
+                {rx.alternatives.map((name) => {
+                  const active = name === rx.name;
+                  const qty = drugStock[name]?.qty ?? 0;
+                  const unit = drugStock[name]?.unit ?? "";
+                  const inStock = qty > 0;
+                  return (
+                    <li key={name}>
+                      <button
+                        type="button"
+                        onClick={() => switchBrand(name)}
+                        className={`w-full text-left rounded-lg border p-3 transition-colors ${
+                          active ? "border-primary bg-brand-subtle/40" : "border-border bg-card"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="text-body text-foreground">{name}</div>
+                            <div className="text-caption mt-0.5">
+                              {inStock ? (
+                                <span className="text-primary">库存 {qty}{unit}</span>
+                              ) : (
+                                <span className="text-[var(--state-danger)]">暂无库存</span>
+                              )}
+                            </div>
+                          </div>
+                          <span
+                            className={`shrink-0 h-5 w-5 rounded-full border inline-flex items-center justify-center ${
+                              active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"
+                            }`}
+                          >
+                            {active && <CheckCircle2 className="h-3.5 w-3.5" />}
+                          </span>
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* 提交校验：缺药 / 规则二次确认 */}
       {submitCheck && (
         <div
