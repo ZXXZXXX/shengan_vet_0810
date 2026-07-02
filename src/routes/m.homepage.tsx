@@ -260,22 +260,22 @@ export type HomeTask = {
 };
 
 export const homeTasks: HomeTask[] = [
-  // 疾病治疗 · 待诊断
-  { id: "WO-2381", target: "#01-24-2381", conclusion: "疑似乳房炎急性发作", type: "疾病治疗", status: "待诊断", minutesAgo: 2 },
-  { id: "WO-2382", target: "#01-24-2270", conclusion: "持续高烧待诊", type: "疾病治疗", status: "待诊断", minutesAgo: 8 },
-  { id: "WO-2383", target: "#01-24-2156", conclusion: "酮病初筛阳性", type: "疾病治疗", status: "待诊断", minutesAgo: 15 },
-  { id: "WO-2384", target: "#01-24-2298", conclusion: "乳房炎复诊评估", type: "疾病治疗", status: "待诊断", minutesAgo: 23 },
-  { id: "WO-2385", target: "#01-24-2188", conclusion: "产后子宫炎跟进", type: "疾病治疗", status: "待诊断", minutesAgo: 31 },
-  { id: "WO-2386", target: "#01-24-2102", conclusion: "蹄部脓肿诊断", type: "疾病治疗", status: "待诊断", minutesAgo: 42 },
-  { id: "WO-2387", target: "#01-24-2250", conclusion: "腹泻 3 天待诊", type: "疾病治疗", status: "待诊断", minutesAgo: 56 },
+  // 疾病治疗 · 待诊断（子宫炎类：产道创伤 / 产后子宫炎 / 子宫内膜炎）
+  { id: "WO-2381", target: "#01-24-2381", conclusion: "产道创伤 · 阴道黏膜层撕裂", type: "疾病治疗", status: "待诊断", minutesAgo: 2 },
+  { id: "WO-2382", target: "#01-24-2270", conclusion: "产后子宫炎 · 体温 39.8℃", type: "疾病治疗", status: "待诊断", minutesAgo: 8 },
+  { id: "WO-2383", target: "#01-24-2156", conclusion: "产后子宫炎 · 分泌物恶臭", type: "疾病治疗", status: "待诊断", minutesAgo: 15 },
+  { id: "WO-2384", target: "#01-24-2298", conclusion: "产后子宫炎 · 脓性分泌物", type: "疾病治疗", status: "待诊断", minutesAgo: 23 },
+  { id: "WO-2385", target: "#01-24-2188", conclusion: "子宫内膜炎 · 直肠检查异常", type: "疾病治疗", status: "待诊断", minutesAgo: 31 },
+  { id: "WO-2386", target: "#01-24-2102", conclusion: "子宫内膜炎 · 产后 24 天", type: "疾病治疗", status: "待诊断", minutesAgo: 42 },
+  { id: "WO-2387", target: "#01-24-2250", conclusion: "产后子宫炎 · 产后 12 天", type: "疾病治疗", status: "待诊断", minutesAgo: 56 },
   // 疾病治疗 · 进行中
-  { id: "WO-2298", target: "#01-24-2298", conclusion: "乳房炎复诊处置", type: "疾病治疗", status: "进行中", minutesAgo: 12 },
-  { id: "WO-2299", target: "#01-24-2270", conclusion: "蹄叶炎复发治疗", type: "疾病治疗", status: "进行中", minutesAgo: 25 },
-  { id: "WO-2300", target: "#01-24-2188", conclusion: "子宫炎第 2 日疗程", type: "疾病治疗", status: "进行中", minutesAgo: 38 },
-  { id: "WO-2301", target: "#01-24-2156", conclusion: "肺炎抗生素处置", type: "疾病治疗", status: "进行中", minutesAgo: 51 },
-  { id: "WO-2302", target: "#01-24-2102", conclusion: "蹄部脓肿排脓", type: "疾病治疗", status: "进行中", minutesAgo: 67 },
-  { id: "WO-2303", target: "#01-24-2233", conclusion: "酮病补液+葡萄糖", type: "疾病治疗", status: "进行中", minutesAgo: 82 },
-  { id: "WO-2440", target: "#01-24-2440", conclusion: "乳房炎 · 观察期满复查", type: "疾病治疗", status: "进行中", minutesAgo: 95 },
+  { id: "WO-2298", target: "#01-24-2298", conclusion: "产后子宫炎处方 2 · 复诊", type: "疾病治疗", status: "进行中", minutesAgo: 12 },
+  { id: "WO-2299", target: "#01-24-2270", conclusion: "产后子宫炎处方 1 · 疗程第 2 天", type: "疾病治疗", status: "进行中", minutesAgo: 25 },
+  { id: "WO-2300", target: "#01-24-2188", conclusion: "子宫内膜炎处方 1 · 疗程第 2 天", type: "疾病治疗", status: "进行中", minutesAgo: 38 },
+  { id: "WO-2301", target: "#01-24-2156", conclusion: "产后子宫炎处方 3 · 利福昔明灌注", type: "疾病治疗", status: "进行中", minutesAgo: 51 },
+  { id: "WO-2302", target: "#01-24-2102", conclusion: "产道创伤处方 1 · 碘甘油局部处理", type: "疾病治疗", status: "进行中", minutesAgo: 67 },
+  { id: "WO-2303", target: "#01-24-2233", conclusion: "子宫内膜炎处方 2 · 灌注第 2 次", type: "疾病治疗", status: "进行中", minutesAgo: 82 },
+  { id: "WO-2440", target: "#01-24-2440", conclusion: "产后子宫炎 · 观察期满复查", type: "疾病治疗", status: "进行中", minutesAgo: 95 },
   // 产后护理 · 进行中
   { id: "PP-2501", target: "#01-24-2710", conclusion: "产后 3 天护理执行", type: "产后护理", status: "进行中", minutesAgo: 28 },
   // 疫苗免疫 · 进行中
@@ -286,14 +286,14 @@ export const homeTasks: HomeTask[] = [
   { id: "YM-1045", target: "#01-24-2045", conclusion: "副伤寒免疫", type: "疫苗免疫", status: "进行中", minutesAgo: 62 },
   { id: "YM-1046", target: "#01-24-2120", conclusion: "漏针补免", type: "疫苗免疫", status: "进行中", minutesAgo: 78 },
   { id: "YM-1047", target: "#01-24-2047", conclusion: "结核检疫排查", type: "疫苗免疫", status: "进行中", minutesAgo: 95 },
-  // 修蹄 · 进行中
-  { id: "HF-0702", target: "#01-24-2150", conclusion: "右后蹄趾间皮炎", type: "修蹄", status: "进行中", minutesAgo: 7 },
-  { id: "HF-0703", target: "#01-24-2151", conclusion: "蹄叶炎修整", type: "修蹄", status: "进行中", minutesAgo: 22 },
-  { id: "HF-0704", target: "#01-24-2188", conclusion: "异常步态修蹄", type: "修蹄", status: "进行中", minutesAgo: 36 },
-  { id: "HF-0705", target: "#01-24-2298", conclusion: "蹄底溃疡处置", type: "修蹄", status: "进行中", minutesAgo: 49 },
-  { id: "HF-0706", target: "#01-24-2199", conclusion: "干奶前修蹄", type: "修蹄", status: "进行中", minutesAgo: 64 },
-  { id: "HF-0707", target: "#01-24-2210", conclusion: "复查修蹄效果", type: "修蹄", status: "进行中", minutesAgo: 80 },
-  { id: "HF-0708", target: "#01-24-2211", conclusion: "蹄部清洁与浴蹄", type: "修蹄", status: "进行中", minutesAgo: 99 },
+  // 修蹄 · 进行中（来源：晟安标准处方 · 肢蹄病类）
+  { id: "HF-0702", target: "#01-24-2150", conclusion: "腐蹄病处方 1 · 头孢噻呋+氟尼辛", type: "修蹄", status: "进行中", minutesAgo: 7 },
+  { id: "HF-0703", target: "#01-24-2151", conclusion: "腐蹄病处方 2 · 青霉素+生理盐水", type: "修蹄", status: "进行中", minutesAgo: 22 },
+  { id: "HF-0704", target: "#01-24-2188", conclusion: "蹄趾皮炎 · 护蹄膏包扎", type: "修蹄", status: "进行中", minutesAgo: 36 },
+  { id: "HF-0705", target: "#01-24-2298", conclusion: "蹄底溃疡 · 清创引流 + 蹄垫", type: "修蹄", status: "进行中", minutesAgo: 49 },
+  { id: "HF-0706", target: "#01-24-2199", conclusion: "蹄疣 · 防腐生肌散", type: "修蹄", status: "进行中", minutesAgo: 64 },
+  { id: "HF-0707", target: "#01-24-2210", conclusion: "白线病 · 远轴侧蹄壁清创", type: "修蹄", status: "进行中", minutesAgo: 80 },
+  { id: "HF-0708", target: "#01-24-2211", conclusion: "功能性蹄浴液喷蹄", type: "修蹄", status: "进行中", minutesAgo: 99 },
 
 ];
 
