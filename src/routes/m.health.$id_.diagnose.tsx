@@ -46,103 +46,99 @@ export const Route = createFileRoute("/m/health/$id_/diagnose")({
 });
 
 // 上报时的症状（带入）
-const reportedSymptoms = ["高烧", "食欲下降", "反刍减少"];
+const reportedSymptoms = ["体温 39.8℃", "分泌物恶臭"];
 
-// 候选症状词库
+// 候选症状词库（来自晟安标准处方 · 子宫炎类诊断要点）
 const symptomLibrary = [
-  "高烧", "食欲下降", "反刍减少", "咳嗽", "鼻液", "呼吸急促",
-  "乳房红肿", "产奶骤降", "跛行", "腹泻", "脱水", "精神萎靡",
+  "体温 > 39.5℃", "体温 39.8℃", "阴道黏膜层撕裂",
+  "分泌物恶臭", "分泌物含 >50% 脓", "分泌物气味正常含脓",
+  "直肠检查子宫异常", "产后 5 天以上", "产后 10 天内", "产后 21-28 天",
+  "助产 3 分及以上", "双胎 / 死胎",
+  "采食下降", "反刍减少", "精神沉郁",
 ];
 
 // 疾病库（关联症状）；每个疾病可包含多个治疗处方方案
 type Plan = { id: string; name: string; desc?: string; items: Prescription[] };
 type Disease = { name: string; symptoms: string[]; plans: Plan[] };
+// 来源：晟安标准处方 · 子宫炎类（产道创伤 / 产后子宫炎 / 子宫内膜炎）
 const diseaseLibrary: Disease[] = [
   {
-    name: "支气管肺炎",
-    symptoms: ["高烧", "咳嗽", "鼻液", "呼吸急促", "食欲下降"],
+    name: "产道创伤",
+    symptoms: ["阴道黏膜层撕裂", "助产 3 分及以上"],
     plans: [
       {
         id: "p1",
-        name: "处方1 · 抗炎 + 抗生素",
-        desc: "适用于高烧伴明显呼吸道症状",
+        name: "处方 1 · 5% 头孢噻呋 + 氟尼辛",
+        desc: "疗程 3-5 天；助产后凉水冲洗外阴 5 分钟，损伤处涂抹碘甘油每天 2 次连用 5 天",
         items: [
-          { id: "r1", kind: "drug", name: "氟尼辛葡甲胺注射液", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2", doseUnit: "ml", days: "3" },
-          { id: "r2", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1", doseUnit: "g", days: "3" },
+          { id: "r1", kind: "drug", name: "5% 盐酸头孢噻呋（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "4.4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
         ],
       },
       {
         id: "p2",
-        name: "处方2 · 单用抗生素",
-        desc: "无明显高烧时的简化方案",
+        name: "处方 2 · 10% 头孢噻呋 + 氟尼辛",
+        desc: "疗程 3-5 天，3 天 1 次给药；产道损伤 >5cm 须 PGA 可吸收线缝合，5 天后拆线",
         items: [
-          { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "肌肉注射", dose: "1", doseUnit: "g", days: "5" },
+          { id: "r1", kind: "drug", name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "1" },
+          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
         ],
       },
     ],
   },
   {
-    name: "急性乳房炎",
-    symptoms: ["高烧", "乳房红肿", "产奶骤降", "食欲下降"],
+    name: "产后子宫炎",
+    symptoms: ["体温 > 39.5℃", "体温 39.8℃", "分泌物恶臭", "分泌物含 >50% 脓", "分泌物气味正常含脓", "产后 10 天内", "产后 5 天以上"],
     plans: [
       {
         id: "p1",
-        name: "处方1 · 药物 + 物理治疗",
-        desc: "联合用药 + 热敷按摩；每次 10 分钟，促进炎症消散",
+        name: "处方 1 · 青霉素钠 + 氟尼辛",
+        desc: "产后 10 天内；青霉素钠 2.2 万单位/kg，早晚各 1 次连用 3 天",
         items: [
-          { id: "r1", kind: "drug", name: "头孢噻呋钠", maker: "礼蓝动保", spec: "1g / 支", use: "乳房灌注", dose: "1", doseUnit: "g", days: "3" },
-          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺", maker: "齐鲁动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "2", doseUnit: "ml", days: "2" },
-          { id: "r3", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "2 次 / 天", days: "3" },
+          { id: "r1", kind: "drug", name: "注射用青霉素钠（联治灵）", maker: "联治灵", spec: "2.4g / 瓶", use: "肌肉注射", dose: "2.4", doseUnit: "g", dosePer: "fixed", timesPerDay: "2", days: "3", isSpecialDrug: true },
+          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
         ],
       },
       {
         id: "p2",
-        name: "处方2 · 仅物理治疗",
-        desc: "轻症或孕期禁用抗生素时；每次 15 分钟，配合人工挤奶",
+        name: "处方 2 · 5% 头孢噻呋 + 氟尼辛",
+        desc: "产后 10 天内，1 天 1 次连用 3 天",
         items: [
-          { id: "r1", kind: "therapy", name: "乳房热敷按摩", therapyMethod: "热敷", frequency: "3 次 / 天", days: "5" },
+          { id: "r1", kind: "drug", name: "5% 盐酸头孢噻呋（畜可健）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "4.4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+        ],
+      },
+      {
+        id: "p3",
+        name: "处方 3 · 10% 头孢噻呋 + 利福昔明灌注",
+        desc: "产后 5 天以上；辅助利福昔明子宫灌注 100 mL/次，2 天一次连用 2-3 次",
+        items: [
+          { id: "r1", kind: "drug", name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "1" },
+          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
+          { id: "r3", kind: "drug", name: "利福昔明子宫注入剂（澳利舒）", maker: "澳利舒", spec: "100ml / 瓶", use: "乳房灌注", dose: "100", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "2" },
         ],
       },
     ],
   },
   {
-    name: "瘤胃酸中毒",
-    symptoms: ["食欲下降", "反刍减少", "腹泻", "脱水"],
+    name: "子宫内膜炎",
+    symptoms: ["直肠检查子宫异常", "分泌物含 >50% 脓", "分泌物气味正常含脓", "产后 21-28 天"],
     plans: [
       {
         id: "p1",
-        name: "处方1 · 常规治疗",
+        name: "处方 1 · 青霉素钠 + 氟尼辛",
+        desc: "产后 21-28 天；直肠按压排脓后用药，早晚各 1 次连用 3 天",
         items: [
-          { id: "r1", kind: "drug", name: "碳酸氢钠", maker: "华北制药", spec: "500g / 袋", use: "口服", dose: "200", doseUnit: "g", days: "2" },
-          { id: "r2", kind: "drug", name: "复合维生素 B", maker: "扬州威克", spec: "100ml / 瓶", use: "肌肉注射", dose: "10", doseUnit: "ml", days: "3" },
+          { id: "r1", kind: "drug", name: "注射用青霉素钠（联治灵）", maker: "联治灵", spec: "2.4g / 瓶", use: "肌肉注射", dose: "2.4", doseUnit: "g", dosePer: "fixed", timesPerDay: "2", days: "3", isSpecialDrug: true },
+          { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
         ],
       },
-    ],
-  },
-  {
-    name: "酮病",
-    symptoms: ["食欲下降", "产奶骤降", "精神萎靡"],
-    plans: [
       {
-        id: "p1",
-        name: "处方1 · 静脉补糖",
+        id: "p2",
+        name: "处方 2 · 利福昔明子宫灌注",
+        desc: "利福昔明 100 mL/次，2 天 1 次连用 2-3 次",
         items: [
-          { id: "r1", kind: "drug", name: "50% 葡萄糖", maker: "石药集团", spec: "500ml / 瓶", use: "静脉注射", dose: "500", doseUnit: "ml", days: "2" },
-        ],
-      },
-    ],
-  },
-  {
-    name: "犊牛腹泻症",
-    symptoms: ["腹泻", "脱水", "精神萎靡"],
-    plans: [
-      {
-        id: "p1",
-        name: "处方1 · 补液护理",
-        desc: "干燥温暖环境，单独看护",
-        items: [
-          { id: "r1", kind: "drug", name: "口服补液盐", maker: "瑞普生物", spec: "100g / 包", use: "口服", dose: "1", doseUnit: "包", days: "3" },
-          { id: "r2", kind: "therapy", name: "保温隔离", therapyMethod: "隔离观察", frequency: "全天", days: "5" },
+          { id: "r1", kind: "drug", name: "利福昔明子宫注入剂（澳利舒）", maker: "澳利舒", spec: "100ml / 瓶", use: "乳房灌注", dose: "100", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "2" },
         ],
       },
     ],
