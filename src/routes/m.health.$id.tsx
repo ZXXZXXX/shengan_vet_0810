@@ -1522,8 +1522,9 @@ function ChecklistDay({
   const claimed = useClaimed();
   const pickupClaimed = pickupCode ? claimed.includes(pickupCode) : true;
 
+  const activePlan = getWoPlan(workOrderId);
   const [items, setItems] = useState<ExecItem[]>(() => {
-    const base = buildDayItems(day, tags, withTemp);
+    const base = buildDayItems(day, tags, withTemp, activePlan);
     if (isDone) return base.map((it) => ({ ...it, status: "done" as ItemStatus }));
     return base;
   });
