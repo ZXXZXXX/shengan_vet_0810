@@ -1661,9 +1661,9 @@ function ChecklistDay({
           )}
 
 
-          {/* 用药状态切换（影响下方"用药信息"与"治疗记录"两张卡片形态） */}
+          {/* 用药状态切换（异常分支入口，影响下方"用药信息"与"治疗记录"两张卡片形态） */}
           {interactive && medItems.length > 0 && (
-            <div className="flex items-center justify-end -mb-1">
+            <div className="flex items-center justify-end">
               {unableMed ? (
                 <button
                   type="button"
@@ -1676,13 +1676,14 @@ function ChecklistDay({
                 <button
                   type="button"
                   onClick={() => setUnableMed(true)}
-                  className="text-caption text-text-secondary active:opacity-70"
+                  className="text-caption text-text-tertiary underline underline-offset-2 decoration-border active:opacity-70"
                 >
                   无法正常用药 ›
                 </button>
               )}
             </div>
           )}
+
 
           {/* 2. 用药信息 或 未用药说明（由"无法正常用药"切换） */}
           {medItems.length > 0 && !unableMed && (
