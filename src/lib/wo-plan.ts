@@ -275,7 +275,7 @@ const PLANS = {
         spec: "100ml / 瓶",
         manufacturer: "礼蓝动保",
         use: "静脉注射",
-        dose: "按体重区间（10-35mL/次）",
+        dose: "20mL / 次",
         method: "1 天 1 次，连用 3 天",
         qty: "1 瓶",
         isPrescription: false,
