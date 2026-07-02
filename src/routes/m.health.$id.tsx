@@ -1672,10 +1672,6 @@ function ChecklistDay({
             const key = `task-${i}`;
             const photos = taskPhotos[key] ?? [];
             const setInputRef = (el: HTMLInputElement | null) => { taskFileRef.current[key] = el; };
-            const recordLabel =
-              t.record === "number" ? "数字输入" :
-              t.record === "photo" ? "图片 / 视频" :
-              "文本输入";
             return (
               <div key={key} className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
                 <div className="flex items-center justify-between mb-1">
