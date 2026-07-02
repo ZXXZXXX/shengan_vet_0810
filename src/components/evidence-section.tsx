@@ -1,5 +1,7 @@
 import React from "react";
-import { Camera, Mic, Video, X } from "lucide-react";
+import { Mic, X } from "lucide-react";
+import { MediaGrid } from "@/components/m/media-grid";
+
 
 export function EvidenceSection({
   desc,
