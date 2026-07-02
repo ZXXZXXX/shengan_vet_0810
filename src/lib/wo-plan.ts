@@ -506,7 +506,7 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
   }
   // fallback: 按疾病或工单类型给默认处方
   const key: PlanKey =
-    (disease && DEFAULT_BY_DISEASE[disease]) ??
+    (disease ? DEFAULT_BY_DISEASE[disease] : undefined) ??
     (workType === "修蹄" ? "fu_p1"
       : workType === "干奶" ? "drying_p1"
       : workType === "产后护理" ? "postpartum"
