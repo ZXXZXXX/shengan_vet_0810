@@ -1129,7 +1129,7 @@ function ReportPage() {
       <DiseasePicker
         open={diseasePickerOpen}
         onClose={() => setDiseasePickerOpen(false)}
-        diseases={diseaseKB}
+        diseases={activeDiseaseKB}
         selectedName={suspectedDisease}
         matchedSymptoms={symptoms}
         onSelect={(d) => setSuspectedDisease(d.name)}
