@@ -1542,16 +1542,10 @@ function ChecklistDay({
   const [noteEditing, setNoteEditing] = useState(false);
   const [temps, setTemps] = useState<Record<string, string>>({});
   const [evidencePhotos, setEvidencePhotos] = useState<number[]>([]);
-  const [evidenceSheetOpen, setEvidenceSheetOpen] = useState(false);
-  const evidencePhotoRef = useRef<HTMLInputElement>(null);
-  const evidenceVideoRef = useRef<HTMLInputElement>(null);
-  const evidenceAlbumRef = useRef<HTMLInputElement>(null);
   const [unableMed, setUnableMed] = useState(false);
   const [unableReason, setUnableReason] = useState("");
   const [unablePhotos, setUnablePhotos] = useState<number[]>([]);
-  const [unableSheetOpen, setUnableSheetOpen] = useState(false);
-  const unablePhotoRef = useRef<HTMLInputElement>(null);
-  const unableAlbumRef = useRef<HTMLInputElement>(null);
+
 
   const scannedMap = useScannedCodes(pickupCode ?? "");
   const scanAttemptRef = useRef(0);
