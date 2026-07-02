@@ -1684,8 +1684,7 @@ function ChecklistDay({
                   </div>
                   <span className="text-caption text-text-tertiary">{t.type}</span>
                 </div>
-                <div className="text-caption text-text-tertiary mb-1">{t.desc}</div>
-                <div className="text-caption text-text-tertiary mb-2">记录方式：{recordLabel}</div>
+                <div className="text-caption text-text-tertiary mb-2">{t.desc}</div>
 
                 {t.record === "number" && (
                   <div className="flex items-center gap-2">
