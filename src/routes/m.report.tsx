@@ -91,7 +91,12 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
     tags: {
       label: "症状标签",
       required: true,
-      presets: ["体温升高", "采食下降", "反刍减少", "精神沉郁", "乳房红肿", "跛行", "腹泻", "鼻液增多", "外伤出血", "卧地不起"],
+      // 仅为临床观察到的体征（症状），不含诊断结论
+      presets: [
+        "体温升高", "采食下降", "反刍减少", "精神沉郁", "卧地不起",
+        "阴道分泌物恶臭", "分泌物含脓", "恶露异常", "外阴红肿",
+        "乳房红肿", "乳汁异常", "跛行", "腹泻", "鼻液增多", "咳嗽", "外伤出血",
+      ],
     },
     allowDisease: true,
   },
@@ -99,7 +104,12 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
     tags: {
       label: "症状标签",
       required: true,
-      presets: ["跛行", "蹄底溃疡", "趾间皮炎", "蹄叶炎", "蹄壁裂", "白线病", "蹄过长", "腐蹄", "蹄冠红肿", "蹄部脓肿"],
+      // 仅为蹄部可观察到的体征，不含病名（腐蹄病 / 蹄叶炎 / 白线病等属诊断结论）
+      presets: [
+        "跛行", "行走姿势异常", "频繁抬蹄", "卧地不起",
+        "蹄冠红肿", "蹄部渗液", "蹄底出血", "蹄部脓肿",
+        "趾间糜烂", "趾间异味", "蹄壁裂纹", "蹄过长",
+      ],
     },
     allowDisease: true,
   },
@@ -107,7 +117,12 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
     tags: {
       label: "症状标签",
       required: true,
-      presets: ["胎衣不下", "产道损伤", "子宫复旧异常", "低血钙", "酮病风险", "产后发热", "BCS 偏低", "恶露异常"],
+      // 产后可观察到的体征，不含诊断结论
+      presets: [
+        "体温升高", "采食下降", "精神沉郁", "卧地不起",
+        "胎衣未排出", "恶露异常", "阴道分泌物恶臭", "外阴红肿",
+        "行走无力", "BCS 偏低",
+      ],
     },
     allowDisease: true,
   },
@@ -115,10 +130,12 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
     tags: {
       label: "干奶依据",
       required: true,
+      // 干奶不是疾病，无症状；此处为执行依据（现场判断）
       presets: ["预产 60 天内", "泌乳量 <15kg", "本胎次高产", "本胎次乳房炎史", "近期 SCC 偏高", "乳区正常", "乳区异常"],
     },
     allowDisease: true,
   },
+
   疫苗: {
     note: { label: "事项说明", placeholder: "请描述疫苗品种、批次、覆盖范围等" },
     allowDisease: false,
