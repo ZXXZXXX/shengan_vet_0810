@@ -1163,7 +1163,7 @@ const DRUG_ASSOCIATIONS: Record<string, string[]> = {
 };
 
 // 根据处方拆解每日任务：每种药品 = 一次任务，加上不需用药的常规任务（如测温）
-function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem[] {
+function buildDayItems(day: number, _tags: string[], withTemp = false, plan?: WoPlan): ExecItem[] {
   const items: ExecItem[] = [];
   if (withTemp) {
     items.push({
@@ -1174,26 +1174,18 @@ function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem
       needMed: false,
     });
   }
-  items.push(
-    {
-      id: `d${day}-t1`,
-      title: "氟尼辛葡甲胺注射液",
-      desc: "2ml",
+  const drugs = (plan?.drugs ?? []).filter((d) => d.kind !== "therapy");
+  drugs.forEach((d, idx) => {
+    items.push({
+      id: `d${day}-t${idx + 1}`,
+      title: d.name,
+      desc: `${d.dose}（${d.use}）`,
       status: "pending",
       needMed: true,
-      manufacturer: "齐鲁动保",
-      batchNo: "L20260418",
-    },
-    {
-      id: `d${day}-t2`,
-      title: "头孢噻呋钠",
-      desc: "1g",
-      status: "pending",
-      needMed: true,
-      manufacturer: "瑞普生物",
-      batchNo: "B20260512",
-    },
-  );
+      manufacturer: d.manufacturer,
+      batchNo: `L2026${String(400 + idx).padStart(4, "0")}`,
+    });
+  });
   return items;
 }
 
