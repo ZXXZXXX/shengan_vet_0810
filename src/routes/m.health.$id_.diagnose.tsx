@@ -1099,9 +1099,6 @@ function DiagnosePage() {
                                   <Pill className="h-3.5 w-3.5 text-primary" />
                                 )}
                                 {r.name || (isTherapy ? "未填写治疗手段" : "未填写药品")}
-                                {!isTherapy && r.maker && (
-                                  <span className="text-caption text-text-tertiary font-normal">· {r.maker}</span>
-                                )}
                                 {!isTherapy && r.isSpecialDrug && (
                                   <span className="tag tag-muted">特殊</span>
                                 )}
