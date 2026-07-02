@@ -27,10 +27,10 @@ import {
   Tag,
   AlertOctagon,
   AlertCircle,
-  ImagePlus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { MAddMediaSheet } from "@/components/m-add-media-sheet";
+import { MediaGrid } from "@/components/m/media-grid";
+
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
