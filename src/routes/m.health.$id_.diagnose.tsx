@@ -166,7 +166,8 @@ const drugStock: Record<string, { qty: number; unit: string }> = {
   "口服补液盐": { qty: 30, unit: "包" },
   "氟尼辛葡甲胺": { qty: 200, unit: "ml" },
   "5% 盐酸头孢噻呋（畜可健）": { qty: 600, unit: "ml" },
-  "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）": { qty: 400, unit: "ml" },
+  "10% 盐酸头孢噻呋注射液（畜可健）": { qty: 400, unit: "ml" },
+  "10% 盐酸头孢噻呋注射液（欣利达）": { qty: 0, unit: "ml" },
   "氟尼辛葡甲胺（福欣安）": { qty: 600, unit: "ml" },
 };
 
@@ -220,7 +221,27 @@ type Prescription = {
   usageMethod?: string;
   // 按体重区间给药（覆盖自动/固定剂量显示）
   doseByWeight?: string;
+  // 药品品牌备选（当同一处方允许多个厂商 / 品牌互替时提供）
+  alternatives?: string[];
 };
+
+// 解析 "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）" -> 前缀 + 多品牌
+function parseBrandAlternatives(name: string): { prefix: string; brands: string[] } | null {
+  const m = name.match(/^(.*?)（([^（）]+)）\s*$/);
+  if (!m) return null;
+  const inner = m[2];
+  if (!/[\/／]/.test(inner)) return null;
+  const brands = inner.split(/[\/／]/).map((s) => s.trim()).filter(Boolean);
+  if (brands.length < 2) return null;
+  return { prefix: m[1].trim(), brands };
+}
+
+function pickDefaultBrand(prefix: string, brands: string[]): string {
+  const withStock = brands.filter((b) => (drugStock[`${prefix}（${b}）`]?.qty ?? 0) > 0);
+  const pool = withStock.length > 0 ? withStock : [...brands];
+  pool.sort((a, b) => a.localeCompare(b, "zh"));
+  return pool[0];
+}
 
 // 体重相关剂量计算（mL/g 等）。fixed 表示单次固定剂量
 function computePerDose(r: Prescription, w: number): number {
@@ -445,11 +466,24 @@ function DiagnosePage() {
     setDisease(d.name);
     setDiseaseQuery(d.name);
     // 优先选择所有药品都有库存的方案；若都齐全或都缺，则按方案名称升序排序
-    const cloned = d.plans.map((p) => ({ ...p, items: p.items.map((it) => ({ ...it })) }));
+    const cloned = d.plans.map((p) => ({
+      ...p,
+      items: p.items.map((it) => {
+        if (it.kind !== "drug") return { ...it };
+        const alt = parseBrandAlternatives(it.name);
+        if (!alt) return { ...it };
+        const brand = pickDefaultBrand(alt.prefix, alt.brands);
+        return {
+          ...it,
+          name: `${alt.prefix}（${brand}）`,
+          alternatives: alt.brands.map((b) => `${alt.prefix}（${b}）`),
+        };
+      }),
+    }));
     const scored = cloned
       .map((p) => {
         const drugItems = p.items.filter((it) => it.kind === "drug");
-        const allInStock = drugItems.length > 0 && drugItems.every((it) => !!drugStock[it.name]);
+        const allInStock = drugItems.length > 0 && drugItems.every((it) => (drugStock[it.name]?.qty ?? 0) > 0);
         return { p, allInStock };
       })
       .sort((a, b) => {
@@ -460,6 +494,25 @@ function DiagnosePage() {
     setStdPlans(sortedPlans);
     setSelectedPlanId(sortedPlans[0]?.id ?? "");
     setDiseasePickerOpen(false);
+  };
+
+  // 品牌替换弹层
+  const [brandSheet, setBrandSheet] = useState<{ planId: string; rxId: string } | null>(null);
+  const switchBrand = (newName: string) => {
+    if (!brandSheet) return;
+    setStdPlans((prev) =>
+      prev.map((p) =>
+        p.id !== brandSheet.planId
+          ? p
+          : {
+              ...p,
+              items: p.items.map((it) =>
+                it.id === brandSheet.rxId ? { ...it, name: newName } : it,
+              ),
+            },
+      ),
+    );
+    setBrandSheet(null);
   };
 
   const selectedPlan = useMemo(
@@ -1003,6 +1056,15 @@ function DiagnosePage() {
                               <span className="text-body text-foreground min-w-0 flex-1">
                                 {r.name}
                               </span>
+                              {!isTherapy && r.alternatives && r.alternatives.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setBrandSheet({ planId: selectedPlan.id, rxId: r.id })}
+                                  className="shrink-0 inline-flex items-center gap-0.5 h-6 px-1.5 rounded-md text-caption text-primary hover:bg-brand-subtle"
+                                >
+                                  更换 <ChevronDown className="h-3 w-3" />
+                                </button>
+                              )}
                             </div>
                             <div className="text-caption text-text-tertiary mt-1">
                               {isTherapy
@@ -1468,6 +1530,71 @@ function DiagnosePage() {
           </div>
         </div>
       )}
+
+      {/* 品牌替换抽屉 */}
+      {brandSheet && (() => {
+        const plan = stdPlans.find((p) => p.id === brandSheet.planId);
+        const rx = plan?.items.find((i) => i.id === brandSheet.rxId);
+        if (!plan || !rx || !rx.alternatives) return null;
+        return (
+          <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setBrandSheet(null)}>
+            <div
+              className="w-full bg-card rounded-t-2xl p-4 space-y-3 max-h-[75vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between">
+                <div className="text-section text-foreground font-medium">更换药品</div>
+                <button
+                  onClick={() => setBrandSheet(null)}
+                  className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary"
+                  aria-label="关闭"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <ul className="space-y-2">
+                {rx.alternatives.map((name) => {
+                  const active = name === rx.name;
+                  const qty = drugStock[name]?.qty ?? 0;
+                  const unit = drugStock[name]?.unit ?? "";
+                  const inStock = qty > 0;
+                  return (
+                    <li key={name}>
+                      <button
+                        type="button"
+                        onClick={() => switchBrand(name)}
+                        className={`w-full text-left rounded-lg border p-3 transition-colors ${
+                          active ? "border-primary bg-brand-subtle/40" : "border-border bg-card"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="text-body text-foreground">{name}</div>
+                            <div className="text-caption mt-0.5">
+                              {inStock ? (
+                                <span className="text-primary">库存 {qty}{unit}</span>
+                              ) : (
+                                <span className="text-[var(--state-danger)]">暂无库存</span>
+                              )}
+                            </div>
+                          </div>
+                          <span
+                            className={`shrink-0 h-5 w-5 rounded-full border inline-flex items-center justify-center ${
+                              active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"
+                            }`}
+                          >
+                            {active && <CheckCircle2 className="h-3.5 w-3.5" />}
+                          </span>
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* 提交校验：缺药 / 规则二次确认 */}
       {submitCheck && (
