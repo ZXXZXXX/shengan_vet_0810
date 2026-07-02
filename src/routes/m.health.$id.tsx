@@ -1594,7 +1594,7 @@ function ChecklistDay({
   const planTasks: PlanTask[] = activePlan?.tasks ?? (withTemp ? [defaultTempTask] : []);
   const [taskValues, setTaskValues] = useState<Record<string, string>>({});
   const [taskPhotos, setTaskPhotos] = useState<Record<string, number[]>>({});
-  const taskFileRef = useRef<Record<string, HTMLInputElement | null>>({});
+
 
   const tasksReady = planTasks.every((t, i) => {
     if (!t.required) return true;
