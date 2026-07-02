@@ -1013,7 +1013,7 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
 
 
 // === 诊断记录 ===
-function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
+function ReviewTab({ isLoss, status, plan }: { isLoss: boolean; status: StatusKey; plan: WoPlan }) {
   if (status === "待诊断") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -1022,11 +1022,13 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
       </div>
     );
   }
+  const symptoms = isLoss ? ["冷链异常"] : plan.symptoms;
+  const conclusion = isLoss ? "疫苗失效，作损耗处理" : `${plan.disease} · ${plan.prescription.name}`;
   return (
     <>
       <Section title="基础信息">
-        <Field label="诊断人" value={<PersonChip name="王医生" />} />
-        <Field label="诊断时间" value="2026-05-20 10:15" />
+        <Field label="诊断人" value={<PersonChip name={plan.diagnoser ?? "王医生"} />} />
+        <Field label="诊断时间" value={plan.diagnoseTime ?? "2026-05-20 10:15"} />
       </Section>
 
       <>
@@ -1036,7 +1038,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
               label="症状标签"
               value={
                 <div className="flex flex-wrap gap-1 justify-end">
-                  {(isLoss ? ["冷链异常"] : ["呼吸道感染", "需隔离"]).map((t) => (
+                  {symptoms.map((t) => (
                     <span key={t} className="tag tag-brand">
                       {t}
                     </span>
@@ -1044,14 +1046,14 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 </div>
               }
             />
-            <Field label="诊断结论" value={isLoss ? "疫苗失效，作损耗处理" : "支气管肺炎（早期）"} />
+            <Field label="诊断结论" value={conclusion} />
           </Section>
 
 
 
           <Section title="具体描述">
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              结合症状与现场视频，判定为支气管肺炎早期，采用标准 3 日方案治疗，隔离至症状消退后 48 小时。
+              {isLoss ? "疫苗冷链异常判定失效，作损耗处理。" : plan.description}
             </p>
           </Section>
 
@@ -1090,14 +1092,13 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
 
           <Section title="治疗方案 / 执行方案">
             <ul className="-mx-1 space-y-3">
-              {[
-                { name: "氟尼辛葡甲胺注射液", use: "肌肉注射", dose: "2ml / 次", method: "1天1次，连用3天", isPrescription: true, isSpecial: false },
-                { name: "头孢噻呋钠", use: "肌肉注射", dose: "1g / 次", method: "1天1次，连用3天", isPrescription: false, isSpecial: true },
-              ].map((m) => (
+              {plan.drugs.map((m) => (
                 <li key={m.name} className="px-1">
                   <div className="flex flex-wrap items-center gap-1.5 mb-1">
                     <span className="text-body font-medium text-foreground">{m.name}</span>
-                    {m.isPrescription ? (
+                    {m.kind === "therapy" ? (
+                      <span className="tag tag-muted">理疗</span>
+                    ) : m.isPrescription ? (
                       <span className="tag tag-info">处方药</span>
                     ) : (
                       <span className="tag tag-muted">非处方药</span>
@@ -1126,7 +1127,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 <FileText className="h-3.5 w-3.5 text-text-tertiary shrink-0 mt-0.5" />
                 <span>
                   <span className="text-text-tertiary">补充说明</span>
-                  <span className="text-foreground ml-1">每次 10 分钟，促进炎症消散。</span>
+                  <span className="text-foreground ml-1">{plan.prescription.note || "-"}</span>
                 </span>
               </div>
             </div>
@@ -1135,7 +1136,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
 
           <Section title="执行安排">
             <Field label="指定执行人" value={<PersonChip name="李雨晴" />} />
-            <Field label="复查 / 验收" value="第 4 天复测体温与采食情况" />
+            <Field label="复查 / 验收" value={plan.reviewAction} />
           </Section>
         </>
     </>
