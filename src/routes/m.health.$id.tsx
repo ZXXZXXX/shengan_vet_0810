@@ -1262,7 +1262,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
     ? []
     : platformAction
       ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
-      : getExecSummary(allPrescriptionsDone ? "已完成" : status);
+      : getExecSummary(allPrescriptionsDone ? "已完成" : status, plan ?? getWoPlan(id));
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
