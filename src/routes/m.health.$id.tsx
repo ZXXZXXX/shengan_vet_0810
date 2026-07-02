@@ -1661,38 +1661,53 @@ function ChecklistDay({
           )}
 
 
+          {/* 用药状态切换（影响下方"用药信息"与"治疗记录"两张卡片形态） */}
+          {interactive && medItems.length > 0 && (
+            <div className="flex items-center justify-end -mb-1">
+              {unableMed ? (
+                <button
+                  type="button"
+                  onClick={() => { setUnableMed(false); setUnableReason(""); setUnablePhotos([]); }}
+                  className="text-caption text-primary active:opacity-70"
+                >
+                  恢复正常用药
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setUnableMed(true)}
+                  className="text-caption text-text-secondary active:opacity-70"
+                >
+                  无法正常用药 ›
+                </button>
+              )}
+            </div>
+          )}
+
           {/* 2. 用药信息 或 未用药说明（由"无法正常用药"切换） */}
           {medItems.length > 0 && !unableMed && (
             <div className={`rounded-xl border border-border bg-card px-3 py-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between">
                 <div className="text-body-sm text-foreground">用药信息</div>
                 {interactive && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setUnableMed(true)}
-                      className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-text-secondary border-border active:bg-surface-subtle"
-                    >
-                      无法正常用药
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        // 演示场景循环：2(无领取记录) → 3(组合用药) → 5(药品异常) → 1(直接录入) → 4(已被使用) → 2 …
-                        const order: Array<1 | 2 | 3 | 4 | 5> = [2, 3, 5, 1, 4];
-                        const scenario = order[scanAttemptRef.current % 5];
-                        scanAttemptRef.current += 1;
-                        const target = medItems.find((m) => !m.scanCode) ?? medItems[0];
-                        if (!target) return;
-                        setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
-                      }}
-                      className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-primary border-primary/30 active:bg-brand-subtle"
-                    >
-                      <ScanLine className="h-3.5 w-3.5" /> 扫码核验
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 演示场景循环：2(无领取记录) → 3(组合用药) → 5(药品异常) → 1(直接录入) → 4(已被使用) → 2 …
+                      const order: Array<1 | 2 | 3 | 4 | 5> = [2, 3, 5, 1, 4];
+                      const scenario = order[scanAttemptRef.current % 5];
+                      scanAttemptRef.current += 1;
+                      const target = medItems.find((m) => !m.scanCode) ?? medItems[0];
+                      if (!target) return;
+                      setReplaceState({ itemId: target.id, itemName: target.title, attempt: scenario === 2 ? 0 : 1, scenario });
+                    }}
+                    className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-primary border-primary/30 active:bg-brand-subtle"
+                  >
+                    <ScanLine className="h-3.5 w-3.5" /> 扫码核验
+                  </button>
                 )}
               </div>
+
 
               {medItems.map((it) => {
                 const scanned = Boolean(it.scanCode);
