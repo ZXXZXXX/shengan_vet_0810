@@ -1965,99 +1965,24 @@ function ChecklistDay({
 
           {interactive && hasMed && !unableMed && (
             <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
-
-                <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
-                  <span>
-                    治疗记录{" "}
-                    {evidenceRequired ? (
-                      <span className="text-[var(--state-danger)]">*</span>
-                    ) : (
-                      <span className="text-caption text-text-tertiary">（选填）</span>
-                    )}
-                  </span>
-                  <span className="text-caption text-text-tertiary">{evidencePhotos.length} / 6</span>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {evidencePhotos.map((pid) => (
-                    <div key={pid} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
-                      <button
-                        type="button"
-                        disabled={inputsLocked}
-                        onClick={() => setEvidencePhotos((p) => p.filter((x) => x !== pid))}
-                        className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow disabled:opacity-50"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                  {evidencePhotos.length < 6 && (
-                    <button
-                      type="button"
-                      disabled={inputsLocked}
-                      onClick={() => setEvidenceSheetOpen(true)}
-                      className={`aspect-square rounded-lg bg-surface-subtle flex flex-col items-center justify-center gap-1 text-text-tertiary ${
-                        inputsLocked ? "cursor-not-allowed opacity-60" : "active:bg-border"
-                      }`}
-                    >
-                      <Camera className="h-5 w-5" />
-                      <span className="text-caption">添加</span>
-                    </button>
-                  )}
-
-                </div>
-                <div className="mt-2 text-caption text-text-tertiary">
-                  请上传至少一张本次治疗的现场照片或视频，支持拍照、录像或从相册选择
-                </div>
-                <input
-                  ref={evidencePhotoRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files ?? []);
-                    files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
-                    e.target.value = "";
-                  }}
-                />
-                <input
-                  ref={evidenceVideoRef}
-                  type="file"
-                  accept="video/*"
-                  capture="environment"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files ?? []);
-                    files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
-                    e.target.value = "";
-                  }}
-                />
-                <input
-                  ref={evidenceAlbumRef}
-                  type="file"
-                  accept="image/*,video/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files ?? []);
-                    files.forEach(() => setEvidencePhotos((p) => [...p, Date.now() + Math.random()]));
-                    e.target.value = "";
-                  }}
-                />
-                <MAddMediaSheet
-                  open={evidenceSheetOpen}
-                  title="添加治疗记录"
-                  onClose={() => setEvidenceSheetOpen(false)}
-                  actions={[
-                    { key: "photo", icon: Camera, label: "拍照", onClick: () => evidencePhotoRef.current?.click() },
-                    { key: "video", icon: Video, label: "拍视频", onClick: () => evidenceVideoRef.current?.click() },
-                    { key: "album", icon: ImagePlus, label: "从相册选择", onClick: () => evidenceAlbumRef.current?.click() },
-                  ]}
-                />
+              <div className="text-body-sm text-foreground mb-2">
+                治疗记录{" "}
+                {evidenceRequired ? (
+                  <span className="text-[var(--state-danger)]">*</span>
+                ) : (
+                  <span className="text-caption text-text-tertiary">（选填）</span>
+                )}
               </div>
+              <MediaGrid
+                items={evidencePhotos}
+                setItems={setEvidencePhotos}
+                max={9}
+                disabled={inputsLocked}
+                helper="请上传至少一张本次治疗的现场照片或视频，支持拍照、录像或从相册选择"
+              />
+            </div>
           )}
+
 
 
 
