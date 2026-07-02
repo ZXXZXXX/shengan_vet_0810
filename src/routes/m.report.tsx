@@ -113,9 +113,9 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
   },
   干奶: {
     tags: {
-      label: "症状标签",
+      label: "干奶依据",
       required: true,
-      presets: ["达到干奶日龄", "预产 60 天内", "泌乳量 <15kg", "本胎次高产", "本胎次乳房炎史", "近期 SCC 偏高", "乳区正常", "乳区异常"],
+      presets: ["预产 60 天内", "泌乳量 <15kg", "本胎次高产", "本胎次乳房炎史", "近期 SCC 偏高", "乳区正常", "乳区异常"],
     },
     allowDisease: true,
   },
