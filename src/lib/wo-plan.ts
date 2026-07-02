@@ -343,7 +343,7 @@ const PLANS = {
       name: "产后 14 天例检方案",
       note: "产后 14 天连续例行检查：每日直肠测温 + 正前/正后照片采集；如出现异常按子宫炎处方另开工单处理。",
     },
-    drugs: [D.pp_check],
+    drugs: [],
     days: 14,
   },
 } as const satisfies Record<string, Omit<WoPlan, "symptoms" | "description" | "reviewAction" | "diagnoser" | "diagnoseTime" | "subType">>;
