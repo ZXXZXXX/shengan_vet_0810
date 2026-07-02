@@ -1957,7 +1957,7 @@ function ChecklistDay({
           )}
 
 
-          {interactive && !unableMed && (
+          {interactive && hasMed && !unableMed && (
             <div className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
 
                 <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
