@@ -177,6 +177,7 @@ const D = {
 
 export type WoPlan = {
   disease: string;
+  subType?: string;                  // 子类型，如 "阴道黏膜层撕裂"
   symptoms: string[];
   description: string;               // 具体诊断描述
   prescription: { name: string; note: string };
