@@ -1007,16 +1007,20 @@ function DiagnosePage() {
                             <div className="text-caption text-text-tertiary mt-1">
                               {isTherapy
                                 ? [r.therapyMethod, r.frequency, r.days && `${r.days} 天`].filter(Boolean).join(" · ")
-                                : [r.spec, r.use, r.timesPerDay && `${r.timesPerDay} 次 / 天`, r.days && `连用 ${r.days} 天`].filter(Boolean).join(" · ")}
+                                : [r.spec, r.use, r.usageMethod || [r.timesPerDay && `${r.timesPerDay} 次 / 天`, r.days && `连用 ${r.days} 天`].filter(Boolean).join(" · ")].filter(Boolean).join(" · ")}
                             </div>
                             {!isTherapy && (
-                              <div className="text-caption text-primary mt-1 inline-flex items-center gap-1">
-                                <Sparkles className="h-3 w-3" />
-                                {isFixed
-                                  ? `固定剂量 ${baseDose}${unit} / 次`
-                                  : computedDose !== null
-                                    ? `自动剂量 ${computedDose}${unit} / 次`
-                                    : `请选择体重以计算剂量`}
+                              <div className="text-caption text-primary mt-1 inline-flex items-start gap-1">
+                                <Sparkles className="h-3 w-3 mt-0.5 shrink-0" />
+                                <span>
+                                {r.doseByWeight
+                                  ? `按体重区间：${r.doseByWeight}`
+                                  : isFixed
+                                    ? `固定剂量 ${baseDose}${unit} / 次`
+                                    : computedDose !== null
+                                      ? `自动剂量 ${computedDose}${unit} / 次`
+                                      : `请选择体重以计算剂量`}
+                                </span>
                               </div>
                             )}
                           </li>
