@@ -870,56 +870,32 @@ function DiagnosePage() {
               </span>
             }
           >
-            <div className="space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
-                <input
-                  value={diseaseQuery}
-                  onChange={(e) => {
-                    setDiseaseQuery(e.target.value);
-                    setDisease(e.target.value.trim());
-                  }}
-                  onFocus={() => setDiseaseFocused(true)}
-                  onBlur={() => setTimeout(() => setDiseaseFocused(false), 150)}
-                  placeholder="搜索或直接输入疾病名称"
-                  className="h-10 w-full pl-9 pr-9 rounded-lg bg-white border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
-                />
-                {disease && (
-                  <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-primary" />
-                )}
-              </div>
-              {diseaseFocused && rankedDiseases.length > 0 && (
-                <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden bg-card max-h-72 overflow-y-auto">
-                  {rankedDiseases.map((d) => (
-                    <li key={d.name}>
-                      <button
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => pickDisease(d)}
-                        className="w-full px-3 py-2.5 flex items-center justify-between gap-2 hover:bg-surface-subtle text-left"
-                      >
-                        <div className="min-w-0">
-                          <div className="text-body text-foreground truncate">{d.name}</div>
-                          <div className="text-caption text-text-tertiary truncate">
-                            关联症状：{d.symptoms.join("、")}
-                          </div>
-                        </div>
-                        <span
-                          className={`shrink-0 tag ${d.matched > 0 ? "tag-brand" : "tag-muted"}`}
-                        >
-                          匹配 {d.matched}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {diseaseFocused && rankedDiseases.length === 0 && diseaseQuery.trim() && (
-                <div className="text-caption text-text-tertiary px-1">
-                  未匹配到库内疾病，将以「{diseaseQuery.trim()}」作为新疾病名称
+            {disease ? (
+              <div className="rounded-lg border border-primary/20 bg-brand-subtle p-3 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <span className="text-body-sm text-primary font-medium truncate">
+                    {disease}
+                  </span>
                 </div>
-              )}
-            </div>
-
+                <button
+                  type="button"
+                  onClick={() => setDiseasePickerOpen(true)}
+                  className="text-caption text-text-tertiary shrink-0"
+                >
+                  重选
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setDiseasePickerOpen(true)}
+                className="w-full h-11 rounded-lg border border-dashed border-border bg-card text-body-sm text-text-secondary inline-flex items-center justify-center gap-1 active:bg-surface-subtle"
+              >
+                <Search className="h-4 w-4" />
+                选择疾病名称
+              </button>
+            )}
           </Section>
 
           {/* ===== 治疗方案 分组 ===== */}
