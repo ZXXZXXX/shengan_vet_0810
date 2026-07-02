@@ -1552,7 +1552,7 @@ function DiagnosePage() {
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <ul className="space-y-2">
+              <ul className="space-y-2 flex-1 overflow-y-auto -mx-1 px-1">
                 {rx.alternatives.map((name) => {
                   const active = name === rx.name;
                   const qty = drugStock[name]?.qty ?? 0;
