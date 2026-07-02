@@ -255,11 +255,35 @@ const PLANS = {
     disease: "子宫内膜炎",
     prescription: {
       name: "处方 1 · 青霉素钠 + 氟尼辛",
-      note: "产后 21-28 天；直肠按压排脓后用药，早晚各 1 次连用 3 天。",
+      note: "产后 21-28 天；直肠按压排脓后用药。青霉素钠肌肉注射早晚各 1 次连用 3 天；氟尼辛葡甲胺静脉注射 1 天 1 次连用 3 天。",
     },
-    drugs: [D.penicillin, D.flunixin],
+    drugs: [
+      {
+        name: "注射用青霉素钠（联治灵 400 万 / 远征 400 万 / 联治灵 1600 万）",
+        spec: "2.4g / 瓶",
+        manufacturer: "联治灵 / 远征",
+        use: "肌肉注射",
+        dose: "按体重区间（2.4-9.6g/次）",
+        method: "早上下午各 1 次，连用 3 天",
+        qty: "6 瓶",
+        isPrescription: true,
+        isSpecial: true,
+      },
+      {
+        name: "氟尼辛葡甲胺注射液（福欣安）",
+        spec: "100ml / 瓶",
+        manufacturer: "礼蓝动保",
+        use: "静脉注射",
+        dose: "按体重区间（10-35mL/次）",
+        method: "1 天 1 次，连用 3 天",
+        qty: "1 瓶",
+        isPrescription: false,
+        isSpecial: false,
+      },
+    ],
     days: 3,
   },
+
   neimoyan_p2: {
     disease: "子宫内膜炎",
     prescription: {
