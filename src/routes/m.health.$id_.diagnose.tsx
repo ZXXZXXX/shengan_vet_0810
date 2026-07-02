@@ -466,11 +466,24 @@ function DiagnosePage() {
     setDisease(d.name);
     setDiseaseQuery(d.name);
     // 优先选择所有药品都有库存的方案；若都齐全或都缺，则按方案名称升序排序
-    const cloned = d.plans.map((p) => ({ ...p, items: p.items.map((it) => ({ ...it })) }));
+    const cloned = d.plans.map((p) => ({
+      ...p,
+      items: p.items.map((it) => {
+        if (it.kind !== "drug") return { ...it };
+        const alt = parseBrandAlternatives(it.name);
+        if (!alt) return { ...it };
+        const brand = pickDefaultBrand(alt.prefix, alt.brands);
+        return {
+          ...it,
+          name: `${alt.prefix}（${brand}）`,
+          alternatives: alt.brands.map((b) => `${alt.prefix}（${b}）`),
+        };
+      }),
+    }));
     const scored = cloned
       .map((p) => {
         const drugItems = p.items.filter((it) => it.kind === "drug");
-        const allInStock = drugItems.length > 0 && drugItems.every((it) => !!drugStock[it.name]);
+        const allInStock = drugItems.length > 0 && drugItems.every((it) => (drugStock[it.name]?.qty ?? 0) > 0);
         return { p, allInStock };
       })
       .sort((a, b) => {
@@ -481,6 +494,25 @@ function DiagnosePage() {
     setStdPlans(sortedPlans);
     setSelectedPlanId(sortedPlans[0]?.id ?? "");
     setDiseasePickerOpen(false);
+  };
+
+  // 品牌替换弹层
+  const [brandSheet, setBrandSheet] = useState<{ planId: string; rxId: string } | null>(null);
+  const switchBrand = (newName: string) => {
+    if (!brandSheet) return;
+    setStdPlans((prev) =>
+      prev.map((p) =>
+        p.id !== brandSheet.planId
+          ? p
+          : {
+              ...p,
+              items: p.items.map((it) =>
+                it.id === brandSheet.rxId ? { ...it, name: newName } : it,
+              ),
+            },
+      ),
+    );
+    setBrandSheet(null);
   };
 
   const selectedPlan = useMemo(
