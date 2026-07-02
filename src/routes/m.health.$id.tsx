@@ -1163,17 +1163,8 @@ const DRUG_ASSOCIATIONS: Record<string, string[]> = {
 };
 
 // 根据处方拆解每日任务：每种药品 = 一次任务，加上不需用药的常规任务（如测温）
-function buildDayItems(day: number, _tags: string[], withTemp = false, plan?: WoPlan): ExecItem[] {
+function buildDayItems(day: number, _tags: string[], _withTemp = false, plan?: WoPlan): ExecItem[] {
   const items: ExecItem[] = [];
-  if (withTemp) {
-    items.push({
-      id: `d${day}-temp`,
-      title: "直肠体温",
-      desc: "测量并记录牛只直肠体温",
-      status: "pending",
-      needMed: false,
-    });
-  }
   const allDrugs = plan?.drugs ?? [];
   const therapies = allDrugs.filter((d) => d.kind === "therapy");
   therapies.forEach((t, idx) => {
