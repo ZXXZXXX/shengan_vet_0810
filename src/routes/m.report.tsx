@@ -99,9 +99,9 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
     tags: {
       label: "症状标签",
       required: true,
-      presets: ["跛行", "蹄底溃疡", "趾间皮炎", "蹄叶炎", "蹄壁裂", "白线病", "蹄过长", "腐蹄"],
+      presets: ["跛行", "蹄底溃疡", "趾间皮炎", "蹄叶炎", "蹄壁裂", "白线病", "蹄过长", "腐蹄", "蹄冠红肿", "蹄部脓肿"],
     },
-    allowDisease: false,
+    allowDisease: true,
   },
   产后护理: {
     tags: {
@@ -112,8 +112,12 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
     allowDisease: true,
   },
   干奶: {
-    note: { label: "事项说明", placeholder: "请描述干奶批次、用药及注意事项" },
-    allowDisease: false,
+    tags: {
+      label: "症状标签",
+      required: true,
+      presets: ["达到干奶日龄", "预产 60 天内", "泌乳量 <15kg", "本胎次高产", "本胎次乳房炎史", "近期 SCC 偏高", "乳区正常", "乳区异常"],
+    },
+    allowDisease: true,
   },
   疫苗: {
     note: { label: "事项说明", placeholder: "请描述疫苗品种、批次、覆盖范围等" },
@@ -134,12 +138,15 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
 };
 
 
-// 疾病知识库 + 自动治疗方案（来源：晟安标准处方 · 子宫炎类）
+// 疾病知识库 + 自动治疗方案（分工单类型；来源：晟安标准处方）
 type DiseasePlan = { id: string; rx: string; desc?: string; drugs: string[]; duration: string };
-const diseaseKB: { name: string; symptoms: string[]; plans: DiseasePlan[] }[] = [
+type DiseaseEntry = { name: string; symptoms: string[]; plans: DiseasePlan[] };
+
+// 疾病治疗（子宫炎类）
+const diseaseKB_disease: DiseaseEntry[] = [
   {
     name: "产道创伤",
-    symptoms: ["阴道黏膜层撕裂", "助产 3 分及以上"],
+    symptoms: ["阴道黏膜层撕裂", "助产 3 分及以上", "外伤出血"],
     plans: [
       { id: "p1", rx: "处方 1 · 5% 头孢噻呋 + 氟尼辛", desc: "疗程 3-5 天，配合外阴冲洗与碘甘油局部处理", drugs: ["5% 盐酸头孢噻呋（畜可健） 4.4mL/100kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3-5 天" },
       { id: "p2", rx: "处方 2 · 10% 头孢噻呋 + 氟尼辛", desc: "3 天 1 次给药；损伤 >5cm 须 PGA 缝合", drugs: ["10% 盐酸头孢噻呋 20mL/次 3 天 1 次", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3-5 天" },
@@ -147,7 +154,7 @@ const diseaseKB: { name: string; symptoms: string[]; plans: DiseasePlan[] }[] = 
   },
   {
     name: "产后子宫炎",
-    symptoms: ["体温 > 39.5℃", "分泌物恶臭", "分泌物含 >50% 脓"],
+    symptoms: ["体温升高", "体温 > 39.5℃", "分泌物恶臭", "分泌物含 >50% 脓", "采食下降", "精神沉郁"],
     plans: [
       { id: "p1", rx: "处方 1 · 青霉素钠 + 氟尼辛", desc: "产后 10 天内，早晚各 1 次", drugs: ["注射用青霉素钠（联治灵） 2.2 万 IU/kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3 天" },
       { id: "p2", rx: "处方 2 · 5% 头孢噻呋 + 氟尼辛", desc: "产后 10 天内，1 天 1 次", drugs: ["5% 盐酸头孢噻呋（畜可健） 4.4mL/100kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3 天" },
@@ -163,6 +170,85 @@ const diseaseKB: { name: string; symptoms: string[]; plans: DiseasePlan[] }[] = 
     ],
   },
 ];
+
+// 修蹄工单（肢蹄病）
+const diseaseKB_hoof: DiseaseEntry[] = [
+  {
+    name: "腐蹄病",
+    symptoms: ["跛行", "腐蹄", "趾间皮炎", "蹄冠红肿"],
+    plans: [
+      { id: "p1", rx: "处方 1 · 修蹄清创 + 头孢噻呋 + 氟尼辛", desc: "清创后局部包扎，配合全身抗炎", drugs: ["5% 盐酸头孢噻呋（畜可健） 4.4mL/100kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3-5 天" },
+      { id: "p2", rx: "处方 2 · 蹄部局部封闭 + 硫酸铜蹄浴", desc: "10% 硫酸铜蹄浴，隔日 1 次", drugs: ["硫酸铜蹄浴液", "头孢噻呋外敷粉"], duration: "5-7 天" },
+    ],
+  },
+  {
+    name: "蹄趾皮炎",
+    symptoms: ["跛行", "趾间皮炎", "蹄冠红肿"],
+    plans: [
+      { id: "p1", rx: "处方 1 · 蹄部清创 + 四环素喷剂", desc: "清创后喷四环素，绷带包扎 2-3 天", drugs: ["盐酸四环素喷剂", "水杨酸粉外敷"], duration: "3-5 天" },
+      { id: "p2", rx: "处方 2 · 群体蹄浴", desc: "10% 硫酸铜或福尔马林蹄浴，连用 2 天", drugs: ["硫酸铜蹄浴液"], duration: "2-3 次" },
+    ],
+  },
+  {
+    name: "蹄底溃疡",
+    symptoms: ["跛行", "蹄底溃疡", "蹄部脓肿"],
+    plans: [
+      { id: "p1", rx: "处方 1 · 修蹄清创 + 蹄块 + 抗炎", desc: "对侧健蹄粘蹄块减压，配合全身抗炎", drugs: ["氟尼辛葡甲胺（福欣安） 4mL/100kg 静推", "头孢噻呋 4.4mL/100kg 肌注"], duration: "3-5 天" },
+    ],
+  },
+  {
+    name: "白线病",
+    symptoms: ["跛行", "白线病", "蹄壁裂"],
+    plans: [
+      { id: "p1", rx: "处方 1 · 修蹄清创 + 蹄块", desc: "清除白线感染灶，对侧粘蹄块", drugs: ["局部消毒液", "蹄块粘接剂"], duration: "1 次处理，7 天复查" },
+    ],
+  },
+  {
+    name: "蹄叶炎",
+    symptoms: ["跛行", "蹄叶炎", "卧地不起", "采食下降"],
+    plans: [
+      { id: "p1", rx: "处方 1 · 氟尼辛 + 修蹄减压", desc: "急性期抗炎为主，3-5 天复查", drugs: ["氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3-5 天" },
+    ],
+  },
+];
+
+// 干奶工单（乳注处方）
+const diseaseKB_drying: DiseaseEntry[] = [
+  {
+    name: "常规干奶（低风险）",
+    symptoms: ["达到干奶日龄", "预产 60 天内", "泌乳量 <15kg", "乳区正常"],
+    plans: [
+      { id: "p1", rx: "处方 1 · 头孢喹肟乳房注入剂（牧全欣）", desc: "干奶当日每乳区 1 支，配合乳头封闭剂", drugs: ["头孢喹肟乳房注入剂（牧全欣） 4 支/头", "乳头内封剂（次硝酸铋） 4 支/头"], duration: "1 次处理" },
+      { id: "p2", rx: "处方 2 · 头孢噻呋乳房注入剂（茹通）", desc: "干奶当日每乳区 1 支", drugs: ["头孢噻呋乳房注入剂（茹通） 4 支/头", "乳头内封剂 4 支/头"], duration: "1 次处理" },
+    ],
+  },
+  {
+    name: "高产 / 高风险干奶",
+    symptoms: ["本胎次高产", "本胎次乳房炎史", "近期 SCC 偏高", "达到干奶日龄"],
+    plans: [
+      { id: "p1", rx: "处方 1 · 长效头孢喹肟 + 内封剂", desc: "针对高产牛，配合外用乳头药浴", drugs: ["长效头孢喹肟乳房注入剂 4 支/头", "乳头内封剂 4 支/头"], duration: "1 次处理" },
+      { id: "p2", rx: "处方 2 · 头孢噻呋 + 内封剂 + 外用碘伏", desc: "SCC 偏高牛，加强外部消毒", drugs: ["头孢噻呋乳房注入剂 4 支/头", "乳头内封剂 4 支/头", "0.5% 碘伏药浴"], duration: "1 次处理" },
+    ],
+  },
+  {
+    name: "隐性乳房炎干奶",
+    symptoms: ["近期 SCC 偏高", "乳区异常", "本胎次乳房炎史"],
+    plans: [
+      { id: "p1", rx: "处方 1 · 干奶前泌乳期治疗 + 干奶注入", desc: "干奶前 3 天泌乳期抗生素治疗，干奶当日再注入", drugs: ["泌乳期头孢噻呋乳房注入剂 3 天", "干奶期头孢喹肟乳房注入剂 4 支/头", "乳头内封剂 4 支/头"], duration: "3 天 + 1 次干奶" },
+    ],
+  },
+];
+
+const diseaseKBByType: Record<WorkType, DiseaseEntry[]> = {
+  疾病治疗: diseaseKB_disease,
+  修蹄: diseaseKB_hoof,
+  干奶: diseaseKB_drying,
+  产后护理: diseaseKB_disease,
+  疫苗: [],
+  驱虫: [],
+  普修: [],
+};
+
 
 // 根据牛只编号查询所属牛舍（mock）
 function barnOfCattle(id: string): string {
@@ -380,23 +466,24 @@ function ReportPage() {
   // 是否完成"线索上传"——之后才显示疑似疾病（照片/视频必填）
   const evidenceReady = photos.length > 0 || videos.length > 0;
 
+  const activeDiseaseKB = diseaseKBByType[workType] ?? [];
   const diseaseMatches = useMemo(() => {
     const kw = diseaseQ.trim().toLowerCase();
     const base = kw
-      ? diseaseKB.filter((d) => d.name.toLowerCase().includes(kw))
-      : // 没有关键词时，按症状重合度排序
-        [...diseaseKB].sort((a, b) => {
+      ? activeDiseaseKB.filter((d) => d.name.toLowerCase().includes(kw))
+      : [...activeDiseaseKB].sort((a, b) => {
           const ai = a.symptoms.filter((s) => symptoms.includes(s)).length;
           const bi = b.symptoms.filter((s) => symptoms.includes(s)).length;
           return bi - ai;
         });
     return base.slice(0, 6);
-  }, [diseaseQ, symptoms]);
+  }, [diseaseQ, symptoms, activeDiseaseKB]);
 
   const selectedDisease = useMemo(
-    () => diseaseKB.find((d) => d.name === suspectedDisease) ?? null,
-    [suspectedDisease]
+    () => activeDiseaseKB.find((d) => d.name === suspectedDisease) ?? null,
+    [suspectedDisease, activeDiseaseKB]
   );
+
   const [planIdx, setPlanIdx] = useState(0);
   const [planPickerOpen, setPlanPickerOpen] = useState(false);
   useEffect(() => { setPlanIdx(0); }, [suspectedDisease]);
@@ -1042,7 +1129,7 @@ function ReportPage() {
       <DiseasePicker
         open={diseasePickerOpen}
         onClose={() => setDiseasePickerOpen(false)}
-        diseases={diseaseKB}
+        diseases={activeDiseaseKB}
         selectedName={suspectedDisease}
         matchedSymptoms={symptoms}
         onSelect={(d) => setSuspectedDisease(d.name)}
