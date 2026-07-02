@@ -1661,9 +1661,9 @@ function ChecklistDay({
           )}
 
 
-          {/* 用药状态切换（影响下方"用药信息"与"治疗记录"两张卡片形态） */}
+          {/* 用药状态切换（异常分支入口，影响下方"用药信息"与"治疗记录"两张卡片形态） */}
           {interactive && medItems.length > 0 && (
-            <div className="flex items-center justify-end -mb-1">
+            <div className="flex items-center justify-end">
               {unableMed ? (
                 <button
                   type="button"
@@ -1676,13 +1676,14 @@ function ChecklistDay({
                 <button
                   type="button"
                   onClick={() => setUnableMed(true)}
-                  className="text-caption text-text-secondary active:opacity-70"
+                  className="text-caption text-text-tertiary underline underline-offset-2 decoration-border active:opacity-70"
                 >
                   无法正常用药 ›
                 </button>
               )}
             </div>
           )}
+
 
           {/* 2. 用药信息 或 未用药说明（由"无法正常用药"切换） */}
           {medItems.length > 0 && !unableMed && (
@@ -1762,7 +1763,7 @@ function ChecklistDay({
 
               <div>
                 <div className="text-body-sm text-foreground mb-2">
-                  未用药原因 <span className="text-[var(--state-danger)]">*</span>
+                  原因说明 <span className="text-[var(--state-danger)]">*</span>
                 </div>
                 <textarea
                   value={unableReason}
@@ -1774,7 +1775,7 @@ function ChecklistDay({
               </div>
               <div>
                 <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
-                  <span>现场留档 <span className="text-[var(--state-danger)]">*</span></span>
+                  <span>现场记录 <span className="text-[var(--state-danger)]">*</span></span>
                   <span className="text-caption text-text-tertiary">{unablePhotos.length} / 6</span>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
@@ -1830,7 +1831,7 @@ function ChecklistDay({
                 />
                 <MAddMediaSheet
                   open={unableSheetOpen}
-                  title="添加现场留档"
+                  title="添加现场记录"
                   onClose={() => setUnableSheetOpen(false)}
                   actions={[
                     { key: "photo", icon: Camera, label: "拍照", onClick: () => unablePhotoRef.current?.click() },
