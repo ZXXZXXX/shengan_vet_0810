@@ -187,6 +187,18 @@ const D = {
   } satisfies PlanDrug,
 };
 
+// 非药物任务：疗程中每天都要做，但不涉及药品的具体执行项
+// type 会作为卡片标题；name 是小标题；desc 是辅助文本；record 决定填写组件
+export type PlanTask = {
+  type: string;                          // 卡片名称：检查 / 采集 / 理疗 / 记录
+  name: string;                          // 小标题（任务名称）
+  desc: string;                          // 辅助描述文本（具体方式/要求）
+  record: "number" | "photo" | "text";   // 填写组件类型
+  unit?: string;                         // 数字输入单位（如 ℃）
+  placeholder?: string;
+  required?: boolean;
+};
+
 export type WoPlan = {
   disease: string;
   subType?: string;                  // 子类型，如 "阴道黏膜层撕裂"
@@ -194,6 +206,7 @@ export type WoPlan = {
   description: string;               // 具体诊断描述
   prescription: { name: string; note: string };
   drugs: PlanDrug[];
+  tasks?: PlanTask[];                // 非药物任务清单
   days: number;                      // 疗程天数（决定"执行任务 01/02/03"数量）
   reviewAction: string;              // 复查具体动作
   diagnoser?: string;
@@ -344,6 +357,11 @@ const PLANS = {
       note: "产后 14 天连续例行检查：每日直肠测温 + 正前/正后照片采集；如出现异常按子宫炎处方另开工单处理。",
     },
     drugs: [],
+    tasks: [
+      { type: "检查", name: "直肠体温", desc: "测量并记录牛只直肠体温", record: "number", unit: "℃", placeholder: "输入直肠温度", required: true },
+      { type: "采集", name: "正前照片", desc: "拍摄牛只正前方全身照片，用于体况归档", record: "photo", required: true },
+      { type: "采集", name: "正后照片", desc: "拍摄牛只正后方全身照片，观察恶露/水肿", record: "photo", required: true },
+    ],
     days: 14,
   },
 } as const satisfies Record<string, Omit<WoPlan, "symptoms" | "description" | "reviewAction" | "diagnoser" | "diagnoseTime" | "subType">>;
@@ -530,6 +548,7 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
       subType: mapped.subType,
       prescription: p.prescription,
       drugs: p.drugs.slice(),
+      tasks: "tasks" in p ? (p as { tasks?: PlanTask[] }).tasks?.slice() : undefined,
       days: p.days,
       symptoms: mapped.symptoms,
       description: mapped.description,
@@ -550,6 +569,7 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
     disease: disease ?? p.disease,
     prescription: p.prescription,
     drugs: p.drugs.slice(),
+    tasks: "tasks" in p ? (p as { tasks?: PlanTask[] }).tasks?.slice() : undefined,
     days: p.days,
     symptoms: ["体温升高", "采食下降"],
     description: `${p.disease}·${p.prescription.name}`,
@@ -563,6 +583,9 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
 export function buildActionText(plan: WoPlan): string {
   const drugs = plan.drugs.filter((d) => d.kind !== "therapy");
   if (drugs.length === 0) {
+    if (plan.tasks && plan.tasks.length > 0) {
+      return plan.tasks.map((t) => t.name).join(" + ");
+    }
     return plan.drugs.map((d) => d.name).join(" + ") + "，并测温记录";
   }
   const summary = drugs
