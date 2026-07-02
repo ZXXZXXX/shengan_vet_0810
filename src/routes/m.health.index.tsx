@@ -148,22 +148,24 @@ function cleanName(name: string) {
   return name.replace(/^(内部|外部)·/, "");
 }
 
-// 疾病工单的诊断/疑似 + 初诊/复诊 元数据
+// 疾病工单的诊断/疑似 + 初诊/复诊 元数据（对齐晟安标准处方文档）
 const diseaseMeta: Record<string, { visit: "初诊" | "复诊"; diagnosis?: string; suspected?: string }> = {
-  "WO-2381": { visit: "初诊", suspected: "乳房炎" },
-  "WO-2410": { visit: "复诊", suspected: "乳房炎" },
-  "WO-2298": { visit: "复诊", diagnosis: "乳房炎" },
-  "WO-2420": { visit: "初诊", diagnosis: "乳房炎" },
-  
-  "WO-2440": { visit: "初诊", diagnosis: "乳房炎" },
-  "WO-2324": { visit: "初诊", suspected: "采食异常" },
-  "WO-2199": { visit: "初诊", diagnosis: "乳房炎" },
+  "WO-2381": { visit: "初诊", suspected: "产道创伤" },
+  "WO-2382": { visit: "初诊", suspected: "产后子宫炎" },
+  "WO-2385": { visit: "初诊", suspected: "子宫内膜炎" },
+  "WO-2298": { visit: "复诊", diagnosis: "产后子宫炎" },
+  "WO-2299": { visit: "初诊", diagnosis: "产后子宫炎" },
+  "WO-2300": { visit: "初诊", diagnosis: "子宫内膜炎" },
+  "WO-2301": { visit: "初诊", diagnosis: "产后子宫炎" },
+  "WO-2440": { visit: "初诊", diagnosis: "产后子宫炎" },
+  "WO-2199": { visit: "初诊", diagnosis: "产后子宫炎" },
+  "WO-2324": { visit: "初诊", suspected: "产后子宫炎" },
 };
-const reviewTaskSet = new Set<string>(["WO-2420", "WO-2440"]);
+const reviewTaskSet = new Set<string>(["WO-2440", "WO-2298"]);
 const observeDaysMap: Record<string, number> = {};
 const obsExpiredOrders = new Set<string>([]);
 // 今日具体执行任务已完成的进行中工单（靠后展示，操作改为「查看」）
-const todayDoneSet = new Set<string>(["WO-2401", "HF-0702"]);
+const todayDoneSet = new Set<string>(["WO-2401", "HF-0708"]);
 
 function truncateCJK(s: string, max = 5) {
   const arr = Array.from(s);
