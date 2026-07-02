@@ -216,6 +216,10 @@ type Prescription = {
   dosePer?: "100kg" | "500kg" | "fixed";
   // 是否属于特殊药品（仅在特殊处方中显示「特殊」标签）
   isSpecialDrug?: boolean;
+  // 用药方法（覆盖 "N 次/天 · 连用 M 天" 的默认显示，例如 "3 天 1 次"）
+  usageMethod?: string;
+  // 按体重区间给药（覆盖自动/固定剂量显示）
+  doseByWeight?: string;
 };
 
 // 体重相关剂量计算（mL/g 等）。fixed 表示单次固定剂量
