@@ -583,6 +583,9 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
 export function buildActionText(plan: WoPlan): string {
   const drugs = plan.drugs.filter((d) => d.kind !== "therapy");
   if (drugs.length === 0) {
+    if (plan.tasks && plan.tasks.length > 0) {
+      return plan.tasks.map((t) => t.name).join(" + ");
+    }
     return plan.drugs.map((d) => d.name).join(" + ") + "，并测温记录";
   }
   const summary = drugs
