@@ -33,6 +33,7 @@ import { MAddMediaSheet } from "@/components/m-add-media-sheet";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
+import { getWoPlan, buildActionText, type WoPlan } from "@/lib/wo-plan";
 
 
 import { useRole, canExecute, canDiagnose } from "@/lib/mobile-role";
@@ -485,8 +486,8 @@ function TaskDetailPage() {
                 ? <EmptyTab label="平台下发工单，无上报记录" />
                 : <ReportTab isLoss={isLoss} />
           )}
-          {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} />)}
-          {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} />}
+          {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} plan={getWoPlan(id, o.type)} />)}
+          {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} plan={getWoPlan(id, o.type)} />}
         </div>
       </div>
 
@@ -1012,7 +1013,7 @@ function ReportTab({ isLoss }: { isLoss: boolean }) {
 
 
 // === 诊断记录 ===
-function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
+function ReviewTab({ isLoss, status, plan }: { isLoss: boolean; status: StatusKey; plan: WoPlan }) {
   if (status === "待诊断") {
     return (
       <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
@@ -1021,11 +1022,13 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
       </div>
     );
   }
+  const symptoms = isLoss ? ["冷链异常"] : plan.symptoms;
+  const conclusion = isLoss ? "疫苗失效，作损耗处理" : `${plan.disease} · ${plan.prescription.name}`;
   return (
     <>
       <Section title="基础信息">
-        <Field label="诊断人" value={<PersonChip name="王医生" />} />
-        <Field label="诊断时间" value="2026-05-20 10:15" />
+        <Field label="诊断人" value={<PersonChip name={plan.diagnoser ?? "王医生"} />} />
+        <Field label="诊断时间" value={plan.diagnoseTime ?? "2026-05-20 10:15"} />
       </Section>
 
       <>
@@ -1035,7 +1038,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
               label="症状标签"
               value={
                 <div className="flex flex-wrap gap-1 justify-end">
-                  {(isLoss ? ["冷链异常"] : ["呼吸道感染", "需隔离"]).map((t) => (
+                  {symptoms.map((t) => (
                     <span key={t} className="tag tag-brand">
                       {t}
                     </span>
@@ -1043,14 +1046,14 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 </div>
               }
             />
-            <Field label="诊断结论" value={isLoss ? "疫苗失效，作损耗处理" : "支气管肺炎（早期）"} />
+            <Field label="诊断结论" value={conclusion} />
           </Section>
 
 
 
           <Section title="具体描述">
             <p className="text-body-sm text-text-secondary leading-relaxed">
-              结合症状与现场视频，判定为支气管肺炎早期，采用标准 3 日方案治疗，隔离至症状消退后 48 小时。
+              {isLoss ? "疫苗冷链异常判定失效，作损耗处理。" : plan.description}
             </p>
           </Section>
 
@@ -1089,14 +1092,13 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
 
           <Section title="治疗方案 / 执行方案">
             <ul className="-mx-1 space-y-3">
-              {[
-                { name: "氟尼辛葡甲胺注射液", use: "肌肉注射", dose: "2ml / 次", method: "1天1次，连用3天", isPrescription: true, isSpecial: false },
-                { name: "头孢噻呋钠", use: "肌肉注射", dose: "1g / 次", method: "1天1次，连用3天", isPrescription: false, isSpecial: true },
-              ].map((m) => (
+              {plan.drugs.map((m) => (
                 <li key={m.name} className="px-1">
                   <div className="flex flex-wrap items-center gap-1.5 mb-1">
                     <span className="text-body font-medium text-foreground">{m.name}</span>
-                    {m.isPrescription ? (
+                    {m.kind === "therapy" ? (
+                      <span className="tag tag-muted">理疗</span>
+                    ) : m.isPrescription ? (
                       <span className="tag tag-info">处方药</span>
                     ) : (
                       <span className="tag tag-muted">非处方药</span>
@@ -1125,7 +1127,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
                 <FileText className="h-3.5 w-3.5 text-text-tertiary shrink-0 mt-0.5" />
                 <span>
                   <span className="text-text-tertiary">补充说明</span>
-                  <span className="text-foreground ml-1">每次 10 分钟，促进炎症消散。</span>
+                  <span className="text-foreground ml-1">{plan.prescription.note || "-"}</span>
                 </span>
               </div>
             </div>
@@ -1134,7 +1136,7 @@ function ReviewTab({ isLoss, status }: { isLoss: boolean; status: StatusKey }) {
 
           <Section title="执行安排">
             <Field label="指定执行人" value={<PersonChip name="李雨晴" />} />
-            <Field label="复查 / 验收" value="第 4 天复测体温与采食情况" />
+            <Field label="复查 / 验收" value={plan.reviewAction} />
           </Section>
         </>
     </>
@@ -1161,7 +1163,7 @@ const DRUG_ASSOCIATIONS: Record<string, string[]> = {
 };
 
 // 根据处方拆解每日任务：每种药品 = 一次任务，加上不需用药的常规任务（如测温）
-function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem[] {
+function buildDayItems(day: number, _tags: string[], withTemp = false, plan?: WoPlan): ExecItem[] {
   const items: ExecItem[] = [];
   if (withTemp) {
     items.push({
@@ -1172,26 +1174,18 @@ function buildDayItems(day: number, _tags: string[], withTemp = false): ExecItem
       needMed: false,
     });
   }
-  items.push(
-    {
-      id: `d${day}-t1`,
-      title: "氟尼辛葡甲胺注射液",
-      desc: "2ml",
+  const drugs = (plan?.drugs ?? []).filter((d) => d.kind !== "therapy");
+  drugs.forEach((d, idx) => {
+    items.push({
+      id: `d${day}-t${idx + 1}`,
+      title: d.name,
+      desc: `${d.dose}（${d.use}）`,
       status: "pending",
       needMed: true,
-      manufacturer: "齐鲁动保",
-      batchNo: "L20260418",
-    },
-    {
-      id: `d${day}-t2`,
-      title: "头孢噻呋钠",
-      desc: "1g",
-      status: "pending",
-      needMed: true,
-      manufacturer: "瑞普生物",
-      batchNo: "B20260512",
-    },
-  );
+      manufacturer: d.manufacturer,
+      batchNo: `L2026${String(400 + idx).padStart(4, "0")}`,
+    });
+  });
   return items;
 }
 
@@ -1205,21 +1199,24 @@ type DaySummary = {
   phase: DayPhase;
 };
 
-function getExecSummary(status: StatusKey): DaySummary[] {
+function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
   const allDone = status === "已完成";
   const terminated = status === "已终止";
-  const action = "氟尼辛葡甲胺 2ml IM + 头孢噻呋钠 1g IM，测温并记录";
+  const action = buildActionText(plan);
+  const days = Math.max(1, plan.days);
+  const baseDates = ["2026-05-12 13:08", "2026-05-13 13:22", "2026-05-14 13:15", "2026-05-15 13:05", "2026-05-16 13:10"];
   if (terminated) {
-    return [
-      { day: 1, date: "2026-05-12 13:08", action, pickup: true, phase: "done" },
-      { day: 2, date: "2026-05-13 13:22", action, pickup: true, phase: "done" },
-    ];
+    return Array.from({ length: Math.min(2, days) }).map((_, i) => ({
+      day: i + 1, date: baseDates[i], action, pickup: true, phase: "done" as DayPhase,
+    }));
   }
-  return [
-    { day: 1, date: "2026-05-12 13:08", action, pickup: true, phase: "done" },
-    { day: 2, date: "2026-05-13 13:22", action, pickup: true, phase: allDone ? "done" : "active" },
-    { day: 3, date: "2026-05-14 13:15", action, pickup: true, phase: allDone ? "done" : "pending" },
-  ];
+  return Array.from({ length: days }).map((_, i) => {
+    let phase: DayPhase = "pending";
+    if (allDone) phase = "done";
+    else if (i === 0) phase = "done";
+    else if (i === 1) phase = "active";
+    return { day: i + 1, date: baseDates[i], action, pickup: true, phase };
+  });
 }
 
 
@@ -1242,7 +1239,7 @@ function PickupStatus({ needPickup }: { needPickup: boolean }) {
   );
 }
 
-export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string }) {
+export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, plan }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string; plan?: WoPlan }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
@@ -1265,7 +1262,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction }:
     ? []
     : platformAction
       ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
-      : getExecSummary(allPrescriptionsDone ? "已完成" : status);
+      : getExecSummary(allPrescriptionsDone ? "已完成" : status, plan ?? getWoPlan(id));
   const needPickup = Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
