@@ -1585,7 +1585,8 @@ function ChecklistDay({
   const medScanReady = unableMed
     ? unableReason.trim().length > 0 && unablePhotos.length > 0
     : pickupClaimed && items.filter((i) => i.needMed).every((i) => Boolean(i.scanCode));
-  const ready = interactive && medScanReady && tempReady && evidencePhotos.length > 0;
+  const evidenceRequired = !unableMed;
+  const ready = interactive && medScanReady && tempReady && (!evidenceRequired || evidencePhotos.length > 0);
   useEffect(() => {
     onReadyChange?.(ready);
   }, [ready, onReadyChange]);
