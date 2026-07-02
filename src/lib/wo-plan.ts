@@ -548,6 +548,7 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
       subType: mapped.subType,
       prescription: p.prescription,
       drugs: p.drugs.slice(),
+      tasks: "tasks" in p ? (p as { tasks?: PlanTask[] }).tasks?.slice() : undefined,
       days: p.days,
       symptoms: mapped.symptoms,
       description: mapped.description,
