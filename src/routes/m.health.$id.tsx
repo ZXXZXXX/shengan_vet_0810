@@ -1168,8 +1168,8 @@ function buildDayItems(day: number, _tags: string[], withTemp = false, plan?: Wo
   if (withTemp) {
     items.push({
       id: `d${day}-temp`,
-      title: "每日测温",
-      desc: "测量并记录当日直肠体温",
+      title: "直肠体温",
+      desc: "测量并记录牛只直肠体温",
       status: "pending",
       needMed: false,
     });
