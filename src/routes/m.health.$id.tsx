@@ -1174,7 +1174,18 @@ function buildDayItems(day: number, _tags: string[], withTemp = false, plan?: Wo
       needMed: false,
     });
   }
-  const drugs = (plan?.drugs ?? []).filter((d) => d.kind !== "therapy");
+  const allDrugs = plan?.drugs ?? [];
+  const therapies = allDrugs.filter((d) => d.kind === "therapy");
+  therapies.forEach((t, idx) => {
+    items.push({
+      id: `d${day}-th${idx + 1}`,
+      title: t.name,
+      desc: `${t.method}`,
+      status: "pending",
+      needMed: false,
+    });
+  });
+  const drugs = allDrugs.filter((d) => d.kind !== "therapy");
   drugs.forEach((d, idx) => {
     items.push({
       id: `d${day}-t${idx + 1}`,
