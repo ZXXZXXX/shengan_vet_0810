@@ -1758,18 +1758,8 @@ function ChecklistDay({
 
           {medItems.length > 0 && unableMed && (
             <div className="rounded-xl border border-[var(--state-warning)]/40 bg-[var(--state-warning)]/5 px-3 py-3 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="text-body-sm text-foreground">未用药说明</div>
-                {interactive && (
-                  <button
-                    type="button"
-                    onClick={() => { setUnableMed(false); setUnableReason(""); setUnablePhotos([]); }}
-                    className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-caption border text-text-secondary border-border active:bg-surface-subtle"
-                  >
-                    恢复正常用药
-                  </button>
-                )}
-              </div>
+              <div className="text-body-sm text-foreground">未用药说明</div>
+
               <div>
                 <div className="text-body-sm text-foreground mb-2">
                   未用药原因 <span className="text-[var(--state-danger)]">*</span>
