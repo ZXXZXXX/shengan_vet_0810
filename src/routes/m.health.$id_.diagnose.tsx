@@ -453,7 +453,7 @@ function DiagnosePage() {
     const sortedPlans = scored.map((s) => s.p);
     setStdPlans(sortedPlans);
     setSelectedPlanId(sortedPlans[0]?.id ?? "");
-    setDiseaseFocused(false);
+    setDiseasePickerOpen(false);
   };
 
   const selectedPlan = useMemo(
