@@ -58,7 +58,7 @@ const symptomLibrary = [
 ];
 
 // 疾病库（关联症状）；每个疾病可包含多个治疗处方方案
-type Plan = { id: string; name: string; desc?: string; items: Prescription[] };
+type Plan = { id: string; name: string; desc?: string; note?: string; items: Prescription[] };
 type Disease = { name: string; symptoms: string[]; plans: Plan[] };
 // 来源：晟安标准处方 · 子宫炎类（产道创伤 / 产后子宫炎 / 子宫内膜炎）
 const diseaseLibrary: Disease[] = [
@@ -960,7 +960,7 @@ function DiagnosePage() {
                         </div>
                         <div className="text-caption text-text-tertiary mt-0.5 inline-flex items-start gap-1">
                           <FileText className="h-3 w-3 shrink-0 mt-0.5" />
-                          <span>补充说明：{selectedPlan.desc || "-"}</span>
+                          <span>补充说明：{selectedPlan.note || "-"}</span>
                         </div>
                       </div>
                       {stdPlans.length > 1 && (
