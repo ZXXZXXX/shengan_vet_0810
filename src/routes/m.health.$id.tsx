@@ -1763,7 +1763,7 @@ function ChecklistDay({
 
               <div>
                 <div className="text-body-sm text-foreground mb-2">
-                  未用药原因 <span className="text-[var(--state-danger)]">*</span>
+                  原因说明 <span className="text-[var(--state-danger)]">*</span>
                 </div>
                 <textarea
                   value={unableReason}
@@ -1775,7 +1775,7 @@ function ChecklistDay({
               </div>
               <div>
                 <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
-                  <span>现场留档 <span className="text-[var(--state-danger)]">*</span></span>
+                  <span>现场记录 <span className="text-[var(--state-danger)]">*</span></span>
                   <span className="text-caption text-text-tertiary">{unablePhotos.length} / 6</span>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
@@ -1831,7 +1831,7 @@ function ChecklistDay({
                 />
                 <MAddMediaSheet
                   open={unableSheetOpen}
-                  title="添加现场留档"
+                  title="添加现场记录"
                   onClose={() => setUnableSheetOpen(false)}
                   actions={[
                     { key: "photo", icon: Camera, label: "拍照", onClick: () => unablePhotoRef.current?.click() },
