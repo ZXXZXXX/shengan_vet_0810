@@ -1570,7 +1570,6 @@ function DiagnosePage() {
                 {rx.alternatives.map((name) => {
                   const active = name === rx.name;
                   const qty = drugStock[name]?.qty ?? 0;
-                  const unit = drugStock[name]?.unit ?? "";
                   const inStock = qty > 0;
                   return (
                     <li key={name}>
@@ -1586,7 +1585,7 @@ function DiagnosePage() {
                             <div className="text-body text-foreground">{name}</div>
                             <div className="text-caption mt-0.5">
                               {inStock ? (
-                                <span className="text-primary">库存 {qty}{unit}</span>
+                                <span className="text-primary">{formatStockDisplay(name)}</span>
                               ) : (
                                 <span className="text-[var(--state-danger)]">暂无库存</span>
                               )}
