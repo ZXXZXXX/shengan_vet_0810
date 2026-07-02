@@ -1095,16 +1095,17 @@ function ReviewTab({ isLoss, status, plan }: { isLoss: boolean; status: StatusKe
             <ul className="-mx-1 space-y-3">
               {plan.drugs.map((m) => (
                 <li key={m.name} className="px-1">
-                  <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                    <span className="text-body font-medium text-foreground">{m.name}</span>
+                  <div className="flex items-start gap-1.5 mb-1">
                     {m.kind === "therapy" ? (
-                      <span className="tag tag-muted">理疗</span>
-                    ) : m.isPrescription ? (
-                      <span className="tag tag-info">处方药</span>
+                      <Activity className="h-3.5 w-3.5 text-[#22ACEB] shrink-0 mt-0.5" />
                     ) : (
-                      <span className="tag tag-muted">非处方药</span>
+                      <Pill className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
                     )}
-                    {m.isSpecial && <span className="tag tag-warning">特殊</span>}
+                    <span className="text-body font-medium text-foreground min-w-0 flex-1">
+                      {m.name}
+                    </span>
+                    {m.kind === "therapy" && <span className="tag tag-muted shrink-0">理疗</span>}
+                    {m.isSpecial && <span className="tag tag-warning shrink-0">特殊</span>}
                   </div>
                   <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-body-sm">
                     <div className="min-w-0">
