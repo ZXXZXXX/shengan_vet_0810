@@ -259,9 +259,9 @@ const PLANS = {
     },
     drugs: [
       {
-        name: "注射用青霉素钠（联治灵 400 万 / 远征 400 万 / 联治灵 1600 万）",
+        name: "注射用青霉素钠（联治灵 400 万）",
         spec: "2.4g / 瓶",
-        manufacturer: "联治灵 / 远征",
+        manufacturer: "联治灵",
         use: "肌肉注射",
         dose: "按体重区间（2.4-9.6g/次）",
         method: "早上下午各 1 次，连用 3 天",
@@ -269,6 +269,7 @@ const PLANS = {
         isPrescription: true,
         isSpecial: true,
       },
+
       {
         name: "氟尼辛葡甲胺注射液（福欣安）",
         spec: "100ml / 瓶",
