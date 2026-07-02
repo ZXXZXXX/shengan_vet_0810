@@ -6,7 +6,7 @@ import {
   Mic,
   Video,
   Search,
-
+  Image,
   Sparkles,
   FileText,
   RefreshCw,
@@ -1619,6 +1619,7 @@ function EvidenceSection({
   const [addSheetOpen, setAddSheetOpen] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const albumInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <Section title="现场记录">
@@ -1684,6 +1685,24 @@ function EvidenceSection({
           e.target.value = "";
         }}
       />
+      <input
+        ref={albumInputRef}
+        type="file"
+        accept={hideVideo ? "image/*" : "image/*,video/*"}
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []);
+          files.forEach((f) => {
+            if (f.type.startsWith("video/")) {
+              setVideos((p) => [...p, Date.now() + Math.random()]);
+            } else {
+              setPhotos((p) => [...p, Date.now() + Math.random()]);
+            }
+          });
+          e.target.value = "";
+        }}
+      />
 
       <MAddMediaSheet
         open={addSheetOpen}
@@ -1693,7 +1712,7 @@ function EvidenceSection({
           ...(hideVideo
             ? []
             : [{ key: "video", icon: Video, label: "拍视频", onClick: () => videoInputRef.current?.click() }]),
-          { key: "voice", icon: Mic, label: "录音", onClick: () => { if (voiceSecs === null) onVoiceToggle(); } },
+          { key: "album", icon: Image, label: "相册", onClick: () => albumInputRef.current?.click() },
         ]}
       />
 
