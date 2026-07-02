@@ -1759,11 +1759,11 @@ function ChecklistDay({
 
           {medItems.length > 0 && unableMed && (
             <div className="rounded-xl border border-[var(--state-warning)]/40 bg-[var(--state-warning)]/5 px-3 py-3 space-y-3">
-              <div className="text-body-sm text-foreground">未用药说明</div>
+              <div className="text-body-sm text-foreground">异常情况说明</div>
 
               <div>
                 <div className="text-body-sm text-foreground mb-2">
-                  原因说明 <span className="text-[var(--state-danger)]">*</span>
+                  情况说明 <span className="text-[var(--state-danger)]">*</span>
                 </div>
                 <textarea
                   value={unableReason}
@@ -1802,7 +1802,7 @@ function ChecklistDay({
                   )}
                 </div>
                 <div className="mt-2 text-caption text-text-tertiary">
-                  请上传现场照片留档，作为未用药执行留痕
+                  请上传现场照片，如牛只照片、药品照片等
                 </div>
                 <input
                   ref={unablePhotoRef}
