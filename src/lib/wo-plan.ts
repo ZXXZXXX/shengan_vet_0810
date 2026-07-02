@@ -140,6 +140,18 @@ const D = {
     isSpecial: false,
     kind: "therapy",
   } satisfies PlanDrug,
+  pp_check: {
+    name: "产后例检操作",
+    spec: "-",
+    manufacturer: "-",
+    use: "产后护理",
+    dose: "-",
+    method: "直肠体温数字录入 + 正前/正后照片采集，日 1 次连续 14 天",
+    qty: "-",
+    isPrescription: false,
+    isSpecial: false,
+    kind: "therapy",
+  } satisfies PlanDrug,
   drying_cefquinome: {
     name: "头孢喹肟乳房注入剂（牧全欣）",
     spec: "8g / 支",
