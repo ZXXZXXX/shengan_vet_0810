@@ -1672,10 +1672,6 @@ function ChecklistDay({
             const key = `task-${i}`;
             const photos = taskPhotos[key] ?? [];
             const setInputRef = (el: HTMLInputElement | null) => { taskFileRef.current[key] = el; };
-            const recordLabel =
-              t.record === "number" ? "数字输入" :
-              t.record === "photo" ? "图片 / 视频" :
-              "文本输入";
             return (
               <div key={key} className={`rounded-xl border border-border bg-card px-3 py-3 ${inputsLocked ? "opacity-60" : ""}`}>
                 <div className="flex items-center justify-between mb-1">
@@ -1684,8 +1680,7 @@ function ChecklistDay({
                   </div>
                   <span className="text-caption text-text-tertiary">{t.type}</span>
                 </div>
-                <div className="text-caption text-text-tertiary mb-1">{t.desc}</div>
-                <div className="text-caption text-text-tertiary mb-2">记录方式：{recordLabel}</div>
+                <div className="text-caption text-text-tertiary mb-2">{t.desc}</div>
 
                 {t.record === "number" && (
                   <div className="flex items-center gap-2">
