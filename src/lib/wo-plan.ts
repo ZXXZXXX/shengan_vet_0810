@@ -177,6 +177,7 @@ const D = {
 
 export type WoPlan = {
   disease: string;
+  subType?: string;                  // 子类型，如 "阴道黏膜层撕裂"
   symptoms: string[];
   description: string;               // 具体诊断描述
   prescription: { name: string; note: string };
@@ -333,12 +334,13 @@ const PLANS = {
     drugs: [D.flunixin],
     days: 3,
   },
-} as const satisfies Record<string, Omit<WoPlan, "symptoms" | "description" | "reviewAction" | "diagnoser" | "diagnoseTime">>;
+} as const satisfies Record<string, Omit<WoPlan, "symptoms" | "description" | "reviewAction" | "diagnoser" | "diagnoseTime" | "subType">>;
 
 type PlanKey = keyof typeof PLANS;
 
 const WO_MAP: Record<string, {
   key: PlanKey;
+  subType?: string;
   symptoms: string[];
   description: string;
   reviewAction?: string;
@@ -348,44 +350,51 @@ const WO_MAP: Record<string, {
   // 疾病治疗
   "WO-2298": {
     key: "zigongyan_p2",
+    subType: "脓性分泌物 + 高热",
     symptoms: ["体温 39.8℃", "分泌物含 >50% 脓", "产后 8 天"],
-    description: "产后 8 天，分泌物脓性伴恶臭，体温 39.8℃，判定为产后子宫炎，采用 5% 头孢噻呋 + 氟尼辛 3 天方案。",
+    description: "产后 8 天，分泌物脓性伴恶臭，体温 39.8℃，判定为产后子宫炎。",
     reviewAction: "第 4 天复测体温（≤39.0℃）与分泌物性状，评估是否延展疗程。",
     diagnoser: "王医生",
     diagnoseTime: "2026-05-20 10:15",
   },
   "WO-2299": {
     key: "zigongyan_p1",
+    subType: "恶臭分泌物",
     symptoms: ["体温 > 39.5℃", "分泌物恶臭", "产后 7 天"],
-    description: "产后 7 天出现恶臭分泌物 + 高热，采用青霉素钠 + 氟尼辛早晚给药方案。",
+    description: "产后 7 天出现恶臭分泌物 + 高热。",
     reviewAction: "第 4 天复测体温与阴道分泌物。",
   },
   "WO-2300": {
     key: "neimoyan_p1",
+    subType: "亚急性型",
     symptoms: ["直肠检查子宫异常", "分泌物含 >50% 脓", "产后 23 天"],
-    description: "产后 23 天直检子宫复旧不良，脓性分泌物，采用青霉素钠 + 氟尼辛方案。",
+    description: "产后 23 天直检子宫复旧不良，脓性分泌物。",
     reviewAction: "第 4 天复测分泌物性状。",
   },
   "WO-2301": {
     key: "zigongyan_p3",
+    subType: "顽固型",
     symptoms: ["产后 12 天", "分泌物恶臭", "产后 5 天以上"],
-    description: "产后 12 天顽固子宫炎，10% 头孢噻呋 + 利福昔明子宫灌注联合治疗。",
+    description: "产后 12 天顽固子宫炎，需灌注联合治疗。",
     reviewAction: "第 6 天复查子宫复旧与灌注反应。",
   },
   "WO-2302": {
     key: "chuandao_p1",
+    subType: "阴道黏膜层撕裂",
     symptoms: ["阴道黏膜层撕裂", "助产 3 分及以上"],
-    description: "助产致产道黏膜撕裂，采用 5% 头孢噻呋 + 氟尼辛 + 碘甘油局部处理。",
+    description: "助产致产道黏膜撕裂。",
     reviewAction: "第 4 天检查产道愈合与体温。",
   },
   "WO-2303": {
     key: "neimoyan_p2",
+    subType: "慢性型",
     symptoms: ["产后 25 天", "分泌物含 >50% 脓"],
-    description: "亚急性子宫内膜炎，利福昔明子宫灌注 3 次。",
+    description: "亚急性子宫内膜炎，需子宫灌注 3 次。",
     reviewAction: "第 3 次灌注 7 天后复查。",
   },
   "WO-2440": {
     key: "zigongyan_p2",
+    subType: "观察复查",
     symptoms: ["体温 39.6℃", "分泌物含脓"],
     description: "产后子宫炎观察期满，进入复查节点。",
     reviewAction: "复测体温、直检子宫复旧、评估是否停药。",
@@ -394,20 +403,23 @@ const WO_MAP: Record<string, {
   // 产后护理
   "PP-2501": {
     key: "postpartum",
+    subType: "产后 3 天例检",
     symptoms: ["产后 3 天", "恶露正常", "体温 38.9℃"],
-    description: "产后 3 天例行检查：胎衣已排出，恶露正常，体温体征正常；执行常规产后保健。",
+    description: "产后 3 天例行检查：胎衣已排出，恶露正常，体温体征正常。",
     reviewAction: "产后 14 天例检。",
     diagnoser: "王医生",
     diagnoseTime: "2026-05-24 09:20",
   },
   "PP-2601": {
     key: "postpartum",
+    subType: "产后 5 天例检",
     symptoms: ["产后 5 天", "轻度水肿"],
-    description: "产后 5 天体况良好，执行例行保健。",
+    description: "产后 5 天体况良好。",
     reviewAction: "产后 14 天例检。",
   },
   "PP-2602": {
     key: "postpartum",
+    subType: "产后 2 天例检",
     symptoms: ["产后 2 天"],
     description: "产后例检 · 常规护理。",
     reviewAction: "产后 7 天例检。",
@@ -416,50 +428,58 @@ const WO_MAP: Record<string, {
   // 修蹄
   "HF-0702": {
     key: "fu_p1",
+    subType: "趾间糜烂型",
     symptoms: ["跛行 2 级", "蹄冠红肿", "趾间糜烂"],
-    description: "左后蹄腐蹄病，趾间糜烂伴脓性分泌物，采用清创 + 全身抗炎方案。",
+    description: "左后蹄腐蹄病，趾间糜烂伴脓性分泌物。",
     reviewAction: "3 天后复检蹄部创面。",
     diagnoser: "王医生",
     diagnoseTime: "2026-05-22 14:30",
   },
   "HF-0703": {
     key: "fu_p2",
+    subType: "脓肿型",
     symptoms: ["跛行 3 级", "蹄部脓肿"],
-    description: "右前蹄严重腐蹄，蹄浴联合外敷方案。",
+    description: "右前蹄严重腐蹄。",
     reviewAction: "5 天后复检。",
   },
   "HF-0704": {
     key: "tizhi_p1",
+    subType: "早期",
     symptoms: ["跛行 1 级", "趾间皮炎"],
-    description: "趾间皮炎早期，四环素喷剂 + 绷带包扎。",
+    description: "趾间皮炎早期。",
     reviewAction: "3 天后拆包扎复检。",
   },
   "HF-0705": {
     key: "tikui_p1",
+    subType: "外侧蹄底",
     symptoms: ["跛行 2 级", "蹄底溃疡"],
-    description: "左后蹄底溃疡，粘蹄块减压 + 全身抗炎。",
+    description: "左后蹄底溃疡。",
     reviewAction: "7 天后复检减压效果。",
   },
   "HF-0706": {
     key: "tiyou_p1",
+    subType: "疣状增生",
     symptoms: ["蹄冠疣状增生", "轻度跛行"],
-    description: "蹄疣，防腐生肌散外敷 + 蹄浴。",
+    description: "蹄疣。",
     reviewAction: "3 天后复检创面。",
   },
   "HF-0707": {
     key: "baixian_p1",
+    subType: "远轴侧",
     symptoms: ["白线分离", "轻度跛行"],
-    description: "白线病，远轴侧蹄壁清创 + 蹄块。",
+    description: "白线病，远轴侧蹄壁清创。",
     reviewAction: "7 天后复检。",
   },
   "HF-0708": {
     key: "tiyu",
+    subType: "预防性",
     symptoms: ["群体轻度跛行", "预防性蹄浴"],
     description: "1 号牛舍群体蹄浴预防干预。",
     reviewAction: "第 3 次蹄浴后评估。",
   },
   "HF-0688": {
     key: "fu_p1",
+    subType: "趾间糜烂型",
     symptoms: ["跛行 2 级", "腐蹄"],
     description: "左后蹄腐蹄病复诊。",
     reviewAction: "3 天后复检。",
@@ -468,8 +488,9 @@ const WO_MAP: Record<string, {
   // 干奶
   "GN-0208": {
     key: "drying_p1",
+    subType: "低风险",
     symptoms: ["达到干奶日龄", "预产 55 天", "泌乳量 12kg"],
-    description: "常规干奶：低风险牛只，头孢喹肟乳注 + 乳头内封剂。",
+    description: "常规干奶：低风险牛只。",
     reviewAction: "干奶后 7 天复查乳区。",
     diagnoser: "王医生",
     diagnoseTime: "2026-05-25 10:00",
@@ -494,6 +515,7 @@ export function getWoPlan(id: string, workType?: string, disease?: string): WoPl
     const p = PLANS[mapped.key];
     return {
       disease: p.disease,
+      subType: mapped.subType,
       prescription: p.prescription,
       drugs: p.drugs.slice(),
       days: p.days,
