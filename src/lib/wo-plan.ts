@@ -600,6 +600,25 @@ const WO_MAP: Record<string, {
     diagnoser: "王医生",
     diagnoseTime: "2026-05-25 10:00",
   },
+  "GN-0185": {
+    key: "drying_p2",
+    subType: "低风险",
+    symptoms: ["达到干奶日龄", "预产 58 天", "泌乳量 14kg"],
+    description: "常规干奶：低风险牛只。",
+    reviewAction: "干奶后 7 天复查乳区。",
+    diagnoser: "王医生",
+    diagnoseTime: "2026-05-24 09:30",
+  },
+  "GN-0120": {
+    key: "drying_p4",
+    subType: "低风险",
+    symptoms: ["达到干奶日龄", "预产 56 天", "泌乳量 13kg"],
+    description: "常规干奶：低风险牛只。",
+    reviewAction: "干奶后 7 天复查乳区。",
+    diagnoser: "王医生",
+    diagnoseTime: "2026-05-23 15:20",
+  },
+
 };
 
 // 疾病 → 默认处方（用于未在表内映射的 WO）
