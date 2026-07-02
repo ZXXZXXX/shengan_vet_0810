@@ -383,21 +383,49 @@ const PLANS = {
   drying_p1: {
     disease: "常规干奶",
     prescription: {
-      name: "处方 1 · 头孢喹肟乳房注入剂（牧全欣）+ 乳头内封剂",
-      note: "干奶当日每乳区 1 支，配合乳头封闭剂。",
+      name: "处方 1 · 硫酸头孢喹肟乳房注入剂干乳期（牧全欣）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
     },
-    drugs: [D.drying_cefquinome, D.drying_sealant],
+    drugs: [D.drying_muquanxin],
     days: 1,
   },
   drying_p2: {
     disease: "常规干奶",
     prescription: {
-      name: "处方 2 · 头孢噻呋乳房注入剂（茹通）+ 乳头内封剂",
-      note: "干奶当日每乳区 1 支。",
+      name: "处方 2 · 硫酸头孢喹肟乳房注入剂（干乳期）（茹通）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
     },
-    drugs: [D.drying_ceftiofur, D.drying_sealant],
+    drugs: [D.drying_rutong],
     days: 1,
   },
+  drying_p3: {
+    disease: "常规干奶",
+    prescription: {
+      name: "处方 3 · 硫酸头孢喹肟乳房注入剂（干乳期）（海喹宁）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
+    },
+    drugs: [D.drying_haikuining],
+    days: 1,
+  },
+  drying_p4: {
+    disease: "常规干奶",
+    prescription: {
+      name: "处方 4 · 盐酸头孢噻呋乳房注入剂干乳期（畜可健）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
+    },
+    drugs: [D.drying_xukejian],
+    days: 1,
+  },
+  drying_p5: {
+    disease: "常规干奶",
+    prescription: {
+      name: "处方 5 · 硫酸头孢喹肟乳房注入剂干乳期（赛福魁）",
+      note: "干奶当日一次量乳注；按非盲乳数计量，默认 4 支 / 头。",
+    },
+    drugs: [D.drying_saifukui],
+    days: 1,
+  },
+
   postpartum: {
     disease: "产后保健",
     prescription: {
