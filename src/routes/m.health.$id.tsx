@@ -1023,7 +1023,7 @@ function ReviewTab({ isLoss, status, plan }: { isLoss: boolean; status: StatusKe
     );
   }
   const symptoms = isLoss ? ["冷链异常"] : plan.symptoms;
-  const conclusion = isLoss ? "疫苗失效，作损耗处理" : `${plan.disease} · ${plan.prescription.name}`;
+  const conclusion = isLoss ? "疫苗失效，作损耗处理" : plan.subType ? `${plan.disease}（${plan.subType}）` : plan.disease;
   return (
     <>
       <Section title="基础信息">
