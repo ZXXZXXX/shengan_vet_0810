@@ -1671,6 +1671,20 @@ function ChecklistDay({
             </div>
           )}
 
+          {/* 理疗任务（如修蹄清创、蹄块粘接）不涉及药品，独立展示 */}
+          {therapyItems.length > 0 && (
+            <div className={`rounded-xl border border-border bg-card px-3 py-3 space-y-2 ${inputsLocked ? "opacity-60" : ""}`}>
+              <div className="text-body-sm text-foreground">理疗操作</div>
+              {therapyItems.map((t) => (
+                <div key={t.id} className="rounded-lg border border-border bg-surface-subtle px-3 py-2">
+                  <div className="text-body-sm font-medium text-foreground">{t.title}</div>
+                  <div className="text-caption text-text-tertiary mt-0.5">{t.desc}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+
 
           {/* 用药状态切换（异常分支入口，影响下方"用药信息"与"治疗记录"两张卡片形态） */}
           {interactive && medItems.length > 0 && (
