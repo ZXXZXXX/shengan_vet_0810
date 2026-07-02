@@ -1239,7 +1239,7 @@ function PickupStatus({ needPickup }: { needPickup: boolean }) {
   );
 }
 
-export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, plan, reviewAction }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string; plan?: WoPlan; reviewAction?: string }) {
+export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, plan }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string; plan?: WoPlan }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
