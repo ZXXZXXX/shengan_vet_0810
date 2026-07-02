@@ -960,7 +960,7 @@ function DiagnosePage() {
                         </div>
                         <div className="text-caption text-text-tertiary mt-0.5 inline-flex items-start gap-1">
                           <FileText className="h-3 w-3 shrink-0 mt-0.5" />
-                          <span>补充说明：{selectedPlan.desc || "-"}</span>
+                          <span>补充说明：{selectedPlan.note || "-"}</span>
                         </div>
                       </div>
                       {stdPlans.length > 1 && (
