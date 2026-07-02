@@ -1894,71 +1894,17 @@ function ChecklistDay({
                 />
               </div>
               <div>
-                <div className="text-body-sm text-foreground mb-2 flex items-center justify-between">
-                  <span>现场记录 <span className="text-[var(--state-danger)]">*</span></span>
-                  <span className="text-caption text-text-tertiary">{unablePhotos.length} / 6</span>
+                <div className="text-body-sm text-foreground mb-2">
+                  现场记录 <span className="text-[var(--state-danger)]">*</span>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {unablePhotos.map((pid) => (
-                    <div key={pid} className="relative aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border">
-                      <button
-                        type="button"
-                        onClick={() => setUnablePhotos((p) => p.filter((x) => x !== pid))}
-                        className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-foreground/85 text-background inline-flex items-center justify-center shadow"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                  {unablePhotos.length < 6 && (
-                    <button
-                      type="button"
-                      onClick={() => setUnableSheetOpen(true)}
-                      className="aspect-square rounded-lg bg-card border border-dashed border-border flex flex-col items-center justify-center gap-1 text-text-tertiary active:bg-surface-subtle"
-                    >
-                      <Camera className="h-5 w-5" />
-                      <span className="text-caption">添加</span>
-                    </button>
-                  )}
-                </div>
-                <div className="mt-2 text-caption text-text-tertiary">
-                  请上传现场照片，如牛只照片、药品照片等
-                </div>
-                <input
-                  ref={unablePhotoRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files ?? []);
-                    files.forEach(() => setUnablePhotos((p) => [...p, Date.now() + Math.random()]));
-                    e.target.value = "";
-                  }}
-                />
-                <input
-                  ref={unableAlbumRef}
-                  type="file"
-                  accept="image/*,video/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files ?? []);
-                    files.forEach(() => setUnablePhotos((p) => [...p, Date.now() + Math.random()]));
-                    e.target.value = "";
-                  }}
-                />
-                <MAddMediaSheet
-                  open={unableSheetOpen}
-                  title="添加现场记录"
-                  onClose={() => setUnableSheetOpen(false)}
-                  actions={[
-                    { key: "photo", icon: Camera, label: "拍照", onClick: () => unablePhotoRef.current?.click() },
-                    { key: "album", icon: ImagePlus, label: "从相册选择", onClick: () => unableAlbumRef.current?.click() },
-                  ]}
+                <MediaGrid
+                  items={unablePhotos}
+                  setItems={setUnablePhotos}
+                  max={9}
+                  helper="请上传现场照片，如牛只照片、药品照片等"
                 />
               </div>
+
             </div>
           )}
 
