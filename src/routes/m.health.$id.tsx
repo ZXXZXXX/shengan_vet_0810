@@ -192,7 +192,7 @@ function TaskDetailPage() {
     : isHoof
       ? "修蹄护理：削蹄、检查蹄底、必要时贴蹄垫"
       : isDryOff
-        ? "干奶乳注（按非盲乳数一次量给药）"
+        ? "干奶乳注（一次量给药）"
         : undefined;
   void isPlatformPostpartum;
   const isPlatformIssued = Boolean(platformAction);
