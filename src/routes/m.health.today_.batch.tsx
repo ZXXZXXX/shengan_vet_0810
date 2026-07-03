@@ -3,11 +3,9 @@ import { useMemo, useState } from "react";
 import {
   ChevronLeft,
   Search,
-  ScanLine,
-  Thermometer,
   Check,
   CheckCircle2,
-  ChevronDown,
+  ChevronRight,
   Inbox,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -35,20 +33,7 @@ function earSortKey(t: HomeTask): string {
   return t.target.startsWith("#") ? t.target.slice(1) : "\uffff" + t.target;
 }
 
-type CardState = {
-  scanned: boolean;
-  temp: string;
-  note: string;
-  done: boolean;
-};
-
-function cardProgress(s: CardState): { label: string; done: boolean } {
-  if (s.done) return { label: "已完成", done: true };
-  return { label: "未完成", done: false };
-}
-
-function StatusBadge({ state }: { state: CardState }) {
-  const { label, done } = cardProgress(state);
+function StatusBadge({ done }: { done: boolean }) {
   return (
     <span
       className={`inline-flex items-center gap-0.5 px-1.5 h-[20px] rounded text-caption leading-none ${
@@ -58,14 +43,16 @@ function StatusBadge({ state }: { state: CardState }) {
       }`}
     >
       {done && <Check className="h-3 w-3" strokeWidth={3} />}
-      {label}
+      {done ? "已完成" : "未完成"}
     </span>
   );
 }
 
 function BatchExecutePage() {
-  const { ids } = useSearch({ from: "/m/health/today_/batch" });
+  const { ids, done } = useSearch({ from: "/m/health/today_/batch" });
   const navigate = useNavigate();
+
+  const doneSet = useMemo(() => new Set(done.split(",").filter(Boolean)), [done]);
 
   const tasks = useMemo(() => {
     const idSet = new Set(ids.split(",").filter(Boolean));
@@ -75,12 +62,6 @@ function BatchExecutePage() {
   }, [ids]);
 
   const [q, setQ] = useState("");
-  const [expandedId, setExpandedId] = useState<string | null>(tasks[0]?.id ?? null);
-  const [state, setState] = useState<Record<string, CardState>>(() =>
-    Object.fromEntries(
-      tasks.map((t) => [t.id, { scanned: false, temp: "", note: "", done: false }]),
-    ),
-  );
 
   const visibleTasks = useMemo(() => {
     const kw = q.trim().toLowerCase();
@@ -92,21 +73,16 @@ function BatchExecutePage() {
     );
   }, [tasks, q]);
 
-  const doneCount = Object.values(state).filter((s) => s.done).length;
+  const doneCount = tasks.filter((t) => doneSet.has(t.id)).length;
   const allDone = tasks.length > 0 && doneCount === tasks.length;
 
-  const patch = (id: string, p: Partial<CardState>) =>
-    setState((prev) => ({ ...prev, [id]: { ...prev[id], ...p } }));
-
-  const advanceNext = (currentId: string) => {
-    const idx = tasks.findIndex((t) => t.id === currentId);
-    const next = tasks.slice(idx + 1).find((t) => !state[t.id]?.done);
-    setExpandedId(next?.id ?? null);
-  };
-
-  const completeCard = (id: string) => {
-    patch(id, { done: true });
-    advanceNext(id);
+  const goExecute = (id: string) => {
+    if (doneSet.has(id)) return;
+    navigate({
+      to: "/m/health/$id/execute",
+      params: { id },
+      search: { return: "batch", batchIds: ids, batchDone: done },
+    });
   };
 
   const submitAll = () => {
@@ -161,26 +137,24 @@ function BatchExecutePage() {
           visibleTasks.map((t) => {
             const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
             const Icon = meta.icon;
-            const s = state[t.id] ?? { scanned: false, temp: "", note: "", done: false };
-            const expanded = expandedId === t.id;
+            const isDone = doneSet.has(t.id);
             const barn = inferBarn(t);
 
             return (
               <article
                 key={t.id}
                 className={`rounded-2xl border bg-card overflow-hidden transition-colors ${
-                  s.done
-                    ? "border-[color-mix(in_oklab,var(--state-success)_40%,transparent)]"
-                    : expanded
-                      ? "border-primary ring-1 ring-primary/25"
-                      : "border-border"
+                  isDone
+                    ? "border-[color-mix(in_oklab,var(--state-success)_40%,transparent)] bg-[color-mix(in_oklab,var(--state-success)_3%,transparent)]"
+                    : "border-border"
                 }`}
               >
-                {/* Header (可点击折叠/展开) */}
+                {/* Header（已完成不可点击） */}
                 <button
                   type="button"
-                  onClick={() => setExpandedId(expanded ? null : t.id)}
-                  className="w-full text-left px-3.5 py-3 flex items-center gap-2 active:bg-surface-subtle"
+                  disabled={isDone}
+                  onClick={() => goExecute(t.id)}
+                  className="w-full text-left px-3.5 py-3 flex items-center gap-2 active:bg-surface-subtle disabled:pointer-events-none disabled:opacity-80"
                 >
                   <span
                     className={`h-5 w-5 rounded-full ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
@@ -189,7 +163,7 @@ function BatchExecutePage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline gap-2 min-w-0">
-                      <span className="text-[15px] font-semibold text-foreground font-mono truncate">
+                      <span className={`text-[15px] font-semibold font-mono truncate ${isDone ? "text-text-tertiary" : "text-foreground"}`}>
                         {t.target}
                       </span>
                       <span className="text-caption text-text-tertiary shrink-0 truncate">
@@ -203,90 +177,10 @@ function BatchExecutePage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <StatusBadge state={s} />
-                    <ChevronDown
-                      className={`h-4 w-4 text-text-tertiary transition-transform ${
-                        expanded ? "rotate-180" : ""
-                      }`}
-                    />
+                    <StatusBadge done={isDone} />
+                    {!isDone && <ChevronRight className="h-4 w-4 text-text-tertiary" />}
                   </div>
                 </button>
-
-                {/* 展开：快捷录入 */}
-                {expanded && (
-                  <div className="px-3.5 pb-3.5 pt-1 space-y-3 border-t border-border/60">
-                    {/* 扫码核验 */}
-                    <div>
-                      <div className="text-caption text-text-tertiary mb-1.5">
-                        药品核验
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => patch(t.id, { scanned: true })}
-                        className={`w-full h-11 rounded-lg inline-flex items-center justify-center gap-1.5 text-body-sm border transition-colors ${
-                          s.scanned
-                            ? "bg-[color-mix(in_oklab,var(--state-success)_10%,transparent)] border-[color-mix(in_oklab,var(--state-success)_40%,transparent)] text-[var(--state-success)]"
-                            : "bg-surface-subtle border-border text-foreground"
-                        }`}
-                      >
-                        {s.scanned ? (
-                          <>
-                            <CheckCircle2 className="h-4 w-4" />
-                            已扫码核验
-                          </>
-                        ) : (
-                          <>
-                            <ScanLine className="h-4 w-4" />
-                            扫码核验药品
-                          </>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* 体温 */}
-                    <div>
-                      <div className="text-caption text-text-tertiary mb-1.5">
-                        体温 (℃)
-                      </div>
-                      <div className="relative">
-                        <Thermometer className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-                        <input
-                          type="number"
-                          inputMode="decimal"
-                          step="0.1"
-                          value={s.temp}
-                          onChange={(e) => patch(t.id, { temp: e.target.value })}
-                          placeholder="例如 38.6"
-                          className="h-11 w-full pl-9 pr-3 rounded-lg bg-surface-subtle border border-border text-body focus:outline-none focus:border-primary"
-                        />
-                      </div>
-                    </div>
-
-                    {/* 备注 */}
-                    <div>
-                      <div className="text-caption text-text-tertiary mb-1.5">
-                        备注（可选）
-                      </div>
-                      <textarea
-                        value={s.note}
-                        onChange={(e) => patch(t.id, { note: e.target.value })}
-                        rows={2}
-                        placeholder="补充观察，如精神状态、采食情况"
-                        className="w-full p-2.5 rounded-lg bg-surface-subtle border border-border text-body-sm focus:outline-none focus:border-primary resize-none"
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      disabled={!s.scanned || !s.temp}
-                      onClick={() => completeCard(t.id)}
-                      className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none"
-                    >
-                      <Check className="h-4 w-4" />
-                      完成录入
-                    </button>
-                  </div>
-                )}
               </article>
             );
           })
