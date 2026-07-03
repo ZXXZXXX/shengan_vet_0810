@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
@@ -8,6 +8,11 @@ import { ActiveDayExecute } from "./m.health.$id";
 
 export const Route = createFileRoute("/m/health/$id_/execute")({
   head: () => ({ meta: [{ title: "执行记录 · 奇点智牧" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    return: typeof s.return === "string" ? s.return : undefined,
+    batchIds: typeof s.batchIds === "string" ? s.batchIds : "",
+    batchDone: typeof s.batchDone === "string" ? s.batchDone : "",
+  }),
   component: ExecuteRecordPage,
 });
 
