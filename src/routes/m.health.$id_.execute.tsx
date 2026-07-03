@@ -60,7 +60,7 @@ function ExecuteRecordPage() {
   const backConfig =
     search.return === "batch"
       ? {
-          to: "/m/health/today_/batch" as const,
+          to: "/m/health/today/batch" as const,
           search: { ids: search.batchIds, done: search.batchDone },
         }
       : true;
