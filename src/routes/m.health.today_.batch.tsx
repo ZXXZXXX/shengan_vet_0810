@@ -18,6 +18,7 @@ import { homeTasks, typeMeta, type HomeTask } from "@/routes/m.homepage";
 export const Route = createFileRoute("/m/health/today_/batch")({
   validateSearch: (s: Record<string, unknown>) => ({
     ids: typeof s.ids === "string" ? s.ids : "",
+    done: typeof s.done === "string" ? s.done : "",
   }),
   head: () => ({ meta: [{ title: "批量执行 · 奇点智牧" }] }),
   component: BatchExecutePage,
