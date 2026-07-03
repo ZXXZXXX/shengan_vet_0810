@@ -1312,6 +1312,19 @@ function ReportPage() {
         onSelect={(o) => setRelatedOrderId(o.id)}
       />
 
+      <RelatedOrderPicker
+        open={dryOffOrderPickerOpen}
+        onClose={() => setDryOffOrderPickerOpen(false)}
+        orders={dryOffCandidateOrders}
+        selectedId={relatedOrderId}
+        onSelect={(o) => {
+          setRelatedOrderId(o.id);
+          setDryOffOrderPickerOpen(false);
+          const cow = o.target.replace(/^#/, "");
+          if (cow && !targets.includes(cow)) setTargets([cow]);
+        }}
+      />
+
       {detectDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-[360px] rounded-2xl bg-card p-5 space-y-4">
