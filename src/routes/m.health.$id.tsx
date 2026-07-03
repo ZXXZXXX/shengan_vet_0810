@@ -1293,7 +1293,10 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
     : platformAction
       ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
       : getExecSummary(allPrescriptionsDone ? "已完成" : status, plan ?? getWoPlan(id));
-  const needPickup = id === "PP-2501" ? false : Boolean(pickupCode);
+  const activePlanForPickup = plan ?? getWoPlan(id);
+  const hasDrugTasks = (activePlanForPickup?.drugs ?? []).some((d) => d.kind !== "therapy");
+  const needPickup = hasDrugTasks && Boolean(pickupCode);
+
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
     <>
