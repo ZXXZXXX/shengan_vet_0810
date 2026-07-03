@@ -48,7 +48,7 @@ function ExecuteRecordPage() {
       const doneList = search.batchDone.split(",").filter(Boolean);
       if (!doneList.includes(id)) doneList.push(id);
       navigate({
-        to: "/m/health/today_/batch",
+        to: "/m/health/today/batch",
         search: { ids: search.batchIds, done: doneList.join(",") },
       });
       return;
