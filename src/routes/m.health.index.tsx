@@ -101,8 +101,8 @@ const tasks: Task[] = [
 
   // === 干奶工单 · 乳注处方 ===
   { id: "GN-0208", target: "#01-24-2208", barn: "干奶舍", kind: "健康", type: "干奶", event: "干奶 · 待诊断", proposer: "平台下发", who: "李雨晴", visitor: "—", status: "待诊断", createdAt: "2026-05-28", executedAt: "—", scope: { type: "single", ear: "#01-24-2208" }, conclusion: "常规干奶", desc: "达到干奶日龄，待兽医诊断并开具乳注处方", needPickup: false },
-  { id: "GN-0185", target: "#01-24-2185", barn: "干奶舍", kind: "健康", type: "干奶", event: "干奶 · 处方 2 茹通", proposer: "平台下发", who: "李雨晴", visitor: "—", status: "进行中", createdAt: "2026-05-28", executedAt: "2026-05-28", scope: { type: "single", ear: "#01-24-2185" }, conclusion: "常规干奶", desc: "硫酸头孢喹肟乳房注入剂（茹通）3g/支，按非盲乳数乳注", needPickup: true },
-  { id: "GN-0120", target: "#01-24-2120", barn: "干奶舍", kind: "健康", type: "干奶", event: "干奶 · 处方 4 畜可健", proposer: "平台下发", who: "李雨晴", visitor: "—", status: "进行中", createdAt: "2026-05-27", executedAt: "2026-05-28", scope: { type: "single", ear: "#01-24-2120" }, conclusion: "常规干奶", desc: "盐酸头孢噻呋乳房注入剂（畜可健）8ml/支，按非盲乳数一次量乳注", needPickup: true },
+  { id: "GN-0185", target: "#01-24-2185", barn: "干奶舍", kind: "健康", type: "干奶", event: "干奶 · 处方 2 茹通", proposer: "平台下发", who: "李雨晴", visitor: "—", status: "进行中", createdAt: "2026-05-28", executedAt: "2026-05-28", scope: { type: "single", ear: "#01-24-2185" }, conclusion: "常规干奶", desc: "硫酸头孢喹肟乳房注入剂（茹通）3g/支，一次量乳注", needPickup: true },
+  { id: "GN-0120", target: "#01-24-2120", barn: "干奶舍", kind: "健康", type: "干奶", event: "干奶 · 处方 4 畜可健", proposer: "平台下发", who: "李雨晴", visitor: "—", status: "进行中", createdAt: "2026-05-27", executedAt: "2026-05-28", scope: { type: "single", ear: "#01-24-2120" }, conclusion: "常规干奶", desc: "盐酸头孢噻呋乳房注入剂（畜可健）8ml/支，一次量乳注", needPickup: true },
 
   // === 疫苗免疫（保留原样例）===
   { id: "YM-2501", target: "1 号牛舍", barn: "1 号牛舍", kind: "健康", type: "免疫", event: "口蹄疫常规免疫（平台下发）", proposer: "平台下发", who: "李雨晴", visitor: "—", status: "进行中", createdAt: "2026-05-28", executedAt: "2026-05-28", scope: { type: "batch", label: "1 号牛舍 全群" }, conclusion: "口蹄疫常规免疫", desc: "平台统一下发的免疫计划，按批次注射免疫药物", needPickup: true, symptoms: [] },
