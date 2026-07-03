@@ -208,7 +208,7 @@ function BatchExecutePage() {
           className="w-full h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
         >
           <CheckCircle2 className="h-4 w-4" />
-          一次性提交 {tasks.length} 项
+          完成 {tasks.length} 项
         </button>
       </div>
     </MobileShell>
