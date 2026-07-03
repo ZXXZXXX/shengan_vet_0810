@@ -57,8 +57,16 @@ function ExecuteRecordPage() {
     navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
   };
 
+  const backConfig =
+    search.return === "batch"
+      ? {
+          to: "/m/health/today_/batch" as const,
+          search: { ids: search.batchIds, done: search.batchDone },
+        }
+      : true;
+
   return (
-    <MobileShell title="执行记录" back hideTabBar>
+    <MobileShell title="执行记录" back={backConfig} hideTabBar>
       <div className="pb-28">
         <div className="px-4 pt-3 pb-2">
           <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
