@@ -18,6 +18,7 @@ export const Route = createFileRoute("/m/health/$id_/execute")({
 
 function ExecuteRecordPage() {
   const { id } = useParams({ from: "/m/health/$id_/execute" });
+  const search = useSearch({ from: "/m/health/$id_/execute" });
   const role = useRole();
   const navigate = useNavigate();
 
@@ -39,6 +40,23 @@ function ExecuteRecordPage() {
   const [ready, setReady] = useState(false);
   const handleReady = useCallback((r: boolean) => setReady(r), []);
 
+  const handleSubmit = () => {
+    if (!ready) return;
+    toast.success("提交成功");
+
+    if (search.return === "batch") {
+      const doneList = search.batchDone.split(",").filter(Boolean);
+      if (!doneList.includes(id)) doneList.push(id);
+      navigate({
+        to: "/m/health/today_/batch",
+        search: { ids: search.batchIds, done: doneList.join(",") },
+      });
+      return;
+    }
+
+    navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
+  };
+
   return (
     <MobileShell title="执行记录" back hideTabBar>
       <div className="pb-28">
@@ -58,11 +76,7 @@ function ExecuteRecordPage() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <button
           disabled={!ready}
-          onClick={() => {
-            if (!ready) return;
-            toast.success("提交成功");
-            navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
-          }}
+          onClick={handleSubmit}
           className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="h-4 w-4" /> 提交记录
