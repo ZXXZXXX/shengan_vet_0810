@@ -1217,6 +1217,8 @@ function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
   const action = buildActionText(plan);
   const sessions = computeSessions(plan);
   const total = sessions.length;
+  // 产后护理只做检查与评估，不涉及领物
+  const needsPickup = plan.key !== "postpartum";
   const genDate = (dayIdx: number, slot: number) => {
     const base = new Date(2026, 4, 12, slot === 2 ? 19 : 8, 0);
     const d = new Date(base.getTime() + (dayIdx - 1) * 86400000);
@@ -1225,7 +1227,7 @@ function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
   };
   if (terminated) {
     return sessions.slice(0, Math.min(2, total)).map((s, i) => ({
-      day: i + 1, date: genDate(s.day, s.slot), action, pickup: true, phase: "done" as DayPhase,
+      day: i + 1, date: genDate(s.day, s.slot), action, pickup: needsPickup, phase: "done" as DayPhase,
     }));
   }
   return sessions.map((s, i) => {
@@ -1233,9 +1235,10 @@ function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
     if (allDone) phase = "done";
     else if (i === 0) phase = "done";
     else if (i === 1) phase = "active";
-    return { day: i + 1, date: genDate(s.day, s.slot), action, pickup: true, phase };
+    return { day: i + 1, date: genDate(s.day, s.slot), action, pickup: needsPickup, phase };
   });
 }
+
 
 
 function PickupStatus({ needPickup }: { needPickup: boolean }) {
