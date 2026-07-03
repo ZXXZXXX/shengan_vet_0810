@@ -107,6 +107,9 @@ const statusById: Record<string, StatusKey> = {
   "WO-2199": "已完成",
   "HF-0702": "进行中",
   "HF-0688": "已完成",
+  "GN-0208": "待诊断",
+  "GN-0185": "进行中",
+  "GN-0120": "进行中",
   "LS-1029": "待诊断",
   "LS-1011": "已完成",
   "YM-2042": "已终止",
@@ -180,6 +183,7 @@ function TaskDetailPage() {
   // mock data
   const isLoss = id.startsWith("LS");
   const isHoof = !isLoss && (role === "hoof_trimmer" || id.startsWith("HF"));
+  const isDryOff = !isLoss && id.startsWith("GN");
   const isPlatformImmune = id === "YM-2501";
   const isPlatformPostpartum = id.startsWith("PP");
   // 产后护理走多天疗程计划（14 天例检），不再合并为单条 platformAction
@@ -187,7 +191,9 @@ function TaskDetailPage() {
     ? "注射免疫药物（口蹄疫疫苗）"
     : isHoof
       ? "修蹄护理：削蹄、检查蹄底、必要时贴蹄垫"
-      : undefined;
+      : isDryOff
+        ? "干奶乳注（按非盲乳数一次量给药）"
+        : undefined;
   void isPlatformPostpartum;
   const isPlatformIssued = Boolean(platformAction);
   const kind = isLoss ? "损耗" : isHoof ? "修蹄" : "健康";
@@ -205,6 +211,9 @@ function TaskDetailPage() {
     "PP-2501": "#01-24-2710",
     "PP-2601": "#01-24-2801",
     "PP-2602": "#01-24-2815",
+    "GN-0208": "#01-24-2208",
+    "GN-0185": "#01-24-2185",
+    "GN-0120": "#01-24-2120",
   };
   const singleEar = singleEarMap[id];
   const isSingle = !isPlatformImmune;
@@ -216,10 +225,10 @@ function TaskDetailPage() {
   const o = {
     id,
     farm: "奇点示范牧场",
-    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : isPlatformImmune ? "1 号牛舍" : isPlatformPostpartum ? "产房 1 号" : "3 号牛舍",
+    barn: isLoss ? "2 号牛舍" : isHoof ? "2 号牛舍" : isDryOff ? "干奶舍" : isPlatformImmune ? "1 号牛舍" : isPlatformPostpartum ? "产房 1 号" : "3 号牛舍",
     target: isLoss ? "口蹄疫疫苗 A 型" : isSingle ? earTag : "1 号牛舍 全群",
 
-    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : isPlatformImmune ? "免疫" : isPlatformPostpartum ? "产后护理" : "疾病治疗",
+    type: isLoss ? "物资损耗" : isHoof ? "修蹄" : isDryOff ? "干奶" : isPlatformImmune ? "免疫" : isPlatformPostpartum ? "产后护理" : "疾病治疗",
     status: ((search.obs && !search.obsExpired) || search.obsExpired
       ? "进行中"
       : (statusById[id] ?? fallbackStatus)) as StatusKey,
