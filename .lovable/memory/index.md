@@ -20,3 +20,4 @@ Sidebar active 用 #EFFBF1 底 + 左侧 brand 强调线，hover 用浅灰绿 (--
 - [MP vet/manager parity](mem://features/mp-vet-manager-parity) — 小程序兽医与场长视角完全一致
 - [Sick pen rule](mem://features/sick-pen-rule) — 疾病类必须进病牛舍，仅群体工单跨牛舍
 - [Cattle ID format](mem://features/cattle-id-format) — 牛只编号 8 位 aa-bb-cccc 格式
+- [Dry-off sources](mem://features/dryoff-sources) — 干奶工单两种来源；复诊上报自动通过诊断
