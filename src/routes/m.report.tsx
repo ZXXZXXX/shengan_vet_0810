@@ -528,13 +528,33 @@ function ReportPage() {
     }
   }, [targets, barnMode, fromRevisit, detectedFor, isRevisit]);
 
-  // 健康
-  // 工单类型：疾病治疗 / 干奶 / 修蹄；修蹄工固定为修蹄且不可改
+  // 工单类型：疾病治疗 / 干奶 / 修蹄；修蹄工固定为修蹄，干奶工固定为干奶
   const [workType, setWorkType] = useState<WorkType>(
-    role === "hoof_trimmer" ? "修蹄" : "疾病治疗"
+    role === "hoof_trimmer"
+      ? "修蹄"
+      : role === "dry_off_worker"
+      ? "干奶"
+      : "疾病治疗"
   );
-  const lockWorkType = role === "hoof_trimmer";
+  const lockWorkType = role === "hoof_trimmer" || role === "dry_off_worker";
   const cfg = workTypeConfig[workType];
+
+  // 干奶复诊：3 天窗口期内的原干奶工单（mock）
+  const dryOffCandidateOrders = useMemo<RelatedOrder[]>(
+    () => [
+      { id: "GN-0208", type: "干奶", conclusion: "常规干奶（低风险）", target: "#01-24-2208", reportedAt: "2026-05-23 09:00", diagnosedAt: "2026-05-23 09:05", startedAt: "2026-05-23 10:00", completedAt: "2026-05-23 10:40", recent: true },
+      { id: "GN-0185", type: "干奶", conclusion: "高产 / 高风险干奶", target: "#01-24-2185", reportedAt: "2026-05-22 08:30", diagnosedAt: "2026-05-22 08:35", startedAt: "2026-05-22 09:20", completedAt: "2026-05-22 10:00" },
+      { id: "GN-0120", type: "干奶", conclusion: "隐性乳房炎干奶", target: "#01-24-2120", reportedAt: "2026-05-21 08:10", diagnosedAt: "2026-05-21 08:15", startedAt: "2026-05-21 09:00", completedAt: "2026-05-21 09:40" },
+    ],
+    []
+  );
+  const [dryOffOrderPickerOpen, setDryOffOrderPickerOpen] = useState(false);
+  const [dryOffRevisitReason, setDryOffRevisitReason] = useState("");
+  const selectedDryOffOrder = useMemo(
+    () => dryOffCandidateOrders.find((o) => o.id === relatedOrderId) ?? null,
+    [dryOffCandidateOrders, relatedOrderId]
+  );
+  const isDryOffRevisit = workType === "干奶" && role === "dry_off_worker";
 
   const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
   const [note, setNote] = useState<string>(draft?.note ?? "");
