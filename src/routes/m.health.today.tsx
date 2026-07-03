@@ -141,7 +141,7 @@ function TodayTasksPage() {
   useEffect(() => {
     if (!capture) return;
     navigate({
-      to: "/m/health/today_/batch",
+      to: "/m/health/today/batch",
       search: { ids: capture },
       replace: true,
     });
