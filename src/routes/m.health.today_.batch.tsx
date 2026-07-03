@@ -198,7 +198,7 @@ function BatchExecutePage() {
             <span className="text-text-tertiary">/ {tasks.length}</span>
           </div>
           <div className="text-caption text-text-tertiary">
-            {allDone ? "全部录入完毕，可提交" : "完成所有卡片后可提交"}
+            {allDone ? "全部录入完毕，可完成" : "完成所有卡片后可用"}
           </div>
         </div>
         <button
