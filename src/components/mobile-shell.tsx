@@ -21,7 +21,7 @@ export function MobileShell({
   title?: string;
   children: ReactNode;
   hideTabBar?: boolean;
-  back?: { to: string; label?: string } | true;
+  back?: { to: string; label?: string; search?: Record<string, string> } | true;
   right?: ReactNode;
 }) {
   return (
@@ -43,7 +43,7 @@ function MobileTopBar({
   right,
 }: {
   title: string;
-  back?: { to: string; label?: string } | true;
+  back?: { to: string; label?: string; search?: Record<string, string> } | true;
   right?: ReactNode;
 }) {
   const { pathname } = useLocation();
