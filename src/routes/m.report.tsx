@@ -621,7 +621,8 @@ function ReportPage() {
     (!cfg?.note || note.trim().length > 0) &&
     desc.trim().length > 0 &&
     evidenceReady &&
-    (isRevisit !== true || finalRevisitReason.length > 0);
+    (isRevisit !== true || finalRevisitReason.length > 0) &&
+    (!isDryOffRevisit || !!relatedOrderId);
 
 
 
@@ -643,6 +644,16 @@ function ReportPage() {
 
   const doSubmit = () => {
     setSubmitted(true);
+    // 干奶工复诊上报：系统自动通过诊断，直接生成"待执行"干奶工单
+    if (isDryOffRevisit) {
+      const id = `GN-${String(Math.floor(Math.random() * 900) + 100)}`;
+      toast.success(`已自动通过诊断，工单 ${id} 进入待执行`);
+      setTimeout(
+        () => navigate({ to: "/m/health/$id", params: { id } }),
+        700
+      );
+      return;
+    }
     // 兽医/场长在现场上报后，提示是否直接进入诊断
     if (role === "vet" || role === "manager") {
       const id = `WO-${Math.floor(Math.random() * 9000 + 1000)}`;
