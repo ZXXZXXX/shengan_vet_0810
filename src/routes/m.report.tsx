@@ -757,10 +757,14 @@ function ReportPage() {
                 </div>
                 {selectedDryOffOrder ? (
                   <div className="space-y-2">
-                    <RelatedOrderCard
-                      order={selectedDryOffOrder}
-                      onChange={() => setDryOffOrderPickerOpen(true)}
-                    />
+                    <RelatedOrderCard order={selectedDryOffOrder} />
+                    <button
+                      type="button"
+                      onClick={() => setDryOffOrderPickerOpen(true)}
+                      className="w-full h-9 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+                    >
+                      更换关联工单
+                    </button>
                   </div>
                 ) : (
                   <button
