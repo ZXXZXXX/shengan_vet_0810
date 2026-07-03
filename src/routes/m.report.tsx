@@ -697,7 +697,13 @@ function ReportPage() {
                   { v: "修蹄" as WorkType, label: "修蹄工单" },
                 ]).map((opt) => {
                   const active = workType === opt.v;
-                  const disabled = lockWorkType && opt.v !== "修蹄";
+                  const lockedType =
+                    role === "hoof_trimmer"
+                      ? "修蹄"
+                      : role === "dry_off_worker"
+                      ? "干奶"
+                      : null;
+                  const disabled = lockWorkType && opt.v !== lockedType;
                   return (
                     <button
                       key={opt.v}
@@ -725,7 +731,9 @@ function ReportPage() {
               </div>
               {lockWorkType && (
                 <div className="mt-2 text-caption text-text-tertiary">
-                  当前角色为修蹄工，仅可上报修蹄工单
+                  {role === "hoof_trimmer"
+                    ? "当前角色为修蹄工，仅可上报修蹄工单"
+                    : "当前角色为干奶工，仅可上报干奶工单（默认作为复诊上报）"}
                 </div>
               )}
             </Section>
