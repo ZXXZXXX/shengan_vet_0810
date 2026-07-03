@@ -234,8 +234,9 @@ function TaskDetailPage() {
       : (statusById[id] ?? fallbackStatus)) as StatusKey,
     who: isLoss ? "李雨晴" : isHoof ? "张师傅" : "李雨晴",
     plannedAt: "今日 13:00",
-    needPickup: !isLoss,
-    pickupCode: isLoss ? null : `PK-${id.replace(/^WO-?/i, "")}`,
+    needPickup: !isLoss && id !== "PP-2501",
+    pickupCode: isLoss || id === "PP-2501" ? null : `PK-${id.replace(/^WO-?/i, "")}`,
+
     flow: isPlatformIssued ? "平台下发 → " + (isHoof ? "张师傅" : "李雨晴") + " 执行" : "陈晓东 上报 → 王医生 诊断 → 李雨晴 执行",
   };
   const s = statusMap[o.status];
@@ -1281,7 +1282,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
     : platformAction
       ? [{ day: 1, date: platformDate, action: platformAction, pickup: Boolean(pickupCode), phase: platformPhase }]
       : getExecSummary(allPrescriptionsDone ? "已完成" : status, plan ?? getWoPlan(id));
-  const needPickup = Boolean(pickupCode);
+  const needPickup = id === "PP-2501" ? false : Boolean(pickupCode);
   const hasUnpicked = needPickup && days.some((d) => d.phase !== "done");
   return (
     <>
