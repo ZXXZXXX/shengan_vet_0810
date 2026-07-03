@@ -525,7 +525,7 @@ function TodayTasksPage() {
               disabled={count === 0}
               onClick={() => {
                 navigate({
-                  to: "/m/health/today_/batch",
+                  to: "/m/health/today/batch",
                   search: { ids: allIds },
                 });
               }}
