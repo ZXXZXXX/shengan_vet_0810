@@ -41,6 +41,31 @@ type CardState = {
   done: boolean;
 };
 
+function cardProgress(s: CardState): { label: string; variant: "done" | "ready" | "doing" | "empty" } {
+  if (s.done) return { label: "已完成", variant: "done" };
+  if (s.scanned && s.temp) return { label: "待提交", variant: "ready" };
+  if (s.scanned || s.temp || s.note) return { label: "填写中", variant: "doing" };
+  return { label: "未填写", variant: "empty" };
+}
+
+function StatusBadge({ state }: { state: CardState }) {
+  const { label, variant } = cardProgress(state);
+  const styles = {
+    done: "bg-[color-mix(in_oklab,var(--state-success)_15%,transparent)] text-[var(--state-success)]",
+    ready: "bg-[color-mix(in_oklab,var(--state-warning)_15%,transparent)] text-[var(--state-warning)]",
+    doing: "bg-[color-mix(in_oklab,var(--brand)_10%,transparent)] text-[var(--brand)]",
+    empty: "bg-surface-subtle text-text-tertiary",
+  }[variant];
+  return (
+    <span
+      className={`inline-flex items-center gap-0.5 px-1.5 h-[20px] rounded text-caption leading-none ${styles}`}
+    >
+      {variant === "done" && <Check className="h-3 w-3" strokeWidth={3} />}
+      {label}
+    </span>
+  );
+}
+
 function BatchExecutePage() {
   const { ids } = useSearch({ from: "/m/health/today_/batch" });
   const navigate = useNavigate();
