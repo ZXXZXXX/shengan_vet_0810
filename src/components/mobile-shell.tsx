@@ -21,7 +21,7 @@ export function MobileShell({
   title?: string;
   children: ReactNode;
   hideTabBar?: boolean;
-  back?: { to: string; label?: string } | true;
+  back?: { to: string; label?: string; search?: Record<string, string> } | true;
   right?: ReactNode;
 }) {
   return (
@@ -43,14 +43,14 @@ function MobileTopBar({
   right,
 }: {
   title: string;
-  back?: { to: string; label?: string } | true;
+  back?: { to: string; label?: string; search?: Record<string, string> } | true;
   right?: ReactNode;
 }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const goParent = () => {
     if (typeof back === "object" && back?.to) {
-      navigate({ to: back.to });
+      navigate({ to: back.to, search: back.search });
       return;
     }
     // 只有 /m/homepage 可以返回到 /m；其他页面最低落到 /m/homepage

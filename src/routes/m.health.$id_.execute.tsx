@@ -48,7 +48,7 @@ function ExecuteRecordPage() {
       const doneList = search.batchDone.split(",").filter(Boolean);
       if (!doneList.includes(id)) doneList.push(id);
       navigate({
-        to: "/m/health/today_/batch",
+        to: "/m/health/today/batch",
         search: { ids: search.batchIds, done: doneList.join(",") },
       });
       return;
@@ -57,8 +57,16 @@ function ExecuteRecordPage() {
     navigate({ to: "/m/health/$id", params: { id }, search: { tab: "execute" } });
   };
 
+  const backConfig =
+    search.return === "batch"
+      ? {
+          to: "/m/health/today/batch" as const,
+          search: { ids: search.batchIds, done: search.batchDone },
+        }
+      : true;
+
   return (
-    <MobileShell title="执行记录" back hideTabBar>
+    <MobileShell title="执行记录" back={backConfig} hideTabBar>
       <div className="pb-28">
         <div className="px-4 pt-3 pb-2">
           <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
