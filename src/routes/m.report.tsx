@@ -528,13 +528,33 @@ function ReportPage() {
     }
   }, [targets, barnMode, fromRevisit, detectedFor, isRevisit]);
 
-  // 健康
-  // 工单类型：疾病治疗 / 干奶 / 修蹄；修蹄工固定为修蹄且不可改
+  // 工单类型：疾病治疗 / 干奶 / 修蹄；修蹄工固定为修蹄，干奶工固定为干奶
   const [workType, setWorkType] = useState<WorkType>(
-    role === "hoof_trimmer" ? "修蹄" : "疾病治疗"
+    role === "hoof_trimmer"
+      ? "修蹄"
+      : role === "dry_off_worker"
+      ? "干奶"
+      : "疾病治疗"
   );
-  const lockWorkType = role === "hoof_trimmer";
+  const lockWorkType = role === "hoof_trimmer" || role === "dry_off_worker";
   const cfg = workTypeConfig[workType];
+
+  // 干奶复诊：3 天窗口期内的原干奶工单（mock）
+  const dryOffCandidateOrders = useMemo<RelatedOrder[]>(
+    () => [
+      { id: "GN-0208", type: "干奶", conclusion: "常规干奶（低风险）", target: "#01-24-2208", reportedAt: "2026-05-23 09:00", diagnosedAt: "2026-05-23 09:05", startedAt: "2026-05-23 10:00", completedAt: "2026-05-23 10:40", recent: true },
+      { id: "GN-0185", type: "干奶", conclusion: "高产 / 高风险干奶", target: "#01-24-2185", reportedAt: "2026-05-22 08:30", diagnosedAt: "2026-05-22 08:35", startedAt: "2026-05-22 09:20", completedAt: "2026-05-22 10:00" },
+      { id: "GN-0120", type: "干奶", conclusion: "隐性乳房炎干奶", target: "#01-24-2120", reportedAt: "2026-05-21 08:10", diagnosedAt: "2026-05-21 08:15", startedAt: "2026-05-21 09:00", completedAt: "2026-05-21 09:40" },
+    ],
+    []
+  );
+  const [dryOffOrderPickerOpen, setDryOffOrderPickerOpen] = useState(false);
+  const [dryOffRevisitReason, setDryOffRevisitReason] = useState("");
+  const selectedDryOffOrder = useMemo(
+    () => dryOffCandidateOrders.find((o) => o.id === relatedOrderId) ?? null,
+    [dryOffCandidateOrders, relatedOrderId]
+  );
+  const isDryOffRevisit = workType === "干奶" && role === "dry_off_worker";
 
   const [symptoms, setSymptoms] = useState<string[]>(draft?.symptoms ?? []);
   const [note, setNote] = useState<string>(draft?.note ?? "");
@@ -601,7 +621,8 @@ function ReportPage() {
     (!cfg?.note || note.trim().length > 0) &&
     desc.trim().length > 0 &&
     evidenceReady &&
-    (isRevisit !== true || finalRevisitReason.length > 0);
+    (isRevisit !== true || finalRevisitReason.length > 0) &&
+    (!isDryOffRevisit || !!relatedOrderId);
 
 
 
@@ -623,6 +644,16 @@ function ReportPage() {
 
   const doSubmit = () => {
     setSubmitted(true);
+    // 干奶工复诊上报：系统自动通过诊断，直接生成"待执行"干奶工单
+    if (isDryOffRevisit) {
+      const id = `GN-${String(Math.floor(Math.random() * 900) + 100)}`;
+      toast.success(`已自动通过诊断，工单 ${id} 进入待执行`);
+      setTimeout(
+        () => navigate({ to: "/m/health/$id", params: { id } }),
+        700
+      );
+      return;
+    }
     // 兽医/场长在现场上报后，提示是否直接进入诊断
     if (role === "vet" || role === "manager") {
       const id = `WO-${Math.floor(Math.random() * 9000 + 1000)}`;
@@ -677,7 +708,13 @@ function ReportPage() {
                   { v: "修蹄" as WorkType, label: "修蹄工单" },
                 ]).map((opt) => {
                   const active = workType === opt.v;
-                  const disabled = lockWorkType && opt.v !== "修蹄";
+                  const lockedType =
+                    role === "hoof_trimmer"
+                      ? "修蹄"
+                      : role === "dry_off_worker"
+                      ? "干奶"
+                      : null;
+                  const disabled = lockWorkType && opt.v !== lockedType;
                   return (
                     <button
                       key={opt.v}
@@ -705,10 +742,50 @@ function ReportPage() {
               </div>
               {lockWorkType && (
                 <div className="mt-2 text-caption text-text-tertiary">
-                  当前角色为修蹄工，仅可上报修蹄工单
+                  {role === "hoof_trimmer"
+                    ? "当前角色为修蹄工，仅可上报修蹄工单"
+                    : "当前角色为干奶工，仅可上报干奶工单（默认作为复诊上报）"}
                 </div>
               )}
             </Section>
+
+            {/* 干奶复诊：关联原干奶工单 */}
+            {isDryOffRevisit && (
+              <Section title="关联原干奶工单（复诊）" required>
+                <div className="text-caption text-text-tertiary mb-2">
+                  仅可关联干奶后 3 天复查窗口期内、由本人执行的原干奶工单；提交后系统将自动通过诊断并生成新的待执行干奶工单。
+                </div>
+                {selectedDryOffOrder ? (
+                  <div className="space-y-2">
+                    <RelatedOrderCard order={selectedDryOffOrder} />
+                    <button
+                      type="button"
+                      onClick={() => setDryOffOrderPickerOpen(true)}
+                      className="w-full h-9 rounded-lg border border-border bg-card text-body-sm text-text-secondary"
+                    >
+                      更换关联工单
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setDryOffOrderPickerOpen(true)}
+                    className="w-full h-10 rounded-lg border border-dashed border-border bg-surface-subtle text-body-sm text-text-secondary"
+                  >
+                    选择原干奶工单
+                  </button>
+                )}
+                <div className="mt-3">
+                  <div className="text-caption text-text-tertiary mb-1.5">复诊原因（可选）</div>
+                  <textarea
+                    value={dryOffRevisitReason}
+                    onChange={(e) => setDryOffRevisitReason(e.target.value)}
+                    placeholder="例：乳区仍有奶漏 / SCC 未回落 / 局部红肿"
+                    className="w-full min-h-[64px] rounded-lg border border-border bg-card px-3 py-2 text-body-sm placeholder:text-text-tertiary resize-none focus:outline-none focus:border-primary/40"
+                  />
+                </div>
+              </Section>
+            )}
 
             {/* 上报对象 */}
             <Section
@@ -1233,6 +1310,19 @@ function ReportPage() {
         orders={candidateOrders}
         selectedId={relatedOrderId}
         onSelect={(o) => setRelatedOrderId(o.id)}
+      />
+
+      <RelatedOrderPicker
+        open={dryOffOrderPickerOpen}
+        onClose={() => setDryOffOrderPickerOpen(false)}
+        orders={dryOffCandidateOrders}
+        selectedId={relatedOrderId}
+        onSelect={(o) => {
+          setRelatedOrderId(o.id);
+          setDryOffOrderPickerOpen(false);
+          const cow = o.target.replace(/^#/, "");
+          if (cow && !targets.includes(cow)) setTargets([cow]);
+        }}
       />
 
       {detectDialog && (
