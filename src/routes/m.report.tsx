@@ -749,6 +749,40 @@ function ReportPage() {
               )}
             </Section>
 
+            {/* 干奶复诊：关联原干奶工单 */}
+            {isDryOffRevisit && (
+              <Section title="关联原干奶工单（复诊）" required>
+                <div className="text-caption text-text-tertiary mb-2">
+                  仅可关联干奶后 3 天复查窗口期内、由本人执行的原干奶工单；提交后系统将自动通过诊断并生成新的待执行干奶工单。
+                </div>
+                {selectedDryOffOrder ? (
+                  <div className="space-y-2">
+                    <RelatedOrderCard
+                      order={selectedDryOffOrder}
+                      onChange={() => setDryOffOrderPickerOpen(true)}
+                    />
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setDryOffOrderPickerOpen(true)}
+                    className="w-full h-10 rounded-lg border border-dashed border-border bg-surface-subtle text-body-sm text-text-secondary"
+                  >
+                    选择原干奶工单
+                  </button>
+                )}
+                <div className="mt-3">
+                  <div className="text-caption text-text-tertiary mb-1.5">复诊原因（可选）</div>
+                  <textarea
+                    value={dryOffRevisitReason}
+                    onChange={(e) => setDryOffRevisitReason(e.target.value)}
+                    placeholder="例：乳区仍有奶漏 / SCC 未回落 / 局部红肿"
+                    className="w-full min-h-[64px] rounded-lg border border-border bg-card px-3 py-2 text-body-sm placeholder:text-text-tertiary resize-none focus:outline-none focus:border-primary/40"
+                  />
+                </div>
+              </Section>
+            )}
+
             {/* 上报对象 */}
             <Section
               title="上报对象"
