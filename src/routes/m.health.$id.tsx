@@ -1218,7 +1218,8 @@ function getExecSummary(status: StatusKey, plan: WoPlan): DaySummary[] {
   const sessions = computeSessions(plan);
   const total = sessions.length;
   // 产后护理只做检查与评估，不涉及领物
-  const needsPickup = plan.key !== "postpartum";
+  const needsPickup = plan.disease !== "产后保健";
+
   const genDate = (dayIdx: number, slot: number) => {
     const base = new Date(2026, 4, 12, slot === 2 ? 19 : 8, 0);
     const d = new Date(base.getTime() + (dayIdx - 1) * 86400000);
