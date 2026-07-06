@@ -7,8 +7,7 @@ export type Role =
   | "manager"
   | "vet_assistant"
   | "immunizer"
-  | "hoof_trimmer"
-  | "dry_off_worker";
+  | "hoof_trimmer";
 
 const KEY = "mp:role";
 const listeners = new Set<() => void>();
@@ -42,7 +41,6 @@ export const roleLabel: Record<Role, string> = {
   vet_assistant: "兽医助理",
   immunizer: "免疫员",
   hoof_trimmer: "修蹄工",
-  dry_off_worker: "干奶工",
 };
 
 export const roleGroup: Record<Role, "internal" | "external"> = {
@@ -52,7 +50,6 @@ export const roleGroup: Record<Role, "internal" | "external"> = {
   vet_assistant: "internal",
   immunizer: "internal",
   hoof_trimmer: "external",
-  dry_off_worker: "external",
 };
 
 // 权限：诊断 vs 执行
@@ -64,7 +61,6 @@ export function canExecute(r: Role) {
     r === "vet_assistant" ||
     r === "immunizer" ||
     r === "hoof_trimmer" ||
-    r === "dry_off_worker" ||
     r === "vet" ||
     r === "manager"
   );
