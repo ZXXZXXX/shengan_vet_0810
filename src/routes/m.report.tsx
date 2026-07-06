@@ -621,12 +621,25 @@ function ReportPage() {
   const [postSubmitOpen, setPostSubmitOpen] = useState(false);
   const [newWorkOrderId, setNewWorkOrderId] = useState<string>("");
 
+  // 干奶复诊：干奶后 3 天复查窗口内，兽医/助理再次上报（关联原干奶工单），
+  // 提交后系统自动完成诊断（默认通过），无需人工诊断确认。
+  const isDryingRevisit = workType === "干奶" && isRevisit === true && !!relatedOrderId && relatedOrderId !== "-";
+
   const doSubmit = () => {
     setSubmitted(true);
+    const newId = `WO-${Math.floor(Math.random() * 9000 + 1000)}`;
+
+    if (isDryingRevisit) {
+      toast.success("已上报，系统已自动完成诊断（默认通过）", {
+        description: `关联原干奶工单 ${relatedOrderId}，工单 ${newId} 已进入执行阶段`,
+      });
+      setTimeout(() => navigate({ to: "/m/health" }), 900);
+      return;
+    }
+
     // 兽医/场长在现场上报后，提示是否直接进入诊断
     if (role === "vet" || role === "manager") {
-      const id = `WO-${Math.floor(Math.random() * 9000 + 1000)}`;
-      setNewWorkOrderId(id);
+      setNewWorkOrderId(newId);
       setTimeout(() => setPostSubmitOpen(true), 400);
       return;
     }
@@ -922,6 +935,11 @@ function ReportPage() {
 
                 {isRevisit === true && (
                   <div className="mt-4 space-y-4">
+                    {workType === "干奶" && (
+                      <div className="rounded-lg border border-primary/30 bg-brand-subtle px-3 py-2 text-caption text-primary leading-relaxed">
+                        干奶后 3 天复查窗口：本次上报将作为原干奶工单的复诊。提交后系统会自动完成诊断（默认通过），无需人工确认。
+                      </div>
+                    )}
                     <div>
                       <div className="text-caption text-text-tertiary mb-2">
                         关联原始工单 <span className="text-[var(--state-danger)]">*</span>
