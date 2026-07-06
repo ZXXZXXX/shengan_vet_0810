@@ -935,6 +935,11 @@ function ReportPage() {
 
                 {isRevisit === true && (
                   <div className="mt-4 space-y-4">
+                    {workType === "干奶" && (
+                      <div className="rounded-lg border border-primary/30 bg-brand-subtle px-3 py-2 text-caption text-primary leading-relaxed">
+                        干奶后 3 天复查窗口：本次上报将作为原干奶工单的复诊。提交后系统会自动完成诊断（默认通过），无需人工确认。
+                      </div>
+                    )}
                     <div>
                       <div className="text-caption text-text-tertiary mb-2">
                         关联原始工单 <span className="text-[var(--state-danger)]">*</span>
