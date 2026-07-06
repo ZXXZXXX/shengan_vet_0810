@@ -373,11 +373,8 @@ function TodayTasksPage() {
                 : "待执行";
             const barn = inferBarn(t);
             const actionText = activeTab === "待执行" ? "执行" : activeTab === "待复查" ? "复查" : "诊断";
-            const linkTo = activeTab === "待执行"
-              ? "/m/health/$id/execute"
-              : activeTab === "待复查"
-                ? "/m/health/$id/review"
-                : "/m/health/$id";
+            const linkTo = "/m/health/$id/execute" as const;
+
 
             const cattleId = t.target.startsWith("#") ? t.target : null;
             const groupTarget = cattleId ? null : t.target;
