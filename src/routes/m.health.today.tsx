@@ -242,7 +242,17 @@ function TodayTasksPage() {
             {allSelected ? "取消全选" : "全选"}
           </button>
         )}
+        {!selectMode && tasks.length > 0 && (
+          <button
+            type="button"
+            onClick={enterSelect}
+            className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
+          >
+            批量执行
+          </button>
+        )}
       </header>
+
 
 
       {/* 状态 tab */}
