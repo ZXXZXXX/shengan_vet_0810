@@ -295,33 +295,21 @@ function TodayTasksPage() {
 
 
       {/* 牛舍筛选 + 批量执行 入口 */}
-      {(allBarns.length > 1 || (activeTab === "待执行" && !selectMode && tasks.length > 0)) && (
+      {allBarns.length > 1 && (
         <div className="px-4 pt-3">
           <div className="flex items-center gap-1.5 mb-2 text-caption text-text-tertiary">
-            {allBarns.length > 1 && (
-              <>
-                <Filter className="h-3 w-3" />
-                <span>按牛舍筛选</span>
-                {selectedBarns.size > 0 && (
-                  <button
-                    onClick={() => setSelectedBarns(new Set())}
-                    className="text-primary"
-                  >
-                    清除
-                  </button>
-                )}
-              </>
-            )}
-            {activeTab === "待执行" && !selectMode && tasks.length > 0 && (
+            <Filter className="h-3 w-3" />
+            <span>按牛舍筛选</span>
+            {selectedBarns.size > 0 && (
               <button
-                type="button"
-                onClick={enterSelect}
-                className="ml-auto text-body-sm text-primary"
+                onClick={() => setSelectedBarns(new Set())}
+                className="text-primary"
               >
-                批量执行
+                清除
               </button>
             )}
           </div>
+
           {allBarns.length > 1 && (
             <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
               <div className="flex gap-1.5 w-max pr-4">
