@@ -242,7 +242,17 @@ function TodayTasksPage() {
             {allSelected ? "取消全选" : "全选"}
           </button>
         )}
+        {!selectMode && tasks.length > 0 && (
+          <button
+            type="button"
+            onClick={enterSelect}
+            className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
+          >
+            批量执行
+          </button>
+        )}
       </header>
+
 
 
       {/* 状态 tab */}
@@ -285,33 +295,21 @@ function TodayTasksPage() {
 
 
       {/* 牛舍筛选 + 批量执行 入口 */}
-      {(allBarns.length > 1 || (activeTab === "待执行" && !selectMode && tasks.length > 0)) && (
+      {allBarns.length > 1 && (
         <div className="px-4 pt-3">
           <div className="flex items-center gap-1.5 mb-2 text-caption text-text-tertiary">
-            {allBarns.length > 1 && (
-              <>
-                <Filter className="h-3 w-3" />
-                <span>按牛舍筛选</span>
-                {selectedBarns.size > 0 && (
-                  <button
-                    onClick={() => setSelectedBarns(new Set())}
-                    className="text-primary"
-                  >
-                    清除
-                  </button>
-                )}
-              </>
-            )}
-            {activeTab === "待执行" && !selectMode && tasks.length > 0 && (
+            <Filter className="h-3 w-3" />
+            <span>按牛舍筛选</span>
+            {selectedBarns.size > 0 && (
               <button
-                type="button"
-                onClick={enterSelect}
-                className="ml-auto text-body-sm text-primary"
+                onClick={() => setSelectedBarns(new Set())}
+                className="text-primary"
               >
-                批量执行
+                清除
               </button>
             )}
           </div>
+
           {allBarns.length > 1 && (
             <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
               <div className="flex gap-1.5 w-max pr-4">
@@ -375,11 +373,8 @@ function TodayTasksPage() {
                 : "待执行";
             const barn = inferBarn(t);
             const actionText = activeTab === "待执行" ? "执行" : activeTab === "待复查" ? "复查" : "诊断";
-            const linkTo = activeTab === "待执行"
-              ? "/m/health/$id/execute"
-              : activeTab === "待复查"
-                ? "/m/health/$id/review"
-                : "/m/health/$id";
+            const linkTo = "/m/health/$id/execute" as const;
+
 
             const cattleId = t.target.startsWith("#") ? t.target : null;
             const groupTarget = cattleId ? null : t.target;
