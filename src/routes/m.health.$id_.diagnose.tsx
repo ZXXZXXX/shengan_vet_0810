@@ -1262,6 +1262,27 @@ function DiagnosePage() {
                   <div className="text-caption text-text-tertiary text-right">{specialPlanDesc.length} / 200</div>
                 </label>
 
+                {/* 特殊处方 · 牛只体重（仅当特殊处方中有按体重计算的用药项时展示） */}
+                {specialNeedsWeight && (
+                  <div>
+                    <div className="text-caption text-text-tertiary mb-1.5">
+                      牛只体重 <span className="text-[var(--state-danger)]">*</span>
+                      <span className="ml-1 text-text-tertiary">用于特殊处方剂量计算，需与标准处方一致</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setWeightSheetTarget("special")}
+                      className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
+                    >
+                      <span className={specialCattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
+                        {specialCattleWeight == null ? "请选择牛只体重" : weightLabelOf(specialCattleWeight)}
+                      </span>
+                      <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
+                    </button>
+                  </div>
+                )}
+
+
                 {specialList.length > 0 && (
                   <ul className="space-y-2">
                     {specialList.map((r) => {
