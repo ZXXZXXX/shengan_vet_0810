@@ -706,8 +706,20 @@ function DiagnosePage() {
       toast.error("请选择一个标准处方方案或开具特殊处方");
       return;
     }
-    if (needsWeight && cattleWeight == null) {
-      toast.error("请选择牛只体重以自动计算剂量");
+    if (stdNeedsWeight && cattleWeight == null) {
+      toast.error("请选择标准处方的牛只体重以自动计算剂量");
+      return;
+    }
+    if (specialNeedsWeight && specialCattleWeight == null) {
+      toast.error("请选择特殊处方的牛只体重以自动计算剂量");
+      return;
+    }
+    if (
+      stdNeedsWeight &&
+      specialNeedsWeight &&
+      cattleWeight !== specialCattleWeight
+    ) {
+      toast.error("标准处方与特殊处方所选牛只体重不一致，请核对");
       return;
     }
     if (specialList.length > 0 && !specialReason.trim()) {
