@@ -416,13 +416,15 @@ function DiagnosePage() {
   const [stdPlans, setStdPlans] = useState<Plan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState<string>("");
   const [cattleWeight, setCattleWeight] = useState<number | null>(null);
+  // 特殊处方独立体重（用户需分别选择，提交时校验一致）
+  const [specialCattleWeight, setSpecialCattleWeight] = useState<number | null>(null);
   // 特殊处方（需填原因，可自由编辑）
   const [specialReason, setSpecialReason] = useState("");
   const [specialPlanDesc, setSpecialPlanDesc] = useState("");
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
   const [planSheetOpen, setPlanSheetOpen] = useState(false);
-  const [weightSheetOpen, setWeightSheetOpen] = useState(false);
+  const [weightSheetTarget, setWeightSheetTarget] = useState<null | "std" | "special">(null);
   const [specialOpen, setSpecialOpen] = useState(false);
 
   // 提交校验弹窗
@@ -607,13 +609,17 @@ function DiagnosePage() {
   );
 
   // 是否需要根据体重计算剂量：任一用药项 dosePer !== "fixed" 或声明了按体重区间
-  const needsWeight = useMemo(() => {
-    const drugs = [
-      ...(selectedPlan?.items ?? []),
-      ...specialList,
-    ].filter((r) => r.kind === "drug");
-    return drugs.some((r) => (r.dosePer && r.dosePer !== "fixed") || !!r.doseByWeight);
-  }, [selectedPlan, specialList]);
+  const drugNeedsWeight = (r: Prescription) =>
+    r.kind === "drug" && ((!!r.dosePer && r.dosePer !== "fixed") || !!r.doseByWeight);
+  const stdNeedsWeight = useMemo(
+    () => (selectedPlan?.items ?? []).some(drugNeedsWeight),
+    [selectedPlan],
+  );
+  const specialNeedsWeight = useMemo(
+    () => specialList.some(drugNeedsWeight),
+    [specialList],
+  );
+  const needsWeight = stdNeedsWeight || specialNeedsWeight;
 
   const removeSpecialRx = (rxId: string) =>
     setSpecialList((prev) => prev.filter((r) => r.id !== rxId));
@@ -700,8 +706,20 @@ function DiagnosePage() {
       toast.error("请选择一个标准处方方案或开具特殊处方");
       return;
     }
-    if (needsWeight && cattleWeight == null) {
-      toast.error("请选择牛只体重以自动计算剂量");
+    if (stdNeedsWeight && cattleWeight == null) {
+      toast.error("请选择标准处方的牛只体重以自动计算剂量");
+      return;
+    }
+    if (specialNeedsWeight && specialCattleWeight == null) {
+      toast.error("请选择特殊处方的牛只体重以自动计算剂量");
+      return;
+    }
+    if (
+      stdNeedsWeight &&
+      specialNeedsWeight &&
+      cattleWeight !== specialCattleWeight
+    ) {
+      toast.error("标准处方与特殊处方所选牛只体重不一致，请核对");
       return;
     }
     if (specialList.length > 0 && !specialReason.trim()) {
@@ -721,23 +739,27 @@ function DiagnosePage() {
       return;
     }
 
-    // 汇总所有药品处方（标准 + 特殊）
-    const allDrugs = [...planItems, ...specialList].filter((r) => r.kind === "drug");
-    const w = cattleWeight ?? 500;
+    // 汇总所有药品处方（标准 + 特殊），分别按各自体重计算
+    const stdDrugs = planItems.filter((r) => r.kind === "drug");
+    const specDrugs = specialList.filter((r) => r.kind === "drug");
+    const stdW = cattleWeight ?? 500;
+    const specW = specialCattleWeight ?? cattleWeight ?? 500;
 
     // 1) 库存校验
     const shortages: Shortage[] = [];
     const need: Record<string, { qty: number; unit: string }> = {};
-    for (const r of allDrugs) {
+    const accumulate = (r: Prescription, w: number) => {
       const perDose = computePerDose(r, w);
-      if (perDose <= 0) continue;
+      if (perDose <= 0) return;
       const times = parseFloat(r.timesPerDay || "1") || 1;
       const days = parseFloat(r.days || "1") || 1;
       const total = Math.round(perDose * times * days * 10) / 10;
       const unit = r.doseUnit || "ml";
       if (!need[r.name]) need[r.name] = { qty: 0, unit };
       need[r.name].qty = Math.round((need[r.name].qty + total) * 10) / 10;
-    }
+    };
+    stdDrugs.forEach((r) => accumulate(r, stdW));
+    specDrugs.forEach((r) => accumulate(r, specW));
     for (const [name, n] of Object.entries(need)) {
       const stock = drugStock[name];
       if (!stock || stock.qty < n.qty) {
@@ -761,8 +783,10 @@ function DiagnosePage() {
   // 2) 规则校验（库存通过或用户已确认继续后触发）
   const proceedRuleCheck = () => {
     const planItems = selectedPlan?.items ?? [];
-    const allDrugs = [...planItems, ...specialList].filter((r) => r.kind === "drug");
-    const w = cattleWeight ?? 500;
+    const stdDrugs = planItems.filter((r) => r.kind === "drug");
+    const specDrugs = specialList.filter((r) => r.kind === "drug");
+    const stdW = cattleWeight ?? 500;
+    const specW = specialCattleWeight ?? cattleWeight ?? 500;
 
     const violations: Violation[] = [];
     const reported = cattleHistory.diseaseCount[disease] ?? 0;
@@ -773,15 +797,15 @@ function DiagnosePage() {
         detail: `当前：${reported + 1} 次；限制：${RULES.diseaseReportMax} 次。`,
       });
     }
-    for (const r of allDrugs) {
+    const evalDrug = (r: Prescription, w: number) => {
       const perDose = computePerDose(r, w);
-      if (perDose <= 0) continue;
+      if (perDose <= 0) return;
       const times = parseFloat(r.timesPerDay || "1") || 1;
       const days = parseFloat(r.days || "1") || 1;
       const addDose = Math.round(perDose * times * days * 10) / 10;
       const addCount = Math.round(times * days);
       const hist = cattleHistory.drugUsage[r.name];
-      if (!hist) continue;
+      if (!hist) return;
       const unit = hist.unit;
       const nextDose = Math.round((hist.totalDose + addDose) * 10) / 10;
       const nextCount = hist.count + addCount;
@@ -800,7 +824,9 @@ function DiagnosePage() {
           detail: `当前：${nextCount} 次；限制：${RULES.drugUsageCountMax} 次。`,
         });
       }
-    }
+    };
+    stdDrugs.forEach((r) => evalDrug(r, stdW));
+    specDrugs.forEach((r) => evalDrug(r, specW));
 
     if (violations.length === 0) {
       doSubmit();
@@ -1075,8 +1101,8 @@ function DiagnosePage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {/* 牛只体重（下拉选择）— 仅当处方内有按体重计算的用药项时展示 */}
-                {needsWeight && (
+                {/* 牛只体重（下拉选择）— 仅当标准处方中有按体重计算的用药项时展示 */}
+                {stdNeedsWeight && (
                   <div>
                     <div className="text-caption text-text-tertiary mb-1.5">
                       牛只体重 <span className="text-[var(--state-danger)]">*</span>
@@ -1084,7 +1110,7 @@ function DiagnosePage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setWeightSheetOpen(true)}
+                      onClick={() => setWeightSheetTarget("std")}
                       className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
                     >
                       <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
@@ -1255,6 +1281,27 @@ function DiagnosePage() {
                   />
                   <div className="text-caption text-text-tertiary text-right">{specialPlanDesc.length} / 200</div>
                 </label>
+
+                {/* 特殊处方 · 牛只体重（仅当特殊处方中有按体重计算的用药项时展示） */}
+                {specialNeedsWeight && (
+                  <div>
+                    <div className="text-caption text-text-tertiary mb-1.5">
+                      牛只体重 <span className="text-[var(--state-danger)]">*</span>
+                      <span className="ml-1 text-text-tertiary">用于特殊处方剂量计算，需与标准处方一致</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setWeightSheetTarget("special")}
+                      className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
+                    >
+                      <span className={specialCattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
+                        {specialCattleWeight == null ? "请选择牛只体重" : weightLabelOf(specialCattleWeight)}
+                      </span>
+                      <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
+                    </button>
+                  </div>
+                )}
+
 
                 {specialList.length > 0 && (
                   <ul className="space-y-2">
@@ -1516,16 +1563,18 @@ function DiagnosePage() {
       )}
 
       {/* 选择牛只体重 */}
-      {weightSheetOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setWeightSheetOpen(false)}>
+      {weightSheetTarget && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setWeightSheetTarget(null)}>
           <div
             className="w-full bg-card rounded-t-2xl p-4 space-y-3 h-[75vh] max-h-[75vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <div className="text-section text-foreground font-medium">选择牛只体重</div>
+              <div className="text-section text-foreground font-medium">
+                选择牛只体重{weightSheetTarget === "special" ? "（特殊处方）" : ""}
+              </div>
               <button
-                onClick={() => setWeightSheetOpen(false)}
+                onClick={() => setWeightSheetTarget(null)}
                 className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary"
                 aria-label="关闭"
               >
@@ -1534,14 +1583,16 @@ function DiagnosePage() {
             </div>
             <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden">
               {WEIGHT_OPTIONS.map((opt) => {
-                const active = cattleWeight === opt.value;
+                const current = weightSheetTarget === "std" ? cattleWeight : specialCattleWeight;
+                const active = current === opt.value;
                 return (
                   <li key={opt.value}>
                     <button
                       type="button"
                       onClick={() => {
-                        setCattleWeight(opt.value);
-                        setWeightSheetOpen(false);
+                        if (weightSheetTarget === "std") setCattleWeight(opt.value);
+                        else setSpecialCattleWeight(opt.value);
+                        setWeightSheetTarget(null);
                       }}
                       className={`w-full px-3 py-3 flex items-center justify-between text-left ${
                         active ? "bg-brand-subtle/40 text-primary" : "bg-card text-foreground"
