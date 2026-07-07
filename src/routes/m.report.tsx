@@ -1222,16 +1222,13 @@ function ReportPage() {
                             {selectedPlan.rx}
                           </div>
                           {selectedPlan.desc && (
-                            <div className="text-caption text-text-tertiary">
-                              {selectedPlan.desc}
+                            <div className="text-caption text-text-secondary">
+                              <span className="text-text-tertiary">处方摘要：</span>
+                              <span className="text-foreground">
+                                {selectedPlan.desc}
+                              </span>
                             </div>
                           )}
-                          <div className="text-caption text-text-secondary">
-                            <span className="text-text-tertiary">处方内容：</span>
-                            <span className="text-foreground">
-                              {selectedPlan.items.map(formatPlanItem).join("、")}
-                            </span>
-                          </div>
                           <div className="text-caption text-text-secondary">
                             <span className="text-text-tertiary">疗程：</span>
                             <span className="text-foreground">
