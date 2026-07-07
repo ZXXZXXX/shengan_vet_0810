@@ -236,6 +236,8 @@ type Prescription = {
   usageMethod?: string;
   // 按体重区间给药（覆盖自动/固定剂量显示）
   doseByWeight?: string;
+  // 按非盲乳数给药（乳注类，与体重无关）
+  doseByQuarter?: string;
   // 药品品牌备选（当同一处方允许多个厂商 / 品牌互替时提供）
   alternatives?: string[];
 };
@@ -345,6 +347,63 @@ const POSTPARTUM_NORMAL_DISEASE: Disease = {
   ],
 };
 
+// === 干奶：固定症状池、固定结论「干奶处理」，5 个乳注处方（按非盲乳数给药）===
+const DRYING_SYMPTOMS = ["确认已孕", "干奶后乳区仍旧漏奶"];
+const DRYING_QUARTER_DOSE_3G = "1=1 支；2=2 支；3=3 支；4=4 支";
+const DRYING_DISEASE: Disease = {
+  name: "干奶处理",
+  symptoms: DRYING_SYMPTOMS,
+  plans: [
+    {
+      id: "dry-1",
+      name: "处方1 · 头孢喹肟乳注（牧全欣）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "硫酸头孢喹肟乳房注入剂 干乳期（牧全欣）", maker: "礼蓝动保", spec: "3g / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+    {
+      id: "dry-2",
+      name: "处方2 · 头孢喹肟乳注（茹通）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "硫酸头孢喹肟乳房注入剂（干乳期）（茹通）", maker: "瑞普生物", spec: "3g / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+    {
+      id: "dry-3",
+      name: "处方3 · 头孢喹肟乳注（海喹宁）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "硫酸头孢喹肟乳房注入剂（干乳期）（海喹宁）", maker: "齐鲁动保", spec: "3g / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+    {
+      id: "dry-4",
+      name: "处方4 · 头孢噻呋乳注（畜可健）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "盐酸头孢噻呋乳房注入剂 干乳期（畜可健）", maker: "礼蓝动保", spec: "8ml / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+    {
+      id: "dry-5",
+      name: "处方5 · 头孢喹肟乳注（赛福魁）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "硫酸头孢喹肟乳房注入剂 干乳期（赛福魁）", maker: "扬州威克", spec: "3g / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+  ],
+};
+
+
+
 // 药品库（用于编辑弹层中搜索匹配）
 type DrugItem = { name: string; maker: string; spec: string; recommendedUse: string; defaultUnit: string; allowedUses: string[]; isSpecial?: boolean };
 const drugLibrary: DrugItem[] = [
@@ -401,13 +460,20 @@ function DiagnosePage() {
 
   // 工单类型判断
   const isPostpartum = id.toUpperCase().startsWith("PP");
-  const effectiveSymptomLibrary = isPostpartum ? POSTPARTUM_SYMPTOMS : symptomLibrary;
+  const isDrying = id.toUpperCase().startsWith("GN");
+  const effectiveSymptomLibrary = isPostpartum
+    ? POSTPARTUM_SYMPTOMS
+    : isDrying
+      ? DRYING_SYMPTOMS
+      : symptomLibrary;
   const effectiveDiseaseLibrary = isPostpartum
     ? [POSTPARTUM_NORMAL_DISEASE, POSTPARTUM_DISEASE]
-    : diseaseLibrary;
+    : isDrying
+      ? [DRYING_DISEASE]
+      : diseaseLibrary;
 
-  // 症状（带入上报症状，可加减；产后护理无上报症状）
-  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum ? [] : reportedSymptoms));
+  // 症状（带入上报症状，可加减；产后护理 / 干奶无上报症状）
+  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum || isDrying ? [] : reportedSymptoms));
   const [symptomInput, setSymptomInput] = useState("");
 
   // 疾病
@@ -679,7 +745,7 @@ function DiagnosePage() {
       return;
     }
     const temp = parseFloat(temperature);
-    if (!isPostpartum) {
+    if (!isPostpartum && !isDrying) {
       if (!temperature.trim() || Number.isNaN(temp)) {
         toast.error("请填写牛只体温");
         return;
@@ -859,7 +925,9 @@ function DiagnosePage() {
             <Sparkles className="h-3 w-3" />
             {isPostpartum
               ? "平台下发的产后护理工单，请勾选症状并核对治疗方案"
-              : "已自动将上报信息填写至下方，方便编辑更改"}
+              : isDrying
+                ? "平台下发的干奶工单，请勾选依据并选择乳注处方"
+                : "已自动将上报信息填写至下方，方便编辑更改"}
           </div>
         </div>
 
@@ -880,7 +948,7 @@ function DiagnosePage() {
               selected={symptoms}
               onChange={handleSymptomsChange}
               presets={effectiveSymptomLibrary}
-              disableCreate={isPostpartum}
+              disableCreate={isPostpartum || isDrying}
             />
           </Section>
 
@@ -891,7 +959,7 @@ function DiagnosePage() {
             <div className="grid grid-cols-2 gap-2">
               <label className="block">
                 <div className="text-caption text-text-tertiary mb-1">
-                  体温 {isPostpartum ? <span className="text-text-tertiary">(选填)</span> : <span className="text-[var(--state-danger)]">*</span>}
+                  体温 {isPostpartum || isDrying ? <span className="text-text-tertiary">(选填)</span> : <span className="text-[var(--state-danger)]">*</span>}
                 </div>
                 <div className="relative">
                   <input
@@ -1202,7 +1270,9 @@ function DiagnosePage() {
                               <div className="text-caption text-primary mt-1 inline-flex items-start gap-1">
                                 <Sparkles className="h-3 w-3 mt-0.5 shrink-0" />
                                 <span>
-                                {r.doseByWeight
+                                {r.doseByQuarter
+                                  ? `按非盲乳数：${r.doseByQuarter}（执行时选择）`
+                                  : r.doseByWeight
                                   ? (cattleWeight != null
                                       ? (() => {
                                           const seg = r.doseByWeight!.split(/[；;]/).find((s) => {

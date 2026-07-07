@@ -136,8 +136,8 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
     tags: {
       label: "干奶依据",
       required: true,
-      // 干奶不是疾病，无症状；此处为执行依据（现场判断）
-      presets: ["预产 60 天内", "泌乳量 <15kg", "本胎次高产", "本胎次乳房炎史", "近期 SCC 偏高", "乳区正常", "乳区异常"],
+      // 干奶症状池：仅保留两条现场判断标签
+      presets: ["确认已孕", "干奶后乳区仍旧漏奶"],
     },
     allowDisease: true,
   },
