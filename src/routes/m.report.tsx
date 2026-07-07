@@ -1455,7 +1455,7 @@ function ReportPage() {
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-body-sm text-foreground">
+                        <div className="flex items-center gap-1.5 text-body font-medium text-foreground">
                           <FileText className="h-3.5 w-3.5 text-primary" />
                           {p.rx}
                         </div>
@@ -1466,12 +1466,15 @@ function ReportPage() {
                       )}
                       <div className="text-caption text-text-secondary">
                         <span className="text-text-tertiary">处方内容：</span>
-                        {p.items.map(formatPlanItem).join("、")}
+                        <span className="font-medium text-foreground">
+                          {p.items.map(formatPlanItem).join("、")}
+                        </span>
                       </div>
-
-
                       <div className="text-caption text-text-secondary">
-                        疗程：{p.duration}
+                        <span className="text-text-tertiary">疗程：</span>
+                        <span className="font-medium text-foreground">
+                          {p.duration}
+                        </span>
                       </div>
                     </button>
                   </li>
