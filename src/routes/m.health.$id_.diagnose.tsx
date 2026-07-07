@@ -377,6 +377,7 @@ const useMethods = [
 
 // 治疗手段枚举
 const therapyMethods = [
+  "检查",
   "按摩",
   "热敷",
   "冷敷",
