@@ -78,6 +78,7 @@ import { Route as MHealthIdReviewRouteImport } from './routes/m.health.$id_.revi
 import { Route as MHealthIdExecuteRouteImport } from './routes/m.health.$id_.execute'
 import { Route as MHealthIdDiagnoseRouteImport } from './routes/m.health.$id_.diagnose'
 import { Route as MHealthIdConfirmCureRouteImport } from './routes/m.health.$id_.confirm-cure'
+import { Route as MHealthIdAbortRouteImport } from './routes/m.health.$id_.abort'
 import { Route as MHealthIdExecutePickupIdRouteImport } from './routes/m.health.$id_.execute_.$pickupId'
 
 const WorkspaceRoute = WorkspaceRouteImport.update({
@@ -426,6 +427,11 @@ const MHealthIdConfirmCureRoute = MHealthIdConfirmCureRouteImport.update({
   path: '/health/$id/confirm-cure',
   getParentRoute: () => MRoute,
 } as any)
+const MHealthIdAbortRoute = MHealthIdAbortRouteImport.update({
+  id: '/health/$id_/abort',
+  path: '/health/$id/abort',
+  getParentRoute: () => MRoute,
+} as any)
 const MHealthIdExecutePickupIdRoute =
   MHealthIdExecutePickupIdRouteImport.update({
     id: '/health/$id_/execute_/$pickupId',
@@ -497,6 +503,7 @@ export interface FileRoutesByFullPath {
   '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
+  '/m/health/$id/abort': typeof MHealthIdAbortRoute
   '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRoute
@@ -564,6 +571,7 @@ export interface FileRoutesByTo {
   '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health': typeof MHealthIndexRoute
+  '/m/health/$id/abort': typeof MHealthIdAbortRoute
   '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id/execute': typeof MHealthIdExecuteRoute
@@ -637,6 +645,7 @@ export interface FileRoutesById {
   '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
+  '/m/health/$id_/abort': typeof MHealthIdAbortRoute
   '/m/health/$id_/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id_/diagnose': typeof MHealthIdDiagnoseRoute
   '/m/health/$id_/execute': typeof MHealthIdExecuteRoute
@@ -711,6 +720,7 @@ export interface FileRouteTypes {
     | '/m/health/today'
     | '/m/pens/$id'
     | '/m/health/'
+    | '/m/health/$id/abort'
     | '/m/health/$id/confirm-cure'
     | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
@@ -778,6 +788,7 @@ export interface FileRouteTypes {
     | '/m/health/today'
     | '/m/pens/$id'
     | '/m/health'
+    | '/m/health/$id/abort'
     | '/m/health/$id/confirm-cure'
     | '/m/health/$id/diagnose'
     | '/m/health/$id/execute'
@@ -850,6 +861,7 @@ export interface FileRouteTypes {
     | '/m/health/today'
     | '/m/pens/$id'
     | '/m/health/'
+    | '/m/health/$id_/abort'
     | '/m/health/$id_/confirm-cure'
     | '/m/health/$id_/diagnose'
     | '/m/health/$id_/execute'
@@ -1358,6 +1370,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MHealthIdConfirmCureRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/health/$id_/abort': {
+      id: '/m/health/$id_/abort'
+      path: '/health/$id/abort'
+      fullPath: '/m/health/$id/abort'
+      preLoaderRoute: typeof MHealthIdAbortRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/health/$id_/execute_/$pickupId': {
       id: '/m/health/$id_/execute_/$pickupId'
       path: '/health/$id/execute/$pickupId'
@@ -1425,6 +1444,7 @@ interface MRouteChildren {
   MHealthTodayRoute: typeof MHealthTodayRoute
   MPensIdRoute: typeof MPensIdRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
+  MHealthIdAbortRoute: typeof MHealthIdAbortRoute
   MHealthIdConfirmCureRoute: typeof MHealthIdConfirmCureRoute
   MHealthIdDiagnoseRoute: typeof MHealthIdDiagnoseRoute
   MHealthIdExecuteRoute: typeof MHealthIdExecuteRoute
@@ -1460,6 +1480,7 @@ const MRouteChildren: MRouteChildren = {
   MHealthTodayRoute: MHealthTodayRoute,
   MPensIdRoute: MPensIdRoute,
   MHealthIndexRoute: MHealthIndexRoute,
+  MHealthIdAbortRoute: MHealthIdAbortRoute,
   MHealthIdConfirmCureRoute: MHealthIdConfirmCureRoute,
   MHealthIdDiagnoseRoute: MHealthIdDiagnoseRoute,
   MHealthIdExecuteRoute: MHealthIdExecuteRoute,
