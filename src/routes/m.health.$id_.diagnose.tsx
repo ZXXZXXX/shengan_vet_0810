@@ -347,6 +347,63 @@ const POSTPARTUM_NORMAL_DISEASE: Disease = {
   ],
 };
 
+// === 干奶：固定症状池、固定结论「干奶处理」，5 个乳注处方（按非盲乳数给药）===
+const DRYING_SYMPTOMS = ["确认已孕", "干奶后乳区仍旧漏奶"];
+const DRYING_QUARTER_DOSE_3G = "1=1 支；2=2 支；3=3 支；4=4 支";
+const DRYING_DISEASE: Disease = {
+  name: "干奶处理",
+  symptoms: DRYING_SYMPTOMS,
+  plans: [
+    {
+      id: "dry-1",
+      name: "处方1 · 头孢喹肟乳注（牧全欣）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "硫酸头孢喹肟乳房注入剂 干乳期（牧全欣）", maker: "礼蓝动保", spec: "3g / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+    {
+      id: "dry-2",
+      name: "处方2 · 头孢喹肟乳注（茹通）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "硫酸头孢喹肟乳房注入剂（干乳期）（茹通）", maker: "瑞普生物", spec: "3g / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+    {
+      id: "dry-3",
+      name: "处方3 · 头孢喹肟乳注（海喹宁）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "硫酸头孢喹肟乳房注入剂（干乳期）（海喹宁）", maker: "齐鲁动保", spec: "3g / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+    {
+      id: "dry-4",
+      name: "处方4 · 头孢噻呋乳注（畜可健）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "盐酸头孢噻呋乳房注入剂 干乳期（畜可健）", maker: "礼蓝动保", spec: "8ml / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+    {
+      id: "dry-5",
+      name: "处方5 · 头孢喹肟乳注（赛福魁）",
+      desc: "1 天疗程 · 按非盲乳数一次量乳注",
+      note: "干奶后 3 天进入复查窗口，需填写转栏信息（任务时限 24 小时）。",
+      items: [
+        { id: "r1", kind: "drug", name: "硫酸头孢喹肟乳房注入剂 干乳期（赛福魁）", maker: "扬州威克", spec: "3g / 支", use: "乳房灌注", dose: "1", doseUnit: "支", dosePer: "fixed", timesPerDay: "1", days: "1", usageMethod: "一次量给药", doseByQuarter: DRYING_QUARTER_DOSE_3G },
+      ],
+    },
+  ],
+};
+
+
+
 // 药品库（用于编辑弹层中搜索匹配）
 type DrugItem = { name: string; maker: string; spec: string; recommendedUse: string; defaultUnit: string; allowedUses: string[]; isSpecial?: boolean };
 const drugLibrary: DrugItem[] = [
