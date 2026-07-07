@@ -1226,10 +1226,9 @@ function ReportPage() {
                               {selectedPlan.desc}
                             </div>
                           )}
-                          <div className="text-caption text-text-secondary space-y-0.5">
-                            {selectedPlan.items.map((it, i) => (
-                              <div key={i}>{formatPlanItem(it)}</div>
-                            ))}
+                          <div className="text-caption text-text-secondary">
+                            <span className="text-text-tertiary">处方内容：</span>
+                            {selectedPlan.items.map(formatPlanItem).join("、")}
                           </div>
 
 
@@ -1462,10 +1461,9 @@ function ReportPage() {
                       {p.desc && (
                         <div className="text-caption text-text-tertiary">{p.desc}</div>
                       )}
-                      <div className="text-caption text-text-secondary space-y-0.5">
-                        {p.items.map((it, i) => (
-                          <div key={i}>{formatPlanItem(it)}</div>
-                        ))}
+                      <div className="text-caption text-text-secondary">
+                        <span className="text-text-tertiary">处方内容：</span>
+                        {p.items.map(formatPlanItem).join("、")}
                       </div>
 
 
