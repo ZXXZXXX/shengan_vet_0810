@@ -185,18 +185,11 @@ type DiseaseEntry = { name: string; symptoms: string[]; plans: DiseasePlan[] };
 // 单条处方内容的展示串
 export function formatPlanItem(it: PlanItem): string {
   if (it.kind === "drug") {
-    return [it.name, it.route, it.method, it.dose].filter(Boolean).join(" · ");
+    return [it.name, it.route].filter(Boolean).join(" · ");
   }
-  return [it.name, it.type, it.record].filter(Boolean).join(" · ");
+  return it.name;
 }
-// 一个处方的行标签：全用药→用药；全非用药→任务；混合→内容
-export function planItemsLabel(items: PlanItem[]): string {
-  const hasDrug = items.some((i) => i.kind === "drug");
-  const hasCare = items.some((i) => i.kind === "care");
-  if (hasDrug && !hasCare) return "用药";
-  if (!hasDrug && hasCare) return "任务";
-  return "内容";
-}
+
 
 // 常用条目模板，减少重复
 const D = (name: string, route: string, dose: string, method?: string): PlanDrugItem => ({
