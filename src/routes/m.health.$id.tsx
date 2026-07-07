@@ -304,7 +304,7 @@ function TaskDetailPage() {
   const canAbort =
     isDisease &&
     (role === "vet" || role === "manager") &&
-    o.status === "进行中" &&
+    (o.status === "进行中" || o.status === "待诊断") &&
     !isObserving &&
     !isObsExpired;
 
