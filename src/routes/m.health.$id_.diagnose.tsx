@@ -745,7 +745,7 @@ function DiagnosePage() {
       return;
     }
     const temp = parseFloat(temperature);
-    if (!isPostpartum) {
+    if (!isPostpartum && !isDrying) {
       if (!temperature.trim() || Number.isNaN(temp)) {
         toast.error("请填写牛只体温");
         return;
@@ -925,7 +925,9 @@ function DiagnosePage() {
             <Sparkles className="h-3 w-3" />
             {isPostpartum
               ? "平台下发的产后护理工单，请勾选症状并核对治疗方案"
-              : "已自动将上报信息填写至下方，方便编辑更改"}
+              : isDrying
+                ? "平台下发的干奶工单，请勾选依据并选择乳注处方"
+                : "已自动将上报信息填写至下方，方便编辑更改"}
           </div>
         </div>
 
@@ -946,7 +948,7 @@ function DiagnosePage() {
               selected={symptoms}
               onChange={handleSymptomsChange}
               presets={effectiveSymptomLibrary}
-              disableCreate={isPostpartum}
+              disableCreate={isPostpartum || isDrying}
             />
           </Section>
 
@@ -957,7 +959,7 @@ function DiagnosePage() {
             <div className="grid grid-cols-2 gap-2">
               <label className="block">
                 <div className="text-caption text-text-tertiary mb-1">
-                  体温 {isPostpartum ? <span className="text-text-tertiary">(选填)</span> : <span className="text-[var(--state-danger)]">*</span>}
+                  体温 {isPostpartum || isDrying ? <span className="text-text-tertiary">(选填)</span> : <span className="text-[var(--state-danger)]">*</span>}
                 </div>
                 <div className="relative">
                   <input
