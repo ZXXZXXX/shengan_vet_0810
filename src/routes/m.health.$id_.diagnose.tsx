@@ -26,9 +26,12 @@ import {
   FileText,
   ChevronDown,
   AlertTriangle,
+  AlertCircle,
   Package,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 
 
 import { TagPicker } from "@/components/m/tag-picker";
@@ -395,6 +398,21 @@ function DiagnosePage() {
     | null
   >(null);
 
+  // 异常终止
+  const [abortOpen, setAbortOpen] = useState(false);
+  const [abortReason, setAbortReason] = useState<string>("");
+  const [abortOther, setAbortOther] = useState<string>("");
+  const [abortNeedTransfer, setAbortNeedTransfer] = useState(false);
+  const [abortTransferTo, setAbortTransferTo] = useState("");
+  const [abortTransferConfirmOpen, setAbortTransferConfirmOpen] = useState(false);
+  const closeAbort = () => {
+    setAbortOpen(false);
+    setAbortReason("");
+    setAbortOther("");
+    setAbortNeedTransfer(false);
+    setAbortTransferTo("");
+  };
+
 
   const earTagLabel = getOrderEarTagLabel(id);
 
@@ -731,7 +749,26 @@ function DiagnosePage() {
 
 
   return (
-    <MobileShell title="诊断记录" back hideTabBar>
+    <MobileShell
+      title="诊断记录"
+      back
+      hideTabBar
+      right={
+        <button
+          type="button"
+          onClick={() => {
+            setAbortReason("");
+            setAbortOther("");
+            setAbortOpen(true);
+          }}
+          className="-mr-1 h-8 px-2 inline-flex items-center gap-1 rounded-md text-caption text-muted-foreground active:bg-surface-subtle"
+          aria-label="异常终止"
+        >
+          <AlertCircle className="h-4 w-4" />
+          <span className="whitespace-nowrap">异常</span>
+        </button>
+      }
+    >
       <div className="pb-28">
         {/* 工单号（吸顶） */}
         <div className="sticky top-12 z-20 bg-[var(--bg-page)] px-4 pt-3 pb-2 border-b border-border">
@@ -1699,6 +1736,110 @@ function DiagnosePage() {
         onSelect={(d) => {
           const full = rankedDiseases.find((x) => x.name === d.name);
           if (full) pickDisease(full);
+        }}
+      />
+
+      {/* 异常终止 */}
+      {abortOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          onClick={closeAbort}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl h-[75vh] max-h-[75vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border">
+              <div className="text-body font-medium text-[var(--state-danger)]">终止工单</div>
+              <button
+                type="button"
+                onClick={closeAbort}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              <div>
+                <div className="text-caption text-text-tertiary mb-2">终止原因</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {["牛只健康，无需治疗", "牛只已死亡", "牛只已淘汰", "已转交其他工单", "其他"].map((r) => {
+                    const active = abortReason === r;
+                    return (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setAbortReason(r)}
+                        className={`h-8 px-3 rounded-full text-body-sm border ${
+                          active
+                            ? "bg-brand-subtle text-primary border-primary/40"
+                            : "bg-card text-text-secondary border-border"
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    );
+                  })}
+                </div>
+                {abortReason === "其他" && (
+                  <textarea
+                    value={abortOther}
+                    onChange={(e) => setAbortOther(e.target.value.slice(0, 200))}
+                    placeholder="请输入其他终止原因"
+                    className="mt-2 h-20 w-full rounded-lg bg-white border border-border p-3 text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary resize-none"
+                  />
+                )}
+              </div>
+
+              <TransferBarnControl
+                enabled={abortNeedTransfer}
+                onEnabledChange={setAbortNeedTransfer}
+                value={abortTransferTo}
+                onValueChange={setAbortTransferTo}
+                bordered={false}
+              />
+            </div>
+
+            <div className="p-4 pt-0 pb-[calc(env(safe-area-inset-bottom)+16px)] flex gap-2">
+              <button
+                type="button"
+                onClick={closeAbort}
+                className="flex-1 h-11 rounded-lg border border-border text-body text-text-secondary"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                disabled={!abortReason || (abortReason === "其他" && !abortOther.trim()) || (abortNeedTransfer && !abortTransferTo.trim())}
+                onClick={() => {
+                  if (abortNeedTransfer) {
+                    setAbortTransferConfirmOpen(true);
+                    return;
+                  }
+                  setAbortOpen(false);
+                  toast.success("工单已终止");
+                  navigate({ to: "/m/health" });
+                }}
+                className="flex-1 h-11 rounded-lg bg-[var(--state-danger)] text-white text-body disabled:opacity-50"
+              >
+                确认终止
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmTransferDialog
+        open={abortTransferConfirmOpen}
+        earTag={earTagLabel}
+        barn={abortTransferTo}
+        onCancel={() => setAbortTransferConfirmOpen(false)}
+        onConfirm={() => {
+          setAbortTransferConfirmOpen(false);
+          setAbortOpen(false);
+          toast.success(`工单已终止，已安排转栏至 ${abortTransferTo}`);
+          navigate({ to: "/m/health" });
         }}
       />
     </MobileShell>
