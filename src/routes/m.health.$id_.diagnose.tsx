@@ -606,6 +606,15 @@ function DiagnosePage() {
     [stdPlans, selectedPlanId],
   );
 
+  // 是否需要根据体重计算剂量：任一用药项 dosePer !== "fixed" 或声明了按体重区间
+  const needsWeight = useMemo(() => {
+    const drugs = [
+      ...(selectedPlan?.items ?? []),
+      ...specialList,
+    ].filter((r) => r.kind === "drug");
+    return drugs.some((r) => (r.dosePer && r.dosePer !== "fixed") || !!r.doseByWeight);
+  }, [selectedPlan, specialList]);
+
   const removeSpecialRx = (rxId: string) =>
     setSpecialList((prev) => prev.filter((r) => r.id !== rxId));
 
@@ -691,7 +700,7 @@ function DiagnosePage() {
       toast.error("请选择一个标准处方方案或开具特殊处方");
       return;
     }
-    if (planItems.some((r) => r.kind === "drug") && cattleWeight == null) {
+    if (needsWeight && cattleWeight == null) {
       toast.error("请选择牛只体重以自动计算剂量");
       return;
     }
@@ -1066,23 +1075,25 @@ function DiagnosePage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {/* 牛只体重（下拉选择） */}
-                <div>
-                  <div className="text-caption text-text-tertiary mb-1.5">
-                    牛只体重 <span className="text-[var(--state-danger)]">*</span>
-                    <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
+                {/* 牛只体重（下拉选择）— 仅当处方内有按体重计算的用药项时展示 */}
+                {needsWeight && (
+                  <div>
+                    <div className="text-caption text-text-tertiary mb-1.5">
+                      牛只体重 <span className="text-[var(--state-danger)]">*</span>
+                      <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setWeightSheetOpen(true)}
+                      className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
+                    >
+                      <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
+                        {cattleWeight == null ? "请选择牛只体重" : weightLabelOf(cattleWeight)}
+                      </span>
+                      <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setWeightSheetOpen(true)}
-                    className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
-                  >
-                    <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
-                      {cattleWeight == null ? "请选择牛只体重" : weightLabelOf(cattleWeight)}
-                    </span>
-                    <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
-                  </button>
-                </div>
+                )}
 
 
                 {/* 当前方案 */}
