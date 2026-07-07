@@ -1370,16 +1370,6 @@ function DiagnosePage() {
 
 
 
-          {/* === 每日测量体温（治疗方案的一部分） === */}
-          <Section title="每日测量体温">
-            <label className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-body-sm text-foreground">需要每日测量体温</div>
-                <div className="text-caption text-text-tertiary mt-0.5">开启后，每日治疗执行任务中会包含测温步骤</div>
-              </div>
-              <Switch checked={dailyTempRequired} onCheckedChange={setDailyTempRequired} />
-            </label>
-          </Section>
 
           {/* === 指派执行人 === */}
           <Section
