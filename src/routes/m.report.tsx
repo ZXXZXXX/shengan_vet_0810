@@ -239,15 +239,34 @@ const diseaseKB_drying: DiseaseEntry[] = [
   },
 ];
 
+// 产后护理工单：结论固定为「产后高危」「产后正常」
+// TODO：处方数据待补，收到后按 rx 规则填充 plans
+const diseaseKB_postpartum: DiseaseEntry[] = [
+  {
+    name: "产后高危",
+    symptoms: [
+      "产犊难易度 ≥ 3", "产道损伤等级 ≥ 2", "产犊数量 ≥ 2",
+      "犊牛体重 ≥ 45kg", "犊牛为「死胎」", "早产", "双胎或以上", "胎衣不下",
+    ],
+    plans: [],
+  },
+  {
+    name: "产后正常",
+    symptoms: ["一切正常"],
+    plans: [],
+  },
+];
+
 const diseaseKBByType: Record<WorkType, DiseaseEntry[]> = {
   疾病治疗: diseaseKB_disease,
   修蹄: diseaseKB_hoof,
   干奶: diseaseKB_drying,
-  产后护理: diseaseKB_disease,
+  产后护理: diseaseKB_postpartum,
   疫苗: [],
   驱虫: [],
   普修: [],
 };
+
 
 
 // 根据牛只编号查询所属牛舍（mock）
