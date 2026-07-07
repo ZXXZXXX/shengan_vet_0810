@@ -739,23 +739,27 @@ function DiagnosePage() {
       return;
     }
 
-    // 汇总所有药品处方（标准 + 特殊）
-    const allDrugs = [...planItems, ...specialList].filter((r) => r.kind === "drug");
-    const w = cattleWeight ?? 500;
+    // 汇总所有药品处方（标准 + 特殊），分别按各自体重计算
+    const stdDrugs = planItems.filter((r) => r.kind === "drug");
+    const specDrugs = specialList.filter((r) => r.kind === "drug");
+    const stdW = cattleWeight ?? 500;
+    const specW = specialCattleWeight ?? cattleWeight ?? 500;
 
     // 1) 库存校验
     const shortages: Shortage[] = [];
     const need: Record<string, { qty: number; unit: string }> = {};
-    for (const r of allDrugs) {
+    const accumulate = (r: Prescription, w: number) => {
       const perDose = computePerDose(r, w);
-      if (perDose <= 0) continue;
+      if (perDose <= 0) return;
       const times = parseFloat(r.timesPerDay || "1") || 1;
       const days = parseFloat(r.days || "1") || 1;
       const total = Math.round(perDose * times * days * 10) / 10;
       const unit = r.doseUnit || "ml";
       if (!need[r.name]) need[r.name] = { qty: 0, unit };
       need[r.name].qty = Math.round((need[r.name].qty + total) * 10) / 10;
-    }
+    };
+    stdDrugs.forEach((r) => accumulate(r, stdW));
+    specDrugs.forEach((r) => accumulate(r, specW));
     for (const [name, n] of Object.entries(need)) {
       const stock = drugStock[name];
       if (!stock || stock.qty < n.qty) {
