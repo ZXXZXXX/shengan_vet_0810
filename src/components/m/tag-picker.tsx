@@ -143,7 +143,7 @@ export function TagPicker({
 
 
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="px-0 h-[75vh] max-h-[75vh] flex flex-col">
+        <DrawerContent className="px-0 h-[75vh] max-h-[75vh] flex flex-col bg-card">
           <DrawerHeader className="px-4 pt-2 pb-3 text-left shrink-0">
             <div className="flex items-center justify-between">
               <DrawerTitle className="text-section-title">{drawerTitle}</DrawerTitle>
