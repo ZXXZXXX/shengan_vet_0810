@@ -1440,6 +1440,8 @@ function ReportPage() {
             <ul className="px-4 pb-3 space-y-2 max-h-[60vh] overflow-y-auto">
               {selectedDisease.plans.map((p, i) => {
                 const active = i === planIdx;
+                const drugCount = p.items.filter((it) => it.kind === "drug").length;
+                const careCount = p.items.filter((it) => it.kind === "care").length;
                 return (
                   <li key={p.id}>
                     <button
@@ -1448,33 +1450,31 @@ function ReportPage() {
                         setPlanIdx(i);
                         setPlanPickerOpen(false);
                       }}
-                      className={`w-full text-left rounded-lg border p-3 space-y-1 ${
+                      className={`w-full text-left rounded-xl border p-3 flex items-start gap-3 ${
                         active
-                          ? "border-primary bg-brand-subtle"
+                          ? "border-primary bg-card"
                           : "border-border bg-card"
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-body font-medium text-foreground">
-                          <FileText className="h-3.5 w-3.5 text-primary" />
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <div className="text-body font-medium text-foreground">
                           {p.rx}
                         </div>
-                        {active && <Check className="h-4 w-4 text-primary" />}
+                        {p.desc && (
+                          <div className="text-caption text-text-tertiary">{p.desc}</div>
+                        )}
+                        <div className="text-caption text-text-tertiary">
+                          包含 {p.items.length} 项 · {drugCount} 用药 / {careCount} 非用药
+                        </div>
                       </div>
-                      {p.desc && (
-                        <div className="text-caption text-text-tertiary">{p.desc}</div>
-                      )}
-                      <div className="text-caption text-text-secondary">
-                        <span className="text-text-tertiary">处方内容：</span>
-                        <span className="text-foreground">
-                          {p.items.map(formatPlanItem).join("、")}
-                        </span>
-                      </div>
-                      <div className="text-caption text-text-secondary">
-                        <span className="text-text-tertiary">疗程：</span>
-                        <span className="text-foreground">
-                          {p.duration}
-                        </span>
+                      <div
+                        className={`mt-0.5 h-5 w-5 rounded-full flex items-center justify-center shrink-0 ${
+                          active
+                            ? "bg-primary text-primary-foreground"
+                            : "border border-border bg-card"
+                        }`}
+                      >
+                        {active && <Check className="h-3 w-3" />}
                       </div>
                     </button>
                   </li>
