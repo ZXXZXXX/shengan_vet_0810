@@ -749,7 +749,26 @@ function DiagnosePage() {
 
 
   return (
-    <MobileShell title="诊断记录" back hideTabBar>
+    <MobileShell
+      title="诊断记录"
+      back
+      hideTabBar
+      right={
+        <button
+          type="button"
+          onClick={() => {
+            setAbortReason("");
+            setAbortOther("");
+            setAbortOpen(true);
+          }}
+          className="-mr-1 h-8 px-2 inline-flex items-center gap-1 rounded-md text-caption text-muted-foreground active:bg-surface-subtle"
+          aria-label="异常终止"
+        >
+          <AlertCircle className="h-4 w-4" />
+          <span className="whitespace-nowrap">异常</span>
+        </button>
+      }
+    >
       <div className="pb-28">
         {/* 工单号（吸顶） */}
         <div className="sticky top-12 z-20 bg-[var(--bg-page)] px-4 pt-3 pb-2 border-b border-border">
