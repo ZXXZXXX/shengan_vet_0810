@@ -700,7 +700,7 @@ function DiagnosePage() {
       toast.error("请选择一个标准处方方案或开具特殊处方");
       return;
     }
-    if (planItems.some((r) => r.kind === "drug") && cattleWeight == null) {
+    if (needsWeight && cattleWeight == null) {
       toast.error("请选择牛只体重以自动计算剂量");
       return;
     }
