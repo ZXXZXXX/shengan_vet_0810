@@ -167,13 +167,8 @@ function TaskDetailPage() {
   const [revisitReason, setRevisitReason] = useState<string>("");
   const [revisitReasonOther, setRevisitReasonOther] = useState<string>("");
 
-  // 异常终止
-  const [abortOpen, setAbortOpen] = useState(false);
-  const [abortReason, setAbortReason] = useState<string>("");
-  const [abortOther, setAbortOther] = useState<string>("");
-  const [abortNeedTransfer, setAbortNeedTransfer] = useState(false);
-  const [abortTransferTo, setAbortTransferTo] = useState("");
-  const [abortTransferConfirmOpen, setAbortTransferConfirmOpen] = useState(false);
+  // 异常终止：跳转独立页面
+
 
   
   
