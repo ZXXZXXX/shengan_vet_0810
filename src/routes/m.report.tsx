@@ -119,6 +119,7 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
       required: true,
       // 产后可观察到的体征，不含诊断结论
       presets: [
+        "一切正常",
         "体温升高", "采食下降", "精神沉郁", "卧地不起",
         "胎衣未排出", "恶露异常", "阴道分泌物恶臭", "外阴红肿",
         "行走无力", "BCS 偏低",
