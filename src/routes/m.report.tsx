@@ -1226,9 +1226,12 @@ function ReportPage() {
                               {selectedPlan.desc}
                             </div>
                           )}
-                          <div className="text-caption text-text-secondary">
-                            {planItemsLabel(selectedPlan.items)}：{selectedPlan.items.map(formatPlanItem).join("、")}
+                          <div className="text-caption text-text-secondary space-y-0.5">
+                            {selectedPlan.items.map((it, i) => (
+                              <div key={i}>{formatPlanItem(it)}</div>
+                            ))}
                           </div>
+
 
                           <div className="text-caption text-text-secondary">
                             疗程：{selectedPlan.duration}
