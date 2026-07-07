@@ -551,6 +551,37 @@ function DiagnosePage() {
     setDiseasePickerOpen(false);
   };
 
+  // 症状变更（产后护理：一切正常 与其它症状互斥；选中「一切正常」自动落诊断＝产后正常 + 产后检查处方）
+  const handleSymptomsChange = (next: string[]) => {
+    if (!isPostpartum) {
+      setSymptoms(next);
+      return;
+    }
+    const prevHasNormal = symptoms.includes(POSTPARTUM_NORMAL_TAG);
+    const nextHasNormal = next.includes(POSTPARTUM_NORMAL_TAG);
+    let final = next;
+    if (nextHasNormal && !prevHasNormal) {
+      // 用户刚勾选「一切正常」：清空其他症状
+      final = [POSTPARTUM_NORMAL_TAG];
+    } else if (nextHasNormal && next.length > 1) {
+      // 用户在已有「一切正常」时勾选其它：移除「一切正常」
+      final = next.filter((s) => s !== POSTPARTUM_NORMAL_TAG);
+    }
+    setSymptoms(final);
+
+    const isNormal = final.length === 1 && final[0] === POSTPARTUM_NORMAL_TAG;
+    if (isNormal) {
+      const d = POSTPARTUM_NORMAL_DISEASE;
+      pickDisease({ ...d, matched: 1 } as (typeof rankedDiseases)[number]);
+    } else if (disease === POSTPARTUM_NORMAL_DISEASE.name) {
+      // 取消「一切正常」时清空自动带入的诊断
+      setDisease("");
+      setDiseaseQuery("");
+      setStdPlans([]);
+      setSelectedPlanId("");
+    }
+  };
+
   // 品牌替换弹层
   const [brandSheet, setBrandSheet] = useState<{ planId: string; rxId: string } | null>(null);
   const switchBrand = (newName: string) => {
