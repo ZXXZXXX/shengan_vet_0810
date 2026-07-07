@@ -416,13 +416,15 @@ function DiagnosePage() {
   const [stdPlans, setStdPlans] = useState<Plan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState<string>("");
   const [cattleWeight, setCattleWeight] = useState<number | null>(null);
+  // 特殊处方独立体重（用户需分别选择，提交时校验一致）
+  const [specialCattleWeight, setSpecialCattleWeight] = useState<number | null>(null);
   // 特殊处方（需填原因，可自由编辑）
   const [specialReason, setSpecialReason] = useState("");
   const [specialPlanDesc, setSpecialPlanDesc] = useState("");
   const [specialList, setSpecialList] = useState<Prescription[]>([]);
   const [editingRx, setEditingRx] = useState<Prescription | null>(null);
   const [planSheetOpen, setPlanSheetOpen] = useState(false);
-  const [weightSheetOpen, setWeightSheetOpen] = useState(false);
+  const [weightSheetTarget, setWeightSheetTarget] = useState<null | "std" | "special">(null);
   const [specialOpen, setSpecialOpen] = useState(false);
 
   // 提交校验弹窗
