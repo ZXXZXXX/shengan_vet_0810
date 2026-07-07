@@ -1081,8 +1081,8 @@ function DiagnosePage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {/* 牛只体重（下拉选择）— 仅当处方内有按体重计算的用药项时展示 */}
-                {needsWeight && (
+                {/* 牛只体重（下拉选择）— 仅当标准处方中有按体重计算的用药项时展示 */}
+                {stdNeedsWeight && (
                   <div>
                     <div className="text-caption text-text-tertiary mb-1.5">
                       牛只体重 <span className="text-[var(--state-danger)]">*</span>
@@ -1090,7 +1090,7 @@ function DiagnosePage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setWeightSheetOpen(true)}
+                      onClick={() => setWeightSheetTarget("std")}
                       className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
                     >
                       <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
