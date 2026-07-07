@@ -1075,23 +1075,25 @@ function DiagnosePage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {/* 牛只体重（下拉选择） */}
-                <div>
-                  <div className="text-caption text-text-tertiary mb-1.5">
-                    牛只体重 <span className="text-[var(--state-danger)]">*</span>
-                    <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
+                {/* 牛只体重（下拉选择）— 仅当处方内有按体重计算的用药项时展示 */}
+                {needsWeight && (
+                  <div>
+                    <div className="text-caption text-text-tertiary mb-1.5">
+                      牛只体重 <span className="text-[var(--state-danger)]">*</span>
+                      <span className="ml-1 text-text-tertiary">用于自动计算剂量</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setWeightSheetOpen(true)}
+                      className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
+                    >
+                      <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
+                        {cattleWeight == null ? "请选择牛只体重" : weightLabelOf(cattleWeight)}
+                      </span>
+                      <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setWeightSheetOpen(true)}
-                    className="h-10 w-full px-3 rounded-lg bg-white border border-border text-body-sm inline-flex items-center justify-between"
-                  >
-                    <span className={cattleWeight == null ? "text-text-tertiary" : "text-foreground"}>
-                      {cattleWeight == null ? "请选择牛只体重" : weightLabelOf(cattleWeight)}
-                    </span>
-                    <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
-                  </button>
-                </div>
+                )}
 
 
                 {/* 当前方案 */}
