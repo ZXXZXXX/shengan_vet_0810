@@ -839,7 +839,7 @@ function DiagnosePage() {
           >
             <TagPicker
               selected={symptoms}
-              onChange={setSymptoms}
+              onChange={handleSymptomsChange}
               presets={effectiveSymptomLibrary}
               disableCreate={isPostpartum}
             />
