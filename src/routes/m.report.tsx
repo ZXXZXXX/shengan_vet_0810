@@ -1217,7 +1217,7 @@ function ReportPage() {
                     >
                       {selectedDisease && selectedPlan ? (
                         <div className="rounded-lg border border-primary/20 bg-brand-subtle/40 p-3 space-y-1.5">
-                          <div className="flex items-center gap-1.5 text-body-sm text-foreground">
+                          <div className="flex items-center gap-1.5 text-body font-medium text-foreground">
                             <FileText className="h-3.5 w-3.5 text-primary" />
                             {selectedPlan.rx}
                           </div>
@@ -1228,12 +1228,15 @@ function ReportPage() {
                           )}
                           <div className="text-caption text-text-secondary">
                             <span className="text-text-tertiary">处方内容：</span>
-                            {selectedPlan.items.map(formatPlanItem).join("、")}
+                            <span className="font-medium text-foreground">
+                              {selectedPlan.items.map(formatPlanItem).join("、")}
+                            </span>
                           </div>
-
-
                           <div className="text-caption text-text-secondary">
-                            疗程：{selectedPlan.duration}
+                            <span className="text-text-tertiary">疗程：</span>
+                            <span className="font-medium text-foreground">
+                              {selectedPlan.duration}
+                            </span>
                           </div>
                         </div>
                       ) : (
