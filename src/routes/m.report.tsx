@@ -1025,7 +1025,23 @@ function ReportPage() {
                   >
                     <TagPicker
                       selected={symptoms}
-                      onChange={setSymptoms}
+                      onChange={(next) => {
+                        // 产后护理：「一切正常」与其它症状互斥
+                        if (workType === "产后护理") {
+                          const NORMAL = "一切正常";
+                          const prevHas = symptoms.includes(NORMAL);
+                          const nextHas = next.includes(NORMAL);
+                          if (nextHas && !prevHas) {
+                            setSymptoms([NORMAL]);
+                            return;
+                          }
+                          if (nextHas && next.length > 1) {
+                            setSymptoms(next.filter((s) => s !== NORMAL));
+                            return;
+                          }
+                        }
+                        setSymptoms(next);
+                      }}
                       presets={cfg.tags.presets}
                     />
                   </Section>
