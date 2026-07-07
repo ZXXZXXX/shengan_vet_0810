@@ -1270,7 +1270,9 @@ function DiagnosePage() {
                               <div className="text-caption text-primary mt-1 inline-flex items-start gap-1">
                                 <Sparkles className="h-3 w-3 mt-0.5 shrink-0" />
                                 <span>
-                                {r.doseByWeight
+                                {r.doseByQuarter
+                                  ? `按非盲乳数：${r.doseByQuarter}（执行时选择）`
+                                  : r.doseByWeight
                                   ? (cattleWeight != null
                                       ? (() => {
                                           const seg = r.doseByWeight!.split(/[；;]/).find((s) => {
