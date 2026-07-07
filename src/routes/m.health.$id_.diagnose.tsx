@@ -398,6 +398,21 @@ function DiagnosePage() {
     | null
   >(null);
 
+  // 异常终止
+  const [abortOpen, setAbortOpen] = useState(false);
+  const [abortReason, setAbortReason] = useState<string>("");
+  const [abortOther, setAbortOther] = useState<string>("");
+  const [abortNeedTransfer, setAbortNeedTransfer] = useState(false);
+  const [abortTransferTo, setAbortTransferTo] = useState("");
+  const [abortTransferConfirmOpen, setAbortTransferConfirmOpen] = useState(false);
+  const closeAbort = () => {
+    setAbortOpen(false);
+    setAbortReason("");
+    setAbortOther("");
+    setAbortNeedTransfer(false);
+    setAbortTransferTo("");
+  };
+
 
   const earTagLabel = getOrderEarTagLabel(id);
 
