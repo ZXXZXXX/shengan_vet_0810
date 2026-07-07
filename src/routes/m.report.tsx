@@ -1467,8 +1467,9 @@ function ReportPage() {
                         <div className="text-caption text-text-tertiary">{p.desc}</div>
                       )}
                       <div className="text-caption text-text-secondary">
-                        用药：{p.drugs.join("、")}
+                        {planItemsLabel(p.items)}：{p.items.map(formatPlanItem).join("、")}
                       </div>
+
                       <div className="text-caption text-text-secondary">
                         疗程：{p.duration}
                       </div>
