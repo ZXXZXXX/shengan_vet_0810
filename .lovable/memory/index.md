@@ -18,7 +18,5 @@ Sidebar active 用 #EFFBF1 底 + 左侧 brand 强调线，hover 用浅灰绿 (--
 ## Memories
 - [Permission merge](mem://features/permission-merge) — 账号-牧场-角色多对多 + 权限并集规则
 - [MP vet/manager parity](mem://features/mp-vet-manager-parity) — 小程序兽医与场长视角完全一致
-- [Rx summary rule](mem://features/rx-summary-rule) — DiseasePlan.rx 摘要生成规范（用药=药名·给药方式，非用药=任务名·任务类型）
-
 - [Sick pen rule](mem://features/sick-pen-rule) — 疾病类必须进病牛舍，仅群体工单跨牛舍
 - [Cattle ID format](mem://features/cattle-id-format) — 牛只编号 8 位 aa-bb-cccc 格式
