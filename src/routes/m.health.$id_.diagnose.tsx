@@ -268,7 +268,9 @@ function computePerDose(r: Prescription, w: number): number {
 }
 
 // === 产后护理：固定症状池、固定结论、固定标准处方 ===
+export const POSTPARTUM_NORMAL_TAG = "一切正常";
 const POSTPARTUM_SYMPTOMS = [
+  POSTPARTUM_NORMAL_TAG,
   "产犊难易度 ≥ 3",
   "产道损伤等级 ≥ 2",
   "产犊数量 ≥ 2",
@@ -280,7 +282,7 @@ const POSTPARTUM_SYMPTOMS = [
 ];
 const POSTPARTUM_DISEASE: Disease = {
   name: "产后高危",
-  symptoms: POSTPARTUM_SYMPTOMS,
+  symptoms: POSTPARTUM_SYMPTOMS.filter((s) => s !== POSTPARTUM_NORMAL_TAG),
   plans: [
     {
       id: "pp-1",
@@ -300,6 +302,40 @@ const POSTPARTUM_DISEASE: Disease = {
       items: [
         { id: "r1", kind: "drug", name: "10% 盐酸头孢噻呋注射液（畜可健 / 欣利达）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "肌肉注射 / 皮下注射", dose: "10", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "3", usageMethod: "3 天 1 次", doseByWeight: "200–400kg=5ml；400–600kg=10ml；600–900kg=15ml；≥900kg=20ml" },
         { id: "r2", kind: "drug", name: "氟尼辛葡甲胺注射液（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "3", usageMethod: "1 天 1 次，连用 3 天", doseByWeight: "200–400kg=10ml；400–600kg=20ml；600–900kg=30ml；≥900kg=35ml" },
+      ],
+    },
+  ],
+};
+
+// 产后正常：对应"产后检查"处方（14 天连续检查，非用药任务）
+const POSTPARTUM_NORMAL_DISEASE: Disease = {
+  name: "产后正常",
+  symptoms: [POSTPARTUM_NORMAL_TAG],
+  plans: [
+    {
+      id: "pp-check",
+      name: "产后检查",
+      desc: "14 天产后连续检查",
+      note: "为期 14 天的产后检查任务，包含直肠体温数字记录和牛只正前方、正后方照片采集。",
+      items: [
+        {
+          id: "c1",
+          kind: "therapy",
+          name: "直肠体温",
+          therapyMethod: "检查",
+          frequency: "1 天 1 次",
+          days: "14",
+          usageMethod: "测量并记录牛只直肠体温（数字输入）",
+        },
+        {
+          id: "c2",
+          kind: "therapy",
+          name: "情况评估",
+          therapyMethod: "检查",
+          frequency: "1 天 1 次",
+          days: "14",
+          usageMethod: "拍摄牛只正前方、正后方照片（图片视频）",
+        },
       ],
     },
   ],
@@ -341,6 +377,7 @@ const useMethods = [
 
 // 治疗手段枚举
 const therapyMethods = [
+  "检查",
   "按摩",
   "热敷",
   "冷敷",
@@ -361,7 +398,9 @@ function DiagnosePage() {
   // 工单类型判断
   const isPostpartum = id.toUpperCase().startsWith("PP");
   const effectiveSymptomLibrary = isPostpartum ? POSTPARTUM_SYMPTOMS : symptomLibrary;
-  const effectiveDiseaseLibrary = isPostpartum ? [POSTPARTUM_DISEASE] : diseaseLibrary;
+  const effectiveDiseaseLibrary = isPostpartum
+    ? [POSTPARTUM_NORMAL_DISEASE, POSTPARTUM_DISEASE]
+    : diseaseLibrary;
 
   // 症状（带入上报症状，可加减；产后护理无上报症状）
   const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum ? [] : reportedSymptoms));
@@ -510,6 +549,37 @@ function DiagnosePage() {
     setStdPlans(sortedPlans);
     setSelectedPlanId(sortedPlans[0]?.id ?? "");
     setDiseasePickerOpen(false);
+  };
+
+  // 症状变更（产后护理：一切正常 与其它症状互斥；选中「一切正常」自动落诊断＝产后正常 + 产后检查处方）
+  const handleSymptomsChange = (next: string[]) => {
+    if (!isPostpartum) {
+      setSymptoms(next);
+      return;
+    }
+    const prevHasNormal = symptoms.includes(POSTPARTUM_NORMAL_TAG);
+    const nextHasNormal = next.includes(POSTPARTUM_NORMAL_TAG);
+    let final = next;
+    if (nextHasNormal && !prevHasNormal) {
+      // 用户刚勾选「一切正常」：清空其他症状
+      final = [POSTPARTUM_NORMAL_TAG];
+    } else if (nextHasNormal && next.length > 1) {
+      // 用户在已有「一切正常」时勾选其它：移除「一切正常」
+      final = next.filter((s) => s !== POSTPARTUM_NORMAL_TAG);
+    }
+    setSymptoms(final);
+
+    const isNormal = final.length === 1 && final[0] === POSTPARTUM_NORMAL_TAG;
+    if (isNormal) {
+      const d = POSTPARTUM_NORMAL_DISEASE;
+      pickDisease({ ...d, matched: 1 } as (typeof rankedDiseases)[number]);
+    } else if (disease === POSTPARTUM_NORMAL_DISEASE.name) {
+      // 取消「一切正常」时清空自动带入的诊断
+      setDisease("");
+      setDiseaseQuery("");
+      setStdPlans([]);
+      setSelectedPlanId("");
+    }
   };
 
   // 品牌替换弹层
@@ -769,7 +839,7 @@ function DiagnosePage() {
           >
             <TagPicker
               selected={symptoms}
-              onChange={setSymptoms}
+              onChange={handleSymptomsChange}
               presets={effectiveSymptomLibrary}
               disableCreate={isPostpartum}
             />

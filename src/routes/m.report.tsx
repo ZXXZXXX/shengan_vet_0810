@@ -119,6 +119,7 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
       required: true,
       // 产后可观察到的体征，不含诊断结论
       presets: [
+        "一切正常",
         "体温升高", "采食下降", "精神沉郁", "卧地不起",
         "胎衣未排出", "恶露异常", "阴道分泌物恶臭", "外阴红肿",
         "行走无力", "BCS 偏低",
@@ -1024,7 +1025,23 @@ function ReportPage() {
                   >
                     <TagPicker
                       selected={symptoms}
-                      onChange={setSymptoms}
+                      onChange={(next) => {
+                        // 产后护理：「一切正常」与其它症状互斥
+                        if (workType === "产后护理") {
+                          const NORMAL = "一切正常";
+                          const prevHas = symptoms.includes(NORMAL);
+                          const nextHas = next.includes(NORMAL);
+                          if (nextHas && !prevHas) {
+                            setSymptoms([NORMAL]);
+                            return;
+                          }
+                          if (nextHas && next.length > 1) {
+                            setSymptoms(next.filter((s) => s !== NORMAL));
+                            return;
+                          }
+                        }
+                        setSymptoms(next);
+                      }}
                       presets={cfg.tags.presets}
                     />
                   </Section>
