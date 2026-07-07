@@ -26,7 +26,6 @@ import {
   FileText,
   ChevronDown,
   AlertTriangle,
-  AlertCircle,
   Package,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
