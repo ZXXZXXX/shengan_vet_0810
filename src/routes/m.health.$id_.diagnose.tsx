@@ -1522,16 +1522,18 @@ function DiagnosePage() {
       )}
 
       {/* 选择牛只体重 */}
-      {weightSheetOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setWeightSheetOpen(false)}>
+      {weightSheetTarget && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={() => setWeightSheetTarget(null)}>
           <div
             className="w-full bg-card rounded-t-2xl p-4 space-y-3 h-[75vh] max-h-[75vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <div className="text-section text-foreground font-medium">选择牛只体重</div>
+              <div className="text-section text-foreground font-medium">
+                选择牛只体重{weightSheetTarget === "special" ? "（特殊处方）" : ""}
+              </div>
               <button
-                onClick={() => setWeightSheetOpen(false)}
+                onClick={() => setWeightSheetTarget(null)}
                 className="h-7 w-7 inline-flex items-center justify-center rounded-md text-text-tertiary"
                 aria-label="关闭"
               >
@@ -1540,14 +1542,16 @@ function DiagnosePage() {
             </div>
             <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden">
               {WEIGHT_OPTIONS.map((opt) => {
-                const active = cattleWeight === opt.value;
+                const current = weightSheetTarget === "std" ? cattleWeight : specialCattleWeight;
+                const active = current === opt.value;
                 return (
                   <li key={opt.value}>
                     <button
                       type="button"
                       onClick={() => {
-                        setCattleWeight(opt.value);
-                        setWeightSheetOpen(false);
+                        if (weightSheetTarget === "std") setCattleWeight(opt.value);
+                        else setSpecialCattleWeight(opt.value);
+                        setWeightSheetTarget(null);
                       }}
                       className={`w-full px-3 py-3 flex items-center justify-between text-left ${
                         active ? "bg-brand-subtle/40 text-primary" : "bg-card text-foreground"
