@@ -689,9 +689,10 @@ function ReportPage() {
 
             {/* 上报类型 */}
             <Section title="上报类型" required>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {([
                   { v: "疾病治疗" as WorkType, label: "疾病治疗" },
+                  { v: "产后护理" as WorkType, label: "产后护理" },
                   { v: "干奶" as WorkType, label: "干奶工单" },
                   { v: "修蹄" as WorkType, label: "修蹄工单" },
                 ]).map((opt) => {
