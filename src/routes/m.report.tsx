@@ -575,6 +575,22 @@ function ReportPage() {
   useEffect(() => { setPlanIdx(0); }, [suspectedDisease]);
   const selectedPlan = selectedDisease?.plans[planIdx] ?? null;
 
+  // 处方用药所需的计算变量（体重区间 / 非盲乳数），根据处方内容自动识别
+  const planCalcVars = useMemo<("weight" | "quarter")[]>(() => {
+    if (!selectedDisease || !selectedPlan) return [];
+    const vars: ("weight" | "quarter")[] = [];
+    const text = selectedPlan.drugs.join(" ");
+    if (/\/\s*(?:100)?\s*kg|IU\s*\/\s*kg|mg\s*\/\s*kg/i.test(text)) vars.push("weight");
+    if (selectedDisease.name === "干奶处理") vars.push("quarter");
+    return vars;
+  }, [selectedDisease, selectedPlan]);
+
+  // 现场可选填的计算变量
+  const [cattleWeight, setCattleWeight] = useState<string>("");
+  const [nonBlindQuarters, setNonBlindQuarters] = useState<string>("");
+  // 切换处方时不清空，避免误操作；用户可手动更改
+
+
 
 
   const startVoice = () => {
