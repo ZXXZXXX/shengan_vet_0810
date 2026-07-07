@@ -805,7 +805,7 @@ function DiagnosePage() {
       const addDose = Math.round(perDose * times * days * 10) / 10;
       const addCount = Math.round(times * days);
       const hist = cattleHistory.drugUsage[r.name];
-      if (!hist) continue;
+      if (!hist) return;
       const unit = hist.unit;
       const nextDose = Math.round((hist.totalDose + addDose) * 10) / 10;
       const nextCount = hist.count + addCount;
@@ -824,7 +824,9 @@ function DiagnosePage() {
           detail: `当前：${nextCount} 次；限制：${RULES.drugUsageCountMax} 次。`,
         });
       }
-    }
+    };
+    stdDrugs.forEach((r) => evalDrug(r, stdW));
+    specDrugs.forEach((r) => evalDrug(r, specW));
 
     if (violations.length === 0) {
       doSubmit();
