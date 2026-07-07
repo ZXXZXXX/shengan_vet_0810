@@ -1221,8 +1221,66 @@ function ReportPage() {
                         </div>
                       )}
                     </Section>
+
+                    {/* 处方计算变量（选填）：根据处方用药自动出现 */}
+                    {planCalcVars.length > 0 && (
+                      <Section
+                        title="处方计算变量"
+                        hint="选填；填写后诊断/执行时可直接沿用，无需重新采集"
+                      >
+                        <div className="grid grid-cols-2 gap-2">
+                          {planCalcVars.includes("weight") && (
+                            <label className="block">
+                              <div className="text-caption text-text-tertiary mb-1">
+                                牛只体重 <span className="text-text-tertiary">(选填)</span>
+                              </div>
+                              <div className="relative">
+                                <input
+                                  inputMode="decimal"
+                                  value={cattleWeight}
+                                  onChange={(e) => setCattleWeight(e.target.value)}
+                                  placeholder="如 520"
+                                  maxLength={5}
+                                  className="h-10 w-full pl-3 pr-10 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary">kg</span>
+                              </div>
+                            </label>
+                          )}
+                          {planCalcVars.includes("quarter") && (
+                            <label className="block">
+                              <div className="text-caption text-text-tertiary mb-1">
+                                非盲乳数 <span className="text-text-tertiary">(选填)</span>
+                              </div>
+                              <div className="flex gap-1.5">
+                                {["1", "2", "3", "4"].map((n) => {
+                                  const active = nonBlindQuarters === n;
+                                  return (
+                                    <button
+                                      key={n}
+                                      type="button"
+                                      onClick={() =>
+                                        setNonBlindQuarters(active ? "" : n)
+                                      }
+                                      className={`h-10 flex-1 rounded-lg border text-body-sm font-medium transition-colors ${
+                                        active
+                                          ? "border-primary bg-brand-subtle text-primary"
+                                          : "border-border bg-card text-text-secondary"
+                                      }`}
+                                    >
+                                      {n}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </label>
+                          )}
+                        </div>
+                      </Section>
+                    )}
                   </>
                 )}
+
 
                 {/* 是否转栏 */}
                 <Section title="是否转栏" hint="转入新栏会同步更新档案">
