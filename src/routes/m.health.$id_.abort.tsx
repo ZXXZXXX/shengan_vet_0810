@@ -58,7 +58,7 @@ function AbortPage() {
   };
 
   return (
-    <MobileShell title="异常终止" back={{ to: "/m/health/$id", search: {} as Record<string, string>, label: "返回" } as unknown as { to: string; label?: string }} hideTabBar>
+    <MobileShell title="异常终止" back={{ to: `/m/health/${id}` }} hideTabBar>
       <div className="pb-28">
         <div className="p-4 space-y-4">
           <section className="bg-card rounded-2xl border border-border p-4">
