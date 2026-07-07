@@ -607,7 +607,7 @@ function ReportPage() {
   const planCalcVars = useMemo<("weight" | "quarter")[]>(() => {
     if (!selectedDisease || !selectedPlan) return [];
     const vars: ("weight" | "quarter")[] = [];
-    const text = selectedPlan.drugs.join(" ");
+    const text = selectedPlan.items.map(formatPlanItem).join(" ");
     if (/\/\s*(?:100)?\s*kg|IU\s*\/\s*kg|mg\s*\/\s*kg/i.test(text)) vars.push("weight");
     if (selectedDisease.name === "干奶处理") vars.push("quarter");
     return vars;
