@@ -236,6 +236,8 @@ type Prescription = {
   usageMethod?: string;
   // 按体重区间给药（覆盖自动/固定剂量显示）
   doseByWeight?: string;
+  // 按非盲乳数给药（乳注类，与体重无关）
+  doseByQuarter?: string;
   // 药品品牌备选（当同一处方允许多个厂商 / 品牌互替时提供）
   alternatives?: string[];
 };
