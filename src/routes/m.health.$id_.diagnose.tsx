@@ -606,6 +606,15 @@ function DiagnosePage() {
     [stdPlans, selectedPlanId],
   );
 
+  // 是否需要根据体重计算剂量：任一用药项 dosePer !== "fixed" 或声明了按体重区间
+  const needsWeight = useMemo(() => {
+    const drugs = [
+      ...(selectedPlan?.items ?? []),
+      ...specialList,
+    ].filter((r) => r.kind === "drug");
+    return drugs.some((r) => (r.dosePer && r.dosePer !== "fixed") || !!r.doseByWeight);
+  }, [selectedPlan, specialList]);
+
   const removeSpecialRx = (rxId: string) =>
     setSpecialList((prev) => prev.filter((r) => r.id !== rxId));
 
