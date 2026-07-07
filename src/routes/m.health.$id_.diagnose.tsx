@@ -783,8 +783,10 @@ function DiagnosePage() {
   // 2) 规则校验（库存通过或用户已确认继续后触发）
   const proceedRuleCheck = () => {
     const planItems = selectedPlan?.items ?? [];
-    const allDrugs = [...planItems, ...specialList].filter((r) => r.kind === "drug");
-    const w = cattleWeight ?? 500;
+    const stdDrugs = planItems.filter((r) => r.kind === "drug");
+    const specDrugs = specialList.filter((r) => r.kind === "drug");
+    const stdW = cattleWeight ?? 500;
+    const specW = specialCattleWeight ?? cattleWeight ?? 500;
 
     const violations: Violation[] = [];
     const reported = cattleHistory.diseaseCount[disease] ?? 0;
@@ -795,9 +797,9 @@ function DiagnosePage() {
         detail: `当前：${reported + 1} 次；限制：${RULES.diseaseReportMax} 次。`,
       });
     }
-    for (const r of allDrugs) {
+    const evalDrug = (r: Prescription, w: number) => {
       const perDose = computePerDose(r, w);
-      if (perDose <= 0) continue;
+      if (perDose <= 0) return;
       const times = parseFloat(r.timesPerDay || "1") || 1;
       const days = parseFloat(r.days || "1") || 1;
       const addDose = Math.round(perDose * times * days * 10) / 10;
