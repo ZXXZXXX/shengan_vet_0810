@@ -460,13 +460,20 @@ function DiagnosePage() {
 
   // 工单类型判断
   const isPostpartum = id.toUpperCase().startsWith("PP");
-  const effectiveSymptomLibrary = isPostpartum ? POSTPARTUM_SYMPTOMS : symptomLibrary;
+  const isDrying = id.toUpperCase().startsWith("GN");
+  const effectiveSymptomLibrary = isPostpartum
+    ? POSTPARTUM_SYMPTOMS
+    : isDrying
+      ? DRYING_SYMPTOMS
+      : symptomLibrary;
   const effectiveDiseaseLibrary = isPostpartum
     ? [POSTPARTUM_NORMAL_DISEASE, POSTPARTUM_DISEASE]
-    : diseaseLibrary;
+    : isDrying
+      ? [DRYING_DISEASE]
+      : diseaseLibrary;
 
-  // 症状（带入上报症状，可加减；产后护理无上报症状）
-  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum ? [] : reportedSymptoms));
+  // 症状（带入上报症状，可加减；产后护理 / 干奶无上报症状）
+  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum || isDrying ? [] : reportedSymptoms));
   const [symptomInput, setSymptomInput] = useState("");
 
   // 疾病
