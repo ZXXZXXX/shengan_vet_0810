@@ -1234,8 +1234,9 @@ function ReportPage() {
                             </div>
                           )}
                           <div className="text-caption text-text-secondary">
-                            用药：{selectedPlan.drugs.join("、")}
+                            {planItemsLabel(selectedPlan.items)}：{selectedPlan.items.map(formatPlanItem).join("、")}
                           </div>
+
                           <div className="text-caption text-text-secondary">
                             疗程：{selectedPlan.duration}
                           </div>
