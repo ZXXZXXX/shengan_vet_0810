@@ -1228,13 +1228,13 @@ function ReportPage() {
                           )}
                           <div className="text-caption text-text-secondary">
                             <span className="text-text-tertiary">处方内容：</span>
-                            <span className="font-medium text-foreground">
+                            <span className="text-foreground">
                               {selectedPlan.items.map(formatPlanItem).join("、")}
                             </span>
                           </div>
                           <div className="text-caption text-text-secondary">
                             <span className="text-text-tertiary">疗程：</span>
-                            <span className="font-medium text-foreground">
+                            <span className="text-foreground">
                               {selectedPlan.duration}
                             </span>
                           </div>
