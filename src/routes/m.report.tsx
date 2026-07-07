@@ -161,8 +161,50 @@ const workTypeConfig: Record<WorkType, WorkTypeConfig> = {
 
 
 // 疾病知识库 + 自动治疗方案（分工单类型；来源：晟安标准处方）
-type DiseasePlan = { id: string; rx: string; desc?: string; drugs: string[]; duration: string };
+// 处方内容以结构化条目表示，展示时按映射规则拼装：
+//   用药任务：{药品名称} + {给药方式} + {用药方法?} + {具体剂量结果}
+//   非用药任务：{任务名称} + {任务类型} + {记录方式}
+type PlanDrugItem = {
+  kind: "drug";
+  name: string;
+  route: string; // 给药方式：肌注 / 静推 / 口服 / 乳房灌注 / 子宫灌注 …
+  method?: string; // 用药方法：如「缓慢推注」「隔日 1 次」，可选
+  dose: string; // 具体剂量结果
+};
+type PlanCareItem = {
+  kind: "care";
+  name: string; // 任务名称
+  type: string; // 任务类型：护理 / 观察 / 检查 …
+  record: string; // 记录方式：图片视频 / 文字记录 / 数值录入 …
+};
+type PlanItem = PlanDrugItem | PlanCareItem;
+
+type DiseasePlan = { id: string; rx: string; desc?: string; items: PlanItem[]; duration: string };
 type DiseaseEntry = { name: string; symptoms: string[]; plans: DiseasePlan[] };
+
+// 单条处方内容的展示串
+export function formatPlanItem(it: PlanItem): string {
+  if (it.kind === "drug") {
+    return [it.name, it.route, it.method, it.dose].filter(Boolean).join(" · ");
+  }
+  return [it.name, it.type, it.record].filter(Boolean).join(" · ");
+}
+// 一个处方的行标签：全用药→用药；全非用药→任务；混合→内容
+export function planItemsLabel(items: PlanItem[]): string {
+  const hasDrug = items.some((i) => i.kind === "drug");
+  const hasCare = items.some((i) => i.kind === "care");
+  if (hasDrug && !hasCare) return "用药";
+  if (!hasDrug && hasCare) return "任务";
+  return "内容";
+}
+
+// 常用条目模板，减少重复
+const D = (name: string, route: string, dose: string, method?: string): PlanDrugItem => ({
+  kind: "drug", name, route, dose, ...(method ? { method } : {}),
+});
+const C = (name: string, type: string, record: string): PlanCareItem => ({
+  kind: "care", name, type, record,
+});
 
 // 疾病治疗（子宫炎类）
 const diseaseKB_disease: DiseaseEntry[] = [
@@ -170,25 +212,46 @@ const diseaseKB_disease: DiseaseEntry[] = [
     name: "产道创伤",
     symptoms: ["阴道黏膜层撕裂", "助产 3 分及以上", "外伤出血"],
     plans: [
-      { id: "p1", rx: "处方 1 · 5% 头孢噻呋 + 氟尼辛", desc: "疗程 3-5 天，配合外阴冲洗与碘甘油局部处理", drugs: ["5% 盐酸头孢噻呋（畜可健） 4.4mL/100kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3-5 天" },
-      { id: "p2", rx: "处方 2 · 10% 头孢噻呋 + 氟尼辛", desc: "3 天 1 次给药；损伤 >5cm 须 PGA 缝合", drugs: ["10% 盐酸头孢噻呋 20mL/次 3 天 1 次", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3-5 天" },
+      { id: "p1", rx: "处方 1 · 5% 头孢噻呋 + 氟尼辛", desc: "疗程 3-5 天，配合外阴冲洗与碘甘油局部处理", items: [
+        D("5% 盐酸头孢噻呋（畜可健）", "肌注", "4.4mL/100kg"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+      ], duration: "3-5 天" },
+      { id: "p2", rx: "处方 2 · 10% 头孢噻呋 + 氟尼辛", desc: "3 天 1 次给药；损伤 >5cm 须 PGA 缝合", items: [
+        D("10% 盐酸头孢噻呋", "肌注", "20mL/次", "3 天 1 次"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+      ], duration: "3-5 天" },
     ],
   },
   {
     name: "产后子宫炎",
     symptoms: ["体温升高", "体温 > 39.5℃", "分泌物恶臭", "分泌物含 >50% 脓", "采食下降", "精神沉郁"],
     plans: [
-      { id: "p1", rx: "处方 1 · 青霉素钠 + 氟尼辛", desc: "产后 10 天内，早晚各 1 次", drugs: ["注射用青霉素钠（联治灵） 2.2 万 IU/kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3 天" },
-      { id: "p2", rx: "处方 2 · 5% 头孢噻呋 + 氟尼辛", desc: "产后 10 天内，1 天 1 次", drugs: ["5% 盐酸头孢噻呋（畜可健） 4.4mL/100kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3 天" },
-      { id: "p3", rx: "处方 3 · 10% 头孢噻呋 + 利福昔明灌注", desc: "产后 5 天以上；利福昔明子宫灌注 2-3 次", drugs: ["10% 盐酸头孢噻呋 20mL 3 天 1 次", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推", "利福昔明子宫注入剂（澳利舒） 100mL/次"], duration: "3 天" },
+      { id: "p1", rx: "处方 1 · 青霉素钠 + 氟尼辛", desc: "产后 10 天内，早晚各 1 次", items: [
+        D("注射用青霉素钠（联治灵）", "肌注", "2.2 万 IU/kg"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+      ], duration: "3 天" },
+      { id: "p2", rx: "处方 2 · 5% 头孢噻呋 + 氟尼辛", desc: "产后 10 天内，1 天 1 次", items: [
+        D("5% 盐酸头孢噻呋（畜可健）", "肌注", "4.4mL/100kg"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+      ], duration: "3 天" },
+      { id: "p3", rx: "处方 3 · 10% 头孢噻呋 + 利福昔明灌注", desc: "产后 5 天以上；利福昔明子宫灌注 2-3 次", items: [
+        D("10% 盐酸头孢噻呋", "肌注", "20mL", "3 天 1 次"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+        D("利福昔明子宫注入剂（澳利舒）", "子宫灌注", "100mL/次"),
+      ], duration: "3 天" },
     ],
   },
   {
     name: "子宫内膜炎",
     symptoms: ["直肠检查子宫异常", "分泌物含 >50% 脓", "产后 21-28 天"],
     plans: [
-      { id: "p1", rx: "处方 1 · 青霉素钠 + 氟尼辛", desc: "直肠按压排脓后用药，早晚各 1 次", drugs: ["注射用青霉素钠（联治灵） 2.2 万 IU/kg 肌注", "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推"], duration: "3 天" },
-      { id: "p2", rx: "处方 2 · 利福昔明子宫灌注", desc: "利福昔明 100 mL/次，2 天一次", drugs: ["利福昔明子宫注入剂（澳利舒） 100mL/次"], duration: "2-3 次" },
+      { id: "p1", rx: "处方 1 · 青霉素钠 + 氟尼辛", desc: "直肠按压排脓后用药，早晚各 1 次", items: [
+        D("注射用青霉素钠（联治灵）", "肌注", "2.2 万 IU/kg"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+      ], duration: "3 天" },
+      { id: "p2", rx: "处方 2 · 利福昔明子宫灌注", desc: "利福昔明 100 mL/次，2 天一次", items: [
+        D("利福昔明子宫注入剂（澳利舒）", "子宫灌注", "100mL/次", "2 天 1 次"),
+      ], duration: "2-3 次" },
     ],
   },
 ];
@@ -207,12 +270,12 @@ const diseaseKB_hoof: DiseaseEntry[] = [
         id: "p1",
         rx: "处方 1 · 五步修蹄法",
         desc: "按「前内后外」顺序完成五步修蹄；清除蹄底淤血与溃烂组织，实现双蹄瓣负重面平整、等高，站立舒适、行走稳定",
-        drugs: [
-          "修长度 · 修剪至露出模糊白线，蹄底角质厚度 5～7 mm（1 天 1 次）",
-          "修平整度 · 蹄锉/修蹄刀使两蹄瓣同一水平面，消除高低差（1 天 1 次）",
-          "修角度 · 沿内侧蹄壁用钩刀塑形，内外趾共面并具适度弧度（1 天 1 次）",
-          "清理趾间与特殊结构 · 削除趾间多余角质、剪短副蹄、除疏松角质与暗道（1 天 1 次）",
-          "检查与修复 · 步态追踪 / 额头起伏法评估跛行改善（1 天 1 次）",
+        items: [
+          C("修长度", "护理", "图片视频"),
+          C("修平整度", "护理", "图片视频"),
+          C("修角度", "护理", "图片视频"),
+          C("清理趾间与特殊结构", "护理", "图片视频"),
+          C("检查与修复", "护理", "图片视频"),
         ],
         duration: "1 天",
       },
@@ -220,28 +283,32 @@ const diseaseKB_hoof: DiseaseEntry[] = [
   },
 ];
 
-
-
-
-
 // 干奶工单（乳注处方）：结论固定为「干奶处理」，下含 5 个按非盲乳数一次量乳注的处方
 const diseaseKB_drying: DiseaseEntry[] = [
   {
     name: "干奶处理",
     symptoms: ["确认已孕", "干奶后乳区仍旧漏奶"],
     plans: [
-      { id: "p1", rx: "处方 1 · 硫酸头孢喹肟乳注（牧全欣）", desc: "3 g/支，按非盲乳数一次量乳注", drugs: ["硫酸头孢喹肟乳房注入剂 干乳期（牧全欣） 3 g/支"], duration: "1 次处理" },
-      { id: "p2", rx: "处方 2 · 硫酸头孢喹肟乳注（茹通）", desc: "3 g/支，按非盲乳数一次量乳注", drugs: ["硫酸头孢喹肟乳房注入剂（干乳期）（茹通） 3 g/支"], duration: "1 次处理" },
-      { id: "p3", rx: "处方 3 · 硫酸头孢喹肟乳注（海喹宁）", desc: "3 g/支，按非盲乳数一次量乳注", drugs: ["硫酸头孢喹肟乳房注入剂（干乳期）（海喹宁） 3 g/支"], duration: "1 次处理" },
-      { id: "p4", rx: "处方 4 · 盐酸头孢噻呋乳注（畜可健）", desc: "8 ml/支，按非盲乳数一次量乳注", drugs: ["盐酸头孢噻呋乳房注入剂 干乳期（畜可健） 8 ml/支"], duration: "1 次处理" },
-      { id: "p5", rx: "处方 5 · 硫酸头孢喹肟乳注（赛福魁）", desc: "3 g/支，按非盲乳数一次量乳注", drugs: ["硫酸头孢喹肟乳房注入剂 干乳期（赛福魁） 3 g/支"], duration: "1 次处理" },
+      { id: "p1", rx: "处方 1 · 硫酸头孢喹肟乳注（牧全欣）", desc: "3 g/支，按非盲乳数一次量乳注", items: [
+        D("硫酸头孢喹肟乳房注入剂 干乳期（牧全欣）", "乳房灌注", "3 g/支 × 非盲乳数"),
+      ], duration: "1 次处理" },
+      { id: "p2", rx: "处方 2 · 硫酸头孢喹肟乳注（茹通）", desc: "3 g/支，按非盲乳数一次量乳注", items: [
+        D("硫酸头孢喹肟乳房注入剂（干乳期）（茹通）", "乳房灌注", "3 g/支 × 非盲乳数"),
+      ], duration: "1 次处理" },
+      { id: "p3", rx: "处方 3 · 硫酸头孢喹肟乳注（海喹宁）", desc: "3 g/支，按非盲乳数一次量乳注", items: [
+        D("硫酸头孢喹肟乳房注入剂（干乳期）（海喹宁）", "乳房灌注", "3 g/支 × 非盲乳数"),
+      ], duration: "1 次处理" },
+      { id: "p4", rx: "处方 4 · 盐酸头孢噻呋乳注（畜可健）", desc: "8 ml/支，按非盲乳数一次量乳注", items: [
+        D("盐酸头孢噻呋乳房注入剂 干乳期（畜可健）", "乳房灌注", "8 ml/支 × 非盲乳数"),
+      ], duration: "1 次处理" },
+      { id: "p5", rx: "处方 5 · 硫酸头孢喹肟乳注（赛福魁）", desc: "3 g/支，按非盲乳数一次量乳注", items: [
+        D("硫酸头孢喹肟乳房注入剂 干乳期（赛福魁）", "乳房灌注", "3 g/支 × 非盲乳数"),
+      ], duration: "1 次处理" },
     ],
   },
 ];
 
 // 产后护理工单：结论仅两种——「产后正常」与「产后高危」
-// - 一切正常 → 产后正常（常规护理观察）
-// - 出现任一风险体征（难产 / 产道损伤 / 双胎 / 死胎 / 早产 / 胎衣不下 等）→ 产后高危（预防性抗感染 + 抗炎）
 const diseaseKB_postpartum: DiseaseEntry[] = [
   {
     name: "产后正常",
@@ -251,10 +318,10 @@ const diseaseKB_postpartum: DiseaseEntry[] = [
         id: "p1",
         rx: "处方 1 · 常规产后护理",
         desc: "产后 3 天内每日观察采食、反刍、恶露与体温，无异常即可结束护理",
-        drugs: [
-          "温水灌服 20-30 L（产后 2 小时内） · 1 次",
-          "口服补钙（钙硼合剂） 500 mL · 产后 1 次，12 小时后可再补 1 次",
-          "每日观察记录：体温、采食、恶露、精神状态",
+        items: [
+          C("温水灌服 20-30 L（产后 2 小时内）", "护理", "文字记录"),
+          D("钙硼合剂", "口服", "500 mL", "12 小时后可再补 1 次"),
+          C("体温 / 采食 / 恶露 / 精神观察", "观察", "文字记录"),
         ],
         duration: "3 天",
       },
@@ -267,40 +334,23 @@ const diseaseKB_postpartum: DiseaseEntry[] = [
       "犊牛体重 ≥ 45kg", "犊牛为「死胎」", "早产", "双胎或以上", "胎衣不下",
     ],
     plans: [
-      {
-        id: "p1",
-        rx: "处方 1 · 青霉素钠 + 氟尼辛",
-        desc: "适用于难产 / 产道损伤 / 死胎等高危场景，1 天 2 次预防子宫感染",
-        drugs: [
-          "注射用青霉素钠（联治灵） 2.2 万 IU/kg 肌注",
-          "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推",
-        ],
-        duration: "3 天",
-      },
-      {
-        id: "p2",
-        rx: "处方 2 · 5% 头孢噻呋 + 氟尼辛",
-        desc: "首选长效方案，1 天 1 次；适用于胎衣不下 / 双胎 / 早产等",
-        drugs: [
-          "5% 盐酸头孢噻呋（畜可健） 4.4mL/100kg 肌注",
-          "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推",
-        ],
-        duration: "3 天",
-      },
-      {
-        id: "p3",
-        rx: "处方 3 · 10% 头孢噻呋 + 利福昔明灌注",
-        desc: "严重胎衣不下或产道重度损伤；利福昔明子宫灌注 2-3 次",
-        drugs: [
-          "10% 盐酸头孢噻呋 20mL 3 天 1 次",
-          "氟尼辛葡甲胺（福欣安） 4mL/100kg 静推",
-          "利福昔明子宫注入剂（澳利舒） 100mL/次",
-        ],
-        duration: "3 天",
-      },
+      { id: "p1", rx: "处方 1 · 青霉素钠 + 氟尼辛", desc: "适用于难产 / 产道损伤 / 死胎等高危场景，1 天 2 次预防子宫感染", items: [
+        D("注射用青霉素钠（联治灵）", "肌注", "2.2 万 IU/kg"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+      ], duration: "3 天" },
+      { id: "p2", rx: "处方 2 · 5% 头孢噻呋 + 氟尼辛", desc: "首选长效方案，1 天 1 次；适用于胎衣不下 / 双胎 / 早产等", items: [
+        D("5% 盐酸头孢噻呋（畜可健）", "肌注", "4.4mL/100kg"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+      ], duration: "3 天" },
+      { id: "p3", rx: "处方 3 · 10% 头孢噻呋 + 利福昔明灌注", desc: "严重胎衣不下或产道重度损伤；利福昔明子宫灌注 2-3 次", items: [
+        D("10% 盐酸头孢噻呋", "肌注", "20mL", "3 天 1 次"),
+        D("氟尼辛葡甲胺（福欣安）", "静推", "4mL/100kg"),
+        D("利福昔明子宫注入剂（澳利舒）", "子宫灌注", "100mL/次"),
+      ], duration: "3 天" },
     ],
   },
 ];
+
 
 const diseaseKBByType: Record<WorkType, DiseaseEntry[]> = {
   疾病治疗: diseaseKB_disease,
