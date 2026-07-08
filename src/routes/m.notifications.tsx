@@ -277,7 +277,7 @@ function NotificationsPage() {
 
       {/* 详情弹窗 */}
       <Dialog open={!!current} onOpenChange={(o) => !o && setOpenId(null)}>
-        <DialogContent className="max-w-[360px] rounded-2xl">
+        <DialogContent className="max-w-[360px] rounded-2xl bg-white">
           {current && (
             <>
               <DialogHeader>
