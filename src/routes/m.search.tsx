@@ -1,16 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Beef, Home, ChevronRight, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Search, Beef, ChevronRight, ChevronDown, Check, X } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export const Route = createFileRoute("/m/search")({
-  head: () => ({ meta: [{ title: "搜索档案 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "牛只档案 · 奇点智牧" }] }),
   component: SearchPage,
 });
 
 type CowStatus = "健康" | "观察中" | "治疗中" | "异常";
 type Cow = { id: string; barnIdx: number; penIdx: number; status: CowStatus };
-type PenType = "病牛舍" | "产后护理舍" | "成牛舍" | "犊牛舍" | "围产舍" | "干奶舍";
 
 const statusTone: Record<CowStatus, string> = {
   健康: "tag tag-success",
@@ -19,31 +19,16 @@ const statusTone: Record<CowStatus, string> = {
   异常: "tag tag-danger",
 };
 
-const penTypeTone: Record<PenType, string> = {
-  病牛舍: "tag tag-danger",
-  产后护理舍: "tag tag-warning",
-  成牛舍: "tag tag-brand",
-  犊牛舍: "tag tag-info",
-  围产舍: "tag tag-warning",
-  干奶舍: "tag tag-muted",
-};
-
 const STATUSES: CowStatus[] = ["健康", "健康", "健康", "健康", "健康", "观察中", "治疗中", "异常"];
 const BARN_COUNT = 8;
 const PEN_PER_BARN = 4;
 const COWS_PER_PEN = 100;
 
-// 各牛舍主用途（一个牛舍内 4 个栏共享同一类型，简化 mock）
-const BARN_TYPE: PenType[] = [
-  "成牛舍",
-  "成牛舍",
-  "病牛舍",
-  "产后护理舍",
-  "围产舍",
-  "犊牛舍",
-  "干奶舍",
-  "成牛舍",
-];
+const BARNS = Array.from({ length: BARN_COUNT }, (_, i) => ({
+  idx: i + 1,
+  id: `B${String(i + 1).padStart(3, "0")}`,
+  name: `${i + 1} 号牛舍`,
+}));
 
 function cowIdFor(barnIdx: number, penIdx: number, i: number) {
   const seq = (barnIdx - 1) * PEN_PER_BARN * COWS_PER_PEN + (penIdx - 1) * COWS_PER_PEN + i + 1;
@@ -54,70 +39,17 @@ function statusFor(barnIdx: number, penIdx: number, i: number): CowStatus {
   return STATUSES[(barnIdx * 13 + penIdx * 7 + i) % STATUSES.length];
 }
 
-// 今日移入 / 减少：根据牛舍、栏稳定生成 0~6
-function todayInOut(barnIdx: number, penIdx: number) {
-  const seed = barnIdx * 31 + penIdx * 11;
-  return {
-    movedIn: (seed * 7) % 7,
-    movedOut: (seed * 5 + 3) % 5,
-  };
-}
-
-// 病牛舍 / 产后护理舍 这类特殊栏一般规模较小（多在 20 头以内，封顶 ~40）
-function stockFor(type: PenType, barnIdx: number, penIdx: number) {
-  const seed = barnIdx * 17 + penIdx * 5;
-  if (type === "病牛舍" || type === "产后护理舍") {
-    return 4 + (seed % 22); // 4 ~ 25
-  }
-  return 90 + (seed % 21); // 90 ~ 110
-}
-
-type Pen = {
-  barnIdx: number;
-  barnId: string;
-  barnName: string;
-  idx: number;
-  name: string;
-  fullName: string;
-  type: PenType;
-  stock: number;
-  movedIn: number;
-  movedOut: number;
-};
-
-const allPens: Pen[] = [];
-for (let bi = 0; bi < BARN_COUNT; bi++) {
-  const barnIdx = bi + 1;
-  const barnId = `B${String(barnIdx).padStart(3, "0")}`;
-  const barnName = `${barnIdx} 号牛舍`;
-  const type = BARN_TYPE[bi];
-  for (let pi = 0; pi < PEN_PER_BARN; pi++) {
-    const penIdx = pi + 1;
-    const globalPenNo = (barnIdx - 1) * PEN_PER_BARN + penIdx;
-    const { movedIn, movedOut } = todayInOut(barnIdx, penIdx);
-    allPens.push({
-      barnIdx,
-      barnId,
-      barnName,
-      idx: penIdx,
-      name: `${globalPenNo} 栏`,
-      fullName: `${barnName} · ${globalPenNo} 栏`,
-      type,
-      stock: stockFor(type, barnIdx, penIdx),
-      movedIn,
-      movedOut,
-    });
-  }
-}
-
-function searchCows(kw: string, max = 30): Cow[] {
+// 生成牛只列表（限制条数避免性能问题）
+function listCows(barnFilter: Set<number> | "all", kw: string, max = 60): Cow[] {
   const out: Cow[] = [];
-  for (let b = 1; b <= BARN_COUNT && out.length < max; b++) {
-    for (let p = 1; p <= PEN_PER_BARN && out.length < max; p++) {
-      for (let i = 0; i < COWS_PER_PEN && out.length < max; i++) {
+  const barns = barnFilter === "all" ? BARNS.map((b) => b.idx) : Array.from(barnFilter);
+  for (const b of barns) {
+    for (let p = 1; p <= PEN_PER_BARN; p++) {
+      for (let i = 0; i < COWS_PER_PEN; i++) {
         const id = cowIdFor(b, p, i);
-        if (id.includes(kw)) {
+        if (!kw || id.includes(kw)) {
           out.push({ id, barnIdx: b, penIdx: p, status: statusFor(b, p, i) });
+          if (out.length >= max) return out;
         }
       }
     }
@@ -127,55 +59,49 @@ function searchCows(kw: string, max = 30): Cow[] {
 
 function SearchPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"cow" | "barn">("cow");
   const [q, setQ] = useState("");
+  const [barnOpen, setBarnOpen] = useState(false);
+  // "all" 表示全部牛舍
+  const [selected, setSelected] = useState<Set<number> | "all">("all");
+  // 抽屉内的临时选择
+  const [draft, setDraft] = useState<Set<number> | "all">("all");
 
-  const cowResults = useMemo(() => {
-    const kw = q.trim().toLowerCase();
-    if (!kw) return [];
-    return searchCows(kw);
-  }, [q]);
+  const results = useMemo(() => listCows(selected, q.trim()), [q, selected]);
 
-  const penResults = useMemo(() => {
-    const kw = q.trim().toLowerCase();
-    if (!kw) return [];
-    return allPens.filter(
-      (p) =>
-        p.barnId.toLowerCase().includes(kw) ||
-        p.barnName.includes(kw) ||
-        p.fullName.includes(kw) ||
-        p.type.includes(kw),
-    );
-  }, [q]);
+  const barnLabel =
+    selected === "all"
+      ? "全部牛舍"
+      : selected.size === 1
+        ? BARNS.find((b) => b.idx === Array.from(selected)[0])!.name
+        : `已选 ${selected.size} 个牛舍`;
+
+  function openBarnSheet() {
+    setDraft(selected === "all" ? "all" : new Set(selected));
+    setBarnOpen(true);
+  }
+
+  function toggleBarn(idx: number) {
+    setDraft((prev) => {
+      // 选择具体牛舍时，取消 "全部"
+      const next = prev === "all" ? new Set<number>() : new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next.size === 0 ? "all" : next;
+    });
+  }
+
+  function pickAll() {
+    setDraft("all");
+  }
+
+  function applyDraft() {
+    setSelected(draft === "all" ? "all" : new Set(draft));
+    setBarnOpen(false);
+  }
 
   return (
-    <MobileShell title="搜索档案" back hideTabBar>
-      <div className="px-4 pt-3 pb-8 space-y-4">
-        {/* 切换 */}
-        <div className="inline-flex rounded-full border border-border bg-surface-subtle p-0.5">
-          {[
-            { v: "cow" as const, label: "按牛只", Icon: Beef },
-            { v: "barn" as const, label: "按牛舍", Icon: Home },
-          ].map(({ v, label, Icon }) => {
-            const active = mode === v;
-            return (
-              <button
-                key={v}
-                type="button"
-                onClick={() => setMode(v)}
-                className={`h-8 min-w-[88px] px-3 rounded-full text-body-sm inline-flex items-center justify-center gap-1 transition-colors ${
-                  active
-                    ? "bg-card text-foreground border border-border shadow-sm"
-                    : "text-text-tertiary"
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
+    <MobileShell title="牛只档案" back hideTabBar>
+      <div className="px-4 pt-3 pb-8 space-y-3">
         {/* 搜索框 */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
@@ -183,132 +109,153 @@ function SearchPage() {
             autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={
-              mode === "cow"
-                ? "输入牛只编号，如 01-24-2381"
-                : "输入牛舍编号、名称或类型，如 B001 / 病牛舍"
-            }
-            className="w-full h-11 pl-9 pr-3 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary"
+            placeholder="输入牛只耳号粗略匹配，如 2381"
+            className="w-full h-11 pl-9 pr-9 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary"
           />
+          {q && (
+            <button
+              type="button"
+              onClick={() => setQ("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+              aria-label="清除"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
 
+        {/* 牛舍选择器 */}
+        <button
+          type="button"
+          onClick={openBarnSheet}
+          className="w-full h-11 px-3 rounded-xl bg-card border border-border flex items-center gap-2 active:bg-surface-subtle"
+        >
+          <span className="text-caption text-text-tertiary">牛舍</span>
+          <span className="flex-1 text-left text-body text-foreground truncate">{barnLabel}</span>
+          <ChevronDown className="h-4 w-4 text-text-tertiary" />
+        </button>
+
         {/* 结果 */}
-        {mode === "cow" ? (
-          q.trim() === "" ? (
-            <EmptyHint text="输入牛只编号查询档案" />
-          ) : cowResults.length === 0 ? (
-            <EmptyHint text="未找到匹配的牛只" />
-          ) : (
-            <div className="space-y-2">
-              {cowResults.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => navigate({ to: "/m/animals-{$id}", params: { id: c.id } })}
-                  className="w-full flex items-center gap-3 h-14 px-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
-                >
-                  <span className="h-8 w-8 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center">
-                    <Beef className="h-4 w-4" />
-                  </span>
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="text-body font-mono text-foreground">#{c.id}</div>
-                    <div className="text-caption text-text-tertiary">
-                      {c.barnIdx} 号牛舍 · {c.penIdx} 栏
-                    </div>
-                  </div>
-                  <span className={statusTone[c.status]}>{c.status}</span>
-                  <ChevronRight className="h-4 w-4 text-text-tertiary" />
-                </button>
-              ))}
-            </div>
-          )
-        ) : q.trim() === "" ? (
-          <EmptyHint text="输入牛舍编号、名称或类型查询牛栏" />
-        ) : penResults.length === 0 ? (
-          <EmptyHint text="未找到匹配的牛栏" />
+        <div className="flex items-center justify-between px-1 pt-1">
+          <div className="text-caption text-text-tertiary">
+            共 {results.length} 头{results.length >= 60 ? "+" : ""}
+          </div>
+        </div>
+
+        {results.length === 0 ? (
+          <div className="rounded-xl bg-card border border-dashed border-border py-10 text-center text-body-sm text-text-tertiary">
+            未找到匹配的牛只
+          </div>
         ) : (
           <div className="space-y-2">
-            <div className="text-caption text-text-tertiary px-1">
-              共 {penResults.length} 个牛栏
-            </div>
-            {penResults.map((pen) => {
-              const globalPenNo = (pen.barnIdx - 1) * PEN_PER_BARN + pen.idx;
-              return (
+            {results.map((c) => (
               <button
-                key={`${pen.barnId}-${pen.idx}`}
-                onClick={() =>
-                  navigate({
-                    to: "/m/pens/$id",
-                    params: { id: `${pen.barnId}-${globalPenNo}` },
-                  })
-                }
-                className="w-full rounded-xl bg-card border border-border p-3 text-left active:bg-surface-subtle"
+                key={c.id}
+                onClick={() => navigate({ to: "/m/animals-{$id}", params: { id: c.id } })}
+                className="w-full flex items-center gap-3 h-14 px-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
               >
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-body font-medium text-foreground">
-                        {pen.fullName}
-                      </span>
-                      <span
-                        className={penTypeTone[pen.type]}
-                      >
-                        {pen.type}
-                      </span>
-                    </div>
-                    <div className="text-caption text-text-tertiary mt-0.5">编号 {pen.barnId}</div>
+                <span className="h-8 w-8 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center">
+                  <Beef className="h-4 w-4" />
+                </span>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="text-body font-mono text-foreground">#{c.id}</div>
+                  <div className="text-caption text-text-tertiary">
+                    {c.barnIdx} 号牛舍 · {c.penIdx} 栏
                   </div>
-                  <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
                 </div>
-
-                <div className="mt-3 grid grid-cols-3 divide-x divide-border">
-                  <Stat label="当前存栏" value={pen.stock} unit="头" />
-                  <Stat label="今日移入" value={pen.movedIn} unit="头" tone="up" />
-                  <Stat label="今日移出" value={pen.movedOut} unit="头" tone="down" />
-                </div>
+                <span className={statusTone[c.status]}>{c.status}</span>
+                <ChevronRight className="h-4 w-4 text-text-tertiary" />
               </button>
-              );
-            })}
+            ))}
           </div>
         )}
       </div>
+
+      {/* 选择牛舍抽屉 */}
+      <Sheet open={barnOpen} onOpenChange={setBarnOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[80vh] flex flex-col">
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">选择牛舍</SheetTitle>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-auto px-4 pb-2 space-y-2">
+            <BarnOption
+              label="全部牛舍"
+              checked={draft === "all"}
+              onClick={pickAll}
+              emphasis
+            />
+            <div className="h-px bg-border my-1" />
+            {BARNS.map((b) => {
+              const checked = draft !== "all" && draft.has(b.idx);
+              return (
+                <BarnOption
+                  key={b.id}
+                  label={b.name}
+                  sub={b.id}
+                  checked={checked}
+                  onClick={() => toggleBarn(b.idx)}
+                />
+              );
+            })}
+          </div>
+
+          <div className="p-4 border-t border-border flex gap-2">
+            <button
+              type="button"
+              onClick={() => setDraft("all")}
+              className="h-11 px-4 rounded-xl border border-border text-body text-text-secondary active:bg-surface-subtle"
+            >
+              重置
+            </button>
+            <button
+              type="button"
+              onClick={applyDraft}
+              className="flex-1 h-11 rounded-xl bg-primary text-primary-foreground text-body font-medium active:opacity-90"
+            >
+              确定
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </MobileShell>
   );
 }
 
-function Stat({
+function BarnOption({
   label,
-  value,
-  unit,
-  tone,
+  sub,
+  checked,
+  onClick,
+  emphasis,
 }: {
   label: string;
-  value: number;
-  unit: string;
-  tone?: "up" | "down";
+  sub?: string;
+  checked: boolean;
+  onClick: () => void;
+  emphasis?: boolean;
 }) {
-  const color =
-    tone === "up"
-      ? "text-status-success"
-      : tone === "down"
-        ? "text-status-danger"
-        : "text-foreground";
-  const Icon = tone === "up" ? ArrowUpRight : tone === "down" ? ArrowDownRight : null;
   return (
-    <div className="px-3 first:pl-0 last:pr-0">
-      <div className="text-caption text-text-tertiary">{label}</div>
-      <div className={`mt-1 inline-flex items-baseline gap-0.5 ${color}`}>
-        {Icon ? <Icon className="h-3.5 w-3.5 self-center" /> : null}
-        <span className="text-section font-medium tabular-nums">{value}</span>
-        <span className="text-caption text-text-tertiary ml-0.5">{unit}</span>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full h-12 px-3 rounded-xl border flex items-center gap-3 active:bg-surface-subtle ${
+        checked ? "border-primary bg-brand-subtle" : "border-border bg-card"
+      }`}
+    >
+      <div className="flex-1 min-w-0 text-left">
+        <div className={`text-body ${emphasis ? "font-medium" : ""} ${checked ? "text-primary" : "text-foreground"}`}>
+          {label}
+        </div>
+        {sub && <div className="text-caption text-text-tertiary mt-0.5">编号 {sub}</div>}
       </div>
-    </div>
-  );
-}
-
-function EmptyHint({ text }: { text: string }) {
-  return (
-    <div className="rounded-xl bg-card border border-dashed border-border py-10 text-center text-body-sm text-text-tertiary">
-      {text}
-    </div>
+      <span
+        className={`h-5 w-5 rounded-full border inline-flex items-center justify-center ${
+          checked ? "bg-primary border-primary text-primary-foreground" : "border-border"
+        }`}
+      >
+        {checked && <Check className="h-3 w-3" />}
+      </span>
+    </button>
   );
 }
