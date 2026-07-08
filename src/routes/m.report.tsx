@@ -1223,7 +1223,7 @@ function ReportPage() {
                           </div>
                           {selectedPlan.desc && (
                             <div className="text-caption text-text-secondary">
-                              <span className="text-text-tertiary">处方摘要：</span>
+                              <span className="text-text-tertiary">摘要：</span>
                               <span className="text-foreground">
                                 {selectedPlan.desc}
                               </span>
