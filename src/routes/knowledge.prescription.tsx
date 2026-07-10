@@ -4,7 +4,10 @@ import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,18 +18,33 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { FileText, Plus, Search, Filter, Pencil, Trash2, X, MoreHorizontal, ChevronsUpDown, Check, Pill } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  FileText,
+  Plus,
+  Search,
+  Filter,
+  Pencil,
+  Trash2,
+  X,
+  MoreHorizontal,
+  Check,
+  Pill,
+  ClipboardList,
+  Stethoscope,
+  RefreshCw,
+  ChevronsUpDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -35,73 +53,357 @@ export const Route = createFileRoute("/knowledge/prescription")({
   component: PrescriptionPage,
 });
 
-type DrugItem = {
+// ---------- 数据模型 ----------
+
+type RxKind = "disease" | "postpartum" | "drying" | "immune" | "deworm" | "hoof";
+const RX_KIND_LABEL: Record<RxKind, string> = {
+  disease: "疾病处方",
+  postpartum: "产后护理",
+  drying: "干奶处方",
+  immune: "免疫处方",
+  deworm: "驱虫处方",
+  hoof: "修蹄处方",
+};
+
+type TimeSlot = { morning: number; noon: number; evening: number };
+const defaultSlot = (freq: number): TimeSlot => {
+  if (freq <= 1) return { morning: 1, noon: 0, evening: 0 };
+  if (freq === 2) return { morning: 1, noon: 0, evening: 1 };
+  return { morning: 1, noon: 1, evening: 1 };
+};
+
+type Freq = { n: number; m: number }; // n 天 m 次
+
+type Route1 = "肌肉注射" | "静脉注射" | "乳注" | "口服" | "局部用药" | "皮下注射";
+const ROUTE_OPTS: Route1[] = ["肌肉注射", "静脉注射", "乳注", "口服", "局部用药", "皮下注射"];
+
+type VarKind = "weight" | "quarter" | "custom";
+const VAR_LABEL: Record<VarKind, string> = {
+  weight: "体重区间",
+  quarter: "非盲乳数",
+  custom: "自定义变量",
+};
+
+type DoseMap = { option: string; dose: string }[]; // 变量选项 → 剂量/次
+
+type DrugRef = { name: string; spec: string }; // 可替代药品
+
+type DrugDetail = {
+  id: string;
+  drugs: DrugRef[]; // 可替代药品组
+  drugType?: string; // 药品档案带出，只读
+  routes: Route1[];
+  days: number;
+  freq: Freq;
+  slotOn: boolean;
+  slot: TimeSlot;
+  variable: boolean;
+  variableKind?: VarKind;
+  fixedDose?: string; // 固定剂量
+  varDose?: DoseMap;
+};
+
+type TaskType = "检查" | "理疗" | "护理" | "观察" | "外科处置" | "其他";
+type RecordWay = "文本输入" | "数字输入" | "图片视频" | "评分" | "无需记录";
+
+type TaskDetail = {
+  id: string;
   name: string;
-  dosage: string; // 剂量 / 用法
-  days: string; // 天数
+  type: TaskType;
+  action: string;
+  record: RecordWay;
+  days: number;
+  freq: Freq;
+  slotOn: boolean;
+  slot: TimeSlot;
+};
+
+type ReviewCfg = {
+  on: boolean;
+  days: number;
+  freq: Freq;
+  slotOn: boolean;
+  slot: TimeSlot;
+  desc: string;
+  transferOn: boolean;
+  deadline: "24h" | "48h";
 };
 
 type Rx = {
   id: string;
+  code: string; // RX-000001
+  kind: RxKind;
+  category: string; // 疾病类型 / 事项类型
+  subType: string; // 疾病子类型 / 事项名称
+  intro?: string;
   name: string;
-  disease: string;
-  drugs: DrugItem[];
-  duration: string;
+  desc?: string;
+  duration: number; // 天
+  summaryAuto: boolean;
+  summary?: string;
+  extra?: string;
+  drugs: DrugDetail[];
+  tasks: TaskDetail[];
+  review: ReviewCfg;
   author: string;
   updated: string;
 };
 
-const DRUG_CATALOG = [
-  "乳房炎抗生素",
-  "消炎药",
-  "口蹄疫疫苗 A 型",
-  "消毒液",
-  "消炎止痛剂",
-  "蹄部护理液",
-  "丙二醇 500ml",
-  "葡萄糖注射液",
-  "头孢噻呋钠",
-  "青霉素 G",
-  "氟苯尼考",
-  "硫酸庆大霉素",
-  "地塞米松",
-  "维生素 B 复合",
+// ---------- catalog ----------
+
+const DRUG_CATALOG: DrugRef[] = [
+  { name: "头孢噻呋钠", spec: "1g/瓶" },
+  { name: "头孢噻呋钠", spec: "4g/瓶" },
+  { name: "青霉素 G 钠", spec: "400 万 IU/瓶" },
+  { name: "青霉素 G 钠", spec: "800 万 IU/瓶" },
+  { name: "氟尼辛葡甲胺", spec: "50mg/ml × 100ml" },
+  { name: "地塞米松", spec: "5mg/ml × 10ml" },
+  { name: "丙二醇", spec: "500ml/瓶" },
+  { name: "50% 葡萄糖", spec: "500ml/袋" },
+  { name: "乳房灌注 头孢洛宁", spec: "5g/支" },
+  { name: "土霉素", spec: "宫内灌注剂 5g/支" },
+  { name: "口蹄疫疫苗 A 型", spec: "5ml/瓶" },
+  { name: "PGF2α", spec: "5mg/ml × 5ml" },
 ];
+
+const drugKey = (d: DrugRef) => `${d.name}｜${d.spec}`;
+
+function defaultReview(kind: RxKind): ReviewCfg {
+  const isDisease = kind === "disease";
+  const isDry = kind === "drying";
+  const on = isDisease || isDry;
+  return {
+    on,
+    days: isDry ? 3 : 1,
+    freq: { n: 1, m: 1 },
+    slotOn: false,
+    slot: { morning: 1, noon: 0, evening: 0 },
+    desc: isDry ? "干奶复查" : "治疗复查",
+    transferOn: true,
+    deadline: "24h",
+  };
+}
+
+function newDrug(): DrugDetail {
+  return {
+    id: crypto.randomUUID(),
+    drugs: [],
+    routes: [],
+    days: 3,
+    freq: { n: 1, m: 1 },
+    slotOn: false,
+    slot: { morning: 1, noon: 0, evening: 0 },
+    variable: false,
+    fixedDose: "",
+  };
+}
+
+function newTask(): TaskDetail {
+  return {
+    id: crypto.randomUUID(),
+    name: "",
+    type: "检查",
+    action: "",
+    record: "文本输入",
+    days: 3,
+    freq: { n: 1, m: 1 },
+    slotOn: false,
+    slot: { morning: 1, noon: 0, evening: 0 },
+  };
+}
+
+// ---------- 种子 ----------
 
 const seed: Rx[] = [
   {
-    id: "RX-001", name: "乳房炎标准处方 A", disease: "乳房炎",
+    id: "1",
+    code: "RX-000001",
+    kind: "disease",
+    category: "乳房炎",
+    subType: "乳房炎一级",
+    intro: "急性临床型乳房炎，全身症状明显。",
+    name: "乳房炎标准处方 A",
+    desc: "急性临床型 · 发热或食欲下降",
+    duration: 5,
+    summaryAuto: true,
+    extra: "热敷 + 频繁挤奶；泌乳期可用",
     drugs: [
-      { name: "乳房炎抗生素", dosage: "5mg ×2，肌注", days: "5" },
-      { name: "消炎药", dosage: "×1，口服", days: "3" },
+      {
+        id: "d1",
+        drugs: [{ name: "头孢噻呋钠", spec: "1g/瓶" }, { name: "头孢噻呋钠", spec: "4g/瓶" }],
+        drugType: "处方药",
+        routes: ["肌肉注射"],
+        days: 5,
+        freq: { n: 1, m: 1 },
+        slotOn: false,
+        slot: { morning: 1, noon: 0, evening: 0 },
+        variable: true,
+        variableKind: "weight",
+        varDose: [
+          { option: "400-600kg", dose: "3ml" },
+          { option: "600-800kg", dose: "4ml" },
+        ],
+      },
+      {
+        id: "d2",
+        drugs: [{ name: "氟尼辛葡甲胺", spec: "50mg/ml × 100ml" }],
+        drugType: "处方药",
+        routes: ["静脉注射"],
+        days: 2,
+        freq: { n: 1, m: 1 },
+        slotOn: false,
+        slot: { morning: 1, noon: 0, evening: 0 },
+        variable: false,
+        fixedDose: "20ml",
+      },
     ],
-    duration: "5 天", author: "李雨晴", updated: "2026-04-20",
+    tasks: [
+      {
+        id: "t1",
+        name: "直肠体温",
+        type: "检查",
+        action: "每日测量并记录直肠温度",
+        record: "数字输入",
+        days: 5,
+        freq: { n: 1, m: 1 },
+        slotOn: false,
+        slot: { morning: 1, noon: 0, evening: 0 },
+      },
+    ],
+    review: { ...defaultReview("disease") },
+    author: "李雨晴",
+    updated: "2026-04-20",
   },
   {
-    id: "RX-002", name: "口蹄疫紧急处方", disease: "口蹄疫",
+    id: "2",
+    code: "RX-000002",
+    kind: "hoof",
+    category: "蹄病",
+    subType: "腐蹄病",
+    name: "蹄叶炎康复处方",
+    duration: 7,
+    summaryAuto: true,
     drugs: [
-      { name: "口蹄疫疫苗 A 型", dosage: "×1，颈部肌注", days: "1" },
-      { name: "消毒液", dosage: "5L，环境喷洒", days: "1" },
+      {
+        id: "d1",
+        drugs: [{ name: "氟尼辛葡甲胺", spec: "50mg/ml × 100ml" }],
+        drugType: "处方药",
+        routes: ["静脉注射"],
+        days: 3,
+        freq: { n: 1, m: 1 },
+        slotOn: false,
+        slot: { morning: 1, noon: 0, evening: 0 },
+        variable: false,
+        fixedDose: "20ml",
+      },
     ],
-    duration: "立即", author: "陈晓东", updated: "2026-04-12",
+    tasks: [
+      {
+        id: "t1",
+        name: "局部修蹄",
+        type: "外科处置",
+        action: "削薄患蹄暴露病灶并粘贴蹄垫",
+        record: "图片视频",
+        days: 1,
+        freq: { n: 1, m: 1 },
+        slotOn: false,
+        slot: { morning: 1, noon: 0, evening: 0 },
+      },
+    ],
+    review: { ...defaultReview("hoof") },
+    author: "赵兽医",
+    updated: "2026-03-28",
   },
   {
-    id: "RX-003", name: "蹄叶炎康复处方", disease: "蹄叶炎",
+    id: "3",
+    code: "RX-000003",
+    kind: "drying",
+    category: "干奶",
+    subType: "常规干奶",
+    name: "干奶处方（长效封闭）",
+    duration: 1,
+    summaryAuto: true,
     drugs: [
-      { name: "消炎止痛剂", dosage: "×1，肌注", days: "7" },
-      { name: "蹄部护理液", dosage: "×1，外用", days: "7" },
+      {
+        id: "d1",
+        drugs: [{ name: "乳房灌注 头孢洛宁", spec: "5g/支" }],
+        drugType: "处方药",
+        routes: ["乳注"],
+        days: 1,
+        freq: { n: 1, m: 1 },
+        slotOn: false,
+        slot: { morning: 1, noon: 0, evening: 0 },
+        variable: false,
+        fixedDose: "每乳区 1 支",
+      },
     ],
-    duration: "7 天", author: "李雨晴", updated: "2026-03-28",
+    tasks: [],
+    review: { ...defaultReview("drying") },
+    author: "李雨晴",
+    updated: "2026-04-01",
   },
   {
-    id: "RX-004", name: "酮病调理处方", disease: "酮病",
+    id: "4",
+    code: "RX-000004",
+    kind: "immune",
+    category: "免疫",
+    subType: "口蹄疫强制免疫",
+    name: "口蹄疫紧急处方",
+    duration: 1,
+    summaryAuto: true,
+    extra: "按当地兽医主管部门要求执行",
     drugs: [
-      { name: "丙二醇 500ml", dosage: "×1，口服", days: "3" },
-      { name: "葡萄糖注射液", dosage: "500ml，静注", days: "3" },
+      {
+        id: "d1",
+        drugs: [{ name: "口蹄疫疫苗 A 型", spec: "5ml/瓶" }],
+        drugType: "生物制品",
+        routes: ["肌肉注射"],
+        days: 1,
+        freq: { n: 1, m: 1 },
+        slotOn: false,
+        slot: { morning: 1, noon: 0, evening: 0 },
+        variable: false,
+        fixedDose: "2ml",
+      },
     ],
-    duration: "3 天", author: "赵兽医", updated: "2026-03-15",
+    tasks: [],
+    review: { ...defaultReview("immune") },
+    author: "陈晓东",
+    updated: "2026-04-12",
   },
 ];
+
+// ---------- 摘要拼接 ----------
+
+function drugSummary(d: DrugDetail): string {
+  if (!d.drugs.length) return "";
+  const name = d.drugs[0].name;
+  const dose = d.variable
+    ? d.variableKind === "weight"
+      ? "按体重计算"
+      : d.variableKind === "quarter"
+      ? "按非盲乳数计算"
+      : "按自定义变量计算"
+    : d.fixedDose || "";
+  const route = d.routes.join("/") || "";
+  const freq = `${d.freq.n}天${d.freq.m}次`;
+  return [name, dose, route, freq, `连续${d.days}天`].filter(Boolean).join("，");
+}
+
+function taskSummary(t: TaskDetail): string {
+  return [t.name, t.action, `${t.freq.n}天${t.freq.m}次`, `连续${t.days}天`].filter(Boolean).join("，");
+}
+
+function buildSummary(r: Rx): string {
+  const parts = [
+    ...r.drugs.map(drugSummary),
+    ...r.tasks.map(taskSummary),
+    r.review.on ? `复查${r.review.days}天` : "",
+  ].filter(Boolean);
+  return parts.join("；");
+}
+
+// ---------- 主页面 ----------
 
 function PrescriptionPage() {
   const [list, setList] = useState<Rx[]>(seed);
@@ -135,17 +437,52 @@ function PrescriptionPage() {
 
   const saveEdit = () => {
     if (!editing) return;
-    setList((prev) => prev.map((r) => (r.id === editing.id ? editing : r)));
+    if (editing.drugs.length + editing.tasks.length === 0) {
+      toast.error("用药明细与非用药明细至少需要 1 条");
+      return;
+    }
+    if (!editing.name.trim()) {
+      toast.error("请填写处方名称");
+      return;
+    }
+    setList((prev) => {
+      const exists = prev.some((r) => r.id === editing.id);
+      return exists ? prev.map((r) => (r.id === editing.id ? editing : r)) : [editing, ...prev];
+    });
     toast.success("已保存");
     setEditing(null);
+  };
+
+  const startCreate = () => {
+    const maxCode = list.reduce((m, r) => {
+      const n = Number(r.code.replace("RX-", ""));
+      return Number.isFinite(n) ? Math.max(m, n) : m;
+    }, 0);
+    const code = `RX-${String(maxCode + 1).padStart(6, "0")}`;
+    const kind: RxKind = "disease";
+    setEditing({
+      id: crypto.randomUUID(),
+      code,
+      kind,
+      category: "",
+      subType: "",
+      name: "",
+      duration: 5,
+      summaryAuto: true,
+      drugs: [newDrug()],
+      tasks: [],
+      review: defaultReview(kind),
+      author: "当前用户",
+      updated: new Date().toISOString().slice(0, 10),
+    });
   };
 
   const batchEdit = () => {
     if (selected.size === 1) {
       const one = list.find((r) => r.id === Array.from(selected)[0]);
-      if (one) setEditing({ ...one, drugs: one.drugs.map((d) => ({ ...d })) });
+      if (one) setEditing(structuredClone(one));
     } else {
-      toast.info("批量编辑仅支持单条，多条请逐条编辑或使用批量删除");
+      toast.info("批量编辑仅支持单条");
     }
   };
 
@@ -156,22 +493,6 @@ function PrescriptionPage() {
     [someChecked],
   );
 
-  const updateDrug = (idx: number, patch: Partial<DrugItem>) => {
-    if (!editing) return;
-    setEditing({
-      ...editing,
-      drugs: editing.drugs.map((d, i) => (i === idx ? { ...d, ...patch } : d)),
-    });
-  };
-  const removeDrug = (idx: number) => {
-    if (!editing) return;
-    setEditing({ ...editing, drugs: editing.drugs.filter((_, i) => i !== idx) });
-  };
-  const addDrug = () => {
-    if (!editing) return;
-    setEditing({ ...editing, drugs: [...editing.drugs, { name: "", dosage: "", days: "" }] });
-  };
-
   return (
     <>
       <AppHeader title="处方管理" breadcrumb={["诊疗知识库", "处方管理"]} />
@@ -180,11 +501,17 @@ function PrescriptionPage() {
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-              <Input placeholder="搜索处方 / 疾病" className="h-9 w-72 pl-9 text-body-sm" />
+              <Input placeholder="搜索处方 / 编码 / 疾病" className="h-9 w-72 pl-9 text-body-sm" />
             </div>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal"><Filter className="h-3.5 w-3.5" /> 适用疾病</Button>
+            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
+              <Filter className="h-3.5 w-3.5" /> 处方类型
+            </Button>
           </div>
-          <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
+          <Button
+            size="sm"
+            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            onClick={startCreate}
+          >
             <Plus className="h-3.5 w-3.5" /> 新建处方
           </Button>
         </div>
@@ -204,7 +531,12 @@ function PrescriptionPage() {
               >
                 <Trash2 className="h-3.5 w-3.5" /> 批量删除
               </Button>
-              <Button variant="ghost" size="sm" className="h-8 gap-1 text-body-sm font-normal text-text-tertiary" onClick={() => setSelected(new Set())}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-1 text-body-sm font-normal text-text-tertiary"
+                onClick={() => setSelected(new Set())}
+              >
                 <X className="h-3.5 w-3.5" /> 取消
               </Button>
             </div>
@@ -214,31 +546,39 @@ function PrescriptionPage() {
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <Checkbox ref={headerCheckRef} checked={allChecked} onCheckedChange={toggleAll} aria-label="全选" />
-            <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
-              <div>编号</div>
+            <div className="grid grid-cols-[110px_1fr_1fr_2fr_80px] gap-4 flex-1 min-w-0">
+              <div>处方编码</div>
               <div>处方名称</div>
-              <div>适用疾病</div>
-              <div>用药组成</div>
+              <div>归属</div>
+              <div>用药摘要</div>
               <div>疗程</div>
             </div>
             <div className="w-[160px] text-right shrink-0">功能</div>
           </div>
           {list.map((r) => {
             const checked = selected.has(r.id);
+            const drugText =
+              r.drugs.map((d) => d.drugs[0]?.name).filter(Boolean).join("、") || "—";
             return (
               <div
                 key={r.id}
-                className={`flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
+                className={`flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 ${
+                  checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"
+                }`}
               >
                 <Checkbox checked={checked} onCheckedChange={() => toggleOne(r.id)} aria-label={`选择 ${r.name}`} />
-                <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
-                  <div className="font-mono text-body text-foreground truncate">{r.id}</div>
-                  <div className="flex items-center gap-1.5 text-body text-foreground truncate"><FileText className="h-3.5 w-3.5 text-primary shrink-0" /><span className="truncate">{r.name}</span></div>
-                  <div className="truncate"><span className="tag tag-brand">{r.disease}</span></div>
-                  <div className="text-body-sm text-text-secondary truncate">
-                    {r.drugs.map((d) => `${d.name} ${d.dosage}`.trim()).join("、")}
+                <div className="grid grid-cols-[110px_1fr_1fr_2fr_80px] gap-4 flex-1 min-w-0">
+                  <div className="font-mono text-body text-foreground truncate">{r.code}</div>
+                  <div className="flex items-center gap-1.5 text-body text-foreground truncate">
+                    <FileText className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <span className="truncate">{r.name}</span>
                   </div>
-                  <div className="text-body-sm text-text-secondary truncate">{r.duration}</div>
+                  <div className="truncate flex items-center gap-1.5">
+                    <span className="tag tag-brand shrink-0">{RX_KIND_LABEL[r.kind]}</span>
+                    <span className="text-body-sm text-text-secondary truncate">{r.subType || r.category || "—"}</span>
+                  </div>
+                  <div className="text-body-sm text-text-secondary truncate">{drugText}</div>
+                  <div className="text-body-sm text-text-secondary truncate">{r.duration} 天</div>
                 </div>
                 <div className="w-[160px] shrink-0 flex justify-end items-center gap-0.5">
                   <Button
@@ -253,7 +593,7 @@ function PrescriptionPage() {
                     variant="ghost"
                     size="sm"
                     className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-                    onClick={() => setEditing({ ...r, drugs: r.drugs.map((d) => ({ ...d })) })}
+                    onClick={() => setEditing(structuredClone(r))}
                   >
                     编辑
                   </Button>
@@ -284,95 +624,51 @@ function PrescriptionPage() {
         </Card>
       </main>
 
+      {/* 编辑抽屉 */}
       <Sheet open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+        <SheetContent side="right" className="w-full sm:max-w-3xl overflow-y-auto bg-white">
           <SheetHeader>
-            <SheetTitle className="text-section-title">编辑处方</SheetTitle>
+            <SheetTitle className="text-section-title">
+              {list.some((r) => r.id === editing?.id) ? "编辑处方" : "新建处方"}
+            </SheetTitle>
           </SheetHeader>
-          {editing && (
-            <div className="mt-4 space-y-4">
-              <div className="space-y-1.5">
-                <Label className="text-body-sm text-text-secondary">处方名称</Label>
-                <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-body-sm text-text-secondary">适用疾病</Label>
-                  <Input value={editing.disease} onChange={(e) => setEditing({ ...editing, disease: e.target.value })} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-body-sm text-text-secondary">总疗程</Label>
-                  <Input value={editing.duration} onChange={(e) => setEditing({ ...editing, duration: e.target.value })} />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-body-sm text-text-secondary">用药组成</Label>
-                  <Button type="button" variant="outline" size="sm" className="h-7 gap-1 text-body-sm font-normal" onClick={addDrug}>
-                    <Plus className="h-3.5 w-3.5" /> 添加药品
-                  </Button>
-                </div>
-
-                <div className="space-y-2.5">
-                  {editing.drugs.length === 0 && (
-                    <div className="rounded-md border border-dashed border-border p-4 text-center text-body-sm text-text-tertiary">
-                      暂未添加药品，点击右上角"添加药品"开始配置
-                    </div>
-                  )}
-                  {editing.drugs.map((d, idx) => (
-                    <DrugRow
-                      key={idx}
-                      index={idx}
-                      value={d}
-                      onChange={(patch) => updateDrug(idx, patch)}
-                      onRemove={() => removeDrug(idx)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+          {editing && <PrescriptionForm value={editing} onChange={setEditing} />}
           <SheetFooter className="mt-6 flex-row justify-end gap-2">
-            <Button variant="outline" onClick={() => setEditing(null)}>取消</Button>
-            <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={saveEdit}>保存</Button>
+            <Button variant="outline" onClick={() => setEditing(null)}>
+              取消
+            </Button>
+            <Button
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={saveEdit}
+            >
+              保存
+            </Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
 
+      {/* 详情抽屉 */}
       <Sheet open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto bg-white">
           <SheetHeader>
             <SheetTitle className="text-section-title">处方详情</SheetTitle>
           </SheetHeader>
-          {viewing && (
-            <div className="mt-4 space-y-4 text-body-sm">
-              <ViewRow label="编号" value={viewing.id} mono />
-              <ViewRow label="处方名称" value={viewing.name} />
-              <ViewRow label="适用疾病" value={viewing.disease} />
-              <ViewRow label="总疗程" value={viewing.duration} />
-              <div className="space-y-1.5">
-                <div className="text-body-sm text-text-secondary">用药组成</div>
-                <div className="space-y-2">
-                  {viewing.drugs.map((d, i) => (
-                    <div key={i} className="rounded-md border border-border bg-surface-subtle p-3">
-                      <div className="flex items-center gap-1.5 text-body text-foreground">
-                        <Pill className="h-3.5 w-3.5 text-primary" />
-                        <span className="font-medium">{d.name || "—"}</span>
-                        {d.days && <span className="ml-auto text-caption text-text-tertiary">{d.days} 天</span>}
-                      </div>
-                      {d.dosage && <div className="mt-1 text-body-sm text-text-secondary">{d.dosage}</div>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <ViewRow label="创建人" value={viewing.author} />
-              <ViewRow label="更新时间" value={viewing.updated} />
-            </div>
-          )}
+          {viewing && <PrescriptionView r={viewing} />}
           <SheetFooter className="mt-6 flex-row justify-end gap-2">
-            <Button variant="outline" onClick={() => setViewing(null)}>关闭</Button>
-            <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={() => { if (viewing) { setEditing({ ...viewing, drugs: viewing.drugs.map((d) => ({ ...d })) }); setViewing(null); } }}>编辑</Button>
+            <Button variant="outline" onClick={() => setViewing(null)}>
+              关闭
+            </Button>
+            <Button
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => {
+                if (viewing) {
+                  setEditing(structuredClone(viewing));
+                  setViewing(null);
+                }
+              }}
+            >
+              编辑
+            </Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
@@ -400,24 +696,290 @@ function PrescriptionPage() {
   );
 }
 
-function DrugRow({
+// ---------- 编辑表单 ----------
+
+function SectionCard({
+  title,
+  icon,
+  action,
+  children,
+}: {
+  title: string;
+  icon?: React.ReactNode;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-lg border border-border bg-card">
+      <div className="flex items-center justify-between px-4 h-11 border-b border-border">
+        <div className="flex items-center gap-1.5 text-card-title text-foreground">
+          {icon}
+          {title}
+        </div>
+        {action}
+      </div>
+      <div className="p-4 space-y-3">{children}</div>
+    </section>
+  );
+}
+
+function Field({
+  label,
+  required,
+  children,
+  hint,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-body-sm text-text-secondary">
+        {label}
+        {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
+      </Label>
+      {children}
+      {hint && <div className="text-caption text-text-tertiary">{hint}</div>}
+    </div>
+  );
+}
+
+function sanitizePositive(v: string) {
+  const s = v.replace(/\D/g, "").replace(/^0+/, "");
+  return s;
+}
+
+function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) => void }) {
+  const patch = (p: Partial<Rx>) => onChange({ ...value, ...p });
+
+  const addDrug = () => patch({ drugs: [...value.drugs, newDrug()] });
+  const updateDrug = (id: string, p: Partial<DrugDetail>) =>
+    patch({ drugs: value.drugs.map((d) => (d.id === id ? { ...d, ...p } : d)) });
+  const removeDrug = (id: string) => patch({ drugs: value.drugs.filter((d) => d.id !== id) });
+
+  const addTask = () => patch({ tasks: [...value.tasks, newTask()] });
+  const updateTask = (id: string, p: Partial<TaskDetail>) =>
+    patch({ tasks: value.tasks.map((t) => (t.id === id ? { ...t, ...p } : t)) });
+  const removeTask = (id: string) => patch({ tasks: value.tasks.filter((t) => t.id !== id) });
+
+  return (
+    <div className="mt-4 space-y-4">
+      {/* 归属 */}
+      <SectionCard title="归属信息" icon={<Stethoscope className="h-4 w-4 text-primary" />}>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="处方所属类型" required>
+            <Select
+              value={value.kind}
+              onValueChange={(v) => {
+                const kind = v as RxKind;
+                patch({ kind, review: defaultReview(kind) });
+              }}
+            >
+              <SelectTrigger className="h-9 text-body-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(RX_KIND_LABEL) as RxKind[]).map((k) => (
+                  <SelectItem key={k} value={k}>
+                    {RX_KIND_LABEL[k]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label={value.kind === "disease" ? "疾病类型" : "事项类型"} required>
+            <Input
+              value={value.category}
+              onChange={(e) => patch({ category: e.target.value })}
+              className="h-9 text-body-sm"
+              placeholder={value.kind === "disease" ? "如 乳房炎" : "如 干奶"}
+            />
+          </Field>
+        </div>
+        <Field label={value.kind === "disease" ? "疾病子类型" : "事项名称"} required>
+          <Input
+            value={value.subType}
+            onChange={(e) => patch({ subType: e.target.value })}
+            className="h-9 text-body-sm"
+            placeholder={value.kind === "disease" ? "如 乳房炎一级" : "如 常规干奶"}
+          />
+        </Field>
+        <Field label="疾病介绍 / 诊断要点">
+          <Textarea
+            value={value.intro ?? ""}
+            onChange={(e) => patch({ intro: e.target.value })}
+            className="text-body-sm min-h-16"
+            placeholder="说明用，展示于处方详情"
+          />
+        </Field>
+      </SectionCard>
+
+      {/* 基础 */}
+      <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="处方编码">
+            <Input value={value.code} readOnly className="h-9 text-body-sm font-mono bg-surface-subtle" />
+          </Field>
+          <Field label="处方名称" required>
+            <Input
+              value={value.name}
+              onChange={(e) => patch({ name: e.target.value })}
+              className="h-9 text-body-sm"
+              placeholder="如 乳房炎标准处方 A"
+            />
+          </Field>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="处方描述">
+            <Input
+              value={value.desc ?? ""}
+              onChange={(e) => patch({ desc: e.target.value })}
+              className="h-9 text-body-sm"
+              placeholder="适用场景简述，用于列表选择"
+            />
+          </Field>
+          <Field label="处方疗程" required>
+            <div className="relative">
+              <Input
+                value={String(value.duration || "")}
+                onChange={(e) => {
+                  const s = sanitizePositive(e.target.value);
+                  patch({ duration: s ? Number(s) : 0 });
+                }}
+                inputMode="numeric"
+                className="h-9 pr-8 text-body-sm"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
+                天
+              </span>
+            </div>
+          </Field>
+        </div>
+        <div className="flex items-center justify-between rounded-md bg-surface-subtle/60 px-3 py-2">
+          <div>
+            <div className="text-body-sm text-foreground">处方摘要</div>
+            <div className="text-caption text-text-tertiary">开启后按用药 → 非用药 → 复查顺序自动拼接</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-caption text-text-tertiary">系统自动拼接</span>
+            <Switch checked={value.summaryAuto} onCheckedChange={(v) => patch({ summaryAuto: v })} />
+          </div>
+        </div>
+        {value.summaryAuto ? (
+          <div className="rounded-md border border-dashed border-border p-3 text-body-sm text-text-secondary leading-relaxed">
+            {buildSummary(value) || <span className="text-text-tertiary">暂无明细，摘要将在保存后展示</span>}
+          </div>
+        ) : (
+          <Textarea
+            value={value.summary ?? ""}
+            onChange={(e) => patch({ summary: e.target.value })}
+            className="text-body-sm min-h-16"
+            placeholder="手动填写方案摘要"
+          />
+        )}
+        <Field label="补充说明">
+          <Textarea
+            value={value.extra ?? ""}
+            onChange={(e) => patch({ extra: e.target.value })}
+            className="text-body-sm min-h-16"
+            placeholder="局部处理、注意事项、护理说明"
+          />
+        </Field>
+      </SectionCard>
+
+      {/* 用药明细 */}
+      <SectionCard
+        title={`用药明细 · ${value.drugs.length}`}
+        icon={<Pill className="h-4 w-4 text-primary" />}
+        action={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 gap-1 text-body-sm font-normal"
+            onClick={addDrug}
+          >
+            <Plus className="h-3.5 w-3.5" /> 添加
+          </Button>
+        }
+      >
+        {value.drugs.length === 0 && (
+          <div className="rounded-md border border-dashed border-border p-4 text-center text-body-sm text-text-tertiary">
+            暂无用药明细
+          </div>
+        )}
+        {value.drugs.map((d, i) => (
+          <DrugDetailRow
+            key={d.id}
+            index={i}
+            value={d}
+            onChange={(p) => updateDrug(d.id, p)}
+            onRemove={() => removeDrug(d.id)}
+          />
+        ))}
+      </SectionCard>
+
+      {/* 非用药明细 */}
+      <SectionCard
+        title={`非用药明细 · ${value.tasks.length}`}
+        icon={<ClipboardList className="h-4 w-4 text-primary" />}
+        action={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 gap-1 text-body-sm font-normal"
+            onClick={addTask}
+          >
+            <Plus className="h-3.5 w-3.5" /> 添加
+          </Button>
+        }
+      >
+        {value.tasks.length === 0 && (
+          <div className="rounded-md border border-dashed border-border p-4 text-center text-body-sm text-text-tertiary">
+            非用药：无
+          </div>
+        )}
+        {value.tasks.map((t, i) => (
+          <TaskDetailRow
+            key={t.id}
+            index={i}
+            value={t}
+            onChange={(p) => updateTask(t.id, p)}
+            onRemove={() => removeTask(t.id)}
+          />
+        ))}
+      </SectionCard>
+
+      {/* 复查配置 */}
+      <SectionCard title="复查配置" icon={<RefreshCw className="h-4 w-4 text-primary" />}>
+        <ReviewEditor value={value.review} onChange={(review) => patch({ review })} />
+      </SectionCard>
+    </div>
+  );
+}
+
+// ---------- 用药明细行 ----------
+
+function DrugDetailRow({
   index,
   value,
   onChange,
   onRemove,
 }: {
   index: number;
-  value: DrugItem;
-  onChange: (patch: Partial<DrugItem>) => void;
+  value: DrugDetail;
+  onChange: (p: Partial<DrugDetail>) => void;
   onRemove: () => void;
 }) {
-  const [open, setOpen] = useState(false);
   return (
     <div className="rounded-md border border-border bg-surface-subtle/50 p-3 space-y-2.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-body-sm text-text-secondary">
           <Pill className="h-3.5 w-3.5 text-primary" />
-          药品 {index + 1}
+          用药 {index + 1}
         </div>
         <Button
           type="button"
@@ -425,92 +987,678 @@ function DrugRow({
           size="sm"
           className="h-6 w-6 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
           onClick={onRemove}
-          aria-label="移除药品"
         >
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>
 
-      <div>
-        <Label className="text-caption text-text-tertiary">药品名称</Label>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="mt-1 w-full justify-between h-9 font-normal text-body-sm"
-            >
-              <span className={cn("truncate", !value.name && "text-text-tertiary")}>
-                {value.name || "搜索或选择药品"}
-              </span>
-              <ChevronsUpDown className="h-3.5 w-3.5 opacity-50 shrink-0" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
-            <Command>
-              <CommandInput placeholder="输入药品名称搜索…" />
-              <CommandList>
-                <CommandEmpty>
-                  <div className="px-2 py-3 text-body-sm text-text-tertiary">
-                    无匹配项，按确认使用自定义名称
-                  </div>
-                </CommandEmpty>
-                <CommandGroup heading="常用药品">
-                  {DRUG_CATALOG.map((name) => (
-                    <CommandItem
-                      key={name}
-                      value={name}
-                      onSelect={(v) => {
-                        onChange({ name: v });
-                        setOpen(false);
-                      }}
-                    >
-                      <Check className={cn("mr-2 h-3.5 w-3.5", value.name === name ? "opacity-100" : "opacity-0")} />
-                      {name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+      <Field label="可替代药品组" required hint="多选，兽医执行时按库存和拼音在其中选定 1 个">
+        <MultiDrugPicker
+          value={value.drugs}
+          onChange={(drugs) => onChange({ drugs })}
+        />
+      </Field>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Field label="药品类型">
+          <Input value={value.drugType ?? ""} readOnly className="h-9 text-body-sm bg-surface-subtle" />
+        </Field>
+        <Field label="给药方式" required>
+          <MultiSelectChips
+            options={ROUTE_OPTS}
+            value={value.routes}
+            onChange={(routes) => onChange({ routes: routes as Route1[] })}
+          />
+        </Field>
       </div>
 
-      <div className="grid grid-cols-[1fr_110px] gap-2">
-        <div>
-          <Label className="text-caption text-text-tertiary">剂量 / 用法</Label>
-          <Input
-            value={value.dosage}
-            onChange={(e) => onChange({ dosage: e.target.value })}
-            placeholder="如 5mg ×2，肌注"
-            className="mt-1 h-9 text-body-sm"
+      <div className="grid grid-cols-2 gap-2">
+        <Field label="用药天数" required>
+          <NumberInput
+            value={value.days}
+            onChange={(days) => onChange({ days })}
+            suffix="天"
           />
-        </div>
-        <div>
-          <Label className="text-caption text-text-tertiary">天数</Label>
-          <div className="relative mt-1">
-            <Input
-              value={value.days}
-              onChange={(e) => onChange({ days: e.target.value })}
-              placeholder="如 5"
-              inputMode="numeric"
-              className="h-9 pr-8 text-body-sm"
+        </Field>
+        <Field label="用药频次" required>
+          <FrequencyInput
+            value={value.freq}
+            onChange={(freq) => {
+              const slot = value.slotOn ? value.slot : defaultSlot(freq.m);
+              onChange({ freq, slot });
+            }}
+          />
+        </Field>
+      </div>
+
+      <SlotSection
+        on={value.slotOn}
+        slot={value.slot}
+        freqM={value.freq.m}
+        onToggle={(on) => onChange({ slotOn: on, slot: on ? value.slot : defaultSlot(value.freq.m) })}
+        onSlotChange={(slot) => onChange({ slot })}
+      />
+
+      <div className="flex items-center justify-between rounded-md bg-white border border-border px-3 py-2">
+        <div className="text-body-sm text-foreground">是否按变量计算</div>
+        <Switch checked={value.variable} onCheckedChange={(v) => onChange({ variable: v })} />
+      </div>
+
+      {value.variable ? (
+        <>
+          <Field label="计算变量" required>
+            <Select
+              value={value.variableKind ?? ""}
+              onValueChange={(v) =>
+                onChange({
+                  variableKind: v as VarKind,
+                  varDose: value.varDose ?? [{ option: "", dose: "" }],
+                })
+              }
+            >
+              <SelectTrigger className="h-9 text-body-sm">
+                <SelectValue placeholder="选择计算变量" />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(VAR_LABEL) as VarKind[]).map((k) => (
+                  <SelectItem key={k} value={k}>
+                    {VAR_LABEL[k]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="具体剂量" required hint="每个变量选项对应一次剂量">
+            <VariableDoseTable
+              varKind={value.variableKind}
+              value={value.varDose ?? []}
+              onChange={(varDose) => onChange({ varDose })}
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">天</span>
-          </div>
+          </Field>
+        </>
+      ) : (
+        <Field label="具体剂量" required>
+          <Input
+            value={value.fixedDose ?? ""}
+            onChange={(e) => onChange({ fixedDose: e.target.value })}
+            className="h-9 text-body-sm"
+            placeholder="如 5ml/次"
+          />
+        </Field>
+      )}
+    </div>
+  );
+}
+
+// ---------- 非用药明细行 ----------
+
+function TaskDetailRow({
+  index,
+  value,
+  onChange,
+  onRemove,
+}: {
+  index: number;
+  value: TaskDetail;
+  onChange: (p: Partial<TaskDetail>) => void;
+  onRemove: () => void;
+}) {
+  const TASK_TYPES: TaskType[] = ["检查", "理疗", "护理", "观察", "外科处置", "其他"];
+  const RECORDS: RecordWay[] = ["文本输入", "数字输入", "图片视频", "评分", "无需记录"];
+  return (
+    <div className="rounded-md border border-border bg-surface-subtle/50 p-3 space-y-2.5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-body-sm text-text-secondary">
+          <ClipboardList className="h-3.5 w-3.5 text-primary" />
+          任务 {index + 1}
         </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
+          onClick={onRemove}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Field label="任务名称" required>
+          <Input
+            value={value.name}
+            onChange={(e) => onChange({ name: e.target.value })}
+            className="h-9 text-body-sm"
+            placeholder="如 直肠体温测量"
+          />
+        </Field>
+        <Field label="任务类型" required>
+          <Select value={value.type} onValueChange={(v) => onChange({ type: v as TaskType })}>
+            <SelectTrigger className="h-9 text-body-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TASK_TYPES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+      </div>
+
+      <Field label="具体操作" required hint="30 字以内">
+        <Input
+          value={value.action}
+          maxLength={30}
+          onChange={(e) => onChange({ action: e.target.value })}
+          className="h-9 text-body-sm"
+          placeholder="描述执行人现场需要完成的动作"
+        />
+      </Field>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Field label="记录方式" required>
+          <Select value={value.record} onValueChange={(v) => onChange({ record: v as RecordWay })}>
+            <SelectTrigger className="h-9 text-body-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {RECORDS.map((r) => (
+                <SelectItem key={r} value={r}>
+                  {r}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+        <Field label="执行天数" required>
+          <NumberInput value={value.days} onChange={(days) => onChange({ days })} suffix="天" />
+        </Field>
+      </div>
+
+      <Field label="执行频次" required>
+        <FrequencyInput
+          value={value.freq}
+          onChange={(freq) => {
+            const slot = value.slotOn ? value.slot : defaultSlot(freq.m);
+            onChange({ freq, slot });
+          }}
+        />
+      </Field>
+
+      <SlotSection
+        on={value.slotOn}
+        slot={value.slot}
+        freqM={value.freq.m}
+        onToggle={(on) => onChange({ slotOn: on, slot: on ? value.slot : defaultSlot(value.freq.m) })}
+        onSlotChange={(slot) => onChange({ slot })}
+      />
+    </div>
+  );
+}
+
+// ---------- 复查编辑 ----------
+
+function ReviewEditor({ value, onChange }: { value: ReviewCfg; onChange: (v: ReviewCfg) => void }) {
+  const patch = (p: Partial<ReviewCfg>) => onChange({ ...value, ...p });
+  return (
+    <>
+      <div className="flex items-center justify-between rounded-md bg-surface-subtle/60 px-3 py-2">
+        <div className="text-body-sm text-foreground">是否开启复查</div>
+        <Switch checked={value.on} onCheckedChange={(v) => patch({ on: v })} />
+      </div>
+      {value.on && (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="复查天数" required hint="1-9 天">
+              <NumberInput
+                value={value.days}
+                onChange={(days) => patch({ days: Math.min(9, Math.max(1, days || 1)) })}
+                suffix="天"
+              />
+            </Field>
+            <Field label="复查频次" required>
+              <FrequencyInput
+                value={value.freq}
+                onChange={(freq) => {
+                  const slot = value.slotOn ? value.slot : defaultSlot(freq.m);
+                  patch({ freq, slot });
+                }}
+              />
+            </Field>
+          </div>
+          <SlotSection
+            on={value.slotOn}
+            slot={value.slot}
+            freqM={value.freq.m}
+            onToggle={(on) => patch({ slotOn: on, slot: on ? value.slot : defaultSlot(value.freq.m) })}
+            onSlotChange={(slot) => patch({ slot })}
+          />
+          <Field label="复查任务描述" required hint="15 字以内">
+            <Input
+              value={value.desc}
+              maxLength={15}
+              onChange={(e) => patch({ desc: e.target.value })}
+              className="h-9 text-body-sm"
+            />
+          </Field>
+          <Field label="任务时限" required>
+            <Select value={value.deadline} onValueChange={(v) => patch({ deadline: v as "24h" | "48h" })}>
+              <SelectTrigger className="h-9 text-body-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="24h">24 小时</SelectItem>
+                <SelectItem value="48h">48 小时</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+        </>
+      )}
+      <div className="flex items-center justify-between rounded-md bg-surface-subtle/60 px-3 py-2">
+        <div>
+          <div className="text-body-sm text-foreground">转栏信息填写</div>
+          <div className="text-caption text-text-tertiary">开启后执行人提交复查结论时需填写是否转栏</div>
+        </div>
+        <Switch checked={value.transferOn} onCheckedChange={(v) => patch({ transferOn: v })} />
+      </div>
+    </>
+  );
+}
+
+// ---------- 通用小组件 ----------
+
+function NumberInput({
+  value,
+  onChange,
+  suffix,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  suffix?: string;
+}) {
+  return (
+    <div className="relative">
+      <Input
+        value={String(value || "")}
+        inputMode="numeric"
+        onChange={(e) => {
+          const s = sanitizePositive(e.target.value);
+          onChange(s ? Number(s) : 0);
+        }}
+        className={cn("h-9 text-body-sm", suffix && "pr-8")}
+      />
+      {suffix && (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
+          {suffix}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function FrequencyInput({ value, onChange }: { value: Freq; onChange: (v: Freq) => void }) {
+  return (
+    <div className="flex items-center gap-1 h-9 rounded-md border border-input bg-white px-2 text-body-sm">
+      <span className="text-text-tertiary">每</span>
+      <Input
+        value={String(value.n || "")}
+        inputMode="numeric"
+        onChange={(e) => {
+          const s = sanitizePositive(e.target.value);
+          onChange({ ...value, n: s ? Number(s) : 1 });
+        }}
+        className="h-7 w-12 text-center border-0 shadow-none focus-visible:ring-0 p-0"
+      />
+      <span className="text-text-tertiary">天</span>
+      <Input
+        value={String(value.m || "")}
+        inputMode="numeric"
+        onChange={(e) => {
+          const s = sanitizePositive(e.target.value);
+          onChange({ ...value, m: s ? Number(s) : 1 });
+        }}
+        className="h-7 w-12 text-center border-0 shadow-none focus-visible:ring-0 p-0"
+      />
+      <span className="text-text-tertiary">次</span>
+    </div>
+  );
+}
+
+function SlotSection({
+  on,
+  slot,
+  freqM,
+  onToggle,
+  onSlotChange,
+}: {
+  on: boolean;
+  slot: TimeSlot;
+  freqM: number;
+  onToggle: (v: boolean) => void;
+  onSlotChange: (s: TimeSlot) => void;
+}) {
+  const shown = on ? slot : defaultSlot(freqM);
+  return (
+    <div className="rounded-md bg-white border border-border p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="text-body-sm text-foreground">是否区分时间段</div>
+        <Switch checked={on} onCheckedChange={onToggle} />
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        {(["morning", "noon", "evening"] as const).map((k) => (
+          <div key={k} className="space-y-1">
+            <div className="text-caption text-text-tertiary">
+              {k === "morning" ? "早上" : k === "noon" ? "中午" : "下午"}
+            </div>
+            <div className="relative">
+              <Input
+                value={String(shown[k] ?? 0)}
+                inputMode="numeric"
+                readOnly={!on}
+                onChange={(e) => {
+                  const n = Number(e.target.value.replace(/\D/g, "") || 0);
+                  onSlotChange({ ...slot, [k]: n });
+                }}
+                className={cn("h-8 pr-6 text-body-sm text-center", !on && "bg-surface-subtle")}
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
+                次
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-function ViewRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+function MultiSelectChips({
+  options,
+  value,
+  onChange,
+}: {
+  options: readonly string[];
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const toggle = (o: string) =>
+    onChange(value.includes(o) ? value.filter((x) => x !== o) : [...value, o]);
+  return (
+    <div className="flex flex-wrap gap-1.5 rounded-md border border-input bg-white p-2 min-h-9">
+      {options.map((o) => {
+        const active = value.includes(o);
+        return (
+          <button
+            type="button"
+            key={o}
+            onClick={() => toggle(o)}
+            className={cn(
+              "h-7 px-2 rounded-full text-caption border transition-colors",
+              active
+                ? "bg-brand-subtle border-primary text-primary"
+                : "bg-white border-border text-text-secondary hover:border-primary/40",
+            )}
+          >
+            {o}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function MultiDrugPicker({
+  value,
+  onChange,
+}: {
+  value: DrugRef[];
+  onChange: (v: DrugRef[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const isSelected = (d: DrugRef) => value.some((v) => drugKey(v) === drugKey(d));
+  const toggle = (d: DrugRef) => {
+    if (isSelected(d)) onChange(value.filter((v) => drugKey(v) !== drugKey(d)));
+    else onChange([...value, d]);
+  };
+  return (
+    <>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-between h-auto min-h-9 py-1.5 font-normal text-body-sm"
+          >
+            <div className="flex flex-wrap gap-1 flex-1 text-left">
+              {value.length === 0 && <span className="text-text-tertiary">搜索或选择药品（可多选）</span>}
+              {value.map((d) => (
+                <span
+                  key={drugKey(d)}
+                  className="inline-flex items-center gap-1 text-caption px-1.5 py-0.5 rounded bg-brand-subtle text-primary"
+                >
+                  {d.name} ～{d.spec}
+                </span>
+              ))}
+            </div>
+            <ChevronsUpDown className="h-3.5 w-3.5 opacity-50 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
+          <Command>
+            <CommandInput placeholder="输入药品名称搜索…" />
+            <CommandList>
+              <CommandEmpty>
+                <div className="px-2 py-3 text-body-sm text-text-tertiary">无匹配药品</div>
+              </CommandEmpty>
+              <CommandGroup heading="药品档案">
+                {DRUG_CATALOG.map((d) => {
+                  const k = drugKey(d);
+                  return (
+                    <CommandItem key={k} value={k} onSelect={() => toggle(d)}>
+                      <Check className={cn("mr-2 h-3.5 w-3.5", isSelected(d) ? "opacity-100" : "opacity-0")} />
+                      <span>
+                        {d.name} <span className="text-text-tertiary">～{d.spec}</span>
+                      </span>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </>
+  );
+}
+
+function VariableDoseTable({
+  varKind,
+  value,
+  onChange,
+}: {
+  varKind?: VarKind;
+  value: DoseMap;
+  onChange: (v: DoseMap) => void;
+}) {
+  const update = (i: number, p: Partial<{ option: string; dose: string }>) =>
+    onChange(value.map((row, idx) => (idx === i ? { ...row, ...p } : row)));
+  const remove = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+  const add = () => onChange([...value, { option: "", dose: "" }]);
+
+  const placeholder =
+    varKind === "weight" ? "如 400-600kg" : varKind === "quarter" ? "如 1-2 个" : "选项";
+
+  return (
+    <div className="space-y-2">
+      {value.map((row, i) => (
+        <div key={i} className="grid grid-cols-[1fr_1fr_32px] gap-2">
+          <Input
+            value={row.option}
+            onChange={(e) => update(i, { option: e.target.value })}
+            placeholder={placeholder}
+            className="h-9 text-body-sm"
+          />
+          <Input
+            value={row.dose}
+            onChange={(e) => update(i, { dose: e.target.value })}
+            placeholder="如 20ml"
+            className="h-9 text-body-sm"
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-9 w-8 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
+            onClick={() => remove(i)}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="h-8 gap-1 text-body-sm font-normal w-full"
+        onClick={add}
+      >
+        <Plus className="h-3.5 w-3.5" /> 增加一组
+      </Button>
+    </div>
+  );
+}
+
+// ---------- 详情视图 ----------
+
+function PrescriptionView({ r }: { r: Rx }) {
+  const summary = r.summaryAuto ? buildSummary(r) : r.summary ?? "";
+  return (
+    <div className="mt-4 space-y-4 text-body-sm">
+      <div className="rounded-lg border border-border p-4 space-y-1.5 bg-surface-subtle/50">
+        <div className="flex items-center gap-2">
+          <span className="tag tag-brand">{RX_KIND_LABEL[r.kind]}</span>
+          <span className="font-mono text-caption text-text-tertiary">{r.code}</span>
+        </div>
+        <div className="text-section-title text-foreground">{r.name}</div>
+        {r.desc && <div className="text-body-sm text-text-secondary">{r.desc}</div>}
+      </div>
+
+      <ViewGroup label="归属">
+        <ViewRow label="疾病/事项类型" value={r.category} />
+        <ViewRow label="疾病子类型/事项名称" value={r.subType} />
+        {r.intro && <ViewRow label="疾病介绍" value={r.intro} />}
+      </ViewGroup>
+
+      <ViewGroup label="基础">
+        <ViewRow label="处方疗程" value={`${r.duration} 天`} />
+        <ViewRow label="处方摘要" value={summary || "—"} />
+        {r.extra && <ViewRow label="补充说明" value={r.extra} />}
+      </ViewGroup>
+
+      <ViewGroup label={`用药明细 · ${r.drugs.length}`}>
+        {r.drugs.length === 0 && <div className="text-text-tertiary">—</div>}
+        {r.drugs.map((d, i) => (
+          <div key={d.id} className="rounded-md border border-border bg-surface-subtle p-3">
+            <div className="flex items-center gap-1.5 text-body text-foreground">
+              <Pill className="h-3.5 w-3.5 text-primary" />
+              <span className="font-medium">用药 {i + 1}</span>
+            </div>
+            <div className="mt-1 text-body-sm text-text-secondary space-y-0.5">
+              <div>
+                药品：{d.drugs.map((x) => `${x.name} ～${x.spec}`).join("；") || "—"}
+              </div>
+              {d.drugType && <div>药品类型：{d.drugType}</div>}
+              <div>给药方式：{d.routes.join("、") || "—"}</div>
+              <div>用药天数：{d.days} 天</div>
+              <div>
+                用药频次：{d.freq.n}天{d.freq.m}次
+              </div>
+              <div>
+                每日时段：早上 {d.slot.morning} 次；中午 {d.slot.noon} 次；下午 {d.slot.evening} 次
+              </div>
+              <div>是否按变量计算：{d.variable ? "是" : "否"}</div>
+              {d.variable && d.variableKind && <div>计算变量：{VAR_LABEL[d.variableKind]}</div>}
+              <div>
+                具体剂量：
+                {d.variable
+                  ? d.varDose && d.varDose.length
+                    ? d.varDose.map((v) => `${v.option} → ${v.dose}/次`).join("；")
+                    : "—"
+                  : d.fixedDose || "—"}
+              </div>
+            </div>
+          </div>
+        ))}
+      </ViewGroup>
+
+      <ViewGroup label={`非用药明细 · ${r.tasks.length}`}>
+        {r.tasks.length === 0 && <div className="text-text-tertiary">非用药：无</div>}
+        {r.tasks.map((t, i) => (
+          <div key={t.id} className="rounded-md border border-border bg-surface-subtle p-3">
+            <div className="flex items-center gap-1.5 text-body text-foreground">
+              <ClipboardList className="h-3.5 w-3.5 text-primary" />
+              <span className="font-medium">
+                任务 {i + 1} · {t.name}
+              </span>
+            </div>
+            <div className="mt-1 text-body-sm text-text-secondary space-y-0.5">
+              <div>任务类型：{t.type}</div>
+              <div>具体操作：{t.action}</div>
+              <div>记录方式：{t.record}</div>
+              <div>执行天数：{t.days} 天</div>
+              <div>
+                执行频次：{t.freq.n}天{t.freq.m}次
+              </div>
+              <div>
+                每日时段：早上 {t.slot.morning} 次；中午 {t.slot.noon} 次；下午 {t.slot.evening} 次
+              </div>
+            </div>
+          </div>
+        ))}
+      </ViewGroup>
+
+      <ViewGroup label="复查配置">
+        <ViewRow label="是否开启复查" value={r.review.on ? "是" : "否"} />
+        {r.review.on && (
+          <>
+            <ViewRow label="复查天数" value={`${r.review.days} 天`} />
+            <ViewRow label="复查频次" value={`${r.review.freq.n}天${r.review.freq.m}次`} />
+            <ViewRow
+              label="每日时段"
+              value={`早上 ${r.review.slot.morning} 次；中午 ${r.review.slot.noon} 次；下午 ${r.review.slot.evening} 次`}
+            />
+            <ViewRow label="复查任务描述" value={r.review.desc} />
+            <ViewRow label="任务时限" value={r.review.deadline === "24h" ? "24 小时" : "48 小时"} />
+          </>
+        )}
+        <ViewRow label="转栏信息填写" value={r.review.transferOn ? "是" : "否"} />
+      </ViewGroup>
+
+      <div className="flex items-center gap-4 text-caption text-text-tertiary pt-2 border-t border-border">
+        <span>创建人 {r.author}</span>
+        <span>更新 {r.updated}</span>
+      </div>
+    </div>
+  );
+}
+
+function ViewGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <div className="text-body-sm text-text-secondary">{label}</div>
+      <div className="space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function ViewRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-20 shrink-0 text-body-sm text-text-secondary">{label}</div>
-      <div className={`flex-1 text-body text-foreground ${mono ? "font-mono" : ""}`}>{value}</div>
+      <div className="w-32 shrink-0 text-body-sm text-text-tertiary">{label}</div>
+      <div className="flex-1 text-body-sm text-foreground break-words">{value || "—"}</div>
     </div>
   );
 }
