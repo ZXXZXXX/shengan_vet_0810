@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Pill, Plus, Search, Filter, Lock } from "lucide-react";
+import { Pill, Plus, Search, Filter, Lock, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/drug")({
   head: () => ({ meta: [{ title: "药品档案 — 奇点智牧" }] }),
@@ -545,18 +545,25 @@ function DrugForm({
           ) : (
             <div />
           )}
-          <FLong
-            label="默认具体剂量"
-            required
-            value={d.defaultDose}
-            readOnly={readOnly}
-            onChange={(v) => patch({ defaultDose: v })}
-            placeholder={
-              d.variableDose
-                ? "分档剂量，如：600-800kg → 30ml/次；400-600kg → 20ml/次"
-                : "固定剂量，如：20ml/次"
-            }
-          />
+          {d.variableDose ? (
+            <VariableDoseEditor
+              label="默认具体剂量"
+              required
+              value={d.defaultDose}
+              unit={d.doseUnit}
+              readOnly={readOnly}
+              onChange={(v) => patch({ defaultDose: v })}
+            />
+          ) : (
+            <FLong
+              label="默认具体剂量"
+              required
+              value={d.defaultDose}
+              readOnly={readOnly}
+              onChange={(v) => patch({ defaultDose: v })}
+              placeholder="固定剂量，如：20ml/次"
+            />
+          )}
           <F
             label="PC单位用药剂量上限"
             value={d.pcDoseMax ?? ""}
@@ -836,6 +843,113 @@ function FMulti({
   );
 }
 
+function VariableDoseEditor({
+  label,
+  value,
+  unit,
+  readOnly,
+  required,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  unit: string;
+  readOnly?: boolean;
+  required?: boolean;
+  onChange?: (v: string) => void;
+}) {
+  const [rows, setRows] = useState(() => parseVariableDose(value, unit));
+
+  useEffect(() => {
+    setRows(parseVariableDose(value, unit));
+  }, [value, unit]);
+
+  const updateRows = (next: Array<{ range: string; dose: string }>) => {
+    setRows(next);
+    const serialized = serializeVariableDose(next, unit);
+    if (serialized !== value) onChange?.(serialized);
+  };
+
+  const addRow = () => updateRows([...rows, { range: "", dose: "" }]);
+  const removeRow = (idx: number) => updateRows(rows.filter((_, i) => i !== idx));
+  const patchRow = (idx: number, patch: Partial<{ range: string; dose: string }>) => {
+    updateRows(rows.map((r, i) => (i === idx ? { ...r, ...patch } : r)));
+  };
+
+  return (
+    <div className="col-span-2">
+      <Lbl label={label} required={required} />
+      {readOnly ? (
+        <div className="mt-1 min-h-9 px-2 py-2 rounded-md bg-surface-subtle text-body-sm text-foreground whitespace-pre-wrap">
+          {value || <span className="text-text-tertiary">—</span>}
+        </div>
+      ) : (
+        <div className="mt-1 space-y-2">
+          {rows.map((row, i) => (
+            <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
+              <Input
+                value={row.range}
+                onChange={(e) => patchRow(i, { range: e.target.value })}
+                placeholder="变量区间，如 600-800kg"
+                className="h-9 text-body-sm"
+              />
+              <div className="flex items-center gap-2">
+                <Input
+                  value={row.dose}
+                  onChange={(e) => patchRow(i, { dose: e.target.value })}
+                  placeholder="剂量"
+                  className="h-9 text-body-sm"
+                />
+                <span className="text-body-sm text-text-secondary whitespace-nowrap">
+                  {unit}/次
+                </span>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-text-secondary hover:text-state-danger"
+                onClick={() => removeRow(i)}
+                disabled={rows.length <= 1}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-1 text-body-sm font-normal"
+            onClick={addRow}
+          >
+            <Plus className="h-3.5 w-3.5" /> 添加一组
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function parseVariableDose(value: string, unit: string): Array<{ range: string; dose: string }> {
+  const s = value.trim();
+  if (!s) return [{ range: "", dose: "" }];
+  return s.split(/[;；]/).map((part) => {
+    const m = part.match(/(.+?)\s*(?:→|->)\s*(\d+(?:\.\d+)?)(.*)/);
+    if (m) {
+      return { range: m[1].trim(), dose: m[2] };
+    }
+    const unitMatch = part.match(new RegExp(`(\\d+(?:\\.\\d+)?)\\s*${unit}`));
+    return { range: part.trim(), dose: unitMatch ? unitMatch[1] : "" };
+  });
+}
+
+function serializeVariableDose(rows: Array<{ range: string; dose: string }>, unit: string): string {
+  return rows
+    .filter((r) => r.range.trim() || r.dose.trim())
+    .map((r) => `${r.range.trim()} → ${r.dose.trim()}${unit}/次`)
+    .join("；");
+}
 function FBool({
   label,
   value,
