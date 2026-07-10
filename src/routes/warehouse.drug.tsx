@@ -385,7 +385,7 @@ function DrugArchivePage() {
       </main>
 
       <Sheet open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto bg-white">
           <SheetHeader>
             <SheetTitle className="text-section-title">
               {mode === "edit" ? "编辑药品" : mode === "create" ? "新建药品" : "药品详情"}
