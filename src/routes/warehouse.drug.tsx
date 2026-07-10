@@ -950,6 +950,7 @@ function serializeVariableDose(rows: Array<{ range: string; dose: string }>, uni
     .map((r) => `${r.range.trim()} → ${r.dose.trim()}${unit}/次`)
     .join("；");
 }
+function FBool({
   label,
   value,
   onChange,
