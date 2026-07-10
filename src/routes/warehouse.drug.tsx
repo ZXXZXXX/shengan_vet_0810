@@ -542,9 +542,19 @@ function DrugForm({
               onChange={(v) => patch({ variable: v })}
             />
           ) : (
-            <div />
+            <div className="grid grid-cols-[1fr_auto] gap-2 items-end">
+              <F
+                label="具体剂量"
+                required
+                value={d.defaultDose}
+                readOnly={readOnly}
+                onChange={(v) => patch({ defaultDose: v })}
+                placeholder="如 20"
+              />
+              <div className="pb-2 text-body-sm text-text-tertiary">{d.doseUnit}/次</div>
+            </div>
           )}
-          {d.variableDose ? (
+          {d.variableDose && (
             <VariableDoseEditor
               label="默认具体剂量"
               required
@@ -552,15 +562,6 @@ function DrugForm({
               unit={d.doseUnit}
               readOnly={readOnly}
               onChange={(v) => patch({ defaultDose: v })}
-            />
-          ) : (
-            <FLong
-              label="默认具体剂量"
-              required
-              value={d.defaultDose}
-              readOnly={readOnly}
-              onChange={(v) => patch({ defaultDose: v })}
-              placeholder="固定剂量，如：20ml/次"
             />
           )}
           <F
