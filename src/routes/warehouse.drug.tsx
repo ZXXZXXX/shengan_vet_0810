@@ -995,7 +995,6 @@ function FrequencyEditor({
             inputMode="numeric"
             value={days}
             onChange={(e) => update(sanitizeFreqValue(e.target.value), times)}
-            placeholder="n"
             className="h-9 w-20 text-body-sm text-center"
           />
           <span className="text-body-sm text-text-secondary">天</span>
@@ -1004,7 +1003,6 @@ function FrequencyEditor({
             inputMode="numeric"
             value={times}
             onChange={(e) => update(days, sanitizeFreqValue(e.target.value))}
-            placeholder="m"
             className="h-9 w-20 text-body-sm text-center"
           />
           <span className="text-body-sm text-text-secondary">次</span>
