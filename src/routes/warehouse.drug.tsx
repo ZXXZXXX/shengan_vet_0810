@@ -511,12 +511,11 @@ function DrugForm({
             readOnly={readOnly}
             onChange={(v) => patch({ doseUnit: v })}
           />
-          <F
+          <FrequencyEditor
             label="用药频次规则"
             value={d.freqRule ?? ""}
             readOnly={readOnly}
-            onChange={(v) => patch({ freqRule: v })}
-            placeholder="如：每3天1次（可空）"
+            onChange={(v: string) => patch({ freqRule: v })}
           />
           <F
             label="用药天数范围"
