@@ -281,7 +281,7 @@ function DrugArchivePage() {
   return (
     <>
       <AppHeader title="药品档案" breadcrumb={["药品管理", "药品档案"]} />
-      <main className="flex-1 px-6 py-6 space-y-4">
+      <main className="flex-1 px-6 py-6 space-y-4 bg-white">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <div className="relative">
