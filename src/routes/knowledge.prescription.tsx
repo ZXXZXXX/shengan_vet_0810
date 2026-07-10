@@ -1565,32 +1565,32 @@ function PrescriptionView({ r }: { r: Rx }) {
         {r.desc && <div className="text-body-sm text-text-secondary">{r.desc}</div>}
       </div>
 
-      <ViewGroup label="基础">
+      <ViewGroup label="处方描述">
         <ViewRow label="处方疗程" value={`${r.duration} 天`} />
         <ViewRow label="处方摘要" value={summary || "—"} />
-        {r.extra && <ViewRow label="补充说明" value={r.extra} />}
+        <ViewRow label="补充说明" value={r.extra || "—"} />
       </ViewGroup>
 
-      <ViewGroup label={`用药明细 · ${r.drugs.length}`}>
-        {r.drugs.length === 0 && <div className="text-text-tertiary">—</div>}
-        {r.drugs.map((d, i) => (
+      <ViewGroup label="处方详情">
+        {r.drugs.length === 0 && r.tasks.length === 0 && (
+          <div className="text-text-tertiary">—</div>
+        )}
+        {r.drugs.map((d) => (
           <div key={d.id} className="rounded-md border border-border bg-surface-subtle p-3">
             <div className="flex items-center gap-1.5 text-body text-foreground">
               <Pill className="h-3.5 w-3.5 text-primary" />
-              <span className="font-medium">用药 {i + 1}</span>
+              <span className="font-medium">
+                用药：{d.drugs.map((x) => `${x.name} ～${x.spec}`).join("；") || "—"}
+              </span>
             </div>
             <div className="mt-1 text-body-sm text-text-secondary space-y-0.5">
-              <div>
-                药品：{d.drugs.map((x) => `${x.name} ～${x.spec}`).join("；") || "—"}
-              </div>
               {d.drugType && <div>药品类型：{d.drugType}</div>}
               <div>给药方式：{d.routes.join("、") || "—"}</div>
               <div>用药天数：{d.days} 天</div>
+              <div>用药频次：{d.freq.n}天{d.freq.m}次</div>
+              <div>是否区分时间段：{d.slotOn ? "是" : "否"}</div>
               <div>
-                用药频次：{d.freq.n}天{d.freq.m}次
-              </div>
-              <div>
-                每日时段：早上 {d.slot.morning} 次；中午 {d.slot.noon} 次；下午 {d.slot.evening} 次
+                每日时段：早上 = {d.slot.morning} 次；中午 = {d.slot.noon} 次；下午 = {d.slot.evening} 次
               </div>
               <div>是否按变量计算：{d.variable ? "是" : "否"}</div>
               {d.variable && d.variableKind && <div>计算变量：{VAR_LABEL[d.variableKind]}</div>}
@@ -1605,32 +1605,33 @@ function PrescriptionView({ r }: { r: Rx }) {
             </div>
           </div>
         ))}
-      </ViewGroup>
-
-      <ViewGroup label={`非用药明细 · ${r.tasks.length}`}>
-        {r.tasks.length === 0 && <div className="text-text-tertiary">非用药：无</div>}
-        {r.tasks.map((t, i) => (
-          <div key={t.id} className="rounded-md border border-border bg-surface-subtle p-3">
-            <div className="flex items-center gap-1.5 text-body text-foreground">
-              <ClipboardList className="h-3.5 w-3.5 text-primary" />
-              <span className="font-medium">
-                任务 {i + 1} · {t.name}
-              </span>
+        {r.tasks.length === 0 ? (
+          r.drugs.length > 0 && (
+            <div className="rounded-md border border-border bg-surface-subtle p-3 text-body-sm text-text-secondary">
+              非用药：无
             </div>
-            <div className="mt-1 text-body-sm text-text-secondary space-y-0.5">
-              <div>任务类型：{t.type}</div>
-              <div>具体操作：{t.action}</div>
-              <div>记录方式：{t.record}</div>
-              <div>执行天数：{t.days} 天</div>
-              <div>
-                执行频次：{t.freq.n}天{t.freq.m}次
+          )
+        ) : (
+          r.tasks.map((t) => (
+            <div key={t.id} className="rounded-md border border-border bg-surface-subtle p-3">
+              <div className="flex items-center gap-1.5 text-body text-foreground">
+                <ClipboardList className="h-3.5 w-3.5 text-primary" />
+                <span className="font-medium">非用药：{t.name || "—"}</span>
               </div>
-              <div>
-                每日时段：早上 {t.slot.morning} 次；中午 {t.slot.noon} 次；下午 {t.slot.evening} 次
+              <div className="mt-1 text-body-sm text-text-secondary space-y-0.5">
+                <div>任务类型：{t.type}</div>
+                <div>具体操作：{t.action || "—"}</div>
+                <div>记录方式：{t.record}</div>
+                <div>执行天数：{t.days} 天</div>
+                <div>执行频次：{t.freq.n}天{t.freq.m}次</div>
+                <div>是否区分时间段：{t.slotOn ? "是" : "否"}</div>
+                <div>
+                  每日时段：早上 = {t.slot.morning} 次；中午 = {t.slot.noon} 次；下午 = {t.slot.evening} 次
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </ViewGroup>
 
       <ViewGroup label="复查配置">
@@ -1639,15 +1640,16 @@ function PrescriptionView({ r }: { r: Rx }) {
           <>
             <ViewRow label="复查天数" value={`${r.review.days} 天`} />
             <ViewRow label="复查频次" value={`${r.review.freq.n}天${r.review.freq.m}次`} />
+            <ViewRow label="是否区分时间段" value={r.review.slotOn ? "是" : "否"} />
             <ViewRow
               label="每日时段"
-              value={`早上 ${r.review.slot.morning} 次；中午 ${r.review.slot.noon} 次；下午 ${r.review.slot.evening} 次`}
+              value={`早上 = ${r.review.slot.morning} 次；中午 = ${r.review.slot.noon} 次；下午 = ${r.review.slot.evening} 次`}
             />
             <ViewRow label="复查任务描述" value={r.review.desc} />
+            <ViewRow label="转栏信息填写" value={r.review.transferOn ? "是" : "否"} />
             <ViewRow label="任务时限" value={r.review.deadline === "24h" ? "24 小时" : "48 小时"} />
           </>
         )}
-        <ViewRow label="转栏信息填写" value={r.review.transferOn ? "是" : "否"} />
       </ViewGroup>
 
       <div className="flex items-center gap-4 text-caption text-text-tertiary pt-2 border-t border-border">
