@@ -991,17 +991,19 @@ function FrequencyEditor({
         <div className="mt-1 h-9 flex items-center gap-2">
           <span className="text-body-sm text-text-secondary">每</span>
           <Input
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={days}
-            onChange={(e) => update(e.target.value, times)}
+            onChange={(e) => update(sanitizeFreqValue(e.target.value), times)}
             placeholder="n"
             className="h-9 w-20 text-body-sm text-center"
           />
           <span className="text-body-sm text-text-secondary">天</span>
           <Input
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={times}
-            onChange={(e) => update(days, e.target.value)}
+            onChange={(e) => update(days, sanitizeFreqValue(e.target.value))}
             placeholder="m"
             className="h-9 w-20 text-body-sm text-center"
           />
@@ -1014,7 +1016,9 @@ function FrequencyEditor({
 
 function parseFrequency(value: string): { days: string; times: string } {
   const m = value.match(/每?(\d+)天(\d+)次/);
-  if (m) return { days: m[1], times: m[2] };
+  if (m) {
+    return { days: sanitizeFreqValue(m[1]), times: sanitizeFreqValue(m[2]) };
+  }
   return { days: "", times: "" };
 }
 
@@ -1022,6 +1026,15 @@ function serializeFrequency(days: string, times: string): string {
   if (!days.trim() && !times.trim()) return "";
   return `每${days.trim()}天${times.trim()}次`;
 }
+
+function sanitizeFreqValue(v: string): string {
+  const digits = v.replace(/\D/g, "");
+  if (!digits) return "";
+  const n = parseInt(digits, 10);
+  if (n <= 0) return "";
+  return String(n);
+}
+
 function FBool({
   label,
   value,
