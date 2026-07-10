@@ -964,7 +964,7 @@ function DrugDetailRow({
         </Button>
       </div>
 
-      <Field label="可替代药品组" required hint="多选，兽医执行时按库存和拼音在其中选定 1 个">
+      <Field label="药品名称（若有可替代药品，可多选）" required hint="兽医执行时，可按实际库存从以上药品中选择合适的药品">
         <MultiDrugPicker
           value={value.drugs}
           onChange={(drugs) => onChange({ drugs })}
