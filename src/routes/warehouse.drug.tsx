@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Pill, Plus, Search, Filter, Lock } from "lucide-react";
+import { Pill, Plus, Search, Filter, Lock, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/warehouse/drug")({
   head: () => ({ meta: [{ title: "药品档案 — 奇点智牧" }] }),
@@ -545,18 +545,25 @@ function DrugForm({
           ) : (
             <div />
           )}
-          <FLong
-            label="默认具体剂量"
-            required
-            value={d.defaultDose}
-            readOnly={readOnly}
-            onChange={(v) => patch({ defaultDose: v })}
-            placeholder={
-              d.variableDose
-                ? "分档剂量，如：600-800kg → 30ml/次；400-600kg → 20ml/次"
-                : "固定剂量，如：20ml/次"
-            }
-          />
+          {d.variableDose ? (
+            <VariableDoseEditor
+              label="默认具体剂量"
+              required
+              value={d.defaultDose}
+              unit={d.doseUnit}
+              readOnly={readOnly}
+              onChange={(v) => patch({ defaultDose: v })}
+            />
+          ) : (
+            <FLong
+              label="默认具体剂量"
+              required
+              value={d.defaultDose}
+              readOnly={readOnly}
+              onChange={(v) => patch({ defaultDose: v })}
+              placeholder="固定剂量，如：20ml/次"
+            />
+          )}
           <F
             label="PC单位用药剂量上限"
             value={d.pcDoseMax ?? ""}
