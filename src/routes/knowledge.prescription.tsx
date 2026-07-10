@@ -1557,17 +1557,13 @@ function PrescriptionView({ r }: { r: Rx }) {
       <div className="rounded-lg border border-border p-4 space-y-1.5 bg-surface-subtle/50">
         <div className="flex items-center gap-2">
           <span className="tag tag-brand">{RX_KIND_LABEL[r.kind]}</span>
-          <span className="font-mono text-caption text-text-tertiary">{r.code}</span>
         </div>
         <div className="text-section-title text-foreground">{r.name}</div>
+        <div className="text-body-sm text-text-secondary">
+          当前应用于{r.category || "—"} {r.subType || "—"}（编号{r.code}）
+        </div>
         {r.desc && <div className="text-body-sm text-text-secondary">{r.desc}</div>}
       </div>
-
-      <ViewGroup label="归属">
-        <ViewRow label="疾病/事项类型" value={r.category} />
-        <ViewRow label="疾病子类型/事项名称" value={r.subType} />
-        {r.intro && <ViewRow label="疾病介绍" value={r.intro} />}
-      </ViewGroup>
 
       <ViewGroup label="基础">
         <ViewRow label="处方疗程" value={`${r.duration} 天`} />
