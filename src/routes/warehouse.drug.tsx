@@ -511,12 +511,11 @@ function DrugForm({
             readOnly={readOnly}
             onChange={(v) => patch({ doseUnit: v })}
           />
-          <F
+          <FrequencyEditor
             label="用药频次规则"
             value={d.freqRule ?? ""}
             readOnly={readOnly}
-            onChange={(v) => patch({ freqRule: v })}
-            placeholder="如：每3天1次（可空）"
+            onChange={(v: string) => patch({ freqRule: v })}
           />
           <F
             label="用药天数范围"
@@ -949,6 +948,78 @@ function serializeVariableDose(rows: Array<{ range: string; dose: string }>, uni
     .filter((r) => r.range.trim() || r.dose.trim())
     .map((r) => `${r.range.trim()} → ${r.dose.trim()}${unit}/次`)
     .join("；");
+}
+
+function FrequencyEditor({
+  label,
+  value,
+  readOnly,
+  required,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  readOnly?: boolean;
+  required?: boolean;
+  onChange?: (v: string) => void;
+}) {
+  const [days, setDays] = useState("");
+  const [times, setTimes] = useState("");
+
+  useEffect(() => {
+    const parsed = parseFrequency(value);
+    setDays(parsed.days);
+    setTimes(parsed.times);
+  }, [value]);
+
+  const update = (nextDays: string, nextTimes: string) => {
+    setDays(nextDays);
+    setTimes(nextTimes);
+    const serialized = serializeFrequency(nextDays, nextTimes);
+    if (serialized !== value) onChange?.(serialized);
+  };
+
+  return (
+    <div>
+      <Lbl label={label} required={required} />
+      {readOnly ? (
+        <div className="mt-1 h-9 flex items-center px-2 rounded-md bg-surface-subtle text-body-sm text-foreground">
+          {value || <span className="text-text-tertiary">—</span>}
+        </div>
+      ) : (
+        <div className="mt-1 h-9 flex items-center gap-2">
+          <span className="text-body-sm text-text-secondary">每</span>
+          <Input
+            type="number"
+            value={days}
+            onChange={(e) => update(e.target.value, times)}
+            placeholder="n"
+            className="h-9 w-20 text-body-sm text-center"
+          />
+          <span className="text-body-sm text-text-secondary">天</span>
+          <Input
+            type="number"
+            value={times}
+            onChange={(e) => update(days, e.target.value)}
+            placeholder="m"
+            className="h-9 w-20 text-body-sm text-center"
+          />
+          <span className="text-body-sm text-text-secondary">次</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function parseFrequency(value: string): { days: string; times: string } {
+  const m = value.match(/每?(\d+)天(\d+)次/);
+  if (m) return { days: m[1], times: m[2] };
+  return { days: "", times: "" };
+}
+
+function serializeFrequency(days: string, times: string): string {
+  if (!days.trim() && !times.trim()) return "";
+  return `每${days.trim()}天${times.trim()}次`;
 }
 function FBool({
   label,
