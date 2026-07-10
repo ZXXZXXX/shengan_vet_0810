@@ -779,55 +779,8 @@ function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) =>
       </TabsList>
 
       <TabsContent value="basic" className="mt-4 space-y-4">
-        {/* 归属 */}
-        <SectionCard title="归属信息" icon={<Stethoscope className="h-4 w-4 text-primary" />}>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="处方所属类型" required>
-              <Select
-                value={value.kind}
-                onValueChange={(v) => {
-                  const kind = v as RxKind;
-                  patch({ kind, review: defaultReview(kind) });
-                }}
-              >
-                <SelectTrigger className="h-9 text-body-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(RX_KIND_LABEL) as RxKind[]).map((k) => (
-                    <SelectItem key={k} value={k}>
-                      {RX_KIND_LABEL[k]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-            <Field label={value.kind === "disease" ? "疾病类型" : "事项类型"} required>
-              <Input
-                value={value.category}
-                onChange={(e) => patch({ category: e.target.value })}
-                className="h-9 text-body-sm"
-                placeholder={value.kind === "disease" ? "如 乳房炎" : "如 干奶"}
-              />
-            </Field>
-          </div>
-          <Field label={value.kind === "disease" ? "疾病子类型" : "事项名称"} required>
-            <Input
-              value={value.subType}
-              onChange={(e) => patch({ subType: e.target.value })}
-              className="h-9 text-body-sm"
-              placeholder={value.kind === "disease" ? "如 乳房炎一级" : "如 常规干奶"}
-            />
-          </Field>
-          <Field label="疾病介绍 / 诊断要点">
-            <Textarea
-              value={value.intro ?? ""}
-              onChange={(e) => patch({ intro: e.target.value })}
-              className="text-body-sm min-h-16"
-              placeholder="说明用，展示于处方详情"
-            />
-          </Field>
-        </SectionCard>
+        {/* 归属信息由所属疾病/事项上下文带出，此处不再编辑 */}
+
 
         {/* 基础 */}
         <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
