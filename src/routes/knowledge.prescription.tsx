@@ -627,14 +627,16 @@ function PrescriptionPage() {
 
       {/* 编辑抽屉 */}
       <Sheet open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-3xl overflow-y-auto bg-white">
-          <SheetHeader>
+        <SheetContent side="right" className="w-full sm:max-w-3xl bg-white flex flex-col gap-0 p-0 overflow-hidden">
+          <SheetHeader className="px-6 pt-6 pb-2">
             <SheetTitle className="text-section-title">
               {list.some((r) => r.id === editing?.id) ? "编辑处方" : "新建处方"}
             </SheetTitle>
           </SheetHeader>
-          {editing && <PrescriptionForm value={editing} onChange={setEditing} />}
-          <SheetFooter className="mt-6 flex-row justify-end gap-2">
+          <div className="flex-1 overflow-y-auto px-6 py-2">
+            {editing && <PrescriptionForm value={editing} onChange={setEditing} />}
+          </div>
+          <SheetFooter className="p-6 border-t border-border bg-white flex-row justify-end gap-2">
             <Button variant="outline" onClick={() => setEditing(null)}>
               取消
             </Button>
