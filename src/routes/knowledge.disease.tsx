@@ -24,7 +24,20 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { BookOpen, Plus, Search, Filter, Pencil, Trash2, X, MoreHorizontal } from "lucide-react";
+import {
+  BookOpen,
+  Plus,
+  Search,
+  Filter,
+  Pencil,
+  Trash2,
+  X,
+  MoreHorizontal,
+  FileText,
+  Stethoscope,
+  Pill,
+  Tag,
+} from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
@@ -34,40 +47,221 @@ export const Route = createFileRoute("/knowledge/disease")({
   component: DiseaseKBPage,
 });
 
+// ---------- 数据模型 ----------
+
+type DiseaseCategory = { code: string; name: string };
+type DiseaseType = { id: string; name: string; seq: string; categoryCode: string };
+type SymptomRef = { code: string; name: string; core?: boolean };
+type PrescriptionRef = { code: string; name: string; level: "首选" | "备选" | "特殊处方"; defaultRx?: boolean };
+type CattleGroup = "泌乳牛" | "干奶牛" | "围产牛" | "犊牛" | "育成牛";
+
 type Disease = {
   id: string;
-  name: string;
-  cat: string;
-  severity: string;
-  symptoms: string[];
-  prevent: string;
+  code: string;              // DZ-xxxxxx
+  typeId: string;            // 所属疾病类型
+  subSeq: string;            // 子类型 3 位序号
+  name: string;              // 疾病子类型名称
+  alias?: string;            // 英文/缩写
+  aliases: string[];         // 别名
+  presentation: string;      // 典型表现
+  treatable: boolean;        // 是否治疗
+  groups: CattleGroup[];     // 适用牛群
+  status: "启用" | "停用";
+  order?: number;
+  remark?: string;
+  symptoms: SymptomRef[];
+  prescriptions: PrescriptionRef[];
 };
 
-const CAT_OPTIONS = ["繁殖系统", "蹄部疾病", "消化系统", "传染病", "代谢疾病", "呼吸系统", "其他"];
-const SEVERITY_OPTIONS = ["低", "中", "高"];
-
-const seed: Disease[] = [
-  { id: "DZ-001", name: "乳房炎", cat: "繁殖系统", severity: "高", symptoms: ["乳房红肿", "热痛", "乳汁异常"], prevent: "挤奶卫生、乳头药浴" },
-  { id: "DZ-002", name: "蹄叶炎", cat: "蹄部疾病", severity: "中", symptoms: ["跛行", "蹄部发热", "行走困难"], prevent: "定期修蹄、地面保持干燥" },
-  { id: "DZ-003", name: "瘤胃酸中毒", cat: "消化系统", severity: "高", symptoms: ["食欲减退", "腹泻", "瘤胃运动减弱"], prevent: "饲料过渡渐进、平衡精粗比" },
-  { id: "DZ-004", name: "口蹄疫", cat: "传染病", severity: "高", symptoms: ["口腔水疱", "蹄部水疱", "乳房水疱", "溃烂"], prevent: "强制免疫、隔离消毒" },
-  { id: "DZ-005", name: "酮病", cat: "代谢疾病", severity: "中", symptoms: ["食欲下降", "产奶量骤减", "酮味"], prevent: "围产期能量平衡、监测血酮" },
+const CATEGORIES: DiseaseCategory[] = [
+  { code: "DL-01", name: "子宫炎类" },
+  { code: "DL-02", name: "产后代谢病类" },
+  { code: "DL-03", name: "乳房炎类" },
+  { code: "DL-04", name: "消化道类" },
+  { code: "DL-05", name: "其他类" },
+  { code: "DL-06", name: "上呼吸道类" },
+  { code: "DL-07", name: "肢蹄病类" },
 ];
 
-function severityTagClass(s: string) {
-  if (s === "高") return "tag-danger";
-  if (s === "中") return "tag-warning";
-  return "tag-muted";
+const TYPES: DiseaseType[] = [
+  { id: "T-001", name: "乳房炎", seq: "001", categoryCode: "DL-03" },
+  { id: "T-002", name: "真胃变位", seq: "002", categoryCode: "DL-02" },
+  { id: "T-003", name: "其他四肢疾病", seq: "003", categoryCode: "DL-07" },
+  { id: "T-004", name: "子宫炎", seq: "004", categoryCode: "DL-01" },
+  { id: "T-005", name: "瘤胃酸中毒", seq: "005", categoryCode: "DL-04" },
+  { id: "T-006", name: "酮病", seq: "006", categoryCode: "DL-02" },
+];
+
+const GROUP_OPTIONS: CattleGroup[] = ["泌乳牛", "干奶牛", "围产牛", "犊牛", "育成牛"];
+
+const seed: Disease[] = [
+  {
+    id: "D-001001",
+    code: "DZ-001001",
+    typeId: "T-001",
+    subSeq: "001",
+    name: "乳房炎一级",
+    alias: "",
+    aliases: ["隐性乳房炎"],
+    presentation: "乳汁外观正常,但体细胞升高,乳房无明显红肿。",
+    treatable: true,
+    groups: ["泌乳牛"],
+    status: "启用",
+    order: 1,
+    symptoms: [
+      { code: "SY-010", name: "体细胞升高", core: true },
+      { code: "SY-011", name: "乳汁略有絮片" },
+    ],
+    prescriptions: [
+      { code: "RX-000001", name: "乳房炎一级基础方案", level: "首选", defaultRx: true },
+    ],
+  },
+  {
+    id: "D-001002",
+    code: "DZ-001002",
+    typeId: "T-001",
+    subSeq: "002",
+    name: "乳房炎二级",
+    aliases: ["临床乳房炎"],
+    presentation: "乳房红肿热痛,乳汁絮片、颜色异常,产量下降。",
+    treatable: true,
+    groups: ["泌乳牛"],
+    status: "启用",
+    order: 2,
+    symptoms: [
+      { code: "SY-012", name: "乳房红肿", core: true },
+      { code: "SY-013", name: "乳汁絮片", core: true },
+      { code: "SY-014", name: "产量下降" },
+    ],
+    prescriptions: [
+      { code: "RX-000002", name: "乳房炎二级抗菌方案", level: "首选", defaultRx: true },
+      { code: "RX-000003", name: "乳房炎二级备选方案", level: "备选" },
+    ],
+  },
+  {
+    id: "D-001003",
+    code: "DZ-001003",
+    typeId: "T-001",
+    subSeq: "003",
+    name: "乳房炎三级",
+    aliases: ["急性重症乳房炎"],
+    presentation: "全身症状明显,发热、食欲下降,乳房严重红肿,乳汁水样或血样。",
+    treatable: true,
+    groups: ["泌乳牛"],
+    status: "启用",
+    order: 3,
+    symptoms: [
+      { code: "SY-015", name: "全身发热", core: true },
+      { code: "SY-016", name: "乳汁水样", core: true },
+      { code: "SY-017", name: "食欲废绝" },
+    ],
+    prescriptions: [
+      { code: "RX-000004", name: "乳房炎三级重症方案", level: "首选", defaultRx: true },
+    ],
+  },
+  {
+    id: "D-002001",
+    code: "DZ-002001",
+    typeId: "T-002",
+    subSeq: "001",
+    name: "真胃左移",
+    alias: "LDA",
+    aliases: ["左移真胃变位"],
+    presentation: "食欲下降,产奶量骤减,左侧腹壁叩诊呈钢管音。",
+    treatable: true,
+    groups: ["泌乳牛", "围产牛"],
+    status: "启用",
+    order: 1,
+    symptoms: [
+      { code: "SY-020", name: "钢管音(左)", core: true },
+      { code: "SY-021", name: "食欲下降" },
+    ],
+    prescriptions: [
+      { code: "RX-000010", name: "真胃左移手术方案", level: "首选", defaultRx: true },
+    ],
+  },
+  {
+    id: "D-003001",
+    code: "DZ-003001",
+    typeId: "T-003",
+    subSeq: "001",
+    name: "腐蹄病",
+    aliases: ["蹄间腐烂"],
+    presentation: "蹄间皮肤红肿溃烂,恶臭,跛行明显。",
+    treatable: true,
+    groups: ["泌乳牛", "干奶牛"],
+    status: "启用",
+    order: 1,
+    symptoms: [
+      { code: "SY-030", name: "跛行", core: true },
+      { code: "SY-031", name: "蹄间恶臭" },
+    ],
+    prescriptions: [
+      { code: "RX-000020", name: "腐蹄病清创方案", level: "首选", defaultRx: true },
+    ],
+  },
+  {
+    id: "D-004001",
+    code: "DZ-004001",
+    typeId: "T-004",
+    subSeq: "001",
+    name: "子宫炎",
+    aliases: [],
+    presentation: "阴道排出脓性或褐色恶臭分泌物,全身症状可有可无。",
+    treatable: true,
+    groups: ["泌乳牛", "围产牛"],
+    status: "启用",
+    order: 1,
+    symptoms: [
+      { code: "SY-040", name: "阴道脓性分泌物", core: true },
+    ],
+    prescriptions: [
+      { code: "RX-000030", name: "子宫炎冲洗方案", level: "首选", defaultRx: true },
+    ],
+  },
+];
+
+// ---------- 工具 ----------
+
+const typeById = (id: string) => TYPES.find((t) => t.id === id);
+const categoryByCode = (code: string) => CATEGORIES.find((c) => c.code === code);
+const typeLabel = (id: string) => typeById(id)?.name ?? "—";
+const categoryOfType = (id: string) => {
+  const t = typeById(id);
+  return t ? categoryByCode(t.categoryCode) : undefined;
+};
+
+function statusTagClass(s: string) {
+  return s === "启用" ? "tag-success" : "tag-muted";
 }
+
+// ---------- 主页面 ----------
 
 function DiseaseKBPage() {
   const [list, setList] = useState<Disease[]>(seed);
+  const [keyword, setKeyword] = useState("");
+  const [filterCat, setFilterCat] = useState<string>("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<Disease | null>(null);
   const [viewing, setViewing] = useState<Disease | null>(null);
   const [pendingDelete, setPendingDelete] = useState<string[] | null>(null);
 
-  const allChecked = list.length > 0 && selected.size === list.length;
+  const filtered = useMemo(() => {
+    return list.filter((d) => {
+      const t = typeById(d.typeId);
+      if (filterCat !== "all" && t?.categoryCode !== filterCat) return false;
+      if (!keyword.trim()) return true;
+      const k = keyword.trim().toLowerCase();
+      return (
+        d.name.toLowerCase().includes(k) ||
+        d.code.toLowerCase().includes(k) ||
+        (t?.name.toLowerCase().includes(k) ?? false) ||
+        d.symptoms.some((s) => s.name.toLowerCase().includes(k))
+      );
+    });
+  }, [list, keyword, filterCat]);
+
+  const allChecked = filtered.length > 0 && filtered.every((d) => selected.has(d.id));
   const someChecked = selected.size > 0 && !allChecked;
 
   const toggleOne = (id: string) =>
@@ -76,7 +270,8 @@ function DiseaseKBPage() {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
-  const toggleAll = () => setSelected(allChecked ? new Set() : new Set(list.map((d) => d.id)));
+  const toggleAll = () =>
+    setSelected(allChecked ? new Set() : new Set(filtered.map((d) => d.id)));
 
   const confirmDelete = () => {
     if (!pendingDelete) return;
@@ -86,7 +281,7 @@ function DiseaseKBPage() {
       pendingDelete.forEach((id) => next.delete(id));
       return next;
     });
-    toast.success(`已删除 ${pendingDelete.length} 条词条`);
+    toast.success(`已删除 ${pendingDelete.length} 条疾病子类型`);
     setPendingDelete(null);
   };
 
@@ -97,13 +292,23 @@ function DiseaseKBPage() {
     setEditing(null);
   };
 
-  const batchEdit = () => {
-    if (selected.size === 1) {
-      const one = list.find((d) => d.id === Array.from(selected)[0]);
-      if (one) setEditing({ ...one });
-    } else {
-      toast.info("批量编辑仅支持单条,多条请逐条编辑或使用批量删除");
-    }
+  const openCreate = () => {
+    const nextTypeSeq = "007";
+    const draft: Disease = {
+      id: `D-new-${Date.now()}`,
+      code: "DZ-—",
+      typeId: TYPES[0]?.id ?? "T-001",
+      subSeq: nextTypeSeq,
+      name: "",
+      aliases: [],
+      presentation: "",
+      treatable: true,
+      groups: [],
+      status: "启用",
+      symptoms: [],
+      prescriptions: [],
+    };
+    setEditing(draft);
   };
 
   const headerCheckRef = useMemo(
@@ -121,12 +326,34 @@ function DiseaseKBPage() {
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-              <Input placeholder="搜索疾病名称 / 症状" className="h-9 w-72 pl-9 text-body-sm" />
+              <Input
+                placeholder="搜索疾病名称 / 编码 / 症状"
+                className="h-9 w-72 pl-9 text-body-sm"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+              />
             </div>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal"><Filter className="h-3.5 w-3.5" /> 分类</Button>
+            <Select value={filterCat} onValueChange={setFilterCat}>
+              <SelectTrigger className="h-9 w-40 text-body-sm">
+                <div className="flex items-center gap-1.5">
+                  <Filter className="h-3.5 w-3.5" />
+                  <SelectValue placeholder="疾病分类" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全部分类</SelectItem>
+                {CATEGORIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
-            <Plus className="h-3.5 w-3.5" /> 新建词条
+          <Button
+            size="sm"
+            className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+            onClick={openCreate}
+          >
+            <Plus className="h-3.5 w-3.5" /> 新建疾病子类型
           </Button>
         </div>
 
@@ -134,9 +361,6 @@ function DiseaseKBPage() {
           <div className="flex items-center justify-between gap-3 px-4 h-11 rounded-md border border-primary/30 bg-brand-subtle">
             <span className="text-body-sm text-foreground">已选 {selected.size} 项</span>
             <div className="flex items-center gap-1.5">
-              <Button variant="outline" size="sm" className="h-8 gap-1.5 text-body-sm font-normal" onClick={batchEdit}>
-                <Pencil className="h-3.5 w-3.5" /> 批量编辑
-              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -155,38 +379,49 @@ function DiseaseKBPage() {
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <Checkbox ref={headerCheckRef} checked={allChecked} onCheckedChange={toggleAll} aria-label="全选" />
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 flex-1 min-w-0">
-              <div>编号</div>
-              <div>名称</div>
-              <div>分类</div>
-              <div>严重程度</div>
-              <div>典型症状</div>
+            <div className="grid grid-cols-[140px_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_80px_80px_minmax(0,1.6fr)] gap-4 flex-1 min-w-0">
+              <div>疾病编码</div>
+              <div>疾病子类型</div>
+              <div>所属疾病类型</div>
+              <div>疾病分类</div>
+              <div>是否治疗</div>
+              <div>状态</div>
+              <div>常见症状</div>
             </div>
             <div className="w-[160px] text-right shrink-0">功能</div>
           </div>
-          {list.map((d) => {
+          {filtered.map((d) => {
             const checked = selected.has(d.id);
+            const t = typeById(d.typeId);
+            const cat = t ? categoryByCode(t.categoryCode) : undefined;
             return (
               <div
                 key={d.id}
                 className={`flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 ${checked ? "bg-brand-subtle/60" : "hover:bg-surface-subtle"}`}
               >
                 <Checkbox checked={checked} onCheckedChange={() => toggleOne(d.id)} aria-label={`选择 ${d.name}`} />
-                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 flex-1 min-w-0">
-                  <div className="font-mono text-body text-foreground truncate">{d.id}</div>
+                <div className="grid grid-cols-[140px_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_80px_80px_minmax(0,1.6fr)] gap-4 flex-1 min-w-0">
+                  <div className="font-mono text-body text-foreground truncate">{d.code}</div>
                   <div className="flex items-center gap-1.5 text-body text-foreground truncate">
                     <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" />
                     <span className="truncate">{d.name}</span>
                   </div>
-                  <div className="text-body-sm text-text-secondary truncate">{d.cat}</div>
-                  <div className="truncate"><span className={`tag ${severityTagClass(d.severity)}`}>{d.severity}</span></div>
+                  <div className="text-body-sm text-text-secondary truncate">{t?.name ?? "—"}</div>
+                  <div className="text-body-sm text-text-secondary truncate">{cat?.name ?? "—"}</div>
+                  <div className="truncate">
+                    <span className={`tag ${d.treatable ? "tag-muted" : "tag-warning"}`}>{d.treatable ? "是" : "否"}</span>
+                  </div>
+                  <div className="truncate">
+                    <span className={`tag ${statusTagClass(d.status)}`}>{d.status}</span>
+                  </div>
                   <div className="flex items-center gap-1 min-w-0 overflow-hidden">
                     {d.symptoms.slice(0, 3).map((s) => (
-                      <span key={s} className="tag tag-muted whitespace-nowrap">{s}</span>
+                      <span key={s.code} className="tag tag-muted whitespace-nowrap">{s.name}</span>
                     ))}
                     {d.symptoms.length > 3 && (
                       <span className="tag tag-muted whitespace-nowrap">+{d.symptoms.length - 3}</span>
                     )}
+                    {d.symptoms.length === 0 && <span className="text-text-tertiary text-body-sm">暂无</span>}
                   </div>
                 </div>
                 <div className="w-[160px] shrink-0 flex justify-end items-center gap-0.5">
@@ -202,7 +437,7 @@ function DiseaseKBPage() {
                     variant="ghost"
                     size="sm"
                     className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-                    onClick={() => setEditing({ ...d })}
+                    onClick={() => setEditing({ ...d, aliases: [...d.aliases], groups: [...d.groups], symptoms: d.symptoms.map((s) => ({ ...s })), prescriptions: d.prescriptions.map((p) => ({ ...p })) })}
                   >
                     编辑
                   </Button>
@@ -230,83 +465,52 @@ function DiseaseKBPage() {
               </div>
             );
           })}
+          {filtered.length === 0 && (
+            <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">暂无匹配的疾病子类型</div>
+          )}
         </Card>
       </main>
 
+      {/* 编辑抽屉 —— 底部吸底保存/取消 */}
       <Sheet open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="text-section-title">编辑疾病词条</SheetTitle>
+        <SheetContent side="right" className="w-full sm:max-w-2xl flex flex-col gap-0 p-0 overflow-hidden">
+          <SheetHeader className="px-6 pt-6 pb-2">
+            <SheetTitle className="text-section-title">
+              {editing?.code?.startsWith("DZ-—") ? "新建疾病子类型" : "编辑疾病子类型"}
+            </SheetTitle>
           </SheetHeader>
-          {editing && (
-            <div className="mt-4 space-y-4">
-              <div className="space-y-1.5">
-                <Label className="text-body-sm text-text-secondary">疾病名称</Label>
-                <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-body-sm text-text-secondary">分类</Label>
-                  <Select value={editing.cat} onValueChange={(v) => setEditing({ ...editing, cat: v })}>
-                    <SelectTrigger><SelectValue placeholder="选择分类" /></SelectTrigger>
-                    <SelectContent>
-                      {CAT_OPTIONS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-body-sm text-text-secondary">严重程度</Label>
-                  <Select value={editing.severity} onValueChange={(v) => setEditing({ ...editing, severity: v })}>
-                    <SelectTrigger><SelectValue placeholder="选择严重程度" /></SelectTrigger>
-                    <SelectContent>
-                      {SEVERITY_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-body-sm text-text-secondary">典型症状</Label>
-                <SymptomTags
-                  value={editing.symptoms}
-                  onChange={(next) => setEditing({ ...editing, symptoms: next })}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-body-sm text-text-secondary">防控要点</Label>
-                <Textarea rows={3} value={editing.prevent} onChange={(e) => setEditing({ ...editing, prevent: e.target.value })} />
-              </div>
-            </div>
-          )}
-          <SheetFooter className="mt-6 flex-row justify-end gap-2">
+          <div className="flex-1 overflow-y-auto px-6 py-2 space-y-4">
+            {editing && <EditForm value={editing} onChange={setEditing} />}
+          </div>
+          <SheetFooter className="p-6 border-t border-border bg-white flex-row justify-end gap-2">
             <Button variant="outline" onClick={() => setEditing(null)}>取消</Button>
             <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={saveEdit}>保存</Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
 
+      {/* 查看抽屉 */}
       <Sheet open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="text-section-title">疾病词条详情</SheetTitle>
+        <SheetContent side="right" className="w-full sm:max-w-2xl flex flex-col gap-0 p-0 overflow-hidden">
+          <SheetHeader className="px-6 pt-6 pb-2">
+            <SheetTitle className="text-section-title">疾病详情</SheetTitle>
           </SheetHeader>
-          {viewing && (
-            <div className="mt-4 space-y-3">
-              <ViewRow label="编号" value={viewing.id} mono />
-              <ViewRow label="名称" value={viewing.name} />
-              <ViewRow label="分类" value={viewing.cat} />
-              <ViewRow label="严重程度" value={viewing.severity} />
-              <div className="flex items-start gap-3">
-                <div className="w-20 shrink-0 text-body-sm text-text-secondary">典型症状</div>
-                <div className="flex-1 flex flex-wrap gap-1">
-                  {viewing.symptoms.map((s) => <span key={s} className="tag tag-muted">{s}</span>)}
-                </div>
-              </div>
-              <ViewRow label="防控要点" value={viewing.prevent} />
-            </div>
-          )}
-          <SheetFooter className="mt-6 flex-row justify-end gap-2">
+          <div className="flex-1 overflow-y-auto px-6 py-2 space-y-4">
+            {viewing && <DetailView value={viewing} />}
+          </div>
+          <SheetFooter className="p-6 border-t border-border bg-white flex-row justify-end gap-2">
             <Button variant="outline" onClick={() => setViewing(null)}>关闭</Button>
-            <Button className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground" onClick={() => { if (viewing) { setEditing({ ...viewing }); setViewing(null); } }}>编辑</Button>
+            <Button
+              className="bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+              onClick={() => {
+                if (viewing) {
+                  setEditing({ ...viewing, aliases: [...viewing.aliases], groups: [...viewing.groups], symptoms: viewing.symptoms.map((s) => ({ ...s })), prescriptions: viewing.prescriptions.map((p) => ({ ...p })) });
+                  setViewing(null);
+                }
+              }}
+            >
+              编辑
+            </Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
@@ -316,7 +520,7 @@ function DiseaseKBPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>确认删除</AlertDialogTitle>
             <AlertDialogDescription>
-              将删除 {pendingDelete?.length ?? 0} 条疾病词条,删除后不可恢复。
+              将删除 {pendingDelete?.length ?? 0} 条疾病子类型,删除后不可恢复。历史诊断记录仍会保留当时的编码快照。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -334,16 +538,401 @@ function DiseaseKBPage() {
   );
 }
 
-function ViewRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+// ---------- 编辑表单 ----------
+
+function SectionCard({
+  title,
+  icon,
+  action,
+  children,
+}: {
+  title: string;
+  icon?: React.ReactNode;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="w-20 shrink-0 text-body-sm text-text-secondary">{label}</div>
-      <div className={`flex-1 text-body text-foreground ${mono ? "font-mono" : ""}`}>{value}</div>
+    <section className="rounded-lg border border-border bg-card">
+      <div className="flex items-center justify-between px-4 h-11 border-b border-border">
+        <div className="flex items-center gap-1.5 text-card-title text-foreground">
+          {icon}
+          {title}
+        </div>
+        {action}
+      </div>
+      <div className="p-4 space-y-3">{children}</div>
+    </section>
+  );
+}
+
+function Field({ label, required, children, hint }: { label: string; required?: boolean; children: React.ReactNode; hint?: string }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-body-sm text-text-secondary">
+        {label}
+        {required && <span className="text-[var(--state-danger)] ml-0.5">*</span>}
+      </Label>
+      {children}
+      {hint && <div className="text-caption text-text-tertiary">{hint}</div>}
     </div>
   );
 }
 
-function SymptomTags({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+function EditForm({ value, onChange }: { value: Disease; onChange: (v: Disease) => void }) {
+  const cat = categoryOfType(value.typeId);
+
+  return (
+    <>
+      <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="疾病编码" hint="系统自动生成,不可修改">
+            <Input value={value.code} readOnly className="font-mono bg-surface-subtle" />
+          </Field>
+          <Field label="所属疾病类型" required>
+            <Select value={value.typeId} onValueChange={(v) => onChange({ ...value, typeId: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {TYPES.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="疾病子类型名称" required>
+            <Input value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} placeholder="如:乳房炎一级" />
+          </Field>
+          <Field label="疾病分类" hint="由所属疾病类型带出">
+            <Input value={cat?.name ?? "—"} readOnly className="bg-surface-subtle" />
+          </Field>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="疾病英文/缩写">
+            <Input value={value.alias ?? ""} onChange={(e) => onChange({ ...value, alias: e.target.value })} placeholder="如: LDA" />
+          </Field>
+          <Field label="疾病别名">
+            <TagInput value={value.aliases} onChange={(v) => onChange({ ...value, aliases: v })} placeholder="输入后回车" />
+          </Field>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          <Field label="状态" required>
+            <Select value={value.status} onValueChange={(v) => onChange({ ...value, status: v as Disease["status"] })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="启用">启用</SelectItem>
+                <SelectItem value="停用">停用</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="排序值">
+            <Input
+              type="number"
+              value={value.order ?? ""}
+              onChange={(e) => onChange({ ...value, order: e.target.value ? Number(e.target.value) : undefined })}
+              placeholder="同类型内排序"
+            />
+          </Field>
+          <Field label="是否治疗" required hint="选择否将走放弃治疗兜底">
+            <Select value={value.treatable ? "yes" : "no"} onValueChange={(v) => onChange({ ...value, treatable: v === "yes" })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="yes">是</SelectItem>
+                <SelectItem value="no">否</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="临床信息" icon={<Stethoscope className="h-4 w-4 text-primary" />}>
+        <Field label="典型表现">
+          <Textarea
+            rows={3}
+            value={value.presentation}
+            onChange={(e) => onChange({ ...value, presentation: e.target.value })}
+            placeholder="用于疾病详情页展示的疾病介绍或典型表现"
+          />
+        </Field>
+        <Field label="适用牛群">
+          <div className="flex flex-wrap gap-2">
+            {GROUP_OPTIONS.map((g) => {
+              const active = value.groups.includes(g);
+              return (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() =>
+                    onChange({
+                      ...value,
+                      groups: active ? value.groups.filter((x) => x !== g) : [...value.groups, g],
+                    })
+                  }
+                  className={`px-3 h-7 rounded-md border text-body-sm transition-colors ${
+                    active
+                      ? "border-primary bg-brand-subtle text-primary"
+                      : "border-border text-text-secondary hover:bg-surface-subtle"
+                  }`}
+                >
+                  {g}
+                </button>
+              );
+            })}
+          </div>
+        </Field>
+      </SectionCard>
+
+      <SectionCard title="常见症状" icon={<Tag className="h-4 w-4 text-primary" />}>
+        <div className="space-y-2">
+          {value.symptoms.length === 0 && (
+            <div className="text-body-sm text-text-tertiary py-2">暂未关联症状</div>
+          )}
+          {value.symptoms.map((s, idx) => (
+            <div key={s.code + idx} className="flex items-center gap-2 rounded-md border border-border px-3 py-2">
+              <span className="font-mono text-body-sm text-text-secondary w-20 shrink-0">{s.code}</span>
+              <Input
+                value={s.name}
+                onChange={(e) => {
+                  const next = [...value.symptoms];
+                  next[idx] = { ...s, name: e.target.value };
+                  onChange({ ...value, symptoms: next });
+                }}
+                className="h-8"
+              />
+              <label className="flex items-center gap-1.5 text-body-sm text-text-secondary shrink-0">
+                <Checkbox
+                  checked={!!s.core}
+                  onCheckedChange={(c) => {
+                    const next = [...value.symptoms];
+                    next[idx] = { ...s, core: !!c };
+                    onChange({ ...value, symptoms: next });
+                  }}
+                />
+                核心症状
+              </label>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
+                onClick={() => onChange({ ...value, symptoms: value.symptoms.filter((_, i) => i !== idx) })}
+                aria-label="移除症状"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 text-body-sm font-normal"
+            onClick={() =>
+              onChange({
+                ...value,
+                symptoms: [...value.symptoms, { code: `SY-${String(100 + value.symptoms.length).padStart(3, "0")}`, name: "" }],
+              })
+            }
+          >
+            <Plus className="h-3.5 w-3.5" /> 关联症状
+          </Button>
+        </div>
+      </SectionCard>
+
+      {value.treatable ? (
+        <SectionCard title="适用处方" icon={<Pill className="h-4 w-4 text-primary" />}>
+          <div className="space-y-2">
+            {value.prescriptions.length === 0 && (
+              <div className="text-body-sm text-text-tertiary py-2">暂未配置处方</div>
+            )}
+            {value.prescriptions.map((p, idx) => (
+              <div key={p.code + idx} className="flex items-center gap-2 rounded-md border border-border px-3 py-2">
+                <span className="font-mono text-body-sm text-text-secondary w-24 shrink-0">{p.code}</span>
+                <Input
+                  value={p.name}
+                  onChange={(e) => {
+                    const next = [...value.prescriptions];
+                    next[idx] = { ...p, name: e.target.value };
+                    onChange({ ...value, prescriptions: next });
+                  }}
+                  className="h-8"
+                />
+                <Select
+                  value={p.level}
+                  onValueChange={(v) => {
+                    const next = [...value.prescriptions];
+                    next[idx] = { ...p, level: v as PrescriptionRef["level"] };
+                    onChange({ ...value, prescriptions: next });
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-28 shrink-0"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="首选">首选</SelectItem>
+                    <SelectItem value="备选">备选</SelectItem>
+                    <SelectItem value="特殊处方">特殊处方</SelectItem>
+                  </SelectContent>
+                </Select>
+                <label className="flex items-center gap-1.5 text-body-sm text-text-secondary shrink-0">
+                  <Checkbox
+                    checked={!!p.defaultRx}
+                    onCheckedChange={(c) => {
+                      const next = value.prescriptions.map((x, i) => ({ ...x, defaultRx: i === idx ? !!c : false }));
+                      onChange({ ...value, prescriptions: next });
+                    }}
+                  />
+                  默认
+                </label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
+                  onClick={() => onChange({ ...value, prescriptions: value.prescriptions.filter((_, i) => i !== idx) })}
+                  aria-label="移除处方"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 text-body-sm font-normal"
+              onClick={() =>
+                onChange({
+                  ...value,
+                  prescriptions: [
+                    ...value.prescriptions,
+                    { code: `RX-${String(900000 + value.prescriptions.length).padStart(6, "0")}`, name: "", level: "备选" },
+                  ],
+                })
+              }
+            >
+              <Plus className="h-3.5 w-3.5" /> 关联处方
+            </Button>
+          </div>
+        </SectionCard>
+      ) : (
+        <SectionCard title="适用处方" icon={<Pill className="h-4 w-4 text-primary" />}>
+          <div className="rounded-md bg-surface-subtle px-3 py-3 text-body-sm text-text-secondary">
+            该疾病子类型「是否治疗」= 否,mobile 端诊断时将展示:放弃治疗,请登记"死亡/淘汰"。
+          </div>
+        </SectionCard>
+      )}
+
+      <SectionCard title="备注" icon={<FileText className="h-4 w-4 text-primary" />}>
+        <Textarea
+          rows={2}
+          value={value.remark ?? ""}
+          onChange={(e) => onChange({ ...value, remark: e.target.value })}
+          placeholder="数据清洗、待确认事项或业务说明"
+        />
+      </SectionCard>
+    </>
+  );
+}
+
+// ---------- 详情视图 ----------
+
+function DetailView({ value }: { value: Disease }) {
+  const t = typeById(value.typeId);
+  const cat = t ? categoryByCode(t.categoryCode) : undefined;
+  return (
+    <>
+      <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
+        <KV label="疾病类型" value={t?.name ?? "—"} />
+        <KV label="疾病名称" value={value.name} />
+        <KV label="疾病编码" value={value.code} mono />
+        <KV label="疾病分类" value={cat?.name ?? "—"} />
+        {value.alias && <KV label="英文/缩写" value={value.alias} />}
+        {value.aliases.length > 0 && (
+          <KV
+            label="别名"
+            valueNode={
+              <div className="flex flex-wrap gap-1">
+                {value.aliases.map((a) => <span key={a} className="tag tag-muted">{a}</span>)}
+              </div>
+            }
+          />
+        )}
+        <KV label="是否治疗" value={value.treatable ? "是" : "否"} />
+        <KV
+          label="状态"
+          valueNode={<span className={`tag ${statusTagClass(value.status)}`}>{value.status}</span>}
+        />
+        {value.groups.length > 0 && (
+          <KV
+            label="适用牛群"
+            valueNode={
+              <div className="flex flex-wrap gap-1">
+                {value.groups.map((g) => <span key={g} className="tag tag-muted">{g}</span>)}
+              </div>
+            }
+          />
+        )}
+      </SectionCard>
+
+      {value.presentation && (
+        <SectionCard title="典型表现" icon={<Stethoscope className="h-4 w-4 text-primary" />}>
+          <div className="text-body text-foreground whitespace-pre-wrap">{value.presentation}</div>
+        </SectionCard>
+      )}
+
+      <SectionCard title="常见症状" icon={<Tag className="h-4 w-4 text-primary" />}>
+        {value.symptoms.length === 0 ? (
+          <div className="text-body-sm text-text-tertiary">暂无</div>
+        ) : (
+          <div className="space-y-1.5">
+            {value.symptoms.map((s) => (
+              <div key={s.code} className="flex items-center gap-2 text-body">
+                <span className={`tag ${s.core ? "tag-success" : "tag-muted"}`}>{s.name}</span>
+                <span className="font-mono text-body-sm text-text-tertiary">{s.code}</span>
+                {s.core && <span className="text-caption text-primary">核心</span>}
+              </div>
+            ))}
+          </div>
+        )}
+      </SectionCard>
+
+      <SectionCard title="适用处方" icon={<Pill className="h-4 w-4 text-primary" />}>
+        {!value.treatable ? (
+          <div className="rounded-md bg-surface-subtle px-3 py-3 text-body-sm text-text-secondary">
+            放弃治疗,请登记"死亡/淘汰"
+          </div>
+        ) : value.prescriptions.length === 0 ? (
+          <div className="text-body-sm text-text-tertiary">暂无</div>
+        ) : (
+          <div className="space-y-1.5">
+            {value.prescriptions.map((p) => (
+              <div key={p.code} className="flex items-center gap-2 text-body">
+                <span className="text-foreground">{p.name}</span>
+                <span className="font-mono text-body-sm text-text-tertiary">{p.code}</span>
+                <span className={`tag ${p.level === "首选" ? "tag-success" : p.level === "备选" ? "tag-muted" : "tag-warning"}`}>{p.level}</span>
+                {p.defaultRx && <span className="tag tag-brand">默认</span>}
+              </div>
+            ))}
+          </div>
+        )}
+      </SectionCard>
+
+      {value.remark && (
+        <SectionCard title="备注" icon={<FileText className="h-4 w-4 text-primary" />}>
+          <div className="text-body text-foreground whitespace-pre-wrap">{value.remark}</div>
+        </SectionCard>
+      )}
+    </>
+  );
+}
+
+function KV({ label, value, valueNode, mono }: { label: string; value?: string; valueNode?: React.ReactNode; mono?: boolean }) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-24 shrink-0 text-body-sm text-text-secondary">{label}</div>
+      <div className={`flex-1 text-body text-foreground ${mono ? "font-mono" : ""}`}>
+        {valueNode ?? value ?? "—"}
+      </div>
+    </div>
+  );
+}
+
+function TagInput({ value, onChange, placeholder }: { value: string[]; onChange: (next: string[]) => void; placeholder?: string }) {
   const [draft, setDraft] = useState("");
   const add = () => {
     const v = draft.trim();
@@ -353,7 +942,7 @@ function SymptomTags({ value, onChange }: { value: string[]; onChange: (next: st
   };
   const remove = (s: string) => onChange(value.filter((x) => x !== s));
   return (
-    <div className="rounded-md border border-input bg-background px-2 py-2 min-h-[40px] flex flex-wrap gap-1.5 items-center focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0">
+    <div className="rounded-md border border-input bg-background px-2 py-1.5 min-h-[38px] flex flex-wrap gap-1.5 items-center focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0">
       {value.map((s) => (
         <span key={s} className="inline-flex items-center gap-1 rounded-md bg-brand-subtle text-primary text-body-sm px-2 py-0.5">
           {s}
@@ -370,8 +959,8 @@ function SymptomTags({ value, onChange }: { value: string[]; onChange: (next: st
           else if (e.key === "Backspace" && !draft && value.length) { onChange(value.slice(0, -1)); }
         }}
         onBlur={add}
-        placeholder={value.length ? "" : "输入症状后回车添加"}
-        className="flex-1 min-w-[120px] bg-transparent outline-none text-body-sm placeholder:text-text-tertiary"
+        placeholder={value.length ? "" : placeholder ?? "输入后回车添加"}
+        className="flex-1 min-w-[100px] bg-transparent outline-none text-body-sm placeholder:text-text-tertiary"
       />
     </div>
   );
