@@ -766,199 +766,215 @@ function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) =>
   const removeTask = (id: string) => patch({ tasks: value.tasks.filter((t) => t.id !== id) });
 
   return (
-    <div className="mt-4 space-y-4">
-      {/* 归属 */}
-      <SectionCard title="归属信息" icon={<Stethoscope className="h-4 w-4 text-primary" />}>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="处方所属类型" required>
-            <Select
-              value={value.kind}
-              onValueChange={(v) => {
-                const kind = v as RxKind;
-                patch({ kind, review: defaultReview(kind) });
-              }}
-            >
-              <SelectTrigger className="h-9 text-body-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(RX_KIND_LABEL) as RxKind[]).map((k) => (
-                  <SelectItem key={k} value={k}>
-                    {RX_KIND_LABEL[k]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field label={value.kind === "disease" ? "疾病类型" : "事项类型"} required>
-            <Input
-              value={value.category}
-              onChange={(e) => patch({ category: e.target.value })}
-              className="h-9 text-body-sm"
-              placeholder={value.kind === "disease" ? "如 乳房炎" : "如 干奶"}
-            />
-          </Field>
-        </div>
-        <Field label={value.kind === "disease" ? "疾病子类型" : "事项名称"} required>
-          <Input
-            value={value.subType}
-            onChange={(e) => patch({ subType: e.target.value })}
-            className="h-9 text-body-sm"
-            placeholder={value.kind === "disease" ? "如 乳房炎一级" : "如 常规干奶"}
-          />
-        </Field>
-        <Field label="疾病介绍 / 诊断要点">
-          <Textarea
-            value={value.intro ?? ""}
-            onChange={(e) => patch({ intro: e.target.value })}
-            className="text-body-sm min-h-16"
-            placeholder="说明用，展示于处方详情"
-          />
-        </Field>
-      </SectionCard>
+    <Tabs defaultValue="basic" className="mt-4">
+      <TabsList className="grid w-full grid-cols-4 h-9">
+        <TabsTrigger value="basic" className="text-body-sm">基础信息</TabsTrigger>
+        <TabsTrigger value="drugs" className="text-body-sm">
+          用药 <span className="ml-1 text-text-tertiary">{value.drugs.length}</span>
+        </TabsTrigger>
+        <TabsTrigger value="tasks" className="text-body-sm">
+          非用药 <span className="ml-1 text-text-tertiary">{value.tasks.length}</span>
+        </TabsTrigger>
+        <TabsTrigger value="review" className="text-body-sm">复查</TabsTrigger>
+      </TabsList>
 
-      {/* 基础 */}
-      <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="处方编码">
-            <Input value={value.code} readOnly className="h-9 text-body-sm font-mono bg-surface-subtle" />
-          </Field>
-          <Field label="处方名称" required>
-            <Input
-              value={value.name}
-              onChange={(e) => patch({ name: e.target.value })}
-              className="h-9 text-body-sm"
-              placeholder="如 乳房炎标准处方 A"
-            />
-          </Field>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="处方描述">
-            <Input
-              value={value.desc ?? ""}
-              onChange={(e) => patch({ desc: e.target.value })}
-              className="h-9 text-body-sm"
-              placeholder="适用场景简述，用于列表选择"
-            />
-          </Field>
-          <Field label="处方疗程" required>
-            <div className="relative">
-              <Input
-                value={String(value.duration || "")}
-                onChange={(e) => {
-                  const s = sanitizePositive(e.target.value);
-                  patch({ duration: s ? Number(s) : 0 });
+      <TabsContent value="basic" className="mt-4 space-y-4">
+        {/* 归属 */}
+        <SectionCard title="归属信息" icon={<Stethoscope className="h-4 w-4 text-primary" />}>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="处方所属类型" required>
+              <Select
+                value={value.kind}
+                onValueChange={(v) => {
+                  const kind = v as RxKind;
+                  patch({ kind, review: defaultReview(kind) });
                 }}
-                inputMode="numeric"
-                className="h-9 pr-8 text-body-sm"
+              >
+                <SelectTrigger className="h-9 text-body-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(RX_KIND_LABEL) as RxKind[]).map((k) => (
+                    <SelectItem key={k} value={k}>
+                      {RX_KIND_LABEL[k]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label={value.kind === "disease" ? "疾病类型" : "事项类型"} required>
+              <Input
+                value={value.category}
+                onChange={(e) => patch({ category: e.target.value })}
+                className="h-9 text-body-sm"
+                placeholder={value.kind === "disease" ? "如 乳房炎" : "如 干奶"}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
-                天
-              </span>
-            </div>
+            </Field>
+          </div>
+          <Field label={value.kind === "disease" ? "疾病子类型" : "事项名称"} required>
+            <Input
+              value={value.subType}
+              onChange={(e) => patch({ subType: e.target.value })}
+              className="h-9 text-body-sm"
+              placeholder={value.kind === "disease" ? "如 乳房炎一级" : "如 常规干奶"}
+            />
           </Field>
-        </div>
-        <div className="flex items-center justify-between rounded-md bg-surface-subtle/60 px-3 py-2">
-          <div>
-            <div className="text-body-sm text-foreground">处方摘要</div>
-            <div className="text-caption text-text-tertiary">开启后按用药 → 非用药 → 复查顺序自动拼接</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-caption text-text-tertiary">系统自动拼接</span>
-            <Switch checked={value.summaryAuto} onCheckedChange={(v) => patch({ summaryAuto: v })} />
-          </div>
-        </div>
-        {value.summaryAuto ? (
-          <div className="rounded-md border border-dashed border-border p-3 text-body-sm text-text-secondary leading-relaxed">
-            {buildSummary(value) || <span className="text-text-tertiary">暂无明细，摘要将在保存后展示</span>}
-          </div>
-        ) : (
-          <Textarea
-            value={value.summary ?? ""}
-            onChange={(e) => patch({ summary: e.target.value })}
-            className="text-body-sm min-h-16"
-            placeholder="手动填写方案摘要"
-          />
-        )}
-        <Field label="补充说明">
-          <Textarea
-            value={value.extra ?? ""}
-            onChange={(e) => patch({ extra: e.target.value })}
-            className="text-body-sm min-h-16"
-            placeholder="局部处理、注意事项、护理说明"
-          />
-        </Field>
-      </SectionCard>
+          <Field label="疾病介绍 / 诊断要点">
+            <Textarea
+              value={value.intro ?? ""}
+              onChange={(e) => patch({ intro: e.target.value })}
+              className="text-body-sm min-h-16"
+              placeholder="说明用，展示于处方详情"
+            />
+          </Field>
+        </SectionCard>
 
-      {/* 用药明细 */}
-      <SectionCard
-        title={`用药明细 · ${value.drugs.length}`}
-        icon={<Pill className="h-4 w-4 text-primary" />}
-        action={
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-7 gap-1 text-body-sm font-normal"
-            onClick={addDrug}
-          >
-            <Plus className="h-3.5 w-3.5" /> 添加
-          </Button>
-        }
-      >
-        {value.drugs.length === 0 && (
-          <div className="rounded-md border border-dashed border-border p-4 text-center text-body-sm text-text-tertiary">
-            暂无用药明细
+        {/* 基础 */}
+        <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="处方编码">
+              <Input value={value.code} readOnly className="h-9 text-body-sm font-mono bg-surface-subtle" />
+            </Field>
+            <Field label="处方名称" required>
+              <Input
+                value={value.name}
+                onChange={(e) => patch({ name: e.target.value })}
+                className="h-9 text-body-sm"
+                placeholder="如 乳房炎标准处方 A"
+              />
+            </Field>
           </div>
-        )}
-        {value.drugs.map((d, i) => (
-          <DrugDetailRow
-            key={d.id}
-            index={i}
-            value={d}
-            onChange={(p) => updateDrug(d.id, p)}
-            onRemove={() => removeDrug(d.id)}
-          />
-        ))}
-      </SectionCard>
-
-      {/* 非用药明细 */}
-      <SectionCard
-        title={`非用药明细 · ${value.tasks.length}`}
-        icon={<ClipboardList className="h-4 w-4 text-primary" />}
-        action={
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-7 gap-1 text-body-sm font-normal"
-            onClick={addTask}
-          >
-            <Plus className="h-3.5 w-3.5" /> 添加
-          </Button>
-        }
-      >
-        {value.tasks.length === 0 && (
-          <div className="rounded-md border border-dashed border-border p-4 text-center text-body-sm text-text-tertiary">
-            非用药：无
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="处方描述">
+              <Input
+                value={value.desc ?? ""}
+                onChange={(e) => patch({ desc: e.target.value })}
+                className="h-9 text-body-sm"
+                placeholder="适用场景简述，用于列表选择"
+              />
+            </Field>
+            <Field label="处方疗程" required>
+              <div className="relative">
+                <Input
+                  value={String(value.duration || "")}
+                  onChange={(e) => {
+                    const s = sanitizePositive(e.target.value);
+                    patch({ duration: s ? Number(s) : 0 });
+                  }}
+                  inputMode="numeric"
+                  className="h-9 pr-8 text-body-sm"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
+                  天
+                </span>
+              </div>
+            </Field>
           </div>
-        )}
-        {value.tasks.map((t, i) => (
-          <TaskDetailRow
-            key={t.id}
-            index={i}
-            value={t}
-            onChange={(p) => updateTask(t.id, p)}
-            onRemove={() => removeTask(t.id)}
-          />
-        ))}
-      </SectionCard>
+          <div className="flex items-center justify-between rounded-md bg-surface-subtle/60 px-3 py-2">
+            <div>
+              <div className="text-body-sm text-foreground">处方摘要</div>
+              <div className="text-caption text-text-tertiary">开启后按用药 → 非用药 → 复查顺序自动拼接</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-caption text-text-tertiary">系统自动拼接</span>
+              <Switch checked={value.summaryAuto} onCheckedChange={(v) => patch({ summaryAuto: v })} />
+            </div>
+          </div>
+          {value.summaryAuto ? (
+            <div className="rounded-md border border-dashed border-border p-3 text-body-sm text-text-secondary leading-relaxed">
+              {buildSummary(value) || <span className="text-text-tertiary">暂无明细，摘要将在保存后展示</span>}
+            </div>
+          ) : (
+            <Textarea
+              value={value.summary ?? ""}
+              onChange={(e) => patch({ summary: e.target.value })}
+              className="text-body-sm min-h-16"
+              placeholder="手动填写方案摘要"
+            />
+          )}
+          <Field label="补充说明">
+            <Textarea
+              value={value.extra ?? ""}
+              onChange={(e) => patch({ extra: e.target.value })}
+              className="text-body-sm min-h-16"
+              placeholder="局部处理、注意事项、护理说明"
+            />
+          </Field>
+        </SectionCard>
+      </TabsContent>
 
-      {/* 复查配置 */}
-      <SectionCard title="复查配置" icon={<RefreshCw className="h-4 w-4 text-primary" />}>
-        <ReviewEditor value={value.review} onChange={(review) => patch({ review })} />
-      </SectionCard>
-    </div>
+      <TabsContent value="drugs" className="mt-4 space-y-4">
+        <SectionCard
+          title={`用药明细 · ${value.drugs.length}`}
+          icon={<Pill className="h-4 w-4 text-primary" />}
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 gap-1 text-body-sm font-normal"
+              onClick={addDrug}
+            >
+              <Plus className="h-3.5 w-3.5" /> 添加
+            </Button>
+          }
+        >
+          {value.drugs.length === 0 && (
+            <div className="rounded-md border border-dashed border-border p-4 text-center text-body-sm text-text-tertiary">
+              暂无用药明细
+            </div>
+          )}
+          {value.drugs.map((d, i) => (
+            <DrugDetailRow
+              key={d.id}
+              index={i}
+              value={d}
+              onChange={(p) => updateDrug(d.id, p)}
+              onRemove={() => removeDrug(d.id)}
+            />
+          ))}
+        </SectionCard>
+      </TabsContent>
+
+      <TabsContent value="tasks" className="mt-4 space-y-4">
+        <SectionCard
+          title={`非用药明细 · ${value.tasks.length}`}
+          icon={<ClipboardList className="h-4 w-4 text-primary" />}
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 gap-1 text-body-sm font-normal"
+              onClick={addTask}
+            >
+              <Plus className="h-3.5 w-3.5" /> 添加
+            </Button>
+          }
+        >
+          {value.tasks.length === 0 && (
+            <div className="rounded-md border border-dashed border-border p-4 text-center text-body-sm text-text-tertiary">
+              非用药：无
+            </div>
+          )}
+          {value.tasks.map((t, i) => (
+            <TaskDetailRow
+              key={t.id}
+              index={i}
+              value={t}
+              onChange={(p) => updateTask(t.id, p)}
+              onRemove={() => removeTask(t.id)}
+            />
+          ))}
+        </SectionCard>
+      </TabsContent>
+
+      <TabsContent value="review" className="mt-4 space-y-4">
+        <SectionCard title="复查配置" icon={<RefreshCw className="h-4 w-4 text-primary" />}>
+          <ReviewEditor value={value.review} onChange={(review) => patch({ review })} />
+        </SectionCard>
+      </TabsContent>
+    </Tabs>
   );
 }
 
