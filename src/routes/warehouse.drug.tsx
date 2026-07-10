@@ -542,9 +542,19 @@ function DrugForm({
               onChange={(v) => patch({ variable: v })}
             />
           ) : (
-            <div />
+            <div className="grid grid-cols-[1fr_auto] gap-2 items-end">
+              <F
+                label="具体剂量"
+                required
+                value={d.defaultDose}
+                readOnly={readOnly}
+                onChange={(v) => patch({ defaultDose: v })}
+                placeholder="如 20"
+              />
+              <div className="pb-2 text-body-sm text-text-tertiary">{d.doseUnit}/次</div>
+            </div>
           )}
-          {d.variableDose ? (
+          {d.variableDose && (
             <VariableDoseEditor
               label="默认具体剂量"
               required
@@ -552,15 +562,6 @@ function DrugForm({
               unit={d.doseUnit}
               readOnly={readOnly}
               onChange={(v) => patch({ defaultDose: v })}
-            />
-          ) : (
-            <FLong
-              label="默认具体剂量"
-              required
-              value={d.defaultDose}
-              readOnly={readOnly}
-              onChange={(v) => patch({ defaultDose: v })}
-              placeholder="固定剂量，如：20ml/次"
             />
           )}
           <F
@@ -990,17 +991,19 @@ function FrequencyEditor({
         <div className="mt-1 h-9 flex items-center gap-2">
           <span className="text-body-sm text-text-secondary">每</span>
           <Input
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={days}
-            onChange={(e) => update(e.target.value, times)}
+            onChange={(e) => update(sanitizeFreqValue(e.target.value), times)}
             placeholder="n"
             className="h-9 w-20 text-body-sm text-center"
           />
           <span className="text-body-sm text-text-secondary">天</span>
           <Input
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={times}
-            onChange={(e) => update(days, e.target.value)}
+            onChange={(e) => update(days, sanitizeFreqValue(e.target.value))}
             placeholder="m"
             className="h-9 w-20 text-body-sm text-center"
           />
@@ -1013,7 +1016,9 @@ function FrequencyEditor({
 
 function parseFrequency(value: string): { days: string; times: string } {
   const m = value.match(/每?(\d+)天(\d+)次/);
-  if (m) return { days: m[1], times: m[2] };
+  if (m) {
+    return { days: sanitizeFreqValue(m[1]), times: sanitizeFreqValue(m[2]) };
+  }
   return { days: "", times: "" };
 }
 
@@ -1021,6 +1026,15 @@ function serializeFrequency(days: string, times: string): string {
   if (!days.trim() && !times.trim()) return "";
   return `每${days.trim()}天${times.trim()}次`;
 }
+
+function sanitizeFreqValue(v: string): string {
+  const digits = v.replace(/\D/g, "");
+  if (!digits) return "";
+  const n = parseInt(digits, 10);
+  if (n <= 0) return "";
+  return String(n);
+}
+
 function FBool({
   label,
   value,
