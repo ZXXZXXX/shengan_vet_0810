@@ -56,6 +56,7 @@ import { Route as MKb_symptomsRouteImport } from './routes/m.kb_symptoms'
 import { Route as MKb_drugsRouteImport } from './routes/m.kb_drugs'
 import { Route as MKb_diseasesRouteImport } from './routes/m.kb_diseases'
 import { Route as MHomepageRouteImport } from './routes/m.homepage'
+import { Route as MFeedbackRouteImport } from './routes/m.feedback'
 import { Route as MEmptyStatesRouteImport } from './routes/m.empty-states'
 import { Route as MDrugReportRouteImport } from './routes/m.drug-report'
 import { Route as MDraftsRouteImport } from './routes/m.drafts'
@@ -316,6 +317,11 @@ const MHomepageRoute = MHomepageRouteImport.update({
   path: '/homepage',
   getParentRoute: () => MRoute,
 } as any)
+const MFeedbackRoute = MFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => MRoute,
+} as any)
 const MEmptyStatesRoute = MEmptyStatesRouteImport.update({
   id: '/empty-states',
   path: '/empty-states',
@@ -462,6 +468,7 @@ export interface FileRoutesByFullPath {
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/feedback': typeof MFeedbackRoute
   '/m/homepage': typeof MHomepageRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
@@ -530,6 +537,7 @@ export interface FileRoutesByTo {
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/feedback': typeof MFeedbackRoute
   '/m/homepage': typeof MHomepageRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
@@ -604,6 +612,7 @@ export interface FileRoutesById {
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
+  '/m/feedback': typeof MFeedbackRoute
   '/m/homepage': typeof MHomepageRoute
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
@@ -679,6 +688,7 @@ export interface FileRouteTypes {
     | '/m/drafts'
     | '/m/drug-report'
     | '/m/empty-states'
+    | '/m/feedback'
     | '/m/homepage'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
@@ -747,6 +757,7 @@ export interface FileRouteTypes {
     | '/m/drafts'
     | '/m/drug-report'
     | '/m/empty-states'
+    | '/m/feedback'
     | '/m/homepage'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
@@ -820,6 +831,7 @@ export interface FileRouteTypes {
     | '/m/drafts'
     | '/m/drug-report'
     | '/m/empty-states'
+    | '/m/feedback'
     | '/m/homepage'
     | '/m/kb_diseases'
     | '/m/kb_drugs'
@@ -1216,6 +1228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MHomepageRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/feedback': {
+      id: '/m/feedback'
+      path: '/feedback'
+      fullPath: '/m/feedback'
+      preLoaderRoute: typeof MFeedbackRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/empty-states': {
       id: '/m/empty-states'
       path: '/empty-states'
@@ -1424,6 +1443,7 @@ interface MRouteChildren {
   MDraftsRoute: typeof MDraftsRoute
   MDrugReportRoute: typeof MDrugReportRoute
   MEmptyStatesRoute: typeof MEmptyStatesRoute
+  MFeedbackRoute: typeof MFeedbackRoute
   MHomepageRoute: typeof MHomepageRoute
   MKb_diseasesRoute: typeof MKb_diseasesRoute
   MKb_drugsRoute: typeof MKb_drugsRoute
@@ -1460,6 +1480,7 @@ const MRouteChildren: MRouteChildren = {
   MDraftsRoute: MDraftsRoute,
   MDrugReportRoute: MDrugReportRoute,
   MEmptyStatesRoute: MEmptyStatesRoute,
+  MFeedbackRoute: MFeedbackRoute,
   MHomepageRoute: MHomepageRoute,
   MKb_diseasesRoute: MKb_diseasesRoute,
   MKb_drugsRoute: MKb_drugsRoute,
