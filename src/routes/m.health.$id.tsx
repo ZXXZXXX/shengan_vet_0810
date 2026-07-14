@@ -1196,7 +1196,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
           <div key={d.day} className={`rounded-2xl bg-card border border-border p-4 ${d.phase === "pending" ? "opacity-50" : ""}`}>
             <div className="flex items-center justify-between mb-2 min-h-6">
               <div className="flex items-center gap-2 leading-6">
-                <DayDot active={isActive} done={isDone} />
+                <DayDot active={isActive} done={isDone} type={orderType} />
                 <span className={`text-body font-medium leading-6 ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
                   执行任务{String(d.day).padStart(2, "0")}
                 </span>
