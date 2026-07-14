@@ -27,6 +27,11 @@ import {
   Tag,
   AlertOctagon,
   AlertCircle,
+  Syringe,
+  HeartPulse,
+  Milk,
+  Wrench,
+  PackageMinus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { MediaGrid } from "@/components/m/media-grid";
@@ -506,7 +511,7 @@ function TaskDetailPage() {
                 : <ReportTab isLoss={isLoss} />
           )}
           {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} plan={getWoPlan(id, o.type)} />)}
-          {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} plan={getWoPlan(id, o.type)} />}
+          {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} plan={getWoPlan(id, o.type)} orderType={o.type} />}
         </div>
       </div>
 
@@ -1147,7 +1152,7 @@ function PickupStatus({ needPickup }: { needPickup: boolean }) {
   );
 }
 
-export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, plan }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string; plan?: WoPlan }) {
+export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, plan, orderType }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string; plan?: WoPlan; orderType?: string }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
@@ -1191,7 +1196,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
           <div key={d.day} className={`rounded-2xl bg-card border border-border p-4 ${d.phase === "pending" ? "opacity-50" : ""}`}>
             <div className="flex items-center justify-between mb-2 min-h-6">
               <div className="flex items-center gap-2 leading-6">
-                <DayDot active={isActive} done={isDone} />
+                <DayDot active={isActive} done={isDone} type={orderType} />
                 <span className={`text-body font-medium leading-6 ${isDone || isActive ? "text-foreground" : "text-text-tertiary"}`}>
                   执行任务{String(d.day).padStart(2, "0")}
                 </span>
@@ -1267,7 +1272,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
           <div id={isAutoArchived ? "auto-archived-review-card" : undefined} className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""} ${isAutoArchived ? "ring-2 ring-[#FFA39E] ring-offset-2 ring-offset-background" : ""}`}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <DayDot active={isReviewActive} done={isReviewDone} />
+                <DayDot active={isReviewActive} done={isReviewDone} type={orderType} />
                 <span className={`text-body font-medium ${isReviewDone || isReviewActive ? "text-foreground" : "text-text-tertiary"}`}>
                   复查
                 </span>
@@ -2276,15 +2281,28 @@ function ReplaceScanOverlay({
 
 
 
-function DayDot({ active, done }: { active: boolean; done: boolean }) {
-  // 统一虚线圆环，颜色与右侧标签对应：已完成=绿，进行中=蓝，待执行=灰
+function DayDot({ active, done, type }: { active: boolean; done: boolean; type?: string }) {
+  // 颜色与右侧标签对应：已完成=绿，进行中=蓝，待执行=灰
   const color = done ? "#23A969" : active ? "#22ACEB" : "var(--text-tertiary)";
+  const iconMap: Record<string, typeof Stethoscope> = {
+    "疾病治疗": Stethoscope,
+    "产后护理": HeartPulse,
+    "免疫": Syringe,
+    "干奶": Milk,
+    "修蹄": Wrench,
+    "物资损耗": PackageMinus,
+  };
+  const Icon = type ? iconMap[type] : undefined;
+  if (Icon) {
+    return <Icon className="shrink-0" width={16} height={16} color={color} strokeWidth={1.75} />;
+  }
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
       <circle cx="8" cy="8" r="7" fill="none" stroke={color} strokeWidth="1.2" strokeDasharray="2 2" />
     </svg>
   );
 }
+
 
 
 
