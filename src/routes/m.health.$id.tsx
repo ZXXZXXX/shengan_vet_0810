@@ -511,7 +511,7 @@ function TaskDetailPage() {
                 : <ReportTab isLoss={isLoss} />
           )}
           {tab === "review" && (isPlatformIssued ? <EmptyTab label="平台下发工单，无诊断记录" /> : <ReviewTab isLoss={isLoss} status={o.status} plan={getWoPlan(id, o.type)} />)}
-          {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} plan={getWoPlan(id, o.type)} />}
+          {tab === "execute" && <ExecuteSummary id={id} status={o.status} pickupCode={o.pickupCode} tags={execTags} platformAction={platformAction} plan={getWoPlan(id, o.type)} orderType={o.type} />}
         </div>
       </div>
 
