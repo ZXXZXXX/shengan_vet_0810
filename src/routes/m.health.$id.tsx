@@ -27,6 +27,11 @@ import {
   Tag,
   AlertOctagon,
   AlertCircle,
+  Syringe,
+  HeartPulse,
+  Milk,
+  Wrench,
+  PackageMinus,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { MediaGrid } from "@/components/m/media-grid";
