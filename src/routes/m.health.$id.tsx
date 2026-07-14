@@ -1272,7 +1272,7 @@ export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, p
           <div id={isAutoArchived ? "auto-archived-review-card" : undefined} className={`rounded-2xl bg-card border border-border p-4 ${reviewPhase === "pending" ? "opacity-50" : ""} ${isAutoArchived ? "ring-2 ring-[#FFA39E] ring-offset-2 ring-offset-background" : ""}`}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <DayDot active={isReviewActive} done={isReviewDone} />
+                <DayDot active={isReviewActive} done={isReviewDone} type={orderType} />
                 <span className={`text-body font-medium ${isReviewDone || isReviewActive ? "text-foreground" : "text-text-tertiary"}`}>
                   复查
                 </span>
