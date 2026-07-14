@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star, X } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { MediaGrid } from "@/components/m/media-grid";
 import { toast } from "sonner";
@@ -28,16 +28,20 @@ function FeedbackPage() {
   const [topic, setTopic] = useState<string | null>(null);
   const [content, setContent] = useState("");
   const [photos, setPhotos] = useState<number[]>([]);
-  const [contact, setContact] = useState("");
+  const [showRatingCard, setShowRatingCard] = useState(true);
 
-  const canSubmit = rating > 0 && content.trim().length >= 5;
+  const canSubmit = topic !== null && content.trim().length >= 5;
 
   const submit = () => {
-    if (!canSubmit) {
-      toast.error("请先评分并填写至少 5 个字的反馈内容");
+    if (!topic) {
+      toast.error("请选择反馈类型");
       return;
     }
-    toast.success("反馈已提交，感谢您的支持");
+    if (content.trim().length < 5) {
+      toast.error("请填写至少 5 个字的反馈内容");
+      return;
+    }
+    toast.success("反馈已提交,感谢您的支持");
     setTimeout(() => navigate({ to: "/m/me" }), 300);
   };
 
@@ -46,46 +50,58 @@ function FeedbackPage() {
   return (
     <MobileShell title="帮助与反馈" back={{ to: "/m/me" }} hideTabBar>
       <div className="px-4 py-4 space-y-4 pb-32">
-        {/* 评分 */}
-        <section className="bg-card rounded-2xl border border-border p-4">
-          <div className="text-card-title text-foreground mb-1">您对系统的整体使用体验？</div>
-          <div className="text-caption text-text-tertiary mb-4">点击星星进行评分</div>
-          <div className="flex items-center justify-center gap-2">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setRating(n)}
-                onMouseEnter={() => setHoverRating(n)}
-                onMouseLeave={() => setHoverRating(0)}
-                className="p-1 active:scale-90 transition-transform"
-                aria-label={`${n} 星`}
-              >
-                <Star
-                  className={`h-9 w-9 transition-colors ${
-                    n <= currentRating
-                      ? "fill-[#F5B301] text-[#F5B301]"
-                      : "text-border"
-                  }`}
-                  strokeWidth={1.5}
-                />
-              </button>
-            ))}
-          </div>
-          <div className="text-center mt-3 text-body-sm h-5">
-            {currentRating > 0 ? (
-              <span className="text-primary font-medium">
-                {RATING_LABELS[currentRating - 1]}
-              </span>
-            ) : (
-              <span className="text-text-tertiary">未评分</span>
-            )}
-          </div>
-        </section>
+        {/* 评分(可关闭) */}
+        {showRatingCard && (
+          <section className="relative bg-card rounded-2xl border border-border p-4">
+            <button
+              type="button"
+              onClick={() => setShowRatingCard(false)}
+              aria-label="关闭"
+              className="absolute top-3 right-3 h-7 w-7 rounded-full inline-flex items-center justify-center text-text-tertiary active:bg-surface-subtle"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="text-card-title text-foreground mb-1 pr-8">您对系统的整体使用体验?</div>
+            <div className="text-caption text-text-tertiary mb-4">点击星星进行评分</div>
+            <div className="flex items-center justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setRating(n)}
+                  onMouseEnter={() => setHoverRating(n)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  className="p-1 active:scale-90 transition-transform"
+                  aria-label={`${n} 星`}
+                >
+                  <Star
+                    className={`h-9 w-9 transition-colors ${
+                      n <= currentRating
+                        ? "fill-[#F5B301] text-[#F5B301]"
+                        : "text-border"
+                    }`}
+                    strokeWidth={1.5}
+                  />
+                </button>
+              ))}
+            </div>
+            <div className="text-center mt-3 text-body-sm h-5">
+              {currentRating > 0 ? (
+                <span className="text-primary font-medium">
+                  {RATING_LABELS[currentRating - 1]}
+                </span>
+              ) : (
+                <span className="text-text-tertiary">未评分</span>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* 反馈类型 */}
         <section className="bg-card rounded-2xl border border-border p-4">
-          <div className="text-card-title text-foreground mb-3">反馈类型</div>
+          <div className="text-card-title text-foreground mb-3">
+            反馈类型<span className="text-[var(--state-danger)] ml-0.5">*</span>
+          </div>
           <div className="flex flex-wrap gap-2">
             {TOPICS.map((t) => {
               const active = topic === t;
@@ -115,7 +131,7 @@ function FeedbackPage() {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="请描述您遇到的问题或建议，越具体越有助于我们改进"
+            placeholder="请描述您遇到的问题或建议,越具体越有助于我们改进"
             rows={5}
             maxLength={500}
             className="w-full p-3 rounded-lg text-body resize-none leading-relaxed bg-surface-subtle border border-border focus:outline-none focus:border-primary"
@@ -129,24 +145,10 @@ function FeedbackPage() {
               items={photos}
               setItems={setPhotos}
               max={6}
-              hideVideo
-              caption="上传截图"
-              helper="最多可上传 6 张截图，便于我们定位问题"
+              caption="上传图片/视频"
+              helper="最多可上传 6 个文件,便于我们定位问题"
             />
           </div>
-        </section>
-
-        {/* 联系方式 */}
-        <section className="bg-card rounded-2xl border border-border p-4">
-          <div className="text-card-title text-foreground mb-1">联系方式</div>
-          <div className="text-caption text-text-tertiary mb-3">选填，方便我们回访您</div>
-          <input
-            value={contact}
-            onChange={(e) => setContact(e.target.value)}
-            placeholder="手机号或企业微信昵称"
-            maxLength={50}
-            className="w-full h-11 px-3 rounded-lg text-body bg-surface-subtle border border-border focus:outline-none focus:border-primary"
-          />
         </section>
       </div>
 
