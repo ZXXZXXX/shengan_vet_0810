@@ -2281,15 +2281,28 @@ function ReplaceScanOverlay({
 
 
 
-function DayDot({ active, done }: { active: boolean; done: boolean }) {
-  // 统一虚线圆环，颜色与右侧标签对应：已完成=绿，进行中=蓝，待执行=灰
+function DayDot({ active, done, type }: { active: boolean; done: boolean; type?: string }) {
+  // 颜色与右侧标签对应：已完成=绿，进行中=蓝，待执行=灰
   const color = done ? "#23A969" : active ? "#22ACEB" : "var(--text-tertiary)";
+  const iconMap: Record<string, typeof Stethoscope> = {
+    "疾病治疗": Stethoscope,
+    "产后护理": HeartPulse,
+    "免疫": Syringe,
+    "干奶": Milk,
+    "修蹄": Wrench,
+    "物资损耗": PackageMinus,
+  };
+  const Icon = type ? iconMap[type] : undefined;
+  if (Icon) {
+    return <Icon className="shrink-0" width={16} height={16} color={color} strokeWidth={1.75} />;
+  }
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
       <circle cx="8" cy="8" r="7" fill="none" stroke={color} strokeWidth="1.2" strokeDasharray="2 2" />
     </svg>
   );
 }
+
 
 
 
