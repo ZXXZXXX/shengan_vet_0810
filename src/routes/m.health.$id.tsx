@@ -1152,7 +1152,7 @@ function PickupStatus({ needPickup }: { needPickup: boolean }) {
   );
 }
 
-export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, plan }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string; plan?: WoPlan }) {
+export function ExecuteSummary({ id, status, pickupCode, tags, platformAction, plan, orderType }: { id: string; status: StatusKey; pickupCode: string | null; tags: string[]; platformAction?: string; plan?: WoPlan; orderType?: string }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   if (status === "待诊断") {
     return (
