@@ -956,7 +956,7 @@ function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) =>
       </TabsContent>
 
       <TabsContent value="review" className="mt-4 space-y-4">
-        <SectionCard title="复查配置" icon={<RefreshCw className="h-4 w-4 text-primary" />}>
+        <SectionCard bare title="复查配置" icon={<RefreshCw className="h-4 w-4 text-primary" />}>
           <ReviewEditor value={value.review} onChange={(review) => patch({ review })} />
         </SectionCard>
       </TabsContent>
