@@ -186,7 +186,7 @@ function TenantPage() {
       </main>
 
       <Sheet open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col gap-0">
+        <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none p-0 flex flex-col gap-0">
           <SheetHeader className="px-6 py-4 border-b border-border">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-md bg-brand-subtle flex items-center justify-center shrink-0">

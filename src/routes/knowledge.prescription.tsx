@@ -627,7 +627,7 @@ function PrescriptionPage() {
 
       {/* 编辑抽屉 */}
       <Sheet open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-3xl bg-white flex flex-col gap-0 p-0 overflow-hidden">
+        <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none bg-white flex flex-col gap-0 p-0 overflow-hidden">
           <SheetHeader className="px-6 pt-6 pb-2">
             <SheetTitle className="text-section-title">
               {list.some((r) => r.id === editing?.id) ? "编辑处方" : "新建处方"}
@@ -652,7 +652,7 @@ function PrescriptionPage() {
 
       {/* 详情抽屉 */}
       <Sheet open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto bg-white">
+        <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto bg-white">
           <SheetHeader>
             <SheetTitle className="text-section-title">处方详情</SheetTitle>
           </SheetHeader>
