@@ -216,7 +216,7 @@ function SymptomKBPage() {
       </main>
 
       <Sheet open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="text-section-title">编辑症状</SheetTitle>
           </SheetHeader>
@@ -247,7 +247,7 @@ function SymptomKBPage() {
       </Sheet>
 
       <Sheet open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="text-section-title">症状详情</SheetTitle>
           </SheetHeader>

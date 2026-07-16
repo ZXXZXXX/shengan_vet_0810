@@ -187,7 +187,7 @@ function LossPage() {
       />
 
       <Sheet open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
-        <SheetContent side="right" className="w-full sm:max-w-xl p-0 flex flex-col gap-0">
+        <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none p-0 flex flex-col gap-0">
           <SheetHeader className="px-6 py-4 border-b border-border">
             <SheetTitle className="text-card-title text-foreground text-left">记录损耗</SheetTitle>
             <SheetDescription className="text-caption text-text-tertiary text-left">

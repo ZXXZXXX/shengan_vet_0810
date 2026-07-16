@@ -972,7 +972,7 @@ function AccountDrawer({
 }) {
   return (
     <Sheet open={!!account} onOpenChange={(v) => !v && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col gap-0">
+      <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none p-0 flex flex-col gap-0">
         {account && (
           <AccountDrawerInner
             key={account.id}
@@ -1428,7 +1428,7 @@ function CreateDialog({
 
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col gap-0">
+      <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none p-0 flex flex-col gap-0">
         <SheetHeader className="px-6 py-4 border-b border-border">
           <SheetTitle className="text-card-title text-foreground text-left">新建账号</SheetTitle>
           <SheetDescription className="text-caption text-text-tertiary text-left">
@@ -1544,7 +1544,7 @@ function BatchAssignDialog({
   return (
     <>
       <Sheet open onOpenChange={(o) => !o && onClose()}>
-        <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col gap-0">
+        <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none p-0 flex flex-col gap-0">
           <SheetHeader className="px-6 py-4 border-b border-border">
             <SheetTitle className="text-card-title text-foreground text-left">批量关联牧场 / 分配角色</SheetTitle>
             <SheetDescription className="text-caption text-text-tertiary text-left">
