@@ -757,6 +757,19 @@ function sanitizePositive(v: string) {
 function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) => void }) {
   const patch = (p: Partial<Rx>) => onChange({ ...value, ...p });
 
+  const computedDuration = useMemo(() => {
+    const dMax = value.drugs.reduce((m, d) => Math.max(m, Number(d.days) || 0), 0);
+    const tMax = value.tasks.reduce((m, t) => Math.max(m, Number(t.days) || 0), 0);
+    return Math.max(dMax, tMax);
+  }, [value.drugs, value.tasks]);
+
+  useEffect(() => {
+    if (computedDuration !== value.duration) {
+      onChange({ ...value, duration: computedDuration });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [computedDuration]);
+
   const addDrug = () => patch({ drugs: [...value.drugs, newDrug()] });
   const updateDrug = (id: string, p: Partial<DrugDetail>) =>
     patch({ drugs: value.drugs.map((d) => (d.id === id ? { ...d, ...p } : d)) });
