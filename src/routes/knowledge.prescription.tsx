@@ -706,12 +706,28 @@ function SectionCard({
   icon,
   action,
   children,
+  bare,
 }: {
   title: string;
   icon?: React.ReactNode;
   action?: React.ReactNode;
   children: React.ReactNode;
+  bare?: boolean;
 }) {
+  if (bare) {
+    return (
+      <section>
+        <div className="flex items-center justify-between h-9 mb-3">
+          <div className="flex items-center gap-1.5 text-card-title text-foreground">
+            {icon}
+            {title}
+          </div>
+          {action}
+        </div>
+        <div className="space-y-3">{children}</div>
+      </section>
+    );
+  }
   return (
     <section className="rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between px-4 h-11 border-b border-border">
