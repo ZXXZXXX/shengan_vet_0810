@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -757,6 +757,19 @@ function sanitizePositive(v: string) {
 function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) => void }) {
   const patch = (p: Partial<Rx>) => onChange({ ...value, ...p });
 
+  const computedDuration = useMemo(() => {
+    const dMax = value.drugs.reduce((m, d) => Math.max(m, Number(d.days) || 0), 0);
+    const tMax = value.tasks.reduce((m, t) => Math.max(m, Number(t.days) || 0), 0);
+    return Math.max(dMax, tMax);
+  }, [value.drugs, value.tasks]);
+
+  useEffect(() => {
+    if (computedDuration !== value.duration) {
+      onChange({ ...value, duration: computedDuration });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [computedDuration]);
+
   const addDrug = () => patch({ drugs: [...value.drugs, newDrug()] });
   const updateDrug = (id: string, p: Partial<DrugDetail>) =>
     patch({ drugs: value.drugs.map((d) => (d.id === id ? { ...d, ...p } : d)) });
@@ -808,20 +821,20 @@ function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) =>
                 placeholder="适用场景简述，用于列表选择"
               />
             </Field>
-            <Field label="处方疗程" required>
+            <Field label="处方疗程">
               <div className="relative">
                 <Input
-                  value={String(value.duration || "")}
-                  onChange={(e) => {
-                    const s = sanitizePositive(e.target.value);
-                    patch({ duration: s ? Number(s) : 0 });
-                  }}
-                  inputMode="numeric"
-                  className="h-9 pr-8 text-body-sm"
+                  value={String(value.duration || 0)}
+                  readOnly
+                  tabIndex={-1}
+                  className="h-9 pr-8 text-body-sm bg-surface-subtle/60 cursor-not-allowed"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
                   天
                 </span>
+              </div>
+              <div className="mt-1 text-caption text-text-tertiary">
+                根据用药与非用药最大天数自动计算
               </div>
             </Field>
           </div>
