@@ -889,6 +889,7 @@ function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) =>
 
       <TabsContent value="drugs" className="mt-4 space-y-4">
         <SectionCard
+          bare
           title={`用药明细 · ${value.drugs.length}`}
           icon={<Pill className="h-4 w-4 text-primary" />}
           action={
