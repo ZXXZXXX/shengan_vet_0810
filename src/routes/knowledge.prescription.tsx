@@ -706,12 +706,28 @@ function SectionCard({
   icon,
   action,
   children,
+  bare,
 }: {
   title: string;
   icon?: React.ReactNode;
   action?: React.ReactNode;
   children: React.ReactNode;
+  bare?: boolean;
 }) {
+  if (bare) {
+    return (
+      <section>
+        <div className="flex items-center justify-between h-9 mb-3">
+          <div className="flex items-center gap-1.5 text-card-title text-foreground">
+            {icon}
+            {title}
+          </div>
+          {action}
+        </div>
+        <div className="space-y-3">{children}</div>
+      </section>
+    );
+  }
   return (
     <section className="rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between px-4 h-11 border-b border-border">
@@ -873,6 +889,7 @@ function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) =>
 
       <TabsContent value="drugs" className="mt-4 space-y-4">
         <SectionCard
+          bare
           title={`用药明细 · ${value.drugs.length}`}
           icon={<Pill className="h-4 w-4 text-primary" />}
           action={
@@ -906,6 +923,7 @@ function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) =>
 
       <TabsContent value="tasks" className="mt-4 space-y-4">
         <SectionCard
+          bare
           title={`非用药明细 · ${value.tasks.length}`}
           icon={<ClipboardList className="h-4 w-4 text-primary" />}
           action={
@@ -938,7 +956,7 @@ function PrescriptionForm({ value, onChange }: { value: Rx; onChange: (v: Rx) =>
       </TabsContent>
 
       <TabsContent value="review" className="mt-4 space-y-4">
-        <SectionCard title="复查配置" icon={<RefreshCw className="h-4 w-4 text-primary" />}>
+        <SectionCard bare title="复查配置" icon={<RefreshCw className="h-4 w-4 text-primary" />}>
           <ReviewEditor value={value.review} onChange={(review) => patch({ review })} />
         </SectionCard>
       </TabsContent>
