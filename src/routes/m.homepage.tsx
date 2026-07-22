@@ -429,7 +429,7 @@ export function truncateCJK(s: string, max = 5) {
 
 function TodayTaskList({ role }: { role: Role }) {
   const renderAllDone = () => (
-    <div className="mt-3 flex items-center gap-3 min-h-[136px] rounded-2xl border border-border bg-card px-4 py-3">
+    <div className="mt-3 flex items-center gap-3 min-h-[136px] rounded-2xl bg-card px-4 py-3">
       <img
         src={tasksDoneCelebrate}
         alt=""
