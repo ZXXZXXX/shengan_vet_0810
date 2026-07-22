@@ -74,7 +74,7 @@ function AnimalDetailPage() {
 
   const devices: Device[] = [
     { kind: "collar", id: "D-COL-012", name: "颈环项圈 · Nedap", status: "正常" },
-    { kind: "ear", id: "D-BOL-088", name: "耳温设备 · smaXtec", status: "异常", alertText: "耳部温度偏高 39.8℃" },
+    { kind: "ear", id: "D-EAR-088", name: "耳温设备 · smaXtec", status: "异常", alertText: "耳部温度偏高 39.8℃" },
   ];
 
 
