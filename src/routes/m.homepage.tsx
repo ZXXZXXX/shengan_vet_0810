@@ -522,9 +522,7 @@ function TodayTaskList({ role }: { role: Role }) {
               </div>
               <div className="mt-1.5 text-body-sm text-text-secondary truncate">
                 <span className="text-text-tertiary mr-1.5">具体内容</span>
-                {t.type === "疾病治疗" && diseaseTaskMeta[t.id]
-                  ? diseaseTaskMeta[t.id].disease
-                  : t.conclusion}
+                {taskContentByChip(t.id, chip, t.conclusion)}
               </div>
             </div>
 
