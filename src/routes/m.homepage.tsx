@@ -21,6 +21,10 @@ import {
   TrendingUp,
   Check,
   Baby,
+  FileText,
+  CheckCircle2,
+  PlayCircle,
+  Clock,
 } from "lucide-react";
 
 import { MobileShell } from "@/components/mobile-shell";
