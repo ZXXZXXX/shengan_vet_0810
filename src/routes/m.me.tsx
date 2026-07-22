@@ -77,6 +77,9 @@ function MePage() {
 
       <section className="px-4 mt-5 space-y-2">
         <MenuItem icon={ClipboardList} label="草稿箱" to="/m/drafts" />
+        {role === "manager" && (
+          <MenuItem icon={FileText} label="月度报告" to="/m/monthly-reports" />
+        )}
         <MenuItem icon={ShieldCheck} label="账号安全" to="/m/account-security" />
         <MenuItem icon={HelpCircle} label="帮助与反馈" to="/m/feedback" />
       </section>
