@@ -12,14 +12,11 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
   Sheet,
   SheetContent,
   SheetHeader,
