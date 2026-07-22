@@ -73,7 +73,7 @@ function AnimalDetailPage() {
 
   const devices: Device[] = [
     { id: "D-COL-012", name: "颈环项圈 · Nedap", status: "正常" },
-    { id: "D-BOL-088", name: "瘤胃胶囊 · smaXtec", status: "异常", alertText: "瘤胃温度偏高 39.8℃" },
+    { id: "D-BOL-088", name: "耳温设备 · smaXtec", status: "异常", alertText: "瘤胃温度偏高 39.8℃" },
   ];
 
   // 外接设备异常 → 牛只状态为"异常"
