@@ -12,14 +12,6 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -335,15 +327,15 @@ function NotificationsPage() {
         })}
       </section>
 
-      {/* 详情弹窗（非实验室） */}
-      <Dialog
-        open={!!current && current.cat !== "lab"}
-        onOpenChange={(o) => !o && setOpenId(null)}
-      >
-        <DialogContent className="max-w-[360px] rounded-2xl bg-white">
-          {current && current.cat !== "lab" && (
+      {/* 详情抽屉（统一样式与高度） */}
+      <Sheet open={!!current} onOpenChange={(o) => !o && setOpenId(null)}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl p-0 h-[80vh] flex flex-col bg-white"
+        >
+          {current && (
             <>
-              <DialogHeader>
+              <SheetHeader className="px-4 pt-4 pb-3 border-b border-border text-left">
                 <div className="flex items-center gap-2">
                   <span
                     className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${META[current.cat].tone}`}
@@ -359,18 +351,64 @@ function NotificationsPage() {
                     {META[current.cat].label}
                   </span>
                 </div>
-                <DialogTitle className="text-left text-base mt-2">
+                <SheetTitle className="text-left text-base mt-2">
                   {current.title}
-                </DialogTitle>
-                <DialogDescription className="text-left text-body text-text-secondary leading-relaxed">
-                  {current.desc}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {current.time}
+                </SheetTitle>
+              </SheetHeader>
+
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+                {current.cat === "lab" && current.lab ? (
+                  <>
+                    <DetailRow label="检查项目" value={current.lab.project} />
+                    <DetailRow
+                      label="最终结论"
+                      value={current.lab.conclusion}
+                      multiline
+                    />
+                    <DetailRow
+                      label="结论提交人"
+                      value={current.lab.submitter}
+                    />
+                    <DetailRow
+                      label="结论提交时间"
+                      value={current.lab.submittedAt}
+                    />
+                    <div>
+                      <div className="text-caption text-text-tertiary mb-2">
+                        检查报告
+                      </div>
+                      {current.lab.reportImages.length > 0 ? (
+                        <div className="grid grid-cols-3 gap-2">
+                          {current.lab.reportImages.map((id) => (
+                            <div
+                              key={id}
+                              className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center text-text-tertiary"
+                            >
+                              <ImageIcon className="h-5 w-5" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-lg border border-dashed border-border bg-surface-subtle/40 py-6 text-center text-caption text-text-tertiary">
+                          实验室未上传检查报告图片
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-body text-text-secondary leading-relaxed">
+                      {current.desc}
+                    </div>
+                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {current.time}
+                    </div>
+                  </>
+                )}
               </div>
-              <DialogFooter className="flex-row gap-2 sm:justify-end">
+
+              <div className="px-4 py-3 border-t border-border bg-white flex gap-2">
                 <Button
                   variant="outline"
                   className="flex-1"
@@ -378,88 +416,11 @@ function NotificationsPage() {
                 >
                   确认
                 </Button>
-                {current.link && (
+                {current.cat !== "lab" && current.link && (
                   <Button className="flex-1" onClick={goDetail}>
                     查看详情
                   </Button>
                 )}
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* 实验室详情抽屉 */}
-      <Sheet
-        open={!!current && current.cat === "lab"}
-        onOpenChange={(o) => !o && setOpenId(null)}
-      >
-        <SheetContent
-          side="bottom"
-          className="rounded-t-2xl p-0 max-h-[80vh] flex flex-col bg-white"
-        >
-          {current && current.cat === "lab" && current.lab && (
-            <>
-              <SheetHeader className="px-4 pt-4 pb-3 border-b border-border text-left">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${META.lab.tone}`}
-                  >
-                    <FlaskConical className="h-4 w-4" strokeWidth={1.75} />
-                  </span>
-                  <span className={`text-caption ${META.lab.tone.split(" ")[1]}`}>
-                    {META.lab.label}
-                  </span>
-                </div>
-                <SheetTitle className="text-left text-base mt-2">
-                  {current.title}
-                </SheetTitle>
-              </SheetHeader>
-
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-                <DetailRow label="检查项目" value={current.lab.project} />
-                <DetailRow
-                  label="最终结论"
-                  value={current.lab.conclusion}
-                  multiline
-                />
-                <DetailRow label="结论提交人" value={current.lab.submitter} />
-                <DetailRow
-                  label="结论提交时间"
-                  value={current.lab.submittedAt}
-                />
-
-                <div>
-                  <div className="text-caption text-text-tertiary mb-2">
-                    检查报告
-                  </div>
-                  {current.lab.reportImages.length > 0 ? (
-                    <div className="grid grid-cols-3 gap-2">
-                      {current.lab.reportImages.map((id) => (
-                        <div
-                          key={id}
-                          className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center text-text-tertiary"
-                        >
-                          <ImageIcon className="h-5 w-5" />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="rounded-lg border border-dashed border-border bg-surface-subtle/40 py-6 text-center text-caption text-text-tertiary">
-                      实验室未上传检查报告图片
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="px-4 py-3 border-t border-border bg-white">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setOpenId(null)}
-                >
-                  确认
-                </Button>
               </div>
             </>
           )}
