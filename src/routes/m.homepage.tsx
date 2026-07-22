@@ -145,9 +145,19 @@ function MHomePage() {
 
 
 
+      {/* ============ 工作任务 ============ */}
+      <section className="px-4 mt-3">
+        <SectionTitle
+          title="今日任务"
+          hint={`共计 ${getTaskCount(role)} 项`}
+          to="/m/health/today"
+        />
+        <TodayTaskList role={role} />
+      </section>
+
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-3">
+        <section className="px-4 mt-[22px] mb-4">
           <SectionTitle title="速查与近况" />
 
           <div className="grid grid-cols-3 gap-2.5">
@@ -179,16 +189,6 @@ function MHomePage() {
 
         </section>
       )}
-
-      {/* ============ 工作任务 ============ */}
-      <section className="px-4 mt-[22px] mb-4">
-        <SectionTitle
-          title="今日任务"
-          hint={`共计 ${getTaskCount(role)} 项`}
-          to="/m/health/today"
-        />
-        <TodayTaskList role={role} />
-      </section>
 
 
 
