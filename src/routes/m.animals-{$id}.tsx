@@ -127,20 +127,32 @@ function AnimalDetailPage() {
                   <span className="truncate">{a.farm} · {a.barn} · {a.pen}</span>
                 </div>
               </div>
-              <span
-                className={`shrink-0 self-start h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
-                  a.health === "异常"
-                    ? "bg-[#FFE4E1] text-[#D9534F]"
-                    : a.health === "观察中"
-                    ? "bg-[#FFF7E6] text-[#B8860B]"
-                    : a.health === "治疗中"
-                    ? "bg-[#FFE8CC] text-[#C9621F]"
-                    : "bg-[#E8F5E9] text-[#2E7D32]"
-                }`}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
-                {a.health}
-              </span>
+              <div className="shrink-0 flex flex-col items-end gap-1.5">
+                <span
+                  className={`h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
+                    a.health === "异常"
+                      ? "bg-[#FFE4E1] text-[#D9534F]"
+                      : a.health === "观察中"
+                      ? "bg-[#FFF7E6] text-[#B8860B]"
+                      : a.health === "治疗中"
+                      ? "bg-[#FFE8CC] text-[#C9621F]"
+                      : "bg-[#E8F5E9] text-[#2E7D32]"
+                  }`}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                  {a.health}
+                </span>
+                <Link
+                  to="/m/animals-orders/$id"
+                  params={{ id: a.id }}
+                  className="h-6 px-2 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-caption text-primary-foreground inline-flex items-center gap-1 active:bg-white/30"
+                >
+                  <ListChecks className="h-3 w-3" />
+                  全部工单
+                  <span className="opacity-80">12</span>
+                  <ChevronRight className="h-3 w-3 -mr-0.5" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
