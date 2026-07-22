@@ -18,18 +18,22 @@ export function MobileShell({
   hideTabBar,
   back,
   right,
+  headerTone,
+  headerExtra,
 }: {
   title?: string;
   children: ReactNode;
   hideTabBar?: boolean;
   back?: { to: string; label?: string; search?: Record<string, string> } | true;
   right?: ReactNode;
+  headerTone?: "brand";
+  headerExtra?: ReactNode;
 }) {
   return (
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col bg-[var(--bg-page)] relative">
         {title && (
-          <MobileTopBar title={title} back={back} right={right} />
+          <MobileTopBar title={title} back={back} right={right} tone={headerTone} extra={headerExtra} />
         )}
         <main className={`flex-1 ${hideTabBar ? "" : "pb-20"}`}>{children}</main>
         {!hideTabBar && <MobileTabBar />}
