@@ -766,7 +766,7 @@ function PersonalWorkStats() {
           return (
             <div
               key={s.label}
-              className="relative rounded-2xl p-3.5 overflow-hidden aspect-[1.6/1]"
+              className="relative rounded-2xl p-3.5 overflow-hidden aspect-[1.75/1]"
               style={{ background: s.bg }}
             >
               <div className="flex items-center gap-1.5">
