@@ -759,7 +759,7 @@ function PersonalWorkStats() {
     },
   ];
   return (
-    <section className="px-4 mt-0">
+    <section className="px-4 mt-1">
       <SectionTitle title="工作概览" hint="本月" />
       <div className="mt-3 grid grid-cols-2 gap-2.5">
         {stats.map((s) => {
