@@ -21,6 +21,10 @@ import {
   TrendingUp,
   Check,
   Baby,
+  FileText,
+  CheckCircle2,
+  PlayCircle,
+  Clock,
 } from "lucide-react";
 
 import { MobileShell } from "@/components/mobile-shell";
@@ -706,32 +710,127 @@ function HealthTrendChart() {
 }
 
 function PersonalWorkStats() {
-  const stats = [
-    { label: "全部工单", value: "128", unit: "单", tone: "var(--brand)" },
-    { label: "完成率", value: "82", unit: "%", tone: "var(--state-success)" },
-    { label: "进行中", value: "14", unit: "单", tone: "var(--effect-ai-cyan)" },
-    { label: "逾期数", value: "3", unit: "单", tone: "var(--state-danger)" },
+  type StatItem = {
+    label: string;
+    value: string;
+    unit: string;
+    tone: string;
+    bg: string;
+    visual: "bars" | "ring" | "spark" | "clock";
+    icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  };
+  const stats: StatItem[] = [
+    {
+      label: "全部工单",
+      value: "128",
+      unit: "单",
+      tone: "var(--text-secondary)",
+      bg: "color-mix(in oklab, var(--text-secondary) 6%, #FFFFFF)",
+      visual: "bars",
+      icon: FileText,
+    },
+    {
+      label: "完成率",
+      value: "75",
+      unit: "%",
+      tone: "var(--state-success)",
+      bg: "color-mix(in oklab, var(--state-success) 10%, #FFFFFF)",
+      visual: "ring",
+      icon: CheckCircle2,
+    },
+    {
+      label: "进行中",
+      value: "14",
+      unit: "单",
+      tone: "#2E8CF0",
+      bg: "color-mix(in oklab, #2E8CF0 8%, #FFFFFF)",
+      visual: "spark",
+      icon: PlayCircle,
+    },
+    {
+      label: "逾期数",
+      value: "6",
+      unit: "单",
+      tone: "#F15454",
+      bg: "color-mix(in oklab, #F15454 8%, #FFFFFF)",
+      visual: "clock",
+      icon: Clock,
+    },
   ];
   return (
     <section className="px-4 mt-3">
       <SectionTitle title="工作概览" hint="本月" />
       <div className="mt-3 grid grid-cols-2 gap-2.5">
-        {stats.map((s) => (
-          <div key={s.label} className="rounded-xl border border-border bg-card p-3">
-            <div className="text-caption text-text-tertiary">{s.label}</div>
-            <div className="mt-1 flex items-baseline gap-1">
-              <span
-                className="text-[24px] leading-none font-semibold tabular-nums"
-                style={{ color: s.tone }}
-              >
-                {s.value}
-              </span>
-              <span className="text-caption text-text-tertiary">{s.unit}</span>
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <div
+              key={s.label}
+              className="relative rounded-2xl p-3.5 overflow-hidden aspect-[1.6/1]"
+              style={{ background: s.bg }}
+            >
+              <div className="flex items-center gap-1.5">
+                <Icon className="h-4 w-4" style={{ color: s.tone }} />
+                <span className="text-body-sm text-foreground">{s.label}</span>
+              </div>
+              <div className="absolute left-3.5 bottom-3 flex items-baseline gap-1">
+                <span
+                  className="text-[30px] leading-none font-semibold tabular-nums"
+                  style={{ color: s.tone }}
+                >
+                  {s.value}
+                </span>
+                <span className="text-caption text-text-tertiary">{s.unit}</span>
+              </div>
+              <StatVisual variant={s.visual} tone={s.tone} />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
+  );
+}
+
+function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "clock"; tone: string }) {
+  if (variant === "bars") {
+    return (
+      <div className="absolute right-3 bottom-3 flex items-end gap-1" style={{ color: tone, opacity: 0.35 }}>
+        <span className="block w-1.5 rounded-sm bg-current" style={{ height: 10 }} />
+        <span className="block w-1.5 rounded-sm bg-current" style={{ height: 16 }} />
+        <span className="block w-1.5 rounded-sm bg-current" style={{ height: 22 }} />
+        <span className="block w-1.5 rounded-sm bg-current" style={{ height: 28 }} />
+      </div>
+    );
+  }
+  if (variant === "ring") {
+    const r = 16;
+    const c = 2 * Math.PI * r;
+    return (
+      <svg className="absolute right-2.5 bottom-2.5" width="42" height="42" viewBox="0 0 42 42">
+        <circle cx="21" cy="21" r={r} fill="none" stroke={tone} strokeOpacity="0.2" strokeWidth="3" />
+        <circle
+          cx="21" cy="21" r={r} fill="none" stroke={tone} strokeWidth="3" strokeLinecap="round"
+          strokeDasharray={`${c * 0.75} ${c}`} transform="rotate(-90 21 21)"
+        />
+        <path d="M15 21.5 L19 25.5 L27 17" fill="none" stroke={tone} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (variant === "spark") {
+    return (
+      <svg className="absolute right-2 bottom-2" width="70" height="34" viewBox="0 0 70 34" fill="none">
+        <path d="M2 24 C 10 20, 14 26, 22 18 S 34 10, 42 14 S 58 6, 68 10"
+          stroke={tone} strokeWidth="2" strokeLinecap="round" fill="none" />
+      </svg>
+    );
+  }
+  // clock
+  return (
+    <svg className="absolute right-2.5 bottom-2.5" width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <circle cx="22" cy="22" r="15" stroke={tone} strokeOpacity="0.35" strokeWidth="2" strokeDasharray="2 3" />
+      <path d="M22 12 A10 10 0 1 1 12 22" stroke={tone} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M22 14 L22 22 L28 25" stroke={tone} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+    </svg>
   );
 }
 
