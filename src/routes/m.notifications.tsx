@@ -6,6 +6,8 @@ import {
   Settings2,
   Megaphone,
   Clock,
+  FlaskConical,
+  ImageIcon,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
@@ -16,6 +18,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/m/notifications")({
