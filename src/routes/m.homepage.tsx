@@ -16,6 +16,7 @@ import {
   Footprints,
   Stethoscope,
   PackageX,
+  Package,
  ArrowUpRight,
   TrendingUp,
   Check,
