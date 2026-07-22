@@ -163,11 +163,13 @@ function AnimalDetailPage() {
         {/* 基础信息 */}
         <section className="px-4 mt-3">
           <div className="rounded-2xl bg-card border border-border px-3 py-3">
-            <div className="grid grid-cols-3 gap-y-2.5 gap-x-2">
+            <div className="grid grid-cols-4 gap-y-2.5 gap-x-2">
               <InfoRow label="品种" value={a.breed} />
+              <InfoRow label="类别" value={a.type} />
               <InfoRow label="性别" value={a.sex} />
               <InfoRow label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
-              <InfoRow label="类别" value={a.type} />
+            </div>
+            <div className="grid grid-cols-3 gap-y-2.5 gap-x-2 mt-2.5">
               <InfoRow label="胎次" value={`${a.parity} 胎`} />
               <InfoRow label="泌乳天数" value={`${a.lactationDays} 天`} />
               <InfoRow label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
