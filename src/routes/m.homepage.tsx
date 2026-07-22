@@ -26,7 +26,8 @@ import {
   PlayCircle,
   Clock,
 } from "lucide-react";
-import tasksDoneCelebrate from "@/assets/tasks-done-celebrate.png";
+import tasksDoneCelebrateAsset from "@/assets/tasks-done-celebrate-v2.png.asset.json";
+const tasksDoneCelebrate = tasksDoneCelebrateAsset.url;
 
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
@@ -428,16 +429,19 @@ export function truncateCJK(s: string, max = 5) {
 
 function TodayTaskList({ role }: { role: Role }) {
   const renderAllDone = () => (
-    <div className="mt-3 flex flex-col items-center justify-center min-h-[136px] py-3 px-4">
-      <div className="text-body-sm text-text-secondary">今日任务已全部完成</div>
+    <div className="mt-3 flex items-center gap-3 min-h-[136px] rounded-2xl border border-border bg-card px-4 py-3">
       <img
         src={tasksDoneCelebrate}
         alt=""
-        width={120}
-        height={120}
+        width={112}
+        height={112}
         loading="lazy"
-        className="mt-1 h-[96px] w-[96px] object-contain"
+        className="h-[104px] w-[104px] shrink-0 object-contain"
       />
+      <div className="flex flex-col">
+        <div className="text-card-title text-foreground font-semibold">今日任务已全部完成</div>
+        <div className="text-body-sm text-text-tertiary mt-1">辛苦啦，今天的工作都处理完了</div>
+      </div>
     </div>
   );
 
