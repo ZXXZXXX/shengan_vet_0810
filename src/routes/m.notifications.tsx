@@ -221,6 +221,9 @@ function NotificationsPage() {
     [msgs],
   );
   const unreadCount = msgs.filter((m) => m.unread).length;
+  useEffect(() => {
+    setUnreadCount(unreadCount);
+  }, [unreadCount]);
   const current = openId ? msgs.find((m) => m.id === openId) ?? null : null;
 
   const markAllRead = () =>
