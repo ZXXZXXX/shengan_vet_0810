@@ -38,7 +38,7 @@ const DEVICES: Device[] = [
   },
   {
     kind: "ear",
-    id: "D-BOL-088",
+    id: "D-EAR-088",
     name: "耳温设备 · smaXtec",
     status: "异常",
     metrics: [
