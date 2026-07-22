@@ -147,15 +147,17 @@ function MHomePage() {
 
 
 
-      {/* ============ 工作任务 ============ */}
-      <section className="px-4 mt-4">
-        <SectionTitle
-          title="今日任务"
-          hint={role === "admin" ? "管理员无待办任务" : `共计 ${getTaskCount(role)} 项`}
-          to={role === "admin" ? undefined : "/m/health/today"}
-        />
-        <TodayTaskList role={role} />
-      </section>
+      {/* ============ 工作任务(管理员无待办) ============ */}
+      {role !== "admin" && (
+        <section className="px-4 mt-4">
+          <SectionTitle
+            title="今日任务"
+            hint={`共计 ${getTaskCount(role)} 项`}
+            to="/m/health/today"
+          />
+          <TodayTaskList role={role} />
+        </section>
+      )}
 
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
