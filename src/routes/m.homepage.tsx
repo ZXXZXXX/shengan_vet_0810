@@ -481,13 +481,26 @@ function TodayTaskList({ role }: { role: Role }) {
 
             {/* 底部: 领物 + 操作 */}
             <div className="mt-3 flex items-center justify-between">
-              {pk ? (
+              {chip === "待诊断" ? (
+                <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                  <Package className="h-3.5 w-3.5" />
+                  -
+                </span>
+              ) : isReview ? (
+                <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                  <Package className="h-3.5 w-3.5" />
+                  无需领物
+                </span>
+              ) : pk ? (
                 <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
                   <Package className="h-3.5 w-3.5" />
                   需要领物
                 </span>
               ) : (
-                <span />
+                <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                  <Package className="h-3.5 w-3.5" />
+                  无需领物
+                </span>
               )}
               <span className="inline-flex items-center gap-0.5 text-body-sm text-primary">
                 {actionText}
