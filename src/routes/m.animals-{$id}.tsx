@@ -63,7 +63,7 @@ function AnimalDetailPage() {
     sex: "母",
     type: "哺乳牛",
     ageDays: 1218,
-    health: "观察中" as "健康" | "观察中" | "异常" | "治疗中",
+    health: "健康" as "健康" | "观察中" | "异常" | "治疗中",
     withdrawalDays: 3,
     withdrawalUntil: "2026-05-28",
     lactationDays: 168,
