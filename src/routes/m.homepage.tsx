@@ -725,8 +725,8 @@ function PersonalWorkStats() {
       label: "全部工单",
       value: "128",
       unit: "单",
-      tone: "var(--text-secondary)",
-      bg: "color-mix(in oklab, var(--text-secondary) 6%, #FFFFFF)",
+      tone: "#FF8A3D",
+      bg: "color-mix(in oklab, #FF8A3D 10%, #FFFFFF)",
       visual: "bars",
       icon: FileText,
     },
@@ -795,11 +795,11 @@ function PersonalWorkStats() {
 function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "clock"; tone: string }) {
   if (variant === "bars") {
     return (
-      <div className="absolute right-3 bottom-3 flex items-end gap-1" style={{ color: tone, opacity: 0.35 }}>
-        <span className="block w-1.5 rounded-sm bg-current" style={{ height: 10 }} />
-        <span className="block w-1.5 rounded-sm bg-current" style={{ height: 16 }} />
-        <span className="block w-1.5 rounded-sm bg-current" style={{ height: 22 }} />
-        <span className="block w-1.5 rounded-sm bg-current" style={{ height: 28 }} />
+      <div className="absolute right-3 bottom-3 flex items-end gap-1.5" style={{ color: tone }}>
+        <span className="block w-[5px] rounded-full bg-current" style={{ height: 10, opacity: 0.5 }} />
+        <span className="block w-[5px] rounded-full bg-current" style={{ height: 16, opacity: 0.55 }} />
+        <span className="block w-[5px] rounded-full bg-current" style={{ height: 22, opacity: 0.6 }} />
+        <span className="block w-[5px] rounded-full bg-current" style={{ height: 28, opacity: 0.7 }} />
       </div>
     );
   }
