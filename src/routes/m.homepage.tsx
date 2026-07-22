@@ -147,7 +147,7 @@ function MHomePage() {
 
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-5">
+        <section className="px-4 mt-2">
           <SectionTitle title="速查与近况" />
 
           <div className="grid grid-cols-3 gap-2.5">
@@ -181,7 +181,7 @@ function MHomePage() {
       )}
 
       {/* ============ 工作任务 ============ */}
-      <section className="px-4 mt-5 mb-4">
+      <section className="px-4 mt-2 mb-4">
         <SectionTitle
           title="今日工作任务"
           hint={`共计 ${getTaskCount(role)} 项`}
@@ -595,7 +595,8 @@ function OpsOverview() {
     { label: "离场牛只", value: "92", unit: "头", tone: "var(--effect-ai-purple)" },
   ];
   return (
-    <section className="px-4 mt-3">
+    <section className="px-4 mt-0">
+
       <SectionTitle title="运营概览" hint="本月" />
       <div className="mt-3 grid grid-cols-2 gap-2.5">
         {kpis.map((k) => (
@@ -758,7 +759,7 @@ function PersonalWorkStats() {
     },
   ];
   return (
-    <section className="px-4 mt-3">
+    <section className="px-4 mt-0">
       <SectionTitle title="工作概览" hint="本月" />
       <div className="mt-3 grid grid-cols-2 gap-2.5">
         {stats.map((s) => {
