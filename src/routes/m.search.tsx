@@ -212,27 +212,58 @@ function SearchPage() {
             <SheetTitle className="text-section">选择牛舍</SheetTitle>
           </SheetHeader>
 
-          <div className="flex-1 overflow-auto px-4 pb-2 space-y-2">
-            <BarnOption
-              label="全部牛舍"
-              checked={draft === "all"}
-              onClick={pickAll}
-              emphasis
-            />
-            <div className="h-px bg-border my-1" />
-            {BARNS.map((b) => {
-              const checked = draft !== "all" && draft.has(b.idx);
-              return (
-                <BarnOption
-                  key={b.id}
-                  label={b.name}
-                  sub={b.id}
-                  checked={checked}
-                  onClick={() => toggleBarn(b.idx)}
-                />
-              );
-            })}
+          <div className="px-4 pb-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+              <input
+                value={barnQuery}
+                onChange={(e) => setBarnQuery(e.target.value)}
+                placeholder="搜索牛舍名称或编号"
+                className="w-full h-10 pl-9 pr-9 rounded-lg bg-surface-subtle border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+              />
+              {barnQuery && (
+                <button
+                  type="button"
+                  onClick={() => setBarnQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+                  aria-label="清除"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
           </div>
+
+          <div className="flex-1 overflow-auto px-4 pb-2 space-y-2">
+            {!barnQuery && (
+              <>
+                <BarnOption
+                  label="全部牛舍"
+                  checked={draft === "all"}
+                  onClick={pickAll}
+                  emphasis
+                />
+                <div className="h-px bg-border my-1" />
+              </>
+            )}
+            {filteredBarns.length === 0 ? (
+              <div className="text-center py-10 text-body-sm text-text-tertiary">无匹配牛舍</div>
+            ) : (
+              filteredBarns.map((b) => {
+                const checked = draft !== "all" && draft.has(b.idx);
+                return (
+                  <BarnOption
+                    key={b.id}
+                    label={b.name}
+                    sub={b.id}
+                    checked={checked}
+                    onClick={() => toggleBarn(b.idx)}
+                  />
+                );
+              })
+            )}
+          </div>
+
 
           <div className="p-4 border-t border-border flex gap-2">
             <button
