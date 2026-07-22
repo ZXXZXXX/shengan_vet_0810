@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Home, ClipboardList, Bell, User, Search } from "lucide-react";
 import { ReactNode } from "react";
+import { useUnreadCount } from "@/lib/notify-store";
 
 const leftTabs = [
   { to: "/m/homepage", label: "首页", icon: Home, exact: true },
