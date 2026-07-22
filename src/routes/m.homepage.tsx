@@ -427,34 +427,29 @@ export function truncateCJK(s: string, max = 5) {
 }
 
 function TodayTaskList({ role }: { role: Role }) {
+  const renderAllDone = () => (
+    <div className="mt-3 rounded-xl bg-card border border-border flex flex-col items-center justify-center py-8 px-4">
+      <img
+        src={tasksDoneCelebrate}
+        alt=""
+        width={120}
+        height={120}
+        loading="lazy"
+        className="h-[120px] w-[120px] object-contain"
+      />
+      <div className="mt-2 text-body-sm text-text-secondary">今日任务已全部完成</div>
+    </div>
+  );
+
   if (role === "admin") {
-    return (
-      <div className="mt-3 rounded-xl bg-card border border-border">
-        <EmptyState
-          icon={Inbox}
-          size="sm"
-          title="暂无任务"
-        />
-      </div>
-    );
+    return renderAllDone();
   }
 
-  const filter: RoleFilter =
-    roleFilterMap[role] ?? { status: "待诊断", type: "疾病治疗", label: "待诊断 · 疾病治疗" };
   const matched = getRoleTasks(role);
-  const visible = matched.slice(0, 7);
+  const visible = matched.slice(0, 1);
 
   if (visible.length === 0) {
-    return (
-      <div className="mt-3 rounded-xl bg-card border border-border">
-        <EmptyState
-          icon={Inbox}
-          size="sm"
-          title="今日暂无工单"
-          desc={`暂无${filter.label}相关工单`}
-        />
-      </div>
-    );
+    return renderAllDone();
   }
 
   return (
