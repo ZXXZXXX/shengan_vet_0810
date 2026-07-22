@@ -149,7 +149,6 @@ function AnimalDetailPage() {
                 >
                   <ListChecks className="h-3 w-3" />
                   全部工单
-                  <span className="opacity-80">12</span>
                   <ChevronRight className="h-3 w-3 -mr-0.5" />
                 </Link>
               </div>
