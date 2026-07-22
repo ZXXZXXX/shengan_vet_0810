@@ -174,16 +174,8 @@ function AnimalDetailPage() {
         <section className="px-4 mt-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-card-title text-foreground">外接设备</h3>
-            {devices.length > 0 && (
-              <Link
-                to="/m/animals-device/$id"
-                params={{ id: a.id }}
-                className="text-caption text-primary inline-flex items-center gap-0.5"
-              >
-                查看数据 <ChevronRight className="h-3 w-3" />
-              </Link>
-            )}
           </div>
+
           {devices.length === 0 ? (
             <div className="rounded-xl bg-card border border-dashed border-border p-5 text-center text-caption text-text-tertiary">
               暂无外接设备
