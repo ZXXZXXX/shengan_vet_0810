@@ -49,7 +49,7 @@ function listCows(barnFilter: Set<number> | "all", kw: string, onlyAbnormal: boo
         const id = cowIdFor(b, p, i);
         if (kw && !id.includes(kw)) continue;
         const status = statusFor(b, p, i);
-        if (onlyAbnormal && status === "健康") continue;
+        if (onlyAbnormal && status !== "异常") continue;
         out.push({ id, barnIdx: b, penIdx: p, status });
         if (out.length >= max) return out;
       }
