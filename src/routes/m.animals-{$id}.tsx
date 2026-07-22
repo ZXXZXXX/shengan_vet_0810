@@ -153,8 +153,20 @@ function AnimalDetailPage() {
                 </Link>
               </div>
             </div>
+
+            {/* 基础信息 */}
+            <div className="relative mt-4 pt-3 border-t border-white/15 grid grid-cols-3 gap-y-2.5 gap-x-2">
+              <HeaderInfo label="品种" value={a.breed} />
+              <HeaderInfo label="类别" value={a.type} />
+              <HeaderInfo label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
+              <HeaderInfo label="胎次" value={`${a.parity} 胎`} />
+              <HeaderInfo label="泌乳天数" value={`${a.lactationDays} 天`} />
+              <HeaderInfo label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
+            </div>
           </div>
         </div>
+
+
 
         {/* 休药期 */}
         {a.withdrawalDays > 0 && (
@@ -171,21 +183,6 @@ function AnimalDetailPage() {
           </section>
         )}
 
-        {/* 基础信息 */}
-        <section className="px-4 mt-3">
-          <div className="rounded-2xl bg-card border border-border px-3 py-3">
-            <div className="grid grid-cols-3 gap-y-2.5 gap-x-2">
-              <InfoRow label="品种" value={a.breed} />
-              <InfoRow label="类别" value={a.type} />
-              <InfoRow label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
-            </div>
-            <div className="grid grid-cols-3 gap-y-2.5 gap-x-2 mt-2.5">
-              <InfoRow label="胎次" value={`${a.parity} 胎`} />
-              <InfoRow label="泌乳天数" value={`${a.lactationDays} 天`} />
-              <InfoRow label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
-            </div>
-          </div>
-        </section>
 
 
         {/* 外接设备 */}
@@ -482,6 +479,16 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function HeaderInfo({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[11px] leading-tight opacity-70">{label}</div>
+      <div className="text-body-sm font-medium truncate mt-0.5">{value}</div>
+    </div>
+  );
+}
+
 
 function RecordOption({
   icon,
