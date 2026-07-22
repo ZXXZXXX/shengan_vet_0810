@@ -196,9 +196,11 @@ function TaskListPage() {
   const search = Route.useSearch();
   const initialTab: (typeof tabs)[number]["key"] = search.tab === "执行中"
     ? "执行中"
-    : isVisitor
-      ? "待诊断"
-      : "全部";
+    : role === "admin"
+      ? "全部"
+      : isVisitor
+        ? "待诊断"
+        : "全部";
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>(initialTab);
   const [q, setQ] = useState("");
   const typeFilter = search.type;
