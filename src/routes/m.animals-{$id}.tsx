@@ -480,6 +480,16 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+function HeaderInfo({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[11px] leading-tight opacity-70">{label}</div>
+      <div className="text-body-sm font-medium truncate mt-0.5">{value}</div>
+    </div>
+  );
+}
+
+
 function RecordOption({
   icon,
   title,
