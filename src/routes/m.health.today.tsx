@@ -379,7 +379,6 @@ function TodayTasksPage() {
             const cattleId = t.target.startsWith("#") ? t.target : null;
             const groupTarget = cattleId ? null : t.target;
             const pk = activeTab === "待执行" ? pickupForWO(t.id) : null;
-            const pickupClaimed = pk ? claimed.includes(pk.id) : false;
 
             const actionLine =
               activeTab === "待诊断"
