@@ -714,7 +714,7 @@ function PersonalWorkStats() {
   ];
   return (
     <section className="px-4 mt-3">
-      <SectionTitle title="本月工作统计" hint="本月" />
+      <SectionTitle title="工作概览" hint="本月" />
       <div className="mt-3 grid grid-cols-2 gap-2.5">
         {stats.map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-card p-3">
