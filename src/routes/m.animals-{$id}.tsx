@@ -195,6 +195,16 @@ function AnimalDetailPage() {
               <Watch className="h-4 w-4 text-primary" />
               外接设备
             </h3>
+            {devices.length > 0 && (
+              <Link
+                to="/m/animals-device/$id"
+                params={{ id: a.id }}
+                className="text-caption text-primary inline-flex items-center gap-0.5 active:opacity-70"
+              >
+                查看全部
+                <ChevronRight className="h-3 w-3" />
+              </Link>
+            )}
           </div>
 
           {devices.length === 0 ? (
@@ -208,6 +218,7 @@ function AnimalDetailPage() {
                   key={d.id}
                   to="/m/animals-device/$id"
                   params={{ id: a.id }}
+                  search={{ kind: d.kind }}
                   className="block rounded-xl bg-card border border-border p-3 active:bg-surface-subtle"
                 >
                   <div className="flex items-center gap-2.5">
@@ -239,6 +250,7 @@ function AnimalDetailPage() {
               ))}
             </div>
           )}
+
         </section>
 
         {/* 近7日产奶数据 */}
