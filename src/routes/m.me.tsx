@@ -6,6 +6,7 @@ import {
   ClipboardList,
   ShieldCheck,
   LayoutGrid,
+  FileText,
 } from "lucide-react";
 
 import meHero from "@/assets/me-hero.png";
