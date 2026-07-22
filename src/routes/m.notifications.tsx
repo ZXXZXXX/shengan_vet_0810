@@ -248,11 +248,6 @@ function NotificationsPage() {
         <div className="flex h-12 items-center px-3 pt-1">
           <div className="flex-1 text-body font-medium text-foreground">
             消息通知
-            {unreadCount > 0 && (
-              <span className="ml-2 text-caption text-text-tertiary font-normal">
-                {unreadCount} 条未读
-              </span>
-            )}
           </div>
         </div>
       </header>
