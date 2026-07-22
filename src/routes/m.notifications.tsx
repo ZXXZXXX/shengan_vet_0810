@@ -399,15 +399,9 @@ function NotificationsPage() {
                     </div>
                   </>
                 ) : (
-                  <>
-                    <div className="text-body text-text-secondary leading-relaxed">
-                      {current.desc}
-                    </div>
-                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {current.time}
-                    </div>
-                  </>
+                  <div className="text-body text-text-secondary leading-relaxed">
+                    {current.desc}
+                  </div>
                 )}
               </div>
 
