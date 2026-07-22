@@ -1,14 +1,20 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { MobileShell } from "@/components/mobile-shell";
 import { Radio, AlertTriangle, Activity, ChevronDown } from "lucide-react";
 
+type DeviceKind = "collar" | "ear";
+
 export const Route = createFileRoute("/m/animals-device/$id")({
   head: () => ({ meta: [{ title: "外接设备数据 · 奇点智牧" }] }),
+  validateSearch: (search: Record<string, unknown>): { kind?: DeviceKind } => ({
+    kind: search.kind === "collar" || search.kind === "ear" ? (search.kind as DeviceKind) : undefined,
+  }),
   component: AnimalDevicePage,
 });
 
 type Device = {
+  kind: DeviceKind;
   id: string;
   name: string;
   status: "正常" | "异常" | "离线";
@@ -18,6 +24,7 @@ type Device = {
 
 const DEVICES: Device[] = [
   {
+    kind: "collar",
     id: "D-COL-012",
     name: "颈环项圈 · Nedap",
     status: "正常",
@@ -30,17 +37,18 @@ const DEVICES: Device[] = [
     alerts: [],
   },
   {
+    kind: "ear",
     id: "D-BOL-088",
-    name: "瘤胃胶囊 · smaXtec",
+    name: "耳温设备 · smaXtec",
     status: "异常",
     metrics: [
-      { label: "瘤胃温度", value: "39.8", unit: "℃", abnormal: true },
+      { label: "耳部温度", value: "39.8", unit: "℃", abnormal: true },
       { label: "饮水次数", value: "4", unit: "次" },
-      { label: "pH 值", value: "6.1", unit: "" },
-      { label: "运动指数", value: "62", unit: "" },
+      { label: "活动指数", value: "62", unit: "" },
+      { label: "反刍活跃度", value: "78", unit: "" },
     ],
     alerts: [
-      { time: "2026-05-29 08:12", text: "瘤胃温度持续 2 小时高于 39.6℃", level: "danger" },
+      { time: "2026-05-29 08:12", text: "耳部温度持续 2 小时高于 39.6℃", level: "danger" },
       { time: "2026-05-28 21:40", text: "饮水量低于个体均值 30%", level: "warn" },
     ],
   },
@@ -48,18 +56,26 @@ const DEVICES: Device[] = [
 
 function AnimalDevicePage() {
   const { id } = useParams({ from: "/m/animals-device/$id" });
-  const [expanded, setExpanded] = useState<string | null>(DEVICES[0]?.id ?? null);
+  const { kind } = Route.useSearch();
+
+  const list = useMemo(() => (kind ? DEVICES.filter((d) => d.kind === kind) : DEVICES), [kind]);
+  const initialOpen = kind ? list[0]?.id ?? null : list[0]?.id ?? null;
+  const [expanded, setExpanded] = useState<string | null>(initialOpen);
+
+  const title = kind
+    ? `#${id} · ${list[0]?.name.split(" · ")[0] ?? "外接设备"}`
+    : `#${id} · 全部外接设备`;
 
   return (
-    <MobileShell title={`#${id} · 外接设备`} back hideTabBar>
+    <MobileShell title={title} back hideTabBar>
       <div className="px-4 pt-3 pb-6 space-y-3">
-        {DEVICES.map((d) => {
-          const open = expanded === d.id;
+        {list.map((d) => {
+          const open = kind ? true : expanded === d.id;
           return (
             <div key={d.id} className="rounded-2xl bg-card border border-border overflow-hidden">
               <button
                 type="button"
-                onClick={() => setExpanded(open ? null : d.id)}
+                onClick={() => !kind && setExpanded(open ? null : d.id)}
                 className="w-full flex items-center gap-2.5 p-3 active:bg-surface-subtle"
               >
                 <span
@@ -80,7 +96,9 @@ function AnimalDevicePage() {
                 >
                   {d.status}
                 </span>
-                <ChevronDown className={`h-4 w-4 text-text-tertiary transition ${open ? "rotate-180" : ""}`} />
+                {!kind && (
+                  <ChevronDown className={`h-4 w-4 text-text-tertiary transition ${open ? "rotate-180" : ""}`} />
+                )}
               </button>
 
               {open && (
