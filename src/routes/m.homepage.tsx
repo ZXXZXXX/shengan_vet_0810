@@ -130,20 +130,6 @@ function MHomePage() {
             </div>
           </div>
 
-          {/* 个人工单摘要：当前牧场到目前为止 */}
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            {[
-              { label: "全部工单", value: "128" },
-              { label: "已完成", value: "96" },
-              { label: "执行中", value: "14" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-caption text-white/85 font-bold" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{s.label}</div>
-                <div className="text-[26px] leading-none font-black text-white tabular-nums mt-1" style={{ fontFamily: '"SF Pro Display", "Helvetica Neue", Arial, sans-serif', letterSpacing: "-0.02em", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{s.value}</div>
-              </div>
-            ))}
-          </div>
-
         </div>
 
       </header>
