@@ -104,47 +104,48 @@ function SearchPage() {
     return BARNS.filter((b) => b.name.includes(kw) || b.id.includes(kw));
   }, [barnQuery]);
 
-  return (
-    <MobileShell title="牛只档案" back hideTabBar>
-      <div className="px-4 pt-3 pb-8 space-y-3">
-        {/* 搜索框 + 牛舍筛选图标 */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-            <input
-              autoFocus
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="输入牛只耳号粗略匹配，如 2381"
-              className="w-full h-11 pl-9 pr-9 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary"
-            />
-            {q && (
-              <button
-                type="button"
-                onClick={() => setQ("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
-                aria-label="清除"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
+  const searchBar = (
+    <div className="flex items-center gap-2">
+      <div className="relative flex-1">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+        <input
+          autoFocus
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="输入牛只耳号粗略匹配，如 2381"
+          className="w-full h-11 pl-9 pr-9 rounded-xl bg-card border border-transparent text-body text-foreground placeholder:text-text-tertiary focus:outline-none"
+        />
+        {q && (
           <button
             type="button"
-            onClick={openBarnSheet}
-            aria-label="筛选牛舍"
-            className={`relative h-11 w-11 shrink-0 rounded-xl border inline-flex items-center justify-center active:bg-surface-subtle ${
-              selectedCount > 0 ? "border-primary text-primary bg-brand-subtle" : "border-border text-text-secondary bg-card"
-            }`}
+            onClick={() => setQ("")}
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+            aria-label="清除"
           >
-            <SlidersHorizontal className="h-4 w-4" />
-            {selectedCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] leading-4 text-center font-medium">
-                {selectedCount}
-              </span>
-            )}
+            <X className="h-3.5 w-3.5" />
           </button>
-        </div>
+        )}
+      </div>
+      <button
+        type="button"
+        onClick={openBarnSheet}
+        aria-label="筛选牛舍"
+        className="relative h-11 w-11 shrink-0 rounded-xl bg-card text-text-secondary inline-flex items-center justify-center active:opacity-90"
+      >
+        <SlidersHorizontal className="h-4 w-4" />
+        {selectedCount > 0 && (
+          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] leading-4 text-center font-medium ring-2 ring-primary">
+            {selectedCount}
+          </span>
+        )}
+      </button>
+    </div>
+  );
+
+  return (
+    <MobileShell title="牛只档案" back hideTabBar headerTone="brand" headerExtra={searchBar}>
+      <div className="px-4 pt-3 pb-8 space-y-3">
+
 
 
         {/* 结果 */}
