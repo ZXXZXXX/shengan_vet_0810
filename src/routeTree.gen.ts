@@ -71,6 +71,7 @@ import { Route as ArchiveCattleRouteImport } from './routes/archive.cattle'
 import { Route as ArchiveBarnRouteImport } from './routes/archive.barn'
 import { Route as MHealthIndexRouteImport } from './routes/m.health.index'
 import { Route as MPensIdRouteImport } from './routes/m.pens.$id'
+import { Route as MMonthlyReportsIdRouteImport } from './routes/m.monthly-reports.$id'
 import { Route as MHealthTodayRouteImport } from './routes/m.health.today'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
@@ -397,6 +398,11 @@ const MPensIdRoute = MPensIdRouteImport.update({
   path: '/pens/$id',
   getParentRoute: () => MRoute,
 } as any)
+const MMonthlyReportsIdRoute = MMonthlyReportsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MMonthlyReportsRoute,
+} as any)
 const MHealthTodayRoute = MHealthTodayRouteImport.update({
   id: '/health/today',
   path: '/health/today',
@@ -500,7 +506,7 @@ export interface FileRoutesByFullPath {
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
-  '/m/monthly-reports': typeof MMonthlyReportsRoute
+  '/m/monthly-reports': typeof MMonthlyReportsRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
   '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
@@ -535,6 +541,7 @@ export interface FileRoutesByFullPath {
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
+  '/m/monthly-reports/$id': typeof MMonthlyReportsIdRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/events/$type/$id': typeof MEventsTypeIdRoute
@@ -573,7 +580,7 @@ export interface FileRoutesByTo {
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
-  '/m/monthly-reports': typeof MMonthlyReportsRoute
+  '/m/monthly-reports': typeof MMonthlyReportsRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
   '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
@@ -608,6 +615,7 @@ export interface FileRoutesByTo {
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
+  '/m/monthly-reports/$id': typeof MMonthlyReportsIdRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health': typeof MHealthIndexRoute
   '/m/events/$type/$id': typeof MEventsTypeIdRoute
@@ -652,7 +660,7 @@ export interface FileRoutesById {
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
-  '/m/monthly-reports': typeof MMonthlyReportsRoute
+  '/m/monthly-reports': typeof MMonthlyReportsRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
   '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
@@ -687,6 +695,7 @@ export interface FileRoutesById {
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
+  '/m/monthly-reports/$id': typeof MMonthlyReportsIdRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
   '/m/events/$type/$id': typeof MEventsTypeIdRoute
@@ -767,6 +776,7 @@ export interface FileRouteTypes {
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
+    | '/m/monthly-reports/$id'
     | '/m/pens/$id'
     | '/m/health/'
     | '/m/events/$type/$id'
@@ -840,6 +850,7 @@ export interface FileRouteTypes {
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
+    | '/m/monthly-reports/$id'
     | '/m/pens/$id'
     | '/m/health'
     | '/m/events/$type/$id'
@@ -918,6 +929,7 @@ export interface FileRouteTypes {
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
+    | '/m/monthly-reports/$id'
     | '/m/pens/$id'
     | '/m/health/'
     | '/m/events/$type/$id'
@@ -1381,6 +1393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MPensIdRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/monthly-reports/$id': {
+      id: '/m/monthly-reports/$id'
+      path: '/$id'
+      fullPath: '/m/monthly-reports/$id'
+      preLoaderRoute: typeof MMonthlyReportsIdRouteImport
+      parentRoute: typeof MMonthlyReportsRoute
+    }
     '/m/health/today': {
       id: '/m/health/today'
       path: '/health/today'
@@ -1513,6 +1532,18 @@ const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
   KnowledgeRouteChildren,
 )
 
+interface MMonthlyReportsRouteChildren {
+  MMonthlyReportsIdRoute: typeof MMonthlyReportsIdRoute
+}
+
+const MMonthlyReportsRouteChildren: MMonthlyReportsRouteChildren = {
+  MMonthlyReportsIdRoute: MMonthlyReportsIdRoute,
+}
+
+const MMonthlyReportsRouteWithChildren = MMonthlyReportsRoute._addFileChildren(
+  MMonthlyReportsRouteChildren,
+)
+
 interface MRouteChildren {
   MAccountSecurityRoute: typeof MAccountSecurityRoute
   MAnimalsChar123idChar125Route: typeof MAnimalsChar123idChar125Route
@@ -1527,7 +1558,7 @@ interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MLossReportRoute: typeof MLossReportRoute
   MMeRoute: typeof MMeRoute
-  MMonthlyReportsRoute: typeof MMonthlyReportsRoute
+  MMonthlyReportsRoute: typeof MMonthlyReportsRouteWithChildren
   MNotificationsRoute: typeof MNotificationsRoute
   MPrepRoute: typeof MPrepRoute
   MReportRoute: typeof MReportRoute
@@ -1568,7 +1599,7 @@ const MRouteChildren: MRouteChildren = {
   MLoginRoute: MLoginRoute,
   MLossReportRoute: MLossReportRoute,
   MMeRoute: MMeRoute,
-  MMonthlyReportsRoute: MMonthlyReportsRoute,
+  MMonthlyReportsRoute: MMonthlyReportsRouteWithChildren,
   MNotificationsRoute: MNotificationsRoute,
   MPrepRoute: MPrepRoute,
   MReportRoute: MReportRoute,
