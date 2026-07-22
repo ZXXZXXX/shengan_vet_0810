@@ -14,7 +14,7 @@ import {
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
-import { PICKUPS, useClaimed } from "@/lib/pickup-store";
+import { PICKUPS } from "@/lib/pickup-store";
 import {
   homeTasks,
   diseaseTaskMeta,
@@ -134,7 +134,7 @@ function TodayTasksPage() {
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<"batch" | null>(null);
-  const claimed = useClaimed();
+  
   const { capture } = Route.useSearch();
 
   // 领药完成后回到此页：直接跳转到批量执行页
@@ -379,19 +379,17 @@ function TodayTasksPage() {
             const cattleId = t.target.startsWith("#") ? t.target : null;
             const groupTarget = cattleId ? null : t.target;
             const pk = activeTab === "待执行" ? pickupForWO(t.id) : null;
-            const pickupClaimed = pk ? claimed.includes(pk.id) : false;
 
             const actionLine =
               activeTab === "待诊断"
                 ? DIAG_BRIEF[t.id] ?? "症状待评估"
                 : TASK_ACTION[t.id] ??
                   (activeTab === "待复查" ? "测温 + 复查评估" : "执行处方");
-            const actionLabel =
-              activeTab === "待诊断" ? "主诉" : activeTab === "待复查" ? "复查" : "动作";
+            const timeAgo = `${((tasks.indexOf(t) + 1) * 2) % 59 || 2}分钟前`;
 
             const inner = (
               <div className="px-3.5 py-3">
-                {/* 顶部:类型 + 编号 + 状态 */}
+                {/* 顶部:类型 + 编号 + 状态 + 时间 */}
                 <div className="flex items-center gap-1.5">
                   <span
                     className={`h-5 w-5 rounded-full ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
@@ -400,8 +398,16 @@ function TodayTasksPage() {
                   </span>
                   <span className="text-body-sm text-text-secondary">{t.type}</span>
                   <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
-                  <div className="ml-auto">
-                    {selectMode ? (
+                  {chip && (
+                    <span
+                      className={`inline-flex items-center px-1.5 h-[18px] rounded-full text-caption leading-none ${taskChipStyle[chip]}`}
+                    >
+                      {chip}
+                    </span>
+                  )}
+                  <div className="ml-auto flex items-center gap-1.5">
+                    <span className="text-caption text-text-tertiary">{timeAgo}</span>
+                    {selectMode && (
                       <span
                         className={`h-[18px] w-[18px] rounded inline-flex items-center justify-center shrink-0 border ${
                           checked
@@ -412,46 +418,32 @@ function TodayTasksPage() {
                       >
                         {checked && <Check className="h-3 w-3" strokeWidth={3} />}
                       </span>
-                    ) : chip ? (
-                      <span
-                        className={`inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none ${taskChipStyle[chip]}`}
-                      >
-                        {chip}
-                      </span>
-                    ) : null}
+                    )}
                   </div>
                 </div>
 
                 {/* 主体 */}
-                <div className="mt-2 pl-2.5 border-l border-primary">
+                <div className="mt-2.5">
                   <div className="flex items-baseline gap-2 min-w-0">
-                    <span className="text-[15px] font-semibold text-foreground font-mono leading-tight truncate">
+                    <span className="text-[17px] font-semibold text-foreground font-mono leading-tight truncate">
                       {cattleId ?? groupTarget}
                     </span>
-                    <span className="text-caption text-text-tertiary shrink-0 truncate">
+                    <span className="text-body-sm text-text-tertiary shrink-0 truncate">
                       {barn}
                     </span>
                   </div>
-                  <div className="mt-1 text-body-sm text-text-secondary truncate">
-                    <span className="text-text-tertiary mr-1">{actionLabel}</span>
+                  <div className="mt-1.5 text-body-sm text-text-secondary truncate">
+                    <span className="text-text-tertiary mr-1.5">具体内容</span>
                     {actionLine}
                   </div>
                 </div>
 
                 {/* 底部:领物 + 操作 */}
-                <div className="mt-2.5 flex items-center justify-between">
-                  {activeTab === "待执行" ? (
+                <div className="mt-3 flex items-center justify-between">
+                  {activeTab === "待执行" && pk ? (
                     <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
-                      <Package className="h-3 w-3" />
-                      {pk ? (
-                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none bg-[#FFF1E0] text-[#E07B1F]">
-                          需领药
-                        </span>
-                      ) : (
-                        <span className="ml-0.5 inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none bg-surface-subtle text-text-tertiary">
-                          无需领药
-                        </span>
-                      )}
+                      <Package className="h-3.5 w-3.5" />
+                      需要领物
                     </span>
                   ) : (
                     <span />
