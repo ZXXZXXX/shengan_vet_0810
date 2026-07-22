@@ -315,7 +315,7 @@ function NotificationsPage() {
                   <div className="mt-1.5 flex items-center gap-2">
                     <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
                       <Clock className="h-3 w-3" />
-                      {m.time}
+                      {formatMsgTime(m.ts, m.time)}
                     </span>
                     <span
                       className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
