@@ -49,6 +49,7 @@ import { Route as MRespondRouteImport } from './routes/m.respond'
 import { Route as MReportRouteImport } from './routes/m.report'
 import { Route as MPrepRouteImport } from './routes/m.prep'
 import { Route as MNotificationsRouteImport } from './routes/m.notifications'
+import { Route as MMonthlyReportsRouteImport } from './routes/m.monthly-reports'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLossReportRouteImport } from './routes/m.loss-report'
 import { Route as MLoginRouteImport } from './routes/m.login'
@@ -285,6 +286,11 @@ const MNotificationsRoute = MNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => MRoute,
 } as any)
+const MMonthlyReportsRoute = MMonthlyReportsRouteImport.update({
+  id: '/monthly-reports',
+  path: '/monthly-reports',
+  getParentRoute: () => MRoute,
+} as any)
 const MMeRoute = MMeRouteImport.update({
   id: '/me',
   path: '/me',
@@ -494,6 +500,7 @@ export interface FileRoutesByFullPath {
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
+  '/m/monthly-reports': typeof MMonthlyReportsRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
@@ -566,6 +573,7 @@ export interface FileRoutesByTo {
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
+  '/m/monthly-reports': typeof MMonthlyReportsRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
@@ -644,6 +652,7 @@ export interface FileRoutesById {
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
+  '/m/monthly-reports': typeof MMonthlyReportsRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/prep': typeof MPrepRoute
   '/m/report': typeof MReportRoute
@@ -723,6 +732,7 @@ export interface FileRouteTypes {
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
+    | '/m/monthly-reports'
     | '/m/notifications'
     | '/m/prep'
     | '/m/report'
@@ -795,6 +805,7 @@ export interface FileRouteTypes {
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
+    | '/m/monthly-reports'
     | '/m/notifications'
     | '/m/prep'
     | '/m/report'
@@ -872,6 +883,7 @@ export interface FileRouteTypes {
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
+    | '/m/monthly-reports'
     | '/m/notifications'
     | '/m/prep'
     | '/m/report'
@@ -1215,6 +1227,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MNotificationsRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/monthly-reports': {
+      id: '/m/monthly-reports'
+      path: '/monthly-reports'
+      fullPath: '/m/monthly-reports'
+      preLoaderRoute: typeof MMonthlyReportsRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/me': {
       id: '/m/me'
       path: '/me'
@@ -1508,6 +1527,7 @@ interface MRouteChildren {
   MLoginRoute: typeof MLoginRoute
   MLossReportRoute: typeof MLossReportRoute
   MMeRoute: typeof MMeRoute
+  MMonthlyReportsRoute: typeof MMonthlyReportsRoute
   MNotificationsRoute: typeof MNotificationsRoute
   MPrepRoute: typeof MPrepRoute
   MReportRoute: typeof MReportRoute
@@ -1548,6 +1568,7 @@ const MRouteChildren: MRouteChildren = {
   MLoginRoute: MLoginRoute,
   MLossReportRoute: MLossReportRoute,
   MMeRoute: MMeRoute,
+  MMonthlyReportsRoute: MMonthlyReportsRoute,
   MNotificationsRoute: MNotificationsRoute,
   MPrepRoute: MPrepRoute,
   MReportRoute: MReportRoute,
