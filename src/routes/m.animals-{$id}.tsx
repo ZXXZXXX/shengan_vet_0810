@@ -155,20 +155,20 @@ function AnimalDetailPage() {
         )}
 
         {/* 基础信息 */}
-        <section className="px-4 mt-4">
-          <h3 className="text-card-title text-foreground mb-2">基础信息</h3>
-          <div className="rounded-2xl bg-card border border-border p-4 space-y-3">
-            <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+        <section className="px-4 mt-3">
+          <div className="rounded-2xl bg-card border border-border px-3 py-3">
+            <div className="grid grid-cols-3 gap-y-2.5 gap-x-2">
               <InfoRow label="品种" value={a.breed} />
               <InfoRow label="类别" value={a.type} />
               <InfoRow label="性别" value={a.sex} />
               <InfoRow label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
+              <InfoRow label="胎次" value={`${a.parity} 胎`} />
               <InfoRow label="泌乳天数" value={`${a.lactationDays} 天`} />
               <InfoRow label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
-              <InfoRow label="胎次" value={`${a.parity} 胎`} />
             </div>
           </div>
         </section>
+
 
         {/* 外接设备 */}
         <section className="px-4 mt-4">
@@ -482,9 +482,9 @@ function AnimalDetailPage() {
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <div className="text-caption text-text-tertiary">{label}</div>
-      <div className="text-body-sm text-foreground">{value}</div>
+    <div className="min-w-0">
+      <div className="text-[11px] leading-tight text-text-tertiary">{label}</div>
+      <div className="text-body-sm text-foreground truncate mt-0.5">{value}</div>
     </div>
   );
 }
