@@ -66,19 +66,16 @@ function SearchPage() {
   const [selected, setSelected] = useState<Set<number> | "all">("all");
   // 抽屉内的临时选择
   const [draft, setDraft] = useState<Set<number> | "all">("all");
+  const [barnQuery, setBarnQuery] = useState("");
   const [onlyAbnormal, setOnlyAbnormal] = useState(false);
 
   const results = useMemo(() => listCows(selected, q.trim(), onlyAbnormal), [q, selected, onlyAbnormal]);
 
-  const barnLabel =
-    selected === "all"
-      ? "全部牛舍"
-      : selected.size === 1
-        ? BARNS.find((b) => b.idx === Array.from(selected)[0])!.name
-        : `已选 ${selected.size} 个牛舍`;
+  const selectedCount = selected === "all" ? 0 : selected.size;
 
   function openBarnSheet() {
     setDraft(selected === "all" ? "all" : new Set(selected));
+    setBarnQuery("");
     setBarnOpen(true);
   }
 
@@ -101,41 +98,54 @@ function SearchPage() {
     setBarnOpen(false);
   }
 
+  const filteredBarns = useMemo(() => {
+    const kw = barnQuery.trim();
+    if (!kw) return BARNS;
+    return BARNS.filter((b) => b.name.includes(kw) || b.id.includes(kw));
+  }, [barnQuery]);
+
   return (
     <MobileShell title="牛只档案" back hideTabBar>
       <div className="px-4 pt-3 pb-8 space-y-3">
-        {/* 搜索框 */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-          <input
-            autoFocus
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="输入牛只耳号粗略匹配，如 2381"
-            className="w-full h-11 pl-9 pr-9 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary"
-          />
-          {q && (
-            <button
-              type="button"
-              onClick={() => setQ("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
-              aria-label="清除"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
+        {/* 搜索框 + 牛舍筛选图标 */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+            <input
+              autoFocus
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="输入牛只耳号粗略匹配，如 2381"
+              className="w-full h-11 pl-9 pr-9 rounded-xl bg-card border border-border text-body placeholder:text-text-tertiary"
+            />
+            {q && (
+              <button
+                type="button"
+                onClick={() => setQ("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+                aria-label="清除"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={openBarnSheet}
+            aria-label="筛选牛舍"
+            className={`relative h-11 w-11 shrink-0 rounded-xl border inline-flex items-center justify-center active:bg-surface-subtle ${
+              selectedCount > 0 ? "border-primary text-primary bg-brand-subtle" : "border-border text-text-secondary bg-card"
+            }`}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {selectedCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] leading-4 text-center font-medium">
+                {selectedCount}
+              </span>
+            )}
+          </button>
         </div>
 
-        {/* 牛舍选择器 */}
-        <button
-          type="button"
-          onClick={openBarnSheet}
-          className="w-full h-11 px-3 rounded-xl bg-card border border-border flex items-center gap-2 active:bg-surface-subtle"
-        >
-          <span className="text-caption text-text-tertiary">牛舍</span>
-          <span className="flex-1 text-left text-body text-foreground truncate">{barnLabel}</span>
-          <ChevronDown className="h-4 w-4 text-text-tertiary" />
-        </button>
 
         {/* 结果 */}
         <div className="flex items-center justify-between px-1 pt-1">
