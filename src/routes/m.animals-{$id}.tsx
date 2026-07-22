@@ -44,6 +44,7 @@ export const Route = createFileRoute("/m/animals-{$id}")({
 });
 
 type Device = {
+  kind: "collar" | "ear";
   id: string;
   name: string;
   status: "正常" | "异常" | "离线";
@@ -72,9 +73,10 @@ function AnimalDetailPage() {
   };
 
   const devices: Device[] = [
-    { id: "D-COL-012", name: "颈环项圈 · Nedap", status: "正常" },
-    { id: "D-BOL-088", name: "耳温设备 · smaXtec", status: "异常", alertText: "瘤胃温度偏高 39.8℃" },
+    { kind: "collar", id: "D-COL-012", name: "颈环项圈 · Nedap", status: "正常" },
+    { kind: "ear", id: "D-BOL-088", name: "耳温设备 · smaXtec", status: "异常", alertText: "耳部温度偏高 39.8℃" },
   ];
+
 
   // 外接设备异常 → 牛只状态为"异常"
   if (devices.some((d) => d.status === "异常")) {
@@ -193,6 +195,16 @@ function AnimalDetailPage() {
               <Watch className="h-4 w-4 text-primary" />
               外接设备
             </h3>
+            {devices.length > 0 && (
+              <Link
+                to="/m/animals-device/$id"
+                params={{ id: a.id }}
+                className="text-caption text-primary inline-flex items-center gap-0.5 active:opacity-70"
+              >
+                查看全部
+                <ChevronRight className="h-3 w-3" />
+              </Link>
+            )}
           </div>
 
           {devices.length === 0 ? (
@@ -206,6 +218,7 @@ function AnimalDetailPage() {
                   key={d.id}
                   to="/m/animals-device/$id"
                   params={{ id: a.id }}
+                  search={{ kind: d.kind }}
                   className="block rounded-xl bg-card border border-border p-3 active:bg-surface-subtle"
                 >
                   <div className="flex items-center gap-2.5">
@@ -237,6 +250,7 @@ function AnimalDetailPage() {
               ))}
             </div>
           )}
+
         </section>
 
         {/* 近7日产奶数据 */}
