@@ -26,6 +26,7 @@ import {
   PlayCircle,
   Clock,
 } from "lucide-react";
+import tasksDoneCelebrate from "@/assets/tasks-done-celebrate.png";
 
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
