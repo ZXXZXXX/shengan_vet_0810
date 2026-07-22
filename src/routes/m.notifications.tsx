@@ -6,6 +6,8 @@ import {
   Settings2,
   Megaphone,
   Clock,
+  FlaskConical,
+  ImageIcon,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
@@ -16,6 +18,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/m/notifications")({
@@ -23,8 +31,17 @@ export const Route = createFileRoute("/m/notifications")({
   component: NotificationsPage,
 });
 
-/** 三大消息维度 */
-type Cat = "system" | "workorder" | "platform";
+/** 消息维度 */
+type Cat = "system" | "workorder" | "platform" | "lab";
+
+type LabInfo = {
+  earTag: string; // #nn-nn-nnnn
+  project: string;
+  conclusion: string;
+  submitter: string;
+  submittedAt: string; // yyyy-mm-dd hh:mm
+  reportImages: number[]; // 可能为空
+};
 
 type Msg = {
   id: string;
@@ -36,6 +53,7 @@ type Msg = {
   ts: number;
   link?: string;
   unread?: boolean;
+  lab?: LabInfo;
 };
 
 const MSGS: Msg[] = [
@@ -130,6 +148,40 @@ const MSGS: Msg[] = [
     time: "2 天前",
     ts: 60 * 48,
   },
+  // ===== 实验室类：检查结果已出 =====
+  {
+    id: "l1",
+    cat: "lab",
+    title: "#01-24-2381：血常规检查结果已出",
+    desc: "牧场自有实验室已上传 #01-24-2381 牛只的检查附件与结论，可点击查看。",
+    time: "10 分钟前",
+    ts: 10,
+    unread: true,
+    lab: {
+      earTag: "#01-24-2381",
+      project: "血常规检查",
+      conclusion: "白细胞轻度升高，提示存在炎症反应；红细胞、血小板正常。建议结合临床继续观察并复查。",
+      submitter: "李文静（牧场自有实验室）",
+      submittedAt: "2026-07-22 09:42",
+      reportImages: [1, 2, 3],
+    },
+  },
+  {
+    id: "l2",
+    cat: "lab",
+    title: "#01-24-2270：牛奶体细胞检测结果已出",
+    desc: "第三方实验室已上传 #01-24-2270 牛只的检查附件与结论，可点击查看。",
+    time: "昨天 15:30",
+    ts: 60 * 20,
+    lab: {
+      earTag: "#01-24-2270",
+      project: "牛奶体细胞检测（DHI）",
+      conclusion: "体细胞计数 620,000/mL，超出预警阈值，建议进入乳房炎复查流程。",
+      submitter: "第三方实验室 · 张伟",
+      submittedAt: "2026-07-21 15:12",
+      reportImages: [],
+    },
+  },
 ];
 
 const META: Record<
@@ -151,7 +203,11 @@ const META: Record<
     tone: "bg-[#E6F7FE] text-[#22ACEB]",
     label: "平台",
   },
-
+  lab: {
+    icon: FlaskConical,
+    tone: "bg-[#FFF3E0] text-[#F59E0B]",
+    label: "实验室",
+  },
 };
 
 function NotificationsPage() {
@@ -275,10 +331,13 @@ function NotificationsPage() {
         })}
       </section>
 
-      {/* 详情弹窗 */}
-      <Dialog open={!!current} onOpenChange={(o) => !o && setOpenId(null)}>
+      {/* 详情弹窗（非实验室） */}
+      <Dialog
+        open={!!current && current.cat !== "lab"}
+        onOpenChange={(o) => !o && setOpenId(null)}
+      >
         <DialogContent className="max-w-[360px] rounded-2xl bg-white">
-          {current && (
+          {current && current.cat !== "lab" && (
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2">
@@ -325,7 +384,105 @@ function NotificationsPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* 实验室详情抽屉 */}
+      <Sheet
+        open={!!current && current.cat === "lab"}
+        onOpenChange={(o) => !o && setOpenId(null)}
+      >
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl p-0 max-h-[80vh] flex flex-col bg-white"
+        >
+          {current && current.cat === "lab" && current.lab && (
+            <>
+              <SheetHeader className="px-4 pt-4 pb-3 border-b border-border text-left">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${META.lab.tone}`}
+                  >
+                    <FlaskConical className="h-4 w-4" strokeWidth={1.75} />
+                  </span>
+                  <span className={`text-caption ${META.lab.tone.split(" ")[1]}`}>
+                    {META.lab.label}
+                  </span>
+                </div>
+                <SheetTitle className="text-left text-base mt-2">
+                  {current.title}
+                </SheetTitle>
+              </SheetHeader>
+
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+                <DetailRow label="检查项目" value={current.lab.project} />
+                <DetailRow
+                  label="最终结论"
+                  value={current.lab.conclusion}
+                  multiline
+                />
+                <DetailRow label="结论提交人" value={current.lab.submitter} />
+                <DetailRow
+                  label="结论提交时间"
+                  value={current.lab.submittedAt}
+                />
+
+                <div>
+                  <div className="text-caption text-text-tertiary mb-2">
+                    检查报告
+                  </div>
+                  {current.lab.reportImages.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      {current.lab.reportImages.map((id) => (
+                        <div
+                          key={id}
+                          className="aspect-square rounded-lg bg-gradient-to-br from-surface-subtle to-border border border-border flex items-center justify-center text-text-tertiary"
+                        >
+                          <ImageIcon className="h-5 w-5" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-dashed border-border bg-surface-subtle/40 py-6 text-center text-caption text-text-tertiary">
+                      实验室未上传检查报告图片
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="px-4 py-3 border-t border-border bg-white">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setOpenId(null)}
+                >
+                  确认
+                </Button>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </MobileShell>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+  multiline,
+}: {
+  label: string;
+  value: string;
+  multiline?: boolean;
+}) {
+  return (
+    <div>
+      <div className="text-caption text-text-tertiary mb-1">{label}</div>
+      <div
+        className={`text-body text-foreground ${multiline ? "leading-relaxed" : ""}`}
+      >
+        {value}
+      </div>
+    </div>
   );
 }
 
