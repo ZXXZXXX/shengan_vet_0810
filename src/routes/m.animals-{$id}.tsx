@@ -244,19 +244,6 @@ function AnimalDetailPage() {
           </div>
         </section>
 
-        {/* 全部工单入口 */}
-        <section className="px-4 mt-4">
-          <Link
-            to="/m/animals-orders/$id"
-            params={{ id: a.id }}
-            className="flex items-center gap-2 h-11 px-4 rounded-xl bg-card border border-border active:bg-surface-subtle"
-          >
-            <ListChecks className="h-4 w-4 text-primary" />
-            <span className="text-body-sm text-foreground flex-1">查看全部工单</span>
-            <span className="text-caption text-text-tertiary">共 12 条</span>
-            <ChevronRight className="h-4 w-4 text-text-tertiary" />
-          </Link>
-        </section>
 
         {/* Tabs */}
         <section className="px-4 mt-5">
