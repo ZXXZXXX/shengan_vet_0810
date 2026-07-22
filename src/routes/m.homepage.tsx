@@ -26,7 +26,7 @@ import {
   PlayCircle,
   Clock,
 } from "lucide-react";
-import tasksDoneCelebrateAsset from "@/assets/tasks-done-celebrate-v2.png.asset.json";
+import tasksDoneCelebrateAsset from "@/assets/today-task-complete-sparkles.svg.asset.json";
 const tasksDoneCelebrate = tasksDoneCelebrateAsset.url;
 
 import { MobileShell } from "@/components/mobile-shell";
