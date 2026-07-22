@@ -817,10 +817,19 @@ function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "c
     );
   }
   if (variant === "spark") {
+    const line = "M4 30 C 12 30, 16 18, 24 18 S 36 32, 44 28 S 58 6, 78 6";
+    const area = `${line} L 78 40 L 4 40 Z`;
+    const gid = `spark-grad-${tone.replace(/[^a-zA-Z0-9]/g, "")}`;
     return (
-      <svg className="absolute right-2 bottom-2" width="70" height="34" viewBox="0 0 70 34" fill="none">
-        <path d="M2 24 C 10 20, 14 26, 22 18 S 34 10, 42 14 S 58 6, 68 10"
-          stroke={tone} strokeWidth="2" strokeLinecap="round" fill="none" />
+      <svg className="absolute right-2 bottom-2" width="82" height="42" viewBox="0 0 82 42" fill="none">
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={tone} stopOpacity="0.22" />
+            <stop offset="100%" stopColor={tone} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={area} fill={`url(#${gid})`} />
+        <path d={line} stroke={tone} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
       </svg>
     );
   }
