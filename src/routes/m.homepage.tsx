@@ -151,8 +151,8 @@ function MHomePage() {
       <section className="px-4 mt-4">
         <SectionTitle
           title="今日任务"
-          hint={`共计 ${getTaskCount(role)} 项`}
-          to="/m/health/today"
+          hint={role === "admin" ? "管理员无待办任务" : `共计 ${getTaskCount(role)} 项`}
+          to={role === "admin" ? undefined : "/m/health/today"}
         />
         <TodayTaskList role={role} />
       </section>
@@ -440,13 +440,30 @@ function TodayTaskList({ role }: { role: Role }) {
       />
       <div className="flex flex-col">
         <div className="text-card-title text-foreground font-semibold">今日任务已全部完成</div>
-        <div className="text-body-sm text-text-tertiary mt-1">辛苦啦，今天的工作都处理完了</div>
+        <div className="text-body-sm text-text-tertiary mt-1">辛苦啦,今天的工作都处理完了</div>
       </div>
     </div>
   );
 
   if (role === "admin") {
-    return renderAllDone();
+    return (
+      <div className="mt-3 flex items-center gap-3 min-h-[136px] rounded-2xl bg-card px-4 py-3">
+        <img
+          src={tasksDoneCelebrate}
+          alt=""
+          width={112}
+          height={112}
+          loading="lazy"
+          className="h-[104px] w-[104px] shrink-0 object-contain"
+        />
+        <div className="flex flex-col">
+          <div className="text-card-title text-foreground font-semibold">管理员无待办任务</div>
+          <div className="text-body-sm text-text-tertiary mt-1">
+            可在工单列表中查看全场工单
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const matched = getRoleTasks(role);
