@@ -377,6 +377,55 @@ export const taskChipStyle: Record<TaskChip, string> = {
   "待治愈": "bg-[#F3E8FF] text-[#9333EA]",
 };
 
+// 卡片"具体内容"数据源
+// 待诊断:症状标签
+export const SYMPTOM_TAGS: Record<string, string> = {
+  "WO-2381": "阴道黏膜撕裂、出血 >5cm",
+  "WO-2382": "高热、恶臭分泌物",
+  "WO-2383": "恶臭分泌物、体温正常",
+  "WO-2384": "脓性分泌物、产后 5 天",
+  "WO-2385": "直肠检查异常、脓性分泌物",
+  "WO-2386": "中度子宫内膜炎、产后 26 天",
+  "WO-2387": "含脓分泌物、产后 12 天",
+};
+// 待执行:{药品名称}+{用药方法} 或 {任务名称}+{具体操作}
+export const EXEC_BRIEF: Record<string, string> = {
+  "WO-2298": "5% 头孢噻呋、肌肉注射 + 氟尼辛、静脉注射",
+  "WO-2299": "青霉素钠、肌肉注射 + 氟尼辛、静脉注射",
+  "WO-2300": "青霉素钠、肌肉注射 + 氟尼辛、静脉注射",
+  "WO-2301": "10% 头孢噻呋、肌肉注射 + 利福昔明、子宫灌注",
+  "WO-2302": "碘甘油、局部涂抹 + PGA 缝合线拆线",
+  "WO-2303": "利福昔明、子宫灌注",
+  "WO-2440": "直肠体温、测量记录 + 情况评估、拍照",
+  "PP-2501": "直肠体温、测量记录 + 情况评估、拍照",
+  "HF-0702": "5% 头孢噻呋、肌肉注射 + 氟尼辛、静脉注射",
+  "HF-0703": "青霉素钠、肌肉注射 + 生理盐水冲洗",
+  "HF-0704": "护蹄膏、局部包扎",
+  "HF-0705": "清创引流 + 蹄垫粘贴",
+  "HF-0706": "防腐生肌散、局部涂抹",
+  "HF-0707": "远轴侧蹄壁、清创",
+  "HF-0708": "功能性蹄浴液、喷蹄",
+  "YM-1041": "口蹄疫疫苗、颈部肌注",
+  "YM-1042": "布病疫苗、颈部皮下注射",
+  "YM-1043": "牛流行热疫苗、颈部肌注",
+  "YM-1044": "炭疽芽孢苗、皮下注射",
+  "YM-1045": "副伤寒疫苗、颈部肌注",
+  "YM-1046": "漏针补免、颈部肌注",
+  "YM-1047": "结核菌素、皮内注射",
+};
+// 待复查:复查任务描述
+export const REVIEW_BRIEF: Record<string, string> = {
+  "WO-2298": "直肠体温 + 分泌物评估",
+  "WO-2440": "直肠体温 + 子宫恢复评估",
+};
+
+export function taskContentByChip(id: string, chip: TaskChip | null, fallback: string) {
+  if (chip === "待诊断") return SYMPTOM_TAGS[id] ?? fallback;
+  if (chip === "待复查") return REVIEW_BRIEF[id] ?? "测温 + 复查评估";
+  if (chip === "待执行") return EXEC_BRIEF[id] ?? fallback;
+  return fallback;
+}
+
 export function truncateCJK(s: string, max = 5) {
   return [...s].length > max ? [...s].slice(0, max).join("") + "…" : s;
 }
