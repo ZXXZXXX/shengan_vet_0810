@@ -254,14 +254,6 @@ function NotificationsPage() {
               </span>
             )}
           </div>
-          <button
-            onClick={markAllRead}
-            disabled={unreadCount === 0}
-            className="h-9 px-2.5 inline-flex items-center gap-1 text-caption text-text-secondary disabled:text-text-tertiary/60 active:bg-surface-subtle rounded-md"
-          >
-            <CheckCheck className="h-3.5 w-3.5" />
-            全部已读
-          </button>
         </div>
       </header>
 
