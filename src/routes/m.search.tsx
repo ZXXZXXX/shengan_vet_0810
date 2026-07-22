@@ -130,14 +130,12 @@ function SearchPage() {
         type="button"
         onClick={openBarnSheet}
         aria-label="筛选牛舍"
-        className={`relative h-11 w-11 shrink-0 rounded-xl inline-flex items-center justify-center active:opacity-80 ${
-          selectedCount > 0 ? "bg-card text-text-secondary" : "bg-transparent text-primary-foreground"
-        }`}
+        className="relative h-11 w-11 shrink-0 rounded-xl bg-transparent text-primary-foreground inline-flex items-center justify-center active:opacity-80"
       >
         <SlidersHorizontal className="h-5 w-5" />
         {selectedCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] leading-4 text-center font-medium ring-2 ring-primary">
-            {selectedCount}
+          <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-white inline-flex items-center justify-center">
+            <Check className="h-2.5 w-2.5 text-primary" strokeWidth={3} />
           </span>
         )}
       </button>
