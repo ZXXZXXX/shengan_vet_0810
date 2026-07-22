@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { setUnreadCount } from "@/lib/notify-store";
 import {
   CheckCheck,
   ClipboardList,
@@ -220,6 +221,9 @@ function NotificationsPage() {
     [msgs],
   );
   const unreadCount = msgs.filter((m) => m.unread).length;
+  useEffect(() => {
+    setUnreadCount(unreadCount);
+  }, [unreadCount]);
   const current = openId ? msgs.find((m) => m.id === openId) ?? null : null;
 
   const markAllRead = () =>
