@@ -413,7 +413,7 @@ function TodayTaskList({ role }: { role: Role }) {
   }
 
   return (
-    <div className="mt-3 space-y-2">
+    <div className="mt-3 space-y-2.5">
       {visible.map((t) => {
         const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
         const Icon = meta.icon;
@@ -421,8 +421,7 @@ function TodayTaskList({ role }: { role: Role }) {
           t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查";
         const isExecution =
           t.status === "进行中" && VET_EXEC_TYPES.has(t.type) && !isReview;
-        const linkCls =
-          "flex items-center gap-3 p-3 rounded-xl bg-card border border-border active:bg-surface-subtle";
+        const actionText = isReview ? "复查" : isExecution ? "执行" : "诊断";
         const chip: TaskChip | null =
           t.type === "疾病治疗"
             ? diseaseTaskMeta[t.id]?.task ?? null
@@ -431,36 +430,74 @@ function TodayTaskList({ role }: { role: Role }) {
               : t.status === "待诊断"
                 ? "待诊断"
                 : null;
+        const cattleId = t.target.startsWith("#") ? t.target : null;
+        const groupTarget = cattleId ? null : t.target;
+        const barn = cattleId
+          ? `${((Number(t.target.slice(-1)) || 1) % 4) + 1} 号牛舍`
+          : "";
+        const pk = isExecution ? PICKUPS.find((p) => p.source === t.id) : null;
         const body = (
-          <>
-            <span className={`h-9 w-9 rounded-lg ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}>
-              <Icon className="h-4 w-4" strokeWidth={1.75} />
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
-                <span className="font-mono">{t.id}</span>
-                <span>·</span>
-                <span>{t.type}</span>
-                {chip && (
-                  <span
-                    className={`ml-1 inline-flex items-center px-1.5 h-[18px] rounded text-caption leading-none ${taskChipStyle[chip]}`}
-                  >
-                    {chip}
+          <div className="px-3.5 py-3">
+            {/* 顶部: 类型 + 编号 + 状态 + 时间 */}
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`h-5 w-5 rounded-full ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
+              >
+                <Icon className="h-3 w-3" strokeWidth={2} />
+              </span>
+              <span className="text-body-sm text-text-secondary">{t.type}</span>
+              <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
+              {chip && (
+                <span
+                  className={`inline-flex items-center px-1.5 h-[18px] rounded-full text-caption leading-none ${taskChipStyle[chip]}`}
+                >
+                  {chip}
+                </span>
+              )}
+              <span className="ml-auto text-caption text-text-tertiary">
+                {formatTimeAgo(t.minutesAgo)}
+              </span>
+            </div>
+
+            {/* 主体 */}
+            <div className="mt-2.5">
+              <div className="flex items-baseline gap-2 min-w-0">
+                <span className="text-[17px] font-semibold text-foreground font-mono leading-tight truncate">
+                  {cattleId ?? groupTarget}
+                </span>
+                {barn && (
+                  <span className="text-body-sm text-text-tertiary shrink-0 truncate">
+                    {barn}
                   </span>
                 )}
-                <span className="ml-auto">{formatTimeAgo(t.minutesAgo)}</span>
               </div>
-              <div className="text-body text-foreground truncate mt-0.5">
-                <span className="text-text-secondary">{t.target}</span>
-                <span className="text-text-tertiary"> · </span>
+              <div className="mt-1.5 text-body-sm text-text-secondary truncate">
+                <span className="text-text-tertiary mr-1.5">具体内容</span>
                 {t.type === "疾病治疗" && diseaseTaskMeta[t.id]
-                  ? truncateCJK(diseaseTaskMeta[t.id].disease)
+                  ? diseaseTaskMeta[t.id].disease
                   : t.conclusion}
               </div>
             </div>
-            <ChevronRight className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-          </>
+
+            {/* 底部: 领物 + 操作 */}
+            <div className="mt-3 flex items-center justify-between">
+              {pk ? (
+                <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                  <Package className="h-3.5 w-3.5" />
+                  需要领物
+                </span>
+              ) : (
+                <span />
+              )}
+              <span className="inline-flex items-center gap-0.5 text-body-sm text-primary">
+                {actionText}
+                <ChevronRight className="h-3.5 w-3.5" />
+              </span>
+            </div>
+          </div>
         );
+        const linkCls =
+          "block rounded-2xl border border-border bg-card overflow-hidden active:bg-surface-subtle";
         return isReview ? (
           <Link key={t.id} to="/m/health/$id/review" params={{ id: t.id }} className={linkCls}>
             {body}
