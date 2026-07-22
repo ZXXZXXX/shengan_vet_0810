@@ -142,6 +142,28 @@ function SearchPage() {
           <div className="text-caption text-text-tertiary">
             共 {results.length} 头{results.length >= 60 ? "+" : ""}
           </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={onlyAbnormal}
+            onClick={() => setOnlyAbnormal((v) => !v)}
+            className="inline-flex items-center gap-2 active:opacity-80"
+          >
+            <span className={`text-caption ${onlyAbnormal ? "text-primary font-medium" : "text-text-secondary"}`}>
+              仅查看异常
+            </span>
+            <span
+              className={`relative h-[18px] w-8 rounded-full transition-colors ${
+                onlyAbnormal ? "bg-primary" : "bg-border"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-all ${
+                  onlyAbnormal ? "left-[14px]" : "left-0.5"
+                }`}
+              />
+            </span>
+          </button>
         </div>
 
         {results.length === 0 ? (
