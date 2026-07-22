@@ -159,9 +159,10 @@ function AnimalDetailPage() {
               <HeaderInfo label="品种" value={a.breed} />
               <HeaderInfo label="类别" value={a.type} />
               <HeaderInfo label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
-              <HeaderInfo label="胎次" value={`${a.parity} 胎`} />
               <HeaderInfo label="泌乳天数" value={`${a.lactationDays} 天`} />
               <HeaderInfo label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
+              <HeaderInfo label="胎次" value={`${a.parity} 胎`} />
+
             </div>
           </div>
         </div>
