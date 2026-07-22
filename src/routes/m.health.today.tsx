@@ -380,11 +380,9 @@ function TodayTasksPage() {
             const groupTarget = cattleId ? null : t.target;
             const pk = activeTab === "待执行" ? pickupForWO(t.id) : null;
 
-            const actionLine =
-              activeTab === "待诊断"
-                ? DIAG_BRIEF[t.id] ?? "症状待评估"
-                : TASK_ACTION[t.id] ??
-                  (activeTab === "待复查" ? "测温 + 复查评估" : "执行处方");
+            const tabChip: TaskChip =
+              activeTab === "待诊断" ? "待诊断" : activeTab === "待复查" ? "待复查" : "待执行";
+            const actionLine = taskContentByChip(t.id, tabChip, "任务待执行");
             const timeAgo = `${((tasks.indexOf(t) + 1) * 2) % 59 || 2}分钟前`;
 
             const inner = (
