@@ -40,17 +40,18 @@ function statusFor(barnIdx: number, penIdx: number, i: number): CowStatus {
 }
 
 // 生成牛只列表（限制条数避免性能问题）
-function listCows(barnFilter: Set<number> | "all", kw: string, max = 60): Cow[] {
+function listCows(barnFilter: Set<number> | "all", kw: string, onlyAbnormal: boolean, max = 60): Cow[] {
   const out: Cow[] = [];
   const barns = barnFilter === "all" ? BARNS.map((b) => b.idx) : Array.from(barnFilter);
   for (const b of barns) {
     for (let p = 1; p <= PEN_PER_BARN; p++) {
       for (let i = 0; i < COWS_PER_PEN; i++) {
         const id = cowIdFor(b, p, i);
-        if (!kw || id.includes(kw)) {
-          out.push({ id, barnIdx: b, penIdx: p, status: statusFor(b, p, i) });
-          if (out.length >= max) return out;
-        }
+        if (kw && !id.includes(kw)) continue;
+        const status = statusFor(b, p, i);
+        if (onlyAbnormal && status === "健康") continue;
+        out.push({ id, barnIdx: b, penIdx: p, status });
+        if (out.length >= max) return out;
       }
     }
   }
@@ -65,8 +66,9 @@ function SearchPage() {
   const [selected, setSelected] = useState<Set<number> | "all">("all");
   // 抽屉内的临时选择
   const [draft, setDraft] = useState<Set<number> | "all">("all");
+  const [onlyAbnormal, setOnlyAbnormal] = useState(false);
 
-  const results = useMemo(() => listCows(selected, q.trim()), [q, selected]);
+  const results = useMemo(() => listCows(selected, q.trim(), onlyAbnormal), [q, selected, onlyAbnormal]);
 
   const barnLabel =
     selected === "all"
@@ -140,6 +142,28 @@ function SearchPage() {
           <div className="text-caption text-text-tertiary">
             共 {results.length} 头{results.length >= 60 ? "+" : ""}
           </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={onlyAbnormal}
+            onClick={() => setOnlyAbnormal((v) => !v)}
+            className="inline-flex items-center gap-2 active:opacity-80"
+          >
+            <span className={`text-caption ${onlyAbnormal ? "text-primary font-medium" : "text-text-secondary"}`}>
+              仅查看异常
+            </span>
+            <span
+              className={`relative h-[18px] w-8 rounded-full transition-colors ${
+                onlyAbnormal ? "bg-primary" : "bg-border"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-all ${
+                  onlyAbnormal ? "left-[14px]" : "left-0.5"
+                }`}
+              />
+            </span>
+          </button>
         </div>
 
         {results.length === 0 ? (
