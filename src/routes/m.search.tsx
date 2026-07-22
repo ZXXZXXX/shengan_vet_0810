@@ -40,17 +40,18 @@ function statusFor(barnIdx: number, penIdx: number, i: number): CowStatus {
 }
 
 // 生成牛只列表（限制条数避免性能问题）
-function listCows(barnFilter: Set<number> | "all", kw: string, max = 60): Cow[] {
+function listCows(barnFilter: Set<number> | "all", kw: string, onlyAbnormal: boolean, max = 60): Cow[] {
   const out: Cow[] = [];
   const barns = barnFilter === "all" ? BARNS.map((b) => b.idx) : Array.from(barnFilter);
   for (const b of barns) {
     for (let p = 1; p <= PEN_PER_BARN; p++) {
       for (let i = 0; i < COWS_PER_PEN; i++) {
         const id = cowIdFor(b, p, i);
-        if (!kw || id.includes(kw)) {
-          out.push({ id, barnIdx: b, penIdx: p, status: statusFor(b, p, i) });
-          if (out.length >= max) return out;
-        }
+        if (kw && !id.includes(kw)) continue;
+        const status = statusFor(b, p, i);
+        if (onlyAbnormal && status === "健康") continue;
+        out.push({ id, barnIdx: b, penIdx: p, status });
+        if (out.length >= max) return out;
       }
     }
   }
