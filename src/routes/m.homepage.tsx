@@ -834,11 +834,26 @@ function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "c
     );
   }
   // clock
+  const cx = 22, cy = 22, r = 15;
+  const dots = Array.from({ length: 12 }, (_, i) => {
+    // dotted portion: bottom-left half (angles 120°–330° going counter-clockwise via left)
+    const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle), i };
+  });
   return (
     <svg className="absolute right-2.5 bottom-2.5" width="44" height="44" viewBox="0 0 44 44" fill="none">
-      <circle cx="22" cy="22" r="15" stroke={tone} strokeOpacity="0.35" strokeWidth="2" strokeDasharray="2 3" />
-      <path d="M22 12 A10 10 0 1 1 12 22" stroke={tone} strokeWidth="2.5" strokeLinecap="round" fill="none" />
-      <path d="M22 14 L22 22 L28 25" stroke={tone} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      {dots.map((d) => (
+        // draw dots on left/bottom arc only (indices 6..11 → 6,7,8,9,10,11 = left side)
+        (d.i >= 6 && d.i <= 11) || d.i === 0 ? (
+          <circle key={d.i} cx={d.x} cy={d.y} r="1.2" fill={tone} fillOpacity="0.35" />
+        ) : null
+      ))}
+      {/* solid arc: top-right through right down to bottom (from 12 o'clock to ~5 o'clock) */}
+      <path d="M22 7 A15 15 0 0 1 32.6 32.6" stroke={tone} strokeWidth="2.6" strokeLinecap="round" fill="none" />
+      {/* hour hand pointing to ~4 (lower-right) */}
+      <path d="M22 22 L29 27" stroke={tone} strokeWidth="2.6" strokeLinecap="round" fill="none" />
+      {/* minute hand pointing up */}
+      <path d="M22 22 L22 12" stroke={tone} strokeWidth="2.6" strokeLinecap="round" fill="none" />
     </svg>
   );
 }
