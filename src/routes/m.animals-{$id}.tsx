@@ -231,9 +231,9 @@ function AnimalDetailPage() {
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
               <Activity className="h-4 w-4 text-primary" />
-              近 7 日产奶数据
+              产奶数据
             </h3>
-            <span className="text-caption text-text-tertiary">3 班次 / 天</span>
+            <span className="text-caption text-text-tertiary">最近7天</span>
           </div>
           <div className="rounded-2xl bg-card border border-border p-4">
             <MilkChart />
