@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Beef, ChevronRight, Check, X, SlidersHorizontal } from "lucide-react";
+import { Search, Beef, ChevronRight, Check, X, SlidersHorizontal, Home } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
@@ -182,27 +182,54 @@ function SearchPage() {
             未找到匹配的牛只
           </div>
         ) : (
-          <div className="space-y-2">
-            {results.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => navigate({ to: "/m/animals-{$id}", params: { id: c.id } })}
-                className="w-full flex items-center gap-3 h-14 px-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
-              >
-                <span className="h-8 w-8 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center">
-                  <Beef className="h-4 w-4" />
-                </span>
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="text-body font-mono text-foreground">#{c.id}</div>
-                  <div className="text-caption text-text-tertiary">
-                    {c.barnIdx} 号牛舍 · {c.penIdx} 栏
-                  </div>
-                </div>
-                <span className={statusTone[c.status]}>{c.status}</span>
-                <ChevronRight className="h-4 w-4 text-text-tertiary" />
-              </button>
-            ))}
-          </div>
+          (() => {
+            const groups = results.reduce<Record<number, Cow[]>>((acc, c) => {
+              (acc[c.barnIdx] ||= []).push(c);
+              return acc;
+            }, {});
+            const barnIdxs = Object.keys(groups)
+              .map((k) => Number(k))
+              .sort((a, b) => a - b);
+            return (
+              <div className="space-y-4">
+                {barnIdxs.map((idx) => {
+                  const items = groups[idx];
+                  return (
+                    <section key={idx}>
+                      <div className="sticky top-0 z-[1] -mx-4 px-4 py-2 bg-[var(--bg-page)]/90 backdrop-blur flex items-center gap-2">
+                        <span className="h-6 w-6 rounded-md bg-brand-subtle text-primary inline-flex items-center justify-center">
+                          <Home className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="text-body-sm font-medium text-foreground">{idx} 号牛舍</span>
+                        <span className="text-caption text-text-tertiary">共 {items.length} 头</span>
+                      </div>
+                      <div className="space-y-2 mt-1">
+                        {items.map((c) => (
+                          <button
+                            key={c.id}
+                            onClick={() => navigate({ to: "/m/animals-{$id}", params: { id: c.id } })}
+                            className="w-full flex items-center gap-3 h-14 px-3 rounded-xl bg-card border border-border active:bg-surface-subtle"
+                          >
+                            <span className="h-8 w-8 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center">
+                              <Beef className="h-4 w-4" />
+                            </span>
+                            <div className="flex-1 min-w-0 text-left">
+                              <div className="text-body font-mono text-foreground">#{c.id}</div>
+                              <div className="text-caption text-text-tertiary">
+                                {c.barnIdx} 号牛舍 · {c.penIdx} 栏
+                              </div>
+                            </div>
+                            <span className={statusTone[c.status]}>{c.status}</span>
+                            <ChevronRight className="h-4 w-4 text-text-tertiary" />
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            );
+          })()
         )}
       </div>
 
