@@ -1,20 +1,22 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import {
   Beef,
-  PlayCircle,
   ClipboardPlus,
   ChevronDown,
-  Pill,
   Clock,
   MapPin,
   ArrowRight,
   ArrowRightLeft,
-  ClipboardList,
-  Stethoscope,
-  Footprints,
   ChevronRight,
   X,
+  Activity,
+  Radio,
+  AlertTriangle,
+  FilePlus2,
+  Baby,
+  LogOut,
+  ListChecks,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
@@ -40,30 +42,43 @@ export const Route = createFileRoute("/m/animals-{$id}")({
   component: AnimalDetailPage,
 });
 
+type Device = {
+  id: string;
+  name: string;
+  status: "正常" | "异常" | "离线";
+  alertText?: string;
+};
+
 function AnimalDetailPage() {
   const { id } = useParams({ from: "/m/animals-{$id}" });
+  const navigate = useNavigate();
 
-  // mock 牛只摘要
   const a = {
     id,
-    farm: "金穗一牧场",
+    farm: "1 号牧场",
     barn: "3 号牛舍",
     pen: "B 区 · 12 栏",
     breed: "荷斯坦",
     sex: "母",
-    type: "哺乳牛" as "哺乳牛" | "育成牛" | "青年牛" | "干奶牛",
+    type: "哺乳牛",
     ageDays: 1218,
     health: "观察中" as "健康" | "观察中" | "异常" | "治疗中",
-    treating: true,
     withdrawalDays: 3,
     withdrawalUntil: "2026-05-28",
-    // 生产信息
     lactationDays: 168,
     pregnancyDays: 92,
     parity: 3,
   };
 
-  // 转栏弹窗状态
+  const devices: Device[] = [
+    { id: "D-COL-012", name: "颈环项圈 · Nedap", status: "正常" },
+    { id: "D-BOL-088", name: "瘤胃胶囊 · smaXtec", status: "异常", alertText: "瘤胃温度偏高 39.8℃" },
+  ];
+
+  // 记录 sheet
+  const [recordOpen, setRecordOpen] = useState(false);
+
+  // 转栏
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferEnabled, setTransferEnabled] = useState(true);
   const [transferTo, setTransferTo] = useState("");
@@ -72,14 +87,8 @@ function AnimalDetailPage() {
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
 
   const handleTransferSubmit = () => {
-    if (!transferTo) {
-      toast.error("请选择转入栏舍");
-      return;
-    }
-    if (transferReasons.length === 0) {
-      toast.error("请选择或输入转栏原因");
-      return;
-    }
+    if (!transferTo) return toast.error("请选择转入栏舍");
+    if (transferReasons.length === 0) return toast.error("请选择或输入转栏原因");
     setTransferConfirmOpen(true);
   };
   const handleTransferConfirm = () => {
@@ -90,45 +99,17 @@ function AnimalDetailPage() {
     setTransferReasons([]);
   };
 
+  const [tab, setTab] = useState<"diagnoses" | "meds" | "moves">("diagnoses");
 
-  // mock 当前相关工单（仅展示 待诊断 / 执行中）
-  const orders = [
-    {
-      id: "WO-2026-0518",
-      kind: "健康" as "健康" | "修蹄",
-      type: "疾病治疗",
-      conclusion: "疑似乳房炎",
-      desc: "持续高烧 39.6℃，食欲明显下降",
-      status: "执行中" as "待诊断" | "执行中",
-      time: "2026-05-18 09:20",
-      person: "李雨晴",
-      needPickup: true,
-    },
-    {
-      id: "WO-2026-0521",
-      kind: "修蹄" as "健康" | "修蹄",
-      type: "趾间皮炎处置",
-      conclusion: "待诊断",
-      desc: "右后蹄红肿，需清创修蹄",
-      status: "待诊断" as "待诊断" | "执行中",
-      time: "2026-05-21 14:05",
-      person: "王巡栏",
-      needPickup: false,
-    },
-  ];
-  const [ordersExpanded, setOrdersExpanded] = useState(false);
-  const visibleOrders = ordersExpanded ? orders : orders.slice(0, 1);
-
-  const [tab, setTab] = useState<"meds" | "diagnoses" | "moves">("meds");
+  const ageLabel = a.ageDays > 90 ? `${Math.floor(a.ageDays / 30)} 月龄` : `${a.ageDays} 日龄`;
 
   return (
     <MobileShell title={`#${a.id}`} back hideTabBar>
       <div className="pb-28">
-        {/* 头部：耳号 + 摘要 */}
+        {/* 头部 */}
         <div className="px-4 pt-4">
           <div className="rounded-3xl bg-gradient-to-br from-primary to-[#00823F] p-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
             <Beef className="absolute -right-4 -bottom-4 h-32 w-32 opacity-10" strokeWidth={1} />
-
             <div className="relative flex items-center gap-3">
               <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/15">
                 <Beef className="h-6 w-6" strokeWidth={1.75} />
@@ -155,29 +136,10 @@ function AnimalDetailPage() {
                 {a.health}
               </span>
             </div>
-
-            <div className="relative mt-4">
-              <Brief
-                icon={<Beef className="h-3 w-3 opacity-85" />}
-                label="品种 / 性别 / 类型 / 日龄"
-                value={`${a.breed} · ${a.sex} · ${a.type} · ${a.ageDays} 日龄`}
-              />
-            </div>
-
-            <div className="relative mt-3 grid grid-cols-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/15 px-2 py-2.5">
-              <HeaderStat label="泌乳天数" value={`${a.lactationDays}`} unit="天" />
-              <HeaderStat
-                label="怀孕天数"
-                value={a.pregnancyDays > 0 ? `${a.pregnancyDays}` : "—"}
-                unit={a.pregnancyDays > 0 ? "天" : ""}
-                divider
-              />
-              <HeaderStat label="胎次" value={`${a.parity}`} unit="胎" divider />
-            </div>
-
           </div>
         </div>
 
+        {/* 休药期 */}
         {a.withdrawalDays > 0 && (
           <section className="px-4 mt-3">
             <div className="bg-[#FFF1F0] border border-[#FFA39E] rounded-lg px-3 py-2 inline-flex items-center justify-between w-full">
@@ -192,119 +154,120 @@ function AnimalDetailPage() {
           </section>
         )}
 
-        {/* 当前相关工单 */}
-        <section className="px-4 mt-5">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-card-title text-foreground">当前相关工单</h3>
-            <span className="text-caption text-text-tertiary">
-              共 {orders.length} 个
-            </span>
+        {/* 基础信息 */}
+        <section className="px-4 mt-4">
+          <h3 className="text-card-title text-foreground mb-2">基础信息</h3>
+          <div className="rounded-2xl bg-card border border-border p-4 space-y-3">
+            <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+              <InfoRow label="品种" value={a.breed} />
+              <InfoRow label="类别" value={a.type} />
+              <InfoRow label="性别" value={a.sex} />
+              <InfoRow label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
+              <InfoRow label="泌乳天数" value={`${a.lactationDays} 天`} />
+              <InfoRow label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
+              <InfoRow label="胎次" value={`${a.parity} 胎`} />
+            </div>
           </div>
+        </section>
 
-          {orders.length === 0 ? (
-            <div className="rounded-xl bg-card border border-dashed border-border p-6 text-center">
-              <div className="text-body-sm text-text-tertiary">暂无相关工单</div>
+        {/* 外接设备 */}
+        <section className="px-4 mt-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-card-title text-foreground">外接设备</h3>
+            {devices.length > 0 && (
+              <Link
+                to="/m/animals-device/$id"
+                params={{ id: a.id }}
+                className="text-caption text-primary inline-flex items-center gap-0.5"
+              >
+                查看数据 <ChevronRight className="h-3 w-3" />
+              </Link>
+            )}
+          </div>
+          {devices.length === 0 ? (
+            <div className="rounded-xl bg-card border border-dashed border-border p-5 text-center text-caption text-text-tertiary">
+              暂无外接设备
             </div>
           ) : (
-            <>
-              <div className="space-y-2.5">
-                {visibleOrders.map((o) => {
-                  const KIcon = o.kind === "修蹄" ? Footprints : Stethoscope;
-                  const isWait = o.status === "待诊断";
-                  const StatusIcon = isWait ? ClipboardList : PlayCircle;
-                  const tagCls = isWait ? "tag tag-warning" : "tag tag-info";
-                  const timeLabel = isWait ? "上报" : "执行";
-                  const personLabel = isWait ? "上报" : "执行";
-                  const ctaText = isWait ? "诊断" : "执行";
-                  const ctaActive = !isWait;
-                  return (
-                    <Link
-                      key={o.id}
-                      to="/m/health/$id"
-                      params={{ id: o.id }}
-                      className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
+            <div className="space-y-2">
+              {devices.map((d) => (
+                <Link
+                  key={d.id}
+                  to="/m/animals-device/$id"
+                  params={{ id: a.id }}
+                  className="block rounded-xl bg-card border border-border p-3 active:bg-surface-subtle"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className={`h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 ${
+                        d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
+                      }`}
                     >
-                      <div className="flex flex-col gap-2">
-                        {/* Header：编号·类型 + 状态 */}
-                        <div className="flex items-center gap-1.5 text-body-sm h-5">
-                          <span className="font-mono text-text-tertiary text-caption">{o.id}</span>
-                          <span className="text-text-tertiary">·</span>
-                          <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
-                            <KIcon className="h-3 w-3" />{o.type}
-                          </span>
-                          {!isWait && (
-                            <span className="text-caption text-text-tertiary">
-                              · {o.needPickup ? "需领物" : "无需领物"}
-                            </span>
-                          )}
-                          <span className={`${tagCls} inline-flex items-center gap-1 ml-auto`}>
-                            <StatusIcon className="h-3 w-3" />
-                            {o.status}
-                          </span>
-                        </div>
-
-                        {/* Title：对象 · 结论 */}
-                        <div className="text-card-title text-foreground truncate h-[26px] leading-[26px]">
-                          {`单只 ${a.id}`}
-                          <span className="text-text-tertiary"> · </span>
-                          {o.conclusion}
-                        </div>
-
-                        {/* Desc */}
-                        <div className="text-body-sm text-text-secondary truncate h-[22px] leading-[22px]">
-                          {o.desc || <span className="text-text-tertiary/0">·</span>}
-                        </div>
-
-                        {/* Footer：时间·人员 + 操作 */}
-                        <div className="flex items-center text-caption text-text-tertiary pt-2 border-t border-border/60 h-9">
-                          <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                            <span className="shrink-0">
-                              {timeLabel} <span className="text-text-secondary">{o.time}</span>
-                            </span>
-                            <span className="text-text-tertiary/60">·</span>
-                            <span className="flex items-center gap-1 min-w-0">
-                              <span className="shrink-0">{personLabel}</span>
-                              <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-caption inline-flex items-center justify-center shrink-0">
-                                {o.person.charAt(0)}
-                              </span>
-                              <span className="text-text-secondary truncate">{o.person}</span>
-                            </span>
-                          </div>
-                          <span className={`ml-2 inline-flex items-center gap-0.5 shrink-0 ${
-                            ctaActive ? "text-primary font-medium" : "text-text-secondary"
-                          }`}>
-                            {ctaText}
-                            <ChevronRight className="h-3.5 w-3.5" />
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-              {orders.length > 1 && (
-                <div className="mt-3 flex justify-center">
-                  <button
-                    onClick={() => setOrdersExpanded((v) => !v)}
-                    className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1 active:bg-primary/15 transition-colors"
-                  >
-                    {ordersExpanded ? "收起" : `展开全部 ${orders.length} 个`}
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 transition-transform ${ordersExpanded ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                </div>
-              )}
-            </>
+                      <Radio className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-body-sm text-foreground truncate">{d.name}</div>
+                      <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
+                    </div>
+                    <span
+                      className={
+                        d.status === "异常"
+                          ? "tag tag-danger"
+                          : d.status === "离线"
+                          ? "tag tag-warning"
+                          : "tag tag-success"
+                      }
+                    >
+                      {d.status}
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
+                  </div>
+                  {d.alertText && (
+                    <div className="mt-2 rounded-lg bg-[#FFF1F0] px-2.5 py-1.5 text-caption text-[#CF1322] inline-flex items-center gap-1.5 w-full">
+                      <AlertTriangle className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{d.alertText}</span>
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
           )}
         </section>
 
-        {/* Tabs：用药与执行 / 转栏 */}
+        {/* 近7日产奶数据 */}
+        <section className="px-4 mt-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
+              <Activity className="h-4 w-4 text-primary" />
+              近 7 日产奶数据
+            </h3>
+            <span className="text-caption text-text-tertiary">3 班次 / 天</span>
+          </div>
+          <div className="rounded-2xl bg-card border border-border p-4">
+            <MilkChart />
+          </div>
+        </section>
+
+        {/* 全部工单入口 */}
+        <section className="px-4 mt-4">
+          <Link
+            to="/m/animals-orders/$id"
+            params={{ id: a.id }}
+            className="flex items-center gap-2 h-11 px-4 rounded-xl bg-card border border-border active:bg-surface-subtle"
+          >
+            <ListChecks className="h-4 w-4 text-primary" />
+            <span className="text-body-sm text-foreground flex-1">查看全部工单</span>
+            <span className="text-caption text-text-tertiary">共 12 条</span>
+            <ChevronRight className="h-4 w-4 text-text-tertiary" />
+          </Link>
+        </section>
+
+        {/* Tabs */}
         <section className="px-4 mt-5">
           <div className="flex items-center gap-6 border-b border-border">
             {[
-              { key: "meds" as const, label: "用药记录" },
               { key: "diagnoses" as const, label: "诊断记录" },
+              { key: "meds" as const, label: "用药记录" },
               { key: "moves" as const, label: "转栏记录" },
             ].map((t) => {
               const active = tab === t.key;
@@ -324,32 +287,21 @@ function AnimalDetailPage() {
               );
             })}
           </div>
-
           <div className="mt-3">
-            {tab === "meds" ? (
-              <MedicationHistory />
-            ) : tab === "diagnoses" ? (
-              <DiagnosisHistory />
-            ) : (
-              <MoveHistory />
-            )}
+            {tab === "meds" ? <MedicationHistory /> : tab === "diagnoses" ? <DiagnosisHistory /> : <MoveHistory />}
           </div>
         </section>
       </div>
 
-      {/* 底部固定：转栏 + 疾病上报 */}
+      {/* 底部：记录 + 疾病上报 */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card/85 backdrop-blur-lg border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => {
-              setTransferEnabled(true);
-              setTransferTo("");
-              setTransferOpen(true);
-            }}
+            onClick={() => setRecordOpen(true)}
             className="h-12 px-4 rounded-2xl bg-brand-subtle text-primary text-body font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
           >
-            <ArrowRightLeft className="h-4 w-4" /> 转栏
+            <FilePlus2 className="h-4 w-4" /> 记录
           </button>
           <Link
             to="/m/report"
@@ -360,6 +312,64 @@ function AnimalDetailPage() {
           </Link>
         </div>
       </div>
+
+      {/* 记录选择 Sheet */}
+      {recordOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          onClick={() => setRecordOpen(false)}
+        >
+          <div
+            className="w-full max-w-[440px] bg-card rounded-t-2xl pb-[calc(env(safe-area-inset-bottom)+16px)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 h-12 flex items-center justify-between border-b border-border">
+              <div className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
+                <FilePlus2 className="h-4 w-4 text-primary" />
+                记录事件
+              </div>
+              <button
+                type="button"
+                onClick={() => setRecordOpen(false)}
+                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-3 space-y-2">
+              <RecordOption
+                icon={<Baby className="h-5 w-5" />}
+                title="产犊"
+                desc="记录本次分娩情况：犊牛、难产、产后处置"
+                onClick={() => {
+                  setRecordOpen(false);
+                  navigate({ to: "/m/events/$type/$id", params: { type: "calving", id: a.id } });
+                }}
+              />
+              <RecordOption
+                icon={<ArrowRightLeft className="h-5 w-5" />}
+                title="转栏"
+                desc="调整所在牛舍 / 栏位"
+                onClick={() => {
+                  setRecordOpen(false);
+                  setTransferEnabled(true);
+                  setTransferTo("");
+                  setTransferOpen(true);
+                }}
+              />
+              <RecordOption
+                icon={<LogOut className="h-5 w-5" />}
+                title="离场"
+                desc="淘汰、死亡、出售等离场事件"
+                onClick={() => {
+                  setRecordOpen(false);
+                  navigate({ to: "/m/events/$type/$id", params: { type: "leave", id: a.id } });
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 转栏 Sheet */}
       {transferOpen && (
@@ -429,7 +439,6 @@ function AnimalDetailPage() {
                 open={transferPickerOpen}
                 onOpenChange={setTransferPickerOpen}
               />
-
               <div className="rounded-xl bg-card border border-border p-3">
                 <div className="text-body-sm text-foreground mb-2 inline-flex items-center gap-1">
                   转栏原因
@@ -440,10 +449,9 @@ function AnimalDetailPage() {
                   onChange={setTransferReasons}
                   presets={TRANSFER_REASONS}
                   singleSelect
-                  placeholder="输入关键词搜索，未命中可直接新建"
+                  placeholder="输入关键词搜索,未命中可直接新建"
                 />
               </div>
-
               <button
                 type="button"
                 onClick={handleTransferSubmit}
@@ -456,7 +464,6 @@ function AnimalDetailPage() {
               >
                 <ArrowRightLeft className="h-4 w-4" /> 提交转栏
               </button>
-
             </div>
           </div>
         </div>
@@ -473,23 +480,114 @@ function AnimalDetailPage() {
   );
 }
 
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="text-body-sm text-foreground">{value}</div>
+    </div>
+  );
+}
 
-function Brief({
-  label,
-  value,
+function RecordOption({
   icon,
+  title,
+  desc,
+  onClick,
 }: {
-  label: string;
-  value: string;
-  icon?: React.ReactNode;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  onClick: () => void;
 }) {
   return (
-    <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-2">
-      <div className="text-caption opacity-75 inline-flex items-center gap-1 font-medium">
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-3 w-full rounded-xl p-3 active:bg-surface-subtle text-left"
+    >
+      <span className="h-10 w-10 rounded-xl bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
         {icon}
-        {label}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-body-sm font-medium text-foreground">{title}</div>
+        <div className="text-caption text-text-tertiary truncate">{desc}</div>
       </div>
-      <div className="text-body-sm mt-0.5 truncate font-medium">{value}</div>
+      <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
+    </button>
+  );
+}
+
+/* 产奶趋势图 */
+function MilkChart() {
+  // 7 天 * 3 班次
+  const days = ["05-23", "05-24", "05-25", "05-26", "05-27", "05-28", "05-29"];
+  const shifts = [
+    { name: "早班", color: "var(--primary)", data: [12.1, 12.4, 12.0, 12.5, 12.8, 12.3, 12.6] },
+    { name: "中班", color: "#FFB020", data: [10.8, 11.0, 10.5, 10.9, 11.2, 10.7, 11.1] },
+    { name: "晚班", color: "#5B8FF9", data: [9.5, 9.7, 9.2, 9.6, 9.9, 9.4, 9.8] },
+  ];
+  const W = 320;
+  const H = 140;
+  const PAD_L = 24;
+  const PAD_R = 8;
+  const PAD_T = 8;
+  const PAD_B = 22;
+  const all = shifts.flatMap((s) => s.data);
+  const min = Math.floor(Math.min(...all) - 1);
+  const max = Math.ceil(Math.max(...all) + 1);
+  const xStep = (W - PAD_L - PAD_R) / (days.length - 1);
+  const yFor = (v: number) => PAD_T + (H - PAD_T - PAD_B) * (1 - (v - min) / (max - min));
+  const xFor = (i: number) => PAD_L + i * xStep;
+
+  return (
+    <div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[140px]">
+        {/* Y grid */}
+        {[0, 0.5, 1].map((t) => {
+          const y = PAD_T + (H - PAD_T - PAD_B) * t;
+          const v = (max - (max - min) * t).toFixed(0);
+          return (
+            <g key={t}>
+              <line x1={PAD_L} x2={W - PAD_R} y1={y} y2={y} stroke="var(--border)" strokeDasharray="2 3" />
+              <text x={0} y={y + 3} fontSize="9" fill="var(--text-tertiary)">{v}</text>
+            </g>
+          );
+        })}
+        {/* lines */}
+        {shifts.map((s) => {
+          const d = s.data.map((v, i) => `${i === 0 ? "M" : "L"}${xFor(i)},${yFor(v)}`).join(" ");
+          return (
+            <g key={s.name}>
+              <path d={d} fill="none" stroke={s.color} strokeWidth="1.5" />
+              {s.data.map((v, i) => (
+                <circle key={i} cx={xFor(i)} cy={yFor(v)} r="2" fill={s.color} />
+              ))}
+            </g>
+          );
+        })}
+        {/* X labels */}
+        {days.map((d, i) => (
+          <text
+            key={d}
+            x={xFor(i)}
+            y={H - 6}
+            fontSize="9"
+            fill="var(--text-tertiary)"
+            textAnchor="middle"
+          >
+            {d.slice(3)}
+          </text>
+        ))}
+      </svg>
+      <div className="flex items-center justify-center gap-4 mt-1">
+        {shifts.map((s) => (
+          <div key={s.name} className="inline-flex items-center gap-1 text-caption text-text-secondary">
+            <span className="h-1.5 w-3 rounded-sm" style={{ background: s.color }} />
+            {s.name}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -514,24 +612,17 @@ const ALL_MEDS: MedRecord[] = [
   { id: "M-0315", date: "2026-03-15", drug: "青霉素 G 钾", manufacturer: "华北制药", dose: "400 万 IU · 肌肉注射", operator: "李雨晴", orderId: "WO-2026-0315" },
   { id: "M-0118", date: "2026-01-18", drug: "口蹄疫疫苗", manufacturer: "中农威特", dose: "2ml · 颈部皮下", operator: "赵敏", orderId: "IM-2026-0118" },
 ];
-
 const TODAY = new Date("2026-05-29");
 
 function MedicationHistory() {
   const [expanded, setExpanded] = useState(false);
-
   const { visible, recentCount, totalCount } = useMemo(() => {
     const cutoff = new Date(TODAY);
     cutoff.setDate(cutoff.getDate() - 20);
     const sorted = [...ALL_MEDS].sort((a, b) => (a.date < b.date ? 1 : -1));
     const recent = sorted.filter((m) => new Date(m.date) >= cutoff);
-    return {
-      visible: expanded ? sorted : recent,
-      recentCount: recent.length,
-      totalCount: sorted.length,
-    };
+    return { visible: expanded ? sorted : recent, recentCount: recent.length, totalCount: sorted.length };
   }, [expanded]);
-
   const groups = useMemo(() => {
     const map = new Map<string, MedRecord[]>();
     for (const m of visible) {
@@ -540,9 +631,7 @@ function MedicationHistory() {
     }
     return Array.from(map.entries());
   }, [visible]);
-
   const hasMore = totalCount > recentCount;
-
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -550,19 +639,16 @@ function MedicationHistory() {
           {expanded ? `全部 ${totalCount} 条` : `近 20 天 ${recentCount} 条`}
         </span>
       </div>
-
       {groups.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
           近 20 天无用药记录
         </div>
       ) : (
         <div className="relative pl-4">
-          {/* 垂直时间线 */}
           <span className="absolute left-[5px] top-1.5 bottom-1.5 w-px bg-border" />
           <div className="space-y-4">
             {groups.map(([date, items]) => (
               <div key={date} className="relative">
-                {/* 小圆点 */}
                 <span className="absolute -left-4 top-1.5 h-[7px] w-[7px] rounded-full bg-primary ring-2 ring-background" />
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="font-mono text-caption text-text-secondary">{date}</span>
@@ -570,17 +656,10 @@ function MedicationHistory() {
                 </div>
                 <div className="space-y-1.5">
                   {items.map((m) => (
-                    <div
-                      key={m.id}
-                      className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center"
-                    >
+                    <div key={m.id} className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
                       <div className="text-body-sm text-foreground truncate">{m.drug}</div>
-                      <div className="text-caption text-text-tertiary truncate text-center">
-                        {m.manufacturer}
-                      </div>
-                      <div className="text-caption text-text-secondary truncate text-right">
-                        {m.dose}
-                      </div>
+                      <div className="text-caption text-text-tertiary truncate text-center">{m.manufacturer}</div>
+                      <div className="text-caption text-text-secondary truncate text-right">{m.dose}</div>
                     </div>
                   ))}
                 </div>
@@ -596,9 +675,7 @@ function MedicationHistory() {
             className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1 active:bg-primary/15 transition-colors"
           >
             {expanded ? "收起" : `展开全部 ${totalCount} 条`}
-            <ChevronDown
-              className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`}
-            />
+            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
           </button>
         </div>
       )}
@@ -620,7 +697,6 @@ const ALL_MOVES: MoveRecord[] = [
   { id: "MV-0518", date: "2026-05-18", from: "1 号牛舍 · A 区 05 栏", to: "3 号牛舍 · B 区 12 栏", orderId: "WO-2026-0518", reason: "疾病治疗", operator: "李雨晴" },
   { id: "MV-0410", date: "2026-04-10", from: "隔离舍 A", to: "1 号牛舍 · A 区 05 栏", orderId: "WO-2026-0405", reason: "治愈", operator: "李雨晴" },
   { id: "MV-0320", date: "2026-03-20", from: "1 号牛舍 · A 区 05 栏", to: "隔离舍 A", orderId: "WO-2026-0318", reason: "继续观察", operator: "李雨晴" },
-  { id: "MV-0215", date: "2026-02-15", from: "1 号牛舍 · A 区 05 栏", to: "淘汰栏", orderId: "WO-2026-0210", reason: "放弃", operator: "王场长" },
   { id: "MV-0301", date: "2026-03-01", from: "犊牛舍 · 03 栏", to: "1 号牛舍 · A 区 05 栏", orderId: null, reason: "调群", operator: "王场长" },
   { id: "MV-0101", date: "2026-01-10", from: "产房 · 02 栏", to: "犊牛舍 · 03 栏", orderId: null, reason: "断奶分群", operator: "周凯" },
 ];
@@ -637,10 +713,7 @@ function MoveHistory() {
     <div className="space-y-2">
       <div className="text-caption text-text-tertiary mb-1">共 {ALL_MOVES.length} 条</div>
       {ALL_MOVES.map((m) => (
-        <div
-          key={m.id}
-          className="rounded-xl border border-border bg-card p-3"
-        >
+        <div key={m.id} className="rounded-xl border border-border bg-card p-3">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="font-mono text-caption text-text-secondary">{m.date}</span>
             <span className="text-caption text-text-tertiary">· 操作人 {m.operator}</span>
@@ -677,39 +750,7 @@ function MoveHistory() {
   );
 }
 
-function HeaderStat({
-  label,
-  value,
-  unit,
-  divider,
-}: {
-  label: string;
-  value: string;
-  unit: string;
-  divider?: boolean;
-}) {
-  return (
-    <div
-      className={`px-2 ${divider ? "border-l border-white/20" : ""}`}
-    >
-      <div className="text-caption opacity-80 leading-none">{label}</div>
-      <div className="mt-1.5 leading-none">
-        <span className="text-[20px] font-semibold tabular-nums">{value}</span>
-        {unit && <span className="text-caption opacity-80 ml-0.5">{unit}</span>}
-      </div>
-    </div>
-  );
-}
-
-
-
-type DiagnosisRecord = {
-  id: string;
-  date: string;
-  disease: string;
-  doctor: string;
-};
-
+type DiagnosisRecord = { id: string; date: string; disease: string; doctor: string };
 const ALL_DIAGNOSES: DiagnosisRecord[] = [
   { id: "DX-0518", date: "2026-05-18", disease: "急性乳房炎", doctor: "李雨晴" },
   { id: "DX-0405", date: "2026-04-05", disease: "蹄叶炎", doctor: "李雨晴" },
@@ -742,4 +783,3 @@ function DiagnosisHistory() {
     </div>
   );
 }
-
