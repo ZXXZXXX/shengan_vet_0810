@@ -448,4 +448,15 @@ function DetailRow({
   );
 }
 
+// ts 为“多少分钟前”，超过 2 天以 yyyy-mm-dd 显示
+function formatMsgTime(ts: number, fallback: string): string {
+  const TWO_DAYS = 60 * 24 * 2;
+  if (ts <= TWO_DAYS) return fallback;
+  const d = new Date(Date.now() - ts * 60_000);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 
