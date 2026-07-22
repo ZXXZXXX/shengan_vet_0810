@@ -31,8 +31,17 @@ export const Route = createFileRoute("/m/notifications")({
   component: NotificationsPage,
 });
 
-/** 三大消息维度 */
-type Cat = "system" | "workorder" | "platform";
+/** 消息维度 */
+type Cat = "system" | "workorder" | "platform" | "lab";
+
+type LabInfo = {
+  earTag: string; // #nn-nn-nnnn
+  project: string;
+  conclusion: string;
+  submitter: string;
+  submittedAt: string; // yyyy-mm-dd hh:mm
+  reportImages: number[]; // 可能为空
+};
 
 type Msg = {
   id: string;
@@ -44,6 +53,7 @@ type Msg = {
   ts: number;
   link?: string;
   unread?: boolean;
+  lab?: LabInfo;
 };
 
 const MSGS: Msg[] = [
