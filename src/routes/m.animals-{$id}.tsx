@@ -223,12 +223,6 @@ function AnimalDetailPage() {
                     </span>
                     <ChevronRight className="h-4 w-4 text-text-tertiary shrink-0" />
                   </div>
-                  {d.alertText && (
-                    <div className="mt-2 rounded-lg bg-[#FFF1F0] px-2.5 py-1.5 text-caption text-[#CF1322] inline-flex items-center gap-1.5 w-full">
-                      <AlertTriangle className="h-3 w-3 shrink-0" />
-                      <span className="truncate">{d.alertText}</span>
-                    </div>
-                  )}
                 </Link>
               ))}
             </div>
