@@ -576,6 +576,165 @@ function TodayTaskList({ role }: { role: Role }) {
 
 
 
+// ---------------- 数据统计 ----------------
+function StatsSection({ role }: { role: Role }) {
+  const isOps = role === "admin" || role === "manager";
+  if (isOps) return <OpsOverview />;
+  return <PersonalWorkStats />;
+}
+
+function OpsOverview() {
+  const kpis = [
+    { label: "存栏牛只", value: "12,486", unit: "头", tone: "var(--brand)" },
+    { label: "新生牛犊", value: "126", unit: "头", tone: "var(--effect-ai-cyan)" },
+    { label: "休药隔离", value: "38", unit: "头", tone: "var(--state-warning)" },
+    { label: "离场牛只", value: "92", unit: "头", tone: "var(--effect-ai-purple)" },
+  ];
+  return (
+    <section className="px-4 mt-3">
+      <SectionTitle title="运营概览" hint="本月" />
+      <div className="mt-3 grid grid-cols-2 gap-2.5">
+        {kpis.map((k) => (
+          <div key={k.label} className="rounded-xl border border-border bg-card p-3">
+            <div className="text-caption text-text-tertiary">{k.label}</div>
+            <div className="mt-1 flex items-baseline gap-1">
+              <span
+                className="text-[24px] leading-none font-semibold tabular-nums"
+                style={{ color: k.tone }}
+              >
+                {k.value}
+              </span>
+              <span className="text-caption text-text-tertiary">{k.unit}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <HealthTrendChart />
+    </section>
+  );
+}
+
+function HealthTrendChart() {
+  const months = ["12月", "1月", "2月", "3月", "4月", "5月"];
+  const onset = [62, 58, 71, 65, 78, 87];
+  const cured = [57, 54, 64, 61, 71, 79];
+  const dead = [5, 4, 7, 4, 8, 11];
+  const W = 320;
+  const H = 160;
+  const padL = 28;
+  const padR = 12;
+  const padT = 12;
+  const padB = 22;
+  const maxY = 100;
+  const xStep = (W - padL - padR) / (months.length - 1);
+  const x = (i: number) => padL + i * xStep;
+  const y = (v: number) => padT + (1 - v / maxY) * (H - padT - padB);
+  const path = (arr: number[]) =>
+    arr.map((v, i) => `${i === 0 ? "M" : "L"}${x(i)},${y(v)}`).join(" ");
+  const yTicks = [0, 20, 40, 60, 80, 100];
+  return (
+    <div className="mt-3 rounded-xl border border-border bg-card p-3">
+      <div className="flex items-center justify-between">
+        <div className="text-body font-medium text-foreground">近 6 月健康趋势</div>
+      </div>
+      <div className="mt-2 flex items-center gap-3 text-caption text-text-secondary">
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[#22ACEB]" />发病
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[var(--brand)]" />治愈
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[var(--state-danger)]" />死淘
+        </span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 w-full h-auto">
+        {yTicks.map((t) => (
+          <g key={t}>
+            <line
+              x1={padL}
+              x2={W - padR}
+              y1={y(t)}
+              y2={y(t)}
+              stroke="var(--border)"
+              strokeWidth={0.5}
+            />
+            <text
+              x={padL - 4}
+              y={y(t) + 3}
+              textAnchor="end"
+              fontSize={9}
+              fill="var(--text-tertiary)"
+            >
+              {t}
+            </text>
+          </g>
+        ))}
+        <path d={path(onset)} fill="none" stroke="#22ACEB" strokeWidth={2} />
+        <path d={path(cured)} fill="none" stroke="var(--brand)" strokeWidth={2} />
+        <path
+          d={path(dead)}
+          fill="none"
+          stroke="var(--state-danger)"
+          strokeWidth={2}
+          strokeDasharray="3 3"
+        />
+        {onset.map((v, i) => (
+          <circle key={`o${i}`} cx={x(i)} cy={y(v)} r={2.5} fill="#22ACEB" />
+        ))}
+        {cured.map((v, i) => (
+          <circle key={`c${i}`} cx={x(i)} cy={y(v)} r={2.5} fill="var(--brand)" />
+        ))}
+        {dead.map((v, i) => (
+          <circle key={`d${i}`} cx={x(i)} cy={y(v)} r={2.5} fill="var(--state-danger)" />
+        ))}
+        {months.map((m, i) => (
+          <text
+            key={m}
+            x={x(i)}
+            y={H - 6}
+            textAnchor="middle"
+            fontSize={10}
+            fill="var(--text-tertiary)"
+          >
+            {m}
+          </text>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function PersonalWorkStats() {
+  const stats = [
+    { label: "全部工单", value: "128", unit: "单", tone: "var(--brand)" },
+    { label: "完成率", value: "82", unit: "%", tone: "var(--state-success)" },
+    { label: "进行中", value: "14", unit: "单", tone: "var(--effect-ai-cyan)" },
+    { label: "逾期数", value: "3", unit: "单", tone: "var(--state-danger)" },
+  ];
+  return (
+    <section className="px-4 mt-3">
+      <SectionTitle title="本月工作统计" hint="本月" />
+      <div className="mt-3 grid grid-cols-2 gap-2.5">
+        {stats.map((s) => (
+          <div key={s.label} className="rounded-xl border border-border bg-card p-3">
+            <div className="text-caption text-text-tertiary">{s.label}</div>
+            <div className="mt-1 flex items-baseline gap-1">
+              <span
+                className="text-[24px] leading-none font-semibold tabular-nums"
+                style={{ color: s.tone }}
+              >
+                {s.value}
+              </span>
+              <span className="text-caption text-text-tertiary">{s.unit}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ---------------- 子组件 ----------------
 function SectionTitle({
   title,
