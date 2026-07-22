@@ -134,7 +134,7 @@ function TodayTasksPage() {
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<"batch" | null>(null);
-  const claimed = useClaimed();
+  
   const { capture } = Route.useSearch();
 
   // 领药完成后回到此页：直接跳转到批量执行页
