@@ -66,8 +66,9 @@ function SearchPage() {
   const [selected, setSelected] = useState<Set<number> | "all">("all");
   // 抽屉内的临时选择
   const [draft, setDraft] = useState<Set<number> | "all">("all");
+  const [onlyAbnormal, setOnlyAbnormal] = useState(false);
 
-  const results = useMemo(() => listCows(selected, q.trim()), [q, selected]);
+  const results = useMemo(() => listCows(selected, q.trim(), onlyAbnormal), [q, selected, onlyAbnormal]);
 
   const barnLabel =
     selected === "all"
