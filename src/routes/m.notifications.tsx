@@ -315,7 +315,7 @@ function NotificationsPage() {
                   <div className="mt-1.5 flex items-center gap-2">
                     <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
                       <Clock className="h-3 w-3" />
-                      {m.time}
+                      {formatMsgTime(m.ts, m.time)}
                     </span>
                     <span
                       className={`ml-auto text-caption ${Meta.tone.split(" ")[1]}`}
@@ -399,15 +399,9 @@ function NotificationsPage() {
                     </div>
                   </>
                 ) : (
-                  <>
-                    <div className="text-body text-text-secondary leading-relaxed">
-                      {current.desc}
-                    </div>
-                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {current.time}
-                    </div>
-                  </>
+                  <div className="text-body text-text-secondary leading-relaxed">
+                    {current.desc}
+                  </div>
                 )}
               </div>
 
@@ -452,6 +446,17 @@ function DetailRow({
       </div>
     </div>
   );
+}
+
+// ts 为“多少分钟前”，超过 2 天以 yyyy-mm-dd 显示
+function formatMsgTime(ts: number, fallback: string): string {
+  const TWO_DAYS = 60 * 24 * 2;
+  if (ts <= TWO_DAYS) return fallback;
+  const d = new Date(Date.now() - ts * 60_000);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 
