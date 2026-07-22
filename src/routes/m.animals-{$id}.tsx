@@ -231,7 +231,7 @@ function AnimalDetailPage() {
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
               <Activity className="h-4 w-4 text-primary" />
-              chan nai s产奶数据
+              产奶数据
             </h3>
             <span className="text-caption text-text-tertiary">最近7天</span>
           </div>
