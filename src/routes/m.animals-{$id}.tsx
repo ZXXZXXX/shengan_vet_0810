@@ -147,7 +147,7 @@ function AnimalDetailPage() {
                   params={{ id: a.id }}
                   className="h-6 px-2 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-caption text-primary-foreground inline-flex items-center gap-1 active:bg-white/30"
                 >
-                  <ListChecks className="h-3 w-3" />
+                  
                   全部工单
                   <ChevronRight className="h-3 w-3 -mr-0.5" />
                 </Link>
