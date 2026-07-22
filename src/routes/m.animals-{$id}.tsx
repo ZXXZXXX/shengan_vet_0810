@@ -12,6 +12,7 @@ import {
   X,
   Activity,
   Radio,
+  Watch,
   AlertTriangle,
   FilePlus2,
   Baby,
