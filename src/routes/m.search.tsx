@@ -153,7 +153,7 @@ function SearchPage() {
         {/* 结果 */}
         <div className="flex items-center justify-between px-1 pt-1">
           <div className="text-caption text-text-tertiary">
-            共 {results.length} 头{results.length >= 60 ? "+" : ""}
+            共 {results.length} 头
           </div>
           <button
             type="button"
