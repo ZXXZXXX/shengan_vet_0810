@@ -63,7 +63,7 @@ function AnimalDetailPage() {
     sex: "母",
     type: "哺乳牛",
     ageDays: 1218,
-    health: "观察中" as "健康" | "观察中" | "异常" | "治疗中",
+    health: "健康" as "健康" | "观察中" | "异常" | "治疗中",
     withdrawalDays: 3,
     withdrawalUntil: "2026-05-28",
     lactationDays: 168,
@@ -75,6 +75,11 @@ function AnimalDetailPage() {
     { id: "D-COL-012", name: "颈环项圈 · Nedap", status: "正常" },
     { id: "D-BOL-088", name: "瘤胃胶囊 · smaXtec", status: "异常", alertText: "瘤胃温度偏高 39.8℃" },
   ];
+
+  // 外接设备异常 → 牛只状态为"异常"
+  if (devices.some((d) => d.status === "异常")) {
+    a.health = "异常";
+  }
 
   // 记录 sheet
   const [recordOpen, setRecordOpen] = useState(false);
