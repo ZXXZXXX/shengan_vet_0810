@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Beef, ChevronRight, ChevronDown, Check, X } from "lucide-react";
+import { Search, Beef, ChevronRight, Check, X, SlidersHorizontal } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
