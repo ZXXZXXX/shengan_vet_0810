@@ -127,20 +127,32 @@ function AnimalDetailPage() {
                   <span className="truncate">{a.farm} · {a.barn} · {a.pen}</span>
                 </div>
               </div>
-              <span
-                className={`shrink-0 self-start h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
-                  a.health === "异常"
-                    ? "bg-[#FFE4E1] text-[#D9534F]"
-                    : a.health === "观察中"
-                    ? "bg-[#FFF7E6] text-[#B8860B]"
-                    : a.health === "治疗中"
-                    ? "bg-[#FFE8CC] text-[#C9621F]"
-                    : "bg-[#E8F5E9] text-[#2E7D32]"
-                }`}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
-                {a.health}
-              </span>
+              <div className="shrink-0 flex flex-col items-end gap-1.5">
+                <span
+                  className={`h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
+                    a.health === "异常"
+                      ? "bg-[#FFE4E1] text-[#D9534F]"
+                      : a.health === "观察中"
+                      ? "bg-[#FFF7E6] text-[#B8860B]"
+                      : a.health === "治疗中"
+                      ? "bg-[#FFE8CC] text-[#C9621F]"
+                      : "bg-[#E8F5E9] text-[#2E7D32]"
+                  }`}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                  {a.health}
+                </span>
+                <Link
+                  to="/m/animals-orders/$id"
+                  params={{ id: a.id }}
+                  className="h-6 px-2 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-caption text-primary-foreground inline-flex items-center gap-1 active:bg-white/30"
+                >
+                  <ListChecks className="h-3 w-3" />
+                  全部工单
+                  <span className="opacity-80">12</span>
+                  <ChevronRight className="h-3 w-3 -mr-0.5" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -244,19 +256,6 @@ function AnimalDetailPage() {
           </div>
         </section>
 
-        {/* 全部工单入口 */}
-        <section className="px-4 mt-4">
-          <Link
-            to="/m/animals-orders/$id"
-            params={{ id: a.id }}
-            className="flex items-center gap-2 h-11 px-4 rounded-xl bg-card border border-border active:bg-surface-subtle"
-          >
-            <ListChecks className="h-4 w-4 text-primary" />
-            <span className="text-body-sm text-foreground flex-1">查看全部工单</span>
-            <span className="text-caption text-text-tertiary">共 12 条</span>
-            <ChevronRight className="h-4 w-4 text-text-tertiary" />
-          </Link>
-        </section>
 
         {/* Tabs */}
         <section className="px-4 mt-5">
