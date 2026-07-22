@@ -73,6 +73,8 @@ import { Route as MPensIdRouteImport } from './routes/m.pens.$id'
 import { Route as MHealthTodayRouteImport } from './routes/m.health.today'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
+import { Route as MAnimalsOrdersIdRouteImport } from './routes/m.animals-orders.$id'
+import { Route as MAnimalsDeviceIdRouteImport } from './routes/m.animals-device.$id'
 import { Route as MHealthTodayPickupRouteImport } from './routes/m.health.today_.pickup'
 import { Route as MHealthTodayBatchRouteImport } from './routes/m.health.today_.batch'
 import { Route as MHealthIdReviewRouteImport } from './routes/m.health.$id_.review'
@@ -80,6 +82,7 @@ import { Route as MHealthIdExecuteRouteImport } from './routes/m.health.$id_.exe
 import { Route as MHealthIdDiagnoseRouteImport } from './routes/m.health.$id_.diagnose'
 import { Route as MHealthIdConfirmCureRouteImport } from './routes/m.health.$id_.confirm-cure'
 import { Route as MHealthIdAbortRouteImport } from './routes/m.health.$id_.abort'
+import { Route as MEventsTypeIdRouteImport } from './routes/m.events.$type.$id'
 import { Route as MHealthIdExecutePickupIdRouteImport } from './routes/m.health.$id_.execute_.$pickupId'
 
 const WorkspaceRoute = WorkspaceRouteImport.update({
@@ -403,6 +406,16 @@ const MBarnsIdRoute = MBarnsIdRouteImport.update({
   path: '/barns/$id',
   getParentRoute: () => MRoute,
 } as any)
+const MAnimalsOrdersIdRoute = MAnimalsOrdersIdRouteImport.update({
+  id: '/animals-orders/$id',
+  path: '/animals-orders/$id',
+  getParentRoute: () => MRoute,
+} as any)
+const MAnimalsDeviceIdRoute = MAnimalsDeviceIdRouteImport.update({
+  id: '/animals-device/$id',
+  path: '/animals-device/$id',
+  getParentRoute: () => MRoute,
+} as any)
 const MHealthTodayPickupRoute = MHealthTodayPickupRouteImport.update({
   id: '/health/today_/pickup',
   path: '/health/today/pickup',
@@ -436,6 +449,11 @@ const MHealthIdConfirmCureRoute = MHealthIdConfirmCureRouteImport.update({
 const MHealthIdAbortRoute = MHealthIdAbortRouteImport.update({
   id: '/health/$id_/abort',
   path: '/health/$id/abort',
+  getParentRoute: () => MRoute,
+} as any)
+const MEventsTypeIdRoute = MEventsTypeIdRouteImport.update({
+  id: '/events/$type/$id',
+  path: '/events/$type/$id',
   getParentRoute: () => MRoute,
 } as any)
 const MHealthIdExecutePickupIdRoute =
@@ -505,11 +523,14 @@ export interface FileRoutesByFullPath {
   '/production/': typeof ProductionIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
+  '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
+  '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
+  '/m/events/$type/$id': typeof MEventsTypeIdRoute
   '/m/health/$id/abort': typeof MHealthIdAbortRoute
   '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
@@ -574,11 +595,14 @@ export interface FileRoutesByTo {
   '/production': typeof ProductionIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/warehouse': typeof WarehouseIndexRoute
+  '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
+  '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health': typeof MHealthIndexRoute
+  '/m/events/$type/$id': typeof MEventsTypeIdRoute
   '/m/health/$id/abort': typeof MHealthIdAbortRoute
   '/m/health/$id/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id/diagnose': typeof MHealthIdDiagnoseRoute
@@ -649,11 +673,14 @@ export interface FileRoutesById {
   '/production/': typeof ProductionIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
+  '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
+  '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
   '/m/pens/$id': typeof MPensIdRoute
   '/m/health/': typeof MHealthIndexRoute
+  '/m/events/$type/$id': typeof MEventsTypeIdRoute
   '/m/health/$id_/abort': typeof MHealthIdAbortRoute
   '/m/health/$id_/confirm-cure': typeof MHealthIdConfirmCureRoute
   '/m/health/$id_/diagnose': typeof MHealthIdDiagnoseRoute
@@ -725,11 +752,14 @@ export interface FileRouteTypes {
     | '/production/'
     | '/settings/'
     | '/warehouse/'
+    | '/m/animals-device/$id'
+    | '/m/animals-orders/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
     | '/m/pens/$id'
     | '/m/health/'
+    | '/m/events/$type/$id'
     | '/m/health/$id/abort'
     | '/m/health/$id/confirm-cure'
     | '/m/health/$id/diagnose'
@@ -794,11 +824,14 @@ export interface FileRouteTypes {
     | '/production'
     | '/settings'
     | '/warehouse'
+    | '/m/animals-device/$id'
+    | '/m/animals-orders/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
     | '/m/pens/$id'
     | '/m/health'
+    | '/m/events/$type/$id'
     | '/m/health/$id/abort'
     | '/m/health/$id/confirm-cure'
     | '/m/health/$id/diagnose'
@@ -868,11 +901,14 @@ export interface FileRouteTypes {
     | '/production/'
     | '/settings/'
     | '/warehouse/'
+    | '/m/animals-device/$id'
+    | '/m/animals-orders/$id'
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
     | '/m/pens/$id'
     | '/m/health/'
+    | '/m/events/$type/$id'
     | '/m/health/$id_/abort'
     | '/m/health/$id_/confirm-cure'
     | '/m/health/$id_/diagnose'
@@ -1347,6 +1383,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MBarnsIdRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/animals-orders/$id': {
+      id: '/m/animals-orders/$id'
+      path: '/animals-orders/$id'
+      fullPath: '/m/animals-orders/$id'
+      preLoaderRoute: typeof MAnimalsOrdersIdRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/animals-device/$id': {
+      id: '/m/animals-device/$id'
+      path: '/animals-device/$id'
+      fullPath: '/m/animals-device/$id'
+      preLoaderRoute: typeof MAnimalsDeviceIdRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/health/today_/pickup': {
       id: '/m/health/today_/pickup'
       path: '/health/today/pickup'
@@ -1394,6 +1444,13 @@ declare module '@tanstack/react-router' {
       path: '/health/$id/abort'
       fullPath: '/m/health/$id/abort'
       preLoaderRoute: typeof MHealthIdAbortRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/events/$type/$id': {
+      id: '/m/events/$type/$id'
+      path: '/events/$type/$id'
+      fullPath: '/m/events/$type/$id'
+      preLoaderRoute: typeof MEventsTypeIdRouteImport
       parentRoute: typeof MRoute
     }
     '/m/health/$id_/execute_/$pickupId': {
@@ -1459,11 +1516,14 @@ interface MRouteChildren {
   MScanRoute: typeof MScanRoute
   MSearchRoute: typeof MSearchRoute
   MIndexRoute: typeof MIndexRoute
+  MAnimalsDeviceIdRoute: typeof MAnimalsDeviceIdRoute
+  MAnimalsOrdersIdRoute: typeof MAnimalsOrdersIdRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
   MHealthTodayRoute: typeof MHealthTodayRoute
   MPensIdRoute: typeof MPensIdRoute
   MHealthIndexRoute: typeof MHealthIndexRoute
+  MEventsTypeIdRoute: typeof MEventsTypeIdRoute
   MHealthIdAbortRoute: typeof MHealthIdAbortRoute
   MHealthIdConfirmCureRoute: typeof MHealthIdConfirmCureRoute
   MHealthIdDiagnoseRoute: typeof MHealthIdDiagnoseRoute
@@ -1496,11 +1556,14 @@ const MRouteChildren: MRouteChildren = {
   MScanRoute: MScanRoute,
   MSearchRoute: MSearchRoute,
   MIndexRoute: MIndexRoute,
+  MAnimalsDeviceIdRoute: MAnimalsDeviceIdRoute,
+  MAnimalsOrdersIdRoute: MAnimalsOrdersIdRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
   MHealthTodayRoute: MHealthTodayRoute,
   MPensIdRoute: MPensIdRoute,
   MHealthIndexRoute: MHealthIndexRoute,
+  MEventsTypeIdRoute: MEventsTypeIdRoute,
   MHealthIdAbortRoute: MHealthIdAbortRoute,
   MHealthIdConfirmCureRoute: MHealthIdConfirmCureRoute,
   MHealthIdDiagnoseRoute: MHealthIdDiagnoseRoute,
