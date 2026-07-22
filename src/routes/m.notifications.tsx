@@ -203,7 +203,11 @@ const META: Record<
     tone: "bg-[#E6F7FE] text-[#22ACEB]",
     label: "平台",
   },
-
+  lab: {
+    icon: FlaskConical,
+    tone: "bg-[#FFF3E0] text-[#F59E0B]",
+    label: "实验室",
+  },
 };
 
 function NotificationsPage() {
