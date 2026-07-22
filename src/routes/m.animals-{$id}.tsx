@@ -76,6 +76,11 @@ function AnimalDetailPage() {
     { id: "D-BOL-088", name: "瘤胃胶囊 · smaXtec", status: "异常", alertText: "瘤胃温度偏高 39.8℃" },
   ];
 
+  // 外接设备异常 → 牛只状态为"异常"
+  if (devices.some((d) => d.status === "异常")) {
+    a.health = "异常";
+  }
+
   // 记录 sheet
   const [recordOpen, setRecordOpen] = useState(false);
 
