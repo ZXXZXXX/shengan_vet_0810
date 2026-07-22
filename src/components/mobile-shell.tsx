@@ -46,10 +46,14 @@ function MobileTopBar({
   title,
   back,
   right,
+  tone,
+  extra,
 }: {
   title: string;
   back?: { to: string; label?: string; search?: Record<string, string> } | true;
   right?: ReactNode;
+  tone?: "brand";
+  extra?: ReactNode;
 }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -58,8 +62,6 @@ function MobileTopBar({
       navigate({ to: back.to, search: back.search });
       return;
     }
-    // 只有 /m/homepage 可以返回到 /m；其他页面最低落到 /m/homepage
-    // 已知存在的父级路由白名单
     const knownParents = new Set([
       "/m/homepage",
       "/m/health",
@@ -78,24 +80,34 @@ function MobileTopBar({
     }
     navigate({ to: parent || "/m/homepage" });
   };
+  const brand = tone === "brand";
   return (
-    <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border">
+    <header
+      className={`sticky top-0 z-30 backdrop-blur ${
+        brand
+          ? "bg-primary text-primary-foreground border-b border-transparent"
+          : "bg-card/95 border-b border-border"
+      }`}
+    >
       <div className="h-12 px-4 flex items-center gap-2">
         {back ? (
           <button
             onClick={goParent}
-            className="-ml-1 h-8 px-2 inline-flex items-center text-body-sm text-text-secondary hover:text-primary"
+            className={`-ml-1 h-8 px-2 inline-flex items-center text-body-sm ${
+              brand ? "text-primary-foreground/90 hover:text-primary-foreground" : "text-text-secondary hover:text-primary"
+            }`}
           >
             ‹ 返回
           </button>
         ) : (
           <span className="w-12" />
         )}
-        <h1 className="flex-1 text-center text-card-title text-foreground truncate">
+        <h1 className={`flex-1 text-center text-card-title truncate ${brand ? "text-primary-foreground" : "text-foreground"}`}>
           {title}
         </h1>
         <div className="w-12 flex justify-end items-center">{right}</div>
       </div>
+      {extra && <div className="px-4 pb-3">{extra}</div>}
     </header>
   );
 }
