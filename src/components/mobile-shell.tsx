@@ -116,7 +116,7 @@ export function MobileTabBar() {
         <span className="relative inline-flex">
           <Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.6} />
           {showBadge && (
-            <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-[#F5222D] text-white text-[10px] leading-4 font-medium text-center ring-2 ring-card">
+            <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-[#F15454] text-white text-[10px] leading-4 font-medium text-center ring-2 ring-card">
               {unread > 99 ? "99+" : unread}
             </span>
           )}
