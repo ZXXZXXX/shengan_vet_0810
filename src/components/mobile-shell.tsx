@@ -98,11 +98,13 @@ function MobileTopBar({
 
 export function MobileTabBar() {
   const { pathname } = useLocation();
+  const unread = useUnreadCount();
   const renderTab = (t: (typeof leftTabs)[number]) => {
     const active = t.exact
       ? pathname === t.to || pathname === "/m/"
       : pathname.startsWith(t.to);
     const Icon = t.icon;
+    const showBadge = t.to === "/m/notifications" && unread > 0;
     return (
       <Link
         key={t.to}
@@ -111,7 +113,14 @@ export function MobileTabBar() {
           active ? "text-primary" : "text-text-tertiary"
         }`}
       >
-        <Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.6} />
+        <span className="relative inline-flex">
+          <Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.6} />
+          {showBadge && (
+            <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-[#F5222D] text-white text-[10px] leading-4 font-medium text-center ring-2 ring-card">
+              {unread > 99 ? "99+" : unread}
+            </span>
+          )}
+        </span>
         <span className="text-caption leading-none">{t.label}</span>
       </Link>
     );
