@@ -340,7 +340,7 @@ function FeedbackAdminPage() {
                         variant="outline"
                         className={`h-7 px-2 text-caption ${
                           r.verdict === "invalid"
-                            ? "bg-surface-subtle border-text-secondary text-foreground ring-1 ring-inset ring-text-secondary/40"
+                            ? "bg-text-secondary border-text-secondary text-white hover:bg-text-secondary hover:text-white"
                             : r.verdict === "valuable"
                             ? "opacity-40"
                             : ""
@@ -430,7 +430,7 @@ function FeedbackAdminPage() {
                   variant="outline"
                   className={`h-9 ${
                     detail.verdict === "invalid"
-                      ? "bg-surface-subtle border-text-secondary text-foreground ring-1 ring-inset ring-text-secondary/40"
+                      ? "bg-text-secondary border-text-secondary text-white hover:bg-text-secondary hover:text-white"
                       : detail.verdict === "valuable"
                       ? "opacity-40"
                       : ""
