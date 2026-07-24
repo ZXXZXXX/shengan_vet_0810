@@ -344,7 +344,7 @@ function FeedbackAdminPage() {
                         variant="outline"
                         className={`h-7 px-2 text-caption ${
                           r.verdict === "invalid"
-                            ? "bg-text-secondary border-text-secondary text-white hover:bg-text-secondary hover:text-white"
+                            ? "border-transparent text-white hover:text-white &&BGSEC&&"
                             : r.verdict === "valuable"
                             ? "opacity-40"
                             : ""
@@ -434,7 +434,7 @@ function FeedbackAdminPage() {
                   variant="outline"
                   className={`h-9 ${
                     detail.verdict === "invalid"
-                      ? "bg-text-secondary border-text-secondary text-white hover:bg-text-secondary hover:text-white"
+                      ? "border-transparent text-white hover:text-white &&BGSEC&&"
                       : detail.verdict === "valuable"
                       ? "opacity-40"
                       : ""
