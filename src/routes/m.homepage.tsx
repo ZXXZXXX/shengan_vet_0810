@@ -153,8 +153,8 @@ function MHomePage() {
           <SectionTitle
             title="今日任务"
             hint={`共计 ${getTaskCount(role)} 项`}
-            to="/m/health/today"
           />
+
           <TodayTaskList role={role} />
         </section>
       )}
@@ -469,7 +469,10 @@ function TodayTaskList({ role }: { role: Role }) {
   }
 
   const matched = getRoleTasks(role);
-  const visible = matched.slice(0, 3);
+  const visible = matched.slice(0, 2);
+  const hasPeek = matched.length > 1;
+  const remaining = matched.length;
+
 
   if (visible.length === 0) {
     return renderAllDone();
@@ -477,7 +480,8 @@ function TodayTaskList({ role }: { role: Role }) {
 
   return (
     <div className="mt-3 space-y-2.5">
-      {visible.map((t) => {
+      {visible.map((t, idx) => {
+        const isPeek = idx === 1;
         const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
         const Icon = meta.icon;
         const isReview =
@@ -572,6 +576,27 @@ function TodayTaskList({ role }: { role: Role }) {
         );
         const linkCls =
           "block rounded-2xl border border-border bg-card overflow-hidden active:bg-surface-subtle";
+
+        if (isPeek) {
+          // 1/3 高度预览,底部渐隐
+          return (
+            <div
+              key={t.id}
+              aria-hidden
+              className="relative rounded-2xl border border-border bg-card overflow-hidden pointer-events-none"
+              style={{
+                height: 44,
+                maskImage:
+                  "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 60%, rgba(0,0,0,0) 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 60%, rgba(0,0,0,0) 100%)",
+              }}
+            >
+              {body}
+            </div>
+          );
+        }
+
         return isReview ? (
           <Link key={t.id} to="/m/health/$id/review" params={{ id: t.id }} className={linkCls}>
             {body}
@@ -586,9 +611,19 @@ function TodayTaskList({ role }: { role: Role }) {
           </Link>
         );
       })}
+      {hasPeek && (
+        <Link
+          to="/m/health/today"
+          className="mt-1 flex items-center justify-center gap-0.5 py-2 text-body-sm text-text-secondary active:text-primary"
+        >
+          查看全部 {remaining} 项
+          <ChevronRight className="h-3.5 w-3.5" />
+        </Link>
+      )}
     </div>
   );
 }
+
 
 
 
