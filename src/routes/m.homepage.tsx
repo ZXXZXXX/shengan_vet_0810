@@ -469,7 +469,7 @@ function TodayTaskList({ role }: { role: Role }) {
   }
 
   const matched = getRoleTasks(role);
-  const visible = matched.slice(0, 1);
+  const visible = matched.slice(0, 3);
 
   if (visible.length === 0) {
     return renderAllDone();
