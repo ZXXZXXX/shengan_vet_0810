@@ -333,11 +333,16 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
             {c.status === "正常" && (
               <>
                 <Field label="品种" required>
-                  <div className="grid grid-cols-4 gap-2">
-                    {BREEDS.map((k) => (
-                      <ChoiceBtn key={k} label={k} active={c.breed === k} onClick={() => updateCalf(idx, { breed: k })} />
-                    ))}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setBreedPickerIdx(idx)}
+                    className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
+                  >
+                    <span className={c.breed ? "text-body-sm text-foreground" : "text-body-sm text-text-tertiary"}>
+                      {c.breed || "请选择"}
+                    </span>
+                    <span className="text-text-tertiary">›</span>
+                  </button>
                 </Field>
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="性别" required>
