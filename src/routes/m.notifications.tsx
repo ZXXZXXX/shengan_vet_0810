@@ -182,7 +182,7 @@ const MSGS: Msg[] = [
       earTag: "#01-24-2270",
       project: "牛结核病γ-干扰素ELISA检测（赛默飞）",
       result: "阳性",
-      conclusion: "γ-干扰素释放明显升高，结核感染可能性高。建议立即隔离并按防控流程复检、处置。",
+      conclusion: "阳性",
       submitter: "第三方实验室 · 张伟",
       submittedAt: "2026-07-21 15:12",
       reportImages: [],
