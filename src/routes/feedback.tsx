@@ -459,6 +459,28 @@ function FeedbackAdminPage() {
           )}
         </SheetContent>
       </Sheet>
+
+      <AlertDialog open={!!confirming} onOpenChange={(o) => !o && setConfirming(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认标注</AlertDialogTitle>
+            <AlertDialogDescription>
+              是否将其标注改为「{nextLabel}」？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (confirming) mark(confirming.id, confirming.next);
+                setConfirming(null);
+              }}
+            >
+              确认
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
