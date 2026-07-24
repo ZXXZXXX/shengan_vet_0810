@@ -41,18 +41,84 @@ const DEVICES: Device[] = [
     id: "D-EAR-088",
     name: "耳温设备 · smaXtec",
     status: "异常",
-    metrics: [
-      { label: "耳部温度", value: "39.8", unit: "℃", abnormal: true },
-      { label: "饮水次数", value: "4", unit: "次" },
-      { label: "活动指数", value: "62", unit: "" },
-      { label: "反刍活跃度", value: "78", unit: "" },
-    ],
+    metrics: [],
     alerts: [
       { time: "2026-05-29 08:12", text: "耳部温度持续 2 小时高于 39.6℃", level: "danger" },
-      { time: "2026-05-28 21:40", text: "饮水量低于个体均值 30%", level: "warn" },
+      { time: "2026-05-28 21:40", text: "耳部温度较个体基线偏高 0.6℃", level: "warn" },
     ],
   },
 ];
+
+// 近 24 小时耳温采样（每 2 小时一次，单位 ℃）
+const EAR_TEMP_SERIES: { time: string; value: number }[] = [
+  { time: "10:00", value: 38.6 },
+  { time: "12:00", value: 38.7 },
+  { time: "14:00", value: 38.9 },
+  { time: "16:00", value: 39.0 },
+  { time: "18:00", value: 38.8 },
+  { time: "20:00", value: 38.7 },
+  { time: "22:00", value: 38.9 },
+  { time: "00:00", value: 39.2 },
+  { time: "02:00", value: 39.4 },
+  { time: "04:00", value: 39.5 },
+  { time: "06:00", value: 39.7 },
+  { time: "08:00", value: 39.8 },
+];
+
+function EarTempChart() {
+  const w = 320;
+  const h = 140;
+  const padL = 28;
+  const padR = 8;
+  const padT = 10;
+  const padB = 20;
+  const min = 38;
+  const max = 40.5;
+  const data = EAR_TEMP_SERIES;
+  const xStep = (w - padL - padR) / (data.length - 1);
+  const y = (v: number) => padT + ((max - v) / (max - min)) * (h - padT - padB);
+  const points = data.map((d, i) => ({ x: padL + i * xStep, y: y(d.value), ...d }));
+  const path = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ");
+  const area = `${path} L${points[points.length - 1].x},${h - padB} L${points[0].x},${h - padB} Z`;
+  const warnY = y(39.6);
+  const gridVals = [38, 39, 40];
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-[140px]">
+      <defs>
+        <linearGradient id="earTempFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#00A14F" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#00A14F" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {gridVals.map((v) => (
+        <g key={v}>
+          <line x1={padL} x2={w - padR} y1={y(v)} y2={y(v)} stroke="hsl(var(--border))" strokeDasharray="2 3" />
+          <text x={4} y={y(v) + 3} fontSize="10" fill="hsl(var(--text-tertiary))">{v.toFixed(0)}</text>
+        </g>
+      ))}
+      <line x1={padL} x2={w - padR} y1={warnY} y2={warnY} stroke="#CF1322" strokeDasharray="3 3" strokeWidth="1" />
+      <text x={w - padR} y={warnY - 3} fontSize="9" fill="#CF1322" textAnchor="end">预警 39.6℃</text>
+      <path d={area} fill="url(#earTempFill)" />
+      <path d={path} fill="none" stroke="#00A14F" strokeWidth="1.8" />
+      {points.map((p, i) => (
+        <circle
+          key={i}
+          cx={p.x}
+          cy={p.y}
+          r="2.5"
+          fill={p.value >= 39.6 ? "#CF1322" : "#00A14F"}
+        />
+      ))}
+      {points.map((p, i) => (
+        i % 3 === 0 ? (
+          <text key={`t-${i}`} x={p.x} y={h - 6} fontSize="9" fill="hsl(var(--text-tertiary))" textAnchor="middle">
+            {p.time}
+          </text>
+        ) : null
+      ))}
+    </svg>
+  );
+}
 
 function AnimalDevicePage() {
   const { id } = useParams({ from: "/m/animals-device/$id" });
@@ -122,39 +188,53 @@ function AnimalDevicePage() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 gap-2">
-                    {d.metrics.map((m) => (
-                      <div
-                        key={m.label}
-                        className={`rounded-xl px-3 py-2.5 ${
-                          m.abnormal ? "bg-[#FFF1F0]" : "bg-surface-subtle"
-                        }`}
-                      >
-                        <div className="text-caption text-text-tertiary">{m.label}</div>
-                        <div className="mt-0.5">
-                          <span
-                            className={`text-[20px] font-semibold tabular-nums ${
-                              m.abnormal ? "text-[#CF1322]" : "text-foreground"
+                  {d.kind === "ear" ? (
+                    <div className="rounded-xl bg-surface-subtle p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
+                          <Activity className="h-3 w-3" /> 近 24 小时耳温变化
+                        </div>
+                        <div className="text-caption text-text-tertiary">单位 ℃</div>
+                      </div>
+                      <EarTempChart />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 gap-2">
+                        {d.metrics.map((m) => (
+                          <div
+                            key={m.label}
+                            className={`rounded-xl px-3 py-2.5 ${
+                              m.abnormal ? "bg-[#FFF1F0]" : "bg-surface-subtle"
                             }`}
                           >
-                            {m.value}
-                          </span>
-                          {m.unit && (
-                            <span className="text-caption text-text-tertiary ml-0.5">{m.unit}</span>
-                          )}
+                            <div className="text-caption text-text-tertiary">{m.label}</div>
+                            <div className="mt-0.5">
+                              <span
+                                className={`text-[20px] font-semibold tabular-nums ${
+                                  m.abnormal ? "text-[#CF1322]" : "text-foreground"
+                                }`}
+                              >
+                                {m.value}
+                              </span>
+                              {m.unit && (
+                                <span className="text-caption text-text-tertiary ml-0.5">{m.unit}</span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="rounded-xl bg-surface-subtle p-3">
+                        <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5 mb-1">
+                          <Activity className="h-3 w-3" /> 近 24 小时
+                        </div>
+                        <div className="text-caption text-text-secondary">
+                          详细趋势图待接入设备数据源。
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="rounded-xl bg-surface-subtle p-3">
-                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5 mb-1">
-                      <Activity className="h-3 w-3" /> 近 24 小时
-                    </div>
-                    <div className="text-caption text-text-secondary">
-                      详细趋势图待接入设备数据源。
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
