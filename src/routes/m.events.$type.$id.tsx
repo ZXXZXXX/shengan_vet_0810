@@ -263,6 +263,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
               {injury == null
                 ? "1 分：轻度　3 分：重度"
                 : ["", "1 - 外阴背连合处或外阴/阴道外侧壁小于 2cm 的撕裂伤", "2 - 外阴背连合处或外阴/阴道外侧壁大于 2cm 的撕裂伤，或两者兼有", "3 - 重度拉伤，阴道深层组织、子宫颈撕裂"][injury]}
+            </div>
           </Field>
 
         </section>
