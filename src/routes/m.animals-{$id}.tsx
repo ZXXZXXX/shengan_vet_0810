@@ -112,7 +112,7 @@ function AnimalDetailPage() {
   const ageLabel = a.ageDays > 90 ? `${Math.floor(a.ageDays / 30)} 月龄` : `${a.ageDays} 日龄`;
 
   return (
-    <MobileShell title="" back hideTabBar headerTone="brand">
+    <MobileShell title={`#${a.id}`} back hideTabBar headerTone="brand">
       <div className="pb-28">
         {/* 头部 */}
         <div className="-mt-px">
