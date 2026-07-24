@@ -365,7 +365,7 @@ function NotificationsPage() {
                     />
                     <div>
                       <div className="text-caption text-text-tertiary mb-2">
-                        检查报告
+                        检测详情
                       </div>
                       {current.lab.reportImages.length > 0 ? (
                         <div className="grid grid-cols-3 gap-2">
