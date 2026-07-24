@@ -8,6 +8,7 @@ import {
   BookOpen,
   FolderArchive,
   MessageSquare,
+  BarChart3,
   ChevronDown,
 } from "lucide-react";
 
