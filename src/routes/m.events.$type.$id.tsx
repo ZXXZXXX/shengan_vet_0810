@@ -251,12 +251,21 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
 
           <Field label="产犊难易度评分" required>
             <ScoreRow max={4} value={difficulty} onChange={setDifficulty} />
-            <div className="text-caption text-text-tertiary mt-1">0 分：无助产　4 分：极难产</div>
+            <div className="text-caption text-text-tertiary mt-1">
+              {difficulty == null
+                ? "0 分：无助产　4 分：极难产"
+                : ["0 - 顺产", "1 - 轻度助产", "2 - 助产", "3 - 难产", "4 - 剖腹产"][difficulty]}
+            </div>
           </Field>
           <Field label="产道损伤等级" required>
             <ScoreRow min={1} max={3} value={injury} onChange={setInjury} />
-            <div className="text-caption text-text-tertiary mt-1">1 分：轻度　3 分：重度</div>
+            <div className="text-caption text-text-tertiary mt-1">
+              {injury == null
+                ? "1 分：轻度　3 分：重度"
+                : ["", "1 - 轻度", "2 - 中度", "3 - 重度"][injury]}
+            </div>
           </Field>
+
         </section>
 
         {/* ============ 犊牛登记 ============ */}
