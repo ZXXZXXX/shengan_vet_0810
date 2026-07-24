@@ -21,7 +21,7 @@ export function MobileShell({
   headerTone,
   headerExtra,
 }: {
-  title?: string;
+  title?: ReactNode;
   children: ReactNode;
   hideTabBar?: boolean;
   back?: { to: string; label?: string; search?: Record<string, string> } | true;
