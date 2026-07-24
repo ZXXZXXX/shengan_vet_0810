@@ -168,9 +168,20 @@ type Calf = {
   status: "正常" | "死胎" | "";
   weight: string;
   keep: "留养" | "不留养" | "";
+  targetBarn: string;
   reason: string;
   media: number[];
 };
+
+const CALF_BARNS = [
+  "犊牛岛 A 区",
+  "犊牛岛 B 区",
+  "犊牛岛 C 区",
+  "1 号犊牛舍",
+  "2 号犊牛舍",
+  "3 号犊牛舍",
+  "断奶过渡舍",
+];
 
 const BREEDS = [
   "荷斯坦",
@@ -200,6 +211,7 @@ function newCalf(index: number): Calf {
     status: "",
     weight: "",
     keep: "",
+    targetBarn: "",
     reason: "",
     media: [],
   };
@@ -216,6 +228,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [injury, setInjury] = useState<number | null>(null);
   const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
   const [breedPickerIdx, setBreedPickerIdx] = useState<number | null>(null);
+  const [barnPickerIdx, setBarnPickerIdx] = useState<number | null>(null);
 
   const updateCalf = (idx: number, patch: Partial<Calf>) =>
     setCalves((list) => list.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
@@ -237,6 +250,9 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
       if (!c.sex) return toast.error(`请选择第 ${i + 1} 头犊牛的性别`);
       if (!c.weight) return toast.error(`请填写第 ${i + 1} 头犊牛的体重`);
       if (!c.keep) return toast.error(`请选择第 ${i + 1} 头犊牛是否留养`);
+      if (c.keep === "留养" && !c.targetBarn) {
+        return toast.error(`请为第 ${i + 1} 头犊牛选择转入牛舍`);
+      }
       if (c.keep === "不留养") {
         if (c.media.length === 0) return toast.error(`第 ${i + 1} 头犊牛不留养需上传照片或视频`);
         if (!c.reason.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛不留养原因`);
@@ -369,6 +385,20 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                     ))}
                   </div>
                 </Field>
+                {c.keep === "留养" && (
+                  <Field label="转入牛舍" required>
+                    <button
+                      type="button"
+                      onClick={() => setBarnPickerIdx(idx)}
+                      className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
+                    >
+                      <span className={c.targetBarn ? "text-body-sm text-foreground" : "text-body-sm text-text-tertiary"}>
+                        {c.targetBarn || "请选择"}
+                      </span>
+                      <span className="text-text-tertiary">›</span>
+                    </button>
+                  </Field>
+                )}
               </>
             )}
 
@@ -425,6 +455,34 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                   onClick={() => {
                     if (breedPickerIdx !== null) updateCalf(breedPickerIdx, { breed: k });
                     setBreedPickerIdx(null);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/40 text-left"
+                >
+                  <span className="text-body text-foreground">{k}</span>
+                  {on && <Check className="w-4 h-4 text-primary" strokeWidth={3} />}
+                </button>
+              );
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={barnPickerIdx !== null} onOpenChange={(o) => !o && setBarnPickerIdx(null)}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[70vh] flex flex-col">
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">选择转入牛舍</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-2 py-2">
+            {CALF_BARNS.map((k) => {
+              const current = barnPickerIdx !== null ? calves[barnPickerIdx]?.targetBarn : "";
+              const on = current === k;
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => {
+                    if (barnPickerIdx !== null) updateCalf(barnPickerIdx, { targetBarn: k });
+                    setBarnPickerIdx(null);
                   }}
                   className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/40 text-left"
                 >
