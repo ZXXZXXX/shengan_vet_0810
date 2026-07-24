@@ -1,7 +1,7 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
-import { ArrowRight, ArrowRightLeft, LogOut, MapPin, Stethoscope } from "lucide-react";
+import { ArrowRight, ArrowRightLeft, LogOut, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
