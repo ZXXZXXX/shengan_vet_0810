@@ -385,6 +385,20 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                     ))}
                   </div>
                 </Field>
+                {c.keep === "留养" && (
+                  <Field label="转入牛舍" required>
+                    <button
+                      type="button"
+                      onClick={() => setBarnPickerIdx(idx)}
+                      className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
+                    >
+                      <span className={c.targetBarn ? "text-body-sm text-foreground" : "text-body-sm text-text-tertiary"}>
+                        {c.targetBarn || "请选择"}
+                      </span>
+                      <span className="text-text-tertiary">›</span>
+                    </button>
+                  </Field>
+                )}
               </>
             )}
 
