@@ -642,31 +642,82 @@ function StatsSection({ role }: { role: Role }) {
 }
 
 function OpsOverview() {
-  const kpis = [
-    { label: "存栏牛只", value: "12,486", unit: "头", tone: "var(--brand)" },
-    { label: "新生牛犊", value: "126", unit: "头", tone: "var(--effect-ai-cyan)" },
-    { label: "休药隔离", value: "38", unit: "头", tone: "var(--state-warning)" },
-    { label: "离场牛只", value: "92", unit: "头", tone: "var(--effect-ai-purple)" },
+  type KpiItem = {
+    label: string;
+    value: string;
+    unit: string;
+    tone: string;
+    bg: string;
+    visual: "bars" | "ring" | "spark" | "clock";
+    icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  };
+  const kpis: KpiItem[] = [
+    {
+      label: "存栏牛只",
+      value: "12,486",
+      unit: "头",
+      tone: "var(--brand)",
+      bg: "color-mix(in oklab, var(--brand) 10%, #FFFFFF)",
+      visual: "bars",
+      icon: Beef,
+    },
+    {
+      label: "新生牛犊",
+      value: "126",
+      unit: "头",
+      tone: "#2E8CF0",
+      bg: "color-mix(in oklab, #2E8CF0 8%, #FFFFFF)",
+      visual: "spark",
+      icon: Baby,
+    },
+    {
+      label: "休药隔离",
+      value: "38",
+      unit: "头",
+      tone: "#FF8A3D",
+      bg: "color-mix(in oklab, #FF8A3D 10%, #FFFFFF)",
+      visual: "clock",
+      icon: Pill,
+    },
+    {
+      label: "离场牛只",
+      value: "92",
+      unit: "头",
+      tone: "var(--effect-ai-purple)",
+      bg: "color-mix(in oklab, var(--effect-ai-purple) 10%, #FFFFFF)",
+      visual: "ring",
+      icon: PackageX,
+    },
   ];
   return (
     <section className="px-4 -mt-1 relative z-10">
-
       <SectionTitle title="运营概览" hint="本月" />
       <div className="mt-3 grid grid-cols-2 gap-2.5">
-        {kpis.map((k) => (
-          <div key={k.label} className="rounded-xl border border-border bg-card p-3">
-            <div className="text-caption text-text-tertiary">{k.label}</div>
-            <div className="mt-1 flex items-baseline gap-1">
-              <span
-                className="text-[24px] leading-none font-semibold tabular-nums"
-                style={{ color: k.tone }}
-              >
-                {k.value}
-              </span>
-              <span className="text-caption text-text-tertiary">{k.unit}</span>
+        {kpis.map((k) => {
+          const Icon = k.icon;
+          return (
+            <div
+              key={k.label}
+              className="relative rounded-2xl p-3.5 overflow-hidden aspect-[1.9/1]"
+              style={{ background: k.bg }}
+            >
+              <div className="flex items-center gap-1.5">
+                <Icon className="h-4 w-4" style={{ color: k.tone }} />
+                <span className="text-body-sm text-foreground">{k.label}</span>
+              </div>
+              <div className="absolute left-3.5 bottom-3 flex items-baseline gap-1">
+                <span
+                  className="text-[30px] leading-none font-semibold tabular-nums"
+                  style={{ color: k.tone }}
+                >
+                  {k.value}
+                </span>
+                <span className="text-caption text-text-tertiary">{k.unit}</span>
+              </div>
+              <StatVisual variant={k.visual} tone={k.tone} />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <HealthTrendChart />
     </section>
