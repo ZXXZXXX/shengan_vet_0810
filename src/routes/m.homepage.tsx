@@ -664,15 +664,6 @@ function OpsOverview() {
       icon: Beef,
     },
     {
-      label: "新生牛犊",
-      value: "126",
-      unit: "头",
-      tone: "#2E8CF0",
-      bg: "color-mix(in oklab, #2E8CF0 8%, #FFFFFF)",
-      visual: "spark",
-      icon: Baby,
-    },
-    {
       label: "休药隔离",
       value: "38",
       unit: "头",
@@ -680,6 +671,15 @@ function OpsOverview() {
       bg: "color-mix(in oklab, #FF8A3D 10%, #FFFFFF)",
       visual: "clock",
       icon: Pill,
+    },
+    {
+      label: "新生牛犊",
+      value: "126",
+      unit: "头",
+      tone: "#2E8CF0",
+      bg: "color-mix(in oklab, #2E8CF0 8%, #FFFFFF)",
+      visual: "spark",
+      icon: Baby,
     },
     {
       label: "离场牛只",
