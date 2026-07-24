@@ -128,7 +128,14 @@ function AnimalDetailPage() {
 
   return (
     <MobileShell
-      title={showTitleId ? `#${a.id} · ${a.farm} · ${a.barn}` : ""}
+      title={
+        showTitleId ? (
+          <div className="leading-tight">
+            <div className="text-body font-medium truncate">#{a.id}</div>
+            <div className="text-caption opacity-80 truncate">{a.farm} · {a.barn}</div>
+          </div>
+        ) : ""
+      }
       back
       hideTabBar
       headerTone="brand"
