@@ -116,58 +116,62 @@ function AnimalDetailPage() {
       <div className="pb-28">
         {/* 头部 */}
         <div className="-mt-px">
-          <div className="rounded-b-3xl bg-gradient-to-br from-primary to-[#00823F] px-5 pt-4 pb-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
-            <Beef className="absolute -right-4 -bottom-4 h-32 w-32 opacity-10" strokeWidth={1} />
-            <div className="relative flex items-center gap-3">
-              <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/15">
-                <Beef className="h-6 w-6" strokeWidth={1.75} />
-              </div>
+          <div className="rounded-b-3xl bg-gradient-to-br from-primary to-[#00823F] px-5 pt-5 pb-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
+            <Beef className="absolute -right-6 -bottom-6 h-36 w-36 opacity-[0.08]" strokeWidth={1} />
+
+            {/* 标题行 */}
+            <div className="relative flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <div className="text-section-title font-mono leading-tight">#{a.id}</div>
-                <div className="mt-1 inline-flex items-center gap-1 text-caption opacity-90 font-medium">
-                  <MapPin className="h-3 w-3 opacity-85 shrink-0" />
+                <div className="text-[26px] font-mono font-semibold leading-none tracking-tight">
+                  #{a.id}
+                </div>
+                <div className="mt-2 inline-flex items-center gap-1 text-caption opacity-90">
+                  <MapPin className="h-3 w-3 shrink-0" />
                   <span className="truncate">{a.farm} · {a.barn}</span>
                 </div>
               </div>
-              <div className="shrink-0 flex flex-col items-end gap-1.5">
-                <span
-                  className={`h-7 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-semibold shadow-sm ${
-                    a.health === "异常"
-                      ? "bg-[#FFE4E1] text-[#D9534F]"
-                      : a.health === "观察中"
-                      ? "bg-[#FFF7E6] text-[#B8860B]"
-                      : a.health === "治疗中"
-                      ? "bg-[#FFE8CC] text-[#C9621F]"
-                      : "bg-[#E8F5E9] text-[#2E7D32]"
-                  }`}
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
-                  {a.health}
-                </span>
-                <Link
-                  to="/m/animals-orders/$id"
-                  params={{ id: a.id }}
-                  className="h-6 px-2 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-caption text-primary-foreground inline-flex items-center gap-1 active:bg-white/30"
-                >
-                  
-                  全部工单
-                  <ChevronRight className="h-3 w-3 -mr-0.5" />
-                </Link>
-              </div>
+              <span
+                className={`shrink-0 h-6 px-2 rounded-full inline-flex items-center gap-1 text-[11px] font-semibold ${
+                  a.health === "异常"
+                    ? "bg-[#FFE4E1] text-[#D9534F]"
+                    : a.health === "观察中"
+                    ? "bg-[#FFF7E6] text-[#B8860B]"
+                    : a.health === "治疗中"
+                    ? "bg-[#FFE8CC] text-[#C9621F]"
+                    : "bg-[#E8F5E9] text-[#2E7D32]"
+                }`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                {a.health}
+              </span>
             </div>
 
             {/* 基础信息 */}
-            <div className="relative mt-4 pt-3 border-t border-white/15 grid grid-cols-3 gap-y-2.5 gap-x-2">
-              <HeaderInfo label="品种" value={a.breed} />
-              <HeaderInfo label="类别" value={a.type} />
-              <HeaderInfo label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
-              <HeaderInfo label="泌乳天数" value={`${a.lactationDays} 天`} />
-              <HeaderInfo label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
-              <HeaderInfo label="胎次" value={`${a.parity} 胎`} />
-
+            <div className="relative mt-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 divide-y divide-white/10">
+              <div className="grid grid-cols-3 divide-x divide-white/10">
+                <HeaderInfo label="品种" value={a.breed} />
+                <HeaderInfo label="类别" value={a.type} />
+                <HeaderInfo label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
+              </div>
+              <div className="grid grid-cols-3 divide-x divide-white/10">
+                <HeaderInfo label="泌乳天数" value={`${a.lactationDays} 天`} />
+                <HeaderInfo label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
+                <HeaderInfo label="胎次" value={`${a.parity} 胎`} />
+              </div>
             </div>
+
+            {/* 全部工单 */}
+            <Link
+              to="/m/animals-orders/$id"
+              params={{ id: a.id }}
+              className="relative mt-3 flex items-center justify-center gap-1 h-9 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 text-body-sm font-medium text-primary-foreground active:bg-white/25"
+            >
+              查看全部工单
+              <ChevronRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
+
 
 
 
@@ -499,9 +503,9 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 function HeaderInfo({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0">
-      <div className="text-[11px] leading-tight opacity-70">{label}</div>
-      <div className="text-body-sm font-medium truncate mt-0.5">{value}</div>
+    <div className="min-w-0 px-3 py-2.5">
+      <div className="text-[11px] leading-none opacity-75">{label}</div>
+      <div className="text-body-sm font-semibold truncate mt-1.5">{value}</div>
     </div>
   );
 }
