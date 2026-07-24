@@ -95,6 +95,11 @@ const groups: NavGroup[] = [
     ],
   },
   {
+    title: "统计分析",
+    icon: BarChart3,
+    url: "/stats",
+  },
+  {
     title: "反馈管理",
     icon: MessageSquare,
     url: "/feedback",
