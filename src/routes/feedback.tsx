@@ -287,7 +287,11 @@ function FeedbackAdminPage() {
                 </TableRow>
               )}
               {filtered.map((r) => (
-                <TableRow key={r.id} className="hover:bg-surface-subtle/40">
+                <TableRow
+                  key={r.id}
+                  className="cursor-pointer hover:bg-[#F1F5F9] transition-colors"
+                  onClick={() => setDetail(r)}
+                >
                   <TableCell className="font-mono text-caption text-text-secondary">{r.id}</TableCell>
                   <TableCell><Stars n={r.rating} /></TableCell>
                   <TableCell><Badge variant="secondary" className="font-normal">{r.topic}</Badge></TableCell>
@@ -296,7 +300,7 @@ function FeedbackAdminPage() {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            onClick={() => setDetail(r)}
+                            onClick={(e) => { e.stopPropagation(); setDetail(r); }}
                             className="text-body-sm text-foreground text-left line-clamp-1 hover:text-primary transition-colors max-w-[360px]"
                           >
                             {r.content}
@@ -323,7 +327,7 @@ function FeedbackAdminPage() {
                   </TableCell>
                   <TableCell className="text-caption text-text-secondary tabular-nums">{r.createdAt}</TableCell>
                   <TableCell><VerdictTag v={r.verdict} /></TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="inline-flex gap-1.5">
                       <Button
                         size="sm"
