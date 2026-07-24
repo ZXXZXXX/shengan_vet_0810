@@ -250,6 +250,9 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
       if (!c.sex) return toast.error(`请选择第 ${i + 1} 头犊牛的性别`);
       if (!c.weight) return toast.error(`请填写第 ${i + 1} 头犊牛的体重`);
       if (!c.keep) return toast.error(`请选择第 ${i + 1} 头犊牛是否留养`);
+      if (c.keep === "留养" && !c.targetBarn) {
+        return toast.error(`请为第 ${i + 1} 头犊牛选择转入牛舍`);
+      }
       if (c.keep === "不留养") {
         if (c.media.length === 0) return toast.error(`第 ${i + 1} 头犊牛不留养需上传照片或视频`);
         if (!c.reason.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛不留养原因`);
