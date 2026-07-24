@@ -282,6 +282,33 @@ const POSTPARTUM_SYMPTOMS = [
   "双胎或以上",
   "胎衣不下",
 ];
+
+// 产犊记录 → 症状映射（产后护理待诊断工单会自动带入）
+type CalvingRecord = {
+  difficulty: number;      // 产犊难易度评分 0-4
+  injury: number;          // 产道损伤等级 1-3
+  calfCount: number;       // 产犊数量
+  calfWeightMax: number;   // 最重犊牛体重 kg
+  stillbirth: boolean;     // 是否有死胎
+  preterm: boolean;        // 是否早产
+  retainedPlacenta: boolean; // 是否胎衣不下
+};
+const CALVING_RECORDS: Record<string, CalvingRecord> = {
+  "PP-2601": { difficulty: 3, injury: 2, calfCount: 2, calfWeightMax: 42, stillbirth: false, preterm: false, retainedPlacenta: true },
+  "PP-2602": { difficulty: 1, injury: 1, calfCount: 1, calfWeightMax: 46, stillbirth: true,  preterm: true,  retainedPlacenta: false },
+};
+function calvingToSymptoms(r: CalvingRecord): string[] {
+  const out: string[] = [];
+  if (r.difficulty >= 3) out.push("产犊难易度 ≥ 3");
+  if (r.injury >= 2) out.push("产道损伤等级 ≥ 2");
+  if (r.calfCount >= 2) out.push("产犊数量 ≥ 2");
+  if (r.calfWeightMax >= 45) out.push("犊牛体重 ≥ 45kg");
+  if (r.stillbirth) out.push("犊牛为「死胎」");
+  if (r.preterm) out.push("早产");
+  if (r.calfCount >= 2) out.push("双胎或以上");
+  if (r.retainedPlacenta) out.push("胎衣不下");
+  return Array.from(new Set(out));
+}
 const POSTPARTUM_DISEASE: Disease = {
   name: "产后高危",
   symptoms: POSTPARTUM_SYMPTOMS.filter((s) => s !== POSTPARTUM_NORMAL_TAG),
@@ -472,8 +499,12 @@ function DiagnosePage() {
       ? [DRYING_DISEASE]
       : diseaseLibrary;
 
-  // 症状（带入上报症状，可加减；产后护理 / 干奶无上报症状）
-  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum || isDrying ? [] : reportedSymptoms));
+  // 症状（带入上报症状；产后护理带入产犊记录映射的症状；干奶无上报症状）
+  const postpartumPrefill = useMemo(
+    () => (isPostpartum ? calvingToSymptoms(CALVING_RECORDS[id.toUpperCase()] ?? { difficulty: 0, injury: 0, calfCount: 1, calfWeightMax: 0, stillbirth: false, preterm: false, retainedPlacenta: false }) : []),
+    [isPostpartum, id],
+  );
+  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum ? postpartumPrefill : isDrying ? [] : reportedSymptoms));
   const [symptomInput, setSymptomInput] = useState("");
 
   // 疾病
