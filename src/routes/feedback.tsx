@@ -208,6 +208,10 @@ function FeedbackAdminPage() {
       mark(id, null);
       return;
     }
+    if (current === null) {
+      mark(id, next);
+      return;
+    }
     setConfirming({ id, next });
   };
   const nextLabel = confirming?.next === "valuable" ? "有价值" : confirming?.next === "invalid" ? "无价值" : "";
