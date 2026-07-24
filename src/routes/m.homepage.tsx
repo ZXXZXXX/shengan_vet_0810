@@ -687,8 +687,8 @@ function OpsOverview() {
       unit: "头",
       tone: "var(--effect-ai-purple)",
       bg: "color-mix(in oklab, var(--effect-ai-purple) 10%, #FFFFFF)",
-      visual: "ring",
-      icon: PackageX,
+      visual: "truck",
+      icon: DoorOpen,
     },
   ];
   return (
