@@ -27,7 +27,7 @@ export const Route = createFileRoute("/m/notifications")({
 });
 
 /** 消息维度 */
-type Cat = "system" | "workorder" | "platform" | "lab";
+type Cat = "system" | "workorder" | "platform" | "lab" | "exam";
 
 type LabInfo = {
   earTag: string; // #nn-nn-nnnn
