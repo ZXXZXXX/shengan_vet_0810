@@ -255,8 +255,8 @@ const META: Record<
     label: "实验室",
   },
   exam: {
-    icon: Stethoscope,
-    tone: "bg-[#EEF2FF] text-[#6366F1]",
+    icon: Megaphone,
+    tone: "bg-[#E6F7FE] text-[#22ACEB]",
     label: "基础检查",
   },
 };
