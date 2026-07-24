@@ -474,7 +474,9 @@ function NotificationsPage() {
                 </Button>
                 {current.jump && (
                   <Button className="flex-1" onClick={goJump}>
-                    {JUMP_LABEL[current.jump.kind]}
+                    {current.cat === "exam"
+                      ? "去记录检查"
+                      : JUMP_LABEL[current.jump.kind]}
                   </Button>
                 )}
               </div>
