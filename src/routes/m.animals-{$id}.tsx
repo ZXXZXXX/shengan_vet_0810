@@ -143,7 +143,7 @@ function AnimalDetailPage() {
       <div className="pb-28">
         {/* 头部 */}
         <div className="-mt-px">
-          <div className="rounded-b-3xl bg-gradient-to-b from-primary to-[#00823F] px-5 pt-5 pb-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
+          <div className="rounded-b-3xl bg-gradient-to-b from-primary to-[#00823F] px-5 pt-2 pb-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
             <Beef className="absolute -right-6 -bottom-6 h-36 w-36 opacity-[0.08]" strokeWidth={1} />
 
             {/* 标题行 */}
