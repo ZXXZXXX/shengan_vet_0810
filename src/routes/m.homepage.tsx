@@ -802,6 +802,17 @@ function HealthTrendChart() {
           </text>
         ))}
       </svg>
+      <div className="mt-2 flex items-center justify-center gap-3 text-caption text-text-secondary">
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[#22ACEB]" />发病
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[var(--brand)]" />治愈
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[var(--state-danger)]" />死淘
+        </span>
+      </div>
     </div>
   );
 }
