@@ -324,16 +324,28 @@ function FeedbackAdminPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className={`h-7 px-2 text-caption ${r.verdict === "valuable" ? "bg-primary border-primary text-primary-foreground hover:bg-[var(--brand-hover)] hover:text-primary-foreground" : ""}`}
-                        onClick={() => mark(r.id, r.verdict === "valuable" ? null : "valuable")}
+                        className={`h-7 px-2 text-caption ${
+                          r.verdict === "valuable"
+                            ? "bg-primary border-primary text-primary-foreground hover:bg-[var(--brand-hover)] hover:text-primary-foreground"
+                            : r.verdict === "invalid"
+                            ? "opacity-40"
+                            : ""
+                        }`}
+                        onClick={() => requestMark(r.id, r.verdict, "valuable")}
                       >
                         <ThumbsUp className="h-3 w-3 mr-1" /> 有价值
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        className={`h-7 px-2 text-caption ${r.verdict === "invalid" ? "bg-surface-subtle border-text-secondary text-foreground ring-1 ring-inset ring-text-secondary/40" : ""}`}
-                        onClick={() => mark(r.id, r.verdict === "invalid" ? null : "invalid")}
+                        className={`h-7 px-2 text-caption ${
+                          r.verdict === "invalid"
+                            ? "bg-surface-subtle border-text-secondary text-foreground ring-1 ring-inset ring-text-secondary/40"
+                            : r.verdict === "valuable"
+                            ? "opacity-40"
+                            : ""
+                        }`}
+                        onClick={() => requestMark(r.id, r.verdict, "invalid")}
                       >
                         <ThumbsDown className="h-3 w-3 mr-1" /> 无价值
                       </Button>
