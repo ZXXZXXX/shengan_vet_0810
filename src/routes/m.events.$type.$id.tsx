@@ -326,7 +326,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
             )}
 
             {(c.status === "死胎" || (c.status === "正常" && c.keep === "不留养")) && (
-              <div className="rounded-xl bg-[var(--state-danger)]/8 border border-[var(--state-danger)]/25 p-3 space-y-3">
+              <div className="space-y-3">
                 <Field label="现场照片 / 视频" required>
                   <MediaGrid items={c.media} setItems={(u) => updateCalf(idx, { media: typeof u === "function" ? (u as any)(c.media) : u })} max={6} />
                 </Field>
