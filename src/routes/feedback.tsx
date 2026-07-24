@@ -268,12 +268,21 @@ function FeedbackAdminPage() {
                   <TableCell><Stars n={r.rating} /></TableCell>
                   <TableCell><Badge variant="secondary" className="font-normal">{r.topic}</Badge></TableCell>
                   <TableCell>
-                    <button
-                      onClick={() => setDetail(r)}
-                      className="text-body-sm text-foreground text-left line-clamp-1 hover:text-primary transition-colors"
-                    >
-                      {r.content}
-                    </button>
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => setDetail(r)}
+                            className="text-body-sm text-foreground text-left line-clamp-1 hover:text-primary transition-colors max-w-[360px]"
+                          >
+                            {r.content}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" align="start" className="max-w-sm whitespace-pre-wrap leading-relaxed">
+                          {r.content}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </TableCell>
                   <TableCell className="text-center">
                     {r.images > 0 ? (
