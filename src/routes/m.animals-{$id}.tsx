@@ -800,3 +800,46 @@ function DiagnosisHistory() {
     </div>
   );
 }
+
+type TestRecord = { id: string; date: string; item: string; conclusion: "阴性" | "阳性" | "合格" | "不合格"; submitter: string };
+const ALL_TESTS: TestRecord[] = [
+  { id: "T-0620", date: "2026-06-20", item: "生鲜乳体细胞检测", conclusion: "合格", submitter: "李雨晴" },
+  { id: "T-0605", date: "2026-06-05", item: "布病抗体筛查", conclusion: "阴性", submitter: "周凯" },
+  { id: "T-0512", date: "2026-05-12", item: "结核病检测", conclusion: "阴性", submitter: "王场长" },
+  { id: "T-0418", date: "2026-04-18", item: "乳房炎病原培养", conclusion: "阳性", submitter: "李雨晴" },
+];
+
+function TestHistory() {
+  if (ALL_TESTS.length === 0) {
+    return (
+      <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
+        暂无检测记录
+      </div>
+    );
+  }
+  const tone = (c: TestRecord["conclusion"]) =>
+    c === "阳性" || c === "不合格"
+      ? "bg-red-50 text-red-600"
+      : "bg-emerald-50 text-emerald-600";
+  return (
+    <div>
+      <div className="text-caption text-text-tertiary mb-1">共 {ALL_TESTS.length} 条</div>
+      <div className="rounded-xl border border-border bg-card divide-y divide-border">
+        {ALL_TESTS.map((t) => (
+          <div key={t.id} className="px-3 py-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <span className="shrink-0 font-mono text-caption text-text-secondary">{t.date}</span>
+                <span className="truncate text-body-sm text-foreground">{t.item}</span>
+              </div>
+              <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-caption ${tone(t.conclusion)}`}>
+                {t.conclusion}
+              </span>
+            </div>
+            <div className="mt-1 text-caption text-text-tertiary">提交人 {t.submitter}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
