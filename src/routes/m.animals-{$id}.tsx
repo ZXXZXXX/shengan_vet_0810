@@ -111,22 +111,27 @@ function AnimalDetailPage() {
 
   const ageLabel = a.ageDays > 90 ? `${Math.floor(a.ageDays / 30)} 月龄` : `${a.ageDays} 日龄`;
 
-  // 滚动到 ID 消失时，标题显示耳号
-  const idRef = useRef<HTMLDivElement>(null);
+  // 滚动到基础信息离开视窗时，标题显示耳号 + 牧场 + 牛舍
+  const infoEndRef = useRef<HTMLDivElement>(null);
   const [showTitleId, setShowTitleId] = useState(false);
   useEffect(() => {
-    const el = idRef.current;
+    const el = infoEndRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => setShowTitleId(!entry.isIntersecting),
-      { root: null, threshold: 0, rootMargin: "-56px 0px 0px 0px" }
+      { root: null, threshold: 0, rootMargin: "-48px 0px 0px 0px" }
     );
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
   return (
-    <MobileShell title={showTitleId ? `#${a.id}` : ""} back hideTabBar headerTone="brand">
+    <MobileShell
+      title={showTitleId ? `#${a.id} · ${a.farm} · ${a.barn}` : ""}
+      back
+      hideTabBar
+      headerTone="brand"
+    >
       <div className="pb-28">
         {/* 头部 */}
         <div className="-mt-px">
@@ -136,7 +141,7 @@ function AnimalDetailPage() {
             {/* 标题行 */}
             <div className="relative flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <div ref={idRef} className="text-[26px] font-mono font-semibold leading-none tracking-tight">
+                <div className="text-[26px] font-mono font-semibold leading-none tracking-tight">
                   #{a.id}
                 </div>
                 <div className="mt-2 inline-flex items-center gap-1 text-caption opacity-90">
@@ -166,7 +171,8 @@ function AnimalDetailPage() {
                 <HeaderInfo label="品种" value={a.breed} />
                 <HeaderInfo label="类别" value={a.type} />
                 <HeaderInfo label={a.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
-              </div>
+            </div>
+            <div ref={infoEndRef} />
               <div className="grid grid-cols-3 divide-x divide-white/10">
                 <HeaderInfo label="泌乳天数" value={`${a.lactationDays} 天`} />
                 <HeaderInfo label="怀孕天数" value={a.pregnancyDays > 0 ? `${a.pregnancyDays} 天` : "—"} />
