@@ -747,7 +747,7 @@ function HealthTrendChart() {
   return (
     <div className="mt-3 rounded-xl border border-border bg-card p-3">
       <div className="flex items-center justify-between">
-        <div className="text-body font-medium text-foreground">近 6 月健康趋势</div>
+        <div className="text-body font-medium text-foreground">健康趋势</div>
       </div>
       <div className="mt-2 flex items-center gap-3 text-caption text-text-secondary">
         <span className="inline-flex items-center gap-1">
