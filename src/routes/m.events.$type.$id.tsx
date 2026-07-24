@@ -517,6 +517,8 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [urineph, setUrineph] = useState("");
   const [pregnancy, setPregnancy] = useState<"有" | "无" | null>(null);
   const [note, setNote] = useState("");
+  const [media, setMedia] = useState<number[]>([]);
+
 
   const toggle = (k: ExamKey) => setActive((s) => ({ ...s, [k]: !s[k] }));
   const chosenKeys = (Object.keys(active) as ExamKey[]).filter((k) => active[k]);
@@ -621,6 +623,13 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
             </Field>
           )}
 
+
+          <Field label="现场影像">
+            <MediaGrid items={media} setItems={setMedia} />
+            <div className="text-caption text-text-tertiary mt-1">可拍摄或上传照片 / 视频</div>
+          </Field>
+
+
           <Field label="备注">
             <textarea
               value={note}
@@ -630,6 +639,7 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
               placeholder="补充说明"
             />
           </Field>
+
         </div>
       </div>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
