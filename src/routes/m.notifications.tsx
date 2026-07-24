@@ -30,7 +30,7 @@ type Cat = "system" | "workorder" | "platform" | "lab";
 type LabInfo = {
   earTag: string; // #nn-nn-nnnn
   project: string;
-  result: "阴性" | "阳性";
+  result: "阴性" | "阳性" | "合格" | "不合格";
   conclusion: string;
   submitter: string;
   submittedAt: string; // yyyy-mm-dd hh:mm
