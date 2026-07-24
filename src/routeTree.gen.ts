@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as WarehouseRouteImport } from './routes/warehouse'
+import { Route as StatsRouteImport } from './routes/stats'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProductionRouteImport } from './routes/production'
 import { Route as OrganizationRouteImport } from './routes/organization'
@@ -96,6 +97,11 @@ const WorkspaceRoute = WorkspaceRouteImport.update({
 const WarehouseRoute = WarehouseRouteImport.update({
   id: '/warehouse',
   path: '/warehouse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -492,6 +498,7 @@ export interface FileRoutesByFullPath {
   '/organization': typeof OrganizationRouteWithChildren
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
+  '/stats': typeof StatsRoute
   '/warehouse': typeof WarehouseRouteWithChildren
   '/workspace': typeof WorkspaceRoute
   '/archive/barn': typeof ArchiveBarnRoute
@@ -568,6 +575,7 @@ export interface FileRoutesByTo {
   '/feedback': typeof FeedbackRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
   '/login': typeof LoginRoute
+  '/stats': typeof StatsRoute
   '/workspace': typeof WorkspaceRoute
   '/archive/barn': typeof ArchiveBarnRoute
   '/archive/cattle': typeof ArchiveCattleRoute
@@ -648,6 +656,7 @@ export interface FileRoutesById {
   '/organization': typeof OrganizationRouteWithChildren
   '/production': typeof ProductionRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
+  '/stats': typeof StatsRoute
   '/warehouse': typeof WarehouseRouteWithChildren
   '/workspace': typeof WorkspaceRoute
   '/archive/barn': typeof ArchiveBarnRoute
@@ -730,6 +739,7 @@ export interface FileRouteTypes {
     | '/organization'
     | '/production'
     | '/settings'
+    | '/stats'
     | '/warehouse'
     | '/workspace'
     | '/archive/barn'
@@ -806,6 +816,7 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/knowledge'
     | '/login'
+    | '/stats'
     | '/workspace'
     | '/archive/barn'
     | '/archive/cattle'
@@ -885,6 +896,7 @@ export interface FileRouteTypes {
     | '/organization'
     | '/production'
     | '/settings'
+    | '/stats'
     | '/warehouse'
     | '/workspace'
     | '/archive/barn'
@@ -966,6 +978,7 @@ export interface RootRouteChildren {
   OrganizationRoute: typeof OrganizationRouteWithChildren
   ProductionRoute: typeof ProductionRouteWithChildren
   SettingsRoute: typeof SettingsRouteWithChildren
+  StatsRoute: typeof StatsRoute
   WarehouseRoute: typeof WarehouseRouteWithChildren
   WorkspaceRoute: typeof WorkspaceRoute
 }
@@ -984,6 +997,13 @@ declare module '@tanstack/react-router' {
       path: '/warehouse'
       fullPath: '/warehouse'
       preLoaderRoute: typeof WarehouseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -1741,6 +1761,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrganizationRoute: OrganizationRouteWithChildren,
   ProductionRoute: ProductionRouteWithChildren,
   SettingsRoute: SettingsRouteWithChildren,
+  StatsRoute: StatsRoute,
   WarehouseRoute: WarehouseRouteWithChildren,
   WorkspaceRoute: WorkspaceRoute,
 }
