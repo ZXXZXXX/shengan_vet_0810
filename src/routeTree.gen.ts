@@ -17,6 +17,7 @@ import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as MRouteImport } from './routes/m'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
@@ -125,6 +126,11 @@ const LoginRoute = LoginRouteImport.update({
 const KnowledgeRoute = KnowledgeRouteImport.update({
   id: '/knowledge',
   path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedbackRoute = FeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchiveRoute = ArchiveRouteImport.update({
@@ -479,6 +485,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/archive': typeof ArchiveRouteWithChildren
+  '/feedback': typeof FeedbackRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
   '/login': typeof LoginRoute
   '/m': typeof MRouteWithChildren
@@ -558,6 +565,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/archive': typeof ArchiveRouteWithChildren
+  '/feedback': typeof FeedbackRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
   '/login': typeof LoginRoute
   '/workspace': typeof WorkspaceRoute
@@ -633,6 +641,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/archive': typeof ArchiveRouteWithChildren
+  '/feedback': typeof FeedbackRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
   '/login': typeof LoginRoute
   '/m': typeof MRouteWithChildren
@@ -714,6 +723,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/archive'
+    | '/feedback'
     | '/knowledge'
     | '/login'
     | '/m'
@@ -793,6 +803,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/archive'
+    | '/feedback'
     | '/knowledge'
     | '/login'
     | '/workspace'
@@ -867,6 +878,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/archive'
+    | '/feedback'
     | '/knowledge'
     | '/login'
     | '/m'
@@ -947,6 +959,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   ArchiveRoute: typeof ArchiveRouteWithChildren
+  FeedbackRoute: typeof FeedbackRoute
   KnowledgeRoute: typeof KnowledgeRouteWithChildren
   LoginRoute: typeof LoginRoute
   MRoute: typeof MRouteWithChildren
@@ -1013,6 +1026,13 @@ declare module '@tanstack/react-router' {
       path: '/knowledge'
       fullPath: '/knowledge'
       preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feedback': {
+      id: '/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof FeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/archive': {
@@ -1714,6 +1734,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   ArchiveRoute: ArchiveRouteWithChildren,
+  FeedbackRoute: FeedbackRoute,
   KnowledgeRoute: KnowledgeRouteWithChildren,
   LoginRoute: LoginRoute,
   MRoute: MRouteWithChildren,
@@ -1726,13 +1747,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
