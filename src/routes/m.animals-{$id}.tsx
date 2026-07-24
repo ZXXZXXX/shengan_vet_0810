@@ -371,7 +371,7 @@ function AnimalDetailPage() {
             <div className="p-3 space-y-2">
               <RecordOption
                 icon={<Baby className="h-5 w-5" />}
-                title="产犊"
+                title="产犊记录"
                 desc="记录本次分娩情况：犊牛、难产、产后处置"
                 onClick={() => {
                   setRecordOpen(false);
@@ -380,7 +380,7 @@ function AnimalDetailPage() {
               />
               <RecordOption
                 icon={<ArrowRightLeft className="h-5 w-5" />}
-                title="转栏"
+                title="转栏/转群"
                 desc="调整所在牛舍 / 栏位"
                 onClick={() => {
                   setRecordOpen(false);
@@ -391,7 +391,7 @@ function AnimalDetailPage() {
               />
               <RecordOption
                 icon={<LogOut className="h-5 w-5" />}
-                title="离场"
+                title="离场记录"
                 desc="淘汰、死亡、出售等离场事件"
                 onClick={() => {
                   setRecordOpen(false);
