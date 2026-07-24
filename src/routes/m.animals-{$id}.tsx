@@ -111,22 +111,27 @@ function AnimalDetailPage() {
 
   const ageLabel = a.ageDays > 90 ? `${Math.floor(a.ageDays / 30)} 月龄` : `${a.ageDays} 日龄`;
 
-  // 滚动到 ID 消失时，标题显示耳号
-  const idRef = useRef<HTMLDivElement>(null);
+  // 滚动到基础信息离开视窗时，标题显示耳号 + 牧场 + 牛舍
+  const infoEndRef = useRef<HTMLDivElement>(null);
   const [showTitleId, setShowTitleId] = useState(false);
   useEffect(() => {
-    const el = idRef.current;
+    const el = infoEndRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => setShowTitleId(!entry.isIntersecting),
-      { root: null, threshold: 0, rootMargin: "-56px 0px 0px 0px" }
+      { root: null, threshold: 0, rootMargin: "-48px 0px 0px 0px" }
     );
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
   return (
-    <MobileShell title={showTitleId ? `#${a.id}` : ""} back hideTabBar headerTone="brand">
+    <MobileShell
+      title={showTitleId ? `#${a.id} · ${a.farm} · ${a.barn}` : ""}
+      back
+      hideTabBar
+      headerTone="brand"
+    >
       <div className="pb-28">
         {/* 头部 */}
         <div className="-mt-px">
