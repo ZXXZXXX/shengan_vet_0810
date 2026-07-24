@@ -107,7 +107,7 @@ function AnimalDetailPage() {
     setTransferReasons([]);
   };
 
-  const [tab, setTab] = useState<"diagnoses" | "meds" | "moves">("diagnoses");
+  const [tab, setTab] = useState<"diagnoses" | "meds" | "moves" | "tests">("diagnoses");
 
   const ageLabel = a.ageDays > 90 ? `${Math.floor(a.ageDays / 30)} 月龄` : `${a.ageDays} 日龄`;
 
