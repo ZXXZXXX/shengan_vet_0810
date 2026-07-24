@@ -128,9 +128,7 @@ function AnimalDevicePage() {
   const initialOpen = kind ? list[0]?.id ?? null : list[0]?.id ?? null;
   const [expanded, setExpanded] = useState<string | null>(initialOpen);
 
-  const title = kind
-    ? `#${id} · ${list[0]?.name.split(" · ")[0] ?? "外接设备"}`
-    : `#${id} · 全部外接设备`;
+  const title = "外接设备";
 
   return (
     <MobileShell title={title} back hideTabBar>
