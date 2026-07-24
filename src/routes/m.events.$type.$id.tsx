@@ -172,7 +172,20 @@ type Calf = {
   media: number[];
 };
 
-const BREEDS = ["荷斯坦", "西门塔尔", "娟姗牛", "安格斯"];
+const BREEDS = [
+  "荷斯坦",
+  "西门塔尔",
+  "娟姗牛",
+  "安格斯",
+  "利木赞",
+  "夏洛莱",
+  "海福特",
+  "和牛",
+  "婆罗门",
+  "秦川牛",
+  "鲁西黄牛",
+  "南阳牛",
+];
 
 function newCalf(index: number): Calf {
   const yy = String(new Date().getFullYear()).slice(2);
