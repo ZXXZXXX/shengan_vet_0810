@@ -260,11 +260,18 @@ function NotificationsPage() {
     setOpenId(id);
   };
 
-  const goDetail = () => {
-    if (current?.link) {
-      const link = current.link;
+  const markUnread = (id: string) => {
+    setMsgs((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, unread: true } : m)),
+    );
+    setOpenId(null);
+  };
+
+  const goJump = () => {
+    if (current?.jump) {
+      const path = jumpToPath(current.jump);
       setOpenId(null);
-      navigate({ to: link });
+      navigate({ to: path });
     }
   };
 
