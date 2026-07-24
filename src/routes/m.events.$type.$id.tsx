@@ -168,9 +168,20 @@ type Calf = {
   status: "正常" | "死胎" | "";
   weight: string;
   keep: "留养" | "不留养" | "";
+  targetBarn: string;
   reason: string;
   media: number[];
 };
+
+const CALF_BARNS = [
+  "犊牛岛 A 区",
+  "犊牛岛 B 区",
+  "犊牛岛 C 区",
+  "1 号犊牛舍",
+  "2 号犊牛舍",
+  "3 号犊牛舍",
+  "断奶过渡舍",
+];
 
 const BREEDS = [
   "荷斯坦",
