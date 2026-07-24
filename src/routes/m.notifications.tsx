@@ -355,26 +355,35 @@ function NotificationsPage() {
       <Sheet open={!!current} onOpenChange={(o) => !o && setOpenId(null)}>
         <SheetContent
           side="bottom"
-          className="rounded-t-2xl p-0 h-[80vh] flex flex-col bg-white"
+          className="rounded-t-2xl p-0 h-[80vh] flex flex-col bg-white [&>button.absolute]:hidden"
         >
           {current && (
             <>
               <SheetHeader className="px-4 pt-4 pb-3 border-b border-border text-left">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                  <span
-                    className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${META[current.cat].tone}`}
+                    <span
+                      className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${META[current.cat].tone}`}
+                    >
+                      {(() => {
+                        const I = META[current.cat].icon;
+                        return <I className="h-4 w-4" strokeWidth={1.75} />;
+                      })()}
+                    </span>
+                    <span
+                      className={`text-caption ${META[current.cat].tone.split(" ")[1]}`}
+                    >
+                      {META[current.cat].label}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => markUnread(current.id)}
+                    className="inline-flex items-center gap-1 h-8 px-2.5 rounded-md text-caption text-text-secondary hover:bg-surface-subtle active:bg-surface-subtle"
                   >
-                    {(() => {
-                      const I = META[current.cat].icon;
-                      return <I className="h-4 w-4" strokeWidth={1.75} />;
-                    })()}
-                  </span>
-                  <span
-                    className={`text-caption ${META[current.cat].tone.split(" ")[1]}`}
-                  >
-                    {META[current.cat].label}
-                  </span>
+                    <MailQuestion className="h-3.5 w-3.5" strokeWidth={1.75} />
+                    标记为未读
+                  </button>
                 </div>
                 <SheetTitle className="text-left text-base mt-2">
                   {current.title}
