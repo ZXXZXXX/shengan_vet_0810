@@ -10,6 +10,7 @@ import {
   FlaskConical,
   ImageIcon,
   MailQuestion,
+  Stethoscope,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
