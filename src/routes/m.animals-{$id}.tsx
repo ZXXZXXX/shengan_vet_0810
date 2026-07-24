@@ -87,26 +87,8 @@ function AnimalDetailPage() {
   // 记录 sheet
   const [recordOpen, setRecordOpen] = useState(false);
 
-  // 转栏
-  const [transferOpen, setTransferOpen] = useState(false);
-  const [transferEnabled, setTransferEnabled] = useState(true);
-  const [transferTo, setTransferTo] = useState("");
-  const [transferPickerOpen, setTransferPickerOpen] = useState(false);
-  const [transferReasons, setTransferReasons] = useState<string[]>([]);
-  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
 
-  const handleTransferSubmit = () => {
-    if (!transferTo) return toast.error("请选择转入栏舍");
-    if (transferReasons.length === 0) return toast.error("请选择或输入转栏原因");
-    setTransferConfirmOpen(true);
-  };
-  const handleTransferConfirm = () => {
-    setTransferConfirmOpen(false);
-    setTransferOpen(false);
-    toast.success(`已转至 ${transferTo}`);
-    setTransferTo("");
-    setTransferReasons([]);
-  };
+
 
   const [tab, setTab] = useState<"diagnoses" | "meds" | "moves" | "tests">("diagnoses");
 
