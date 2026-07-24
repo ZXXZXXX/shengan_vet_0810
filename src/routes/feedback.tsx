@@ -344,11 +344,12 @@ function FeedbackAdminPage() {
                         variant="outline"
                         className={`h-7 px-2 text-caption ${
                           r.verdict === "invalid"
-                            ? "bg-text-secondary border-text-secondary text-white hover:bg-text-secondary hover:text-white"
+                            ? "border-transparent text-white hover:text-white"
                             : r.verdict === "valuable"
                             ? "opacity-40"
                             : ""
                         }`}
+                        style={r.verdict === "invalid" ? { backgroundColor: "var(--text-secondary)" } : undefined}
                         onClick={() => requestMark(r.id, r.verdict, "invalid")}
                       >
                         <ThumbsDown className="h-3 w-3 mr-1" /> 无价值
@@ -434,11 +435,12 @@ function FeedbackAdminPage() {
                   variant="outline"
                   className={`h-9 ${
                     detail.verdict === "invalid"
-                      ? "bg-text-secondary border-text-secondary text-white hover:bg-text-secondary hover:text-white"
+                      ? "border-transparent text-white hover:text-white"
                       : detail.verdict === "valuable"
                       ? "opacity-40"
                       : ""
                   }`}
+                  style={detail.verdict === "invalid" ? { backgroundColor: "var(--text-secondary)" } : undefined}
                   onClick={() => requestMark(detail.id, detail.verdict, "invalid")}
                 >
                   <ThumbsDown className="h-3.5 w-3.5 mr-1.5" />
