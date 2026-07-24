@@ -98,7 +98,7 @@ const MSGS: Msg[] = [
     desc: "平台已下发 IMM-0529 免疫工单，覆盖 1/3/5 号舍共 128 头牛只，计划今日 14:00 执行。",
     time: "30 分钟前",
     ts: 30,
-    jump: { kind: "workorder", id: "IMM-0529" },
+    jump: { kind: "orderList" },
     unread: true,
   },
   {
@@ -108,7 +108,7 @@ const MSGS: Msg[] = [
     desc: "平台已下发 HOOF-0528 修蹄工单，涉及 2 号舍 18 头泌乳牛，计划本周内完成。",
     time: "1 小时前",
     ts: 60,
-    jump: { kind: "workorder", id: "HOOF-0528" },
+    jump: { kind: "orderList" },
     unread: true,
   },
   {
@@ -118,7 +118,7 @@ const MSGS: Msg[] = [
     desc: "平台已下发 BRE-0527 繁育工单，覆盖 4 号舍 22 头空怀牛只。",
     time: "昨天 09:10",
     ts: 60 * 14,
-    jump: { kind: "workorder", id: "BRE-0527" },
+    jump: { kind: "orderList" },
   },
 
   // ===== 系统类：更新事项、权限变更、角色变更 =====
