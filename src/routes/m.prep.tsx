@@ -30,6 +30,8 @@ import {
   homeTasks,
   diseaseTaskMeta,
   typeMeta,
+  taskContentByChip,
+  taskChipStyle,
   type HomeTask,
 } from "./m.homepage";
 import { useRole } from "@/lib/mobile-role";
