@@ -287,7 +287,11 @@ function FeedbackAdminPage() {
                 </TableRow>
               )}
               {filtered.map((r) => (
-                <TableRow key={r.id} className="hover:bg-surface-subtle/40">
+                <TableRow
+                  key={r.id}
+                  className="cursor-pointer hover:bg-[#F1F5F9] transition-colors"
+                  onClick={() => setDetail(r)}
+                >
                   <TableCell className="font-mono text-caption text-text-secondary">{r.id}</TableCell>
                   <TableCell><Stars n={r.rating} /></TableCell>
                   <TableCell><Badge variant="secondary" className="font-normal">{r.topic}</Badge></TableCell>
