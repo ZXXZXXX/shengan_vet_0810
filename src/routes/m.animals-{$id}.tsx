@@ -542,7 +542,7 @@ function RecordOption({
 
 /* 产奶趋势图 */
 function MilkChart() {
-  // 7 天 * 3 班次，按时间顺序连成一条线
+  // 7 天 * 3 班次，每个班次一条线
   const days = ["05-23", "05-24", "05-25", "05-26", "05-27", "05-28", "05-29"];
   const shiftMeta = [
     { name: "早班", color: "var(--primary)" },
@@ -558,10 +558,8 @@ function MilkChart() {
     [12.3, 10.7, 9.4],
     [12.6, 11.1, 9.8],
   ];
-  // 按时间顺序展开为点列表
-  const points = raw.flatMap((day, di) =>
-    day.map((v, si) => ({ v, day: days[di], shift: si, di, si }))
-  );
+  // 按班次分组
+  const series = shiftMeta.map((_, si) => raw.map((day) => day[si]));
 
   const W = 320;
   const H = 140;
@@ -569,27 +567,16 @@ function MilkChart() {
   const PAD_R = 8;
   const PAD_T = 8;
   const PAD_B = 22;
-  const all = points.map((p) => p.v);
+  const all = raw.flat();
   const min = Math.floor(Math.min(...all) - 1);
   const max = Math.ceil(Math.max(...all) + 1);
-  const xStep = (W - PAD_L - PAD_R) / (points.length - 1);
+  const xStep = (W - PAD_L - PAD_R) / (days.length - 1);
   const yFor = (v: number) => PAD_T + (H - PAD_T - PAD_B) * (1 - (v - min) / (max - min));
   const xFor = (i: number) => PAD_L + i * xStep;
-
-  const pathD = points.map((p, i) => `${i === 0 ? "M" : "L"}${xFor(i)},${yFor(p.v)}`).join(" ");
-  const areaD =
-    pathD +
-    ` L${xFor(points.length - 1)},${H - PAD_B} L${xFor(0)},${H - PAD_B} Z`;
 
   return (
     <div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[140px]">
-        <defs>
-          <linearGradient id="milkArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
         {/* Y grid */}
         {[0, 0.5, 1].map((t) => {
           const y = PAD_T + (H - PAD_T - PAD_B) * t;
@@ -601,29 +588,31 @@ function MilkChart() {
             </g>
           );
         })}
-        {/* 连续折线 + 面积 */}
-        <path d={areaD} fill="url(#milkArea)" />
-        <path d={pathD} fill="none" stroke="var(--primary)" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-        {/* 班次分色圆点 */}
-        {points.map((p, i) => (
-          <circle key={i} cx={xFor(i)} cy={yFor(p.v)} r="2.2" fill={shiftMeta[p.si].color} />
-        ))}
-        {/* X labels：每天只标一次（居中于三个点） */}
-        {days.map((d, di) => {
-          const centerIdx = di * 3 + 1;
+        {/* 三条班次折线 */}
+        {series.map((vals, si) => {
+          const d = vals.map((v, i) => `${i === 0 ? "M" : "L"}${xFor(i)},${yFor(v)}`).join(" ");
           return (
-            <text
-              key={d}
-              x={xFor(centerIdx)}
-              y={H - 6}
-              fontSize="9"
-              fill="var(--text-tertiary)"
-              textAnchor="middle"
-            >
-              {d.slice(3)}
-            </text>
+            <g key={si}>
+              <path d={d} fill="none" stroke={shiftMeta[si].color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+              {vals.map((v, i) => (
+                <circle key={i} cx={xFor(i)} cy={yFor(v)} r="2.2" fill={shiftMeta[si].color} />
+              ))}
+            </g>
           );
         })}
+        {/* X labels */}
+        {days.map((d, di) => (
+          <text
+            key={d}
+            x={xFor(di)}
+            y={H - 6}
+            fontSize="9"
+            fill="var(--text-tertiary)"
+            textAnchor="middle"
+          >
+            {d.slice(3)}
+          </text>
+        ))}
       </svg>
       <div className="flex items-center justify-center gap-4 mt-1">
         {shiftMeta.map((s) => (
@@ -636,6 +625,7 @@ function MilkChart() {
     </div>
   );
 }
+
 
 
 type MedRecord = {
