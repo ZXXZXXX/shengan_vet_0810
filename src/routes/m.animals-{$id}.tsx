@@ -559,7 +559,7 @@ function MilkChart() {
   // 7 天 * 3 班次，每个班次一条线
   const days = ["05-23", "05-24", "05-25", "05-26", "05-27", "05-28", "05-29"];
   const shiftMeta = [
-    { name: "早班", color: "var(--primary)" },
+    { name: "早班", color: "#00A14F" },
     { name: "中班", color: "#FFB020" },
     { name: "晚班", color: "#5B8FF9" },
   ];
