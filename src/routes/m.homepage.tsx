@@ -25,6 +25,8 @@ import {
   CheckCircle2,
   PlayCircle,
   Clock,
+  DoorOpen,
+  Truck,
 } from "lucide-react";
 import tasksDoneCelebrateAsset from "@/assets/today-task-complete-sparkles.svg.asset.json";
 const tasksDoneCelebrate = tasksDoneCelebrateAsset.url;
