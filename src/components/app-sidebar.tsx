@@ -7,8 +7,10 @@ import {
   Pill,
   BookOpen,
   FolderArchive,
+  MessageSquare,
   ChevronDown,
 } from "lucide-react";
+
 
 import {
   Sidebar,
@@ -90,6 +92,11 @@ const groups: NavGroup[] = [
       { title: "角色管理", url: "/organization/role" },
       { title: "租户管理", url: "/organization/tenant" },
     ],
+  },
+  {
+    title: "反馈管理",
+    icon: MessageSquare,
+    url: "/feedback",
   },
 ];
 
