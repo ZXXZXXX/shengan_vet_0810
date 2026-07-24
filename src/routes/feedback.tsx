@@ -301,16 +301,16 @@ function FeedbackAdminPage() {
                     <div className="inline-flex gap-1.5">
                       <Button
                         size="sm"
-                        variant={r.verdict === "valuable" ? "default" : "outline"}
-                        className={`h-7 px-2 text-caption ${r.verdict === "valuable" ? "bg-primary hover:bg-[var(--brand-hover)]" : ""}`}
+                        variant="outline"
+                        className={`h-7 px-2 text-caption ${r.verdict === "valuable" ? "bg-primary border-primary text-primary-foreground hover:bg-[var(--brand-hover)] hover:text-primary-foreground" : ""}`}
                         onClick={() => mark(r.id, r.verdict === "valuable" ? null : "valuable")}
                       >
                         <ThumbsUp className="h-3 w-3 mr-1" /> 有价值
                       </Button>
                       <Button
                         size="sm"
-                        variant={r.verdict === "invalid" ? "secondary" : "outline"}
-                        className="h-7 px-2 text-caption"
+                        variant="outline"
+                        className={`h-7 px-2 text-caption ${r.verdict === "invalid" ? "bg-surface-subtle border-text-secondary text-foreground ring-1 ring-inset ring-text-secondary/40" : ""}`}
                         onClick={() => mark(r.id, r.verdict === "invalid" ? null : "invalid")}
                       >
                         <ThumbsDown className="h-3 w-3 mr-1" /> 无价值
@@ -394,14 +394,15 @@ function FeedbackAdminPage() {
               <div className="px-6 py-3 border-t border-border flex items-center justify-end gap-2">
                 <Button
                   variant="outline"
-                  className="h-9"
+                  className={`h-9 ${detail.verdict === "invalid" ? "bg-surface-subtle border-text-secondary text-foreground ring-1 ring-inset ring-text-secondary/40" : ""}`}
                   onClick={() => mark(detail.id, detail.verdict === "invalid" ? null : "invalid")}
                 >
                   <ThumbsDown className="h-3.5 w-3.5 mr-1.5" />
                   {detail.verdict === "invalid" ? "取消无价值" : "标为无价值"}
                 </Button>
                 <Button
-                  className="h-9 bg-primary hover:bg-[var(--brand-hover)]"
+                  variant="outline"
+                  className={`h-9 ${detail.verdict === "valuable" ? "bg-primary border-primary text-primary-foreground hover:bg-[var(--brand-hover)] hover:text-primary-foreground" : ""}`}
                   onClick={() => mark(detail.id, detail.verdict === "valuable" ? null : "valuable")}
                 >
                   <ThumbsUp className="h-3.5 w-3.5 mr-1.5" />
