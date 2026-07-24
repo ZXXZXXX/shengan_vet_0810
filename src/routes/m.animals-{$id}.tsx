@@ -401,9 +401,7 @@ function AnimalDetailPage() {
                 desc="调整所在牛舍 / 栏位"
                 onClick={() => {
                   setRecordOpen(false);
-                  setTransferEnabled(true);
-                  setTransferTo("");
-                  setTransferOpen(true);
+                  navigate({ to: "/m/events/$type/$id", params: { type: "transfer", id: a.id } });
                 }}
               />
               <RecordOption
