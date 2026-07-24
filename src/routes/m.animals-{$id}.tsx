@@ -21,23 +21,8 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { TransferBarnControl } from "@/components/m/transfer-barn-control";
-import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
-import { TagPicker } from "@/components/m/tag-picker";
-import { toast } from "sonner";
 
-const TRANSFER_REASONS = [
-  "泌乳阶段调整",
-  "干奶转入",
-  "产前转入产房",
-  "产后转出",
-  "并群优化",
-  "隔离治疗",
-  "康复转出",
-  "淘汰待售",
-  "栏舍维修",
-  "饲养密度调整",
-];
+
 
 export const Route = createFileRoute("/m/animals-{$id}")({
   head: () => ({ meta: [{ title: "牛只详情 · 奇点智牧" }] }),
