@@ -411,13 +411,13 @@ function ScoreRow({
   const items: number[] = [];
   for (let i = min; i <= max; i++) items.push(i);
   return (
-    <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0,1fr))` }}>
+    <div className="flex flex-wrap gap-2">
       {items.map((n) => (
         <button
           key={n}
           type="button"
           onClick={() => onChange(n)}
-          className={`h-11 rounded-lg text-body-sm ${
+          className={`w-10 h-10 shrink-0 rounded-full text-body-sm inline-flex items-center justify-center ${
             value === n ? "bg-primary text-primary-foreground" : "bg-card border border-border text-text-secondary"
           }`}
         >
