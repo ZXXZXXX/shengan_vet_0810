@@ -428,16 +428,28 @@ function FeedbackAdminPage() {
               <div className="px-6 py-3 border-t border-border flex items-center justify-end gap-2">
                 <Button
                   variant="outline"
-                  className={`h-9 ${detail.verdict === "invalid" ? "bg-surface-subtle border-text-secondary text-foreground ring-1 ring-inset ring-text-secondary/40" : ""}`}
-                  onClick={() => mark(detail.id, detail.verdict === "invalid" ? null : "invalid")}
+                  className={`h-9 ${
+                    detail.verdict === "invalid"
+                      ? "bg-surface-subtle border-text-secondary text-foreground ring-1 ring-inset ring-text-secondary/40"
+                      : detail.verdict === "valuable"
+                      ? "opacity-40"
+                      : ""
+                  }`}
+                  onClick={() => requestMark(detail.id, detail.verdict, "invalid")}
                 >
                   <ThumbsDown className="h-3.5 w-3.5 mr-1.5" />
                   {detail.verdict === "invalid" ? "取消无价值" : "标为无价值"}
                 </Button>
                 <Button
                   variant="outline"
-                  className={`h-9 ${detail.verdict === "valuable" ? "bg-primary border-primary text-primary-foreground hover:bg-[var(--brand-hover)] hover:text-primary-foreground" : ""}`}
-                  onClick={() => mark(detail.id, detail.verdict === "valuable" ? null : "valuable")}
+                  className={`h-9 ${
+                    detail.verdict === "valuable"
+                      ? "bg-primary border-primary text-primary-foreground hover:bg-[var(--brand-hover)] hover:text-primary-foreground"
+                      : detail.verdict === "invalid"
+                      ? "opacity-40"
+                      : ""
+                  }`}
+                  onClick={() => requestMark(detail.id, detail.verdict, "valuable")}
                 >
                   <ThumbsUp className="h-3.5 w-3.5 mr-1.5" />
                   {detail.verdict === "valuable" ? "取消有价值" : "标为有价值"}
