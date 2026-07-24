@@ -153,8 +153,8 @@ function MHomePage() {
           <SectionTitle
             title="今日任务"
             hint={`共计 ${getTaskCount(role)} 项`}
-            to="/m/health/today"
           />
+
           <TodayTaskList role={role} />
         </section>
       )}
