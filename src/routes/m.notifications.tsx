@@ -112,15 +112,6 @@ const MSGS: Msg[] = [
     jump: { kind: "orderList" },
     unread: true,
   },
-  {
-    id: "p3",
-    cat: "platform",
-    title: "繁育工单：同期发情处理",
-    desc: "平台已下发 BRE-0527 繁育工单，覆盖 4 号舍 22 头空怀牛只。",
-    time: "昨天 09:10",
-    ts: 60 * 14,
-    jump: { kind: "orderList" },
-  },
 
   // ===== 系统类：更新事项、权限变更、角色变更 =====
   {
