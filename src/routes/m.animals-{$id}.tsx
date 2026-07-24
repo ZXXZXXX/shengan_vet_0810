@@ -141,7 +141,7 @@ function AnimalDetailPage() {
             {/* 标题行 */}
             <div className="relative flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <div ref={idRef} className="text-[26px] font-mono font-semibold leading-none tracking-tight">
+                <div className="text-[26px] font-mono font-semibold leading-none tracking-tight">
                   #{a.id}
                 </div>
                 <div className="mt-2 inline-flex items-center gap-1 text-caption opacity-90">
