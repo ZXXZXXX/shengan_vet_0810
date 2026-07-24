@@ -517,6 +517,8 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [urineph, setUrineph] = useState("");
   const [pregnancy, setPregnancy] = useState<"有" | "无" | null>(null);
   const [note, setNote] = useState("");
+  const [media, setMedia] = useState<number[]>([]);
+
 
   const toggle = (k: ExamKey) => setActive((s) => ({ ...s, [k]: !s[k] }));
   const chosenKeys = (Object.keys(active) as ExamKey[]).filter((k) => active[k]);
