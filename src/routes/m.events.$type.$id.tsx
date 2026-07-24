@@ -363,9 +363,28 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="性别" required>
                     <div className="grid grid-cols-2 gap-2">
-                      {(["母", "公"] as const).map((k) => (
-                        <ChoiceBtn key={k} label={k} active={c.sex === k} onClick={() => updateCalf(idx, { sex: k })} />
-                      ))}
+                      {(["母", "公"] as const).map((k) => {
+                        const active = c.sex === k;
+                        return (
+                          <button
+                            key={k}
+                            type="button"
+                            onClick={() => updateCalf(idx, { sex: k })}
+                            className={`w-full h-11 px-2 inline-flex items-center gap-2 text-body-sm text-left ${
+                              active ? "text-foreground" : "text-text-secondary"
+                            }`}
+                          >
+                            <span
+                              className={`w-4 h-4 rounded-full border inline-flex items-center justify-center shrink-0 ${
+                                active ? "border-primary" : "border-border"
+                              }`}
+                            >
+                              {active && <span className="w-2 h-2 rounded-full bg-primary" />}
+                            </span>
+                            <span className={active ? "font-medium" : ""}>{k}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </Field>
                   <Field label="犊牛体重 (kg)" required>
