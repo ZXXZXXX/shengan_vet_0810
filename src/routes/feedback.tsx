@@ -202,15 +202,15 @@ function FeedbackAdminPage() {
     );
   };
 
-  const [pending, setPending] = useState<{ id: string; next: Verdict } | null>(null);
+  const [confirming, setConfirming] = useState<{ id: string; next: Verdict } | null>(null);
   const requestMark = (id: string, current: Verdict, next: Verdict) => {
     if (current === next) {
       mark(id, null);
       return;
     }
-    setPending({ id, next });
+    setConfirming({ id, next });
   };
-  const nextLabel = pending?.next === "valuable" ? "有价值" : pending?.next === "invalid" ? "无价值" : "";
+  const nextLabel = confirming?.next === "valuable" ? "有价值" : confirming?.next === "invalid" ? "无价值" : "";
 
   return (
     <>
