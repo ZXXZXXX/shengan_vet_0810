@@ -344,11 +344,12 @@ function FeedbackAdminPage() {
                         variant="outline"
                         className={`h-7 px-2 text-caption ${
                           r.verdict === "invalid"
-                            ? "border-transparent text-white hover:text-white &&BGSEC&&"
+                            ? "border-transparent text-white hover:text-white"
                             : r.verdict === "valuable"
                             ? "opacity-40"
                             : ""
                         }`}
+                        style={r.verdict === "invalid" ? { backgroundColor: "var(--text-secondary)" } : undefined}
                         onClick={() => requestMark(r.id, r.verdict, "invalid")}
                       >
                         <ThumbsDown className="h-3 w-3 mr-1" /> 无价值
