@@ -139,7 +139,7 @@ function VerdictTag({ v }: { v: Verdict }) {
   if (v === "valuable")
     return <span className="tag tag-success">有价值</span>;
   if (v === "invalid")
-    return <span className="tag tag-muted">无价值</span>;
+    return <span className="tag" style={{ backgroundColor: "#F0F2F4", color: "#475569" }}>无价值</span>;
   return <span className="text-caption text-text-tertiary">-</span>;
 }
 
