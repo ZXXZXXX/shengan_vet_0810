@@ -499,8 +499,12 @@ function DiagnosePage() {
       ? [DRYING_DISEASE]
       : diseaseLibrary;
 
-  // 症状（带入上报症状，可加减；产后护理 / 干奶无上报症状）
-  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum || isDrying ? [] : reportedSymptoms));
+  // 症状（带入上报症状；产后护理带入产犊记录映射的症状；干奶无上报症状）
+  const postpartumPrefill = useMemo(
+    () => (isPostpartum ? calvingToSymptoms(CALVING_RECORDS[id.toUpperCase()] ?? { difficulty: 0, injury: 0, calfCount: 1, calfWeightMax: 0, stillbirth: false, preterm: false, retainedPlacenta: false }) : []),
+    [isPostpartum, id],
+  );
+  const [symptoms, setSymptoms] = useState<string[]>(() => (isPostpartum ? postpartumPrefill : isDrying ? [] : reportedSymptoms));
   const [symptomInput, setSymptomInput] = useState("");
 
   // 疾病
