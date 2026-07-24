@@ -583,7 +583,7 @@ function TodayTaskList({ role }: { role: Role }) {
             <div
               key={t.id}
               aria-hidden
-              className="relative rounded-2xl border border-border bg-card overflow-hidden pointer-events-none"
+              className="relative rounded-t-2xl border border-b-0 border-border bg-card overflow-hidden pointer-events-none"
               style={{
                 height: 44,
                 maskImage:
