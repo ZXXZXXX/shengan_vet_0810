@@ -216,7 +216,7 @@ function SearchPage() {
                             <div className="flex-1 min-w-0 text-left">
                               <div className="text-body font-mono text-foreground">#{c.id}</div>
                               <div className="text-caption text-text-tertiary">
-                                {c.barnIdx} 号牛舍 · {c.penIdx} 栏
+                                {c.barnIdx} 号牛舍
                               </div>
                             </div>
                             <span className={statusTone[c.status]}>{c.status}</span>

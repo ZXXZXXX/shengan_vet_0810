@@ -59,7 +59,7 @@ function AnimalDetailPage() {
     id,
     farm: "1 号牧场",
     barn: "3 号牛舍",
-    pen: "B 区 · 12 栏",
+    
     breed: "荷斯坦",
     sex: "母",
     type: "哺乳牛",
@@ -126,7 +126,7 @@ function AnimalDetailPage() {
                 <div className="text-section-title font-mono leading-tight">#{a.id}</div>
                 <div className="mt-1 inline-flex items-center gap-1 text-caption opacity-90 font-medium">
                   <MapPin className="h-3 w-3 opacity-85 shrink-0" />
-                  <span className="truncate">{a.farm} · {a.barn} · {a.pen}</span>
+                  <span className="truncate">{a.farm} · {a.barn}</span>
                 </div>
               </div>
               <div className="shrink-0 flex flex-col items-end gap-1.5">
@@ -408,7 +408,7 @@ function AnimalDetailPage() {
                     当前位置
                   </div>
                   <div className="text-body-sm text-foreground font-medium truncate">
-                    {a.barn} · {a.pen}
+                    {a.barn}
                   </div>
                 </div>
                 <div className={`shrink-0 flex items-center justify-center w-7 ${transferTo ? "text-primary" : "text-text-tertiary"}`}>
