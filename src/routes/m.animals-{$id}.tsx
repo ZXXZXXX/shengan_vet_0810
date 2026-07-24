@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   Beef,
   ClipboardPlus,
@@ -111,8 +111,22 @@ function AnimalDetailPage() {
 
   const ageLabel = a.ageDays > 90 ? `${Math.floor(a.ageDays / 30)} 月龄` : `${a.ageDays} 日龄`;
 
+  // 滚动到 ID 消失时，标题显示耳号
+  const idRef = useRef<HTMLDivElement>(null);
+  const [showTitleId, setShowTitleId] = useState(false);
+  useEffect(() => {
+    const el = idRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setShowTitleId(!entry.isIntersecting),
+      { root: null, threshold: 0, rootMargin: "-56px 0px 0px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <MobileShell title="" back hideTabBar headerTone="brand">
+    <MobileShell title={showTitleId ? `#${a.id}` : ""} back hideTabBar headerTone="brand">
       <div className="pb-28">
         {/* 头部 */}
         <div className="-mt-px">
@@ -122,7 +136,7 @@ function AnimalDetailPage() {
             {/* 标题行 */}
             <div className="relative flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <div className="text-[26px] font-mono font-semibold leading-none tracking-tight">
+                <div ref={idRef} className="text-[26px] font-mono font-semibold leading-none tracking-tight">
                   #{a.id}
                 </div>
                 <div className="mt-2 inline-flex items-center gap-1 text-caption opacity-90">
