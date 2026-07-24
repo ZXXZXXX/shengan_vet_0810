@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { TagPicker } from "@/components/m/tag-picker";
+import { MediaGrid } from "@/components/m/media-grid";
 
 export const Route = createFileRoute("/m/events/$type/$id")({
   head: () => ({ meta: [{ title: "事件记录 · 奇点智牧" }] }),
@@ -155,104 +156,186 @@ function Field({ label, required, children }: { label: string; required?: boolea
 
 const inputCls = "w-full h-11 px-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary";
 
+type Calf = {
+  id: string;
+  earTag: string;
+  birthDate: string;
+  breed: string;
+  sex: "母" | "公" | "";
+  status: "正常" | "死胎" | "";
+  weight: string;
+  keep: "留养" | "不留养" | "";
+  reason: string;
+  media: number[];
+};
+
+const BREEDS = ["荷斯坦", "西门塔尔", "娟姗牛", "安格斯"];
+
+function newCalf(index: number): Calf {
+  const seq = String(index + 1).padStart(3, "0");
+  return {
+    id: `${Date.now()}-${index}`,
+    earTag: `C-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${seq}`,
+    birthDate: new Date().toISOString().slice(0, 10),
+    breed: "",
+    sex: "",
+    status: "",
+    weight: "",
+    keep: "",
+    reason: "",
+    media: [],
+  };
+}
+
 function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-  const [difficulty, setDifficulty] = useState<"顺产" | "助产" | "难产">("顺产");
-  const [calfCount, setCalfCount] = useState("1");
-  const [calfSex, setCalfSex] = useState<"母" | "公" | "混">("母");
-  const [calfWeight, setCalfWeight] = useState("");
-  const [alive, setAlive] = useState<"存活" | "死胎">("存活");
-  const [note, setNote] = useState("");
+  // 系统自动填入（模拟）
+  const pregnancyDays = 278;
+  const semenBreed = "荷斯坦 · 冻精 A-2201";
+  const calvingTime = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const parity = 3;
+
+  const [difficulty, setDifficulty] = useState<number | null>(null);
+  const [injury, setInjury] = useState<number | null>(null);
+  const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
+
+  const updateCalf = (idx: number, patch: Partial<Calf>) =>
+    setCalves((list) => list.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
+  const removeCalf = (idx: number) =>
+    setCalves((list) => (list.length <= 1 ? list : list.filter((_, i) => i !== idx)));
 
   const submit = () => {
-    if (!date) return toast.error("请选择产犊日期");
-    if (!calfWeight) return toast.error("请输入犊牛体重");
+    if (difficulty == null) return toast.error("请选择产犊难易度评分");
+    if (injury == null) return toast.error("请选择产道损伤等级");
+    for (let i = 0; i < calves.length; i++) {
+      const c = calves[i];
+      if (!c.breed) return toast.error(`请选择第 ${i + 1} 头犊牛的品种`);
+      if (!c.sex) return toast.error(`请选择第 ${i + 1} 头犊牛的性别`);
+      if (!c.status) return toast.error(`请选择第 ${i + 1} 头犊牛的分娩状态`);
+      if (!c.weight) return toast.error(`请填写第 ${i + 1} 头犊牛的体重`);
+      if (!c.keep) return toast.error(`请选择第 ${i + 1} 头犊牛是否留养`);
+      if (c.keep === "不留养") {
+        if (c.media.length === 0) return toast.error(`第 ${i + 1} 头犊牛不留养需上传照片或视频`);
+        if (!c.reason.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛不留养原因`);
+      }
+    }
     toast.success("产犊记录已保存");
     onDone();
   };
 
   return (
     <MobileShell title={`#${id} · 产犊记录`} back hideTabBar>
-      <div className="pb-24">
+      <div className="pb-24 px-4 pt-3 space-y-3">
+        {/* ============ 母牛产犊记录 ============ */}
+        <section className="rounded-2xl bg-card border border-border p-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-card-title text-foreground">母牛产犊记录</h3>
+            <span className="text-caption text-text-tertiary">#{id}</span>
+          </div>
 
-        <div className="px-4 mt-4 space-y-4">
-          <Field label="产犊日期" required>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
+          <div className="grid grid-cols-2 gap-x-3 gap-y-3 rounded-xl bg-muted/40 p-3">
+            <AutoField label="怀孕时间" value={`${pregnancyDays} 天`} />
+            <AutoField label="胎次" value={`第 ${parity} 胎`} />
+            <AutoField label="冻精品种" value={semenBreed} />
+            <AutoField label="产犊时间" value={calvingTime} />
+          </div>
+
+          <Field label="产犊难易度评分" required>
+            <ScoreRow max={4} value={difficulty} onChange={setDifficulty} />
+            <div className="text-caption text-text-tertiary mt-1">0 分：无助产　4 分：极难产</div>
           </Field>
-          <Field label="分娩方式" required>
-            <div className="grid grid-cols-3 gap-2">
-              {(["顺产", "助产", "难产"] as const).map((k) => (
+          <Field label="产道损伤等级" required>
+            <ScoreRow min={1} max={3} value={injury} onChange={setInjury} />
+            <div className="text-caption text-text-tertiary mt-1">1 分：轻度　3 分：重度</div>
+          </Field>
+        </section>
+
+        {/* ============ 犊牛登记 ============ */}
+        {calves.map((c, idx) => (
+          <section key={c.id} className="rounded-2xl bg-card border border-border p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-card-title text-foreground">犊牛登记 · {idx + 1}</h3>
+              {calves.length > 1 && (
                 <button
-                  key={k}
                   type="button"
-                  onClick={() => setDifficulty(k)}
-                  className={`h-10 rounded-lg text-body-sm ${
-                    difficulty === k
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-card border border-border text-text-secondary"
-                  }`}
+                  onClick={() => removeCalf(idx)}
+                  className="text-caption text-[var(--state-danger)]"
                 >
-                  {k}
+                  移除
                 </button>
-              ))}
+              )}
             </div>
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="犊牛数量" required>
-              <input type="number" min="1" value={calfCount} onChange={(e) => setCalfCount(e.target.value)} className={inputCls} />
-            </Field>
-            <Field label="性别" required>
-              <div className="grid grid-cols-3 gap-1">
-                {(["母", "公", "混"] as const).map((k) => (
-                  <button
-                    key={k}
-                    type="button"
-                    onClick={() => setCalfSex(k)}
-                    className={`h-11 rounded-lg text-body-sm ${
-                      calfSex === k
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-card border border-border text-text-secondary"
-                    }`}
-                  >
-                    {k}
-                  </button>
+
+            <div className="grid grid-cols-2 gap-x-3 gap-y-3 rounded-xl bg-muted/40 p-3">
+              <AutoField label="牛只耳号" value={c.earTag} mono />
+              <AutoField label="出生日期" value={c.birthDate} />
+            </div>
+
+            <Field label="品种" required>
+              <div className="grid grid-cols-4 gap-2">
+                {BREEDS.map((k) => (
+                  <ChoiceBtn key={k} label={k} active={c.breed === k} onClick={() => updateCalf(idx, { breed: k })} />
                 ))}
               </div>
             </Field>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="性别" required>
+                <div className="grid grid-cols-2 gap-2">
+                  {(["母", "公"] as const).map((k) => (
+                    <ChoiceBtn key={k} label={k} active={c.sex === k} onClick={() => updateCalf(idx, { sex: k })} />
+                  ))}
+                </div>
+              </Field>
+              <Field label="分娩状态" required>
+                <div className="grid grid-cols-2 gap-2">
+                  {(["正常", "死胎"] as const).map((k) => (
+                    <ChoiceBtn key={k} label={k} active={c.status === k} onClick={() => updateCalf(idx, { status: k })} />
+                  ))}
+                </div>
+              </Field>
+            </div>
             <Field label="犊牛体重 (kg)" required>
-              <input type="number" value={calfWeight} onChange={(e) => setCalfWeight(e.target.value)} className={inputCls} />
+              <input
+                type="number"
+                inputMode="decimal"
+                value={c.weight}
+                onChange={(e) => updateCalf(idx, { weight: e.target.value })}
+                className={inputCls}
+              />
             </Field>
-            <Field label="犊牛状态" required>
-              <div className="grid grid-cols-2 gap-1">
-                {(["存活", "死胎"] as const).map((k) => (
-                  <button
-                    key={k}
-                    type="button"
-                    onClick={() => setAlive(k)}
-                    className={`h-11 rounded-lg text-body-sm ${
-                      alive === k
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-card border border-border text-text-secondary"
-                    }`}
-                  >
-                    {k}
-                  </button>
+            <Field label="是否留养" required>
+              <div className="grid grid-cols-2 gap-2">
+                {(["留养", "不留养"] as const).map((k) => (
+                  <ChoiceBtn key={k} label={k} active={c.keep === k} onClick={() => updateCalf(idx, { keep: k })} />
                 ))}
               </div>
             </Field>
-          </div>
-          <Field label="备注">
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              rows={3}
-              className="w-full p-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary resize-none"
-              placeholder="产程时长、助产人员、异常处置等"
-            />
-          </Field>
-        </div>
+
+            {c.keep === "不留养" && (
+              <div className="rounded-xl bg-[var(--state-danger)]/8 border border-[var(--state-danger)]/25 p-3 space-y-3">
+                <Field label="现场照片 / 视频" required>
+                  <MediaGrid items={c.media} setItems={(u) => updateCalf(idx, { media: typeof u === "function" ? (u as any)(c.media) : u })} max={6} />
+                </Field>
+                <Field label="不留养原因" required>
+                  <textarea
+                    value={c.reason}
+                    onChange={(e) => updateCalf(idx, { reason: e.target.value })}
+                    rows={3}
+                    className="w-full p-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary resize-none"
+                    placeholder="如：畸形、体弱、经济价值低等"
+                  />
+                </Field>
+              </div>
+            )}
+          </section>
+        ))}
+
+        <button
+          type="button"
+          onClick={() => setCalves((l) => [...l, newCalf(l.length)])}
+          className="w-full h-11 rounded-xl border border-dashed border-border text-body-sm text-text-secondary bg-card"
+        >
+          + 添加一头犊牛
+        </button>
       </div>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <button
@@ -266,6 +349,62 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
     </MobileShell>
   );
 }
+
+function AutoField({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div>
+      <div className="text-caption text-text-tertiary mb-0.5">{label}</div>
+      <div className={`text-body-sm text-foreground ${mono ? "font-mono" : ""}`}>{value}</div>
+    </div>
+  );
+}
+
+function ChoiceBtn({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`h-10 rounded-lg text-body-sm ${
+        active ? "bg-primary text-primary-foreground" : "bg-card border border-border text-text-secondary"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function ScoreRow({
+  min = 0,
+  max,
+  value,
+  onChange,
+}: {
+  min?: number;
+  max: number;
+  value: number | null;
+  onChange: (n: number) => void;
+}) {
+  const items: number[] = [];
+  for (let i = min; i <= max; i++) items.push(i);
+  return (
+    <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0,1fr))` }}>
+      {items.map((n) => (
+        <button
+          key={n}
+          type="button"
+          onClick={() => onChange(n)}
+          className={`h-11 rounded-lg text-body-sm ${
+            value === n ? "bg-primary text-primary-foreground" : "bg-card border border-border text-text-secondary"
+          }`}
+        >
+          {n}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+
 
 function LeaveForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
