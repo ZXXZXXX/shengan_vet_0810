@@ -932,7 +932,7 @@ function SectionTitle({
         search={search as never}
         className="flex items-center justify-between mb-2 active:opacity-70"
       >
-        <h3 className="text-card-title text-foreground">{title}</h3>
+        <h3 className="text-section-title text-foreground">{title}</h3>
         {hint && (
           <span className="inline-flex items-center gap-0.5 text-caption text-text-tertiary">
             {hint}
@@ -944,7 +944,7 @@ function SectionTitle({
   }
   return (
     <div className="flex items-center justify-between mb-2">
-      <h3 className="text-card-title text-foreground">{title}</h3>
+      <h3 className="text-section-title text-foreground">{title}</h3>
       {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
     </div>
   );
