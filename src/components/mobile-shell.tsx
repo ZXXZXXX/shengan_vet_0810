@@ -50,7 +50,7 @@ function MobileTopBar({
   tone,
   extra,
 }: {
-  title: string;
+  title: ReactNode;
   back?: { to: string; label?: string; search?: Record<string, string> } | true;
   right?: ReactNode;
   tone?: "brand";
