@@ -32,8 +32,8 @@ export function MobileShell({
   return (
     <div className="m-scope min-h-dvh bg-[var(--bg-page)] flex justify-center">
       <div className="w-full max-w-[440px] min-h-dvh flex flex-col bg-[var(--bg-page)] relative">
-        {title && (
-          <MobileTopBar title={title} back={back} right={right} tone={headerTone} extra={headerExtra} />
+        {(title || back || right || headerExtra) && (
+          <MobileTopBar title={title ?? ""} back={back} right={right} tone={headerTone} extra={headerExtra} />
         )}
         <main className={`flex-1 ${hideTabBar ? "" : "pb-20"}`}>{children}</main>
         {!hideTabBar && <MobileTabBar />}
