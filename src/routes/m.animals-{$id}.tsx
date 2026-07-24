@@ -274,6 +274,7 @@ function AnimalDetailPage() {
             {[
               { key: "diagnoses" as const, label: "诊断记录" },
               { key: "meds" as const, label: "用药记录" },
+              { key: "tests" as const, label: "检测记录" },
               { key: "moves" as const, label: "转栏记录" },
             ].map((t) => {
               const active = tab === t.key;
@@ -294,7 +295,7 @@ function AnimalDetailPage() {
             })}
           </div>
           <div className="mt-3">
-            {tab === "meds" ? <MedicationHistory /> : tab === "diagnoses" ? <DiagnosisHistory /> : <MoveHistory />}
+            {tab === "meds" ? <MedicationHistory /> : tab === "diagnoses" ? <DiagnosisHistory /> : tab === "tests" ? <TestHistory /> : <MoveHistory />}
           </div>
         </section>
       </div>
