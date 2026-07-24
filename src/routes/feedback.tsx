@@ -300,7 +300,7 @@ function FeedbackAdminPage() {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            onClick={() => setDetail(r)}
+                            onClick={(e) => { e.stopPropagation(); setDetail(r); }}
                             className="text-body-sm text-foreground text-left line-clamp-1 hover:text-primary transition-colors max-w-[360px]"
                           >
                             {r.content}
