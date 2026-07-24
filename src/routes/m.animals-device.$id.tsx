@@ -1,14 +1,14 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { createFileRoute, useParams, Link, useNavigate } from "@tanstack/react-router";
 import { MobileShell } from "@/components/mobile-shell";
-import { Radio, AlertTriangle, Activity, ChevronDown } from "lucide-react";
+import { Radio, AlertTriangle, Activity, ChevronRight } from "lucide-react";
 
 type DeviceKind = "collar" | "ear";
 
 export const Route = createFileRoute("/m/animals-device/$id")({
-  head: () => ({ meta: [{ title: "外接设备数据 · 奇点智牧" }] }),
-  validateSearch: (search: Record<string, unknown>): { kind?: DeviceKind } => ({
+  head: () => ({ meta: [{ title: "外接设备 · 奇点智牧" }] }),
+  validateSearch: (search: Record<string, unknown>): { kind?: DeviceKind; deviceId?: string } => ({
     kind: search.kind === "collar" || search.kind === "ear" ? (search.kind as DeviceKind) : undefined,
+    deviceId: typeof search.deviceId === "string" ? search.deviceId : undefined,
   }),
   component: AnimalDevicePage,
 });
@@ -120,125 +120,173 @@ function EarTempChart() {
   );
 }
 
+function DeviceRow({ d, to }: { d: Device; to: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={to}
+      className="w-full flex items-center gap-2.5 p-3 rounded-2xl bg-card border border-border active:bg-surface-subtle"
+    >
+      <span
+        className={`h-10 w-10 rounded-xl inline-flex items-center justify-center shrink-0 ${
+          d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
+        }`}
+      >
+        <Radio className="h-4 w-4" />
+      </span>
+      <div className="min-w-0 flex-1 text-left">
+        <div className="text-body-sm text-foreground truncate">{d.name}</div>
+        <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
+      </div>
+      <span
+        className={
+          d.status === "异常" ? "tag tag-danger" : d.status === "离线" ? "tag tag-warning" : "tag tag-success"
+        }
+      >
+        {d.status}
+      </span>
+      <ChevronRight className="h-4 w-4 text-text-tertiary" />
+    </button>
+  );
+}
+
+function DeviceDetail({ d }: { d: Device }) {
+  return (
+    <div className="space-y-3">
+      {d.alerts.length > 0 && (
+        <div className="space-y-1.5">
+          {d.alerts.map((a, i) => (
+            <div
+              key={i}
+              className={`rounded-lg px-2.5 py-2 flex items-start gap-1.5 ${
+                a.level === "danger" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-[#FFF7E6] text-[#B8860B]"
+              }`}
+            >
+              <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <div className="text-body-sm">{a.text}</div>
+                <div className="text-caption opacity-80 mt-0.5">{a.time}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {d.kind === "ear" ? (
+        <div className="rounded-xl bg-surface-subtle p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
+              <Activity className="h-3 w-3" /> 近 24 小时耳温变化
+            </div>
+            <div className="text-caption text-text-tertiary">单位 ℃</div>
+          </div>
+          <EarTempChart />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-2">
+            {d.metrics.map((m) => (
+              <div
+                key={m.label}
+                className={`rounded-xl px-3 py-2.5 ${m.abnormal ? "bg-[#FFF1F0]" : "bg-surface-subtle"}`}
+              >
+                <div className="text-caption text-text-tertiary">{m.label}</div>
+                <div className="mt-0.5">
+                  <span
+                    className={`text-[20px] font-semibold tabular-nums ${
+                      m.abnormal ? "text-[#CF1322]" : "text-foreground"
+                    }`}
+                  >
+                    {m.value}
+                  </span>
+                  {m.unit && (
+                    <span className="text-caption text-text-tertiary ml-0.5">{m.unit}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-xl bg-surface-subtle p-3">
+            <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5 mb-1">
+              <Activity className="h-3 w-3" /> 近 24 小时
+            </div>
+            <div className="text-caption text-text-secondary">
+              详细趋势图待接入设备数据源。
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function AnimalDevicePage() {
   const { id } = useParams({ from: "/m/animals-device/$id" });
-  const { kind } = Route.useSearch();
+  const { kind, deviceId } = Route.useSearch();
+  const navigate = useNavigate();
 
-  const list = useMemo(() => (kind ? DEVICES.filter((d) => d.kind === kind) : DEVICES), [kind]);
-  const initialOpen = kind ? list[0]?.id ?? null : list[0]?.id ?? null;
-  const [expanded, setExpanded] = useState<string | null>(initialOpen);
+  // 优先按 deviceId 精确匹配；否则按 kind 过滤；都无则展示全部列表
+  const activeByDeviceId = deviceId ? DEVICES.find((d) => d.id === deviceId) : undefined;
+  const kindList = kind ? DEVICES.filter((d) => d.kind === kind) : DEVICES;
+  const active = activeByDeviceId ?? (kind && kindList.length === 1 ? kindList[0] : undefined);
 
-  const title = "外接设备";
+  if (active) {
+    return (
+      <MobileShell title="外接设备" back hideTabBar>
+        <div className="px-4 pt-3 pb-6 space-y-3">
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-card border border-border">
+            <span
+              className={`h-10 w-10 rounded-xl inline-flex items-center justify-center shrink-0 ${
+                active.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
+              }`}
+            >
+              <Radio className="h-4 w-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="text-body-sm text-foreground truncate">{active.name}</div>
+              <div className="text-caption text-text-tertiary font-mono">{active.id}</div>
+            </div>
+            <span
+              className={
+                active.status === "异常"
+                  ? "tag tag-danger"
+                  : active.status === "离线"
+                  ? "tag tag-warning"
+                  : "tag tag-success"
+              }
+            >
+              {active.status}
+            </span>
+          </div>
+          <DeviceDetail d={active} />
+        </div>
+      </MobileShell>
+    );
+  }
 
   return (
-    <MobileShell title={title} back hideTabBar>
-      <div className="px-4 pt-3 pb-6 space-y-3">
-        {list.map((d) => {
-          const open = kind ? true : expanded === d.id;
-          return (
-            <div key={d.id} className="rounded-2xl bg-card border border-border overflow-hidden">
-              <button
-                type="button"
-                onClick={() => !kind && setExpanded(open ? null : d.id)}
-                className="w-full flex items-center gap-2.5 p-3 active:bg-surface-subtle"
-              >
-                <span
-                  className={`h-10 w-10 rounded-xl inline-flex items-center justify-center shrink-0 ${
-                    d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
-                  }`}
-                >
-                  <Radio className="h-4 w-4" />
-                </span>
-                <div className="min-w-0 flex-1 text-left">
-                  <div className="text-body-sm text-foreground truncate">{d.name}</div>
-                  <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
-                </div>
-                <span
-                  className={
-                    d.status === "异常" ? "tag tag-danger" : d.status === "离线" ? "tag tag-warning" : "tag tag-success"
-                  }
-                >
-                  {d.status}
-                </span>
-                {!kind && (
-                  <ChevronDown className={`h-4 w-4 text-text-tertiary transition ${open ? "rotate-180" : ""}`} />
-                )}
-              </button>
-
-              {open && (
-                <div className="px-3 pb-3 space-y-3">
-                  {d.alerts.length > 0 && (
-                    <div className="space-y-1.5">
-                      {d.alerts.map((a, i) => (
-                        <div
-                          key={i}
-                          className={`rounded-lg px-2.5 py-2 flex items-start gap-1.5 ${
-                            a.level === "danger" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-[#FFF7E6] text-[#B8860B]"
-                          }`}
-                        >
-                          <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                          <div className="min-w-0">
-                            <div className="text-body-sm">{a.text}</div>
-                            <div className="text-caption opacity-80 mt-0.5">{a.time}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {d.kind === "ear" ? (
-                    <div className="rounded-xl bg-surface-subtle p-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
-                          <Activity className="h-3 w-3" /> 近 24 小时耳温变化
-                        </div>
-                        <div className="text-caption text-text-tertiary">单位 ℃</div>
-                      </div>
-                      <EarTempChart />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="grid grid-cols-2 gap-2">
-                        {d.metrics.map((m) => (
-                          <div
-                            key={m.label}
-                            className={`rounded-xl px-3 py-2.5 ${
-                              m.abnormal ? "bg-[#FFF1F0]" : "bg-surface-subtle"
-                            }`}
-                          >
-                            <div className="text-caption text-text-tertiary">{m.label}</div>
-                            <div className="mt-0.5">
-                              <span
-                                className={`text-[20px] font-semibold tabular-nums ${
-                                  m.abnormal ? "text-[#CF1322]" : "text-foreground"
-                                }`}
-                              >
-                                {m.value}
-                              </span>
-                              {m.unit && (
-                                <span className="text-caption text-text-tertiary ml-0.5">{m.unit}</span>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="rounded-xl bg-surface-subtle p-3">
-                        <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5 mb-1">
-                          <Activity className="h-3 w-3" /> 近 24 小时
-                        </div>
-                        <div className="text-caption text-text-secondary">
-                          详细趋势图待接入设备数据源。
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
+    <MobileShell title="外接设备" back hideTabBar>
+      <div className="px-4 pt-3 pb-6 space-y-2">
+        {kindList.map((d) => (
+          <DeviceRow
+            key={d.id}
+            d={d}
+            to={() =>
+              navigate({
+                to: "/m/animals-device/$id",
+                params: { id },
+                search: { deviceId: d.id },
+              })
+            }
+          />
+        ))}
+        {kindList.length === 0 && (
+          <div className="text-caption text-text-tertiary text-center py-10">暂无外接设备</div>
+        )}
       </div>
+      {/* Link import kept for type-safety even if unused */}
+      <Link to="/m/animals-device/$id" params={{ id }} className="hidden" />
     </MobileShell>
   );
 }
