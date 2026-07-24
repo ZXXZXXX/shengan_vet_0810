@@ -1,7 +1,7 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
-import { Baby, LogOut } from "lucide-react";
+import { Baby, LogOut, Stethoscope } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/events/$type/$id")({
@@ -12,8 +12,10 @@ export const Route = createFileRoute("/m/events/$type/$id")({
 function EventPage() {
   const { type, id } = useParams({ from: "/m/events/$type/$id" });
   const navigate = useNavigate();
-  if (type === "calving") return <CalvingForm id={id} onDone={() => navigate({ to: "/m/animals-{$id}", params: { id } })} />;
-  return <LeaveForm id={id} onDone={() => navigate({ to: "/m/animals-{$id}", params: { id } })} />;
+  const done = () => navigate({ to: "/m/animals-{$id}", params: { id } });
+  if (type === "calving") return <CalvingForm id={id} onDone={done} />;
+  if (type === "exam") return <ExamForm id={id} onDone={done} />;
+  return <LeaveForm id={id} onDone={done} />;
 }
 
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
