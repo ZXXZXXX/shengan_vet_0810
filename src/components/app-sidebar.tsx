@@ -8,6 +8,7 @@ import {
   BookOpen,
   FolderArchive,
   MessageSquare,
+  BarChart3,
   ChevronDown,
 } from "lucide-react";
 
@@ -92,6 +93,11 @@ const groups: NavGroup[] = [
       { title: "角色管理", url: "/organization/role" },
       { title: "租户管理", url: "/organization/tenant" },
     ],
+  },
+  {
+    title: "统计分析",
+    icon: BarChart3,
+    url: "/stats",
   },
   {
     title: "反馈管理",
