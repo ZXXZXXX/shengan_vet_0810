@@ -418,7 +418,7 @@ function ScoreRow({
           type="button"
           onClick={() => onChange(n)}
           className={`w-10 h-10 shrink-0 rounded-full text-body-sm inline-flex items-center justify-center ${
-            value === n ? "bg-primary text-primary-foreground" : "bg-card border border-border text-text-secondary"
+            value === n ? "bg-primary text-primary-foreground font-bold" : "bg-card border border-border text-text-secondary"
           }`}
         >
           {n}
