@@ -941,6 +941,21 @@ function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "c
       </svg>
     );
   }
+  if (variant === "truck") {
+    return (
+      <svg className="absolute right-2 bottom-2" width="60" height="42" viewBox="0 0 60 42" fill="none">
+        {/* cargo box */}
+        <rect x="4" y="10" width="30" height="20" rx="2" stroke={tone} strokeWidth="2.2" fill={tone} fillOpacity="0.12" />
+        {/* cab */}
+        <path d="M34 16 L46 16 L54 24 L54 30 L34 30 Z" stroke={tone} strokeWidth="2.2" strokeLinejoin="round" fill={tone} fillOpacity="0.12" />
+        {/* window */}
+        <path d="M37 18 L45 18 L50.5 23.5 L37 23.5 Z" fill={tone} fillOpacity="0.28" />
+        {/* wheels */}
+        <circle cx="14" cy="32" r="3.4" fill="#fff" stroke={tone} strokeWidth="2.2" />
+        <circle cx="44" cy="32" r="3.4" fill="#fff" stroke={tone} strokeWidth="2.2" />
+      </svg>
+    );
+  }
   // clock
   const cx = 22, cy = 22, r = 15;
   const dots = Array.from({ length: 12 }, (_, i) => {
