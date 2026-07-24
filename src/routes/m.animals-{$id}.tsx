@@ -131,7 +131,7 @@ function AnimalDetailPage() {
       title={
         showTitleId ? (
           <div className="leading-tight">
-            <div className="text-body font-medium truncate">#{a.id}</div>
+            <div className="text-body font-semibold truncate">#{a.id}</div>
             <div className="text-caption opacity-80 truncate">{a.farm} · {a.barn}</div>
           </div>
         ) : ""
