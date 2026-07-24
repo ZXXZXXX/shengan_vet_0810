@@ -349,7 +349,7 @@ function FeedbackAdminPage() {
                             ? "opacity-40"
                             : ""
                         }`}
-                        style={r.verdict === "invalid" ? { backgroundColor: "var(--text-secondary)" } : undefined}
+                        style={r.verdict === "invalid" ? { backgroundColor: "#94A3B8" } : undefined}
                         onClick={() => requestMark(r.id, r.verdict, "invalid")}
                       >
                         <ThumbsDown className="h-3 w-3 mr-1" /> 无价值
