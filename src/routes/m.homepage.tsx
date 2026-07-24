@@ -650,7 +650,7 @@ function OpsOverview() {
     unit: string;
     tone: string;
     bg: string;
-    visual: "bars" | "ring" | "spark" | "clock";
+    visual: "bars" | "ring" | "spark" | "clock" | "truck";
     icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   };
   const kpis: KpiItem[] = [
