@@ -228,6 +228,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [injury, setInjury] = useState<number | null>(null);
   const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
   const [breedPickerIdx, setBreedPickerIdx] = useState<number | null>(null);
+  const [barnPickerIdx, setBarnPickerIdx] = useState<number | null>(null);
 
   const updateCalf = (idx: number, patch: Partial<Calf>) =>
     setCalves((list) => list.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
