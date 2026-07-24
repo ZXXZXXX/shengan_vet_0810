@@ -532,17 +532,6 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
   return (
     <MobileShell title={`#${id} · 基础检查`} back hideTabBar>
       <div className="pb-24">
-        <div className="px-4 pt-4">
-          <div className="rounded-2xl bg-gradient-to-br from-primary to-[#00823F] p-4 text-primary-foreground flex items-center gap-3">
-            <span className="h-11 w-11 rounded-xl bg-white/20 inline-flex items-center justify-center">
-              <Stethoscope className="h-5 w-5" />
-            </span>
-            <div>
-              <div className="text-card-title">基础检查</div>
-              <div className="text-caption opacity-85">牛只 #{id}</div>
-            </div>
-          </div>
-        </div>
         <div className="px-4 mt-4 space-y-4">
           <Field label="检查日期" required>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
