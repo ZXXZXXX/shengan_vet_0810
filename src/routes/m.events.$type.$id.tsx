@@ -641,6 +641,49 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
           保存基础检查
         </button>
       </div>
+
+      <Sheet open={pickerOpen} onOpenChange={setPickerOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[80vh] flex flex-col">
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">选择检查项目</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-2 py-2">
+            {EXAM_ITEMS.map((it) => {
+              const on = active[it.key];
+              return (
+                <button
+                  key={it.key}
+                  type="button"
+                  onClick={() => toggle(it.key)}
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/40 text-left"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-body text-foreground">{it.label}</span>
+                    {it.hint && <span className="text-caption text-text-tertiary mt-0.5">{it.hint}</span>}
+                  </div>
+                  <span
+                    className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                      on ? "bg-primary text-primary-foreground" : "border border-border"
+                    }`}
+                  >
+                    {on && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="p-3 border-t border-border">
+            <button
+              type="button"
+              onClick={() => setPickerOpen(false)}
+              className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-body font-semibold"
+            >
+              确定{chosenKeys.length > 0 ? `（${chosenKeys.length}）` : ""}
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </MobileShell>
+
   );
 }
