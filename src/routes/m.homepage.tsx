@@ -749,17 +749,6 @@ function HealthTrendChart() {
       <div className="flex items-center justify-between">
         <div className="text-body font-medium text-foreground">健康趋势</div>
       </div>
-      <div className="mt-2 flex items-center gap-3 text-caption text-text-secondary">
-        <span className="inline-flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full bg-[#22ACEB]" />发病
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full bg-[var(--brand)]" />治愈
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full bg-[var(--state-danger)]" />死淘
-        </span>
-      </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 w-full h-auto">
         {yTicks.map((t) => (
           <g key={t}>
@@ -813,6 +802,17 @@ function HealthTrendChart() {
           </text>
         ))}
       </svg>
+      <div className="mt-2 flex items-center justify-center gap-3 text-caption text-text-secondary">
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[#22ACEB]" />发病
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[var(--brand)]" />治愈
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-[var(--state-danger)]" />死淘
+        </span>
+      </div>
     </div>
   );
 }
