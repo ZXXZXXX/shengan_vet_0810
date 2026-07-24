@@ -899,7 +899,7 @@ function PersonalWorkStats() {
   );
 }
 
-function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "clock"; tone: string }) {
+function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "clock" | "truck"; tone: string }) {
   if (variant === "bars") {
     return (
       <div className="absolute right-3 bottom-3 flex items-end gap-1.5" style={{ color: tone }}>
