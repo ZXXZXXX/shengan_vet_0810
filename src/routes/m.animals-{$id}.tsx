@@ -112,11 +112,11 @@ function AnimalDetailPage() {
   const ageLabel = a.ageDays > 90 ? `${Math.floor(a.ageDays / 30)} 月龄` : `${a.ageDays} 日龄`;
 
   return (
-    <MobileShell title={`#${a.id}`} back hideTabBar>
+    <MobileShell title={`#${a.id}`} back hideTabBar headerTone="brand">
       <div className="pb-28">
         {/* 头部 */}
-        <div className="px-4 pt-4">
-          <div className="rounded-3xl bg-gradient-to-br from-primary to-[#00823F] p-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
+        <div className="-mt-px">
+          <div className="rounded-b-3xl bg-gradient-to-br from-primary to-[#00823F] px-5 pt-4 pb-5 text-primary-foreground relative overflow-hidden shadow-lg shadow-primary/20">
             <Beef className="absolute -right-4 -bottom-4 h-32 w-32 opacity-10" strokeWidth={1} />
             <div className="relative flex items-center gap-3">
               <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/15">
@@ -168,6 +168,7 @@ function AnimalDetailPage() {
             </div>
           </div>
         </div>
+
 
 
 
