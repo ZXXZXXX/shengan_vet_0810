@@ -327,7 +327,7 @@ function FeedbackAdminPage() {
                   </TableCell>
                   <TableCell className="text-caption text-text-secondary tabular-nums">{r.createdAt}</TableCell>
                   <TableCell><VerdictTag v={r.verdict} /></TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="inline-flex gap-1.5">
                       <Button
                         size="sm"
