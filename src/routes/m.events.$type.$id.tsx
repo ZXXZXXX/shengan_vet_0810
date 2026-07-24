@@ -623,9 +623,10 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
 
 
           <Field label="现场影像">
-            <MediaGrid />
+            <MediaGrid items={media} setItems={setMedia} />
             <div className="text-caption text-text-tertiary mt-1">可拍摄或上传照片 / 视频</div>
           </Field>
+
 
           <Field label="备注">
             <textarea
