@@ -18,6 +18,7 @@ import {
   Baby,
   LogOut,
   ListChecks,
+  Stethoscope,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
@@ -376,6 +377,15 @@ function AnimalDetailPage() {
                 onClick={() => {
                   setRecordOpen(false);
                   navigate({ to: "/m/events/$type/$id", params: { type: "calving", id: a.id } });
+                }}
+              />
+              <RecordOption
+                icon={<Stethoscope className="h-5 w-5" />}
+                title="基础检查"
+                desc="体温、子宫分泌物、酮病、尿液 PH、孕检"
+                onClick={() => {
+                  setRecordOpen(false);
+                  navigate({ to: "/m/events/$type/$id", params: { type: "exam", id: a.id } });
                 }}
               />
               <RecordOption

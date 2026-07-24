@@ -1,7 +1,7 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
-import { Baby, LogOut } from "lucide-react";
+import { Baby, LogOut, Stethoscope } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/m/events/$type/$id")({
@@ -12,8 +12,10 @@ export const Route = createFileRoute("/m/events/$type/$id")({
 function EventPage() {
   const { type, id } = useParams({ from: "/m/events/$type/$id" });
   const navigate = useNavigate();
-  if (type === "calving") return <CalvingForm id={id} onDone={() => navigate({ to: "/m/animals-{$id}", params: { id } })} />;
-  return <LeaveForm id={id} onDone={() => navigate({ to: "/m/animals-{$id}", params: { id } })} />;
+  const done = () => navigate({ to: "/m/animals-{$id}", params: { id } });
+  if (type === "calving") return <CalvingForm id={id} onDone={done} />;
+  if (type === "exam") return <ExamForm id={id} onDone={done} />;
+  return <LeaveForm id={id} onDone={done} />;
 }
 
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
@@ -243,6 +245,163 @@ function LeaveForm({ id, onDone }: { id: string; onDone: () => void }) {
           className="w-full h-12 rounded-2xl bg-primary text-primary-foreground text-body font-semibold"
         >
           保存离场记录
+        </button>
+      </div>
+    </MobileShell>
+  );
+}
+
+type ExamKey = "temp" | "discharge" | "ketosis" | "urineph" | "pregnancy";
+const EXAM_ITEMS: { key: ExamKey; label: string; unit?: string; hint?: string }[] = [
+  { key: "temp", label: "体温检查", unit: "℃", hint: "正常 38.0 ~ 39.3" },
+  { key: "discharge", label: "子宫分泌物检查", hint: "1 分（清亮）~ 5 分（脓性恶臭）" },
+  { key: "ketosis", label: "酮病检查", unit: "mmol/L", hint: "血酮 ≥ 1.2 提示亚临床酮病" },
+  { key: "urineph", label: "尿液 PH 值检查", hint: "正常 7.8 ~ 8.4" },
+  { key: "pregnancy", label: "孕检" },
+];
+
+function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [active, setActive] = useState<Record<ExamKey, boolean>>({
+    temp: true, discharge: false, ketosis: false, urineph: false, pregnancy: false,
+  });
+  const [temp, setTemp] = useState("");
+  const [discharge, setDischarge] = useState<number | null>(null);
+  const [ketosis, setKetosis] = useState("");
+  const [urineph, setUrineph] = useState("");
+  const [pregnancy, setPregnancy] = useState<"有" | "无" | null>(null);
+  const [note, setNote] = useState("");
+
+  const toggle = (k: ExamKey) => setActive((s) => ({ ...s, [k]: !s[k] }));
+
+  const submit = () => {
+    if (!date) return toast.error("请选择检查日期");
+    const chosen = (Object.keys(active) as ExamKey[]).filter((k) => active[k]);
+    if (chosen.length === 0) return toast.error("请至少选择一项检查项目");
+    if (active.temp && !temp) return toast.error("请输入体温");
+    if (active.discharge && discharge == null) return toast.error("请选择子宫分泌物评分");
+    if (active.ketosis && !ketosis) return toast.error("请输入酮病检查数值");
+    if (active.urineph && !urineph) return toast.error("请输入尿液 PH 值");
+    if (active.pregnancy && !pregnancy) return toast.error("请选择孕检结果");
+    toast.success("基础检查已保存");
+    onDone();
+  };
+
+  return (
+    <MobileShell title={`#${id} · 基础检查`} back hideTabBar>
+      <div className="pb-24">
+        <div className="px-4 pt-4">
+          <div className="rounded-2xl bg-gradient-to-br from-primary to-[#00823F] p-4 text-primary-foreground flex items-center gap-3">
+            <span className="h-11 w-11 rounded-xl bg-white/20 inline-flex items-center justify-center">
+              <Stethoscope className="h-5 w-5" />
+            </span>
+            <div>
+              <div className="text-card-title">基础检查</div>
+              <div className="text-caption opacity-85">牛只 #{id}</div>
+            </div>
+          </div>
+        </div>
+        <div className="px-4 mt-4 space-y-4">
+          <Field label="检查日期" required>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
+          </Field>
+          <Field label="检查项目" required>
+            <div className="grid grid-cols-2 gap-2">
+              {EXAM_ITEMS.map((it) => (
+                <button
+                  key={it.key}
+                  type="button"
+                  onClick={() => toggle(it.key)}
+                  className={`h-10 rounded-lg text-body-sm ${
+                    active[it.key]
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card border border-border text-text-secondary"
+                  }`}
+                >
+                  {it.label}
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          {active.temp && (
+            <Field label="体温 (℃)" required>
+              <input type="number" step="0.1" value={temp} onChange={(e) => setTemp(e.target.value)} className={inputCls} />
+              <div className="text-caption text-text-tertiary mt-1">正常 38.0 ~ 39.3 ℃</div>
+            </Field>
+          )}
+          {active.discharge && (
+            <Field label="子宫分泌物评分" required>
+              <div className="grid grid-cols-5 gap-2">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setDischarge(n)}
+                    className={`h-11 rounded-lg text-body-sm ${
+                      discharge === n
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card border border-border text-text-secondary"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <div className="text-caption text-text-tertiary mt-1">1 分：清亮透明　5 分：脓性恶臭</div>
+            </Field>
+          )}
+          {active.ketosis && (
+            <Field label="酮病检查 (mmol/L)" required>
+              <input type="number" step="0.1" value={ketosis} onChange={(e) => setKetosis(e.target.value)} className={inputCls} />
+              <div className="text-caption text-text-tertiary mt-1">血酮 ≥ 1.2 提示亚临床酮病</div>
+            </Field>
+          )}
+          {active.urineph && (
+            <Field label="尿液 PH 值" required>
+              <input type="number" step="0.1" value={urineph} onChange={(e) => setUrineph(e.target.value)} className={inputCls} />
+              <div className="text-caption text-text-tertiary mt-1">正常 7.8 ~ 8.4</div>
+            </Field>
+          )}
+          {active.pregnancy && (
+            <Field label="孕检结果" required>
+              <div className="grid grid-cols-2 gap-2">
+                {(["有", "无"] as const).map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setPregnancy(k)}
+                    className={`h-11 rounded-lg text-body-sm ${
+                      pregnancy === k
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card border border-border text-text-secondary"
+                    }`}
+                  >
+                    {k}
+                  </button>
+                ))}
+              </div>
+            </Field>
+          )}
+
+          <Field label="备注">
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              rows={3}
+              className="w-full p-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary resize-none"
+              placeholder="补充说明"
+            />
+          </Field>
+        </div>
+      </div>
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        <button
+          type="button"
+          onClick={submit}
+          className="w-full h-12 rounded-2xl bg-primary text-primary-foreground text-body font-semibold"
+        >
+          保存基础检查
         </button>
       </div>
     </MobileShell>
