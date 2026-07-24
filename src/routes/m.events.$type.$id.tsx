@@ -7,6 +7,9 @@ import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { TagPicker } from "@/components/m/tag-picker";
 import { MediaGrid } from "@/components/m/media-grid";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Check } from "lucide-react";
+
 
 export const Route = createFileRoute("/m/events/$type/$id")({
   head: () => ({ meta: [{ title: "事件记录 · 奇点智牧" }] }),
@@ -507,6 +510,7 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [active, setActive] = useState<Record<ExamKey, boolean>>({
     temp: true, discharge: false, ketosis: false, urineph: false, pregnancy: false,
   });
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [temp, setTemp] = useState("");
   const [discharge, setDischarge] = useState<number | null>(null);
   const [ketosis, setKetosis] = useState("");
@@ -515,11 +519,12 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [note, setNote] = useState("");
 
   const toggle = (k: ExamKey) => setActive((s) => ({ ...s, [k]: !s[k] }));
+  const chosenKeys = (Object.keys(active) as ExamKey[]).filter((k) => active[k]);
+  const chosenLabels = chosenKeys.map((k) => EXAM_ITEMS.find((it) => it.key === k)!.label);
 
   const submit = () => {
     if (!date) return toast.error("请选择检查日期");
-    const chosen = (Object.keys(active) as ExamKey[]).filter((k) => active[k]);
-    if (chosen.length === 0) return toast.error("请至少选择一项检查项目");
+    if (chosenKeys.length === 0) return toast.error("请至少选择一项检查项目");
     if (active.temp && !temp) return toast.error("请输入体温");
     if (active.discharge && discharge == null) return toast.error("请选择子宫分泌物评分");
     if (active.ketosis && !ketosis) return toast.error("请输入酮病检查数值");
@@ -537,23 +542,24 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
           </Field>
           <Field label="检查项目" required>
-            <div className="grid grid-cols-2 gap-2">
-              {EXAM_ITEMS.map((it) => (
-                <button
-                  key={it.key}
-                  type="button"
-                  onClick={() => toggle(it.key)}
-                  className={`h-10 rounded-lg text-body-sm ${
-                    active[it.key]
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-card border border-border text-text-secondary"
-                  }`}
-                >
-                  {it.label}
-                </button>
-              ))}
-            </div>
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
+            >
+              {chosenLabels.length === 0 ? (
+                <span className="text-body-sm text-text-tertiary">请选择检查项目</span>
+              ) : (
+                <span className="text-body-sm text-foreground truncate pr-2">
+                  {chosenLabels.join("、")}
+                </span>
+              )}
+              <span className="text-caption text-text-tertiary shrink-0">
+                {chosenLabels.length > 0 ? `已选 ${chosenLabels.length} 项` : "选择"} ›
+              </span>
+            </button>
           </Field>
+
 
           {active.temp && (
             <Field label="体温 (℃)" required>
@@ -635,6 +641,49 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
           保存基础检查
         </button>
       </div>
+
+      <Sheet open={pickerOpen} onOpenChange={setPickerOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[80vh] flex flex-col">
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">选择检查项目</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-2 py-2">
+            {EXAM_ITEMS.map((it) => {
+              const on = active[it.key];
+              return (
+                <button
+                  key={it.key}
+                  type="button"
+                  onClick={() => toggle(it.key)}
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/40 text-left"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-body text-foreground">{it.label}</span>
+                    {it.hint && <span className="text-caption text-text-tertiary mt-0.5">{it.hint}</span>}
+                  </div>
+                  <span
+                    className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                      on ? "bg-primary text-primary-foreground" : "border border-border"
+                    }`}
+                  >
+                    {on && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="p-3 border-t border-border">
+            <button
+              type="button"
+              onClick={() => setPickerOpen(false)}
+              className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-body font-semibold"
+            >
+              确定{chosenKeys.length > 0 ? `（${chosenKeys.length}）` : ""}
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </MobileShell>
+
   );
 }
