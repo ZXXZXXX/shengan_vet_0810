@@ -1198,7 +1198,7 @@ function KBShortcut({
           style={{ background: "rgba(255,255,255,0.55)" }}
         />
         <div className="relative h-full px-2.5 pt-1.5 pb-2 flex flex-col justify-between text-white">
-          <div className="text-[13px] font-semibold leading-tight drop-shadow-sm">{label}</div>
+          <div className="text-body font-semibold leading-tight drop-shadow-sm">{label}</div>
           <div className="flex items-center justify-between text-caption text-white/90 leading-none">
             <span className="truncate max-w-[7em] font-medium">{trendName}</span>
             <span className="shrink-0 inline-flex items-center gap-0.5 tabular-nums font-semibold">
