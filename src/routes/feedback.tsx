@@ -195,14 +195,6 @@ function FeedbackAdminPage() {
     <>
       <AppHeader title="反馈管理" breadcrumb={["反馈管理"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
-        {/* 统计概览 */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <StatCard label="累计反馈" value={stats.total} />
-          <StatCard label="待处理" value={stats.pending} tone="warning" />
-          <StatCard label="有价值" value={stats.valuable} tone="success" />
-          <StatCard label="无价值" value={stats.invalid} tone="muted" />
-          <StatCard label="平均评分" value={stats.avg} suffix="/ 5" />
-        </div>
 
         {/* 筛选栏 */}
         <div className="flex items-center gap-3 flex-wrap">
