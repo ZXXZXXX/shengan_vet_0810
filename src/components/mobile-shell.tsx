@@ -90,23 +90,27 @@ function MobileTopBar({
           : "bg-card/95 border-b border-border"
       }`}
     >
-      <div className="h-12 px-4 flex items-center gap-2">
+      <div className="min-h-12 px-4 py-1.5 flex items-center gap-2">
         {back ? (
           <button
             onClick={goParent}
-            className={`-ml-1 h-8 px-2 inline-flex items-center text-body-sm ${
+            className={`-ml-1 h-8 px-2 inline-flex items-center text-body-sm shrink-0 ${
               brand ? "text-primary-foreground/90 hover:text-primary-foreground" : "text-text-secondary hover:text-primary"
             }`}
           >
             ‹ 返回
           </button>
         ) : (
-          <span className="w-12" />
+          <span className="w-12 shrink-0" />
         )}
-        <h1 className={`flex-1 text-center text-card-title truncate ${brand ? "text-primary-foreground" : "text-foreground"}`}>
-          {title}
-        </h1>
-        <div className="w-12 flex justify-end items-center">{right}</div>
+        <div className={`flex-1 min-w-0 text-center ${brand ? "text-primary-foreground" : "text-foreground"}`}>
+          {typeof title === "string" ? (
+            <h1 className="text-card-title truncate">{title}</h1>
+          ) : (
+            title
+          )}
+        </div>
+        <div className="w-12 shrink-0 flex justify-end items-center">{right}</div>
       </div>
       {extra && <div className="px-4 pb-3">{extra}</div>}
     </header>
