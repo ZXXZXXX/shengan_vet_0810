@@ -396,9 +396,9 @@ function NotificationsPage() {
                     <DetailRow label="检测项目" value={current.lab.project} />
                     <DetailRow
                       label="最终结论"
-                      value={current.lab.conclusion}
-                      multiline
+                      value={current.lab.result}
                     />
+
                     <DetailRow
                       label="结论提交人"
                       value={current.lab.submitter}
