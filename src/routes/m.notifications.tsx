@@ -125,15 +125,6 @@ const MSGS: Msg[] = [
     unread: true,
   },
   {
-    id: "s2",
-    cat: "system",
-    title: "权限变更通知",
-    desc: "您在「1 号牧场」的数据权限范围已扩展至全部牛舍，原仅限 1/2 号舍。",
-    time: "昨天 16:05",
-    ts: 60 * 22,
-    jump: { kind: "orderList" },
-  },
-  {
     id: "s3",
     cat: "system",
     title: "系统更新事项",
