@@ -435,11 +435,12 @@ function FeedbackAdminPage() {
                   variant="outline"
                   className={`h-9 ${
                     detail.verdict === "invalid"
-                      ? "border-transparent text-white hover:text-white &&BGSEC&&"
+                      ? "border-transparent text-white hover:text-white"
                       : detail.verdict === "valuable"
                       ? "opacity-40"
                       : ""
                   }`}
+                  style={detail.verdict === "invalid" ? { backgroundColor: "var(--text-secondary)" } : undefined}
                   onClick={() => requestMark(detail.id, detail.verdict, "invalid")}
                 >
                   <ThumbsDown className="h-3.5 w-3.5 mr-1.5" />
