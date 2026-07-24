@@ -611,15 +611,15 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
           )}
           {active.discharge && (
             <Field label="子宫分泌物评分" required>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="flex flex-wrap gap-2">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
                     key={n}
                     type="button"
                     onClick={() => setDischarge(n)}
-                    className={`h-11 rounded-lg text-body-sm ${
+                    className={`w-10 h-10 shrink-0 rounded-full text-body-sm inline-flex items-center justify-center ${
                       discharge === n
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground font-bold"
                         : "bg-card border border-border text-text-secondary"
                     }`}
                   >
