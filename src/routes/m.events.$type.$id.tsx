@@ -298,8 +298,8 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                       key={k}
                       type="button"
                       onClick={() => updateCalf(idx, { status: k })}
-                      className={`h-11 px-3 rounded-lg border inline-flex items-center gap-2 text-body-sm ${
-                        active ? "border-primary bg-brand-subtle text-foreground" : "border-border bg-card text-text-secondary"
+                      className={`h-11 px-2 inline-flex items-center gap-2 text-body-sm ${
+                        active ? "text-foreground" : "text-text-secondary"
                       }`}
                     >
                       <span
