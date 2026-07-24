@@ -64,7 +64,7 @@ const MSGS: Msg[] = [
     id: "n1",
     cat: "workorder",
     title: "待诊断：处方申请 RX-2381",
-    desc: "兽医助理 王芳 提交了 #01-24-2381 的退烧处方申请，已等待。",
+    desc: "兽医助理 王芳 提交了 #01-24-2381 的退烧处方申请。",
     time: "5 分钟前",
     ts: 5,
     jump: { kind: "workorder", id: "RX-2381" },
