@@ -164,7 +164,7 @@ const MSGS: Msg[] = [
       earTag: "#01-24-2381",
       project: "口蹄疫病毒A/O型ELISA抗体检测",
       result: "合格",
-      conclusion: "A/O型抗体效价均达到免疫保护水平，判定为合格。建议按免疫程序继续维持。",
+      conclusion: "合格",
       submitter: "李文静（牧场自有实验室）",
       submittedAt: "2026-07-22 09:42",
       reportImages: [1, 2, 3],
@@ -182,7 +182,7 @@ const MSGS: Msg[] = [
       earTag: "#01-24-2270",
       project: "牛结核病γ-干扰素ELISA检测（赛默飞）",
       result: "阳性",
-      conclusion: "γ-干扰素释放明显升高，结核感染可能性高。建议立即隔离并按防控流程复检、处置。",
+      conclusion: "阳性",
       submitter: "第三方实验室 · 张伟",
       submittedAt: "2026-07-21 15:12",
       reportImages: [],
@@ -396,9 +396,9 @@ function NotificationsPage() {
                     <DetailRow label="检测项目" value={current.lab.project} />
                     <DetailRow
                       label="最终结论"
-                      value={current.lab.conclusion}
-                      multiline
+                      value={current.lab.result}
                     />
+
                     <DetailRow
                       label="结论提交人"
                       value={current.lab.submitter}
