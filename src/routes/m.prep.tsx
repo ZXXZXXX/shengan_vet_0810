@@ -1130,7 +1130,7 @@ function AggregateDrawer({
           </span>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-border">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2.5 bg-surface-subtle/40">
           {tasks.length === 0 && (
             <div className="p-10 text-center text-caption text-text-tertiary">
               当前牛舍范围下暂无待执行任务
@@ -1138,39 +1138,69 @@ function AggregateDrawer({
           )}
           {tasks.map((t) => {
             const on = selected.has(t.id);
-            const meta = typeMeta[t.type];
-            const Icon = meta?.icon ?? Pill;
+            const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
+            const Icon = meta.icon;
             const barn = barnOf(t);
+            const chip =
+              t.type === "疾病治疗"
+                ? diseaseTaskMeta[t.id]?.task ?? null
+                : "待执行";
+            const cattleId = t.target.startsWith("#") ? t.target : null;
+            const groupTarget = cattleId ? null : t.target;
+            const actionLine = taskContentByChip(t.id, "待执行", t.conclusion);
+
             return (
               <button
                 key={t.id}
+                type="button"
                 onClick={() => toggle(t.id)}
-                className={`w-full p-3 flex items-center gap-3 text-left active:bg-surface-subtle ${
-                  on ? "bg-brand-subtle/50" : ""
+                className={`w-full text-left rounded-2xl border bg-card overflow-hidden active:bg-surface-subtle ${
+                  on ? "border-primary ring-1 ring-primary/30" : "border-border"
                 }`}
               >
-                <span
-                  className={`h-4 w-4 rounded border shrink-0 inline-flex items-center justify-center ${
-                    on ? "bg-primary border-primary" : "border-border bg-card"
-                  }`}
-                >
-                  {on && <Check className="h-3 w-3 text-white" />}
-                </span>
-                <span
-                  className={`h-8 w-8 rounded-lg ${meta?.bg ?? "bg-brand-subtle"} ${meta?.text ?? "text-primary"} inline-flex items-center justify-center shrink-0`}
-                >
-                  <Icon className="h-4 w-4" />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-caption text-text-tertiary">
-                    <span className="font-mono">{t.id}</span>
-                    <span className="mx-1.5 text-border">·</span>
-                    {barn}
-                    <span className="mx-1.5 text-border">·</span>
-                    {diseaseTaskMeta[t.id]?.disease ?? t.type}
+                <div className="px-3.5 py-3">
+                  {/* 顶部：类型 + 编号 + 状态 + 勾选 */}
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={`h-5 w-5 rounded-full ${meta.bg} ${meta.text} inline-flex items-center justify-center shrink-0`}
+                    >
+                      <Icon className="h-3 w-3" strokeWidth={2} />
+                    </span>
+                    <span className="text-body-sm text-text-secondary">{t.type}</span>
+                    <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
+                    {chip && (
+                      <span
+                        className={`inline-flex items-center px-1.5 h-[18px] rounded-full text-caption leading-none ${taskChipStyle[chip]}`}
+                      >
+                        {chip}
+                      </span>
+                    )}
+                    <span
+                      className={`ml-auto h-[18px] w-[18px] rounded inline-flex items-center justify-center shrink-0 border ${
+                        on
+                          ? "bg-primary border-primary text-primary-foreground"
+                          : "border-border bg-card"
+                      }`}
+                      aria-hidden
+                    >
+                      {on && <Check className="h-3 w-3" strokeWidth={3} />}
+                    </span>
                   </div>
-                  <div className="text-body-sm text-foreground truncate mt-0.5">
-                    {t.target} · {t.conclusion}
+
+                  {/* 主体 */}
+                  <div className="mt-2.5">
+                    <div className="flex items-baseline gap-2 min-w-0">
+                      <span className="text-[17px] font-semibold text-foreground font-mono leading-tight truncate">
+                        {cattleId ?? groupTarget}
+                      </span>
+                      <span className="text-body-sm text-text-tertiary shrink-0 truncate">
+                        {barn}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 text-body-sm text-text-secondary truncate">
+                      <span className="text-text-tertiary mr-1.5">具体内容</span>
+                      {actionLine}
+                    </div>
                   </div>
                 </div>
               </button>
