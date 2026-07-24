@@ -503,9 +503,9 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 function HeaderInfo({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0">
-      <div className="text-[11px] leading-tight opacity-70">{label}</div>
-      <div className="text-body-sm font-medium truncate mt-0.5">{value}</div>
+    <div className="min-w-0 px-3 py-2.5">
+      <div className="text-[11px] leading-none opacity-75">{label}</div>
+      <div className="text-body-sm font-semibold truncate mt-1.5">{value}</div>
     </div>
   );
 }
