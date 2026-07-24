@@ -346,7 +346,7 @@ function NotificationsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start gap-2">
                     <div
-                      className={`flex-1 text-body leading-snug ${
+                      className={`flex-1 min-w-0 truncate text-body leading-snug ${
                         m.unread
                           ? "text-foreground font-medium"
                           : "text-text-secondary"
