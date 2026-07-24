@@ -57,7 +57,7 @@ const RATING_LABELS = ["", "很差", "较差", "一般", "满意", "非常满意
 
 const initialData: FeedbackRow[] = [
   {
-    id: "FB-2026-0721",
+    id: "#0721",
     rating: 5,
     topic: "功能建议",
     content: "希望在工单列表可以按牛舍批量分配任务，现在只能一个一个点，效率低。",
@@ -69,7 +69,7 @@ const initialData: FeedbackRow[] = [
     verdict: null,
   },
   {
-    id: "FB-2026-0720",
+    id: "#0720",
     rating: 2,
     topic: "性能卡顿",
     content: "扫描耳标进入牛只档案偶发白屏，等 3-5 秒才刷出，弱网时更明显。",
@@ -81,7 +81,7 @@ const initialData: FeedbackRow[] = [
     verdict: "valuable",
   },
   {
-    id: "FB-2026-0719",
+    id: "#0719",
     rating: 4,
     topic: "界面体验",
     content: "首页速查区希望能自定义顺序。",
@@ -93,7 +93,7 @@ const initialData: FeedbackRow[] = [
     verdict: null,
   },
   {
-    id: "FB-2026-0718",
+    id: "#0718",
     rating: 1,
     topic: "使用问题",
     content: "登录不上，页面卡在加载。",
@@ -105,7 +105,7 @@ const initialData: FeedbackRow[] = [
     verdict: "invalid",
   },
   {
-    id: "FB-2026-0717",
+    id: "#0717",
     rating: 5,
     topic: "数据/账号",
     content: "月度报告 PDF 里希望增加每头牛的用药总成本明细。",
