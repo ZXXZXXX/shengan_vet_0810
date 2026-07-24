@@ -442,11 +442,11 @@ function NotificationsPage() {
                   className="flex-1"
                   onClick={() => setOpenId(null)}
                 >
-                  确认
+                  关闭
                 </Button>
-                {current.cat !== "lab" && current.link && (
-                  <Button className="flex-1" onClick={goDetail}>
-                    查看详情
+                {current.jump && (
+                  <Button className="flex-1" onClick={goJump}>
+                    {JUMP_LABEL[current.jump.kind]}
                   </Button>
                 )}
               </div>
