@@ -291,9 +291,28 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
 
             <Field label="分娩状态" required>
               <div className="grid grid-cols-2 gap-2">
-                {(["正常", "死胎"] as const).map((k) => (
-                  <ChoiceBtn key={k} label={k} active={c.status === k} onClick={() => updateCalf(idx, { status: k })} />
-                ))}
+                {(["正常", "死胎"] as const).map((k) => {
+                  const active = c.status === k;
+                  return (
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => updateCalf(idx, { status: k })}
+                      className={`h-11 px-3 rounded-lg border inline-flex items-center gap-2 text-body-sm ${
+                        active ? "border-primary bg-brand-subtle text-foreground" : "border-border bg-card text-text-secondary"
+                      }`}
+                    >
+                      <span
+                        className={`w-4 h-4 rounded-full border inline-flex items-center justify-center shrink-0 ${
+                          active ? "border-primary" : "border-border"
+                        }`}
+                      >
+                        {active && <span className="w-2 h-2 rounded-full bg-primary" />}
+                      </span>
+                      <span className={active ? "font-medium" : ""}>{k}</span>
+                    </button>
+                  );
+                })}
               </div>
             </Field>
 
