@@ -38,6 +38,11 @@ type LabInfo = {
   reportImages: number[]; // 可能为空
 };
 
+type Jump =
+  | { kind: "cattle"; earTag: string }
+  | { kind: "workorder"; id: string }
+  | { kind: "orderList" };
+
 type Msg = {
   id: string;
   cat: Cat;
@@ -47,6 +52,7 @@ type Msg = {
   /** minutes ago, used for sorting */
   ts: number;
   link?: string;
+  jump?: Jump;
   unread?: boolean;
   lab?: LabInfo;
 };
