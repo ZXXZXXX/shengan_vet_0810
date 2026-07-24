@@ -188,39 +188,53 @@ function AnimalDevicePage() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 gap-2">
-                    {d.metrics.map((m) => (
-                      <div
-                        key={m.label}
-                        className={`rounded-xl px-3 py-2.5 ${
-                          m.abnormal ? "bg-[#FFF1F0]" : "bg-surface-subtle"
-                        }`}
-                      >
-                        <div className="text-caption text-text-tertiary">{m.label}</div>
-                        <div className="mt-0.5">
-                          <span
-                            className={`text-[20px] font-semibold tabular-nums ${
-                              m.abnormal ? "text-[#CF1322]" : "text-foreground"
+                  {d.kind === "ear" ? (
+                    <div className="rounded-xl bg-surface-subtle p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5">
+                          <Activity className="h-3 w-3" /> 近 24 小时耳温变化
+                        </div>
+                        <div className="text-caption text-text-tertiary">单位 ℃</div>
+                      </div>
+                      <EarTempChart />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 gap-2">
+                        {d.metrics.map((m) => (
+                          <div
+                            key={m.label}
+                            className={`rounded-xl px-3 py-2.5 ${
+                              m.abnormal ? "bg-[#FFF1F0]" : "bg-surface-subtle"
                             }`}
                           >
-                            {m.value}
-                          </span>
-                          {m.unit && (
-                            <span className="text-caption text-text-tertiary ml-0.5">{m.unit}</span>
-                          )}
+                            <div className="text-caption text-text-tertiary">{m.label}</div>
+                            <div className="mt-0.5">
+                              <span
+                                className={`text-[20px] font-semibold tabular-nums ${
+                                  m.abnormal ? "text-[#CF1322]" : "text-foreground"
+                                }`}
+                              >
+                                {m.value}
+                              </span>
+                              {m.unit && (
+                                <span className="text-caption text-text-tertiary ml-0.5">{m.unit}</span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="rounded-xl bg-surface-subtle p-3">
+                        <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5 mb-1">
+                          <Activity className="h-3 w-3" /> 近 24 小时
+                        </div>
+                        <div className="text-caption text-text-secondary">
+                          详细趋势图待接入设备数据源。
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="rounded-xl bg-surface-subtle p-3">
-                    <div className="text-caption text-text-tertiary inline-flex items-center gap-1.5 mb-1">
-                      <Activity className="h-3 w-3" /> 近 24 小时
-                    </div>
-                    <div className="text-caption text-text-secondary">
-                      详细趋势图待接入设备数据源。
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
