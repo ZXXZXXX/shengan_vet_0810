@@ -173,18 +173,8 @@ function LeaveForm({ id, onDone }: { id: string; onDone: () => void }) {
   return (
     <MobileShell title={`#${id} · 离场记录`} back hideTabBar>
       <div className="pb-24">
-        <div className="px-4 pt-4">
-          <div className="rounded-2xl bg-gradient-to-br from-[#B75B37] to-[#8B3D1F] p-4 text-white flex items-center gap-3">
-            <span className="h-11 w-11 rounded-xl bg-white/20 inline-flex items-center justify-center">
-              <LogOut className="h-5 w-5" />
-            </span>
-            <div>
-              <div className="text-card-title">离场记录</div>
-              <div className="text-caption opacity-85">牛只 #{id}</div>
-            </div>
-          </div>
-        </div>
         <div className="px-4 mt-4 space-y-4">
+
           <Field label="离场日期" required>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
           </Field>
