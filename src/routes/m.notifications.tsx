@@ -189,6 +189,28 @@ const MSGS: Msg[] = [
       reportImages: [],
     },
   },
+
+  // ===== 基础检查类：平台下发的基础检查任务 =====
+  {
+    id: "e1",
+    cat: "exam",
+    title: "基础检查任务：牛只 #01-24-2381 产后 7 天例检",
+    desc: "请对该牛只完成以下基础检查：体温测量、子宫分泌物评分（1–5 分）、酮病血酮值检测。请在今日 18:00 前完成并在牛只档案中记录。",
+    time: "8 分钟前",
+    ts: 8,
+    unread: true,
+    jump: { kind: "cattle", earTag: "#01-24-2381" },
+  },
+  {
+    id: "e2",
+    cat: "exam",
+    title: "基础检查任务：牛只 #01-24-2270 孕检复核",
+    desc: "请对该牛只完成孕检（有/无）与体温测量，如发现异常请同步上报兽医。",
+    time: "1 小时前",
+    ts: 60,
+    unread: true,
+    jump: { kind: "cattle", earTag: "#01-24-2270" },
+  },
 ];
 
 const JUMP_LABEL: Record<Jump["kind"], string> = {
