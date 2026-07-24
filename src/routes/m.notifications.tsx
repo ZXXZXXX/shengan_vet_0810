@@ -9,6 +9,7 @@ import {
   Clock,
   FlaskConical,
   ImageIcon,
+  MailQuestion,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import {
