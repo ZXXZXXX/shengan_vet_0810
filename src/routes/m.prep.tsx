@@ -1082,7 +1082,7 @@ function AggregateDrawer({
       >
         <div className="h-12 px-4 flex items-center justify-between border-b border-border shrink-0">
           <div className="text-body font-medium text-foreground">
-            统计药品清单
+            选择任务
           </div>
           <button
             onClick={onClose}
