@@ -164,7 +164,7 @@ const MSGS: Msg[] = [
       earTag: "#01-24-2381",
       project: "口蹄疫病毒A/O型ELISA抗体检测",
       result: "合格",
-      conclusion: "A/O型抗体效价均达到免疫保护水平，判定为合格。建议按免疫程序继续维持。",
+      conclusion: "合格",
       submitter: "李文静（牧场自有实验室）",
       submittedAt: "2026-07-22 09:42",
       reportImages: [1, 2, 3],
