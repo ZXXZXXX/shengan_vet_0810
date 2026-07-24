@@ -408,6 +408,34 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
           保存产犊记录
         </button>
       </div>
+
+      <Sheet open={breedPickerIdx !== null} onOpenChange={(o) => !o && setBreedPickerIdx(null)}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[70vh] flex flex-col">
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">选择品种</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-2 py-2">
+            {BREEDS.map((k) => {
+              const current = breedPickerIdx !== null ? calves[breedPickerIdx]?.breed : "";
+              const on = current === k;
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => {
+                    if (breedPickerIdx !== null) updateCalf(breedPickerIdx, { breed: k });
+                    setBreedPickerIdx(null);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/40 text-left"
+                >
+                  <span className="text-body text-foreground">{k}</span>
+                  {on && <Check className="w-4 h-4 text-primary" strokeWidth={3} />}
+                </button>
+              );
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
     </MobileShell>
   );
 }
