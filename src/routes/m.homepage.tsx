@@ -25,6 +25,8 @@ import {
   CheckCircle2,
   PlayCircle,
   Clock,
+  DoorOpen,
+  Truck,
 } from "lucide-react";
 import tasksDoneCelebrateAsset from "@/assets/today-task-complete-sparkles.svg.asset.json";
 const tasksDoneCelebrate = tasksDoneCelebrateAsset.url;
@@ -648,7 +650,7 @@ function OpsOverview() {
     unit: string;
     tone: string;
     bg: string;
-    visual: "bars" | "ring" | "spark" | "clock";
+    visual: "bars" | "ring" | "spark" | "clock" | "truck";
     icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   };
   const kpis: KpiItem[] = [
@@ -685,8 +687,8 @@ function OpsOverview() {
       unit: "头",
       tone: "var(--effect-ai-purple)",
       bg: "color-mix(in oklab, var(--effect-ai-purple) 10%, #FFFFFF)",
-      visual: "ring",
-      icon: PackageX,
+      visual: "truck",
+      icon: DoorOpen,
     },
   ];
   return (
@@ -897,7 +899,7 @@ function PersonalWorkStats() {
   );
 }
 
-function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "clock"; tone: string }) {
+function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "clock" | "truck"; tone: string }) {
   if (variant === "bars") {
     return (
       <div className="absolute right-3 bottom-3 flex items-end gap-1.5" style={{ color: tone }}>
@@ -936,6 +938,21 @@ function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "c
         </defs>
         <path d={area} fill={`url(#${gid})`} />
         <path d={line} stroke={tone} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </svg>
+    );
+  }
+  if (variant === "truck") {
+    return (
+      <svg className="absolute right-2 bottom-2" width="60" height="42" viewBox="0 0 60 42" fill="none">
+        {/* cargo box */}
+        <rect x="4" y="10" width="30" height="20" rx="2" stroke={tone} strokeWidth="2.2" fill={tone} fillOpacity="0.12" />
+        {/* cab */}
+        <path d="M34 16 L46 16 L54 24 L54 30 L34 30 Z" stroke={tone} strokeWidth="2.2" strokeLinejoin="round" fill={tone} fillOpacity="0.12" />
+        {/* window */}
+        <path d="M37 18 L45 18 L50.5 23.5 L37 23.5 Z" fill={tone} fillOpacity="0.28" />
+        {/* wheels */}
+        <circle cx="14" cy="32" r="3.4" fill="#fff" stroke={tone} strokeWidth="2.2" />
+        <circle cx="44" cy="32" r="3.4" fill="#fff" stroke={tone} strokeWidth="2.2" />
       </svg>
     );
   }
