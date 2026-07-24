@@ -257,7 +257,7 @@ const META: Record<
   exam: {
     icon: Megaphone,
     tone: "bg-[#E6F7FE] text-[#22ACEB]",
-    label: "基础检查",
+    label: "平台",
   },
 };
 
