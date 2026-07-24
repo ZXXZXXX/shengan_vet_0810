@@ -621,6 +621,12 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
             </Field>
           )}
 
+
+          <Field label="现场影像">
+            <MediaGrid />
+            <div className="text-caption text-text-tertiary mt-1">可拍摄或上传照片 / 视频</div>
+          </Field>
+
           <Field label="备注">
             <textarea
               value={note}
@@ -630,6 +636,7 @@ function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
               placeholder="补充说明"
             />
           </Field>
+
         </div>
       </div>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
