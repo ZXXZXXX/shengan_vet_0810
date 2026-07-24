@@ -140,7 +140,7 @@ function VerdictTag({ v }: { v: Verdict }) {
     return <span className="tag tag-success">有价值</span>;
   if (v === "invalid")
     return <span className="tag tag-muted">无价值</span>;
-  return <span className="tag">未处理</span>;
+  return <span className="text-caption text-text-tertiary">-</span>;
 }
 
 function FeedbackAdminPage() {
