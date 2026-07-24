@@ -280,58 +280,63 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
               <AutoField label="出生日期" value={c.birthDate} />
             </div>
 
-            <Field label="品种" required>
-              <div className="grid grid-cols-4 gap-2">
-                {BREEDS.map((k) => (
-                  <ChoiceBtn key={k} label={k} active={c.breed === k} onClick={() => updateCalf(idx, { breed: k })} />
-                ))}
-              </div>
-            </Field>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="性别" required>
-                <div className="grid grid-cols-2 gap-2">
-                  {(["母", "公"] as const).map((k) => (
-                    <ChoiceBtn key={k} label={k} active={c.sex === k} onClick={() => updateCalf(idx, { sex: k })} />
-                  ))}
-                </div>
-              </Field>
-              <Field label="分娩状态" required>
-                <div className="grid grid-cols-2 gap-2">
-                  {(["正常", "死胎"] as const).map((k) => (
-                    <ChoiceBtn key={k} label={k} active={c.status === k} onClick={() => updateCalf(idx, { status: k })} />
-                  ))}
-                </div>
-              </Field>
-            </div>
-            <Field label="犊牛体重 (kg)" required>
-              <input
-                type="number"
-                inputMode="decimal"
-                value={c.weight}
-                onChange={(e) => updateCalf(idx, { weight: e.target.value })}
-                className={inputCls}
-              />
-            </Field>
-            <Field label="是否留养" required>
+            <Field label="分娩状态" required>
               <div className="grid grid-cols-2 gap-2">
-                {(["留养", "不留养"] as const).map((k) => (
-                  <ChoiceBtn key={k} label={k} active={c.keep === k} onClick={() => updateCalf(idx, { keep: k })} />
+                {(["正常", "死胎"] as const).map((k) => (
+                  <ChoiceBtn key={k} label={k} active={c.status === k} onClick={() => updateCalf(idx, { status: k })} />
                 ))}
               </div>
             </Field>
 
-            {c.keep === "不留养" && (
+            {c.status === "正常" && (
+              <>
+                <Field label="品种" required>
+                  <div className="grid grid-cols-4 gap-2">
+                    {BREEDS.map((k) => (
+                      <ChoiceBtn key={k} label={k} active={c.breed === k} onClick={() => updateCalf(idx, { breed: k })} />
+                    ))}
+                  </div>
+                </Field>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="性别" required>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(["母", "公"] as const).map((k) => (
+                        <ChoiceBtn key={k} label={k} active={c.sex === k} onClick={() => updateCalf(idx, { sex: k })} />
+                      ))}
+                    </div>
+                  </Field>
+                  <Field label="犊牛体重 (kg)" required>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      value={c.weight}
+                      onChange={(e) => updateCalf(idx, { weight: e.target.value })}
+                      className={inputCls}
+                    />
+                  </Field>
+                </div>
+                <Field label="是否留养" required>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(["留养", "不留养"] as const).map((k) => (
+                      <ChoiceBtn key={k} label={k} active={c.keep === k} onClick={() => updateCalf(idx, { keep: k })} />
+                    ))}
+                  </div>
+                </Field>
+              </>
+            )}
+
+            {(c.status === "死胎" || (c.status === "正常" && c.keep === "不留养")) && (
               <div className="rounded-xl bg-[var(--state-danger)]/8 border border-[var(--state-danger)]/25 p-3 space-y-3">
                 <Field label="现场照片 / 视频" required>
                   <MediaGrid items={c.media} setItems={(u) => updateCalf(idx, { media: typeof u === "function" ? (u as any)(c.media) : u })} max={6} />
                 </Field>
-                <Field label="不留养原因" required>
+                <Field label={c.status === "死胎" ? "死胎原因" : "不留养原因"} required>
                   <textarea
                     value={c.reason}
                     onChange={(e) => updateCalf(idx, { reason: e.target.value })}
                     rows={3}
                     className="w-full p-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary resize-none"
-                    placeholder="如：畸形、体弱、经济价值低等"
+                    placeholder={c.status === "死胎" ? "如：脐带绕颈、难产窒息、畸形等" : "如：畸形、体弱、经济价值低等"}
                   />
                 </Field>
               </div>
