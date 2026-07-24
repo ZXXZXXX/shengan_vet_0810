@@ -172,7 +172,20 @@ type Calf = {
   media: number[];
 };
 
-const BREEDS = ["荷斯坦", "西门塔尔", "娟姗牛", "安格斯"];
+const BREEDS = [
+  "荷斯坦",
+  "西门塔尔",
+  "娟姗牛",
+  "安格斯",
+  "利木赞",
+  "夏洛莱",
+  "海福特",
+  "和牛",
+  "婆罗门",
+  "秦川牛",
+  "鲁西黄牛",
+  "南阳牛",
+];
 
 function newCalf(index: number): Calf {
   const yy = String(new Date().getFullYear()).slice(2);
@@ -202,6 +215,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [difficulty, setDifficulty] = useState<number | null>(null);
   const [injury, setInjury] = useState<number | null>(null);
   const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
+  const [breedPickerIdx, setBreedPickerIdx] = useState<number | null>(null);
 
   const updateCalf = (idx: number, patch: Partial<Calf>) =>
     setCalves((list) => list.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
@@ -319,11 +333,16 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
             {c.status === "正常" && (
               <>
                 <Field label="品种" required>
-                  <div className="grid grid-cols-4 gap-2">
-                    {BREEDS.map((k) => (
-                      <ChoiceBtn key={k} label={k} active={c.breed === k} onClick={() => updateCalf(idx, { breed: k })} />
-                    ))}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setBreedPickerIdx(idx)}
+                    className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
+                  >
+                    <span className={c.breed ? "text-body-sm text-foreground" : "text-body-sm text-text-tertiary"}>
+                      {c.breed || "请选择"}
+                    </span>
+                    <span className="text-text-tertiary">›</span>
+                  </button>
                 </Field>
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="性别" required>
@@ -389,6 +408,34 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
           保存产犊记录
         </button>
       </div>
+
+      <Sheet open={breedPickerIdx !== null} onOpenChange={(o) => !o && setBreedPickerIdx(null)}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[70vh] flex flex-col">
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">选择品种</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-2 py-2">
+            {BREEDS.map((k) => {
+              const current = breedPickerIdx !== null ? calves[breedPickerIdx]?.breed : "";
+              const on = current === k;
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => {
+                    if (breedPickerIdx !== null) updateCalf(breedPickerIdx, { breed: k });
+                    setBreedPickerIdx(null);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/40 text-left"
+                >
+                  <span className="text-body text-foreground">{k}</span>
+                  {on && <Check className="w-4 h-4 text-primary" strokeWidth={3} />}
+                </button>
+              );
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
     </MobileShell>
   );
 }
