@@ -616,7 +616,7 @@ function TodayTaskList({ role }: { role: Role }) {
           to="/m/health/today"
           className="mt-1 flex items-center justify-center gap-0.5 pt-2 text-body-sm text-text-secondary active:text-primary"
         >
-          查看全部 {remaining} 项
+          查看全部
           <ChevronRight className="h-3.5 w-3.5" />
         </Link>
       )}
