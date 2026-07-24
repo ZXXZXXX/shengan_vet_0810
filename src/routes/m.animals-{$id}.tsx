@@ -18,6 +18,7 @@ import {
   Baby,
   LogOut,
   ListChecks,
+  Stethoscope,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
