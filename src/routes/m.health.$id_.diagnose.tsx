@@ -299,13 +299,12 @@ const CALVING_RECORDS: Record<string, CalvingRecord> = {
 };
 function calvingToSymptoms(r: CalvingRecord): string[] {
   const out: string[] = [];
-  if (r.difficulty >= 3) out.push("产犊难易度 ≥ 3");
-  if (r.injury >= 2) out.push("产道损伤等级 ≥ 2");
-  if (r.calfCount >= 2) out.push("产犊数量 ≥ 2");
-  if (r.calfWeightMax >= 45) out.push("犊牛体重 ≥ 45kg");
+  if (r.difficulty >= 3) out.push(`产犊难易度 ${r.difficulty} 分`);
+  if (r.injury >= 2) out.push(`产道损伤 ${r.injury} 级`);
+  if (r.calfCount >= 2) out.push(`产犊数量 ${r.calfCount} 头`);
+  if (r.calfWeightMax >= 45) out.push(`犊牛体重 ${r.calfWeightMax}kg`);
   if (r.stillbirth) out.push("犊牛为「死胎」");
   if (r.preterm) out.push("早产");
-  if (r.calfCount >= 2) out.push("双胎或以上");
   if (r.retainedPlacenta) out.push("胎衣不下");
   return Array.from(new Set(out));
 }
