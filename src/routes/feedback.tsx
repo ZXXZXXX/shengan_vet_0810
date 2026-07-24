@@ -27,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Search, Star, ThumbsUp, ThumbsDown, ImageIcon, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
