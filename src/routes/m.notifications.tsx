@@ -30,7 +30,7 @@ type Cat = "system" | "workorder" | "platform" | "lab";
 type LabInfo = {
   earTag: string; // #nn-nn-nnnn
   project: string;
-  result: "阴性" | "阳性";
+  result: "阴性" | "阳性" | "合格" | "不合格";
   conclusion: string;
   submitter: string;
   submittedAt: string; // yyyy-mm-dd hh:mm
@@ -147,15 +147,15 @@ const MSGS: Msg[] = [
     id: "l1",
     cat: "lab",
     title: "牛只 #01-24-2381 检测结果已出",
-    desc: "血常规检查的检测最终结果为阳性，点击查看附件，了解具体数据",
+    desc: "口蹄疫病毒A/O型ELISA抗体检测的最终结果为合格，点击查看附件，了解具体数据",
     time: "10 分钟前",
     ts: 10,
     unread: true,
     lab: {
       earTag: "#01-24-2381",
-      project: "血常规检查",
-      result: "阳性",
-      conclusion: "白细胞轻度升高，提示存在炎症反应；红细胞、血小板正常。建议结合临床继续观察并复查。",
+      project: "口蹄疫病毒A/O型ELISA抗体检测",
+      result: "合格",
+      conclusion: "A/O型抗体效价均达到免疫保护水平，判定为合格。建议按免疫程序继续维持。",
       submitter: "李文静（牧场自有实验室）",
       submittedAt: "2026-07-22 09:42",
       reportImages: [1, 2, 3],
@@ -165,14 +165,14 @@ const MSGS: Msg[] = [
     id: "l2",
     cat: "lab",
     title: "牛只 #01-24-2270 检测结果已出",
-    desc: "牛奶体细胞检测（DHI）的检测最终结果为阳性，点击查看附件，了解具体数据",
+    desc: "牛结核病γ-干扰素ELISA检测（赛默飞）的最终结果为阳性，点击查看附件，了解具体数据",
     time: "昨天 15:30",
     ts: 60 * 20,
     lab: {
       earTag: "#01-24-2270",
-      project: "牛奶体细胞检测（DHI）",
+      project: "牛结核病γ-干扰素ELISA检测（赛默飞）",
       result: "阳性",
-      conclusion: "体细胞计数 620,000/mL，超出预警阈值，建议进入乳房炎复查流程。",
+      conclusion: "γ-干扰素释放明显升高，结核感染可能性高。建议立即隔离并按防控流程复检、处置。",
       submitter: "第三方实验室 · 张伟",
       submittedAt: "2026-07-21 15:12",
       reportImages: [],
