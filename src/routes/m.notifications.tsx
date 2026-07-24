@@ -360,7 +360,8 @@ function NotificationsPage() {
           {current && (
             <>
               <SheetHeader className="px-4 pt-4 pb-3 border-b border-border text-left">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
                   <span
                     className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${META[current.cat].tone}`}
                   >
