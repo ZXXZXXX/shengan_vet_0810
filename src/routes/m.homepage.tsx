@@ -149,7 +149,7 @@ function MHomePage() {
 
       {/* ============ 工作任务(管理员无待办) ============ */}
       {role !== "admin" && (
-        <section className="px-4 mt-4">
+        <section className="px-4 mt-5">
           <SectionTitle
             title="今日任务"
             hint={`共计 ${getTaskCount(role)} 项`}
@@ -161,7 +161,7 @@ function MHomePage() {
 
       {/* ============ 金刚区:速查与近况 ============ */}
       {roleGroup[role] === "internal" && (
-        <section className="px-4 mt-[26px] mb-4">
+        <section className="px-4 mt-5 mb-4">
           <SectionTitle title="速查与近况" />
 
           <div className="grid grid-cols-3 gap-2.5">
