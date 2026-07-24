@@ -175,10 +175,12 @@ type Calf = {
 const BREEDS = ["荷斯坦", "西门塔尔", "娟姗牛", "安格斯"];
 
 function newCalf(index: number): Calf {
-  const seq = String(index + 1).padStart(3, "0");
+  const yy = String(new Date().getFullYear()).slice(2);
+  const mm = String(new Date().getMonth() + 1).padStart(2, "0");
+  const seq = String(9000 + index + 1).padStart(4, "0");
   return {
     id: `${Date.now()}-${index}`,
-    earTag: `C-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${seq}`,
+    earTag: `${yy}-${mm}-${seq}`,
     birthDate: new Date().toISOString().slice(0, 10),
     breed: "",
     sex: "",
