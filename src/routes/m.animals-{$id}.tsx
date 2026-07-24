@@ -21,23 +21,8 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { TransferBarnControl } from "@/components/m/transfer-barn-control";
-import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
-import { TagPicker } from "@/components/m/tag-picker";
-import { toast } from "sonner";
 
-const TRANSFER_REASONS = [
-  "泌乳阶段调整",
-  "干奶转入",
-  "产前转入产房",
-  "产后转出",
-  "并群优化",
-  "隔离治疗",
-  "康复转出",
-  "淘汰待售",
-  "栏舍维修",
-  "饲养密度调整",
-];
+
 
 export const Route = createFileRoute("/m/animals-{$id}")({
   head: () => ({ meta: [{ title: "牛只详情 · 奇点智牧" }] }),
@@ -87,26 +72,8 @@ function AnimalDetailPage() {
   // 记录 sheet
   const [recordOpen, setRecordOpen] = useState(false);
 
-  // 转栏
-  const [transferOpen, setTransferOpen] = useState(false);
-  const [transferEnabled, setTransferEnabled] = useState(true);
-  const [transferTo, setTransferTo] = useState("");
-  const [transferPickerOpen, setTransferPickerOpen] = useState(false);
-  const [transferReasons, setTransferReasons] = useState<string[]>([]);
-  const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
 
-  const handleTransferSubmit = () => {
-    if (!transferTo) return toast.error("请选择转入栏舍");
-    if (transferReasons.length === 0) return toast.error("请选择或输入转栏原因");
-    setTransferConfirmOpen(true);
-  };
-  const handleTransferConfirm = () => {
-    setTransferConfirmOpen(false);
-    setTransferOpen(false);
-    toast.success(`已转至 ${transferTo}`);
-    setTransferTo("");
-    setTransferReasons([]);
-  };
+
 
   const [tab, setTab] = useState<"diagnoses" | "meds" | "moves" | "tests">("diagnoses");
 
@@ -401,9 +368,7 @@ function AnimalDetailPage() {
                 desc="调整所在牛舍 / 栏位"
                 onClick={() => {
                   setRecordOpen(false);
-                  setTransferEnabled(true);
-                  setTransferTo("");
-                  setTransferOpen(true);
+                  navigate({ to: "/m/events/$type/$id", params: { type: "transfer", id: a.id } });
                 }}
               />
               <RecordOption
@@ -420,111 +385,6 @@ function AnimalDetailPage() {
         </div>
       )}
 
-      {/* 转栏 Sheet */}
-      {transferOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
-          onClick={() => setTransferOpen(false)}
-        >
-          <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl pb-[calc(env(safe-area-inset-bottom)+16px)]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-4 h-12 flex items-center justify-between border-b border-border">
-              <div className="text-body font-medium text-foreground inline-flex items-center gap-1.5">
-                <ArrowRightLeft className="h-4 w-4 text-primary" />
-                转栏操作
-              </div>
-              <button
-                type="button"
-                onClick={() => setTransferOpen(false)}
-                className="h-8 w-8 -mr-2 inline-flex items-center justify-center text-text-tertiary"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="p-4 space-y-3">
-              <div className="flex items-stretch gap-2">
-                <div className="flex-1 min-w-0 rounded-xl border border-primary/40 bg-brand-subtle px-3 py-2.5">
-                  <div className="flex items-center gap-1 text-caption text-primary mb-1">
-                    <MapPin className="h-3 w-3" />
-                    当前位置
-                  </div>
-                  <div className="text-body-sm text-foreground font-medium truncate">
-                    {a.barn}
-                  </div>
-                </div>
-                <div className={`shrink-0 flex items-center justify-center w-7 ${transferTo ? "text-primary" : "text-text-tertiary"}`}>
-                  <ArrowRight className="h-4 w-4" />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setTransferPickerOpen(true)}
-                  className={`flex-1 min-w-0 rounded-xl bg-card px-3 py-2.5 text-left transition-colors ${
-                    transferTo ? "border border-primary" : "border border-dashed border-border active:border-primary/60"
-                  }`}
-                >
-                  <div className={`flex items-center justify-between gap-1 text-caption mb-1 ${transferTo ? "text-primary" : "text-text-tertiary"}`}>
-                    <span className="inline-flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      转入位置
-                    </span>
-                    <span className="text-caption text-text-tertiary">{transferTo ? "更换" : "选择"}</span>
-                  </div>
-                  <div className={`text-body-sm truncate ${transferTo ? "text-foreground font-medium" : "text-text-tertiary"}`}>
-                    {transferTo || "点击选择牛舍"}
-                  </div>
-                </button>
-              </div>
-              <TransferBarnControl
-                enabled={transferEnabled}
-                onEnabledChange={setTransferEnabled}
-                value={transferTo}
-                onValueChange={setTransferTo}
-                exclude={[a.barn]}
-                label="转入栏舍"
-                hideToggle
-                triggerless
-                open={transferPickerOpen}
-                onOpenChange={setTransferPickerOpen}
-              />
-              <div className="rounded-xl bg-card border border-border p-3">
-                <div className="text-body-sm text-foreground mb-2 inline-flex items-center gap-1">
-                  转栏原因
-                  <span className="text-[var(--state-danger)]">*</span>
-                </div>
-                <TagPicker
-                  selected={transferReasons}
-                  onChange={setTransferReasons}
-                  presets={TRANSFER_REASONS}
-                  singleSelect
-                  placeholder="输入关键词搜索,未命中可直接新建"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={handleTransferSubmit}
-                disabled={!transferTo || transferReasons.length === 0}
-                className={`w-full h-11 rounded-lg text-body inline-flex items-center justify-center gap-1.5 ${
-                  transferTo && transferReasons.length > 0
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-border text-text-tertiary"
-                }`}
-              >
-                <ArrowRightLeft className="h-4 w-4" /> 提交转栏
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <ConfirmTransferDialog
-        open={transferConfirmOpen}
-        earTag={`#${a.id}`}
-        barn={transferTo}
-        onCancel={() => setTransferConfirmOpen(false)}
-        onConfirm={handleTransferConfirm}
-      />
     </MobileShell>
   );
 }

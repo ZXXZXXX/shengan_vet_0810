@@ -1,8 +1,11 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { MobileShell } from "@/components/mobile-shell";
-import { Baby, LogOut, Stethoscope } from "lucide-react";
+import { ArrowRight, ArrowRightLeft, Baby, LogOut, MapPin, Stethoscope } from "lucide-react";
 import { toast } from "sonner";
+import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
+import { TagPicker } from "@/components/m/tag-picker";
 
 export const Route = createFileRoute("/m/events/$type/$id")({
   head: () => ({ meta: [{ title: "事件记录 · 奇点智牧" }] }),
@@ -15,7 +18,127 @@ function EventPage() {
   const done = () => navigate({ to: "/m/animals-{$id}", params: { id } });
   if (type === "calving") return <CalvingForm id={id} onDone={done} />;
   if (type === "exam") return <ExamForm id={id} onDone={done} />;
+  if (type === "transfer") return <TransferForm id={id} onDone={done} />;
   return <LeaveForm id={id} onDone={done} />;
+}
+
+const TRANSFER_REASONS = [
+  "泌乳阶段调整",
+  "干奶转入",
+  "产前转入产房",
+  "产后转出",
+  "并群优化",
+  "隔离治疗",
+  "康复转出",
+  "淘汰待售",
+  "栏舍维修",
+  "饲养密度调整",
+];
+
+function TransferForm({ id, onDone }: { id: string; onDone: () => void }) {
+  const currentBarn = "3 号牛舍";
+  const [to, setTo] = useState("");
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [reasons, setReasons] = useState<string[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const submit = () => {
+    if (!to) return toast.error("请选择转入栏舍");
+    if (reasons.length === 0) return toast.error("请选择或输入转栏原因");
+    setConfirmOpen(true);
+  };
+  const confirm = () => {
+    setConfirmOpen(false);
+    toast.success(`已转至 ${to}`);
+    onDone();
+  };
+
+  return (
+    <MobileShell title={`#${id} · 转栏/转群`} back hideTabBar>
+      <div className="pb-24">
+        <div className="px-4 pt-4">
+          <div className="rounded-2xl bg-gradient-to-br from-primary to-[#00823F] p-4 text-primary-foreground flex items-center gap-3">
+            <span className="h-11 w-11 rounded-xl bg-white/20 inline-flex items-center justify-center">
+              <ArrowRightLeft className="h-5 w-5" />
+            </span>
+            <div>
+              <div className="text-card-title">转栏 / 转群</div>
+              <div className="text-caption opacity-85">牛只 #{id}</div>
+            </div>
+          </div>
+        </div>
+        <div className="px-4 mt-4 space-y-4">
+          <div className="flex items-stretch gap-2">
+            <div className="flex-1 min-w-0 rounded-xl border border-primary/40 bg-brand-subtle px-3 py-2.5">
+              <div className="flex items-center gap-1 text-caption text-primary mb-1">
+                <MapPin className="h-3 w-3" />
+                当前位置
+              </div>
+              <div className="text-body-sm text-foreground font-medium truncate">{currentBarn}</div>
+            </div>
+            <div className={`shrink-0 flex items-center justify-center w-7 ${to ? "text-primary" : "text-text-tertiary"}`}>
+              <ArrowRight className="h-4 w-4" />
+            </div>
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              className={`flex-1 min-w-0 rounded-xl bg-card px-3 py-2.5 text-left transition-colors ${
+                to ? "border border-primary" : "border border-dashed border-border active:border-primary/60"
+              }`}
+            >
+              <div className={`flex items-center justify-between gap-1 text-caption mb-1 ${to ? "text-primary" : "text-text-tertiary"}`}>
+                <span className="inline-flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  转入位置
+                </span>
+                <span className="text-caption text-text-tertiary">{to ? "更换" : "选择"}</span>
+              </div>
+              <div className={`text-body-sm truncate ${to ? "text-foreground font-medium" : "text-text-tertiary"}`}>
+                {to || "点击选择牛舍"}
+              </div>
+            </button>
+          </div>
+          <TransferBarnControl
+            enabled
+            onEnabledChange={() => {}}
+            value={to}
+            onValueChange={setTo}
+            exclude={[currentBarn]}
+            label="转入栏舍"
+            hideToggle
+            triggerless
+            open={pickerOpen}
+            onOpenChange={setPickerOpen}
+          />
+          <Field label="转栏原因" required>
+            <TagPicker
+              selected={reasons}
+              onChange={setReasons}
+              presets={TRANSFER_REASONS}
+              singleSelect
+              placeholder="输入关键词搜索,未命中可直接新建"
+            />
+          </Field>
+        </div>
+      </div>
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        <button
+          type="button"
+          onClick={submit}
+          className="w-full h-12 rounded-2xl bg-primary text-primary-foreground text-body font-semibold inline-flex items-center justify-center gap-1.5"
+        >
+          <ArrowRightLeft className="h-4 w-4" /> 提交转栏
+        </button>
+      </div>
+      <ConfirmTransferDialog
+        open={confirmOpen}
+        earTag={`#${id}`}
+        barn={to}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={confirm}
+      />
+    </MobileShell>
+  );
 }
 
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
