@@ -349,7 +349,7 @@ function NotificationsPage() {
               <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
                 {current.cat === "lab" && current.lab ? (
                   <>
-                    <DetailRow label="检查项目" value={current.lab.project} />
+                    <DetailRow label="检测项目" value={current.lab.project} />
                     <DetailRow
                       label="最终结论"
                       value={current.lab.conclusion}
