@@ -403,14 +403,7 @@ function ScoreRow({
   );
 }
 
-          className="w-full h-12 rounded-2xl bg-primary text-primary-foreground text-body font-semibold"
-        >
-          保存产犊记录
-        </button>
-      </div>
-    </MobileShell>
-  );
-}
+
 
 function LeaveForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
