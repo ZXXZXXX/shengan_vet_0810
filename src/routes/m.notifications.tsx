@@ -63,10 +63,10 @@ const MSGS: Msg[] = [
     id: "n1",
     cat: "workorder",
     title: "待诊断：处方申请 RX-2381",
-    desc: "兽医助理 王芳 提交了 #01-24-2381 的退烧处方申请，已等待。", 
+    desc: "兽医助理 王芳 提交了 #01-24-2381 的退烧处方申请，已等待。",
     time: "5 分钟前",
     ts: 5,
-    link: "/m/health/01-24-2381/diagnose",
+    jump: { kind: "workorder", id: "RX-2381" },
     unread: true,
   },
   {
@@ -76,7 +76,7 @@ const MSGS: Msg[] = [
     desc: "工单 T-1042 已逾期未开始执行，请尽快处理。",
     time: "12 分钟前",
     ts: 12,
-    link: "/m/",
+    jump: { kind: "workorder", id: "T-1042" },
     unread: true,
   },
   {
@@ -86,7 +86,7 @@ const MSGS: Msg[] = [
     desc: "「兽医」王医生为您指派 2 号舍 4 头牛只的疾病治疗工作，计划今日 15:00 开始执行。",
     time: "2 小时前",
     ts: 120,
-    link: "/m/",
+    jump: { kind: "workorder", id: "T-1056" },
     unread: true,
   },
 
@@ -98,7 +98,7 @@ const MSGS: Msg[] = [
     desc: "平台已下发 IMM-0529 免疫工单，覆盖 1/3/5 号舍共 128 头牛只，计划今日 14:00 执行。",
     time: "30 分钟前",
     ts: 30,
-    link: "/m/",
+    jump: { kind: "workorder", id: "IMM-0529" },
     unread: true,
   },
   {
@@ -108,7 +108,7 @@ const MSGS: Msg[] = [
     desc: "平台已下发 HOOF-0528 修蹄工单，涉及 2 号舍 18 头泌乳牛，计划本周内完成。",
     time: "1 小时前",
     ts: 60,
-    link: "/m/",
+    jump: { kind: "workorder", id: "HOOF-0528" },
     unread: true,
   },
   {
@@ -118,7 +118,7 @@ const MSGS: Msg[] = [
     desc: "平台已下发 BRE-0527 繁育工单，覆盖 4 号舍 22 头空怀牛只。",
     time: "昨天 09:10",
     ts: 60 * 14,
-    link: "/m/",
+    jump: { kind: "workorder", id: "BRE-0527" },
   },
 
   // ===== 系统类：更新事项、权限变更、角色变更 =====
@@ -129,7 +129,7 @@ const MSGS: Msg[] = [
     desc: "您的角色已由「兽医助理」调整为「兽医」，新权限即时生效。",
     time: "昨天 18:20",
     ts: 60 * 20,
-    link: "/m/me",
+    jump: { kind: "orderList" },
     unread: true,
   },
   {
@@ -139,7 +139,7 @@ const MSGS: Msg[] = [
     desc: "您在「1 号牧场」的数据权限范围已扩展至全部牛舍，原仅限 1/2 号舍。",
     time: "昨天 16:05",
     ts: 60 * 22,
-    link: "/m/me",
+    jump: { kind: "orderList" },
   },
   {
     id: "s3",
@@ -148,6 +148,7 @@ const MSGS: Msg[] = [
     desc: "奇点智牧 v2.4.0 已发布：新增 AI 辅助诊断、优化工单流转性能，建议尽快刷新使用。",
     time: "2 天前",
     ts: 60 * 48,
+    jump: { kind: "orderList" },
   },
   // ===== 实验室类：检查结果已出 =====
   {
@@ -158,6 +159,7 @@ const MSGS: Msg[] = [
     time: "10 分钟前",
     ts: 10,
     unread: true,
+    jump: { kind: "cattle", earTag: "#01-24-2381" },
     lab: {
       earTag: "#01-24-2381",
       project: "口蹄疫病毒A/O型ELISA抗体检测",
@@ -175,6 +177,7 @@ const MSGS: Msg[] = [
     desc: "牛结核病γ-干扰素ELISA检测（赛默飞）的最终结果为阳性，点击查看附件，了解具体数据",
     time: "昨天 15:30",
     ts: 60 * 20,
+    jump: { kind: "cattle", earTag: "#01-24-2270" },
     lab: {
       earTag: "#01-24-2270",
       project: "牛结核病γ-干扰素ELISA检测（赛默飞）",
@@ -186,6 +189,23 @@ const MSGS: Msg[] = [
     },
   },
 ];
+
+const JUMP_LABEL: Record<Jump["kind"], string> = {
+  cattle: "查看牛只档案",
+  workorder: "查看工单详情",
+  orderList: "查看工单列表",
+};
+
+function jumpToPath(j: Jump): string {
+  switch (j.kind) {
+    case "cattle":
+      return `/m/animals-${j.earTag.replace(/^#/, "")}`;
+    case "workorder":
+      return `/m/health/${j.id}`;
+    case "orderList":
+      return "/m/health";
+  }
+}
 
 const META: Record<
   Cat,
