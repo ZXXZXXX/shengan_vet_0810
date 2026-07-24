@@ -211,6 +211,7 @@ function newCalf(index: number): Calf {
     status: "",
     weight: "",
     keep: "",
+    targetBarn: "",
     reason: "",
     media: [],
   };
