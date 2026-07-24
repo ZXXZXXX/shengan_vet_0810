@@ -213,9 +213,14 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
     if (injury == null) return toast.error("请选择产道损伤等级");
     for (let i = 0; i < calves.length; i++) {
       const c = calves[i];
+      if (!c.status) return toast.error(`请选择第 ${i + 1} 头犊牛的分娩状态`);
+      if (c.status === "死胎") {
+        if (c.media.length === 0) return toast.error(`第 ${i + 1} 头犊牛（死胎）需上传照片或视频`);
+        if (!c.reason.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛（死胎）原因`);
+        continue;
+      }
       if (!c.breed) return toast.error(`请选择第 ${i + 1} 头犊牛的品种`);
       if (!c.sex) return toast.error(`请选择第 ${i + 1} 头犊牛的性别`);
-      if (!c.status) return toast.error(`请选择第 ${i + 1} 头犊牛的分娩状态`);
       if (!c.weight) return toast.error(`请填写第 ${i + 1} 头犊牛的体重`);
       if (!c.keep) return toast.error(`请选择第 ${i + 1} 头犊牛是否留养`);
       if (c.keep === "不留养") {
