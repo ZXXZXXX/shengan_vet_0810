@@ -440,7 +440,7 @@ function FeedbackAdminPage() {
                       ? "opacity-40"
                       : ""
                   }`}
-                  style={detail.verdict === "invalid" ? { backgroundColor: "var(--text-secondary)" } : undefined}
+                  style={detail.verdict === "invalid" ? { backgroundColor: "#94A3B8" } : undefined}
                   onClick={() => requestMark(detail.id, detail.verdict, "invalid")}
                 >
                   <ThumbsDown className="h-3.5 w-3.5 mr-1.5" />
