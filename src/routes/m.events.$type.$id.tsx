@@ -7,6 +7,9 @@ import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { TagPicker } from "@/components/m/tag-picker";
 import { MediaGrid } from "@/components/m/media-grid";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Check } from "lucide-react";
+
 
 export const Route = createFileRoute("/m/events/$type/$id")({
   head: () => ({ meta: [{ title: "事件记录 · 奇点智牧" }] }),
