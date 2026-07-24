@@ -380,6 +380,15 @@ function AnimalDetailPage() {
                 }}
               />
               <RecordOption
+                icon={<Stethoscope className="h-5 w-5" />}
+                title="基础检查"
+                desc="体温、子宫分泌物、酮病、尿液 PH、孕检"
+                onClick={() => {
+                  setRecordOpen(false);
+                  navigate({ to: "/m/events/$type/$id", params: { type: "exam", id: a.id } });
+                }}
+              />
+              <RecordOption
                 icon={<ArrowRightLeft className="h-5 w-5" />}
                 title="转栏/转群"
                 desc="调整所在牛舍 / 栏位"
