@@ -542,29 +542,54 @@ function RecordOption({
 
 /* 产奶趋势图 */
 function MilkChart() {
-  // 7 天 * 3 班次
+  // 7 天 * 3 班次，按时间顺序连成一条线
   const days = ["05-23", "05-24", "05-25", "05-26", "05-27", "05-28", "05-29"];
-  const shifts = [
-    { name: "早班", color: "var(--primary)", data: [12.1, 12.4, 12.0, 12.5, 12.8, 12.3, 12.6] },
-    { name: "中班", color: "#FFB020", data: [10.8, 11.0, 10.5, 10.9, 11.2, 10.7, 11.1] },
-    { name: "晚班", color: "#5B8FF9", data: [9.5, 9.7, 9.2, 9.6, 9.9, 9.4, 9.8] },
+  const shiftMeta = [
+    { name: "早班", color: "var(--primary)" },
+    { name: "中班", color: "#FFB020" },
+    { name: "晚班", color: "#5B8FF9" },
   ];
+  const raw = [
+    [12.1, 10.8, 9.5],
+    [12.4, 11.0, 9.7],
+    [12.0, 10.5, 9.2],
+    [12.5, 10.9, 9.6],
+    [12.8, 11.2, 9.9],
+    [12.3, 10.7, 9.4],
+    [12.6, 11.1, 9.8],
+  ];
+  // 按时间顺序展开为点列表
+  const points = raw.flatMap((day, di) =>
+    day.map((v, si) => ({ v, day: days[di], shift: si, di, si }))
+  );
+
   const W = 320;
   const H = 140;
   const PAD_L = 24;
   const PAD_R = 8;
   const PAD_T = 8;
   const PAD_B = 22;
-  const all = shifts.flatMap((s) => s.data);
+  const all = points.map((p) => p.v);
   const min = Math.floor(Math.min(...all) - 1);
   const max = Math.ceil(Math.max(...all) + 1);
-  const xStep = (W - PAD_L - PAD_R) / (days.length - 1);
+  const xStep = (W - PAD_L - PAD_R) / (points.length - 1);
   const yFor = (v: number) => PAD_T + (H - PAD_T - PAD_B) * (1 - (v - min) / (max - min));
   const xFor = (i: number) => PAD_L + i * xStep;
+
+  const pathD = points.map((p, i) => `${i === 0 ? "M" : "L"}${xFor(i)},${yFor(p.v)}`).join(" ");
+  const areaD =
+    pathD +
+    ` L${xFor(points.length - 1)},${H - PAD_B} L${xFor(0)},${H - PAD_B} Z`;
 
   return (
     <div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[140px]">
+        <defs>
+          <linearGradient id="milkArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
         {/* Y grid */}
         {[0, 0.5, 1].map((t) => {
           const y = PAD_T + (H - PAD_T - PAD_B) * t;
@@ -576,36 +601,34 @@ function MilkChart() {
             </g>
           );
         })}
-        {/* lines */}
-        {shifts.map((s) => {
-          const d = s.data.map((v, i) => `${i === 0 ? "M" : "L"}${xFor(i)},${yFor(v)}`).join(" ");
+        {/* 连续折线 + 面积 */}
+        <path d={areaD} fill="url(#milkArea)" />
+        <path d={pathD} fill="none" stroke="var(--primary)" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+        {/* 班次分色圆点 */}
+        {points.map((p, i) => (
+          <circle key={i} cx={xFor(i)} cy={yFor(p.v)} r="2.2" fill={shiftMeta[p.si].color} />
+        ))}
+        {/* X labels：每天只标一次（居中于三个点） */}
+        {days.map((d, di) => {
+          const centerIdx = di * 3 + 1;
           return (
-            <g key={s.name}>
-              <path d={d} fill="none" stroke={s.color} strokeWidth="1.5" />
-              {s.data.map((v, i) => (
-                <circle key={i} cx={xFor(i)} cy={yFor(v)} r="2" fill={s.color} />
-              ))}
-            </g>
+            <text
+              key={d}
+              x={xFor(centerIdx)}
+              y={H - 6}
+              fontSize="9"
+              fill="var(--text-tertiary)"
+              textAnchor="middle"
+            >
+              {d.slice(3)}
+            </text>
           );
         })}
-        {/* X labels */}
-        {days.map((d, i) => (
-          <text
-            key={d}
-            x={xFor(i)}
-            y={H - 6}
-            fontSize="9"
-            fill="var(--text-tertiary)"
-            textAnchor="middle"
-          >
-            {d.slice(3)}
-          </text>
-        ))}
       </svg>
       <div className="flex items-center justify-center gap-4 mt-1">
-        {shifts.map((s) => (
+        {shiftMeta.map((s) => (
           <div key={s.name} className="inline-flex items-center gap-1 text-caption text-text-secondary">
-            <span className="h-1.5 w-3 rounded-sm" style={{ background: s.color }} />
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: s.color }} />
             {s.name}
           </div>
         ))}
@@ -613,6 +636,7 @@ function MilkChart() {
     </div>
   );
 }
+
 
 type MedRecord = {
   id: string;
