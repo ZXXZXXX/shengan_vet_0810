@@ -149,8 +149,8 @@ function MHomePage() {
 
 
 
-      {/* ============ 工作任务(管理员无待办) ============ */}
-      {role !== "admin" && (
+      {/* ============ 工作任务(管理员/场长无待办) ============ */}
+      {role !== "admin" && role !== "manager" && (
         <section className="px-4 mt-5">
           <SectionTitle
             title="今日任务"
