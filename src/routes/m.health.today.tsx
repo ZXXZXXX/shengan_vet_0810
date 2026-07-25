@@ -57,18 +57,21 @@ type StatusTab = "待诊断" | "待执行" | "待复查";
 const ALL_TABS: StatusTab[] = ["待诊断", "待执行", "待复查"];
 
 function tabHandledByRole(role: Role, tab: StatusTab): boolean {
-  if (role === "vet" || role === "manager") return true;
+  if (role === "manager") return false; // 场长无工单处理权限
+  if (role === "vet") return true;
   return tab === "待执行";
 }
 
 // 按角色获取候选任务全集（不区分状态 tab）
-// 兽医/场长：疾病治疗 待诊断/待复查 + 疾病治疗/产后护理 的待执行
+// 兽医：疾病治疗 待诊断/待复查 + 疾病治疗/产后护理 的待执行
+// 场长：无（不参与工单处理）
 // 助理：疾病治疗/产后护理 的待执行
 // 免疫员：疫苗免疫；修蹄工：修蹄
 const EXEC_TYPES_VET = ["疾病治疗", "产后护理"];
 
 function getRoleAllTasks(role: Role): HomeTask[] {
-  if (role === "vet" || role === "manager") {
+  if (role === "manager") return [];
+  if (role === "vet") {
     return homeTasks.filter(
       (t) =>
         (t.type === "疾病治疗" && t.status === "待诊断") ||
