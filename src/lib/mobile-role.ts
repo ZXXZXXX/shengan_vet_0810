@@ -53,26 +53,28 @@ export const roleGroup: Record<Role, "internal" | "external"> = {
 };
 
 // 权限：诊断 vs 执行
+// 场长(manager)：不参与工单处理，仅能查看自己上报的工单；不能诊断也不能执行
 export function canVisit(r: Role) {
-  return r === "admin" || r === "vet" || r === "manager";
+  return r === "admin" || r === "vet";
 }
 export function canExecute(r: Role) {
   return (
     r === "vet_assistant" ||
     r === "immunizer" ||
     r === "hoof_trimmer" ||
-    r === "vet" ||
-    r === "manager"
+    r === "vet"
   );
 }
-// 诊断权限：兽医/场长可诊断疾病；管理员仅查看
+// 诊断权限：仅兽医可诊断疾病；管理员/场长仅查看
 export function canDiagnose(r: Role, type?: string) {
-  if (r === "vet" || r === "manager") return type === "疾病治疗" || type === "产后护理";
+  if (r === "vet") return type === "疾病治疗" || type === "产后护理";
   return false;
 }
-// 是否能查看全场/经营级数据：兽医与场长一致
+// 是否能查看全场/经营级数据：管理员/场长/兽医
 export function canViewOperations(r: Role) {
   return r === "admin" || r === "manager" || r === "vet";
 }
+// 场长登录账号名（用于"仅查看自己上报的工单"过滤）
+export const MANAGER_ACCOUNT_NAME = "李雨晴";
 
 
