@@ -333,7 +333,7 @@ export function getRoleTasks(role: Role): HomeTask[] {
 }
 
 function getTaskCount(role: Role) {
-  if (role === "admin") return 0;
+  if (role === "admin" || role === "manager") return 0;
   return getRoleTasks(role).length;
 }
 
