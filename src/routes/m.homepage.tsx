@@ -301,7 +301,6 @@ export const homeTasks: HomeTask[] = [
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
 export const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
-  manager: { status: "待诊断", type: "疾病治疗", label: "待诊断 / 待执行 / 待复查" },
   vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 / 待执行 / 待复查" },
   vet_assistant: { status: "进行中", type: "疾病治疗", label: "执行中 · 疾病治疗" },
   immunizer: { status: "进行中", type: "疫苗免疫", label: "执行中 · 疫苗免疫" },
