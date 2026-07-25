@@ -149,8 +149,8 @@ function MHomePage() {
 
 
 
-      {/* ============ 工作任务(管理员无待办) ============ */}
-      {role !== "admin" && (
+      {/* ============ 工作任务(管理员/场长无待办) ============ */}
+      {role !== "admin" && role !== "manager" && (
         <section className="px-4 mt-5">
           <SectionTitle
             title="今日任务"
@@ -301,7 +301,6 @@ export const homeTasks: HomeTask[] = [
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
 export const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
-  manager: { status: "待诊断", type: "疾病治疗", label: "待诊断 / 待执行 / 待复查" },
   vet: { status: "待诊断", type: "疾病治疗", label: "待诊断 / 待执行 / 待复查" },
   vet_assistant: { status: "进行中", type: "疾病治疗", label: "执行中 · 疾病治疗" },
   immunizer: { status: "进行中", type: "疫苗免疫", label: "执行中 · 疫苗免疫" },
@@ -311,9 +310,11 @@ export const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
 const VET_EXEC_TYPES = new Set(["疾病治疗", "产后护理"]);
 
 export function getRoleTasks(role: Role): HomeTask[] {
+  // 场长无工单处理权限，不返回任何待办
+  if (role === "manager") return [];
   const filter = roleFilterMap[role];
   if (!filter) return [];
-  if (role === "vet" || role === "manager") {
+  if (role === "vet") {
     const diagnoses = homeTasks.filter((t) => t.status === "待诊断" && t.type === "疾病治疗");
     const executions = homeTasks.filter(
       (t) =>
@@ -332,7 +333,7 @@ export function getRoleTasks(role: Role): HomeTask[] {
 }
 
 function getTaskCount(role: Role) {
-  if (role === "admin") return 0;
+  if (role === "admin" || role === "manager") return 0;
   return getRoleTasks(role).length;
 }
 

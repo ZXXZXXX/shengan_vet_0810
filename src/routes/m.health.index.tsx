@@ -212,7 +212,9 @@ function TaskListPage() {
   if (role === "hoof_trimmer") list = list.filter((t) => t.kind === "修蹄");
   if (role === "immunizer") list = list.filter((t) => t.type === "免疫");
   if (role === "vet_assistant") list = list.filter((t) => t.type === "疾病治疗" || t.type === "产后护理" || t.type === "干奶");
-  if (role === "vet" || role === "manager") list = list.filter((t) => t.type === "疾病治疗" || t.type === "产后护理" || t.type === "干奶");
+  if (role === "vet") list = list.filter((t) => t.type === "疾病治疗" || t.type === "产后护理" || t.type === "干奶");
+  // 场长：仅可查看自己上报的工单，且无处理权限
+  if (role === "manager") list = list.filter((t) => t.proposer === "李雨晴");
 
   if (typeFilter) {
     list = list.filter((o) => o.type === typeFilter || (typeFilter === "疫苗免疫" && o.type === "免疫"));
@@ -306,7 +308,7 @@ function TaskListPage() {
                   const KIcon = kindIcon[o.kind];
                   const isPickup = o.kind === "领取";
                   const canVisitThis = canDiagnose(role, o.type) && o.status === "待诊断";
-                  const isVetView = role === "vet" || role === "manager";
+                  const isVetView = role === "vet";
                   const isObserving = !!observeDaysMap[o.id] && !obsExpiredOrders.has(o.id);
                   const isReviewNode = reviewTaskSet.has(o.id);
                   const todayDone = o.status === "进行中" && todayDoneSet.has(o.id);

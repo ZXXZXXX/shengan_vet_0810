@@ -126,11 +126,12 @@ function RespondListPage() {
   const role = useRole();
   // 按角色过滤可响应的工单类型
   const canSee = (c: RespondCard) => {
+    if (role === "manager") return false; // 场长无工单响应权限
     if (role === "hoof_trimmer") return c.kind === "修蹄";
     if (role === "immunizer") return c.kind === "免疫";
     if (role === "vet_assistant")
       return c.kind === "疾病治疗" || c.kind === "产后护理";
-    if (role === "vet" || role === "manager") return c.kind === "疾病治疗";
+    if (role === "vet") return c.kind === "疾病治疗";
     return true;
   };
 
