@@ -310,9 +310,11 @@ export const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
 const VET_EXEC_TYPES = new Set(["疾病治疗", "产后护理"]);
 
 export function getRoleTasks(role: Role): HomeTask[] {
+  // 场长无工单处理权限，不返回任何待办
+  if (role === "manager") return [];
   const filter = roleFilterMap[role];
   if (!filter) return [];
-  if (role === "vet" || role === "manager") {
+  if (role === "vet") {
     const diagnoses = homeTasks.filter((t) => t.status === "待诊断" && t.type === "疾病治疗");
     const executions = homeTasks.filter(
       (t) =>
