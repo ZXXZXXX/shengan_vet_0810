@@ -308,7 +308,7 @@ function TaskListPage() {
                   const KIcon = kindIcon[o.kind];
                   const isPickup = o.kind === "领取";
                   const canVisitThis = canDiagnose(role, o.type) && o.status === "待诊断";
-                  const isVetView = role === "vet" || role === "manager";
+                  const isVetView = role === "vet";
                   const isObserving = !!observeDaysMap[o.id] && !obsExpiredOrders.has(o.id);
                   const isReviewNode = reviewTaskSet.has(o.id);
                   const todayDone = o.status === "进行中" && todayDoneSet.has(o.id);
