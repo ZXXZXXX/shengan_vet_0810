@@ -1,7 +1,7 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { MobileShell } from "@/components/mobile-shell";
-import { ArrowRight, ArrowRightLeft, LogOut, MapPin } from "lucide-react";
+import { ArrowRight, ArrowRightLeft, LogOut, MapPin, Search } from "lucide-react";
 import { toast } from "sonner";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
@@ -43,11 +43,77 @@ const TRANSFER_REASONS = [
   "饲养密度调整",
 ];
 
+function ReasonPicker({
+  open,
+  onOpenChange,
+  value,
+  onChange,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [q, setQ] = useState("");
+  const kw = q.trim();
+  const list = kw ? TRANSFER_REASONS.filter((t) => t.includes(kw)) : TRANSFER_REASONS;
+  const canCreate = !!kw && !TRANSFER_REASONS.some((t) => t === kw);
+
+  return (
+    <Sheet open={open} onOpenChange={(o) => { onOpenChange(o); if (!o) setQ(""); }}>
+      <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[75vh] flex flex-col">
+        <SheetHeader className="px-4 pt-4 pb-2 text-left">
+          <SheetTitle className="text-section-title">选择转栏原因</SheetTitle>
+        </SheetHeader>
+        <div className="px-4 pb-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="输入关键词搜索，未命中可直接新建"
+              className="w-full h-10 pl-9 pr-3 rounded-lg bg-card border border-border text-body-sm placeholder:text-text-tertiary focus:outline-none focus:border-primary"
+            />
+          </div>
+        </div>
+        <div className="px-4 pb-6 flex-1 min-h-0 overflow-y-auto">
+          {list.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => { onChange(t); onOpenChange(false); setQ(""); }}
+              className={`w-full h-12 px-1 flex items-center justify-between text-body border-b border-border/60 last:border-b-0 ${
+                value === t ? "text-primary" : "text-foreground"
+              }`}
+            >
+              <span className="truncate">{t}</span>
+              {value === t && <Check className="h-4 w-4 text-primary shrink-0" />}
+            </button>
+          ))}
+          {list.length === 0 && !canCreate && (
+            <div className="py-6 text-center text-caption text-text-tertiary">无匹配结果</div>
+          )}
+          {canCreate && (
+            <button
+              type="button"
+              onClick={() => { onChange(kw); onOpenChange(false); setQ(""); }}
+              className="mt-3 inline-flex items-center h-10 px-3 rounded-lg border border-dashed border-primary/60 bg-brand-subtle text-primary text-body-sm"
+            >
+              新建「{kw}」
+            </button>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
 function TransferForm({ id, onDone }: { id: string; onDone: () => void }) {
   const currentBarn = "3 号牛舍";
   const [to, setTo] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [reasons, setReasons] = useState<string[]>([]);
+  const [reasonOpen, setReasonOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const submit = () => {
