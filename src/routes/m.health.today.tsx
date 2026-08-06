@@ -358,25 +358,37 @@ function TodayTasksPage() {
           </div>
         ) : (
           tasks.map((t) => {
+            const isExam = t.kind === "基础检查";
+            const isAlert = t.kind === "异常排查";
             const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
             const Icon = meta.icon;
             const checked = selected.has(t.id);
             const chip: TaskChip | null =
-              t.type === "疾病治疗"
-                ? diseaseTaskMeta[t.id]?.task ?? null
-                : "待执行";
+              isAlert
+                ? null
+                : isExam
+                  ? "待执行"
+                  : t.type === "疾病治疗"
+                    ? diseaseTaskMeta[t.id]?.task ?? null
+                    : "待执行";
             const barn = inferBarn(t);
-            const actionText = activeTab === "待执行" ? "执行" : activeTab === "待复查" ? "复查" : "诊断";
+            const actionText = isAlert
+              ? "查看详情"
+              : activeTab === "待执行"
+                ? "执行"
+                : activeTab === "待复查"
+                  ? "复查"
+                  : "诊断";
             const linkTo = "/m/health/$id/execute" as const;
 
 
             const cattleId = t.target.startsWith("#") ? t.target : null;
             const groupTarget = cattleId ? null : t.target;
-            const pk = activeTab === "待执行" ? pickupForWO(t.id) : null;
+            const pk = activeTab === "待执行" && !isExam && !isAlert ? pickupForWO(t.id) : null;
 
             const tabChip: TaskChip =
               activeTab === "待诊断" ? "待诊断" : activeTab === "待复查" ? "待复查" : "待执行";
-            const actionLine = taskContentByChip(t.id, tabChip, "任务待执行");
+            const actionLine = taskCardContent(t, tabChip);
             const timeAgo = `${((tasks.indexOf(t) + 1) * 2) % 59 || 2}分钟前`;
 
             const inner = (
@@ -389,7 +401,10 @@ function TodayTasksPage() {
                     <Icon className="h-3 w-3" strokeWidth={2} />
                   </span>
                   <span className="text-body-sm text-text-secondary">{t.type}</span>
-                  <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
+                  {!isExam && !isAlert && (
+                    <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
+                  )}
+
                   {chip && (
                     <span
                       className={`inline-flex items-center px-1.5 h-[18px] rounded-full text-caption leading-none ${taskChipStyle[chip]}`}
