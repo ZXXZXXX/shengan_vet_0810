@@ -262,6 +262,15 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const submit = () => {
     if (difficulty == null) return toast.error("请选择产犊难易度评分");
     if (injury == null) return toast.error("请选择产道损伤等级");
+    if (!colostrum) return toast.error("请选择是否采集初乳");
+    if (colostrum === "已采集") {
+      if (!colAmount) return toast.error("请填写初乳采集量");
+      if (!colBrix) return toast.error("请填写初乳质量 Brix 值");
+      if (!colUse) return toast.error("请选择初乳处置方式");
+    } else if (!colReason.trim()) {
+      return toast.error("请填写初乳未采集原因");
+    }
+
     for (let i = 0; i < calves.length; i++) {
       const c = calves[i];
       if (!c.status) return toast.error(`请选择第 ${i + 1} 头犊牛的分娩状态`);
