@@ -488,27 +488,6 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                     />
                   </Field>
                 </div>
-                <Field label="是否留养" required>
-                  <div className="grid grid-cols-2 gap-2">
-                    {(["留养", "不留养"] as const).map((k) => (
-                      <ChoiceBtn key={k} label={k} active={c.keep === k} onClick={() => updateCalf(idx, { keep: k })} />
-                    ))}
-                  </div>
-                </Field>
-                {c.keep === "留养" && (
-                  <Field label="转入牛舍" required>
-                    <button
-                      type="button"
-                      onClick={() => setBarnPickerIdx(idx)}
-                      className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
-                    >
-                      <span className={c.targetBarn ? "text-body-sm text-foreground" : "text-body-sm text-text-tertiary"}>
-                        {c.targetBarn || "请选择"}
-                      </span>
-                      <span className="text-text-tertiary">›</span>
-                    </button>
-                  </Field>
-                )}
 
                 {/* ---- 初乳饲喂记录 ---- */}
                 <div className="pt-1 space-y-4">
@@ -544,6 +523,48 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                     </button>
                   </Field>
                 </div>
+
+                <Field label="是否留养" required>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(["留养", "不留养"] as const).map((k) => {
+                      const active = c.keep === k;
+                      return (
+                        <button
+                          key={k}
+                          type="button"
+                          onClick={() => updateCalf(idx, { keep: k })}
+                          className={`w-full h-11 px-2 inline-flex items-center gap-2 text-body-sm text-left ${
+                            active ? "text-foreground" : "text-text-secondary"
+                          }`}
+                        >
+                          <span
+                            className={`w-4 h-4 rounded-full border inline-flex items-center justify-center shrink-0 ${
+                              active ? "border-primary" : "border-border"
+                            }`}
+                          >
+                            {active && <span className="w-2 h-2 rounded-full bg-primary" />}
+                          </span>
+                          <span className={active ? "font-medium" : ""}>{k}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Field>
+                {c.keep === "留养" && (
+                  <Field label="转入牛舍" required>
+                    <button
+                      type="button"
+                      onClick={() => setBarnPickerIdx(idx)}
+                      className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
+                    >
+                      <span className={c.targetBarn ? "text-body-sm text-foreground" : "text-body-sm text-text-tertiary"}>
+                        {c.targetBarn || "请选择"}
+                      </span>
+                      <span className="text-text-tertiary">›</span>
+                    </button>
+                  </Field>
+                )}
+
               </>
             )}
 
