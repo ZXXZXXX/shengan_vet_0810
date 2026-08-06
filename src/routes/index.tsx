@@ -31,6 +31,9 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   PackageMinus,
+  HeartPulse,
+  Activity,
+  Wallet,
 } from "lucide-react";
 
 
@@ -45,10 +48,10 @@ export const Route = createFileRoute("/")({
 });
 
 const kpis = [
-  { label: "发病率", value: "4.8", unit: "%", trend: "down", delta: "-0.6 个百分点", icon: Stethoscope, anchor: "alerts" as const },
-  { label: "治愈率", value: "92.3", unit: "%", trend: "up", delta: "+1.4 个百分点", icon: HeartPulse, anchor: "alerts" as const },
-  { label: "死淘率", value: "1.6", unit: "%", trend: "down", delta: "-0.3 个百分点", icon: Activity, anchor: "stock" as const },
-  { label: "总药费", value: "18.6", unit: "万元", trend: "up", delta: "+1.2 万元（+6.9%）", icon: Wallet, anchor: "warehouse" as const },
+  { label: "发病率", value: "4.8", unit: "%", trend: "down", delta: "-0.6 个百分点", icon: Stethoscope, anchor: "alerts" as const, good: true },
+  { label: "治愈率", value: "92.3", unit: "%", trend: "up", delta: "+1.4 个百分点", icon: HeartPulse, anchor: "alerts" as const, good: true },
+  { label: "死淘率", value: "1.6", unit: "%", trend: "down", delta: "-0.3 个百分点", icon: Activity, anchor: "stock" as const, good: true },
+  { label: "总药费", value: "18.6", unit: "万元", trend: "up", delta: "+1.2 万元（+6.9%）", icon: Wallet, anchor: "warehouse" as const, good: false },
 ];
 
 
@@ -347,16 +350,17 @@ function HomePage() {
             const tone = tones[i % tones.length];
             const isUp = k.trend === "up";
             const isDown = k.trend === "down";
-            const chipBg = isUp
+            const isGood = k.good;
+            const chipBg = !isUp && !isDown
+              ? "var(--bg-surface-subtle)"
+              : isGood
               ? "color-mix(in oklab, var(--state-success) 18%, transparent)"
-              : isDown
-              ? "color-mix(in oklab, var(--state-danger) 14%, transparent)"
-              : "var(--bg-surface-subtle)";
-            const chipColor = isUp
+              : "color-mix(in oklab, var(--state-danger) 14%, transparent)";
+            const chipColor = !isUp && !isDown
+              ? "var(--text-secondary)"
+              : isGood
               ? "#2F7A3A"
-              : isDown
-              ? "#B23A3A"
-              : "var(--text-secondary)";
+              : "#B23A3A";
             return (
               <Card
                 key={k.label}
@@ -392,7 +396,7 @@ function HomePage() {
                     <TrendIcon trend={k.trend} />
                     {k.delta}
                   </span>
-                  <span className="text-caption text-text-tertiary">vs 昨日</span>
+                  <span className="text-caption text-text-tertiary">较上月</span>
                 </div>
               </Card>
             );
