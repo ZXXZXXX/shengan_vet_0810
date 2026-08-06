@@ -247,6 +247,12 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
   const [breedPickerIdx, setBreedPickerIdx] = useState<number | null>(null);
   const [barnPickerIdx, setBarnPickerIdx] = useState<number | null>(null);
+  const [colostrum, setColostrum] = useState<"已采集" | "未采集" | "">("");
+  const [colTime, setColTime] = useState(new Date().toISOString().slice(0, 16));
+  const [colAmount, setColAmount] = useState("");
+  const [colBrix, setColBrix] = useState("");
+  const [colUse, setColUse] = useState("");
+  const [colReason, setColReason] = useState("");
 
   const updateCalf = (idx: number, patch: Partial<Calf>) =>
     setCalves((list) => list.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
