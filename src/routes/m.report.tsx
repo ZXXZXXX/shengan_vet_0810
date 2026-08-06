@@ -133,11 +133,20 @@ function CowProfileCard({
     { label: "胎次", value: p.parity ? `${p.parity} 胎` : "—" },
   ];
   return (
-    <div className="rounded-xl bg-card border border-border overflow-hidden">
-      {/* 顶部：耳号 · 牛舍 + 删除 */}
-      <div className="pl-3 pr-2 h-12 flex items-center gap-2 border-b border-border">
-        <span className="font-mono text-body text-foreground truncate">
-          {`#${cowId} · ${barn}`}
+    <div className="rounded-2xl overflow-hidden shadow-sm border border-[color-mix(in_oklab,var(--brand)_25%,transparent)]">
+      {/* 顶部：耳号 · 牛舍（品牌绿主视觉） */}
+      <div className="bg-primary text-primary-foreground pl-4 pr-2 py-3 flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="font-mono text-section font-medium leading-tight truncate">
+            {`#${cowId}`}
+          </div>
+          <div className="text-caption opacity-85 truncate">{barn}</div>
+        </div>
+        <span className="shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-primary-foreground/15 text-caption">
+          <Stethoscope className="h-3.5 w-3.5" />
+          <span>近一年报病</span>
+          <span className="tabular-nums font-medium">{p.reportCount}</span>
+          <span>次</span>
         </span>
         {onRemove && (
           <button
@@ -146,35 +155,27 @@ function CowProfileCard({
               e.stopPropagation();
               onRemove();
             }}
-            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+            className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-full text-primary-foreground/80 active:bg-primary-foreground/15"
             aria-label="删除已选牛只"
           >
             <X className="h-4 w-4" />
           </button>
         )}
       </div>
-      <div className="grid grid-cols-3 gap-y-3 p-3">
+      <div className="grid grid-cols-3 gap-y-3 p-4 bg-card">
         {items.map((it) => (
           <div key={it.label} className="min-w-0">
             <div className="text-caption text-text-tertiary">{it.label}</div>
-            <div className="text-body-sm text-foreground truncate tabular-nums">{it.value}</div>
+            <div className="text-body font-medium text-foreground truncate tabular-nums">
+              {it.value}
+            </div>
           </div>
         ))}
-      </div>
-      {/* 底部：近一年报病次数 */}
-      <div className="px-3 h-10 flex items-center gap-1.5 border-t border-border bg-surface-subtle text-body-sm">
-        <Stethoscope className="h-3.5 w-3.5 text-primary shrink-0" />
-        <span className="text-text-secondary">近一年报病</span>
-        <span
-          className={`tabular-nums font-medium ${p.reportCount > 0 ? "text-[var(--state-warning)]" : "text-foreground"}`}
-        >
-          {p.reportCount}
-        </span>
-        <span className="text-text-secondary">次</span>
       </div>
     </div>
   );
 }
+
 
 // 牛舍档案（mock）
 function barnProfileOf(barn: string) {
