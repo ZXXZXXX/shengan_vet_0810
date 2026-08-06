@@ -949,20 +949,9 @@ function ReportPage() {
               {barnMode ? (
                 <div className="space-y-2">
                   {barns.map((b) => (
-                    <div
-                      key={b}
-                      className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
-                    >
-                      <span className="truncate">{b}</span>
-                      <button
-                        onClick={() => setBarns([])}
-                        className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
-                        aria-label="删除"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
+                    <BarnProfileCard key={b} barn={b} onRemove={() => setBarns([])} />
                   ))}
+
                   {barns.length === 0 && (
                     <button
                       type="button"
