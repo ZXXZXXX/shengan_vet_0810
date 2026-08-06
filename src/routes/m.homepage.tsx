@@ -364,7 +364,16 @@ export const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: str
   "疫苗免疫": { icon: Syringe, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
   "修蹄":     { icon: Footprints, bg: "bg-[#FFF5DF]", text: "text-[#F59E0B]" },
   "产后护理": { icon: Baby, bg: "bg-[#F3E8FF]", text: "text-[#9333EA]" },
+  // 基础检查类
+  "结核病检测": { icon: ClipboardCheck, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
+  "布病检测":   { icon: ClipboardCheck, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
+  "妊娠检查":   { icon: ClipboardCheck, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
+  // 异常排查类（警示色）
+  "耳温数据": { icon: AlertTriangle, bg: "bg-[#FEF2F2]", text: "text-[#DC2626]" },
+  "颈环数据": { icon: AlertTriangle, bg: "bg-[#FEF2F2]", text: "text-[#DC2626]" },
+  "奶量数据": { icon: AlertTriangle, bg: "bg-[#FEF2F2]", text: "text-[#DC2626]" },
 };
+
 
 // 疾病治疗工单的疾病名称 + 任务类型（用于统一卡片文案）
 export type TaskChip = "待诊断" | "待执行" | "待复查" | "待治愈";
