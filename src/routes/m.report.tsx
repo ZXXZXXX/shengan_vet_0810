@@ -62,21 +62,35 @@ const REVISIT_REASONS = [
   "需进一步检查",
 ];
 
+// 牛只编号格式：{牧场两位}-{出生年份后两位}-{顺序四位}
+function parseCowId(cowId: string): { farm: string; yy: number; seq: number } {
+  const parts = (cowId || "").replace(/^#/, "").split("-");
+  if (parts.length >= 3) {
+    return {
+      farm: parts[0],
+      yy: parseInt(parts[1], 10) || 24,
+      seq: parseInt(parts[2], 10) || 0,
+    };
+  }
+  const digits = (cowId || "").replace(/\D/g, "");
+  return { farm: "08", yy: 24, seq: parseInt(digits || "0", 10) || 0 };
+}
+
 // mock：根据牛只编号生成近 7 日疾病诊疗工单号
 function recentDiseaseOrderOf(cowId: string): string | null {
   if (!cowId) return null;
-  const num = parseInt(cowId.replace(/\D/g, ""), 10);
-  if (isNaN(num)) return null;
+  const { seq } = parseCowId(cowId);
+  if (!seq) return null;
   // mock：编号能被 2 整除的牛只视为近 7 日有疾病诊疗工单
-  if (num % 2 !== 0) return null;
-  return `WO-2026${String(num).padStart(4, "0").slice(-4)}`;
+  if (seq % 2 !== 0) return null;
+  return `WO-2026${String(seq).padStart(4, "0").slice(-4)}`;
 }
 
 // mock：根据耳号推导牛只基础档案（近一年报病次数、品种、类别等）
 function cowProfileOf(cowId: string) {
-  const digits = cowId.replace(/\D/g, "");
-  const num = parseInt(digits || "0", 10) || 0;
-  const birthYear = 2000 + (parseInt(digits.slice(2, 4), 10) || 24);
+  const { yy, seq } = parseCowId(cowId);
+  const num = seq;
+  const birthYear = 2000 + yy;
   const monthsOld = Math.max(1, (2026 - birthYear) * 12 + (num % 12));
   const ageLabel =
     monthsOld < 2
@@ -88,6 +102,7 @@ function cowProfileOf(cowId: string) {
   const parity = isCalf ? 0 : 1 + (num % 4);
   const lactation = isCalf ? 0 : 15 + (num % 300);
   const pregnancy = isCalf || num % 3 === 0 ? 0 : 20 + (num % 260);
+
   return {
     reportCount: num % 5,
     breed: num % 4 === 0 ? "西门塔尔" : "荷斯坦",
@@ -512,13 +527,14 @@ const diseaseKBByType: Record<WorkType, DiseaseEntry[]> = {
 
 // 根据牛只编号查询所属牛舍（mock）
 function barnOfCattle(id: string): string {
-  const n = parseInt(id.replace(/\D/g, ""), 10);
-  if (!isNaN(n)) {
-    const idx = (Math.floor(n / 100) % 8) + 1;
+  const { seq } = parseCowId(id);
+  if (seq) {
+    const idx = (Math.floor(seq / 100) % 8) + 1;
     return `${idx} 号牛舍`;
   }
   return "未知牛舍";
 }
+
 
 function loadDraft(draftId?: string, target?: string): any | null {
   if (typeof window === "undefined") return null;
@@ -844,10 +860,13 @@ function ReportPage() {
   const farmCattlePool = useMemo(
     () =>
       Array.from({ length: 240 }, (_, i) => {
-        const num = 2100 + i;
-        return `A${num}`;
+        const seq = 2100 + i;
+        // {牧场两位数编号}-{出生年份后两位}-{顺序编号四位}
+        const yy = String(20 + (seq % 6)).padStart(2, "0");
+        return `08-${yy}-${String(seq).padStart(4, "0")}`;
       }),
     []
+
   );
   const [addQuery, setAddQuery] = useState("");
   const [cowPickerOpen, setCowPickerOpen] = useState(false);
