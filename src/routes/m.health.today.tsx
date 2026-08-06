@@ -500,6 +500,15 @@ function TodayTasksPage() {
               >
                 {inner}
               </button>
+            ) : isAlert ? (
+              <Link
+                key={t.id}
+                to="/m/animals-{$id}"
+                params={{ id: t.cattleId ?? t.target.replace("#", "") }}
+                className={cls}
+              >
+                {inner}
+              </Link>
             ) : (
               <Link
                 key={t.id}
@@ -510,6 +519,7 @@ function TodayTasksPage() {
                 {inner}
               </Link>
             );
+
           })
         )}
       </div>
