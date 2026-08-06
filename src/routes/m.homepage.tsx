@@ -302,7 +302,16 @@ export const homeTasks: HomeTask[] = [
   { id: "HF-0707", target: "#01-24-2210", conclusion: "白线病 · 远轴侧蹄壁清创", type: "修蹄", status: "进行中", minutesAgo: 80 },
   { id: "HF-0708", target: "#01-24-2211", conclusion: "功能性蹄浴液喷蹄", type: "修蹄", status: "进行中", minutesAgo: 99 },
 
+  // 基础检查类（平台下发）
+  { id: "EX-0901", target: "#01-24-2311", conclusion: "结核病检测", type: "结核病检测", status: "进行中", minutesAgo: 10, kind: "基础检查", dueDate: "2026-08-10" },
+  { id: "EX-0902", target: "#01-24-2312", conclusion: "布病检测", type: "布病检测", status: "进行中", minutesAgo: 26, kind: "基础检查", dueDate: "2026-08-12" },
+  { id: "EX-0903", target: "#01-24-2313", conclusion: "妊娠检查", type: "妊娠检查", status: "进行中", minutesAgo: 44, kind: "基础检查", dueDate: "2026-08-08" },
+  // 异常排查类（设备预警）
+  { id: "AL-0101", target: "#01-24-2405", conclusion: "耳温异常", type: "耳温数据", status: "进行中", minutesAgo: 6, kind: "异常排查", cattleId: "01-24-2405" },
+  { id: "AL-0102", target: "#01-24-2418", conclusion: "颈环异常", type: "颈环数据", status: "进行中", minutesAgo: 19, kind: "异常排查", cattleId: "01-24-2418" },
+  { id: "AL-0103", target: "#01-24-2432", conclusion: "奶量异常", type: "奶量数据", status: "进行中", minutesAgo: 35, kind: "异常排查", cattleId: "01-24-2432" },
 ];
+
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
 export const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
