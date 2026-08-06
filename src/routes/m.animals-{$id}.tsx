@@ -151,20 +151,33 @@ function AnimalDetailPage() {
                   <span className="truncate">{a.farm} · {a.barn}</span>
                 </div>
               </div>
-              <span
-                className={`shrink-0 h-6 px-2 rounded-full inline-flex items-center gap-1 text-[11px] font-semibold ${
-                  a.health === "异常"
-                    ? "bg-[#FFE4E1] text-[#D9534F]"
-                    : a.health === "观察中"
-                    ? "bg-[#FFF7E6] text-[#B8860B]"
-                    : a.health === "治疗中"
-                    ? "bg-[#FFE8CC] text-[#C9621F]"
-                    : "bg-[#E8F5E9] text-[#2E7D32]"
-                }`}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
-                {a.health}
-              </span>
+              <div className="shrink-0 inline-flex items-center gap-1.5">
+                <span
+                  className={`h-6 px-2 rounded-full inline-flex items-center gap-1 text-[11px] font-semibold ${
+                    a.health === "异常"
+                      ? "bg-[#FFE4E1] text-[#D9534F]"
+                      : a.health === "观察中"
+                      ? "bg-[#FFF7E6] text-[#B8860B]"
+                      : a.health === "治疗中"
+                      ? "bg-[#FFE8CC] text-[#C9621F]"
+                      : "bg-[#E8F5E9] text-[#2E7D32]"
+                  }`}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                  {a.health}
+                </span>
+                {(abnormal || observing) && (
+                  <button
+                    type="button"
+                    aria-label="异常反馈"
+                    onClick={() => setFeedbackOpen(true)}
+                    className="h-6 w-6 rounded-full bg-white/20 border border-white/25 inline-flex items-center justify-center active:scale-95 transition-transform"
+                  >
+                    <MessageSquareWarning className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
             </div>
 
             {/* 基础信息 */}
