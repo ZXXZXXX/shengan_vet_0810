@@ -460,6 +460,7 @@ function AnimalDetailPage() {
               <button
                 type="button"
                 onClick={() => {
+                  markAlertHandled(a.id); // 异常排查任务当天从今日任务列表清除
                   setFeedbackOpen(false);
                   navigate({
                     to: "/m/report",
