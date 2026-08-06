@@ -1,5 +1,5 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MobileShell } from "@/components/mobile-shell";
 import { ArrowRight, ArrowRightLeft, LogOut, MapPin } from "lucide-react";
 import { toast } from "sonner";
