@@ -13,6 +13,7 @@ import {
   Check,
   ImagePlus,
   Pencil,
+  Stethoscope,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 
