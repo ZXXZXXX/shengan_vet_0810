@@ -359,11 +359,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
           </Field>
 
           <Field label="袋号" required>
-            <div className="grid grid-cols-5 gap-2">
-              {(["1", "2", "3", "4", "5"] as const).map((k) => (
-                <ChoiceBtn key={k} label={k} active={colBag === k} onClick={() => setColBag(k)} />
-              ))}
-            </div>
+            <ScoreRow min={1} max={5} value={colBag ? Number(colBag) : null} onChange={(n) => setColBag(String(n))} />
           </Field>
 
           <div className="grid grid-cols-2 gap-3">
