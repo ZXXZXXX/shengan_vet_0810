@@ -844,10 +844,13 @@ function ReportPage() {
   const farmCattlePool = useMemo(
     () =>
       Array.from({ length: 240 }, (_, i) => {
-        const num = 2100 + i;
-        return `A${num}`;
+        const seq = 2100 + i;
+        // {牧场两位数编号}-{出生年份后两位}-{顺序编号四位}
+        const yy = String(20 + (seq % 6)).padStart(2, "0");
+        return `08-${yy}-${String(seq).padStart(4, "0")}`;
       }),
     []
+
   );
   const [addQuery, setAddQuery] = useState("");
   const [cowPickerOpen, setCowPickerOpen] = useState(false);
