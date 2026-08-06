@@ -176,7 +176,14 @@ type Calf = {
   targetBarn: string;
   reason: string;
   media: number[];
+  // 初乳饲喂记录
+  feedTime: string;
+  feedSource: "母源初乳" | "初乳库" | "代乳（初乳粉）" | "";
+  feedAmount: string;
+  feedWay: "奶瓶自饮" | "食管灌服" | "";
+  feedNote: string;
 };
+
 
 const CALF_BARNS = [
   "犊牛岛 A 区",
