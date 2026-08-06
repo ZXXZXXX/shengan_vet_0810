@@ -120,14 +120,27 @@ function TransferForm({ id, onDone }: { id: string; onDone: () => void }) {
             onOpenChange={setPickerOpen}
           />
           <Field label="转栏原因" required>
-            <TagPicker
-              selected={reasons}
-              onChange={setReasons}
-              presets={TRANSFER_REASONS}
-              singleSelect
-              placeholder="输入关键词搜索,未命中可直接新建"
-            />
+            <div className="flex flex-wrap gap-2">
+              {TRANSFER_REASONS.map((t) => {
+                const active = reasons[0] === t;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setReasons([t])}
+                    className={`inline-flex items-center h-9 px-4 rounded-full text-body-sm border transition-colors ${
+                      active
+                        ? "bg-brand-subtle text-primary border-primary font-medium"
+                        : "bg-card text-foreground border-border active:border-primary"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
           </Field>
+
         </div>
       </div>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
