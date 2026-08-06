@@ -127,6 +127,9 @@ function TodayTasksPage() {
   const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
   const [kindFilter, setKindFilter] = useState<TaskKind>("工单任务");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
+  const [barnSheetOpen, setBarnSheetOpen] = useState(false);
+  const [barnQuery, setBarnQuery] = useState("");
+
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<"batch" | null>(null);
