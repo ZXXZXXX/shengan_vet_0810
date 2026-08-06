@@ -822,47 +822,48 @@ function PersonalWorkStats() {
   type StatItem = {
     label: string;
     value: string;
+    /** 外部系统派工单口径 */
+    dispatch: string;
     unit: string;
     tone: string;
     bg: string;
-    visual: "bars" | "ring" | "spark" | "clock";
     icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   };
   const stats: StatItem[] = [
     {
       label: "全部工单",
       value: "128",
+      dispatch: "46",
       unit: "单",
       tone: "#FF8A3D",
       bg: "color-mix(in oklab, #FF8A3D 10%, #FFFFFF)",
-      visual: "bars",
       icon: FileText,
     },
     {
       label: "完成率",
       value: "75",
+      dispatch: "68",
       unit: "%",
       tone: "var(--state-success)",
       bg: "color-mix(in oklab, var(--state-success) 10%, #FFFFFF)",
-      visual: "ring",
       icon: CheckCircle2,
     },
     {
       label: "进行中",
       value: "14",
+      dispatch: "5",
       unit: "单",
       tone: "#2E8CF0",
       bg: "color-mix(in oklab, #2E8CF0 8%, #FFFFFF)",
-      visual: "spark",
       icon: PlayCircle,
     },
     {
       label: "逾期数",
       value: "6",
+      dispatch: "2",
       unit: "单",
       tone: "#F15454",
       bg: "color-mix(in oklab, #F15454 8%, #FFFFFF)",
-      visual: "clock",
       icon: Clock,
     },
   ];
@@ -875,14 +876,15 @@ function PersonalWorkStats() {
           return (
             <div
               key={s.label}
-              className="relative rounded-2xl p-3.5 overflow-hidden aspect-[1.9/1]"
+              className="relative rounded-2xl p-3.5 overflow-hidden"
               style={{ background: s.bg }}
             >
               <div className="flex items-center gap-1.5">
                 <Icon className="h-4 w-4" style={{ color: s.tone }} />
                 <span className="text-body-sm text-foreground">{s.label}</span>
               </div>
-              <div className="absolute left-3.5 bottom-3 flex items-baseline gap-1">
+              {/* 左上：全部工单口径 */}
+              <div className="mt-2 flex items-baseline gap-1">
                 <span
                   className="text-[30px] leading-none font-semibold tabular-nums"
                   style={{ color: s.tone }}
@@ -890,8 +892,19 @@ function PersonalWorkStats() {
                   {s.value}
                 </span>
                 <span className="text-caption text-text-tertiary">{s.unit}</span>
+                <span className="text-caption text-text-tertiary ml-0.5">全部</span>
               </div>
-              <StatVisual variant={s.visual} tone={s.tone} />
+              {/* 右下：外部系统派工单口径 */}
+              <div className="mt-2 flex items-baseline justify-end gap-1">
+                <span className="text-caption text-text-tertiary">派工单</span>
+                <span
+                  className="text-[18px] leading-none font-medium tabular-nums"
+                  style={{ color: s.tone, opacity: 0.75 }}
+                >
+                  {s.dispatch}
+                </span>
+                <span className="text-caption text-text-tertiary">{s.unit}</span>
+              </div>
             </div>
           );
         })}
@@ -899,6 +912,7 @@ function PersonalWorkStats() {
     </section>
   );
 }
+
 
 function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "clock" | "truck"; tone: string }) {
   if (variant === "bars") {
