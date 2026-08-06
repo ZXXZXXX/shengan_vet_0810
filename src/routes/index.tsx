@@ -14,6 +14,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import grasslandHero from "@/assets/grassland-hero.png";
+import { ImmunizationRateCard } from "@/components/immunization-rate-card";
+
 
 import {
   Inbox,
