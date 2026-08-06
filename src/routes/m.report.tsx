@@ -202,9 +202,17 @@ function BarnProfileCard({ barn, onRemove }: { barn: string; onRemove?: () => vo
   const shown = p.categories.slice(0, 2);
   const rest = p.categories.length - shown.length;
   return (
-    <div className="rounded-xl bg-card border border-border overflow-hidden">
-      <div className="pl-3 pr-2 h-12 flex items-center gap-2 border-b border-border">
-        <span className="text-body text-foreground truncate">{barn}</span>
+    <div className="rounded-2xl overflow-hidden shadow-sm border border-[color-mix(in_oklab,var(--brand)_25%,transparent)]">
+      <div className="bg-primary text-primary-foreground pl-4 pr-2 py-3 flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="text-section font-medium leading-tight truncate">{barn}</div>
+          <div className="text-caption opacity-85 truncate">{p.desc}</div>
+        </div>
+        <span className="shrink-0 inline-flex items-baseline gap-1 h-7 px-2.5 rounded-full bg-primary-foreground/15 text-caption">
+          <span>存栏</span>
+          <span className="tabular-nums font-medium">{p.stock}</span>
+          <span>头</span>
+        </span>
         {onRemove && (
           <button
             type="button"
@@ -212,31 +220,34 @@ function BarnProfileCard({ barn, onRemove }: { barn: string; onRemove?: () => vo
               e.stopPropagation();
               onRemove();
             }}
-            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+            className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-full text-primary-foreground/80 active:bg-primary-foreground/15"
             aria-label="删除已选牛舍"
           >
             <X className="h-4 w-4" />
           </button>
         )}
       </div>
-      <div className="p-3 space-y-3">
-        <div className="text-body-sm text-text-secondary">{p.desc}</div>
-        <div className="grid grid-cols-2 gap-y-3">
-          <div className="min-w-0">
-            <div className="text-caption text-text-tertiary">当前存栏</div>
-            <div className="text-body-sm text-foreground tabular-nums">{p.stock} 头</div>
-          </div>
-          <div className="min-w-0">
-            <div className="text-caption text-text-tertiary">主要类别</div>
-            <div className="text-body-sm text-foreground truncate">
-              {shown.join("、")}
-              {rest > 0 ? " 等" : ""}
-            </div>
-          </div>
+      <div className="p-4 bg-card">
+        <div className="text-caption text-text-tertiary">主要牛只类别</div>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {shown.map((c) => (
+            <span
+              key={c}
+              className="inline-flex items-center h-7 px-2.5 rounded-full bg-brand-subtle text-primary text-body-sm"
+            >
+              {c}
+            </span>
+          ))}
+          {rest > 0 && (
+            <span className="inline-flex items-center h-7 px-2.5 rounded-full bg-surface-subtle text-text-secondary text-body-sm">
+              等 {rest} 类
+            </span>
+          )}
         </div>
       </div>
     </div>
   );
+
 }
 
 
