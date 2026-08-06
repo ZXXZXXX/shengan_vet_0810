@@ -45,11 +45,12 @@ export const Route = createFileRoute("/")({
 });
 
 const kpis = [
-  { label: "存栏总数", value: "2,486", unit: "头", trend: "up", delta: "+1.2%", icon: Beef, anchor: "stock" as const },
-  { label: "仓库物资", value: "186", unit: "类", trend: "down", delta: "-3 类临期", icon: Package, anchor: "warehouse" as const },
-  { label: "健康异常", value: "12", unit: "起", trend: "down", delta: "-22%", icon: Stethoscope, anchor: "alerts" as const },
-  { label: "待办工作", value: "37", unit: "项", trend: "flat", delta: "+5", icon: ClipboardList, anchor: "alerts" as const },
+  { label: "发病率", value: "4.8", unit: "%", trend: "down", delta: "-0.6 个百分点", icon: Stethoscope, anchor: "alerts" as const },
+  { label: "治愈率", value: "92.3", unit: "%", trend: "up", delta: "+1.4 个百分点", icon: HeartPulse, anchor: "alerts" as const },
+  { label: "死淘率", value: "1.6", unit: "%", trend: "down", delta: "-0.3 个百分点", icon: Activity, anchor: "stock" as const },
+  { label: "总药费", value: "18.6", unit: "万元", trend: "up", delta: "+1.2 万元（+6.9%）", icon: Wallet, anchor: "warehouse" as const },
 ];
+
 
 type WorkOrderType = "disease" | "vaccine" | "deworm" | "hoof" | "postpartum" | "drying" | "general";
 type PendingRequest = {
