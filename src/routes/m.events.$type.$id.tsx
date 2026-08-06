@@ -114,6 +114,7 @@ function TransferForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [reasons, setReasons] = useState<string[]>([]);
   const [reasonOpen, setReasonOpen] = useState(false);
+  const [media, setMedia] = useState<number[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const submit = () => {
@@ -202,6 +203,9 @@ function TransferForm({ id, onDone }: { id: string; onDone: () => void }) {
             value={reasons[0] ?? ""}
             onChange={(v) => setReasons(v ? [v] : [])}
           />
+          <Field label="拍照记录">
+            <MediaGrid items={media} setItems={setMedia} max={6} hideVideo caption="照片（选填）" />
+          </Field>
 
 
         </div>
