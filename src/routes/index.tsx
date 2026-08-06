@@ -15,6 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import grasslandHero from "@/assets/grassland-hero.png";
 import { ImmunizationRateCard } from "@/components/immunization-rate-card";
+import { DiseaseStatsSection } from "@/components/disease-stats-section";
+
 
 
 import {
@@ -407,6 +409,10 @@ function HomePage() {
 
         {/* 本期免疫完成率 — 支持下钻 */}
         <ImmunizationRateCard />
+
+        {/* 疾病统计 — 左右联动 */}
+        <DiseaseStatsSection />
+
 
 
 
