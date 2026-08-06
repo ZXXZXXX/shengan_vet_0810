@@ -648,8 +648,6 @@ function OpsOverview() {
   type KpiItem = {
     label: string;
     value: string;
-    /** 外部系统派工单维度 */
-    dispatchValue: string;
     unit: string;
     tone: string;
     bg: string;
@@ -660,7 +658,6 @@ function OpsOverview() {
     {
       label: "存栏牛只",
       value: "12,486",
-      dispatchValue: "3,214",
       unit: "头",
       tone: "var(--brand)",
       bg: "color-mix(in oklab, var(--brand) 10%, #FFFFFF)",
@@ -670,7 +667,6 @@ function OpsOverview() {
     {
       label: "休药隔离",
       value: "38",
-      dispatchValue: "12",
       unit: "头",
       tone: "#FF8A3D",
       bg: "color-mix(in oklab, #FF8A3D 10%, #FFFFFF)",
@@ -680,7 +676,6 @@ function OpsOverview() {
     {
       label: "新生牛犊",
       value: "126",
-      dispatchValue: "41",
       unit: "头",
       tone: "#2E8CF0",
       bg: "color-mix(in oklab, #2E8CF0 8%, #FFFFFF)",
@@ -690,7 +685,6 @@ function OpsOverview() {
     {
       label: "离场牛只",
       value: "92",
-      dispatchValue: "27",
       unit: "头",
       tone: "var(--effect-ai-purple)",
       bg: "color-mix(in oklab, var(--effect-ai-purple) 10%, #FFFFFF)",
@@ -707,38 +701,22 @@ function OpsOverview() {
           return (
             <div
               key={k.label}
-              className="relative rounded-2xl p-3.5 overflow-hidden"
+              className="relative rounded-2xl p-3.5 overflow-hidden aspect-[1.9/1]"
               style={{ background: k.bg }}
             >
               <div className="flex items-center gap-1.5">
                 <Icon className="h-4 w-4" style={{ color: k.tone }} />
                 <span className="text-body-sm text-foreground">{k.label}</span>
               </div>
-
-              {/* 左上：全部工单 */}
-              <div className="mt-2 flex items-baseline gap-1">
+              <div className="absolute left-3.5 bottom-3 flex items-baseline gap-1">
                 <span
-                  className="text-[26px] leading-none font-semibold tabular-nums"
+                  className="text-[30px] leading-none font-semibold tabular-nums"
                   style={{ color: k.tone }}
                 >
                   {k.value}
                 </span>
                 <span className="text-caption text-text-tertiary">{k.unit}</span>
               </div>
-              <div className="mt-0.5 text-caption text-text-tertiary">全部工单</div>
-
-              {/* 右下：外部系统派工单 */}
-              <div className="mt-2 pt-1.5 border-t border-border/50 flex items-baseline justify-end gap-1">
-                <span className="text-caption text-text-tertiary mr-auto">派工单</span>
-                <span
-                  className="text-body font-medium tabular-nums"
-                  style={{ color: k.tone }}
-                >
-                  {k.dispatchValue}
-                </span>
-                <span className="text-caption text-text-tertiary">{k.unit}</span>
-              </div>
-
               <StatVisual variant={k.visual} tone={k.tone} />
             </div>
           );
@@ -748,7 +726,6 @@ function OpsOverview() {
     </section>
   );
 }
-
 
 function HealthTrendChart() {
   const months = ["12月", "1月", "2月", "3月", "4月", "5月"];
