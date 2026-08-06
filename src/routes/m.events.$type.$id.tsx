@@ -247,12 +247,9 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
   const [breedPickerIdx, setBreedPickerIdx] = useState<number | null>(null);
   const [barnPickerIdx, setBarnPickerIdx] = useState<number | null>(null);
-  const [colostrum, setColostrum] = useState<"已采集" | "未采集" | "">("已采集");
-  const [colTime, setColTime] = useState(new Date().toISOString().slice(0, 16));
   const [colAmount, setColAmount] = useState("");
   const [colBrix, setColBrix] = useState(""); // 白力度
   const [colUse, setColUse] = useState("");
-  const [colReason, setColReason] = useState("");
   const [colQuality, setColQuality] = useState("");
   const [colBag, setColBag] = useState("");
   // 初乳编码：大牛耳号 + 年份后两位和月份
