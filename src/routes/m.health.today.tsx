@@ -183,9 +183,10 @@ function TodayTasksPage() {
 
   const allBarns = useMemo(() => {
     const s = new Set<string>();
-    tabTasks.forEach((t) => s.add(inferBarn(t)));
+    kindTasks.forEach((t) => s.add(inferBarn(t)));
     return Array.from(s);
-  }, [tabTasks]);
+  }, [kindTasks]);
+
 
   const tasks = useMemo(
     () =>
