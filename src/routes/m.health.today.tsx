@@ -286,9 +286,11 @@ function TodayTasksPage() {
                 type="button"
                 onClick={() => {
                   setActiveTab(tb);
+                  setKindFilter("全部");
                   setSelectedBarns(new Set());
                   exitSelect();
                 }}
+
                 className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
                   active
                     ? "text-primary font-medium"
