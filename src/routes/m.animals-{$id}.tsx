@@ -425,6 +425,55 @@ function AnimalDetailPage() {
         </div>
       )}
 
+      {/* 异常反馈弹窗 */}
+      {feedbackOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-8"
+          onClick={() => setFeedbackOpen(false)}
+        >
+          <div
+            className="w-full max-w-[340px] bg-card rounded-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-5 pt-5 pb-4 text-center space-y-2">
+              <div className="mx-auto h-11 w-11 rounded-full bg-[#FFF7E6] text-[#B8860B] inline-flex items-center justify-center">
+                <MessageSquareWarning className="h-5 w-5" />
+              </div>
+              <div className="text-section text-foreground">牛只是否需要报病治疗？</div>
+              <div className="text-caption text-text-tertiary">
+                #{a.id} 当前存在异常预警
+                {observing && observeUntil
+                  ? `，已标记为观察中（${new Date(observeUntil).toLocaleDateString("zh-CN")} 00:00 解除）`
+                  : ""}
+              </div>
+            </div>
+            <div className="p-3 pt-0 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={startObserve}
+                className="h-11 rounded-xl border border-border text-body-sm text-text-secondary bg-card active:bg-surface-subtle"
+              >
+                继续观察
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFeedbackOpen(false);
+                  navigate({
+                    to: "/m/report",
+                    search: { target: a.id, barn: a.barn, lock: 1 } as never,
+                  });
+                }}
+                className="h-11 rounded-xl bg-primary text-primary-foreground text-body-sm font-medium"
+              >
+                疾病上报
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </MobileShell>
   );
 }
