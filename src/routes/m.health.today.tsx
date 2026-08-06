@@ -114,14 +114,16 @@ function statusOf(t: HomeTask): StatusTab {
   return "待执行";
 }
 
+type TaskKind = "工单任务" | "基础检查" | "异常排查";
+const ALL_KINDS: TaskKind[] = ["工单任务", "基础检查", "异常排查"];
+
 function TodayTasksPage() {
   const role = useRole();
   const navigate = useNavigate();
-  const tabs = ALL_TABS;
   const allTasks = useMemo(() => getRoleAllTasks(role), [role]);
 
   const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
-  const [kindFilter, setKindFilter] = useState<"全部" | "工单任务" | "基础检查" | "异常排查">("全部");
+  const [kindFilter, setKindFilter] = useState<TaskKind>("工单任务");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -139,37 +141,36 @@ function TodayTasksPage() {
     });
   }, [capture, navigate]);
 
-  // 当前 tab 下的任务，叠加分类筛选与牛舍筛选
-  const statusTasks = useMemo(
-    () => allTasks.filter((t) => statusOf(t) === activeTab),
-    [allTasks, activeTab],
-  );
-
-  const kindOf = (t: HomeTask) =>
+  const kindOf = (t: HomeTask): TaskKind =>
     t.kind === "基础检查" || t.kind === "异常排查" ? t.kind : "工单任务";
 
-  const kindOptions = useMemo(() => {
-    const opts: Array<"全部" | "工单任务" | "基础检查" | "异常排查"> = [
-      "全部",
-      "工单任务",
-      "基础检查",
-      "异常排查",
-    ];
-    return opts
-      .map((k) => ({
+  // 顶层：三大类别
+  const kindOptions = useMemo(
+    () =>
+      ALL_KINDS.map((k) => ({
         key: k,
-        count: k === "全部" ? statusTasks.length : statusTasks.filter((t) => kindOf(t) === k).length,
-      }))
-      .filter((o) => o.key === "全部" || o.count > 0);
-  }, [statusTasks]);
+        count: allTasks.filter((t) => kindOf(t) === k).length,
+      })),
+    [allTasks],
+  );
+
+  const kindTasks = useMemo(
+    () => allTasks.filter((t) => kindOf(t) === kindFilter),
+    [allTasks, kindFilter],
+  );
+
+  // 状态 tab 仅对「工单任务」有意义
+  const showStatusTabs = kindFilter === "工单任务";
+  const tabs = ALL_TABS;
 
   const tabTasks = useMemo(
     () =>
-      kindFilter === "全部"
-        ? statusTasks
-        : statusTasks.filter((t) => kindOf(t) === kindFilter),
-    [statusTasks, kindFilter],
+      showStatusTabs
+        ? kindTasks.filter((t) => statusOf(t) === activeTab)
+        : kindTasks,
+    [kindTasks, activeTab, showStatusTabs],
   );
+
 
   const allBarns = useMemo(() => {
     const s = new Set<string>();
