@@ -12,19 +12,24 @@ import { Check } from "lucide-react";
 
 
 export const Route = createFileRoute("/m/events/$type/$id")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    item: typeof s.item === "string" ? s.item : undefined,
+  }),
   head: () => ({ meta: [{ title: "事件记录 · 奇点智牧" }] }),
   component: EventPage,
 });
 
 function EventPage() {
   const { type, id } = useParams({ from: "/m/events/$type/$id" });
+  const { item } = Route.useSearch();
   const navigate = useNavigate();
   const done = () => navigate({ to: "/m/animals-{$id}", params: { id } });
   if (type === "calving") return <CalvingForm id={id} onDone={done} />;
-  if (type === "exam") return <ExamForm id={id} onDone={done} />;
+  if (type === "exam") return <ExamForm id={id} item={item} onDone={done} />;
   if (type === "transfer") return <TransferForm id={id} onDone={done} />;
   return <LeaveForm id={id} onDone={done} />;
 }
+
 
 const TRANSFER_REASONS = [
   "泌乳阶段调整",
@@ -669,11 +674,27 @@ const EXAM_ITEMS: { key: ExamKey; label: string; unit?: string; hint?: string }[
   { key: "pregnancy", label: "孕检" },
 ];
 
-function ExamForm({ id, onDone }: { id: string; onDone: () => void }) {
+function ExamForm({
+  id,
+  item,
+  onDone,
+}: {
+  id: string;
+  item?: string;
+  onDone: () => void;
+}) {
+  const preset = EXAM_ITEMS.find(
+    (it) => item && (it.label === item || item.includes(it.label.slice(0, 2))),
+  )?.key;
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [active, setActive] = useState<Record<ExamKey, boolean>>({
-    temp: true, discharge: false, ketosis: false, urineph: false, pregnancy: false,
+    temp: preset ? preset === "temp" : true,
+    discharge: preset === "discharge",
+    ketosis: preset === "ketosis",
+    urineph: preset === "urineph",
+    pregnancy: preset === "pregnancy",
   });
+
   const [pickerOpen, setPickerOpen] = useState(false);
   const [temp, setTemp] = useState("");
   const [discharge, setDischarge] = useState<number | null>(null);

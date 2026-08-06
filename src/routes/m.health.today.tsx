@@ -560,11 +560,14 @@ function TodayTasksPage() {
             const barn = inferBarn(t);
             const actionText = isAlert
               ? "查看详情"
-              : activeTab === "待执行"
-                ? "执行"
-                : activeTab === "待复查"
-                  ? "复查"
-                  : "诊断";
+              : isExam
+                ? "记录"
+                : activeTab === "待执行"
+                  ? "执行"
+                  : activeTab === "待复查"
+                    ? "复查"
+                    : "诊断";
+
             const linkTo = "/m/health/$id/execute" as const;
 
 
@@ -695,7 +698,18 @@ function TodayTasksPage() {
               >
                 {inner}
               </Link>
+            ) : isExam ? (
+              <Link
+                key={t.id}
+                to="/m/events/$type/$id"
+                params={{ type: "exam", id: t.target.replace("#", "") }}
+                search={{ item: t.type }}
+                className={cls}
+              >
+                {inner}
+              </Link>
             ) : (
+
               <Link
                 key={t.id}
                 to={linkTo}
