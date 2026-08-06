@@ -10,6 +10,8 @@ import {
   Camera,
   Filter,
   ChevronRight,
+  ChevronDown,
+
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -128,6 +130,8 @@ function TodayTasksPage() {
   const [kindFilter, setKindFilter] = useState<TaskKind>("工单任务");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [barnSheetOpen, setBarnSheetOpen] = useState(false);
+  const [statusSheetOpen, setStatusSheetOpen] = useState(false);
+
   const [barnQuery, setBarnQuery] = useState("");
 
   const [selectMode, setSelectMode] = useState(false);
@@ -316,89 +320,112 @@ function TodayTasksPage() {
         </div>
       </div>
 
-      {/* 工单任务下的状态筛选 */}
-      {showStatusTabs && (
-        <div className="sticky top-[92px] z-20 bg-card/95 backdrop-blur border-b border-border">
-          <div className="px-4 py-2 overflow-x-auto no-scrollbar">
-            <div className="flex gap-1.5 w-max pr-4">
-              {tabs.map((tb) => {
-                const sel = activeTab === tb;
-                const tabCount = kindTasks.filter(
-                  (t) => statusOf(t) === tb,
-                ).length;
-                return (
-                  <button
-                    key={tb}
-                    type="button"
-                    onClick={() => {
-                      setActiveTab(tb);
-                      setSelectedBarns(new Set());
-                      exitSelect();
-                    }}
-                    className={`shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-full border text-body-sm transition-colors ${
-                      sel
-                        ? "border-primary bg-brand-subtle text-primary font-medium"
-                        : "border-border bg-card text-text-secondary"
+      {/* 筛选条：状态 + 牛舍（下拉抽屉） */}
+      {(showStatusTabs || allBarns.length > 1) && (
+        <div className="px-4 pt-3 flex items-center gap-2">
+          {showStatusTabs && (
+            <button
+              type="button"
+              onClick={() => setStatusSheetOpen(true)}
+              className="h-9 px-3 inline-flex items-center gap-1.5 rounded-full border border-primary bg-brand-subtle text-primary text-body-sm max-w-[52%]"
+            >
+              <span className="truncate">{activeTab}</span>
+              <span className="text-caption tabular-nums text-primary/70">
+                {kindTasks.filter((t) => statusOf(t) === activeTab).length}
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+            </button>
+          )}
+          {allBarns.length > 1 && (
+            <button
+              type="button"
+              onClick={() => {
+                setBarnQuery("");
+                setBarnSheetOpen(true);
+              }}
+              className={`h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm flex-1 min-w-0 ${
+                selectedBarns.size > 0
+                  ? "border-primary bg-brand-subtle text-primary"
+                  : "border-border bg-card text-text-secondary"
+              }`}
+            >
+              <Filter className="h-4 w-4 shrink-0" />
+              <span className="flex-1 text-left truncate">
+                {selectedBarns.size === 0
+                  ? "全部牛舍"
+                  : Array.from(selectedBarns).slice(0, 2).join("、") +
+                    (selectedBarns.size > 2
+                      ? ` 等 ${selectedBarns.size} 个`
+                      : "")}
+              </span>
+              {selectedBarns.size > 0 ? (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedBarns(new Set());
+                  }}
+                  className="text-caption text-primary px-1"
+                >
+                  清除
+                </span>
+              ) : (
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
+              )}
+            </button>
+          )}
+        </div>
+      )}
+
+      <Sheet open={statusSheetOpen} onOpenChange={setStatusSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0">
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">任务状态</SheetTitle>
+          </SheetHeader>
+          <div className="px-4 pb-6 space-y-2">
+            {tabs.map((tb) => {
+              const sel = activeTab === tb;
+              const tabCount = kindTasks.filter((t) => statusOf(t) === tb).length;
+              return (
+                <button
+                  key={tb}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tb);
+                    setSelectedBarns(new Set());
+                    exitSelect();
+                    setStatusSheetOpen(false);
+                  }}
+                  className={`w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border transition-colors ${
+                    sel ? "border-primary bg-primary/5" : "border-border bg-card"
+                  }`}
+                >
+                  <span className="flex-1 text-left text-body text-foreground">
+                    {tb}
+                  </span>
+                  <span className="text-body-sm tabular-nums text-text-tertiary">
+                    {tabCount}
+                  </span>
+                  <span
+                    className={`h-5 w-5 rounded-md flex items-center justify-center border ${
+                      sel ? "bg-primary border-primary" : "border-border bg-card"
                     }`}
                   >
-                    <span>{tb}</span>
-                    <span
-                      className={`text-caption tabular-nums ${
-                        sel ? "text-primary/80" : "text-text-tertiary"
-                      }`}
-                    >
-                      {tabCount}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                    {sel && (
+                      <Check
+                        className="h-3.5 w-3.5 text-primary-foreground"
+                        strokeWidth={3}
+                      />
+                    )}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
 
-
-
-
-      {/* 牛舍筛选入口（抽屉内搜索多选） */}
-      {allBarns.length > 1 && (
-        <div className="px-4 pt-3">
-          <button
-            type="button"
-            onClick={() => {
-              setBarnQuery("");
-              setBarnSheetOpen(true);
-            }}
-            className={`w-full h-10 px-3 inline-flex items-center gap-2 rounded-xl border text-body-sm ${
-              selectedBarns.size > 0
-                ? "border-primary bg-brand-subtle text-primary"
-                : "border-border bg-card text-text-secondary"
-            }`}
-          >
-            <Filter className="h-4 w-4 shrink-0" />
-            <span className="flex-1 text-left truncate">
-              {selectedBarns.size === 0
-                ? "全部牛舍"
-                : Array.from(selectedBarns).slice(0, 2).join("、") +
-                  (selectedBarns.size > 2 ? ` 等 ${selectedBarns.size} 个牛舍` : "")}
-            </span>
-            {selectedBarns.size > 0 ? (
-              <span
-                role="button"
-                tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedBarns(new Set());
-                }}
-                className="text-caption text-primary px-1"
-              >
-                清除
-              </span>
-            ) : null}
-            <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
-          </button>
-        </div>
-      )}
 
       <Sheet open={barnSheetOpen} onOpenChange={setBarnSheetOpen}>
         <SheetContent
