@@ -161,7 +161,67 @@ function CowProfileCard({
   );
 }
 
+// 牛舍档案（mock）
+function barnProfileOf(barn: string) {
+  const n = parseInt(barn.replace(/\D/g, ""), 10) || 1;
+  const descs = [
+    "泌乳牛舍 · 自由卧栏",
+    "干奶牛舍 · 散栏饲养",
+    "围产牛舍 · 产前观察",
+    "后备牛舍 · 育成培育",
+    "犊牛舍 · 单栏饲养",
+  ];
+  const pools = ["泌乳牛", "干奶牛", "围产牛", "后备牛", "犊牛", "青年牛"];
+  const catCount = (n % 3) + 1;
+  const cats = Array.from({ length: catCount }, (_, i) => pools[(n + i) % pools.length]);
+  return {
+    desc: descs[n % descs.length],
+    stock: 60 + ((n * 17) % 180),
+    categories: cats,
+  };
+}
 
+function BarnProfileCard({ barn, onRemove }: { barn: string; onRemove?: () => void }) {
+  const p = useMemo(() => barnProfileOf(barn), [barn]);
+  const shown = p.categories.slice(0, 2);
+  const rest = p.categories.length - shown.length;
+  return (
+    <div className="rounded-xl bg-card border border-border overflow-hidden">
+      <div className="pl-3 pr-2 h-12 flex items-center gap-2 border-b border-border">
+        <span className="text-body text-foreground truncate">{barn}</span>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+            aria-label="删除已选牛舍"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+      <div className="p-3 space-y-3">
+        <div className="text-body-sm text-text-secondary">{p.desc}</div>
+        <div className="grid grid-cols-2 gap-y-3">
+          <div className="min-w-0">
+            <div className="text-caption text-text-tertiary">当前存栏</div>
+            <div className="text-body-sm text-foreground tabular-nums">{p.stock} 头</div>
+          </div>
+          <div className="min-w-0">
+            <div className="text-caption text-text-tertiary">主要类别</div>
+            <div className="text-body-sm text-foreground truncate">
+              {shown.join("、")}
+              {rest > 0 ? " 等" : ""}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 
 
@@ -889,20 +949,9 @@ function ReportPage() {
               {barnMode ? (
                 <div className="space-y-2">
                   {barns.map((b) => (
-                    <div
-                      key={b}
-                      className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
-                    >
-                      <span className="truncate">{b}</span>
-                      <button
-                        onClick={() => setBarns([])}
-                        className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
-                        aria-label="删除"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
+                    <BarnProfileCard key={b} barn={b} onRemove={() => setBarns([])} />
                   ))}
+
                   {barns.length === 0 && (
                     <button
                       type="button"
