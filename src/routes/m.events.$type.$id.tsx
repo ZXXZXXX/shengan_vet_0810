@@ -193,6 +193,10 @@ const CALF_BARNS = [
   "断奶过渡舍",
 ];
 
+const TECHNICIANS = ["张伟", "李强", "王芳", "刘洋", "陈晓东", "赵敏"];
+
+
+
 const BREEDS = [
   "荷斯坦",
   "西门塔尔",
@@ -243,6 +247,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
   const [breedPickerIdx, setBreedPickerIdx] = useState<number | null>(null);
   const [barnPickerIdx, setBarnPickerIdx] = useState<number | null>(null);
+  const [techPickerIdx, setTechPickerIdx] = useState<number | null>(null);
   const [colAmount, setColAmount] = useState("");
   const [colBrix, setColBrix] = useState(""); // 白力度
   const [colUse, setColUse] = useState("");
@@ -528,12 +533,16 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                     />
                   </Field>
                   <Field label="技术员" required>
-                    <input
-                      value={c.feedTech}
-                      onChange={(e) => updateCalf(idx, { feedTech: e.target.value })}
-                      className={inputCls}
-                      placeholder="请输入姓名"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setTechPickerIdx(idx)}
+                      className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
+                    >
+                      <span className={c.feedTech ? "text-body-sm text-foreground" : "text-body-sm text-text-tertiary"}>
+                        {c.feedTech || "请选择技术员"}
+                      </span>
+                      <span className="text-text-tertiary">›</span>
+                    </button>
                   </Field>
                 </div>
               </>
@@ -621,6 +630,34 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                   onClick={() => {
                     if (barnPickerIdx !== null) updateCalf(barnPickerIdx, { targetBarn: k });
                     setBarnPickerIdx(null);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/40 text-left"
+                >
+                  <span className="text-body text-foreground">{k}</span>
+                  {on && <Check className="w-4 h-4 text-primary" strokeWidth={3} />}
+                </button>
+              );
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={techPickerIdx !== null} onOpenChange={(o) => !o && setTechPickerIdx(null)}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[70vh] flex flex-col">
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">选择技术员</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-2 py-2">
+            {TECHNICIANS.map((k) => {
+              const current = techPickerIdx !== null ? calves[techPickerIdx]?.feedTech : "";
+              const on = current === k;
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => {
+                    if (techPickerIdx !== null) updateCalf(techPickerIdx, { feedTech: k });
+                    setTechPickerIdx(null);
                   }}
                   className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/40 text-left"
                 >
