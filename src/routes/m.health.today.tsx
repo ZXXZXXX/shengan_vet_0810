@@ -314,6 +314,45 @@ function TodayTasksPage() {
         </div>
       </div>
 
+      {/* 任务分类快速筛选 */}
+      {kindOptions.length > 1 && (
+        <div className="sticky top-[92px] z-20 bg-card/95 backdrop-blur border-b border-border">
+          <div className="px-4 py-2 overflow-x-auto no-scrollbar">
+            <div className="flex gap-1.5 w-max pr-4">
+              {kindOptions.map((o) => {
+                const sel = kindFilter === o.key;
+                return (
+                  <button
+                    key={o.key}
+                    type="button"
+                    onClick={() => {
+                      setKindFilter(o.key);
+                      setSelectedBarns(new Set());
+                      exitSelect();
+                    }}
+                    className={`shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-full border text-body-sm transition-colors ${
+                      sel
+                        ? "border-primary bg-brand-subtle text-primary font-medium"
+                        : "border-border bg-card text-text-secondary"
+                    }`}
+                  >
+                    <span>{o.key}</span>
+                    <span
+                      className={`text-caption tabular-nums ${
+                        sel ? "text-primary/80" : "text-text-tertiary"
+                      }`}
+                    >
+                      {o.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+
 
       {/* 牛舍筛选 + 批量执行 入口 */}
       {allBarns.length > 1 && (
