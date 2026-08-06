@@ -130,6 +130,8 @@ function TodayTasksPage() {
   const [kindFilter, setKindFilter] = useState<TaskKind>("工单任务");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [barnSheetOpen, setBarnSheetOpen] = useState(false);
+  const [statusSheetOpen, setStatusSheetOpen] = useState(false);
+
   const [barnQuery, setBarnQuery] = useState("");
 
   const [selectMode, setSelectMode] = useState(false);
