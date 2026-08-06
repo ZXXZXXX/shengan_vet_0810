@@ -252,14 +252,19 @@ function MHomePage() {
 }
 
 // ---------------- 数据 ----------------
+export type TaskKind = "工单" | "基础检查" | "异常排查";
 export type HomeTask = {
   id: string;
   target: string;
   conclusion: string;
-  type: string; // 工单类型
+  type: string; // 工单类型 / 检查项目名称 / 异常数据来源
   status: "待诊断" | "进行中";
   minutesAgo: number;
+  kind?: TaskKind; // 缺省为「工单」
+  dueDate?: string; // 基础检查：平台给出的完成期限
+  cattleId?: string; // 异常排查：跳转牛只档案
 };
+
 
 export const homeTasks: HomeTask[] = [
   // 疾病治疗 · 待诊断（子宫炎类：产道创伤 / 产后子宫炎 / 子宫内膜炎）
