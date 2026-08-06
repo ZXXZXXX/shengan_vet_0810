@@ -19,6 +19,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
 import { PICKUPS } from "@/lib/pickup-store";
+import { getHandledAlerts, subscribeAlerts } from "@/lib/alert-store";
 import {
   homeTasks,
   diseaseTaskMeta,
