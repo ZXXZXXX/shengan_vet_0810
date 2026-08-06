@@ -408,6 +408,10 @@ function HomePage() {
         {/* 本期免疫完成率 — 支持下钻 */}
         <ImmunizationRateCard />
 
+        {/* 疾病统计 — 左右联动 */}
+        <DiseaseStatsSection />
+
+
 
 
         {/* 待办工作 + 消息提醒 */}
