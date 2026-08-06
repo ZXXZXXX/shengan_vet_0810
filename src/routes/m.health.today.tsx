@@ -20,10 +20,11 @@ import {
   diseaseTaskMeta,
   taskChipStyle,
   typeMeta,
-  taskContentByChip,
+  taskCardContent,
   type HomeTask,
   type TaskChip,
 } from "@/routes/m.homepage";
+
 
 export const Route = createFileRoute("/m/health/today")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -68,23 +69,32 @@ function tabHandledByRole(role: Role, tab: StatusTab): boolean {
 // 助理：疾病治疗/产后护理 的待执行
 // 免疫员：疫苗免疫；修蹄工：修蹄
 const EXEC_TYPES_VET = ["疾病治疗", "产后护理"];
+const EXTRA_TASKS = homeTasks.filter(
+  (t) => t.kind === "基础检查" || t.kind === "异常排查",
+);
 
 function getRoleAllTasks(role: Role): HomeTask[] {
   if (role === "manager") return [];
   if (role === "vet") {
-    return homeTasks.filter(
-      (t) =>
-        (t.type === "疾病治疗" && t.status === "待诊断") ||
-        (EXEC_TYPES_VET.includes(t.type) && t.status === "进行中"),
-    );
+    return [
+      ...homeTasks.filter(
+        (t) =>
+          (t.type === "疾病治疗" && t.status === "待诊断") ||
+          (EXEC_TYPES_VET.includes(t.type) && t.status === "进行中"),
+      ),
+      ...EXTRA_TASKS,
+    ];
   }
   if (role === "vet_assistant")
-    return homeTasks.filter(
-      (t) =>
-        EXEC_TYPES_VET.includes(t.type) &&
-        t.status === "进行中" &&
-        diseaseTaskMeta[t.id]?.task !== "待复查",
-    );
+    return [
+      ...homeTasks.filter(
+        (t) =>
+          EXEC_TYPES_VET.includes(t.type) &&
+          t.status === "进行中" &&
+          diseaseTaskMeta[t.id]?.task !== "待复查",
+      ),
+      ...EXTRA_TASKS,
+    ];
   if (role === "immunizer")
     return homeTasks.filter((t) => t.type === "疫苗免疫" && t.status === "进行中");
   if (role === "hoof_trimmer")
@@ -93,7 +103,9 @@ function getRoleAllTasks(role: Role): HomeTask[] {
 }
 
 function statusOf(t: HomeTask): StatusTab {
+  if (t.kind === "基础检查" || t.kind === "异常排查") return "待执行";
   if (t.type === "疾病治疗") {
+
     const meta = diseaseTaskMeta[t.id]?.task;
     if (meta === "待诊断") return "待诊断";
     if (meta === "待复查") return "待复查";
@@ -346,25 +358,37 @@ function TodayTasksPage() {
           </div>
         ) : (
           tasks.map((t) => {
+            const isExam = t.kind === "基础检查";
+            const isAlert = t.kind === "异常排查";
             const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
             const Icon = meta.icon;
             const checked = selected.has(t.id);
             const chip: TaskChip | null =
-              t.type === "疾病治疗"
-                ? diseaseTaskMeta[t.id]?.task ?? null
-                : "待执行";
+              isAlert
+                ? null
+                : isExam
+                  ? "待执行"
+                  : t.type === "疾病治疗"
+                    ? diseaseTaskMeta[t.id]?.task ?? null
+                    : "待执行";
             const barn = inferBarn(t);
-            const actionText = activeTab === "待执行" ? "执行" : activeTab === "待复查" ? "复查" : "诊断";
+            const actionText = isAlert
+              ? "查看详情"
+              : activeTab === "待执行"
+                ? "执行"
+                : activeTab === "待复查"
+                  ? "复查"
+                  : "诊断";
             const linkTo = "/m/health/$id/execute" as const;
 
 
             const cattleId = t.target.startsWith("#") ? t.target : null;
             const groupTarget = cattleId ? null : t.target;
-            const pk = activeTab === "待执行" ? pickupForWO(t.id) : null;
+            const pk = activeTab === "待执行" && !isExam && !isAlert ? pickupForWO(t.id) : null;
 
             const tabChip: TaskChip =
               activeTab === "待诊断" ? "待诊断" : activeTab === "待复查" ? "待复查" : "待执行";
-            const actionLine = taskContentByChip(t.id, tabChip, "任务待执行");
+            const actionLine = taskCardContent(t, tabChip);
             const timeAgo = `${((tasks.indexOf(t) + 1) * 2) % 59 || 2}分钟前`;
 
             const inner = (
@@ -377,7 +401,10 @@ function TodayTasksPage() {
                     <Icon className="h-3 w-3" strokeWidth={2} />
                   </span>
                   <span className="text-body-sm text-text-secondary">{t.type}</span>
-                  <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
+                  {!isExam && !isAlert && (
+                    <span className="text-caption text-text-tertiary font-mono">{t.id}</span>
+                  )}
+
                   {chip && (
                     <span
                       className={`inline-flex items-center px-1.5 h-[18px] rounded-full text-caption leading-none ${taskChipStyle[chip]}`}
@@ -420,7 +447,13 @@ function TodayTasksPage() {
 
                 {/* 底部:领物 + 操作 */}
                 <div className="mt-3 flex items-center justify-between">
-                  {activeTab === "待诊断" ? (
+                  {isExam || isAlert ? (
+                    <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                      <Package className="h-3.5 w-3.5" />
+                      无需领物
+                    </span>
+                  ) : activeTab === "待诊断" ? (
+
                     <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
                       <Package className="h-3.5 w-3.5" />
                       -
@@ -467,6 +500,15 @@ function TodayTasksPage() {
               >
                 {inner}
               </button>
+            ) : isAlert ? (
+              <Link
+                key={t.id}
+                to="/m/animals-{$id}"
+                params={{ id: t.cattleId ?? t.target.replace("#", "") }}
+                className={cls}
+              >
+                {inner}
+              </Link>
             ) : (
               <Link
                 key={t.id}
@@ -477,6 +519,7 @@ function TodayTasksPage() {
                 {inner}
               </Link>
             );
+
           })
         )}
       </div>

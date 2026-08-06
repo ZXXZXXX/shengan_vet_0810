@@ -37,7 +37,7 @@ import { RoleSwitchSheet } from "@/components/role-switch-sheet";
 import { useRole, roleLabel, roleGroup, canVisit, type Role } from "@/lib/mobile-role";
 
 
-import { Activity, BookMarked } from "lucide-react";
+import { Activity, BookMarked, ClipboardCheck, AlertTriangle } from "lucide-react";
 import { PICKUPS, useClaimed } from "@/lib/pickup-store";
 import { FARMS, useFarmId, setFarmId, useFarm } from "@/lib/farm-store";
 import { QrCode } from "lucide-react";
@@ -252,14 +252,19 @@ function MHomePage() {
 }
 
 // ---------------- 数据 ----------------
+export type TaskKind = "工单" | "基础检查" | "异常排查";
 export type HomeTask = {
   id: string;
   target: string;
   conclusion: string;
-  type: string; // 工单类型
+  type: string; // 工单类型 / 检查项目名称 / 异常数据来源
   status: "待诊断" | "进行中";
   minutesAgo: number;
+  kind?: TaskKind; // 缺省为「工单」
+  dueDate?: string; // 基础检查：平台给出的完成期限
+  cattleId?: string; // 异常排查：跳转牛只档案
 };
+
 
 export const homeTasks: HomeTask[] = [
   // 疾病治疗 · 待诊断（子宫炎类：产道创伤 / 产后子宫炎 / 子宫内膜炎）
@@ -297,7 +302,16 @@ export const homeTasks: HomeTask[] = [
   { id: "HF-0707", target: "#01-24-2210", conclusion: "白线病 · 远轴侧蹄壁清创", type: "修蹄", status: "进行中", minutesAgo: 80 },
   { id: "HF-0708", target: "#01-24-2211", conclusion: "功能性蹄浴液喷蹄", type: "修蹄", status: "进行中", minutesAgo: 99 },
 
+  // 基础检查类（平台下发）
+  { id: "EX-0901", target: "#01-24-2311", conclusion: "结核病检测", type: "结核病检测", status: "进行中", minutesAgo: 10, kind: "基础检查", dueDate: "2026-08-10" },
+  { id: "EX-0902", target: "#01-24-2312", conclusion: "布病检测", type: "布病检测", status: "进行中", minutesAgo: 26, kind: "基础检查", dueDate: "2026-08-12" },
+  { id: "EX-0903", target: "#01-24-2313", conclusion: "妊娠检查", type: "妊娠检查", status: "进行中", minutesAgo: 44, kind: "基础检查", dueDate: "2026-08-08" },
+  // 异常排查类（设备预警）
+  { id: "AL-0101", target: "#01-24-2405", conclusion: "耳温异常", type: "耳温数据", status: "进行中", minutesAgo: 6, kind: "异常排查", cattleId: "01-24-2405" },
+  { id: "AL-0102", target: "#01-24-2418", conclusion: "颈环异常", type: "颈环数据", status: "进行中", minutesAgo: 19, kind: "异常排查", cattleId: "01-24-2418" },
+  { id: "AL-0103", target: "#01-24-2432", conclusion: "奶量异常", type: "奶量数据", status: "进行中", minutesAgo: 35, kind: "异常排查", cattleId: "01-24-2432" },
 ];
+
 
 type RoleFilter = { status: "待诊断" | "进行中"; type: string; label: string };
 export const roleFilterMap: Partial<Record<Role, RoleFilter>> = {
@@ -350,7 +364,16 @@ export const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: str
   "疫苗免疫": { icon: Syringe, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
   "修蹄":     { icon: Footprints, bg: "bg-[#FFF5DF]", text: "text-[#F59E0B]" },
   "产后护理": { icon: Baby, bg: "bg-[#F3E8FF]", text: "text-[#9333EA]" },
+  // 基础检查类
+  "结核病检测": { icon: ClipboardCheck, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
+  "布病检测":   { icon: ClipboardCheck, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
+  "妊娠检查":   { icon: ClipboardCheck, bg: "bg-[#E6F7FE]", text: "text-[#0EA5E9]" },
+  // 异常排查类（警示色）
+  "耳温数据": { icon: AlertTriangle, bg: "bg-[#FEF2F2]", text: "text-[#DC2626]" },
+  "颈环数据": { icon: AlertTriangle, bg: "bg-[#FEF2F2]", text: "text-[#DC2626]" },
+  "奶量数据": { icon: AlertTriangle, bg: "bg-[#FEF2F2]", text: "text-[#DC2626]" },
 };
+
 
 // 疾病治疗工单的疾病名称 + 任务类型（用于统一卡片文案）
 export type TaskChip = "待诊断" | "待执行" | "待复查" | "待治愈";
@@ -420,6 +443,22 @@ export const REVIEW_BRIEF: Record<string, string> = {
   "WO-2298": "直肠体温 + 分泌物评估",
   "WO-2440": "直肠体温 + 子宫恢复评估",
 };
+// 异常排查:具体的异常数据描述
+export const ALERT_BRIEF: Record<string, string> = {
+  "AL-0101": "耳温连续 6h 高于 39.5℃，最高 40.1℃",
+  "AL-0102": "反刍时长较 7 日均值下降 38%，活动量偏低",
+  "AL-0103": "今日产奶量较 7 日均值下降 24%（22.6kg）",
+};
+
+// 任务卡片「具体内容」（含基础检查 / 异常排查类）
+export function taskCardContent(t: HomeTask, chip: TaskChip | null) {
+  if (t.kind === "基础检查")
+    return `平台下发${t.type}任务，请在${t.dueDate}前完成。`;
+  if (t.kind === "异常排查") return ALERT_BRIEF[t.id] ?? t.conclusion;
+  return taskContentByChip(t.id, chip, t.conclusion);
+}
+
+
 
 export function taskContentByChip(id: string, chip: TaskChip | null, fallback: string) {
   if (chip === "待诊断") return SYMPTOM_TAGS[id] ?? fallback;
