@@ -224,11 +224,9 @@ function newCalf(index: number): Calf {
     targetBarn: "",
     reason: "",
     media: [],
-    feedTime: new Date().toISOString().slice(0, 16).replace("T", " "),
-    feedSource: "",
+    feedCode: "",
     feedAmount: "",
-    feedWay: "",
-    feedNote: "",
+    feedTech: "",
   };
 
 }
