@@ -354,7 +354,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
 
           <Field label="初乳编码">
             <input value={colCode} readOnly className={`${inputCls} bg-muted/40 text-text-secondary`} />
-            <div className="text-caption text-text-tertiary mt-1">大牛耳号 + 年份后两位和月份，系统自动生成</div>
+            <div className="text-caption text-text-tertiary mt-1">系统自动生成</div>
           </Field>
 
           <Field label="袋号" required>
