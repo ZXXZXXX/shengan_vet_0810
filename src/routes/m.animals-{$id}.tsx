@@ -69,8 +69,33 @@ function AnimalDetailPage() {
     a.health = "异常";
   }
 
+  // 强制"观察中"（至次日 00:00 解除）
+  const obsKey = `cow-observe-${id}`;
+  const [observeUntil, setObserveUntil] = useState<number | null>(null);
+  useEffect(() => {
+    const raw = typeof window !== "undefined" ? window.localStorage.getItem(obsKey) : null;
+    const ts = raw ? Number(raw) : 0;
+    if (ts && ts > Date.now()) setObserveUntil(ts);
+    else if (raw) window.localStorage.removeItem(obsKey);
+  }, [obsKey]);
+
+  const observing = observeUntil != null && observeUntil > Date.now();
+  const abnormal = a.health === "异常";
+  if (observing) a.health = "观察中";
+
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const startObserve = () => {
+    const d = new Date();
+    d.setHours(24, 0, 0, 0); // 次日 00:00
+    window.localStorage.setItem(obsKey, String(d.getTime()));
+    setObserveUntil(d.getTime());
+    setFeedbackOpen(false);
+    toast.success("已转为观察中，次日 00:00 自动解除");
+  };
+
   // 记录 sheet
   const [recordOpen, setRecordOpen] = useState(false);
+
 
 
 
