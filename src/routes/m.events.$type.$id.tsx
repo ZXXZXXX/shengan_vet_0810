@@ -306,7 +306,6 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
         <section className="rounded-2xl bg-card border border-border p-4 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-card-title text-foreground">母牛产犊记录</h3>
-            <span className="text-caption text-text-tertiary">#{id}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-x-3 gap-y-3 rounded-xl bg-muted/40 p-3">
