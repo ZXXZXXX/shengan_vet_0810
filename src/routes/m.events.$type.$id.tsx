@@ -193,6 +193,10 @@ const CALF_BARNS = [
   "断奶过渡舍",
 ];
 
+const TECHNICIANS = ["张伟", "李强", "王芳", "刘洋", "陈晓东", "赵敏"];
+
+
+
 const BREEDS = [
   "荷斯坦",
   "西门塔尔",
