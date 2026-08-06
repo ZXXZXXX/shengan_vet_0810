@@ -12,19 +12,24 @@ import { Check } from "lucide-react";
 
 
 export const Route = createFileRoute("/m/events/$type/$id")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    item: typeof s.item === "string" ? s.item : undefined,
+  }),
   head: () => ({ meta: [{ title: "事件记录 · 奇点智牧" }] }),
   component: EventPage,
 });
 
 function EventPage() {
   const { type, id } = useParams({ from: "/m/events/$type/$id" });
+  const { item } = Route.useSearch();
   const navigate = useNavigate();
   const done = () => navigate({ to: "/m/animals-{$id}", params: { id } });
   if (type === "calving") return <CalvingForm id={id} onDone={done} />;
-  if (type === "exam") return <ExamForm id={id} onDone={done} />;
+  if (type === "exam") return <ExamForm id={id} item={item} onDone={done} />;
   if (type === "transfer") return <TransferForm id={id} onDone={done} />;
   return <LeaveForm id={id} onDone={done} />;
 }
+
 
 const TRANSFER_REASONS = [
   "泌乳阶段调整",
