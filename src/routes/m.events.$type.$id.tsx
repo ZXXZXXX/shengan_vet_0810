@@ -508,7 +508,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
 
                 {/* ---- 初乳饲喂记录 ---- */}
                 <div className="pt-1 space-y-4">
-                  <div className="text-body-sm font-medium text-foreground">初乳饲喂记录</div>
+                  
                   <Field label="初乳编码" required>
                     <input
                       value={c.feedCode}
