@@ -526,11 +526,19 @@ function TodayTaskList({ role }: { role: Role }) {
         const isPeek = idx === 1;
         const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
         const Icon = meta.icon;
+        const isExam = t.kind === "基础检查";
         const isReview =
           t.type === "疾病治疗" && diseaseTaskMeta[t.id]?.task === "待复查";
         const isExecution =
           t.status === "进行中" && VET_EXEC_TYPES.has(t.type) && !isReview;
-        const actionText = isReview ? "复查" : isExecution ? "执行" : "诊断";
+        const actionText = isExam
+          ? "记录"
+          : isReview
+            ? "复查"
+            : isExecution
+              ? "执行"
+              : "诊断";
+
         const chip: TaskChip | null =
           t.type === "疾病治疗"
             ? diseaseTaskMeta[t.id]?.task ?? null
