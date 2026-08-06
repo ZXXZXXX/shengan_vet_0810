@@ -121,6 +121,7 @@ function TodayTasksPage() {
   const allTasks = useMemo(() => getRoleAllTasks(role), [role]);
 
   const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
+  const [kindFilter, setKindFilter] = useState<"全部" | "工单任务" | "基础检查" | "异常排查">("全部");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -138,10 +139,36 @@ function TodayTasksPage() {
     });
   }, [capture, navigate]);
 
-  // 当前 tab 下的任务，叠加牛舍筛选
-  const tabTasks = useMemo(
+  // 当前 tab 下的任务，叠加分类筛选与牛舍筛选
+  const statusTasks = useMemo(
     () => allTasks.filter((t) => statusOf(t) === activeTab),
     [allTasks, activeTab],
+  );
+
+  const kindOf = (t: HomeTask) =>
+    t.kind === "基础检查" || t.kind === "异常排查" ? t.kind : "工单任务";
+
+  const kindOptions = useMemo(() => {
+    const opts: Array<"全部" | "工单任务" | "基础检查" | "异常排查"> = [
+      "全部",
+      "工单任务",
+      "基础检查",
+      "异常排查",
+    ];
+    return opts
+      .map((k) => ({
+        key: k,
+        count: k === "全部" ? statusTasks.length : statusTasks.filter((t) => kindOf(t) === k).length,
+      }))
+      .filter((o) => o.key === "全部" || o.count > 0);
+  }, [statusTasks]);
+
+  const tabTasks = useMemo(
+    () =>
+      kindFilter === "全部"
+        ? statusTasks
+        : statusTasks.filter((t) => kindOf(t) === kindFilter),
+    [statusTasks, kindFilter],
   );
 
   const allBarns = useMemo(() => {
@@ -157,6 +184,7 @@ function TodayTasksPage() {
         : tabTasks.filter((t) => selectedBarns.has(inferBarn(t))),
     [tabTasks, selectedBarns],
   );
+
 
 
 
@@ -258,9 +286,11 @@ function TodayTasksPage() {
                 type="button"
                 onClick={() => {
                   setActiveTab(tb);
+                  setKindFilter("全部");
                   setSelectedBarns(new Set());
                   exitSelect();
                 }}
+
                 className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
                   active
                     ? "text-primary font-medium"
@@ -283,6 +313,45 @@ function TodayTasksPage() {
           })}
         </div>
       </div>
+
+      {/* 任务分类快速筛选 */}
+      {kindOptions.length > 1 && (
+        <div className="sticky top-[92px] z-20 bg-card/95 backdrop-blur border-b border-border">
+          <div className="px-4 py-2 overflow-x-auto no-scrollbar">
+            <div className="flex gap-1.5 w-max pr-4">
+              {kindOptions.map((o) => {
+                const sel = kindFilter === o.key;
+                return (
+                  <button
+                    key={o.key}
+                    type="button"
+                    onClick={() => {
+                      setKindFilter(o.key);
+                      setSelectedBarns(new Set());
+                      exitSelect();
+                    }}
+                    className={`shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-full border text-body-sm transition-colors ${
+                      sel
+                        ? "border-primary bg-brand-subtle text-primary font-medium"
+                        : "border-border bg-card text-text-secondary"
+                    }`}
+                  >
+                    <span>{o.key}</span>
+                    <span
+                      className={`text-caption tabular-nums ${
+                        sel ? "text-primary/80" : "text-text-tertiary"
+                      }`}
+                    >
+                      {o.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
 
 
       {/* 牛舍筛选 + 批量执行 入口 */}
