@@ -183,9 +183,10 @@ function TodayTasksPage() {
 
   const allBarns = useMemo(() => {
     const s = new Set<string>();
-    tabTasks.forEach((t) => s.add(inferBarn(t)));
+    kindTasks.forEach((t) => s.add(inferBarn(t)));
     return Array.from(s);
-  }, [tabTasks]);
+  }, [kindTasks]);
+
 
   const tasks = useMemo(
     () =>
@@ -321,9 +322,10 @@ function TodayTasksPage() {
       </div>
 
       {/* 筛选条：状态 + 牛舍（下拉抽屉） */}
-      {(showStatusTabs || allBarns.length > 1) && (
+      {(showStatusTabs || allBarns.length > 0) && (
         <div className="px-4 pt-3 flex items-center gap-2">
-          {allBarns.length > 1 && (
+          {allBarns.length > 0 && (
+
             <button
               type="button"
               onClick={() => {
