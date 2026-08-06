@@ -1,11 +1,10 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MobileShell } from "@/components/mobile-shell";
 import { ArrowRight, ArrowRightLeft, LogOut, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
-import { TagPicker } from "@/components/m/tag-picker";
 import { MediaGrid } from "@/components/m/media-grid";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Check } from "lucide-react";
@@ -120,14 +119,27 @@ function TransferForm({ id, onDone }: { id: string; onDone: () => void }) {
             onOpenChange={setPickerOpen}
           />
           <Field label="转栏原因" required>
-            <TagPicker
-              selected={reasons}
-              onChange={setReasons}
-              presets={TRANSFER_REASONS}
-              singleSelect
-              placeholder="输入关键词搜索,未命中可直接新建"
-            />
+            <div className="flex flex-wrap gap-2">
+              {TRANSFER_REASONS.map((t) => {
+                const active = reasons[0] === t;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setReasons([t])}
+                    className={`inline-flex items-center h-9 px-4 rounded-full text-body-sm border transition-colors ${
+                      active
+                        ? "bg-brand-subtle text-primary border-primary font-medium"
+                        : "bg-card text-foreground border-border active:border-primary"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
           </Field>
+
         </div>
       </div>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
@@ -239,7 +251,10 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   // 系统自动填入（模拟）
   const pregnancyDays = 278;
   const semenBreed = "荷斯坦 · 冻精 A-2201";
-  const calvingTime = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const [calvingTime, setCalvingTime] = useState("");
+  useEffect(() => {
+    setCalvingTime(new Date().toISOString().slice(0, 16).replace("T", " "));
+  }, []);
   const parity = 3;
 
   const [difficulty, setDifficulty] = useState<number | null>(null);
