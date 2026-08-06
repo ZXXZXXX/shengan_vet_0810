@@ -934,11 +934,10 @@ function ReportPage() {
                   const tBarn = search.barn ?? barnOfCattle(t);
                   return (
                     <div key={t} className="space-y-2">
+                    {isEditing ? (
                     <div
                       className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
                     >
-                      {isEditing ? (
-                        <>
                           <span className="font-mono text-text-tertiary">#</span>
                           <input
                             autoFocus
@@ -956,41 +955,17 @@ function ReportPage() {
                             onClick={(e) => e.stopPropagation()}
                           />
                           <span className="font-mono text-text-tertiary shrink-0 text-caption">· {tBarn}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="font-mono truncate">
-                            {`#${t} · ${tBarn}`}
-                          </span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingTarget(t);
-                              setEditingValue(t);
-                            }}
-                            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
-                            aria-label="编辑"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </button>
-                          {canDelete && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeTarget(t);
-                              }}
-                              className="h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
-                              aria-label="删除"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          )}
-                        </>
-                      )}
                     </div>
-                    {!isEditing && <CowProfileCard cowId={t} />}
+                    ) : (
+                      <CowProfileCard
+                        cowId={t}
+                        barn={tBarn}
+                        onRemove={canDelete ? () => removeTarget(t) : undefined}
+                      />
+                    )}
                     </div>
                   );
+
                 })}
                 {targets.length > 0 ? (
                   <div className="text-caption text-text-tertiary">
