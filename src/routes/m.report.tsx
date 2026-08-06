@@ -959,6 +959,8 @@ function ReportPage() {
                         </>
                       )}
                     </div>
+                    {!isEditing && <CowProfileCard cowId={t} />}
+                    </div>
                   );
                 })}
                 {targets.length > 0 ? (
