@@ -533,12 +533,16 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                     />
                   </Field>
                   <Field label="技术员" required>
-                    <input
-                      value={c.feedTech}
-                      onChange={(e) => updateCalf(idx, { feedTech: e.target.value })}
-                      className={inputCls}
-                      placeholder="请输入姓名"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setTechPickerIdx(idx)}
+                      className="w-full h-11 px-3 rounded-lg border border-border bg-card flex items-center justify-between text-left"
+                    >
+                      <span className={c.feedTech ? "text-body-sm text-foreground" : "text-body-sm text-text-tertiary"}>
+                        {c.feedTech || "请选择技术员"}
+                      </span>
+                      <span className="text-text-tertiary">›</span>
+                    </button>
                   </Field>
                 </div>
               </>
