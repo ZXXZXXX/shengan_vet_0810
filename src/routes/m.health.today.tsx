@@ -698,7 +698,18 @@ function TodayTasksPage() {
               >
                 {inner}
               </Link>
+            ) : isExam ? (
+              <Link
+                key={t.id}
+                to="/m/events/$type/$id"
+                params={{ type: "exam", id: t.target.replace("#", "") }}
+                search={{ item: t.type }}
+                className={cls}
+              >
+                {inner}
+              </Link>
             ) : (
+
               <Link
                 key={t.id}
                 to={linkTo}
