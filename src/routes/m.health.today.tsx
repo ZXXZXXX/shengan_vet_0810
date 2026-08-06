@@ -12,6 +12,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
 import { PICKUPS } from "@/lib/pickup-store";
@@ -125,6 +127,9 @@ function TodayTasksPage() {
   const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
   const [kindFilter, setKindFilter] = useState<TaskKind>("工单任务");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
+  const [barnSheetOpen, setBarnSheetOpen] = useState(false);
+  const [barnQuery, setBarnQuery] = useState("");
+
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<"batch" | null>(null);
@@ -355,56 +360,112 @@ function TodayTasksPage() {
 
 
 
-      {/* 牛舍筛选 + 批量执行 入口 */}
+      {/* 牛舍筛选入口（抽屉内搜索多选） */}
       {allBarns.length > 1 && (
         <div className="px-4 pt-3">
-          <div className="flex items-center gap-1.5 mb-2 text-caption text-text-tertiary">
-            <Filter className="h-3 w-3" />
-            <span>按牛舍筛选</span>
-            {selectedBarns.size > 0 && (
-              <button
-                onClick={() => setSelectedBarns(new Set())}
-                className="text-primary"
+          <button
+            type="button"
+            onClick={() => {
+              setBarnQuery("");
+              setBarnSheetOpen(true);
+            }}
+            className={`w-full h-10 px-3 inline-flex items-center gap-2 rounded-xl border text-body-sm ${
+              selectedBarns.size > 0
+                ? "border-primary bg-brand-subtle text-primary"
+                : "border-border bg-card text-text-secondary"
+            }`}
+          >
+            <Filter className="h-4 w-4 shrink-0" />
+            <span className="flex-1 text-left truncate">
+              {selectedBarns.size === 0
+                ? "全部牛舍"
+                : Array.from(selectedBarns).slice(0, 2).join("、") +
+                  (selectedBarns.size > 2 ? ` 等 ${selectedBarns.size} 个牛舍` : "")}
+            </span>
+            {selectedBarns.size > 0 ? (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedBarns(new Set());
+                }}
+                className="text-caption text-primary px-1"
               >
                 清除
-              </button>
-            )}
-          </div>
-
-          {allBarns.length > 1 && (
-            <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
-              <div className="flex gap-1.5 w-max pr-4">
-                {allBarns.map((b) => {
-                  const sel = selectedBarns.has(b);
-                  const cnt = tabTasks.filter((t) => inferBarn(t) === b).length;
-                  return (
-                    <button
-                      key={b}
-                      type="button"
-                      onClick={() => toggleBarn(b)}
-                      className={`shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-full border text-body-sm transition-colors ${
-                        sel
-                          ? "border-primary bg-brand-subtle text-primary"
-                          : "border-border bg-card text-text-secondary"
-                      }`}
-                    >
-                      <span>{b}</span>
-                      <span
-                        className={`text-caption tabular-nums ${
-                          sel ? "text-primary/80" : "text-text-tertiary"
-                        }`}
-                      >
-                        {cnt}
-                      </span>
-                      {sel && <Check className="h-3 w-3" strokeWidth={3} />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+              </span>
+            ) : null}
+            <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
+          </button>
         </div>
       )}
+
+      <Sheet open={barnSheetOpen} onOpenChange={setBarnSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl p-0 max-h-[80vh] flex flex-col"
+        >
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">选择牛舍</SheetTitle>
+          </SheetHeader>
+          <div className="px-4 pb-2">
+            <input
+              value={barnQuery}
+              onChange={(e) => setBarnQuery(e.target.value)}
+              placeholder="搜索牛舍"
+              className="w-full h-10 px-3 rounded-xl bg-surface-subtle text-body-sm outline-none"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto px-2 pb-2">
+            <button
+              type="button"
+              onClick={() => setSelectedBarns(new Set())}
+              className="w-full h-11 px-2 flex items-center gap-2 rounded-lg active:bg-surface-subtle"
+            >
+              <span className="flex-1 text-left text-body-sm text-foreground">
+                全部牛舍
+              </span>
+              {selectedBarns.size === 0 && (
+                <Check className="h-4 w-4 text-primary" strokeWidth={3} />
+              )}
+            </button>
+            {allBarns
+              .filter((b) => b.includes(barnQuery.trim()))
+              .map((b) => {
+                const sel = selectedBarns.has(b);
+                const cnt = tabTasks.filter((t) => inferBarn(t) === b).length;
+                return (
+                  <button
+                    key={b}
+                    type="button"
+                    onClick={() => toggleBarn(b)}
+                    className="w-full h-11 px-2 flex items-center gap-2 rounded-lg active:bg-surface-subtle"
+                  >
+                    <span className="flex-1 text-left text-body-sm text-foreground">
+                      {b}
+                    </span>
+                    <span className="text-caption tabular-nums text-text-tertiary">
+                      {cnt}
+                    </span>
+                    {sel && (
+                      <Check className="h-4 w-4 text-primary" strokeWidth={3} />
+                    )}
+                  </button>
+                );
+              })}
+          </div>
+          <div className="px-4 py-3 border-t border-border">
+            <button
+              type="button"
+              onClick={() => setBarnSheetOpen(false)}
+              className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-body font-medium"
+            >
+              确定
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
 
 
       {/* 列表 */}
