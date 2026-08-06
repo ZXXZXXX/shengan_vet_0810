@@ -71,6 +71,69 @@ function recentDiseaseOrderOf(cowId: string): string | null {
   return `WO-2026${String(num).padStart(4, "0").slice(-4)}`;
 }
 
+// mock：根据耳号推导牛只基础档案（近一年报病次数、品种、类别等）
+function cowProfileOf(cowId: string) {
+  const digits = cowId.replace(/\D/g, "");
+  const num = parseInt(digits || "0", 10) || 0;
+  const birthYear = 2000 + (parseInt(digits.slice(2, 4), 10) || 24);
+  const monthsOld = Math.max(1, (2026 - birthYear) * 12 + (num % 12));
+  const ageLabel =
+    monthsOld < 2
+      ? `${30 * monthsOld} 日龄`
+      : monthsOld < 24
+        ? `${monthsOld} 月龄`
+        : `${(monthsOld / 12).toFixed(1)} 岁`;
+  const isCalf = monthsOld < 14;
+  const parity = isCalf ? 0 : 1 + (num % 4);
+  const lactation = isCalf ? 0 : 15 + (num % 300);
+  const pregnancy = isCalf || num % 3 === 0 ? 0 : 20 + (num % 260);
+  return {
+    reportCount: num % 5,
+    breed: num % 4 === 0 ? "西门塔尔" : "荷斯坦",
+    category: isCalf ? "犊牛" : pregnancy > 0 ? "妊娠牛" : "泌乳牛",
+    ageLabel,
+    lactation,
+    pregnancy,
+    parity,
+  };
+}
+
+function CowProfileCard({ cowId }: { cowId: string }) {
+  const p = useMemo(() => cowProfileOf(cowId), [cowId]);
+  const items = [
+    { label: "品种", value: p.breed },
+    { label: "类别", value: p.category },
+    { label: "月龄", value: p.ageLabel },
+    { label: "泌乳天数", value: p.lactation ? `${p.lactation} 天` : "—" },
+    { label: "怀孕天数", value: p.pregnancy ? `${p.pregnancy} 天` : "—" },
+    { label: "胎次", value: p.parity ? `${p.parity} 胎` : "—" },
+  ];
+  return (
+    <div className="rounded-xl bg-card border border-border overflow-hidden">
+      <div className="px-3 h-10 flex items-center gap-1.5 border-b border-border bg-surface-subtle text-body-sm">
+        <Stethoscope className="h-3.5 w-3.5 text-primary shrink-0" />
+        <span className="text-text-secondary">近一年报病</span>
+        <span
+          className={`tabular-nums font-medium ${p.reportCount > 0 ? "text-[var(--state-warning)]" : "text-foreground"}`}
+        >
+          {p.reportCount}
+        </span>
+        <span className="text-text-secondary">次</span>
+      </div>
+      <div className="grid grid-cols-3 gap-y-3 p-3">
+        {items.map((it) => (
+          <div key={it.label} className="min-w-0">
+            <div className="text-caption text-text-tertiary">{it.label}</div>
+            <div className="text-body-sm text-foreground truncate tabular-nums">{it.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+
 
 type ReportKind = "health";
 
