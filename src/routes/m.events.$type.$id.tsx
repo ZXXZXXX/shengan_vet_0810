@@ -247,6 +247,7 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
   const [breedPickerIdx, setBreedPickerIdx] = useState<number | null>(null);
   const [barnPickerIdx, setBarnPickerIdx] = useState<number | null>(null);
+  const [techPickerIdx, setTechPickerIdx] = useState<number | null>(null);
   const [colAmount, setColAmount] = useState("");
   const [colBrix, setColBrix] = useState(""); // 白力度
   const [colUse, setColUse] = useState("");
