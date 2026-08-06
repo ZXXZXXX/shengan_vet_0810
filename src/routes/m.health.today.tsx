@@ -416,18 +416,33 @@ function TodayTasksPage() {
               className="w-full h-10 px-3 rounded-xl bg-surface-subtle text-body-sm outline-none"
             />
           </div>
-          <div className="flex-1 overflow-y-auto px-2 pb-2">
+          <div className="flex-1 overflow-y-auto px-4 pb-2 space-y-2">
             <button
               type="button"
               onClick={() => setSelectedBarns(new Set())}
-              className="w-full h-11 px-2 flex items-center gap-2 rounded-lg active:bg-surface-subtle"
+              className={`w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border transition-colors ${
+                selectedBarns.size === 0
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-card"
+              }`}
             >
-              <span className="flex-1 text-left text-body-sm text-foreground">
+              <span className="flex-1 text-left text-body text-foreground">
                 全部牛舍
               </span>
-              {selectedBarns.size === 0 && (
-                <Check className="h-4 w-4 text-primary" strokeWidth={3} />
-              )}
+              <span
+                className={`h-5 w-5 rounded-md flex items-center justify-center border ${
+                  selectedBarns.size === 0
+                    ? "bg-primary border-primary"
+                    : "border-border bg-card"
+                }`}
+              >
+                {selectedBarns.size === 0 && (
+                  <Check
+                    className="h-3.5 w-3.5 text-primary-foreground"
+                    strokeWidth={3}
+                  />
+                )}
+              </span>
             </button>
             {allBarns
               .filter((b) => b.includes(barnQuery.trim()))
@@ -439,21 +454,33 @@ function TodayTasksPage() {
                     key={b}
                     type="button"
                     onClick={() => toggleBarn(b)}
-                    className="w-full h-11 px-2 flex items-center gap-2 rounded-lg active:bg-surface-subtle"
+                    className={`w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border transition-colors ${
+                      sel ? "border-primary bg-primary/5" : "border-border bg-card"
+                    }`}
                   >
-                    <span className="flex-1 text-left text-body-sm text-foreground">
+                    <span className="flex-1 text-left text-body text-foreground">
                       {b}
                     </span>
-                    <span className="text-caption tabular-nums text-text-tertiary">
-                      {cnt}
+                    <span className="text-body-sm tabular-nums text-text-tertiary">
+                      {cnt} 个任务
                     </span>
-                    {sel && (
-                      <Check className="h-4 w-4 text-primary" strokeWidth={3} />
-                    )}
+                    <span
+                      className={`h-5 w-5 rounded-md flex items-center justify-center border ${
+                        sel ? "bg-primary border-primary" : "border-border bg-card"
+                      }`}
+                    >
+                      {sel && (
+                        <Check
+                          className="h-3.5 w-3.5 text-primary-foreground"
+                          strokeWidth={3}
+                        />
+                      )}
+                    </span>
                   </button>
                 );
               })}
           </div>
+
           <div className="px-4 py-3 border-t border-border">
             <button
               type="button"
