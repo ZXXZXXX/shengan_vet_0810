@@ -19,7 +19,9 @@ import {
   LogOut,
   ListChecks,
   Stethoscope,
+  MessageSquareWarning,
 } from "lucide-react";
+import { toast } from "sonner";
 import { MobileShell } from "@/components/mobile-shell";
 
 
@@ -69,8 +71,33 @@ function AnimalDetailPage() {
     a.health = "异常";
   }
 
+  // 强制"观察中"（至次日 00:00 解除）
+  const obsKey = `cow-observe-${id}`;
+  const [observeUntil, setObserveUntil] = useState<number | null>(null);
+  useEffect(() => {
+    const raw = typeof window !== "undefined" ? window.localStorage.getItem(obsKey) : null;
+    const ts = raw ? Number(raw) : 0;
+    if (ts && ts > Date.now()) setObserveUntil(ts);
+    else if (raw) window.localStorage.removeItem(obsKey);
+  }, [obsKey]);
+
+  const observing = observeUntil != null && observeUntil > Date.now();
+  const abnormal = a.health === "异常";
+  if (observing) a.health = "观察中";
+
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const startObserve = () => {
+    const d = new Date();
+    d.setHours(24, 0, 0, 0); // 次日 00:00
+    window.localStorage.setItem(obsKey, String(d.getTime()));
+    setObserveUntil(d.getTime());
+    setFeedbackOpen(false);
+    toast.success("已转为观察中，次日 00:00 自动解除");
+  };
+
   // 记录 sheet
   const [recordOpen, setRecordOpen] = useState(false);
+
 
 
 
@@ -124,20 +151,33 @@ function AnimalDetailPage() {
                   <span className="truncate">{a.farm} · {a.barn}</span>
                 </div>
               </div>
-              <span
-                className={`shrink-0 h-6 px-2 rounded-full inline-flex items-center gap-1 text-[11px] font-semibold ${
-                  a.health === "异常"
-                    ? "bg-[#FFE4E1] text-[#D9534F]"
-                    : a.health === "观察中"
-                    ? "bg-[#FFF7E6] text-[#B8860B]"
-                    : a.health === "治疗中"
-                    ? "bg-[#FFE8CC] text-[#C9621F]"
-                    : "bg-[#E8F5E9] text-[#2E7D32]"
-                }`}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
-                {a.health}
-              </span>
+              <div className="shrink-0 inline-flex items-center gap-1.5">
+                <span
+                  className={`h-6 px-2 rounded-full inline-flex items-center gap-1 text-[11px] font-semibold ${
+                    a.health === "异常"
+                      ? "bg-[#FFE4E1] text-[#D9534F]"
+                      : a.health === "观察中"
+                      ? "bg-[#FFF7E6] text-[#B8860B]"
+                      : a.health === "治疗中"
+                      ? "bg-[#FFE8CC] text-[#C9621F]"
+                      : "bg-[#E8F5E9] text-[#2E7D32]"
+                  }`}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                  {a.health}
+                </span>
+                {(abnormal || observing) && (
+                  <button
+                    type="button"
+                    aria-label="异常反馈"
+                    onClick={() => setFeedbackOpen(true)}
+                    className="h-6 w-6 rounded-full bg-white/20 border border-white/25 inline-flex items-center justify-center active:scale-95 transition-transform"
+                  >
+                    <MessageSquareWarning className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
             </div>
 
             {/* 基础信息 */}
@@ -384,6 +424,55 @@ function AnimalDetailPage() {
           </div>
         </div>
       )}
+
+      {/* 异常反馈弹窗 */}
+      {feedbackOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-8"
+          onClick={() => setFeedbackOpen(false)}
+        >
+          <div
+            className="w-full max-w-[340px] bg-card rounded-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-5 pt-5 pb-4 text-center space-y-2">
+              <div className="mx-auto h-11 w-11 rounded-full bg-[#FFF7E6] text-[#B8860B] inline-flex items-center justify-center">
+                <MessageSquareWarning className="h-5 w-5" />
+              </div>
+              <div className="text-section text-foreground">牛只是否需要报病治疗？</div>
+              <div className="text-caption text-text-tertiary">
+                #{a.id} 当前存在异常预警
+                {observing && observeUntil
+                  ? `，已标记为观察中（${new Date(observeUntil).toLocaleDateString("zh-CN")} 00:00 解除）`
+                  : ""}
+              </div>
+            </div>
+            <div className="p-3 pt-0 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={startObserve}
+                className="h-11 rounded-xl border border-border text-body-sm text-text-secondary bg-card active:bg-surface-subtle"
+              >
+                继续观察
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFeedbackOpen(false);
+                  navigate({
+                    to: "/m/report",
+                    search: { target: a.id, barn: a.barn, lock: 1 } as never,
+                  });
+                }}
+                className="h-11 rounded-xl bg-primary text-primary-foreground text-body-sm font-medium"
+              >
+                疾病上报
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
     </MobileShell>
   );
