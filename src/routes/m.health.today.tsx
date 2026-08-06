@@ -275,39 +275,35 @@ function TodayTasksPage() {
 
 
 
-      {/* 状态 tab */}
+      {/* 顶层：三大任务类别 */}
       <div className="sticky top-12 z-20 bg-card/95 backdrop-blur border-b border-border px-2">
         <div className="flex">
-          {tabs.map((tb) => {
-            const tabCount = allTasks.filter((t) => statusOf(t) === tb).length;
-            const active = activeTab === tb;
+          {kindOptions.map((o) => {
+            const active = kindFilter === o.key;
             return (
               <button
-                key={tb}
+                key={o.key}
                 type="button"
                 onClick={() => {
-                  setActiveTab(tb);
-                  setKindFilter("全部");
+                  setKindFilter(o.key);
+                  setActiveTab("待执行");
                   setSelectedBarns(new Set());
                   exitSelect();
                 }}
-
                 className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
-                  active
-                    ? "text-primary font-medium"
-                    : "text-text-secondary"
+                  active ? "text-primary font-medium" : "text-text-secondary"
                 }`}
               >
-                <span>{tb}</span>
+                <span>{o.key}</span>
                 <span
                   className={`text-caption tabular-nums ${
                     active ? "text-primary" : "text-text-tertiary"
                   }`}
                 >
-                  {tabCount}
+                  {o.count}
                 </span>
                 {active && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full bg-primary" />
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-10 rounded-full bg-primary" />
                 )}
               </button>
             );
@@ -315,19 +311,22 @@ function TodayTasksPage() {
         </div>
       </div>
 
-      {/* 任务分类快速筛选 */}
-      {kindOptions.length > 1 && (
+      {/* 工单任务下的状态筛选 */}
+      {showStatusTabs && (
         <div className="sticky top-[92px] z-20 bg-card/95 backdrop-blur border-b border-border">
           <div className="px-4 py-2 overflow-x-auto no-scrollbar">
             <div className="flex gap-1.5 w-max pr-4">
-              {kindOptions.map((o) => {
-                const sel = kindFilter === o.key;
+              {tabs.map((tb) => {
+                const sel = activeTab === tb;
+                const tabCount = kindTasks.filter(
+                  (t) => statusOf(t) === tb,
+                ).length;
                 return (
                   <button
-                    key={o.key}
+                    key={tb}
                     type="button"
                     onClick={() => {
-                      setKindFilter(o.key);
+                      setActiveTab(tb);
                       setSelectedBarns(new Set());
                       exitSelect();
                     }}
@@ -337,13 +336,13 @@ function TodayTasksPage() {
                         : "border-border bg-card text-text-secondary"
                     }`}
                   >
-                    <span>{o.key}</span>
+                    <span>{tb}</span>
                     <span
                       className={`text-caption tabular-nums ${
                         sel ? "text-primary/80" : "text-text-tertiary"
                       }`}
                     >
-                      {o.count}
+                      {tabCount}
                     </span>
                   </button>
                 );
@@ -352,6 +351,7 @@ function TodayTasksPage() {
           </div>
         </div>
       )}
+
 
 
 
