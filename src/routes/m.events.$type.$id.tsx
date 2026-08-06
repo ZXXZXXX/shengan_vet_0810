@@ -176,7 +176,14 @@ type Calf = {
   targetBarn: string;
   reason: string;
   media: number[];
+  // 初乳饲喂记录
+  feedTime: string;
+  feedSource: "母源初乳" | "初乳库" | "代乳（初乳粉）" | "";
+  feedAmount: string;
+  feedWay: "奶瓶自饮" | "食管灌服" | "";
+  feedNote: string;
 };
+
 
 const CALF_BARNS = [
   "犊牛岛 A 区",
@@ -219,7 +226,13 @@ function newCalf(index: number): Calf {
     targetBarn: "",
     reason: "",
     media: [],
+    feedTime: new Date().toISOString().slice(0, 16).replace("T", " "),
+    feedSource: "",
+    feedAmount: "",
+    feedWay: "",
+    feedNote: "",
   };
+
 }
 
 function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
@@ -234,6 +247,12 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [calves, setCalves] = useState<Calf[]>([newCalf(0)]);
   const [breedPickerIdx, setBreedPickerIdx] = useState<number | null>(null);
   const [barnPickerIdx, setBarnPickerIdx] = useState<number | null>(null);
+  const [colostrum, setColostrum] = useState<"已采集" | "未采集" | "">("");
+  const [colTime, setColTime] = useState(new Date().toISOString().slice(0, 16));
+  const [colAmount, setColAmount] = useState("");
+  const [colBrix, setColBrix] = useState("");
+  const [colUse, setColUse] = useState("");
+  const [colReason, setColReason] = useState("");
 
   const updateCalf = (idx: number, patch: Partial<Calf>) =>
     setCalves((list) => list.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
@@ -243,6 +262,15 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
   const submit = () => {
     if (difficulty == null) return toast.error("请选择产犊难易度评分");
     if (injury == null) return toast.error("请选择产道损伤等级");
+    if (!colostrum) return toast.error("请选择是否采集初乳");
+    if (colostrum === "已采集") {
+      if (!colAmount) return toast.error("请填写初乳采集量");
+      if (!colBrix) return toast.error("请填写初乳质量 Brix 值");
+      if (!colUse) return toast.error("请选择初乳处置方式");
+    } else if (!colReason.trim()) {
+      return toast.error("请填写初乳未采集原因");
+    }
+
     for (let i = 0; i < calves.length; i++) {
       const c = calves[i];
       if (!c.status) return toast.error(`请选择第 ${i + 1} 头犊牛的分娩状态`);
@@ -262,7 +290,11 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
         if (c.media.length === 0) return toast.error(`第 ${i + 1} 头犊牛不留养需上传照片或视频`);
         if (!c.reason.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛不留养原因`);
       }
+      if (!c.feedAmount) return toast.error(`请填写第 ${i + 1} 头犊牛的初乳饲喂量`);
+      if (!c.feedSource) return toast.error(`请选择第 ${i + 1} 头犊牛的初乳来源`);
+      if (!c.feedWay) return toast.error(`请选择第 ${i + 1} 头犊牛的初乳饲喂方式`);
     }
+
     toast.success("产犊记录已保存");
     onDone();
   };
@@ -301,7 +333,75 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
             </div>
           </Field>
 
+          {/* ---- 初乳采集 ---- */}
+          <div className="pt-1 space-y-4">
+            <div className="text-body-sm font-medium text-foreground">初乳采集</div>
+            <Field label="是否采集初乳" required>
+              <div className="grid grid-cols-2 gap-2">
+                {(["已采集", "未采集"] as const).map((k) => (
+                  <ChoiceBtn key={k} label={k} active={colostrum === k} onClick={() => setColostrum(k)} />
+                ))}
+              </div>
+            </Field>
+            {colostrum === "已采集" && (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="采集时间" required>
+                    <input
+                      type="datetime-local"
+                      value={colTime}
+                      onChange={(e) => setColTime(e.target.value)}
+                      className={inputCls}
+                    />
+                  </Field>
+                  <Field label="采集量 (L)" required>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      value={colAmount}
+                      onChange={(e) => setColAmount(e.target.value)}
+                      className={inputCls}
+                    />
+                  </Field>
+                </div>
+                <Field label="初乳质量 Brix (%)" required>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    value={colBrix}
+                    onChange={(e) => setColBrix(e.target.value)}
+                    className={inputCls}
+                    placeholder="合格标准 ≥ 22%"
+                  />
+                  {colBrix !== "" && (
+                    <div className="text-caption mt-1" style={{ color: Number(colBrix) >= 22 ? "var(--state-success)" : "var(--state-danger)" }}>
+                      {Number(colBrix) >= 22 ? "质量合格（优质初乳）" : "质量不合格（Brix < 22%）"}
+                    </div>
+                  )}
+                </Field>
+                <Field label="处置方式" required>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(["立即饲喂", "冷藏暂存", "冷冻入库", "废弃"] as const).map((k) => (
+                      <ChoiceBtn key={k} label={k} active={colUse === k} onClick={() => setColUse(k)} />
+                    ))}
+                  </div>
+                </Field>
+              </>
+            )}
+            {colostrum === "未采集" && (
+              <Field label="未采集原因" required>
+                <textarea
+                  value={colReason}
+                  onChange={(e) => setColReason(e.target.value)}
+                  rows={2}
+                  className="w-full p-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary resize-none"
+                  placeholder="如：乳房水肿、乳房炎、无乳等"
+                />
+              </Field>
+            )}
+          </div>
         </section>
+
 
         {/* ============ 犊牛登记 ============ */}
         {calves.map((c, idx) => (
@@ -423,8 +523,57 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                     </button>
                   </Field>
                 )}
+
+                {/* ---- 初乳饲喂记录 ---- */}
+                <div className="pt-1 space-y-4">
+                  <div className="text-body-sm font-medium text-foreground">初乳饲喂记录</div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="饲喂时间" required>
+                      <input
+                        type="datetime-local"
+                        value={c.feedTime.replace(" ", "T")}
+                        onChange={(e) => updateCalf(idx, { feedTime: e.target.value })}
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field label="饲喂量 (L)" required>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        value={c.feedAmount}
+                        onChange={(e) => updateCalf(idx, { feedAmount: e.target.value })}
+                        className={inputCls}
+                        placeholder="建议 ≥ 4L"
+                      />
+                    </Field>
+                  </div>
+                  <Field label="初乳来源" required>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(["母源初乳", "初乳库", "代乳（初乳粉）"] as const).map((k) => (
+                        <ChoiceBtn key={k} label={k} active={c.feedSource === k} onClick={() => updateCalf(idx, { feedSource: k })} />
+                      ))}
+                    </div>
+                  </Field>
+                  <Field label="饲喂方式" required>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(["奶瓶自饮", "食管灌服"] as const).map((k) => (
+                        <ChoiceBtn key={k} label={k} active={c.feedWay === k} onClick={() => updateCalf(idx, { feedWay: k })} />
+                      ))}
+                    </div>
+                  </Field>
+                  <Field label="备注">
+                    <textarea
+                      value={c.feedNote}
+                      onChange={(e) => updateCalf(idx, { feedNote: e.target.value })}
+                      rows={2}
+                      className="w-full p-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary resize-none"
+                      placeholder="如：吮吸无力、需二次补饲等"
+                    />
+                  </Field>
+                </div>
               </>
             )}
+
 
             {(c.status === "死胎" || (c.status === "正常" && c.keep === "不留养")) && (
               <div className="space-y-3">
