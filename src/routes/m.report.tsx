@@ -99,7 +99,15 @@ function cowProfileOf(cowId: string) {
   };
 }
 
-function CowProfileCard({ cowId }: { cowId: string }) {
+function CowProfileCard({
+  cowId,
+  barn,
+  onRemove,
+}: {
+  cowId: string;
+  barn: string;
+  onRemove?: () => void;
+}) {
   const p = useMemo(() => cowProfileOf(cowId), [cowId]);
   const items = [
     { label: "品种", value: p.breed },
@@ -111,15 +119,24 @@ function CowProfileCard({ cowId }: { cowId: string }) {
   ];
   return (
     <div className="rounded-xl bg-card border border-border overflow-hidden">
-      <div className="px-3 h-10 flex items-center gap-1.5 border-b border-border bg-surface-subtle text-body-sm">
-        <Stethoscope className="h-3.5 w-3.5 text-primary shrink-0" />
-        <span className="text-text-secondary">近一年报病</span>
-        <span
-          className={`tabular-nums font-medium ${p.reportCount > 0 ? "text-[var(--state-warning)]" : "text-foreground"}`}
-        >
-          {p.reportCount}
+      {/* 顶部：耳号 · 牛舍 + 删除 */}
+      <div className="pl-3 pr-2 h-12 flex items-center gap-2 border-b border-border">
+        <span className="font-mono text-body text-foreground truncate">
+          {`#${cowId} · ${barn}`}
         </span>
-        <span className="text-text-secondary">次</span>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="ml-auto h-9 w-9 inline-flex items-center justify-center rounded-full text-text-tertiary active:bg-surface-subtle"
+            aria-label="删除已选牛只"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-3 gap-y-3 p-3">
         {items.map((it) => (
@@ -129,9 +146,21 @@ function CowProfileCard({ cowId }: { cowId: string }) {
           </div>
         ))}
       </div>
+      {/* 底部：近一年报病次数 */}
+      <div className="px-3 h-10 flex items-center gap-1.5 border-t border-border bg-surface-subtle text-body-sm">
+        <Stethoscope className="h-3.5 w-3.5 text-primary shrink-0" />
+        <span className="text-text-secondary">近一年报病</span>
+        <span
+          className={`tabular-nums font-medium ${p.reportCount > 0 ? "text-[var(--state-warning)]" : "text-foreground"}`}
+        >
+          {p.reportCount}
+        </span>
+        <span className="text-text-secondary">次</span>
+      </div>
     </div>
   );
 }
+
 
 
 
