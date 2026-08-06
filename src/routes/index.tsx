@@ -19,7 +19,7 @@ import {
   Inbox,
   ArrowUpRight,
   Beef,
-  ClipboardList,
+  
   Package,
   Stethoscope,
   TrendingUp,
