@@ -323,19 +323,6 @@ function TodayTasksPage() {
       {/* 筛选条：状态 + 牛舍（下拉抽屉） */}
       {(showStatusTabs || allBarns.length > 1) && (
         <div className="px-4 pt-3 flex items-center gap-2">
-          {showStatusTabs && (
-            <button
-              type="button"
-              onClick={() => setStatusSheetOpen(true)}
-              className="h-9 px-3 inline-flex items-center gap-1.5 rounded-full border border-primary bg-brand-subtle text-primary text-body-sm max-w-[52%]"
-            >
-              <span className="truncate">{activeTab}</span>
-              <span className="text-caption tabular-nums text-primary/70">
-                {kindTasks.filter((t) => statusOf(t) === activeTab).length}
-              </span>
-              <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
-            </button>
-          )}
           {allBarns.length > 1 && (
             <button
               type="button"
@@ -375,6 +362,20 @@ function TodayTasksPage() {
               )}
             </button>
           )}
+          {showStatusTabs && (
+            <button
+              type="button"
+              onClick={() => setStatusSheetOpen(true)}
+              className="shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border border-primary bg-brand-subtle text-primary text-body-sm max-w-[52%]"
+            >
+              <span className="truncate">{activeTab}</span>
+              <span className="text-caption tabular-nums text-primary/70">
+                {kindTasks.filter((t) => statusOf(t) === activeTab).length}
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+            </button>
+          )}
+
         </div>
       )}
 
