@@ -333,74 +333,66 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
             </div>
           </Field>
 
-          {/* ---- 初乳采集 ---- */}
-          <div className="pt-1 space-y-4">
-            <div className="text-body-sm font-medium text-foreground">初乳采集</div>
-            <Field label="是否采集初乳" required>
-              <div className="grid grid-cols-2 gap-2">
-                {(["已采集", "未采集"] as const).map((k) => (
-                  <ChoiceBtn key={k} label={k} active={colostrum === k} onClick={() => setColostrum(k)} />
-                ))}
-              </div>
+        </section>
+
+        {/* ============ 初乳采集（独立板块） ============ */}
+        <section className="rounded-2xl bg-card border border-border p-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-card-title text-foreground">初乳采集</h3>
+            <span className="text-caption text-text-tertiary">{colCode}</span>
+          </div>
+
+          <Field label="用途" required>
+            <div className="grid grid-cols-3 gap-2">
+              {(["饲喂", "储存", "废弃"] as const).map((k) => (
+                <ChoiceBtn key={k} label={k} active={colUse === k} onClick={() => setColUse(k)} />
+              ))}
+            </div>
+          </Field>
+
+          <Field label="初乳质量" required>
+            <div className="grid grid-cols-4 gap-2">
+              {(["好", "一般", "坏", "未知"] as const).map((k) => (
+                <ChoiceBtn key={k} label={k} active={colQuality === k} onClick={() => setColQuality(k)} />
+              ))}
+            </div>
+          </Field>
+
+          <Field label="初乳编码">
+            <input value={colCode} readOnly className={`${inputCls} bg-muted/40 text-text-secondary`} />
+            <div className="text-caption text-text-tertiary mt-1">大牛耳号 + 年份后两位和月份，系统自动生成</div>
+          </Field>
+
+          <Field label="袋号" required>
+            <div className="grid grid-cols-5 gap-2">
+              {(["1", "2", "3", "4", "5"] as const).map((k) => (
+                <ChoiceBtn key={k} label={k} active={colBag === k} onClick={() => setColBag(k)} />
+              ))}
+            </div>
+          </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="初乳量 (L)" required>
+              <input
+                type="number"
+                inputMode="decimal"
+                value={colAmount}
+                onChange={(e) => setColAmount(e.target.value)}
+                className={inputCls}
+              />
             </Field>
-            {colostrum === "已采集" && (
-              <>
-                <div className="grid grid-cols-2 gap-3">
-                  <Field label="采集时间" required>
-                    <input
-                      type="datetime-local"
-                      value={colTime}
-                      onChange={(e) => setColTime(e.target.value)}
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="采集量 (L)" required>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      value={colAmount}
-                      onChange={(e) => setColAmount(e.target.value)}
-                      className={inputCls}
-                    />
-                  </Field>
-                </div>
-                <Field label="初乳质量 Brix (%)" required>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    value={colBrix}
-                    onChange={(e) => setColBrix(e.target.value)}
-                    className={inputCls}
-                    placeholder="合格标准 ≥ 22%"
-                  />
-                  {colBrix !== "" && (
-                    <div className="text-caption mt-1" style={{ color: Number(colBrix) >= 22 ? "var(--state-success)" : "var(--state-danger)" }}>
-                      {Number(colBrix) >= 22 ? "质量合格（优质初乳）" : "质量不合格（Brix < 22%）"}
-                    </div>
-                  )}
-                </Field>
-                <Field label="处置方式" required>
-                  <div className="grid grid-cols-2 gap-2">
-                    {(["立即饲喂", "冷藏暂存", "冷冻入库", "废弃"] as const).map((k) => (
-                      <ChoiceBtn key={k} label={k} active={colUse === k} onClick={() => setColUse(k)} />
-                    ))}
-                  </div>
-                </Field>
-              </>
-            )}
-            {colostrum === "未采集" && (
-              <Field label="未采集原因" required>
-                <textarea
-                  value={colReason}
-                  onChange={(e) => setColReason(e.target.value)}
-                  rows={2}
-                  className="w-full p-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary resize-none"
-                  placeholder="如：乳房水肿、乳房炎、无乳等"
-                />
-              </Field>
-            )}
+            <Field label="白力度" required>
+              <input
+                type="number"
+                inputMode="decimal"
+                value={colBrix}
+                onChange={(e) => setColBrix(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
           </div>
         </section>
+
 
 
         {/* ============ 犊牛登记 ============ */}
