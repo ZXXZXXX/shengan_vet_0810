@@ -527,13 +527,14 @@ const diseaseKBByType: Record<WorkType, DiseaseEntry[]> = {
 
 // 根据牛只编号查询所属牛舍（mock）
 function barnOfCattle(id: string): string {
-  const n = parseInt(id.replace(/\D/g, ""), 10);
-  if (!isNaN(n)) {
-    const idx = (Math.floor(n / 100) % 8) + 1;
+  const { seq } = parseCowId(id);
+  if (seq) {
+    const idx = (Math.floor(seq / 100) % 8) + 1;
     return `${idx} 号牛舍`;
   }
   return "未知牛舍";
 }
+
 
 function loadDraft(draftId?: string, target?: string): any | null {
   if (typeof window === "undefined") return null;
