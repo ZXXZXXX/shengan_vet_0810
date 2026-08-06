@@ -22,6 +22,7 @@ import {
   MessageSquareWarning,
 } from "lucide-react";
 import { toast } from "sonner";
+import { markAlertHandled } from "@/lib/alert-store";
 import { MobileShell } from "@/components/mobile-shell";
 
 
