@@ -22,6 +22,7 @@ import {
   MessageSquareWarning,
 } from "lucide-react";
 import { toast } from "sonner";
+import { markAlertHandled } from "@/lib/alert-store";
 import { MobileShell } from "@/components/mobile-shell";
 
 
@@ -91,6 +92,7 @@ function AnimalDetailPage() {
     d.setHours(24, 0, 0, 0); // 次日 00:00
     window.localStorage.setItem(obsKey, String(d.getTime()));
     setObserveUntil(d.getTime());
+    markAlertHandled(a.id); // 异常排查任务当天从今日任务列表清除
     setFeedbackOpen(false);
     toast.success("已转为观察中，次日 00:00 自动解除");
   };
@@ -458,6 +460,7 @@ function AnimalDetailPage() {
               <button
                 type="button"
                 onClick={() => {
+                  markAlertHandled(a.id); // 异常排查任务当天从今日任务列表清除
                   setFeedbackOpen(false);
                   navigate({
                     to: "/m/report",

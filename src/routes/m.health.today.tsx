@@ -19,6 +19,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
 import { PICKUPS } from "@/lib/pickup-store";
+import { getHandledAlerts, subscribeAlerts } from "@/lib/alert-store";
 import {
   homeTasks,
   diseaseTaskMeta,
@@ -124,7 +125,20 @@ const ALL_KINDS: TaskKind[] = ["工单任务", "基础检查", "异常排查"];
 function TodayTasksPage() {
   const role = useRole();
   const navigate = useNavigate();
-  const allTasks = useMemo(() => getRoleAllTasks(role), [role]);
+  // 已在牛只档案中反馈过的异常排查任务，当天不再展示
+  const [handledAlerts, setHandledAlerts] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    const sync = () => setHandledAlerts(getHandledAlerts());
+    sync();
+    return subscribeAlerts(sync);
+  }, []);
+  const allTasks = useMemo(
+    () =>
+      getRoleAllTasks(role).filter(
+        (t) => !(t.kind === "异常排查" && t.cattleId && handledAlerts.has(t.cattleId)),
+      ),
+    [role, handledAlerts],
+  );
 
   const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
   const [kindFilter, setKindFilter] = useState<TaskKind>("工单任务");
