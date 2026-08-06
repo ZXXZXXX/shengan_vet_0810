@@ -14,6 +14,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import grasslandHero from "@/assets/grassland-hero.png";
+import { ImmunizationRateCard } from "@/components/immunization-rate-card";
+
 
 import {
   Inbox,
@@ -402,6 +404,11 @@ function HomePage() {
             );
           })}
         </div>
+
+        {/* 本期免疫完成率 — 支持下钻 */}
+        <ImmunizationRateCard />
+
+
 
         {/* 待办工作 + 消息提醒 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
