@@ -69,23 +69,32 @@ function tabHandledByRole(role: Role, tab: StatusTab): boolean {
 // 助理：疾病治疗/产后护理 的待执行
 // 免疫员：疫苗免疫；修蹄工：修蹄
 const EXEC_TYPES_VET = ["疾病治疗", "产后护理"];
+const EXTRA_TASKS = homeTasks.filter(
+  (t) => t.kind === "基础检查" || t.kind === "异常排查",
+);
 
 function getRoleAllTasks(role: Role): HomeTask[] {
   if (role === "manager") return [];
   if (role === "vet") {
-    return homeTasks.filter(
-      (t) =>
-        (t.type === "疾病治疗" && t.status === "待诊断") ||
-        (EXEC_TYPES_VET.includes(t.type) && t.status === "进行中"),
-    );
+    return [
+      ...homeTasks.filter(
+        (t) =>
+          (t.type === "疾病治疗" && t.status === "待诊断") ||
+          (EXEC_TYPES_VET.includes(t.type) && t.status === "进行中"),
+      ),
+      ...EXTRA_TASKS,
+    ];
   }
   if (role === "vet_assistant")
-    return homeTasks.filter(
-      (t) =>
-        EXEC_TYPES_VET.includes(t.type) &&
-        t.status === "进行中" &&
-        diseaseTaskMeta[t.id]?.task !== "待复查",
-    );
+    return [
+      ...homeTasks.filter(
+        (t) =>
+          EXEC_TYPES_VET.includes(t.type) &&
+          t.status === "进行中" &&
+          diseaseTaskMeta[t.id]?.task !== "待复查",
+      ),
+      ...EXTRA_TASKS,
+    ];
   if (role === "immunizer")
     return homeTasks.filter((t) => t.type === "疫苗免疫" && t.status === "进行中");
   if (role === "hoof_trimmer")
@@ -94,7 +103,9 @@ function getRoleAllTasks(role: Role): HomeTask[] {
 }
 
 function statusOf(t: HomeTask): StatusTab {
+  if (t.kind === "基础检查" || t.kind === "异常排查") return "待执行";
   if (t.type === "疾病治疗") {
+
     const meta = diseaseTaskMeta[t.id]?.task;
     if (meta === "待诊断") return "待诊断";
     if (meta === "待复查") return "待复查";
