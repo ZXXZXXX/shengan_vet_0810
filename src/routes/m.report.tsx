@@ -904,8 +904,8 @@ function ReportPage() {
                   const canDelete = true;
                   const tBarn = search.barn ?? barnOfCattle(t);
                   return (
+                    <div key={t} className="space-y-2">
                     <div
-                      key={t}
                       className="flex items-center h-12 pl-3 pr-2 rounded-xl bg-card border border-border text-body text-foreground gap-2"
                     >
                       {isEditing ? (
