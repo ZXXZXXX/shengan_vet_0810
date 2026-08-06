@@ -20,10 +20,11 @@ import {
   diseaseTaskMeta,
   taskChipStyle,
   typeMeta,
-  taskContentByChip,
+  taskCardContent,
   type HomeTask,
   type TaskChip,
 } from "@/routes/m.homepage";
+
 
 export const Route = createFileRoute("/m/health/today")({
   validateSearch: (s: Record<string, unknown>) => ({
