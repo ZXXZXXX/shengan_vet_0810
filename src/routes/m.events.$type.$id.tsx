@@ -177,11 +177,9 @@ type Calf = {
   reason: string;
   media: number[];
   // 初乳饲喂记录
-  feedTime: string;
-  feedSource: "母源初乳" | "初乳库" | "代乳（初乳粉）" | "";
+  feedCode: string;
   feedAmount: string;
-  feedWay: "奶瓶自饮" | "食管灌服" | "";
-  feedNote: string;
+  feedTech: string;
 };
 
 
