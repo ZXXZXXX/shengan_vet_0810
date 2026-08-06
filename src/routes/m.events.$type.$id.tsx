@@ -514,47 +514,30 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                 {/* ---- 初乳饲喂记录 ---- */}
                 <div className="pt-1 space-y-4">
                   <div className="text-body-sm font-medium text-foreground">初乳饲喂记录</div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Field label="饲喂时间" required>
-                      <input
-                        type="datetime-local"
-                        value={c.feedTime.replace(" ", "T")}
-                        onChange={(e) => updateCalf(idx, { feedTime: e.target.value })}
-                        className={inputCls}
-                      />
-                    </Field>
-                    <Field label="饲喂量 (L)" required>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        value={c.feedAmount}
-                        onChange={(e) => updateCalf(idx, { feedAmount: e.target.value })}
-                        className={inputCls}
-                        placeholder="建议 ≥ 4L"
-                      />
-                    </Field>
-                  </div>
-                  <Field label="初乳来源" required>
-                    <div className="grid grid-cols-2 gap-2">
-                      {(["母源初乳", "初乳库", "代乳（初乳粉）"] as const).map((k) => (
-                        <ChoiceBtn key={k} label={k} active={c.feedSource === k} onClick={() => updateCalf(idx, { feedSource: k })} />
-                      ))}
-                    </div>
+                  <Field label="初乳编码" required>
+                    <input
+                      value={c.feedCode}
+                      onChange={(e) => updateCalf(idx, { feedCode: e.target.value })}
+                      className={inputCls}
+                      placeholder={`如：${colCode}`}
+                    />
                   </Field>
-                  <Field label="饲喂方式" required>
-                    <div className="grid grid-cols-2 gap-2">
-                      {(["奶瓶自饮", "食管灌服"] as const).map((k) => (
-                        <ChoiceBtn key={k} label={k} active={c.feedWay === k} onClick={() => updateCalf(idx, { feedWay: k })} />
-                      ))}
-                    </div>
+                  <Field label="初乳饲喂量 (L)" required>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      value={c.feedAmount}
+                      onChange={(e) => updateCalf(idx, { feedAmount: e.target.value })}
+                      className={inputCls}
+                      placeholder="建议 ≥ 4L"
+                    />
                   </Field>
-                  <Field label="备注">
-                    <textarea
-                      value={c.feedNote}
-                      onChange={(e) => updateCalf(idx, { feedNote: e.target.value })}
-                      rows={2}
-                      className="w-full p-3 rounded-lg border border-border bg-card text-body-sm text-foreground outline-none focus:border-primary resize-none"
-                      placeholder="如：吮吸无力、需二次补饲等"
+                  <Field label="技术员" required>
+                    <input
+                      value={c.feedTech}
+                      onChange={(e) => updateCalf(idx, { feedTech: e.target.value })}
+                      className={inputCls}
+                      placeholder="请输入姓名"
                     />
                   </Field>
                 </div>
