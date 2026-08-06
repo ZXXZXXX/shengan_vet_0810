@@ -443,6 +443,22 @@ export const REVIEW_BRIEF: Record<string, string> = {
   "WO-2298": "直肠体温 + 分泌物评估",
   "WO-2440": "直肠体温 + 子宫恢复评估",
 };
+// 异常排查:具体的异常数据描述
+export const ALERT_BRIEF: Record<string, string> = {
+  "AL-0101": "耳温连续 6h 高于 39.5℃，最高 40.1℃",
+  "AL-0102": "反刍时长较 7 日均值下降 38%，活动量偏低",
+  "AL-0103": "今日产奶量较 7 日均值下降 24%（22.6kg）",
+};
+
+// 任务卡片「具体内容」（含基础检查 / 异常排查类）
+export function taskCardContent(t: HomeTask, chip: TaskChip | null) {
+  if (t.kind === "基础检查")
+    return `平台下发${t.type}任务，请在${t.dueDate}前完成。`;
+  if (t.kind === "异常排查") return ALERT_BRIEF[t.id] ?? t.conclusion;
+  return taskContentByChip(t.id, chip, t.conclusion);
+}
+
+
 
 export function taskContentByChip(id: string, chip: TaskChip | null, fallback: string) {
   if (chip === "待诊断") return SYMPTOM_TAGS[id] ?? fallback;
