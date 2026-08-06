@@ -403,6 +403,11 @@ function HomePage() {
           })}
         </div>
 
+        {/* 本期免疫完成率 — 支持下钻 */}
+        <ImmunizationRateCard />
+
+
+
         {/* 待办工作 + 消息提醒 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card ref={alertsRef} className="lg:col-span-2 border-border bg-card scroll-mt-20">
