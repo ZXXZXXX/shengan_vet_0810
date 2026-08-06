@@ -647,7 +647,18 @@ function TodayTaskList({ role }: { role: Role }) {
           );
         }
 
-        return isReview ? (
+        return isExam ? (
+          <Link
+            key={t.id}
+            to="/m/events/$type/$id"
+            params={{ type: "exam", id: t.target.replace("#", "") }}
+            search={{ item: t.type }}
+            className={linkCls}
+          >
+            {body}
+          </Link>
+        ) : isReview ? (
+
           <Link key={t.id} to="/m/health/$id/review" params={{ id: t.id }} className={linkCls}>
             {body}
           </Link>
