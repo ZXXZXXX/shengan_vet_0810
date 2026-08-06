@@ -119,26 +119,24 @@ function TransferForm({ id, onDone }: { id: string; onDone: () => void }) {
             onOpenChange={setPickerOpen}
           />
           <Field label="转栏原因" required>
-            <div className="flex flex-wrap gap-2">
-              {TRANSFER_REASONS.map((t) => {
-                const active = reasons[0] === t;
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setReasons([t])}
-                    className={`inline-flex items-center h-9 px-4 rounded-full text-body-sm border transition-colors ${
-                      active
-                        ? "bg-brand-subtle text-primary border-primary font-medium"
-                        : "bg-card text-foreground border-border active:border-primary"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                );
-              })}
-            </div>
+            <button
+              type="button"
+              onClick={() => setReasonOpen(true)}
+              className={`w-full h-11 px-3 inline-flex items-center rounded-lg bg-card border text-body-sm ${
+                reasons[0] ? "border-primary text-foreground" : "border-border text-text-tertiary"
+              }`}
+            >
+              <Search className="h-4 w-4 mr-2 text-text-tertiary" />
+              <span className="flex-1 text-left truncate">{reasons[0] || "搜索或选择转栏原因"}</span>
+            </button>
           </Field>
+          <ReasonPicker
+            open={reasonOpen}
+            onOpenChange={setReasonOpen}
+            value={reasons[0] ?? ""}
+            onChange={(v) => setReasons(v ? [v] : [])}
+          />
+
 
         </div>
       </div>
