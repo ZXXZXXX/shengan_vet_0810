@@ -876,6 +876,17 @@ function HealthTrendChart() {
   );
 }
 
+const WORK_SCOPES = [
+  { id: "all", label: "全量工单" },
+  { id: "ud", label: "派工单" },
+] as const;
+type WorkScope = (typeof WORK_SCOPES)[number]["id"];
+
+const WORK_SCOPE_DATA: Record<WorkScope, { total: string; rate: string; doing: string; overdue: string }> = {
+  all: { total: "128", rate: "75", doing: "14", overdue: "6" },
+  ud: { total: "46", rate: "82", doing: "5", overdue: "2" },
+};
+
 function PersonalWorkStats() {
   type StatItem = {
     label: string;
@@ -886,10 +897,12 @@ function PersonalWorkStats() {
     visual: "bars" | "ring" | "spark" | "clock";
     icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   };
+  const [scope, setScope] = useState<WorkScope>("all");
+  const d = WORK_SCOPE_DATA[scope];
   const stats: StatItem[] = [
     {
-      label: "全部工单",
-      value: "128",
+      label: scope === "ud" ? "派工单量" : "全部工单",
+      value: d.total,
       unit: "单",
       tone: "#FF8A3D",
       bg: "color-mix(in oklab, #FF8A3D 10%, #FFFFFF)",
@@ -898,7 +911,7 @@ function PersonalWorkStats() {
     },
     {
       label: "完成率",
-      value: "75",
+      value: d.rate,
       unit: "%",
       tone: "var(--state-success)",
       bg: "color-mix(in oklab, var(--state-success) 10%, #FFFFFF)",
@@ -907,7 +920,7 @@ function PersonalWorkStats() {
     },
     {
       label: "进行中",
-      value: "14",
+      value: d.doing,
       unit: "单",
       tone: "#2E8CF0",
       bg: "color-mix(in oklab, #2E8CF0 8%, #FFFFFF)",
@@ -916,7 +929,7 @@ function PersonalWorkStats() {
     },
     {
       label: "逾期数",
-      value: "6",
+      value: d.overdue,
       unit: "单",
       tone: "#F15454",
       bg: "color-mix(in oklab, #F15454 8%, #FFFFFF)",
@@ -927,6 +940,25 @@ function PersonalWorkStats() {
   return (
     <section className="px-4 -mt-1 relative z-10">
       <SectionTitle title="工作概览" hint="本月" />
+      <div className="mt-1 inline-flex rounded-full bg-[var(--bg-page)] p-0.5 border border-border">
+        {WORK_SCOPES.map((s) => {
+          const active = s.id === scope;
+          return (
+            <button
+              key={s.id}
+              onClick={() => setScope(s.id)}
+              className={`px-3 py-1 rounded-full text-caption transition-colors ${
+                active ? "bg-card text-foreground font-medium shadow-sm" : "text-text-tertiary"
+              }`}
+            >
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-1 text-caption text-text-tertiary">
+        {scope === "ud" ? "仅统计来自 UD 系统的派工单" : "统计本牧场全部工单"}
+      </div>
       <div className="mt-3 grid grid-cols-2 gap-2.5">
         {stats.map((s) => {
           const Icon = s.icon;
@@ -957,6 +989,7 @@ function PersonalWorkStats() {
     </section>
   );
 }
+
 
 function StatVisual({ variant, tone }: { variant: "bars" | "ring" | "spark" | "clock" | "truck"; tone: string }) {
   if (variant === "bars") {
