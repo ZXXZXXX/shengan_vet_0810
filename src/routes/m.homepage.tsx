@@ -27,7 +27,7 @@ import {
   Clock,
   DoorOpen,
   Truck,
-  Repeat2,
+  ArrowLeftRight,
 } from "lucide-react";
 import tasksDoneCelebrateAsset from "@/assets/today-task-complete-sparkles.svg.asset.json";
 const tasksDoneCelebrate = tasksDoneCelebrateAsset.url;
@@ -880,8 +880,8 @@ function HealthTrendChart() {
 }
 
 const WORK_SCOPES = [
-  { id: "all", label: "全量工单" },
-  { id: "ud", label: "派工单" },
+  { id: "all", label: "全部" },
+  { id: "ud", label: "其他" },
 ] as const;
 type WorkScope = (typeof WORK_SCOPES)[number]["id"];
 
@@ -953,7 +953,7 @@ function PersonalWorkStats() {
               className="flex items-center gap-1 text-caption leading-none text-primary font-medium"
             >
               {WORK_SCOPES.find((s) => s.id === scope)?.label}
-              <Repeat2 className="h-3.5 w-3.5" />
+              <ArrowLeftRight className="h-3 w-3" />
             </button>
           </div>
         }
