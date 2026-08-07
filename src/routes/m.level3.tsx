@@ -20,9 +20,26 @@ export const Route = createFileRoute("/m/level3")({
 
 function Level3Page() {
   const navigate = useNavigate();
-  const items = L3_ITEMS;
   const [tab, setTab] = useState<"all" | "unused" | "used">("all");
   const [q, setQ] = useState("");
+  // 避免 SSR/客户端时间差导致的水合不一致
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    setNow(Date.now());
+    const t = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(t);
+  }, []);
+
+  // 已使用的药品，领取时间超过 24 小时后自动清除
+  const items = useMemo(() => {
+    if (now === null) return L3_ITEMS;
+    return L3_ITEMS.filter((i) => {
+      if (!i.used) return true;
+      const claimed = new Date(i.claimedAt.replace(/-/g, "/")).getTime();
+      if (Number.isNaN(claimed)) return true;
+      return now - claimed < 24 * 60 * 60 * 1000;
+    });
+  }, [now]);
 
   const list = useMemo(() => {
     const kw = q.trim().toLowerCase();
@@ -51,6 +68,8 @@ function Level3Page() {
     { key: "all", label: `全部 ${items.length}` },
     { key: "unused", label: `未使用 ${unusedCount}` },
     { key: "used", label: `已使用 ${items.length - unusedCount}` },
+  ];
+
   ];
 
   return (
