@@ -27,6 +27,7 @@ import {
   Clock,
   DoorOpen,
   Truck,
+  Repeat2,
 } from "lucide-react";
 import tasksDoneCelebrateAsset from "@/assets/today-task-complete-sparkles.svg.asset.json";
 const tasksDoneCelebrate = tasksDoneCelebrateAsset.url;
@@ -945,28 +946,20 @@ function PersonalWorkStats() {
         title="工作概览"
         right={
           <div className="flex items-center gap-2 shrink-0">
-            {WORK_SCOPES.map((s, i) => {
-              const active = s.id === scope;
-              return (
-                <div key={s.id} className="flex items-center gap-2">
-                  {i > 0 && <span className="h-2.5 w-px bg-border" />}
-                  <button
-                    onClick={() => setScope(s.id)}
-                    className={`text-caption leading-none transition-colors ${
-                      active
-                        ? "text-primary font-medium"
-                        : "text-text-tertiary"
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                </div>
-              );
-            })}
+            <span className="text-caption text-text-tertiary">本月</span>
+            <span className="h-2.5 w-px bg-border" />
+            <button
+              onClick={() => setScope((prev) => (prev === "all" ? "ud" : "all"))}
+              className="flex items-center gap-1 text-caption leading-none text-primary font-medium"
+            >
+              {WORK_SCOPES.find((s) => s.id === scope)?.label}
+              <Repeat2 className="h-3.5 w-3.5" />
+            </button>
           </div>
         }
-
       />
+
+
       <div className="grid grid-cols-2 gap-2.5">
 
         {stats.map((s) => {
