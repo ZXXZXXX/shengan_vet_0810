@@ -942,14 +942,14 @@ function PersonalWorkStats() {
       <SectionTitle
         title="工作概览"
         right={
-          <div className="inline-flex rounded-full bg-[var(--bg-surface-subtle)] p-0.5 shrink-0">
+          <div className="inline-flex rounded-full bg-[var(--bg-surface-subtle)] p-[2px] shrink-0">
             {WORK_SCOPES.map((s) => {
               const active = s.id === scope;
               return (
                 <button
                   key={s.id}
                   onClick={() => setScope(s.id)}
-                  className={`px-2.5 h-6 rounded-full text-caption leading-none transition-colors ${
+                  className={`px-2 h-5 rounded-full text-[11px] leading-none transition-colors ${
                     active ? "bg-card text-foreground font-medium" : "text-text-tertiary"
                   }`}
                 >
