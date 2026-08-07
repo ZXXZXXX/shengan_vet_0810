@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
   Camera,
@@ -939,27 +939,29 @@ function PersonalWorkStats() {
   ];
   return (
     <section className="px-4 -mt-1 relative z-10">
-      <div className="flex items-center justify-between gap-2">
-        <SectionTitle title="工作概览" hint="本月" />
-        <div className="inline-flex rounded-full bg-[var(--bg-surface-subtle)] p-0.5 shrink-0">
-          {WORK_SCOPES.map((s) => {
-            const active = s.id === scope;
-            return (
-              <button
-                key={s.id}
-                onClick={() => setScope(s.id)}
-                className={`px-2.5 h-6 rounded-full text-caption leading-none transition-colors ${
-                  active ? "bg-card text-foreground font-medium" : "text-text-tertiary"
-                }`}
-              >
-                {s.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <SectionTitle
+        title="工作概览"
+        right={
+          <div className="inline-flex rounded-full bg-[var(--bg-surface-subtle)] p-0.5 shrink-0">
+            {WORK_SCOPES.map((s) => {
+              const active = s.id === scope;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setScope(s.id)}
+                  className={`px-2.5 h-6 rounded-full text-caption leading-none transition-colors ${
+                    active ? "bg-card text-foreground font-medium" : "text-text-tertiary"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+        }
+      />
+      <div className="grid grid-cols-2 gap-2.5">
 
-      <div className="mt-3 grid grid-cols-2 gap-2.5">
         {stats.map((s) => {
           const Icon = s.icon;
           return (
@@ -1079,11 +1081,13 @@ function SectionTitle({
   hint,
   to,
   search,
+  right,
 }: {
   title: string;
   hint?: string;
   to?: string;
   search?: Record<string, unknown>;
+  right?: ReactNode;
 }) {
   if (to) {
     return (
@@ -1103,12 +1107,13 @@ function SectionTitle({
     );
   }
   return (
-    <div className="flex items-center justify-between mb-2">
+    <div className="flex items-center justify-between gap-2 mb-2">
       <h3 className="text-section-title text-foreground">{title}</h3>
-      {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
+      {right ?? (hint && <span className="text-caption text-text-tertiary">{hint}</span>)}
     </div>
   );
 }
+
 
 
 const toneAccentMap: Record<string, string> = {
