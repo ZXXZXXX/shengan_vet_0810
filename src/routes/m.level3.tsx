@@ -26,7 +26,7 @@ function Level3Page() {
 
   const list = useMemo(() => {
     const kw = q.trim().toLowerCase();
-    return items.filter((i) => {
+    const filtered = items.filter((i) => {
       if (tab === "unused" && i.used) return false;
       if (tab === "used" && !i.used) return false;
       if (!kw) return true;
@@ -36,7 +36,14 @@ function Level3Page() {
         (i.cattle ?? []).some((c) => c.toLowerCase().includes(kw))
       );
     });
+    // 未使用在前（按领取时间），已使用在后（按使用时间）
+    return filtered.sort((a, b) => {
+      if (a.used !== b.used) return a.used ? 1 : -1;
+      if (a.used) return (a.usedAt ?? "").localeCompare(b.usedAt ?? "");
+      return a.claimedAt.localeCompare(b.claimedAt);
+    });
   }, [items, tab, q]);
+
 
   const unusedCount = items.filter((i) => !i.used).length;
 
