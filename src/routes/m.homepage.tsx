@@ -897,7 +897,7 @@ function PersonalWorkStats() {
     visual: "bars" | "ring" | "spark" | "clock";
     icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   };
-  const [scope, setScope] = React.useState<WorkScope>("all");
+  const [scope, setScope] = useState<WorkScope>("all");
   const d = WORK_SCOPE_DATA[scope];
   const stats: StatItem[] = [
     {
