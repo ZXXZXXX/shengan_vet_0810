@@ -55,6 +55,7 @@ import { Route as MMonthlyReportsRouteImport } from './routes/m.monthly-reports'
 import { Route as MMeRouteImport } from './routes/m.me'
 import { Route as MLossReportRouteImport } from './routes/m.loss-report'
 import { Route as MLoginRouteImport } from './routes/m.login'
+import { Route as MLevel3RouteImport } from './routes/m.level3'
 import { Route as MKb_symptomsRouteImport } from './routes/m.kb_symptoms'
 import { Route as MKb_drugsRouteImport } from './routes/m.kb_drugs'
 import { Route as MKb_diseasesRouteImport } from './routes/m.kb_diseases'
@@ -319,6 +320,11 @@ const MLoginRoute = MLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => MRoute,
 } as any)
+const MLevel3Route = MLevel3RouteImport.update({
+  id: '/level3',
+  path: '/level3',
+  getParentRoute: () => MRoute,
+} as any)
 const MKb_symptomsRoute = MKb_symptomsRouteImport.update({
   id: '/kb_symptoms',
   path: '/kb_symptoms',
@@ -517,6 +523,7 @@ export interface FileRoutesByFullPath {
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
   '/m/kb_symptoms': typeof MKb_symptomsRoute
+  '/m/level3': typeof MLevel3Route
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
@@ -593,6 +600,7 @@ export interface FileRoutesByTo {
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
   '/m/kb_symptoms': typeof MKb_symptomsRoute
+  '/m/level3': typeof MLevel3Route
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
@@ -675,6 +683,7 @@ export interface FileRoutesById {
   '/m/kb_diseases': typeof MKb_diseasesRoute
   '/m/kb_drugs': typeof MKb_drugsRoute
   '/m/kb_symptoms': typeof MKb_symptomsRoute
+  '/m/level3': typeof MLevel3Route
   '/m/login': typeof MLoginRoute
   '/m/loss-report': typeof MLossReportRoute
   '/m/me': typeof MMeRoute
@@ -758,6 +767,7 @@ export interface FileRouteTypes {
     | '/m/kb_diseases'
     | '/m/kb_drugs'
     | '/m/kb_symptoms'
+    | '/m/level3'
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
@@ -834,6 +844,7 @@ export interface FileRouteTypes {
     | '/m/kb_diseases'
     | '/m/kb_drugs'
     | '/m/kb_symptoms'
+    | '/m/level3'
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
@@ -915,6 +926,7 @@ export interface FileRouteTypes {
     | '/m/kb_diseases'
     | '/m/kb_drugs'
     | '/m/kb_symptoms'
+    | '/m/level3'
     | '/m/login'
     | '/m/loss-report'
     | '/m/me'
@@ -1307,6 +1319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MLoginRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/level3': {
+      id: '/m/level3'
+      path: '/level3'
+      fullPath: '/m/level3'
+      preLoaderRoute: typeof MLevel3RouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/kb_symptoms': {
       id: '/m/kb_symptoms'
       path: '/kb_symptoms'
@@ -1595,6 +1614,7 @@ interface MRouteChildren {
   MKb_diseasesRoute: typeof MKb_diseasesRoute
   MKb_drugsRoute: typeof MKb_drugsRoute
   MKb_symptomsRoute: typeof MKb_symptomsRoute
+  MLevel3Route: typeof MLevel3Route
   MLoginRoute: typeof MLoginRoute
   MLossReportRoute: typeof MLossReportRoute
   MMeRoute: typeof MMeRoute
@@ -1636,6 +1656,7 @@ const MRouteChildren: MRouteChildren = {
   MKb_diseasesRoute: MKb_diseasesRoute,
   MKb_drugsRoute: MKb_drugsRoute,
   MKb_symptomsRoute: MKb_symptomsRoute,
+  MLevel3Route: MLevel3Route,
   MLoginRoute: MLoginRoute,
   MLossReportRoute: MLossReportRoute,
   MMeRoute: MMeRoute,
