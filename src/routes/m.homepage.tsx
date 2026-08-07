@@ -943,30 +943,20 @@ function PersonalWorkStats() {
     <section className="px-4 -mt-1 relative z-10">
       <SectionTitle
         title="工作概览"
+        hint="本月"
         right={
-          <div className="flex items-center gap-2 shrink-0">
-            {WORK_SCOPES.map((s, i) => {
-              const active = s.id === scope;
-              return (
-                <div key={s.id} className="flex items-center gap-2">
-                  {i > 0 && <span className="h-2.5 w-px bg-border" />}
-                  <button
-                    onClick={() => setScope(s.id)}
-                    className={`text-caption leading-none transition-colors ${
-                      active
-                        ? "text-primary font-medium"
-                        : "text-text-tertiary"
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+          <button
+            onClick={() =>
+              setScope((prev) => (prev === "all" ? "ud" : "all"))
+            }
+            className="flex items-center gap-1 text-caption leading-none text-primary font-medium shrink-0"
+          >
+            {WORK_SCOPES.find((s) => s.id === scope)?.label}
+            <Repeat2 className="h-3.5 w-3.5" />
+          </button>
         }
-
       />
+
       <div className="grid grid-cols-2 gap-2.5">
 
         {stats.map((s) => {
