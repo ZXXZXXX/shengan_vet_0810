@@ -13,12 +13,14 @@ import {
   Minus,
   Plus,
   Beef,
+  Boxes,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ConfirmPickupDialog } from "@/components/m/confirm-pickup-dialog";
+import { Level3StoreSheet, L3_ITEMS } from "@/components/m/level3-store-sheet";
 import { cn } from "@/lib/utils";
 
 import {
@@ -379,6 +381,9 @@ function PrepPage() {
     return keys.size;
   }, [groups]);
 
+
+  const [l3Open, setL3Open] = useState(false);
+  const l3Unused = L3_ITEMS.filter((i) => !i.used).length;
 
   const handleAggregateConfirm = (ids: string[]) => {
     setAggOpen(false);
