@@ -34,6 +34,7 @@ const tasksDoneCelebrate = tasksDoneCelebrateAsset.url;
 import { MobileShell } from "@/components/mobile-shell";
 import { EmptyState } from "@/components/empty-state";
 import { RoleSwitchSheet } from "@/components/role-switch-sheet";
+import { GreetingDialog } from "@/components/m/greeting-dialog";
 import { useRole, roleLabel, roleGroup, canVisit, type Role } from "@/lib/mobile-role";
 
 
