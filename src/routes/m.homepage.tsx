@@ -942,23 +942,28 @@ function PersonalWorkStats() {
       <SectionTitle
         title="工作概览"
         right={
-          <div className="inline-flex rounded-full bg-[var(--bg-surface-subtle)] p-[2px] shrink-0">
-            {WORK_SCOPES.map((s) => {
+          <div className="flex items-center gap-2 shrink-0">
+            {WORK_SCOPES.map((s, i) => {
               const active = s.id === scope;
               return (
-                <button
-                  key={s.id}
-                  onClick={() => setScope(s.id)}
-                  className={`px-2 h-5 rounded-full text-[11px] leading-none transition-colors ${
-                    active ? "bg-card text-foreground font-medium" : "text-text-tertiary"
-                  }`}
-                >
-                  {s.label}
-                </button>
+                <div key={s.id} className="flex items-center gap-2">
+                  {i > 0 && <span className="h-2.5 w-px bg-border" />}
+                  <button
+                    onClick={() => setScope(s.id)}
+                    className={`text-caption leading-none transition-colors ${
+                      active
+                        ? "text-primary font-medium"
+                        : "text-text-tertiary"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                </div>
               );
             })}
           </div>
         }
+
       />
       <div className="grid grid-cols-2 gap-2.5">
 
