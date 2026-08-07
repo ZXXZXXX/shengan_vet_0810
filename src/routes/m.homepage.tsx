@@ -86,6 +86,7 @@ function MHomePage() {
 
   return (
     <MobileShell>
+      <GreetingDialog count={pendingPickups.length + 6} />
       {/* 牧场切换（全局数据） */}
       <FarmSwitcher />
 
