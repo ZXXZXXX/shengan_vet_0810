@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, Search, Beef, Clock, CheckCircle2, CircleDashed } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { L3_ITEMS } from "@/lib/level3-items";
