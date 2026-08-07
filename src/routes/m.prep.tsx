@@ -13,12 +13,14 @@ import {
   Minus,
   Plus,
   Beef,
+  Boxes,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ConfirmPickupDialog } from "@/components/m/confirm-pickup-dialog";
+import { Level3StoreSheet, L3_ITEMS } from "@/components/m/level3-store-sheet";
 import { cn } from "@/lib/utils";
 
 import {
@@ -380,6 +382,9 @@ function PrepPage() {
   }, [groups]);
 
 
+  const [l3Open, setL3Open] = useState(false);
+  const l3Unused = L3_ITEMS.filter((i) => !i.used).length;
+
   const handleAggregateConfirm = (ids: string[]) => {
     setAggOpen(false);
     setSelectedTaskIds(ids);
@@ -402,8 +407,23 @@ function PrepPage() {
             <ChevronLeft className="h-5 w-5" />
           </button>
           <div className="flex-1 text-body font-semibold text-foreground">备药</div>
+          <button
+            type="button"
+            onClick={() => setL3Open(true)}
+            className="relative h-9 w-9 mr-1 inline-flex items-center justify-center rounded-lg text-text-secondary active:bg-surface-subtle"
+            aria-label="三级库"
+          >
+            <Boxes className="h-5 w-5" />
+            {l3Unused > 0 && (
+              <span className="absolute top-1 right-1 min-w-[15px] h-[15px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] leading-[15px] text-center font-medium">
+                {l3Unused > 99 ? "99+" : l3Unused}
+              </span>
+            )}
+          </button>
         </div>
       </header>
+
+      <Level3StoreSheet open={l3Open} onClose={() => setL3Open(false)} />
 
 
       {/* 顶部 1/4 区域：药品清单 */}
