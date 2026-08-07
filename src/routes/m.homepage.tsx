@@ -1079,11 +1079,13 @@ function SectionTitle({
   hint,
   to,
   search,
+  right,
 }: {
   title: string;
   hint?: string;
   to?: string;
   search?: Record<string, unknown>;
+  right?: ReactNode;
 }) {
   if (to) {
     return (
@@ -1103,12 +1105,13 @@ function SectionTitle({
     );
   }
   return (
-    <div className="flex items-center justify-between mb-2">
+    <div className="flex items-center justify-between gap-2 mb-2">
       <h3 className="text-section-title text-foreground">{title}</h3>
-      {hint && <span className="text-caption text-text-tertiary">{hint}</span>}
+      {right ?? (hint && <span className="text-caption text-text-tertiary">{hint}</span>)}
     </div>
   );
 }
+
 
 
 const toneAccentMap: Record<string, string> = {
