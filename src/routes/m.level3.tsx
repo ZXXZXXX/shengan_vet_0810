@@ -70,8 +70,6 @@ function Level3Page() {
     { key: "used", label: `已使用 ${items.length - unusedCount}` },
   ];
 
-  ];
-
   return (
     <MobileShell hideTabBar>
       <header className="sticky top-0 z-30 bg-card border-b border-border">
