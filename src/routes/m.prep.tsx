@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ConfirmPickupDialog } from "@/components/m/confirm-pickup-dialog";
-import { Level3StoreSheet, L3_ITEMS } from "@/components/m/level3-store-sheet";
+import { L3_ITEMS } from "@/lib/level3-items";
 import { cn } from "@/lib/utils";
 
 import {
@@ -382,7 +382,6 @@ function PrepPage() {
   }, [groups]);
 
 
-  const [l3Open, setL3Open] = useState(false);
   const l3Unused = L3_ITEMS.filter((i) => !i.used).length;
 
   const handleAggregateConfirm = (ids: string[]) => {
@@ -409,7 +408,7 @@ function PrepPage() {
           <div className="flex-1 text-body font-semibold text-foreground">备药</div>
           <button
             type="button"
-            onClick={() => setL3Open(true)}
+            onClick={() => navigate({ to: "/m/level3" })}
             className="relative h-9 w-9 mr-1 inline-flex items-center justify-center rounded-lg text-text-secondary active:bg-surface-subtle"
             aria-label="三级库"
           >
@@ -423,7 +422,6 @@ function PrepPage() {
         </div>
       </header>
 
-      <Level3StoreSheet open={l3Open} onClose={() => setL3Open(false)} />
 
 
       {/* 顶部 1/4 区域：药品清单 */}
