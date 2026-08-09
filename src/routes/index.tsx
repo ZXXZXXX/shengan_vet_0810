@@ -197,10 +197,11 @@ const notifToneColor: Record<NotifTone, string> = {
 
 
 function TrendIcon({ trend }: { trend: string }) {
-  if (trend === "up") return <TrendingUp className="h-3 w-3 text-[var(--state-success)]" />;
-  if (trend === "down") return <TrendingDown className="h-3 w-3 text-[var(--state-danger)]" />;
-  return <Minus className="h-3 w-3 text-text-tertiary" />;
+  if (trend === "up") return <TrendingUp className="h-3 w-3" />;
+  if (trend === "down") return <TrendingDown className="h-3 w-3" />;
+  return <Minus className="h-3 w-3" />;
 }
+
 
 function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
