@@ -52,10 +52,11 @@ function BatchExecutePage() {
   const { ids, done } = useSearch({ from: "/m/health/today_/batch" });
   const navigate = useNavigate();
 
-  const doneSet = useMemo(() => new Set(done.split(",").filter(Boolean)), [done]);
+  const doneSet = useMemo(() => new Set((done ?? "").split(",").filter(Boolean)), [done]);
 
   const tasks = useMemo(() => {
-    const idSet = new Set(ids.split(",").filter(Boolean));
+    const idSet = new Set((ids ?? "").split(",").filter(Boolean));
+
     return homeTasks
       .filter((t) => idSet.has(t.id))
       .sort((a, b) => earSortKey(a).localeCompare(earSortKey(b)));
