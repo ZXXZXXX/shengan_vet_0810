@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import grasslandHero from "@/assets/grassland-hero.png";
 import { ImmunizationRateCard } from "@/components/immunization-rate-card";
 import { DiseaseStatsSection } from "@/components/disease-stats-section";
+import { BareContext } from "@/components/dashboard/charts";
 import { HerdSection } from "@/components/dashboard/herd-section";
 import { CalvingSection } from "@/components/dashboard/calving-section";
 import { CullingSection } from "@/components/dashboard/culling-section";
@@ -13,7 +14,6 @@ import { DrugSection } from "@/components/dashboard/drug-section";
 import { WorkOrderSection } from "@/components/dashboard/workorder-section";
 import { AlertSection } from "@/components/dashboard/alert-section";
 import { OpsSection } from "@/components/dashboard/ops-section";
-import { DrillSheet } from "@/components/dashboard/drill-sheet";
 
 import {
   ArrowUpRight,
@@ -228,11 +228,14 @@ function KpiCard({ label, caption, value, unit, delta, good, tone, icon, onClick
 
 function HomePage() {
   const [scope, setScope] = useState<ReportScope>("farm-in");
-  const [topic, setTopic] = useState<TopicKey | null>(null);
+  const [topic, setTopic] = useState<TopicKey>("herd");
   const showInternal = scope !== "farm-out";
   const herdTotal = 4060;
 
-  const open = (k: TopicKey) => () => setTopic(k);
+  const open = (k: TopicKey) => () => {
+    setTopic(k);
+    document.getElementById("topic-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <>
@@ -302,54 +305,50 @@ function HomePage() {
           ))}
         </div>
 
-        {/* 专题分析入口 */}
-        <div>
+        {/* 专题分析 */}
+        <div id="topic-panel">
           <h3 className="text-section-title text-foreground">专题分析</h3>
-          <p className="mt-0.5 text-caption text-text-tertiary">点击进入对应专题查看明细与下钻</p>
-          <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <p className="mt-0.5 text-caption text-text-tertiary">{topicMeta[topic].desc}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
             {topics
               .filter((t) => (showInternal || !t.internal) && (t.key !== "ops" || scope === "region" || scope === "group"))
-              .map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  onClick={open(t.key)}
-                  className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/40 hover:bg-surface-subtle"
-                >
-                  <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
-                    style={{ background: `color-mix(in oklab, ${t.tone} 12%, transparent)`, color: t.tone }}
+              .map((t) => {
+                const active = topic === t.key;
+                return (
+                  <button
+                    key={t.key}
+                    type="button"
+                    onClick={() => setTopic(t.key)}
+                    className={`inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-body-sm transition-colors ${
+                      active
+                        ? "border-primary/40 bg-[var(--sidebar-active,#EFFBF1)] text-primary"
+                        : "border-border bg-card text-text-secondary hover:bg-surface-subtle"
+                    }`}
                   >
-                    {t.icon}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-body font-medium text-foreground">{topicMeta[t.key].title}</span>
-                    <span className="mt-0.5 block truncate text-caption text-text-tertiary">{topicMeta[t.key].desc}</span>
-                  </span>
-                  <ArrowUpRight className="h-4 w-4 shrink-0 text-text-tertiary transition-colors group-hover:text-primary" />
-                </button>
-              ))}
+                    <span style={{ color: active ? undefined : t.tone }} className="flex h-4 w-4 items-center justify-center">
+                      {t.icon}
+                    </span>
+                    {topicMeta[t.key].title}
+                  </button>
+                );
+              })}
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-border bg-card p-5 [&_[data-slot=card]]:border-0 [&_[data-slot=card]]:bg-transparent [&_[data-slot=card]]:shadow-none">
+            <BareContext.Provider value>
+            {topic === "herd" && <HerdSection />}
+            {topic === "calving" && <CalvingSection />}
+            {topic === "culling" && <CullingSection />}
+            {topic === "disease" && <DiseaseStatsSection />}
+            {topic === "drug" && <DrugSection />}
+            {topic === "vaccine" && <ImmunizationRateCard />}
+            {topic === "workorder" && <WorkOrderSection />}
+            {topic === "alert" && <AlertSection />}
+            {topic === "ops" && <OpsSection level={scope === "group" ? "group" : "region"} />}
+            </BareContext.Provider>
           </div>
         </div>
-
       </main>
-
-      <DrillSheet
-        open={!!topic}
-        onOpenChange={(v) => !v && setTopic(null)}
-        title={topic ? topicMeta[topic].title : ""}
-        desc={topic ? topicMeta[topic].desc : undefined}
-      >
-        {topic === "herd" && <HerdSection />}
-        {topic === "calving" && <CalvingSection />}
-        {topic === "culling" && <CullingSection />}
-        {topic === "disease" && <DiseaseStatsSection />}
-        {topic === "drug" && <DrugSection />}
-        {topic === "vaccine" && <ImmunizationRateCard />}
-        {topic === "workorder" && <WorkOrderSection />}
-        {topic === "alert" && <AlertSection />}
-        {topic === "ops" && <OpsSection level={scope === "group" ? "group" : "region"} />}
-      </DrillSheet>
     </>
   );
 }
