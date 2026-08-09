@@ -382,7 +382,7 @@ function PrepPage() {
   }, [groups]);
 
 
-  const l3Unused = L3_ITEMS.filter((i) => !i.used).length;
+  const l3Unused = L3_ITEMS.filter((i) => !i.used && i.holder === CURRENT_HOLDER).length;
 
   const handleAggregateConfirm = (ids: string[]) => {
     setAggOpen(false);
