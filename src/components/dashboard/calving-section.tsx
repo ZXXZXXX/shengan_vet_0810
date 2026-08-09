@@ -54,7 +54,7 @@ export function CalvingSection() {
       icon={<Baby className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={
         drill ? (
-          <PeriodTabs value={tab} onChange={setTab} options={[TAB_PARITY, TAB_SEX]} />
+          <PeriodTabs value={tab} onChange={setTab} options={[TAB_PARITY, TAB_SEX, TAB_WEIGHT]} />
         ) : undefined
       }
     >
