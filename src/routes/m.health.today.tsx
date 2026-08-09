@@ -155,6 +155,12 @@ function TodayTasksPage() {
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<"batch" | null>(null);
+  const [assignSheetOpen, setAssignSheetOpen] = useState(false);
+  const [staffQuery, setStaffQuery] = useState("");
+  const assignees = useAssignees();
+  // 兽医/场长可指定责任人
+  const canAssign = role === "vet" || role === "manager";
+
   
   const { capture } = Route.useSearch();
 
