@@ -28,6 +28,20 @@ export const offReasonLabel: Record<"leave" | "absent", string> = {
   absent: "未签到",
 };
 
+/** 各角色视角下的当前登录人姓名（演示数据） */
+export const CURRENT_USER_BY_ROLE: Record<string, string> = {
+  vet: "陈嘉明",
+  vet_assistant: "赵一鸣",
+  immunizer: "王海涛",
+  hoof_trimmer: "林晓峰",
+  manager: "李雨晴",
+  admin: "李雨晴",
+};
+
+export function currentUserName(role: string) {
+  return CURRENT_USER_BY_ROLE[role] ?? "";
+}
+
 const KEY = "mp:task-assignee";
 const listeners = new Set<() => void>();
 
