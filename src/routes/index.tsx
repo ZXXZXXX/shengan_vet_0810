@@ -350,16 +350,18 @@ function HomePage() {
             const isUp = k.trend === "up";
             const isDown = k.trend === "down";
             const isGood = k.good;
-            const chipBg = !isUp && !isDown
+            const neutral = !isUp && !isDown;
+            const chipBg = neutral
               ? "var(--bg-surface-subtle)"
               : isGood
-              ? "color-mix(in oklab, var(--state-success) 18%, transparent)"
+              ? "color-mix(in oklab, var(--state-success) 16%, transparent)"
               : "color-mix(in oklab, var(--state-danger) 14%, transparent)";
-            const chipColor = !isUp && !isDown
+            const chipColor = neutral
               ? "var(--text-secondary)"
               : isGood
-              ? "#2F7A3A"
-              : "#B23A3A";
+              ? "var(--state-success)"
+              : "var(--state-danger)";
+
             return (
               <Card
                 key={k.label}
