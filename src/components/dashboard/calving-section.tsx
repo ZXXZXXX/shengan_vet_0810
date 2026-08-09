@@ -39,12 +39,17 @@ const TAB_PARITY = "胎型分布";
 const TAB_SEX = "性别比例";
 const TAB_WEIGHT = "体重分布";
 
+const VIEW_CALF = "犊牛情况";
+const VIEW_COW = "母牛情况";
+
+const difficultTotal = difficulty.reduce((s, d) => s + d.value, 0);
+
 export function CalvingSection() {
+  const [view, setView] = useState(VIEW_CALF);
   const [drill, setDrill] = useState(false);
   const [tab, setTab] = useState(TAB_PARITY);
   const total = aliveTotal + deadTotal;
   const detail = tab === TAB_PARITY ? parityDist : tab === TAB_SEX ? sexRatio : birthWeight;
-
 
   return (
     <SectionCard
@@ -53,12 +58,22 @@ export function CalvingSection() {
       desc={`本月产犊 ${total} 头`}
       icon={<Baby className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={
-        drill ? (
-          <PeriodTabs value={tab} onChange={setTab} options={[TAB_PARITY, TAB_SEX, TAB_WEIGHT]} />
-        ) : undefined
+        <div className="flex items-center gap-3 flex-wrap">
+          <PeriodTabs
+            value={view}
+            onChange={(v) => {
+              setView(v);
+              setDrill(false);
+            }}
+            options={[VIEW_CALF, VIEW_COW]}
+          />
+          {view === VIEW_CALF && drill ? (
+            <PeriodTabs value={tab} onChange={setTab} options={[TAB_PARITY, TAB_SEX, TAB_WEIGHT]} />
+          ) : null}
+        </div>
       }
     >
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      {view === VIEW_CALF ? (
         <div>
           {drill ? (
             <>
@@ -99,7 +114,7 @@ export function CalvingSection() {
                 />
                 <Legend data={survival} unit=" 头" />
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="mt-4 grid grid-cols-2 gap-3 max-w-md">
                 <MiniStat
                   label={`成活率 ${((aliveTotal / total) * 100).toFixed(1)}%`}
                   value={String(aliveTotal)}
@@ -116,18 +131,28 @@ export function CalvingSection() {
             </>
           )}
         </div>
-        <div className="space-y-6">
-          <div>
-
-            <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度</p>
-            <div className="flex items-center gap-6 flex-wrap">
-              <Donut data={difficulty} size={136} centerLabel="顺产率" centerValue="74.6%" />
-              <Legend data={difficulty} unit=" 例" />
-            </div>
+      ) : (
+        <div>
+          <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度分布</p>
+          <div className="flex items-center gap-8 flex-wrap">
+            <Donut data={difficulty} centerLabel="顺产率" centerValue="74.6%" />
+            <Legend data={difficulty} unit=" 例" />
+          </div>
+          <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {difficulty.map((d) => (
+              <MiniStat
+                key={d.name}
+                label={`${d.name} ${((d.value / difficultTotal) * 100).toFixed(1)}%`}
+                value={String(d.value)}
+                unit="例"
+                tone={d.color}
+              />
+            ))}
           </div>
         </div>
-      </div>
+      )}
     </SectionCard>
   );
 }
+
 
