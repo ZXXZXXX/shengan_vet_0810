@@ -70,7 +70,7 @@ import {
 
 export const Route = createFileRoute("/m/health/$id")({
   head: () => ({ meta: [{ title: "工单详情 · 奇点智牧" }] }),
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { tab?: "report" | "review" | "execute"; obs?: number; obsExpired?: number } => ({
     tab: (s.tab as "report" | "review" | "execute" | undefined) ?? undefined,
     obs: typeof s.obs === "number" ? s.obs : s.obs ? Number(s.obs) : undefined,
     obsExpired: s.obsExpired ? 1 : undefined,
@@ -319,7 +319,7 @@ function TaskDetailPage() {
             type="button"
             onClick={() =>
               navigate({
-                to: "/m/health/$id_/abort",
+                to: "/m/health/$id/abort",
                 params: { id },
                 search: isDisease ? { disease: 1 } : {},
               })
@@ -599,7 +599,7 @@ function TaskDetailPage() {
             )}
             {showConfirmCure && (
               <Link
-                to="/m/health/$id_/confirm-cure"
+                to="/m/health/$id/confirm-cure"
                 params={{ id: o.id }}
                 className="flex-1 h-11 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
               >

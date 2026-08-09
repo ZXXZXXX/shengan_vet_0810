@@ -11,7 +11,7 @@ import { Check } from "lucide-react";
 
 
 export const Route = createFileRoute("/m/events/$type/$id")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { item?: string } => ({
     item: typeof s.item === "string" ? s.item : undefined,
   }),
   head: () => ({ meta: [{ title: "事件记录 · 奇点智牧" }] }),

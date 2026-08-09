@@ -8,7 +8,7 @@ import { ActiveDayExecute } from "./m.health.$id";
 
 export const Route = createFileRoute("/m/health/$id_/execute")({
   head: () => ({ meta: [{ title: "执行记录 · 奇点智牧" }] }),
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { return?: string; batchIds?: string; batchDone?: string } => ({
     return: typeof s.return === "string" ? s.return : undefined,
     batchIds: typeof s.batchIds === "string" ? s.batchIds : "",
     batchDone: typeof s.batchDone === "string" ? s.batchDone : "",
