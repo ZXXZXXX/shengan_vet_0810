@@ -366,14 +366,46 @@ function HomePage() {
           </div>
         </Card>
 
-        {/* KPI grid — 简洁卡片样式 */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpis.map((k, i) => {
+        {/* 报表口径切换 */}
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+          <div className="min-w-0">
+            <h3 className="text-section-title text-foreground">数据看板</h3>
+            <p className="text-caption text-text-tertiary mt-0.5">
+              {scope === "farm-out"
+                ? "外部口径：不展示药品、工单与预警告警专题"
+                : scope === "region"
+                ? "区域（中心）口径：牧场数据上卷至区域级"
+                : scope === "group"
+                ? "集团高管口径：牧场数据上卷至区域级、集团级"
+                : "牧场级内部口径：全量专题"}
+            </p>
+          </div>
+          <div className="inline-flex items-center rounded-full border border-border bg-surface-subtle p-0.5 shrink-0">
+            {scopeOptions.map((o) => (
+              <button
+                key={o.key}
+                type="button"
+                onClick={() => setScope(o.key)}
+                className={`h-8 px-3 rounded-full text-caption transition-colors ${
+                  scope === o.key ? "bg-card text-primary shadow-card" : "text-text-secondary"
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 数据指标卡 1-6 — 点击跳转至对应专题 */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          {visibleCards.map((k, i) => {
             const tones = [
               "var(--brand)",
               "var(--effect-ai-cyan)",
               "var(--state-danger)",
+              "var(--state-warning)",
               "var(--effect-ai-purple)",
+              "var(--brand)",
             ];
             const tone = tones[i % tones.length];
             const isUp = k.trend === "up";
@@ -392,14 +424,22 @@ function HomePage() {
             return (
               <Card
                 key={k.label}
-                onClick={k.anchor ? () => scrollToAnchor(k.anchor) : undefined}
-                role={k.anchor ? "button" : undefined}
-                tabIndex={k.anchor ? 0 : undefined}
-                onKeyDown={k.anchor ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); scrollToAnchor(k.anchor); } } : undefined}
-                className={`relative border-border bg-card p-5 rounded-2xl shadow-card transition-all ${k.anchor ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-elevated" : ""}`}
+                onClick={() => scrollToTopic(k.anchor)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    scrollToTopic(k.anchor);
+                  }
+                }}
+                className="relative border-border bg-card p-5 rounded-2xl shadow-card transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-elevated"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <p className="text-body-sm text-text-tertiary">{k.label}</p>
+                  <div className="min-w-0">
+                    <p className="text-caption text-text-tertiary truncate">{k.topic}</p>
+                    <p className="text-body-sm text-text-secondary mt-0.5">{k.label}</p>
+                  </div>
                   <div
                     className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
                     style={{
@@ -411,7 +451,7 @@ function HomePage() {
                   </div>
                 </div>
                 <div className="mt-2 flex items-baseline gap-1.5">
-                  <span className="tabular-nums font-semibold leading-none text-foreground" style={{ fontSize: "28px" }}>
+                  <span className="tabular-nums font-semibold leading-none text-foreground" style={{ fontSize: "26px" }}>
                     {k.value}
                   </span>
                   <span className="text-body-sm text-text-tertiary">{k.unit}</span>
@@ -431,11 +471,39 @@ function HomePage() {
           })}
         </div>
 
-        {/* 本期免疫完成率 — 支持下钻 */}
-        <ImmunizationRateCard />
+        {/* 1 牛群专题 */}
+        <HerdSection />
 
-        {/* 疾病统计 — 左右联动 */}
-        <DiseaseStatsSection />
+        {/* 2 产犊专题 */}
+        <CalvingSection />
+
+        {/* 3 死淘专题 */}
+        <CullingSection />
+
+        {/* 4 疾病专题 */}
+        <div id="topic-disease" className="scroll-mt-24">
+          <DiseaseStatsSection />
+        </div>
+
+        {/* 5 药品专题 — 外部口径不展示 */}
+        {showInternal && <DrugSection />}
+
+        {/* 6 疫苗免疫专题 */}
+        <div id="topic-vaccine" className="scroll-mt-24">
+          <ImmunizationRateCard />
+        </div>
+
+        {/* 7 兽医工单专题 — 外部口径不展示 */}
+        {showInternal && <WorkOrderSection />}
+
+        {/* 8 预警告警专题 — 外部口径不展示 */}
+        {showInternal && <AlertSection />}
+
+        {/* 区域 / 集团运营统计 */}
+        {(scope === "region" || scope === "group") && (
+          <OpsSection level={scope === "group" ? "group" : "region"} />
+        )}
+
 
 
 
