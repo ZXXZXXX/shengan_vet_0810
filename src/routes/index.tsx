@@ -191,219 +191,43 @@ function HomePage() {
           </div>
         </div>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-12 gap-4">
-          {/* 牛群 */}
-          <Tile
-            span="col-span-12 md:col-span-6 xl:col-span-5"
-            tone="var(--brand)"
-            title="牛群存栏"
-            caption="至今日 · 类型与健康分布"
-            icon={<Beef className="h-4 w-4" strokeWidth={1.75} />}
-            onClick={open("herd")}
-          >
-            <Headline value={herdTotal.toLocaleString()} unit="头" delta="+38 头" good note="较上月" size={38} />
-            <div className="mt-4">
-              <RankRows data={herdType} unit=" 头" />
-            </div>
-          </Tile>
-
-          {/* 产犊 */}
-          <Tile
-            span="col-span-12 md:col-span-6 xl:col-span-4"
-            tone="var(--effect-ai-cyan)"
-            title="产犊"
-            caption="本月 · 成活与死亡"
-            icon={<Baby className="h-4 w-4" strokeWidth={1.75} />}
-            onClick={open("calving")}
-          >
-            <Headline value="179" unit="头" delta="+12 头" good note="较上月" />
-            <div className="mt-4">
-              <SplitBar segments={calvingSplit} />
-            </div>
-            <div className="mt-4">
-              <StatRow
-                items={[
-                  { label: "成活率", value: "95.0%", tone: "var(--brand)" },
-                  { label: "双胎及以上", value: "22", unit: "头" },
-                ]}
-              />
-            </div>
-          </Tile>
-
-          {/* 死淘 */}
-          <Tile
-            span="col-span-12 md:col-span-6 xl:col-span-3"
-            tone="var(--state-danger)"
-            title="死淘"
-            caption="本月 · 近 6 个月趋势"
-            icon={<Activity className="h-4 w-4" strokeWidth={1.75} />}
-            onClick={open("culling")}
-          >
-            <Headline value="45" unit="头" delta="-6 头" good note="较上月" />
-            <div className="mt-3">
-              <Sparkline points={cullingTrend} color="var(--state-danger)" />
-            </div>
-            <div className="mt-3">
-              <StatRow
-                items={[
-                  { label: "死亡", value: "21", unit: "头", tone: "var(--state-danger)" },
-                  { label: "淘汰", value: "24", unit: "头", tone: "var(--state-warning)" },
-                ]}
-              />
-            </div>
-          </Tile>
-
-          {/* 疾病 */}
-          <Tile
-            span="col-span-12 md:col-span-6 xl:col-span-5"
-            tone="var(--effect-ai-purple)"
-            title="疾病"
-            caption="本月 · 发病 / 治愈头次"
-            icon={<Stethoscope className="h-4 w-4" strokeWidth={1.75} />}
-            onClick={open("disease")}
-          >
-            <Headline value="365 / 337" unit="头次" delta="-4.2%" good note="发病率较上月" />
-            <div className="mt-4">
-              <RankRows
-                data={diseaseTop}
-                unit=" 例"
-                color="var(--effect-ai-purple)"
-              />
-            </div>
-          </Tile>
-
-          {/* 药品 */}
-          {showInternal && (
-            <Tile
-              span="col-span-12 md:col-span-6 xl:col-span-4"
-              tone="var(--state-warning)"
-              title="药品费用"
-              caption="本月 · 头均用药费用"
-              icon={<Pill className="h-4 w-4" strokeWidth={1.75} />}
-              onClick={open("drug")}
-            >
-              <Headline value="42.6" unit="元/头" delta="+6.9%" good={false} note="较上月" />
-              <div className="mt-3">
-                <Sparkline points={drugTrend} color="var(--state-warning)" />
-              </div>
-              <div className="mt-3">
-                <StatRow
-                  items={[
-                    { label: "近 6 月总费用", value: "109.0", unit: "万元" },
-                    { label: "抗生素占比", value: "42.4%", tone: "var(--state-warning)" },
-                  ]}
-                />
-              </div>
-            </Tile>
-          )}
-
-          {/* 免疫 */}
-          <Tile
-            span={`col-span-12 md:col-span-6 ${showInternal ? "xl:col-span-3" : "xl:col-span-7"}`}
-            tone="var(--brand)"
-            title="疫苗免疫"
-            caption="本期 · 完成率"
-            icon={<Syringe className="h-4 w-4" strokeWidth={1.75} />}
-            onClick={open("vaccine")}
-          >
-            <div className="flex items-center gap-4">
-              <Ring value={91.6} label="完成率" />
-              <div className="min-w-0 space-y-1">
-                <p className="text-body-sm text-text-secondary tabular-nums">已免疫 5,634 头</p>
-                <p className="text-body-sm text-text-secondary tabular-nums">应免疫 6,154 头</p>
-                <p className="text-caption text-text-tertiary">较上期 +2.3%</p>
-              </div>
-            </div>
-          </Tile>
-
-          {/* 工单 */}
-          {showInternal && (
-            <Tile
-              span="col-span-12 xl:col-span-7"
-              tone="var(--effect-ai-cyan)"
-              title="兽医工单"
-              caption="本月 · 全部工单 / UD 派工单"
-              icon={<ClipboardList className="h-4 w-4" strokeWidth={1.75} />}
-              onClick={open("workorder")}
-            >
-              <div className="grid gap-4 sm:grid-cols-2">
-                {workOrderSplit.map((s) => {
-                  const rate = Math.round((s.done / s.total) * 100);
-                  return (
-                    <div key={s.name} className="rounded-xl bg-surface-subtle p-3.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-body-sm text-foreground">{s.name}</span>
-                        <span className="text-caption tabular-nums text-text-tertiary">完成率 {rate}%</span>
-                      </div>
-                      <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-card">
-                        <div className="h-full rounded-full" style={{ width: `${rate}%`, background: s.color }} />
-                      </div>
-                      <div className="mt-3">
-                        <StatRow
-                          items={[
-                            { label: "总量", value: String(s.total), unit: "单" },
-                            { label: "已完成", value: String(s.done), unit: "单", tone: s.color },
-                            { label: "逾期", value: String(s.overdue), unit: "单", tone: "var(--state-danger)" },
-                          ]}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Tile>
-          )}
-
-          {/* 预警 */}
-          {showInternal && (
-            <Tile
-              span="col-span-12 xl:col-span-5"
-              tone="var(--state-danger)"
-              title="预警告警"
-              caption="库存 / 牛只 / 工单"
-              icon={<AlertTriangle className="h-4 w-4" strokeWidth={1.75} />}
-              onClick={open("alert")}
-            >
-              <Headline value="9" unit="条待关注" size={30} />
-              <ul className="mt-3 space-y-2">
-                {alertItems.map((a) => (
-                  <li key={a.title} className="flex items-center gap-2 rounded-lg bg-surface-subtle px-3 py-2">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: a.tone }} />
-                    <span className="min-w-0 flex-1 truncate text-body-sm text-foreground">{a.title}</span>
-                    <span
-                      className="shrink-0 rounded-md px-1.5 py-0.5 text-caption"
-                      style={{ background: `color-mix(in oklab, ${a.tone} 14%, transparent)`, color: a.tone }}
-                    >
-                      {a.tag}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Tile>
-          )}
-
-          {/* 运营统计 */}
-          {(scope === "region" || scope === "group") && (
-            <Tile
-              span="col-span-12"
-              tone="var(--effect-ai-purple)"
-              title={scope === "group" ? "集团运营统计" : "区域运营统计"}
-              caption="牧场数量 / 牛群规模 / 人员"
-              icon={<Building2 className="h-4 w-4" strokeWidth={1.75} />}
-              onClick={open("ops")}
-            >
-              <StatRow
-                items={[
-                  { label: "牧场数量", value: scope === "group" ? "6" : "2", unit: "个", tone: "var(--brand)" },
-                  { label: "牛群规模", value: scope === "group" ? "7,044" : "2,252", unit: "头" },
-                  { label: "兽医及助理", value: scope === "group" ? "48" : "16", unit: "人", tone: "var(--effect-ai-cyan)" },
-                  { label: "覆盖区域", value: scope === "group" ? "3" : "1", unit: "个", tone: "var(--effect-ai-purple)" },
-                ]}
-              />
-            </Tile>
-          )}
+        {/* 核心指标卡 3 × 2 */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {kpis.filter((k) => showInternal || !k.internal).map((k) => (
+            <KpiCard key={k.key} {...k} onClick={open(k.topic)} />
+          ))}
         </div>
+
+        {/* 专题分析入口 */}
+        <div>
+          <h3 className="text-section-title text-foreground">专题分析</h3>
+          <p className="mt-0.5 text-caption text-text-tertiary">点击进入对应专题查看明细与下钻</p>
+          <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {topics
+              .filter((t) => (showInternal || !t.internal) && (t.key !== "ops" || scope === "region" || scope === "group"))
+              .map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={open(t.key)}
+                  className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/40 hover:bg-surface-subtle"
+                >
+                  <span
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                    style={{ background: `color-mix(in oklab, ${t.tone} 12%, transparent)`, color: t.tone }}
+                  >
+                    {t.icon}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-body font-medium text-foreground">{topicMeta[t.key].title}</span>
+                    <span className="mt-0.5 block truncate text-caption text-text-tertiary">{topicMeta[t.key].desc}</span>
+                  </span>
+                  <ArrowUpRight className="h-4 w-4 shrink-0 text-text-tertiary transition-colors group-hover:text-primary" />
+                </button>
+              ))}
+          </div>
+        </div>
+
       </main>
 
       <DrillSheet
