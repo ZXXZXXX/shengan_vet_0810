@@ -22,7 +22,7 @@ import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
 import { PICKUPS } from "@/lib/pickup-store";
 import { getHandledAlerts, subscribeAlerts } from "@/lib/alert-store";
-import { SHIFT_STAFF, assignTasks, useAssignees, offReasonLabel } from "@/lib/assignee-store";
+import { SHIFT_STAFF, assignTasks, useAssignees, offReasonLabel, currentUserName } from "@/lib/assignee-store";
 
 import {
   homeTasks,
@@ -151,6 +151,7 @@ function TodayTasksPage() {
   const [statusSheetOpen, setStatusSheetOpen] = useState(false);
 
   const [barnQuery, setBarnQuery] = useState("");
+  const [mineOnly, setMineOnly] = useState(false);
 
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -212,13 +213,20 @@ function TodayTasksPage() {
   }, [kindTasks]);
 
 
-  const tasks = useMemo(
-    () =>
+  const me = currentUserName(role);
+  const mineCount = useMemo(
+    () => kindTasks.filter((t) => assignees[t.id] === me).length,
+    [kindTasks, assignees, me],
+  );
+
+  const tasks = useMemo(() => {
+    let list =
       selectedBarns.size === 0
         ? tabTasks
-        : tabTasks.filter((t) => selectedBarns.has(inferBarn(t))),
-    [tabTasks, selectedBarns],
-  );
+        : tabTasks.filter((t) => selectedBarns.has(inferBarn(t)));
+    if (mineOnly) list = list.filter((t) => assignees[t.id] === me);
+    return list;
+  }, [tabTasks, selectedBarns, mineOnly, assignees, me]);
 
 
 
@@ -347,8 +355,24 @@ function TodayTasksPage() {
       </div>
 
       {/* 筛选条：状态 + 牛舍（下拉抽屉） */}
+      <div className="px-4 pt-3 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setMineOnly((v) => !v)}
+          className={`shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm ${
+            mineOnly
+              ? "border-primary bg-brand-subtle text-primary"
+              : "border-border bg-card text-text-secondary"
+          }`}
+        >
+          <UserCheck className="h-4 w-4 shrink-0" />
+          <span>与我有关</span>
+          <span className="text-caption tabular-nums opacity-70">{mineCount}</span>
+        </button>
+      </div>
+
       {(showStatusTabs || allBarns.length > 0) && (
-        <div className="px-4 pt-3 flex items-center gap-2">
+        <div className="px-4 pt-2 flex items-center gap-2">
           {allBarns.length > 0 && (
 
             <button
