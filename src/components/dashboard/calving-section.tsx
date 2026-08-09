@@ -21,11 +21,11 @@ const sexRatio = [
 ];
 
 const birthWeight = [
-  { name: "< 30 kg", value: 12 },
-  { name: "30 - 35 kg", value: 41 },
-  { name: "35 - 40 kg", value: 78 },
-  { name: "40 - 45 kg", value: 33 },
-  { name: "≥ 45 kg", value: 15 },
+  { name: "< 30 kg", value: 12, color: "var(--state-warning)" },
+  { name: "30 - 35 kg", value: 40, color: "var(--effect-ai-cyan)" },
+  { name: "35 - 40 kg", value: 72, color: "var(--brand)" },
+  { name: "40 - 45 kg", value: 31, color: "var(--effect-ai-purple)" },
+  { name: "≥ 45 kg", value: 15, color: "var(--state-danger)" },
 ];
 
 const difficulty = [
@@ -37,12 +37,14 @@ const difficulty = [
 
 const TAB_PARITY = "胎型分布";
 const TAB_SEX = "性别比例";
+const TAB_WEIGHT = "体重分布";
 
 export function CalvingSection() {
   const [drill, setDrill] = useState(false);
   const [tab, setTab] = useState(TAB_PARITY);
   const total = aliveTotal + deadTotal;
-  const detail = tab === TAB_PARITY ? parityDist : sexRatio;
+  const detail = tab === TAB_PARITY ? parityDist : tab === TAB_SEX ? sexRatio : birthWeight;
+
 
   return (
     <SectionCard
@@ -52,7 +54,7 @@ export function CalvingSection() {
       icon={<Baby className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={
         drill ? (
-          <PeriodTabs value={tab} onChange={setTab} options={[TAB_PARITY, TAB_SEX]} />
+          <PeriodTabs value={tab} onChange={setTab} options={[TAB_PARITY, TAB_SEX, TAB_WEIGHT]} />
         ) : undefined
       }
     >
