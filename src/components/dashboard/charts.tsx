@@ -48,13 +48,16 @@ export function Donut({
   centerLabel,
   centerValue,
   centerUnit,
+  onSliceClick,
 }: {
   data: Slice[];
   size?: number;
   centerLabel?: string;
   centerValue?: string;
   centerUnit?: string;
+  onSliceClick?: (slice: Slice, index: number) => void;
 }) {
+
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
   const r = size / 2 - 8;
   const inner = r * 0.62;
