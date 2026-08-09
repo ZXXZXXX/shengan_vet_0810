@@ -11,8 +11,10 @@ import {
   Filter,
   ChevronRight,
   ChevronDown,
+  UserRound,
 
 } from "lucide-react";
+import { toast } from "sonner";
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
@@ -20,6 +22,8 @@ import { EmptyState } from "@/components/empty-state";
 import { useRole, roleLabel, type Role } from "@/lib/mobile-role";
 import { PICKUPS } from "@/lib/pickup-store";
 import { getHandledAlerts, subscribeAlerts } from "@/lib/alert-store";
+import { SHIFT_STAFF, assignTasks, useAssignees } from "@/lib/assignee-store";
+
 import {
   homeTasks,
   diseaseTaskMeta,
@@ -151,6 +155,12 @@ function TodayTasksPage() {
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<"batch" | null>(null);
+  const [assignSheetOpen, setAssignSheetOpen] = useState(false);
+  const [staffQuery, setStaffQuery] = useState("");
+  const assignees = useAssignees();
+  // 兽医/场长可指定责任人
+  const canAssign = role === "vet" || role === "manager";
+
   
   const { capture } = Route.useSearch();
 
@@ -292,7 +302,8 @@ function TodayTasksPage() {
             onClick={enterSelect}
             className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
           >
-            批量执行
+            批量选择
+
           </button>
         )}
       </header>
@@ -648,7 +659,16 @@ function TodayTasksPage() {
                     <span className="text-text-tertiary mr-1.5">具体内容</span>
                     {actionLine}
                   </div>
+                  <div className="mt-1 text-body-sm truncate">
+                    <span className="text-text-tertiary mr-1.5">责任人</span>
+                    {assignees[t.id] ? (
+                      <span className="text-text-secondary">{assignees[t.id]}</span>
+                    ) : (
+                      <span className="text-text-tertiary/70">未指定</span>
+                    )}
+                  </div>
                 </div>
+
 
                 {/* 底部:领物 + 操作 */}
                 <div className="mt-3 flex items-center justify-between">
@@ -743,8 +763,14 @@ function TodayTasksPage() {
       {/* 底部操作栏(多选态):按流程单一 CTA — 先取药,再拍照记录 */}
       {selectMode && tasks.length > 0 && (() => {
         const selectedTasks = tasks.filter((t) => selected.has(t.id));
-        const subText = count === 0 ? "勾选要一次处理的任务" : "下一步：批量执行";
+        const subText =
+          count === 0
+            ? "勾选要一次处理的任务"
+            : canAssign
+              ? "可指定责任人或直接执行"
+              : "下一步：批量执行";
         const allIds = selectedTasks.map((t) => t.id).join(",");
+        const canExecuteBatch = role !== "manager";
         return (
           <div className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)] max-w-[440px] mx-auto">
             <div className="flex items-center justify-between mb-2">
@@ -759,24 +785,100 @@ function TodayTasksPage() {
                 {subText}
               </div>
             </div>
-            <button
-              type="button"
-              disabled={count === 0}
-              onClick={() => {
-                navigate({
-                  to: "/m/health/today/batch",
-                  search: { ids: allIds },
-                });
-              }}
-              className="w-full h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
-            >
-              <Camera className="h-4 w-4" />
-              开始执行
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {canAssign && (
+                <button
+                  type="button"
+                  disabled={count === 0}
+                  onClick={() => {
+                    setStaffQuery("");
+                    setAssignSheetOpen(true);
+                  }}
+                  className={`h-11 rounded-full border border-primary text-primary text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform ${
+                    canExecuteBatch ? "flex-1" : "w-full"
+                  }`}
+                >
+                  <UserRound className="h-4 w-4" />
+                  指定责任人
+                </button>
+              )}
+              {canExecuteBatch && (
+                <button
+                  type="button"
+                  disabled={count === 0}
+                  onClick={() => {
+                    navigate({
+                      to: "/m/health/today/batch",
+                      search: { ids: allIds },
+                    });
+                  }}
+                  className="flex-1 h-11 rounded-full bg-primary text-primary-foreground text-body-sm font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none active:scale-[.97] transition-transform"
+                >
+                  <Camera className="h-4 w-4" />
+                  开始执行
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
           </div>
         );
       })()}
+
+      {/* 指定责任人抽屉 */}
+      <Sheet open={assignSheetOpen} onOpenChange={setAssignSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl p-0 max-h-[80vh] flex flex-col"
+        >
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">指定责任人</SheetTitle>
+          </SheetHeader>
+          <div className="px-4 pb-1 text-caption text-text-tertiary">
+            为已选 {count} 项任务指定本场次在岗人员
+          </div>
+          <div className="px-4 py-2">
+            <input
+              value={staffQuery}
+              onChange={(e) => setStaffQuery(e.target.value)}
+              placeholder="搜索姓名或岗位"
+              className="w-full h-10 px-3 rounded-xl bg-surface-subtle text-body-sm outline-none"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-2">
+            {SHIFT_STAFF.filter((s) => s.onShift)
+              .filter((s) => {
+                const kw = staffQuery.trim();
+                if (!kw) return true;
+                return s.name.includes(kw) || roleLabel[s.role].includes(kw);
+              })
+              .map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => {
+                    assignTasks(Array.from(selected), s.name);
+                    setAssignSheetOpen(false);
+                    exitSelect();
+                    toast.success(`已将 ${count} 项任务指派给 ${s.name}`);
+                  }}
+                  className="w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border border-border bg-card active:bg-surface-subtle"
+                >
+                  <span className="h-8 w-8 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center text-caption shrink-0">
+                    {s.name.slice(0, 1)}
+                  </span>
+                  <span className="flex-1 text-left text-body text-foreground">
+                    {s.name}
+                  </span>
+                  <span className="text-body-sm text-text-tertiary">
+                    {roleLabel[s.role]}
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-text-tertiary" />
+                </button>
+              ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
 
 
 
