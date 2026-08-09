@@ -659,7 +659,16 @@ function TodayTasksPage() {
                     <span className="text-text-tertiary mr-1.5">具体内容</span>
                     {actionLine}
                   </div>
+                  <div className="mt-1 text-body-sm truncate">
+                    <span className="text-text-tertiary mr-1.5">责任人</span>
+                    {assignees[t.id] ? (
+                      <span className="text-text-secondary">{assignees[t.id]}</span>
+                    ) : (
+                      <span className="text-text-tertiary/70">未指定</span>
+                    )}
+                  </div>
                 </div>
+
 
                 {/* 底部:领物 + 操作 */}
                 <div className="mt-3 flex items-center justify-between">
