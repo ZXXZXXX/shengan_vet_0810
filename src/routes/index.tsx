@@ -14,7 +14,6 @@ import { WorkOrderSection } from "@/components/dashboard/workorder-section";
 import { AlertSection } from "@/components/dashboard/alert-section";
 import { OpsSection } from "@/components/dashboard/ops-section";
 import { DrillSheet } from "@/components/dashboard/drill-sheet";
-import { Tile, Headline, Sparkline, SplitBar, Ring, RankRows, StatRow } from "@/components/dashboard/bento";
 
 import {
   ArrowUpRight,
