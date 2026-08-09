@@ -10,7 +10,14 @@ export type L3Item = {
   usedAt?: string;
   /** 用到的牛只耳号 */
   cattle?: string[];
+  /** 领用人（三级库归属人） */
+  holder: string;
+  /** 领用人岗位 */
+  holderRole?: string;
 };
+
+/** 当前登录人（个人三级库视角） */
+export const CURRENT_HOLDER = "李雨晴";
 
 /** 演示数据：三级库（个人库）中的药品 */
 export const L3_ITEMS: L3Item[] = [
@@ -24,6 +31,8 @@ export const L3_ITEMS: L3Item[] = [
     claimedAt: "2026-08-07 07:42",
     usedAt: "2026-08-07 09:10",
     cattle: ["01-24-2412", "01-24-2376"],
+    holder: "李雨晴",
+    holderRole: "兽医助理",
   },
   {
     code: "SN-8801-0232",
@@ -33,6 +42,8 @@ export const L3_ITEMS: L3Item[] = [
     manufacturer: "齐鲁动保",
     used: false,
     claimedAt: "2026-08-07 07:42",
+    holder: "李雨晴",
+    holderRole: "兽医助理",
   },
   {
     code: "SN-6620-1187",
@@ -44,6 +55,8 @@ export const L3_ITEMS: L3Item[] = [
     claimedAt: "2026-08-07 07:42",
     usedAt: "2026-08-07 08:55",
     cattle: ["01-24-2381"],
+    holder: "李雨晴",
+    holderRole: "兽医助理",
   },
   {
     code: "SN-4410-0902",
@@ -53,6 +66,8 @@ export const L3_ITEMS: L3Item[] = [
     manufacturer: "华农动保",
     used: false,
     claimedAt: "2026-08-06 07:30",
+    holder: "李雨晴",
+    holderRole: "兽医助理",
   },
   {
     code: "SN-4410-0903",
@@ -64,5 +79,80 @@ export const L3_ITEMS: L3Item[] = [
     claimedAt: "2026-08-06 07:30",
     usedAt: "2026-08-06 10:12",
     cattle: ["01-24-2298"],
+    holder: "李雨晴",
+    holderRole: "兽医助理",
+  },
+  // —— 其他人员（全场视角可见）——
+  {
+    code: "SN-8801-0240",
+    name: "精制盐酸头孢噻呋注射液",
+    spec: "100ml:5g / 瓶",
+    batch: "B240517",
+    manufacturer: "齐鲁动保",
+    used: false,
+    claimedAt: "2026-08-07 07:50",
+    holder: "王志强",
+    holderRole: "兽医助理",
+  },
+  {
+    code: "SN-3320-0455",
+    name: "产后灌注剂",
+    spec: "100ml / 瓶",
+    batch: "B240708",
+    manufacturer: "大华农",
+    used: true,
+    claimedAt: "2026-08-07 07:50",
+    usedAt: "2026-08-07 10:26",
+    cattle: ["02-24-1180"],
+    holder: "王志强",
+    holderRole: "兽医助理",
+  },
+  {
+    code: "SN-9912-0071",
+    name: "口蹄疫双价灭活疫苗",
+    spec: "100ml / 瓶",
+    batch: "B240611",
+    manufacturer: "中农威特",
+    used: true,
+    claimedAt: "2026-08-07 06:58",
+    usedAt: "2026-08-07 09:40",
+    cattle: ["03-24-0912", "03-24-0915", "03-24-0918"],
+    holder: "赵敏",
+    holderRole: "免疫员",
+  },
+  {
+    code: "SN-9912-0072",
+    name: "口蹄疫双价灭活疫苗",
+    spec: "100ml / 瓶",
+    batch: "B240611",
+    manufacturer: "中农威特",
+    used: false,
+    claimedAt: "2026-08-07 06:58",
+    holder: "赵敏",
+    holderRole: "免疫员",
+  },
+  {
+    code: "SN-7701-0338",
+    name: "硫酸铜溶液",
+    spec: "5L / 桶",
+    batch: "B240520",
+    manufacturer: "华农动保",
+    used: false,
+    claimedAt: "2026-08-06 08:05",
+    holder: "陈立",
+    holderRole: "修蹄工",
+  },
+  {
+    code: "SN-7701-0339",
+    name: "水杨酸粉",
+    spec: "500g / 袋",
+    batch: "B240502",
+    manufacturer: "瑞普生物",
+    used: true,
+    claimedAt: "2026-08-06 08:05",
+    usedAt: "2026-08-06 11:48",
+    cattle: ["01-24-2455"],
+    holder: "陈立",
+    holderRole: "修蹄工",
   },
 ];
