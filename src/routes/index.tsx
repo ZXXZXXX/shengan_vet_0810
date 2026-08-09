@@ -16,14 +16,21 @@ import { toast } from "sonner";
 import grasslandHero from "@/assets/grassland-hero.png";
 import { ImmunizationRateCard } from "@/components/immunization-rate-card";
 import { DiseaseStatsSection } from "@/components/disease-stats-section";
-
-
+import { HerdSection } from "@/components/dashboard/herd-section";
+import { CalvingSection } from "@/components/dashboard/calving-section";
+import { CullingSection } from "@/components/dashboard/culling-section";
+import { DrugSection } from "@/components/dashboard/drug-section";
+import { WorkOrderSection } from "@/components/dashboard/workorder-section";
+import { AlertSection } from "@/components/dashboard/alert-section";
+import { OpsSection } from "@/components/dashboard/ops-section";
 
 import {
   Inbox,
   ArrowUpRight,
   Beef,
-  
+  Baby,
+  Pill,
+  Syringe,
   Package,
   Stethoscope,
   TrendingUp,
@@ -35,10 +42,9 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   PackageMinus,
-  HeartPulse,
   Activity,
-  Wallet,
 } from "lucide-react";
+
 
 
 export const Route = createFileRoute("/")({
