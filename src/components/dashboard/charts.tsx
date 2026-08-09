@@ -176,11 +176,15 @@ export function LineTrend({
   series,
   height = 180,
   unit = "",
+  activeIndex,
+  onPointClick,
 }: {
   labels: string[];
   series: Series[];
   height?: number;
   unit?: string;
+  activeIndex?: number;
+  onPointClick?: (index: number) => void;
 }) {
   const w = 640;
   const h = height;
@@ -194,6 +198,7 @@ export function LineTrend({
   return (
     <div className="w-full overflow-hidden">
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ height }}>
+
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
           <g key={t}>
             <line
