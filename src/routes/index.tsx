@@ -31,7 +31,7 @@ import {
   Baby,
   Pill,
   Syringe,
-  Package,
+  
   Stethoscope,
   TrendingUp,
   TrendingDown,
@@ -214,84 +214,12 @@ function HeroStat({ label, value, unit }: { label: string; value: string; unit?:
   );
 }
 
-const stockComposition = [
-  { name: "1 号牛舍", count: 320, color: "var(--brand)" },
-  { name: "2 号牛舍", count: 312, color: "var(--effect-ai-cyan)" },
-  { name: "3 号牛舍", count: 298, color: "var(--state-warning)" },
-  { name: "犊牛舍 A", count: 84, color: "var(--effect-ai-purple)" },
-  { name: "隔离区", count: 6, color: "var(--state-danger)" },
-  { name: "其他单元", count: 1466, color: "color-mix(in oklab, var(--brand) 30%, var(--bg-surface-subtle))" },
-];
 
-const StockCompositionCard = ({ ref }: { ref: React.RefObject<HTMLDivElement | null> }) => {
-  const total = stockComposition.reduce((s, x) => s + x.count, 0);
-  const radius = 70;
-  const inner = 44;
-  const cx = 90;
-  const cy = 90;
-  let acc = 0;
-  const arcs = stockComposition.map((seg) => {
-    const start = (acc / total) * Math.PI * 2 - Math.PI / 2;
-    acc += seg.count;
-    const end = (acc / total) * Math.PI * 2 - Math.PI / 2;
-    const large = end - start > Math.PI ? 1 : 0;
-    const x1 = cx + radius * Math.cos(start);
-    const y1 = cy + radius * Math.sin(start);
-    const x2 = cx + radius * Math.cos(end);
-    const y2 = cy + radius * Math.sin(end);
-    const xi2 = cx + inner * Math.cos(end);
-    const yi2 = cy + inner * Math.sin(end);
-    const xi1 = cx + inner * Math.cos(start);
-    const yi1 = cy + inner * Math.sin(start);
-    const d = `M ${x1} ${y1} A ${radius} ${radius} 0 ${large} 1 ${x2} ${y2} L ${xi2} ${yi2} A ${inner} ${inner} 0 ${large} 0 ${xi1} ${yi1} Z`;
-    return { d, color: seg.color, name: seg.name, count: seg.count };
-  });
 
-  return (
-    <Card ref={ref} className="border-border bg-card scroll-mt-20">
-      <div className="p-6 pb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Beef className="h-4 w-4 text-primary" strokeWidth={1.75} />
-          <h3 className="text-card-title text-foreground">存栏构成</h3>
-          <span className="tag tag-muted">共 {total.toLocaleString()} 头</span>
-        </div>
-      </div>
-      <div className="px-6 pb-6 flex items-center gap-8 flex-wrap">
-        <div className="relative">
-          <svg width="180" height="180" viewBox="0 0 180 180">
-            {arcs.map((a, i) => (
-              <path key={i} d={a.d} fill={a.color} stroke="var(--bg-surface)" strokeWidth="1.5" />
-            ))}
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-caption text-text-tertiary">存栏总数</span>
-            <span className="text-section-title tabular-nums text-foreground">{total.toLocaleString()}</span>
-            <span className="text-caption text-text-tertiary">头</span>
-          </div>
-        </div>
-        <div className="flex-1 min-w-[240px] grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {stockComposition.map((s) => {
-            const pct = ((s.count / total) * 100).toFixed(1);
-            return (
-              <div key={s.name} className="flex items-center gap-2 py-1.5">
-                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: s.color }} />
-                <span className="text-body-sm text-foreground flex-1">{s.name}</span>
-                <span className="text-body-sm text-text-secondary tabular-nums">{s.count.toLocaleString()}</span>
-                <span className="text-caption text-text-tertiary tabular-nums w-12 text-right">{pct}%</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </Card>
-  );
-};
 
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
-  const stockRef = useRef<HTMLDivElement | null>(null);
-  const warehouseRef = useRef<HTMLDivElement | null>(null);
   const alertsRef = useRef<HTMLDivElement | null>(null);
 
   const [scope, setScope] = useState<ReportScope>("farm-in");
@@ -304,13 +232,6 @@ function HomePage() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const scrollToAnchor = (anchor?: "stock" | "warehouse" | "alerts") => {
-    const el =
-      anchor === "stock" ? stockRef.current :
-      anchor === "warehouse" ? warehouseRef.current :
-      anchor === "alerts" ? alertsRef.current : null;
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
 
 
@@ -529,56 +450,6 @@ function HomePage() {
 
 
 
-        {/* 存栏构成 */}
-        <StockCompositionCard ref={stockRef} />
-
-        {/* 仓库物资概览 */}
-        <Card ref={warehouseRef} className="border-border bg-card scroll-mt-20">
-          <div className="p-6 pb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-primary" strokeWidth={1.75} />
-              <h3 className="text-card-title text-foreground">仓库物资概览</h3>
-              <span className="tag tag-muted">共 186 类</span>
-            </div>
-            <Link to="/warehouse">
-              <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
-                进入库存管理 <ChevronRight className="h-3 w-3 ml-0.5" />
-              </Button>
-            </Link>
-          </div>
-          <div className="px-6 pb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { label: "物资正常", count: 158, total: 186, tone: "success", dot: "bg-[var(--state-success)]" },
-              { label: "物资临期", count: 18, total: 186, tone: "warning", dot: "bg-[var(--state-warning)]" },
-              { label: "余量紧张", count: 10, total: 186, tone: "danger", dot: "bg-[var(--state-danger)]" },
-            ].map((s) => {
-              const pct = Math.round((s.count / s.total) * 100);
-              return (
-                <div key={s.label} className="rounded-md border border-border p-4 bg-surface-subtle">
-                  <div className="flex items-center gap-2">
-                    <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
-                    <span className="text-body-sm text-text-secondary">{s.label}</span>
-                    <span className="ml-auto text-caption text-text-tertiary tabular-nums">占比 {pct}%</span>
-                  </div>
-                  <div className="mt-3 flex items-baseline gap-1">
-                    <span className="text-page-title tabular-nums text-foreground">{s.count}</span>
-                    <span className="text-caption text-text-tertiary">类 / {s.total}</span>
-                  </div>
-                  <div className="mt-3 h-1.5 rounded-full bg-card overflow-hidden">
-                    <div
-                      className={`h-full ${
-                        s.tone === "success" ? "bg-[var(--state-success)]" :
-                        s.tone === "warning" ? "bg-[var(--state-warning)]" :
-                        "bg-[var(--state-danger)]"
-                      }`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
       </main>
 
       <Dialog
