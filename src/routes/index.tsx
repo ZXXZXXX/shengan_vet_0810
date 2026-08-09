@@ -429,13 +429,18 @@ function HomePage() {
         {/* 5 药品专题 — 外部口径不展示 */}
         {showInternal && <DrugSection />}
 
-        {/* 6 疫苗免疫专题 */}
-        <div id="topic-vaccine" className="scroll-mt-24">
-          <ImmunizationRateCard />
+        {/* 6 疫苗免疫专题 + 7 兽医工单专题 左右布局 */}
+        <div className={`grid grid-cols-1 gap-6 ${showInternal ? "xl:grid-cols-2" : ""}`}>
+          <div id="topic-vaccine" className="scroll-mt-24">
+            <ImmunizationRateCard />
+          </div>
+          {showInternal && (
+            <div className="min-w-0">
+              <WorkOrderSection />
+            </div>
+          )}
         </div>
 
-        {/* 7 兽医工单专题 — 外部口径不展示 */}
-        {showInternal && <WorkOrderSection />}
 
         {/* 8 预警告警专题 — 外部口径不展示 */}
         {showInternal && <AlertSection />}
