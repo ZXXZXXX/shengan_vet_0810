@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Beef } from "lucide-react";
-import { SectionCard, Donut, Legend, MiniStat, PeriodTabs, PALETTE } from "./charts";
+import { SectionCard, Donut, Legend, PeriodTabs } from "./charts";
 
 const typeDist = [
   { name: "泌乳牛", value: 2180 },
