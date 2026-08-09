@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Sun, Moon, Sparkles, PartyPopper, Coffee, ArrowRight } from "lucide-react";
+import { Sun, Moon, Coffee, ArrowRight } from "lucide-react";
+import morningGreeting from "@/assets/cow-morning-greeting.svg.asset.json";
+import afternoonGreeting from "@/assets/cow-afternoon-greeting.svg.asset.json";
+import morningStart from "@/assets/cow-_morning-start-work.svg.asset.json";
+import afternoonStart from "@/assets/cow-_afternoon-start-work.svg.asset.json";
+import leaveRest from "@/assets/cow-leave-rest.svg.asset.json";
 
 type Props = {
   /** 当前时段预计工作项数 */
@@ -10,7 +15,7 @@ type Props = {
 
 /**
  * M 端问候卡弹窗：按时段问候 -> 出勤 / 请假 -> 反馈文案 -> 进入主页。
- * 情绪化设计：时段插画天空、光晕、飘浮元素与鼓励文案。
+ * 情绪化设计：奶牛插画 + 柔和渐变底 + 鼓励文案。
  */
 export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
   const [open, setOpen] = useState(false);
@@ -36,66 +41,54 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
 
   const period = isMorning ? "早上" : "下午";
   const Icon = isMorning ? Sun : Moon;
-  const sky = isMorning
-    ? "linear-gradient(160deg,#FFD98E 0%,#7FE3B4 55%,#00A85A 100%)"
-    : "linear-gradient(160deg,#FFB27A 0%,#5FCFAE 55%,#00875C 100%)";
+  const heroArt = isMorning ? morningGreeting.url : afternoonGreeting.url;
+  const workArt = isMorning ? morningStart.url : afternoonStart.url;
+  const heroBg = isMorning
+    ? "linear-gradient(180deg,#F3FAEF 0%,#E7F6EA 100%)"
+    : "linear-gradient(180deg,#FFF6EC 0%,#E9F6F0 100%)";
   const mood = isMorning
     ? "新的一天，从一次巡栏开始 ☀️"
     : "下午也别硬撑，节奏稳一点就好 🌤️";
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-[2px] px-6 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/45 backdrop-blur-[2px] px-6 animate-in fade-in duration-200">
       <div className="w-full max-w-[344px] rounded-[28px] bg-card overflow-hidden shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         {feedback === null ? (
           <>
-            {/* 情绪化天空插画 */}
-            <div className="relative px-6 pt-7 pb-6 text-white overflow-hidden" style={{ background: sky }}>
-              {/* 光晕 */}
-              <span
-                aria-hidden
-                className="absolute -top-16 -right-10 h-44 w-44 rounded-full animate-pulse"
-                style={{ background: "radial-gradient(circle,rgba(255,255,255,0.55),transparent 70%)" }}
+            {/* 插画区 */}
+            <div className="relative" style={{ background: heroBg }}>
+              <span className="absolute top-4 left-4 h-9 w-9 rounded-2xl bg-card/80 backdrop-blur-sm inline-flex items-center justify-center shadow-sm">
+                <Icon className="h-4.5 w-4.5 text-primary" />
+              </span>
+              <img
+                src={heroArt}
+                alt={`${period}问候插画`}
+                className="w-full h-[188px] object-contain select-none pointer-events-none animate-in fade-in zoom-in-95 duration-500"
               />
-              <span
-                aria-hidden
-                className="absolute -bottom-16 -left-12 h-40 w-40 rounded-full"
-                style={{ background: "radial-gradient(circle,rgba(255,255,255,0.28),transparent 70%)" }}
-              />
-              {/* 云朵 */}
-              <span aria-hidden className="absolute top-6 left-4 h-3 w-14 rounded-full bg-white/40" />
-              <span aria-hidden className="absolute top-11 left-10 h-2.5 w-9 rounded-full bg-white/25" />
-              <Sparkles aria-hidden className="absolute top-5 right-24 h-4 w-4 text-white/70 animate-pulse" />
-
-              <div className="relative">
-                <span className="h-14 w-14 rounded-2xl bg-white/25 backdrop-blur-sm inline-flex items-center justify-center shadow-lg ring-1 ring-white/40">
-                  <Icon className="h-7 w-7 drop-shadow" />
-                </span>
-                <div className="mt-4 text-page-title font-semibold tracking-tight drop-shadow-sm">
-                  {period}好，李雨晴
-                </div>
-                <div className="mt-2 text-body-sm text-white/95 leading-relaxed">
-                  今天{period}预计有
-                  <span className="mx-1.5 inline-flex items-baseline gap-0.5 px-2 py-0.5 rounded-lg bg-white/25 font-semibold text-white">
-                    <span className="text-section-title leading-none">{count}</span>
-                    <span className="text-caption">项</span>
-                  </span>
-                  工作，准备好就开始吧！
-                </div>
-              </div>
             </div>
 
-            {/* 情绪文案 */}
-            <div className="px-6 pt-4">
-              <div className="rounded-2xl bg-surface-subtle px-3.5 py-2.5 text-caption text-text-secondary leading-relaxed">
+            <div className="px-6 pt-5">
+              <div className="text-page-title font-semibold text-foreground tracking-tight">
+                {period}好，李雨晴
+              </div>
+              <div className="mt-2 text-body-sm text-text-secondary leading-relaxed">
+                今天{period}预计有
+                <span className="mx-1.5 inline-flex items-baseline gap-0.5 px-2 py-0.5 rounded-lg bg-[var(--surface-subtle,#EFFBF1)] font-semibold text-primary">
+                  <span className="text-section-title leading-none">{count}</span>
+                  <span className="text-caption">项</span>
+                </span>
+                工作，准备好就开始吧！
+              </div>
+              <div className="mt-3 rounded-2xl bg-surface-subtle px-3.5 py-2.5 text-caption text-text-tertiary leading-relaxed">
                 {mood}
               </div>
             </div>
 
-            <div className="p-5 pt-3 space-y-2.5">
+            <div className="p-5 pt-4 space-y-2.5">
               <button
                 type="button"
                 onClick={() => setFeedback("work")}
-                className="w-full h-12 rounded-2xl text-primary-foreground text-body font-medium inline-flex items-center justify-center gap-1.5 shadow-lg active:scale-[0.98] transition-transform"
+                className="w-full h-12 rounded-2xl text-primary-foreground text-body font-medium inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
                 style={{
                   background: "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)",
                   boxShadow: "0 10px 24px -10px color-mix(in oklab, var(--primary) 60%, transparent)",
@@ -115,41 +108,33 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
             </div>
           </>
         ) : (
-          <div className="relative p-7 text-center overflow-hidden animate-in fade-in duration-200">
-            <span
-              aria-hidden
-              className="absolute -top-20 left-1/2 -translate-x-1/2 h-48 w-48 rounded-full"
+          <div className="animate-in fade-in duration-200">
+            <div
+              className="relative"
               style={{
                 background:
                   feedback === "work"
-                    ? "radial-gradient(circle, color-mix(in oklab, var(--primary) 22%, transparent), transparent 70%)"
-                    : "radial-gradient(circle, rgba(255,178,122,0.35), transparent 70%)",
+                    ? "linear-gradient(180deg,#F3FAEF 0%,#E7F6EA 100%)"
+                    : "linear-gradient(180deg,#F2FAF6 0%,#E4F3EC 100%)",
               }}
-            />
-            <div className="relative space-y-4">
-              <span
-                className="h-16 w-16 rounded-full inline-flex items-center justify-center shadow-md animate-in zoom-in duration-300"
-                style={{
-                  background:
-                    feedback === "work"
-                      ? "linear-gradient(135deg,#00A85A 0%,#3FD49C 100%)"
-                      : "linear-gradient(135deg,#FFB27A 0%,#FFD98E 100%)",
-                }}
-              >
-                {feedback === "work" ? (
-                  <PartyPopper className="h-7 w-7 text-white" />
-                ) : (
-                  <Coffee className="h-7 w-7 text-white" />
-                )}
-              </span>
+            >
+              <img
+                src={feedback === "work" ? workArt : leaveRest.url}
+                alt={feedback === "work" ? "开始工作插画" : "请假休息插画"}
+                className="w-full h-[188px] object-contain select-none pointer-events-none animate-in zoom-in-95 duration-500"
+              />
+            </div>
+            <div className="px-6 pt-5 text-center">
               <div className="text-section-title text-foreground font-medium">
                 {feedback === "work" ? "已确认出勤" : "已记录本场请假"}
               </div>
-              <div className="text-body-sm text-text-secondary leading-relaxed">
+              <div className="mt-2 text-body-sm text-text-secondary leading-relaxed">
                 {feedback === "work"
                   ? "已确认出勤，祝你今天工作顺利。"
                   : "已记录本场请假，请安心休息。"}
               </div>
+            </div>
+            <div className="p-5 pt-4">
               <button
                 type="button"
                 onClick={close}
