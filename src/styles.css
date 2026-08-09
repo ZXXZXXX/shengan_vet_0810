@@ -99,6 +99,7 @@
   --text-primary: var(--core-text-primary);
   --text-secondary: var(--core-text-secondary);
   --text-tertiary: var(--core-text-tertiary);
+  --text-disabled: #AAB4A8;
 
   --border-default: var(--core-border);
   --border-strong: #C9D2C9;
@@ -256,6 +257,7 @@
   .bg-surface-subtle { background-color: var(--bg-surface-subtle); }
   .text-text-secondary { color: var(--text-secondary); }
   .text-text-tertiary { color: var(--text-tertiary); }
+  .text-text-disabled { color: var(--text-disabled); }
 
   /* Unified tag — soft pastel bg + saturated semibold text */
   .tag {

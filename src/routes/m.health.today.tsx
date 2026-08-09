@@ -664,7 +664,7 @@ function TodayTasksPage() {
                     {assignees[t.id] ? (
                       <span className="text-text-secondary">{assignees[t.id]}</span>
                     ) : (
-                      <span className="text-text-tertiary/70">未指定</span>
+                      <span className="text-text-disabled">未指定</span>
                     )}
                   </div>
                 </div>
