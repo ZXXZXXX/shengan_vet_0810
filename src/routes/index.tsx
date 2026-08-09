@@ -290,8 +290,6 @@ const StockCompositionCard = ({ ref }: { ref: React.RefObject<HTMLDivElement | n
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
-  const stockRef = useRef<HTMLDivElement | null>(null);
-  const warehouseRef = useRef<HTMLDivElement | null>(null);
   const alertsRef = useRef<HTMLDivElement | null>(null);
 
   const [scope, setScope] = useState<ReportScope>("farm-in");
@@ -304,13 +302,6 @@ function HomePage() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const scrollToAnchor = (anchor?: "stock" | "warehouse" | "alerts") => {
-    const el =
-      anchor === "stock" ? stockRef.current :
-      anchor === "warehouse" ? warehouseRef.current :
-      anchor === "alerts" ? alertsRef.current : null;
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
 
 
