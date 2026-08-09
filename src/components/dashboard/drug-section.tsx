@@ -55,8 +55,8 @@ function compositionFor(label: string, total: number) {
 }
 
 export function DrugSection() {
-  const [period, setPeriod] = useState(PERIODS[1]);
-  const [active, setActive] = useState<number | null>(null);
+  const [period, setPeriod] = useState(PERIODS[2]);
+  const [active, setActive] = useState<number | null>(trendData[PERIODS[2]].labels.length - 1);
   const t = trendData[period];
   const idx = active !== null && active < t.labels.length ? active : null;
   const label = idx !== null ? t.labels[idx] : null;
@@ -76,7 +76,7 @@ export function DrugSection() {
           value={period}
           onChange={(v) => {
             setPeriod(v);
-            setActive(null);
+            setActive(trendData[v].labels.length - 1);
           }}
           options={PERIODS}
         />
