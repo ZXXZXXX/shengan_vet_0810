@@ -231,15 +231,54 @@ export function LineTrend({
               points={s.points.map((p, i) => `${x(i)},${y(p)}`).join(" ")}
             />
             {s.points.map((p, i) => (
-              <circle key={i} cx={x(i)} cy={y(p)} r="3" fill="var(--bg-surface)" stroke={s.color} strokeWidth="2" />
+              <circle
+                key={i}
+                cx={x(i)}
+                cy={y(p)}
+                r={activeIndex === i ? 5 : 3}
+                fill={activeIndex === i ? s.color : "var(--bg-surface)"}
+                stroke={s.color}
+                strokeWidth="2"
+              />
             ))}
           </g>
         ))}
+        {onPointClick &&
+          labels.map((l, i) => (
+            <g key={`hit-${l}-${i}`} onClick={() => onPointClick(i)} className="cursor-pointer">
+              {activeIndex === i && (
+                <line
+                  x1={x(i)}
+                  x2={x(i)}
+                  y1={padT}
+                  y2={h - padB}
+                  stroke="var(--brand)"
+                  strokeDasharray="3 4"
+                  opacity="0.5"
+                />
+              )}
+              <rect
+                x={x(i) - (w - padL - 8) / Math.max(labels.length - 1, 1) / 2}
+                y={padT}
+                width={(w - padL - 8) / Math.max(labels.length - 1, 1)}
+                height={h - padT - padB}
+                fill="transparent"
+              />
+            </g>
+          ))}
         {labels.map((l, i) => (
-          <text key={l} x={x(i)} y={h - 6} textAnchor="middle" fill="var(--text-tertiary)" fontSize="10">
+          <text
+            key={l}
+            x={x(i)}
+            y={h - 6}
+            textAnchor="middle"
+            fill={activeIndex === i ? "var(--brand)" : "var(--text-tertiary)"}
+            fontSize="10"
+          >
             {l}
           </text>
         ))}
+
       </svg>
       <div className="mt-2 flex flex-wrap items-center gap-4">
         {series.map((s) => (
