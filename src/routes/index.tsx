@@ -294,6 +294,16 @@ function HomePage() {
   const warehouseRef = useRef<HTMLDivElement | null>(null);
   const alertsRef = useRef<HTMLDivElement | null>(null);
 
+  const [scope, setScope] = useState<ReportScope>("farm-in");
+  const showInternal = scope !== "farm-out";
+  const visibleCards = metricCards.filter(
+    (c) => showInternal || (c.anchor !== "topic-drug" && c.anchor !== "topic-workorder")
+  );
+
+  const scrollToTopic = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const scrollToAnchor = (anchor?: "stock" | "warehouse" | "alerts") => {
     const el =
       anchor === "stock" ? stockRef.current :
@@ -301,6 +311,7 @@ function HomePage() {
       anchor === "alerts" ? alertsRef.current : null;
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
 
 
   const handleVisit = () => {
