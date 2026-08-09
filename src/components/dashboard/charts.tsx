@@ -82,8 +82,17 @@ export function Donut({
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {arcs.map((a, i) => (
-          <path key={i} d={a.d} fill={a.color} stroke="var(--bg-surface)" strokeWidth="1.5" />
+          <path
+            key={i}
+            d={a.d}
+            fill={a.color}
+            stroke="var(--bg-surface)"
+            strokeWidth="1.5"
+            onClick={onSliceClick ? () => onSliceClick(data[i]!, i) : undefined}
+            className={onSliceClick ? "cursor-pointer transition-opacity hover:opacity-80" : undefined}
+          />
         ))}
+
       </svg>
       {(centerValue || centerLabel) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
