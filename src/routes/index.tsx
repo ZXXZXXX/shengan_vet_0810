@@ -75,52 +75,145 @@ const topicMeta: Record<TopicKey, { title: string; desc: string }> = {
   ops: { title: "运营统计", desc: "区域 / 集团口径运营概览" },
 };
 
-/* ---------------- 卡片快照数据 ---------------- */
+/* ---------------- 指标卡数据 ---------------- */
 
-const herdType = [
-  { name: "泌乳牛", value: 2180 },
-  { name: "干奶牛", value: 386 },
-  { name: "青年牛", value: 640 },
-  { name: "犊牛", value: 498 },
+type Kpi = {
+  key: string;
+  topic: TopicKey;
+  label: string;
+  caption: string;
+  value: string;
+  unit?: string;
+  delta: string;
+  good: boolean;
+  tone: string;
+  icon: React.ReactNode;
+  internal?: boolean;
+};
+
+const kpis: Kpi[] = [
+  {
+    key: "herd",
+    topic: "herd",
+    label: "牛群存栏",
+    caption: "截至今日",
+    value: "4,060",
+    unit: "头",
+    delta: "+38 头",
+    good: true,
+    tone: "var(--brand)",
+    icon: <Beef className="h-4 w-4" strokeWidth={1.75} />,
+  },
+  {
+    key: "calving",
+    topic: "calving",
+    label: "犊牛成活率",
+    caption: "本月产犊 179 头",
+    value: "95.0",
+    unit: "%",
+    delta: "+1.2%",
+    good: true,
+    tone: "var(--effect-ai-cyan)",
+    icon: <Baby className="h-4 w-4" strokeWidth={1.75} />,
+  },
+  {
+    key: "culling",
+    topic: "culling",
+    label: "死淘头数",
+    caption: "本月 死亡 21 · 淘汰 24",
+    value: "45",
+    unit: "头",
+    delta: "-6 头",
+    good: true,
+    tone: "var(--state-danger)",
+    icon: <Activity className="h-4 w-4" strokeWidth={1.75} />,
+  },
+  {
+    key: "disease",
+    topic: "disease",
+    label: "发病率",
+    caption: "本月 发病 365 · 治愈 337 头次",
+    value: "9.0",
+    unit: "%",
+    delta: "-4.2%",
+    good: true,
+    tone: "var(--effect-ai-purple)",
+    icon: <Stethoscope className="h-4 w-4" strokeWidth={1.75} />,
+  },
+  {
+    key: "drug",
+    topic: "drug",
+    label: "头均用药费用",
+    caption: "本月",
+    value: "42.6",
+    unit: "元/头",
+    delta: "+6.9%",
+    good: false,
+    tone: "var(--state-warning)",
+    icon: <Pill className="h-4 w-4" strokeWidth={1.75} />,
+    internal: true,
+  },
+  {
+    key: "vaccine",
+    topic: "vaccine",
+    label: "免疫完成率",
+    caption: "本期 已免疫 5,634 / 6,154 头",
+    value: "91.6",
+    unit: "%",
+    delta: "+2.3%",
+    good: true,
+    tone: "var(--brand)",
+    icon: <Syringe className="h-4 w-4" strokeWidth={1.75} />,
+  },
 ];
 
-const calvingSplit = [
-  { name: "成活", value: 170, color: "var(--brand)" },
-  { name: "死亡", value: 9, color: "var(--state-danger)" },
+const topics: { key: TopicKey; tone: string; icon: React.ReactNode; internal?: boolean }[] = [
+  { key: "herd", tone: "var(--brand)", icon: <Beef className="h-5 w-5" strokeWidth={1.75} /> },
+  { key: "calving", tone: "var(--effect-ai-cyan)", icon: <Baby className="h-5 w-5" strokeWidth={1.75} /> },
+  { key: "culling", tone: "var(--state-danger)", icon: <Activity className="h-5 w-5" strokeWidth={1.75} /> },
+  { key: "disease", tone: "var(--effect-ai-purple)", icon: <Stethoscope className="h-5 w-5" strokeWidth={1.75} /> },
+  { key: "drug", tone: "var(--state-warning)", icon: <Pill className="h-5 w-5" strokeWidth={1.75} />, internal: true },
+  { key: "vaccine", tone: "var(--brand)", icon: <Syringe className="h-5 w-5" strokeWidth={1.75} /> },
+  { key: "workorder", tone: "var(--effect-ai-cyan)", icon: <ClipboardList className="h-5 w-5" strokeWidth={1.75} />, internal: true },
+  { key: "alert", tone: "var(--state-danger)", icon: <AlertTriangle className="h-5 w-5" strokeWidth={1.75} />, internal: true },
+  { key: "ops", tone: "var(--effect-ai-purple)", icon: <Building2 className="h-5 w-5" strokeWidth={1.75} /> },
 ];
 
-const cullingTrend = [38, 44, 51, 47, 52, 45];
-
-const diseaseTop = [
-  { name: "乳房疾病", value: 132 },
-  { name: "肢蹄疾病", value: 99 },
-  { name: "繁殖疾病", value: 73 },
-];
-
-const drugTrend = [19.2, 20.4, 17.3, 16.1, 17.4, 18.6];
-
-const workOrderSplit = [
-  { name: "全部工单", total: 486, done: 431, overdue: 18, color: "var(--brand)" },
-  { name: "UD 派工单", total: 214, done: 182, overdue: 11, color: "var(--effect-ai-cyan)" },
-];
-
-const alertItems = [
-  { title: "疫苗 A 余量 12 支", tag: "紧急", tone: "var(--state-danger)" },
-  { title: "#01-24-2381 诊疗期 18 天", tag: "诊疗期长", tone: "var(--state-warning)" },
-  { title: "WO-2381 距离逾期 3 小时", tag: "即将逾期", tone: "var(--effect-ai-cyan)" },
-];
-
-function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
+function KpiCard({ label, caption, value, unit, delta, good, tone, icon, onClick }: Kpi & { onClick: () => void }) {
   return (
-    <div>
-      <div className="text-caption text-white/75">{label}</div>
-      <div className="mt-0.5 flex items-baseline gap-1">
-        <span className="text-section-title tabular-nums text-white drop-shadow-sm">{value}</span>
-        {unit && <span className="text-caption text-white/75">{unit}</span>}
+    <button
+      type="button"
+      onClick={onClick}
+      className="group rounded-2xl border border-border bg-card p-5 text-left transition-shadow hover:shadow-card"
+    >
+      <div className="flex items-center gap-2.5">
+        <span
+          className="flex h-8 w-8 items-center justify-center rounded-lg"
+          style={{ background: `color-mix(in oklab, ${tone} 12%, transparent)`, color: tone }}
+        >
+          {icon}
+        </span>
+        <span className="text-body text-text-secondary">{label}</span>
+        <ArrowUpRight className="ml-auto h-4 w-4 text-text-tertiary opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
-    </div>
+      <div className="mt-4 flex items-baseline gap-1.5">
+        <span className="text-[34px] font-medium leading-none tabular-nums text-foreground">{value}</span>
+        {unit && <span className="text-body-sm text-text-tertiary">{unit}</span>}
+        <span
+          className="ml-1 rounded-md px-1.5 py-0.5 text-caption tabular-nums"
+          style={{
+            background: `color-mix(in oklab, ${good ? "var(--state-success)" : "var(--state-danger)"} 12%, transparent)`,
+            color: good ? "var(--state-success)" : "var(--state-danger)",
+          }}
+        >
+          {delta}
+        </span>
+      </div>
+      <p className="mt-2 text-caption text-text-tertiary">{caption}</p>
+    </button>
   );
 }
+
 
 function HomePage() {
   const [scope, setScope] = useState<ReportScope>("farm-in");
