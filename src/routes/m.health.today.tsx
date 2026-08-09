@@ -302,7 +302,8 @@ function TodayTasksPage() {
             onClick={enterSelect}
             className="h-8 px-3 rounded-full text-body-sm text-primary active:bg-brand-subtle"
           >
-            批量执行
+            批量选择
+
           </button>
         )}
       </header>
