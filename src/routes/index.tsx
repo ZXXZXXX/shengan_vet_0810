@@ -51,12 +51,36 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const kpis = [
-  { label: "发病率", value: "4.8", unit: "%", trend: "down", delta: "-0.6 %", icon: Stethoscope, anchor: "alerts" as const, good: true },
-  { label: "治愈率", value: "92.3", unit: "%", trend: "up", delta: "+1.4 %", icon: HeartPulse, anchor: "alerts" as const, good: true },
-  { label: "死淘率", value: "1.6", unit: "%", trend: "down", delta: "-0.3 %", icon: Activity, anchor: "stock" as const, good: true },
-  { label: "总药费", value: "18.6", unit: "万元", trend: "up", delta: "+6.9 %", icon: Wallet, anchor: "warehouse" as const, good: false },
+type ReportScope = "farm-in" | "farm-out" | "region" | "group";
+
+const scopeOptions: { key: ReportScope; label: string }[] = [
+  { key: "farm-in", label: "牧场级·内部" },
+  { key: "farm-out", label: "牧场级·外部" },
+  { key: "region", label: "区域（中心）" },
+  { key: "group", label: "集团高管" },
 ];
+
+type MetricCard = {
+  label: string;
+  value: string;
+  unit: string;
+  trend: string;
+  delta: string;
+  icon: typeof Stethoscope;
+  anchor: string;
+  good: boolean;
+  topic: string;
+};
+
+const metricCards: MetricCard[] = [
+  { topic: "牛群专题", label: "（至今日）存栏总数", value: "4,060", unit: "头", trend: "up", delta: "+38 头", icon: Beef, anchor: "topic-herd", good: true },
+  { topic: "产犊专题", label: "（本月）产犊数", value: "179", unit: "头", trend: "up", delta: "+12 头", icon: Baby, anchor: "topic-calving", good: true },
+  { topic: "死淘专题", label: "（本月）死淘数", value: "45", unit: "头", trend: "down", delta: "-6 头", icon: Activity, anchor: "topic-culling", good: true },
+  { topic: "疾病专题", label: "（本月）发病 / 治愈头次", value: "365 / 337", unit: "头次", trend: "down", delta: "-4.2 %", icon: Stethoscope, anchor: "topic-disease", good: true },
+  { topic: "药品专题", label: "（本月）头均用药费用", value: "42.6", unit: "元/头", trend: "up", delta: "+6.9 %", icon: Pill, anchor: "topic-drug", good: false },
+  { topic: "疫苗免疫专题", label: "（最近一次）疫苗完成率", value: "93.1", unit: "%", trend: "up", delta: "+2.3 %", icon: Syringe, anchor: "topic-vaccine", good: true },
+];
+
 
 
 type WorkOrderType = "disease" | "vaccine" | "deworm" | "hoof" | "postpartum" | "drying" | "general";
