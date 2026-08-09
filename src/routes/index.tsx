@@ -179,6 +179,18 @@ const topics: { key: TopicKey; tone: string; icon: React.ReactNode; internal?: b
   { key: "ops", tone: "var(--effect-ai-purple)", icon: <Building2 className="h-5 w-5" strokeWidth={1.75} /> },
 ];
 
+function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
+  return (
+    <div>
+      <div className="text-caption text-white/75">{label}</div>
+      <div className="mt-0.5 flex items-baseline gap-1">
+        <span className="text-section-title tabular-nums text-white drop-shadow-sm">{value}</span>
+        {unit && <span className="text-caption text-white/75">{unit}</span>}
+      </div>
+    </div>
+  );
+}
+
 function KpiCard({ label, caption, value, unit, delta, good, tone, icon, onClick }: Kpi & { onClick: () => void }) {
   return (
     <button
@@ -287,7 +299,7 @@ function HomePage() {
         {/* 核心指标卡 3 × 2 */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {kpis.filter((k) => showInternal || !k.internal).map((k) => (
-            <KpiCard key={k.key} {...k} onClick={open(k.topic)} />
+            <KpiCard {...k} key={k.key} onClick={open(k.topic)} />
           ))}
         </div>
 
