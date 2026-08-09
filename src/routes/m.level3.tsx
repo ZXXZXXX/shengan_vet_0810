@@ -86,9 +86,6 @@ function Level3Page() {
       </header>
 
       <div className="px-4 pt-3 pb-3 bg-card border-b border-border space-y-2.5">
-        <div className="text-caption text-text-tertiary">
-          已领取但尚未核销的药品，按单件展示状态与去向
-        </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
           <input
