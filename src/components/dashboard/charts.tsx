@@ -1,5 +1,9 @@
 import type { ReactNode } from "react";
+import { createContext, useContext } from "react";
 import { Card } from "@/components/ui/card";
+
+/** 处于下钻抽屉内时，专题卡去掉卡片外壳，避免“卡中卡” */
+export const BareContext = createContext(false);
 
 export const PALETTE = [
   "var(--brand)",
@@ -27,6 +31,15 @@ export function SectionCard({
   id?: string;
   desc?: string;
 }) {
+  const bare = useContext(BareContext);
+  if (bare) {
+    return (
+      <div id={id}>
+        {extra && <div className="mb-4 flex justify-end">{extra}</div>}
+        {children}
+      </div>
+    );
+  }
   return (
     <Card id={id} className="border-border bg-card scroll-mt-24">
       <div className="p-6 pb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
@@ -41,6 +54,7 @@ export function SectionCard({
     </Card>
   );
 }
+
 
 export function Donut({
   data,
