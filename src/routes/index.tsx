@@ -414,7 +414,7 @@ function HomePage() {
         </div>
 
         {/* 数据指标卡 1-6 — 点击跳转至对应专题 */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {visibleCards.map((k, i) => {
             const tones = [
               "var(--brand)",
