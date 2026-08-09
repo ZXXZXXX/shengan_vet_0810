@@ -14,7 +14,7 @@ import { EmptyState } from "@/components/empty-state";
 import { homeTasks, typeMeta, type HomeTask } from "@/routes/m.homepage";
 
 export const Route = createFileRoute("/m/health/today_/batch")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { ids?: string; done?: string } => ({
     ids: typeof s.ids === "string" ? s.ids : "",
     done: typeof s.done === "string" ? s.done : "",
   }),

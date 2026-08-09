@@ -8,7 +8,7 @@ import { ActiveDayExecute } from "./m.health.$id";
 
 export const Route = createFileRoute("/m/health/$id_/execute")({
   head: () => ({ meta: [{ title: "执行记录 · 奇点智牧" }] }),
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { return?: string; batchIds?: string; batchDone?: string } => ({
     return: typeof s.return === "string" ? s.return : undefined,
     batchIds: typeof s.batchIds === "string" ? s.batchIds : "",
     batchDone: typeof s.batchDone === "string" ? s.batchDone : "",
@@ -45,11 +45,11 @@ function ExecuteRecordPage() {
     toast.success("提交成功");
 
     if (search.return === "batch") {
-      const doneList = search.batchDone.split(",").filter(Boolean);
+      const doneList = (search.batchDone ?? "").split(",").filter(Boolean);
       if (!doneList.includes(id)) doneList.push(id);
       navigate({
         to: "/m/health/today/batch",
-        search: { ids: search.batchIds, done: doneList.join(",") },
+        search: { ids: search.batchIds ?? "", done: doneList.join(",") },
       });
       return;
     }
@@ -61,7 +61,7 @@ function ExecuteRecordPage() {
     search.return === "batch"
       ? {
           to: "/m/health/today/batch" as const,
-          search: { ids: search.batchIds, done: search.batchDone },
+          search: { ids: search.batchIds ?? "", done: search.batchDone ?? "" },
         }
       : true;
 

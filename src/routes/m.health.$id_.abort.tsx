@@ -9,7 +9,7 @@ import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
 
 export const Route = createFileRoute("/m/health/$id_/abort")({
   head: () => ({ meta: [{ title: "异常终止 · 奇点智牧" }] }),
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { disease?: number } => ({
     disease: s.disease ? 1 : undefined,
   }),
   component: AbortPage,

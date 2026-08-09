@@ -188,7 +188,7 @@ function PenDetailPage() {
               return (
                 <Link
                   key={o.id}
-                  to="/m/health/$id_/execute"
+                  to="/m/health/$id/execute"
                   params={{ id: o.id }}
                   className="block rounded-xl bg-card border border-border p-4 active:bg-surface-subtle"
                 >
