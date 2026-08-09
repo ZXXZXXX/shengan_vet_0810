@@ -908,22 +908,7 @@ function TodayTasksPage() {
                 </button>
               );
 
-              return (
-                <>
-                  {onShift.length > 0 && (
-                    <div className="pt-1 pb-1 text-caption text-text-tertiary">
-                      本场次在岗 · {onShift.length} 人
-                    </div>
-                  )}
-                  {onShift.map(renderItem)}
-                  {off.length > 0 && (
-                    <div className="pt-3 pb-1 text-caption text-text-tertiary">
-                      请假 / 未到岗 · {off.length} 人
-                    </div>
-                  )}
-                  {off.map(renderItem)}
-                </>
-              );
+              return <>{[...onShift, ...off].map(renderItem)}</>;
             })()}
           </div>
 
