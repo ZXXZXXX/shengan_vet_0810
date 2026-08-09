@@ -29,7 +29,7 @@ import { useFarm } from "@/lib/farm-store";
 
 
 export const Route = createFileRoute("/m/health/today_/pickup")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { ids?: string } => ({
     ids: typeof s.ids === "string" ? s.ids : "",
   }),
   head: () => ({ meta: [{ title: "批量领药 · 奇点智牧" }] }),

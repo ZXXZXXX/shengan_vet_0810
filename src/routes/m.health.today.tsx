@@ -32,7 +32,7 @@ import {
 
 
 export const Route = createFileRoute("/m/health/today")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { capture?: string } => ({
     capture: typeof s.capture === "string" ? s.capture : undefined,
   }),
   head: () => ({ meta: [{ title: "今日工作任务 · 奇点智牧" }] }),
