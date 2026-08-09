@@ -76,7 +76,7 @@ export function DrugSection() {
           value={period}
           onChange={(v) => {
             setPeriod(v);
-            setActive(null);
+            setActive(trendData[v].labels.length - 1);
           }}
           options={PERIODS}
         />
