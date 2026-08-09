@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Baby, ChevronLeft } from "lucide-react";
-import { SectionCard, Donut, Legend, BarList, MiniStat, PeriodTabs } from "./charts";
+import { SectionCard, Donut, Legend, MiniStat, PeriodTabs } from "./charts";
 
 const aliveTotal = 170;
 const deadTotal = 9;
