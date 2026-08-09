@@ -118,10 +118,7 @@ export function CalvingSection() {
         </div>
         <div className="space-y-6">
           <div>
-            <p className="text-body-sm text-text-secondary mb-3">（本月）初生牛犊体重分布</p>
-            <BarList data={birthWeight} unit=" 头" />
-          </div>
-          <div>
+
             <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度</p>
             <div className="flex items-center gap-6 flex-wrap">
               <Donut data={difficulty} size={136} centerLabel="顺产率" centerValue="74.6%" />
