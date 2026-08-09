@@ -7,6 +7,8 @@ export type Staff = {
   role: Extract<Role, "vet" | "vet_assistant" | "immunizer" | "hoof_trimmer">;
   /** 本场次是否上班 */
   onShift: boolean;
+  /** 不在岗原因 */
+  offReason?: "leave" | "absent";
 };
 
 /** 本场次在岗人员（演示数据） */
@@ -17,7 +19,14 @@ export const SHIFT_STAFF: Staff[] = [
   { id: "u4", name: "孙静", role: "vet_assistant", onShift: true },
   { id: "u5", name: "王海涛", role: "immunizer", onShift: true },
   { id: "u6", name: "林晓峰", role: "hoof_trimmer", onShift: true },
+  { id: "u7", name: "李文博", role: "vet_assistant", onShift: false, offReason: "leave" },
+  { id: "u8", name: "郑楠", role: "immunizer", onShift: false, offReason: "absent" },
 ];
+
+export const offReasonLabel: Record<"leave" | "absent", string> = {
+  leave: "请假",
+  absent: "未到岗",
+};
 
 const KEY = "mp:task-assignee";
 const listeners = new Set<() => void>();
