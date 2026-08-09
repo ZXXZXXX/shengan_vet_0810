@@ -31,7 +31,7 @@ import {
   Baby,
   Pill,
   Syringe,
-  Package,
+  
   Stethoscope,
   TrendingUp,
   TrendingDown,
