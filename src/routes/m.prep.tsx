@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ConfirmPickupDialog } from "@/components/m/confirm-pickup-dialog";
-import { L3_ITEMS } from "@/lib/level3-items";
+import { L3_ITEMS, CURRENT_HOLDER } from "@/lib/level3-items";
 import { cn } from "@/lib/utils";
 
 import {
