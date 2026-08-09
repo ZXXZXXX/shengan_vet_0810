@@ -834,7 +834,7 @@ function TodayTasksPage() {
             <SheetTitle className="text-section">指定责任人</SheetTitle>
           </SheetHeader>
           <div className="px-4 pb-1 text-caption text-text-tertiary">
-            为已选 {count} 项任务指定本场次在岗人员
+            为已选 {count} 项任务指定责任人（在岗人员优先）
           </div>
           <div className="px-4 py-2">
             <input
@@ -845,13 +845,15 @@ function TodayTasksPage() {
             />
           </div>
           <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-2">
-            {SHIFT_STAFF.filter((s) => s.onShift)
-              .filter((s) => {
-                const kw = staffQuery.trim();
-                if (!kw) return true;
-                return s.name.includes(kw) || roleLabel[s.role].includes(kw);
-              })
-              .map((s) => (
+            {(() => {
+              const kw = staffQuery.trim();
+              const list = SHIFT_STAFF.filter(
+                (s) => !kw || s.name.includes(kw) || roleLabel[s.role].includes(kw),
+              );
+              const onShift = list.filter((s) => s.onShift);
+              const off = list.filter((s) => !s.onShift);
+
+              const renderItem = (s: (typeof SHIFT_STAFF)[number]) => (
                 <button
                   key={s.id}
                   type="button"
@@ -859,23 +861,72 @@ function TodayTasksPage() {
                     assignTasks(Array.from(selected), s.name);
                     setAssignSheetOpen(false);
                     exitSelect();
-                    toast.success(`已将 ${count} 项任务指派给 ${s.name}`);
+                    if (s.onShift) {
+                      toast.success(`已将 ${count} 项任务指派给 ${s.name}`);
+                    } else {
+                      toast.warning(
+                        `${s.name} 本场次${offReasonLabel[s.offReason ?? "absent"]}，已指派 ${count} 项任务`,
+                      );
+                    }
                   }}
-                  className="w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border border-border bg-card active:bg-surface-subtle"
+                  className={
+                    "w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border active:bg-surface-subtle " +
+                    (s.onShift
+                      ? "border-border bg-card"
+                      : "border-dashed border-border bg-surface-subtle/60 opacity-70")
+                  }
                 >
-                  <span className="h-8 w-8 rounded-full bg-brand-subtle text-primary inline-flex items-center justify-center text-caption shrink-0">
+                  <span
+                    className={
+                      "h-8 w-8 rounded-full inline-flex items-center justify-center text-caption shrink-0 " +
+                      (s.onShift
+                        ? "bg-brand-subtle text-primary"
+                        : "bg-muted text-text-tertiary")
+                    }
+                  >
                     {s.name.slice(0, 1)}
                   </span>
-                  <span className="flex-1 text-left text-body text-foreground">
-                    {s.name}
+                  <span className="flex-1 text-left flex items-center gap-2 min-w-0">
+                    <span
+                      className={
+                        "text-body truncate " +
+                        (s.onShift ? "text-foreground" : "text-text-secondary")
+                      }
+                    >
+                      {s.name}
+                    </span>
+                    {!s.onShift && (
+                      <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-muted text-text-tertiary text-[11px] leading-4">
+                        {offReasonLabel[s.offReason ?? "absent"]}
+                      </span>
+                    )}
                   </span>
                   <span className="text-body-sm text-text-tertiary">
                     {roleLabel[s.role]}
                   </span>
                   <ChevronRight className="h-4 w-4 text-text-tertiary" />
                 </button>
-              ))}
+              );
+
+              return (
+                <>
+                  {onShift.length > 0 && (
+                    <div className="pt-1 pb-1 text-caption text-text-tertiary">
+                      本场次在岗 · {onShift.length} 人
+                    </div>
+                  )}
+                  {onShift.map(renderItem)}
+                  {off.length > 0 && (
+                    <div className="pt-3 pb-1 text-caption text-text-tertiary">
+                      请假 / 未到岗 · {off.length} 人
+                    </div>
+                  )}
+                  {off.map(renderItem)}
+                </>
+              );
+            })()}
           </div>
+
         </SheetContent>
       </Sheet>
 
