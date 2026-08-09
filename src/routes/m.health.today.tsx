@@ -873,7 +873,7 @@ function TodayTasksPage() {
                     "w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border active:bg-surface-subtle " +
                     (s.onShift
                       ? "border-border bg-card"
-                      : "border-dashed border-border bg-surface-subtle/60 opacity-70")
+                      : "border-border bg-card opacity-50")
                   }
                 >
                   <span
@@ -890,13 +890,13 @@ function TodayTasksPage() {
                     <span
                       className={
                         "text-body truncate " +
-                        (s.onShift ? "text-foreground" : "text-text-secondary")
+                        (s.onShift ? "text-foreground" : "text-text-tertiary")
                       }
                     >
                       {s.name}
                     </span>
                     {!s.onShift && (
-                      <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-muted text-text-tertiary text-[11px] leading-4">
+                      <span className="shrink-0 text-caption text-text-tertiary">
                         {offReasonLabel[s.offReason ?? "absent"]}
                       </span>
                     )}

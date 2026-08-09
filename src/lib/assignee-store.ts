@@ -25,7 +25,7 @@ export const SHIFT_STAFF: Staff[] = [
 
 export const offReasonLabel: Record<"leave" | "absent", string> = {
   leave: "请假",
-  absent: "未到岗",
+  absent: "未签到",
 };
 
 const KEY = "mp:task-assignee";
