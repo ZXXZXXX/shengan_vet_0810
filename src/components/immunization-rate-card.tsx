@@ -87,7 +87,7 @@ export function ImmunizationRateCard() {
             >
               <Syringe className="h-4 w-4" strokeWidth={2} />
             </div>
-            <h3 className="text-card-title text-foreground">本期免疫完成率</h3>
+            <h3 className="text-card-title text-foreground">疫苗免疫专题</h3>
           </div>
 
           {/* 面包屑下钻路径 */}
