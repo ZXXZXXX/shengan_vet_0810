@@ -355,26 +355,10 @@ function TodayTasksPage() {
         </div>
       </div>
 
-      {/* 筛选条：状态 + 牛舍（下拉抽屉） */}
+      {/* 筛选条：牛舍 + 与我有关 + 状态（单行） */}
       <div className="px-4 pt-3 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setMineOnly((v) => !v)}
-          className={`shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm ${
-            mineOnly
-              ? "border-primary bg-brand-subtle text-primary"
-              : "border-border bg-card text-text-secondary"
-          }`}
-        >
-          <UserCheck className="h-4 w-4 shrink-0" />
-          <span>与我有关</span>
-          <span className="text-caption tabular-nums opacity-70">{mineCount}</span>
-        </button>
-      </div>
+        {allBarns.length > 0 && (
 
-      {(showStatusTabs || allBarns.length > 0) && (
-        <div className="px-4 pt-2 flex items-center gap-2">
-          {allBarns.length > 0 && (
 
             <button
               type="button"
