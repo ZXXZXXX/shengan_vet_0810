@@ -529,56 +529,6 @@ function HomePage() {
 
 
 
-        {/* 存栏构成 */}
-        <StockCompositionCard ref={stockRef} />
-
-        {/* 仓库物资概览 */}
-        <Card ref={warehouseRef} className="border-border bg-card scroll-mt-20">
-          <div className="p-6 pb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-primary" strokeWidth={1.75} />
-              <h3 className="text-card-title text-foreground">仓库物资概览</h3>
-              <span className="tag tag-muted">共 186 类</span>
-            </div>
-            <Link to="/warehouse">
-              <Button variant="ghost" size="sm" className="text-body-sm font-normal text-text-tertiary hover:text-foreground h-8">
-                进入库存管理 <ChevronRight className="h-3 w-3 ml-0.5" />
-              </Button>
-            </Link>
-          </div>
-          <div className="px-6 pb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { label: "物资正常", count: 158, total: 186, tone: "success", dot: "bg-[var(--state-success)]" },
-              { label: "物资临期", count: 18, total: 186, tone: "warning", dot: "bg-[var(--state-warning)]" },
-              { label: "余量紧张", count: 10, total: 186, tone: "danger", dot: "bg-[var(--state-danger)]" },
-            ].map((s) => {
-              const pct = Math.round((s.count / s.total) * 100);
-              return (
-                <div key={s.label} className="rounded-md border border-border p-4 bg-surface-subtle">
-                  <div className="flex items-center gap-2">
-                    <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
-                    <span className="text-body-sm text-text-secondary">{s.label}</span>
-                    <span className="ml-auto text-caption text-text-tertiary tabular-nums">占比 {pct}%</span>
-                  </div>
-                  <div className="mt-3 flex items-baseline gap-1">
-                    <span className="text-page-title tabular-nums text-foreground">{s.count}</span>
-                    <span className="text-caption text-text-tertiary">类 / {s.total}</span>
-                  </div>
-                  <div className="mt-3 h-1.5 rounded-full bg-card overflow-hidden">
-                    <div
-                      className={`h-full ${
-                        s.tone === "success" ? "bg-[var(--state-success)]" :
-                        s.tone === "warning" ? "bg-[var(--state-warning)]" :
-                        "bg-[var(--state-danger)]"
-                      }`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
       </main>
 
       <Dialog
