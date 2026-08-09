@@ -25,15 +25,18 @@ const cullReasons = [
 ];
 
 export function CullingSection() {
+  const [view, setView] = useState("死亡原因");
   const total = groupDist.reduce((s, d) => s + d.value, 0);
   const deaths = deathReasons.reduce((s, d) => s + d.value, 0);
   const culls = cullReasons.reduce((s, d) => s + d.value, 0);
+  const isDeath = view === "死亡原因";
   return (
     <SectionCard
       id="topic-culling"
       title="死淘专题"
       desc={`本月死淘 ${total} 头`}
       icon={<Activity className="h-4 w-4 text-primary" strokeWidth={1.75} />}
+      extra={<PeriodTabs value={view} onChange={setView} options={["死亡原因", "淘汰原因"]} />}
     >
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div>
@@ -43,21 +46,26 @@ export function CullingSection() {
             <Legend data={groupDist} unit=" 头" />
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <MiniStat label="死亡数" value={String(deaths)} unit="头" tone="var(--state-danger)" />
-            <MiniStat label="淘汰数" value={String(culls)} unit="头" tone="var(--state-warning)" />
+            <button type="button" onClick={() => setView("死亡原因")} className="text-left">
+              <div className={`rounded-xl transition-all ${isDeath ? "ring-2 ring-primary/40" : ""}`}>
+                <MiniStat label="死亡数" value={String(deaths)} unit="头" tone="var(--state-danger)" />
+              </div>
+            </button>
+            <button type="button" onClick={() => setView("淘汰原因")} className="text-left">
+              <div className={`rounded-xl transition-all ${!isDeath ? "ring-2 ring-primary/40" : ""}`}>
+                <MiniStat label="淘汰数" value={String(culls)} unit="头" tone="var(--state-warning)" />
+              </div>
+            </button>
           </div>
         </div>
-        <div className="space-y-6">
-          <div>
-            <p className="text-body-sm text-text-secondary mb-3">（本月）死亡原因占比</p>
-            <BarList data={deathReasons} unit=" 头" />
-          </div>
-          <div>
-            <p className="text-body-sm text-text-secondary mb-3">（本月）淘汰原因占比</p>
-            <BarList data={cullReasons} unit=" 头" />
-          </div>
+        <div>
+          <p className="text-body-sm text-text-secondary mb-3">
+            （本月）{isDeath ? "死亡原因占比" : "淘汰原因占比"}
+          </p>
+          <BarList data={isDeath ? deathReasons : cullReasons} unit=" 头" />
         </div>
       </div>
     </SectionCard>
   );
 }
+
