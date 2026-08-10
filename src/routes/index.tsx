@@ -413,7 +413,9 @@ function HomePage() {
         </div>
 
         {/* 1 牛群专题 */}
-        <HerdSection />
+        <div className="w-full xl:max-w-[720px]">
+          <HerdSection />
+        </div>
 
         {/* 2 产犊专题 */}
         <CalvingSection />
