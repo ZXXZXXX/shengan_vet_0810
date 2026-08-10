@@ -81,6 +81,8 @@ export function CattleProfileDrawer({
 }) {
   const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves" | "events" | "orders">("diagnoses");
   const historyRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
 
   const [observed, setObserved] = useState(false);
 
@@ -174,7 +176,7 @@ export function CattleProfileDrawer({
         </header>
 
         {/* 内容 */}
-        <div className="flex-1 overflow-y-auto px-7 py-6 space-y-5">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-7 py-6 space-y-5">
           {cow.withdrawalDays > 0 && (
             <div className="rounded-xl border border-[#FFCCC7] bg-[#FFF1F0] px-4 py-3 flex items-center gap-2.5">
               <Clock className="h-4 w-4 shrink-0 text-[#CF1322]" />
@@ -252,9 +254,10 @@ export function CattleProfileDrawer({
 
 
           {/* 历史记录：整宽贯穿 */}
-          <div ref={historyRef} className="scroll-mt-0">
+          <div ref={historyRef} className="min-h-[calc(100%-1px)]">
           <Panel title="历史记录" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="p-4 pt-0">
-            <div className="flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
+            <div className="sticky top-0 z-10 bg-card flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
+
               {[
                 { key: "orders" as const, label: "全部工单" },
                 { key: "diagnoses" as const, label: "诊断记录" },
@@ -269,8 +272,13 @@ export function CattleProfileDrawer({
                     key={t.key}
                     onClick={() => {
                       setTab(t.key);
-                      historyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      const sc = scrollRef.current;
+                      const el = historyRef.current;
+                      if (sc && el) {
+                        sc.scrollTo({ top: el.offsetTop - sc.offsetTop, behavior: "smooth" });
+                      }
                     }}
+
                     className={`relative h-11 shrink-0 text-body-sm transition-colors ${
                       active ? "text-primary font-medium" : "text-text-secondary hover:text-foreground"
                     }`}
