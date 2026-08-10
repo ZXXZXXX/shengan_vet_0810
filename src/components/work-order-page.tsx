@@ -190,14 +190,15 @@ export type WorkOrder = {
 
 type ColKey =
   | "id"
-  | "target"
+  | "category"
   | "status"
-  | "proposer"
-  | "proposedAt"
-  | "reviewer"
-  | "reviewedAt"
-  | "executor"
-  | "executedAt"
+  | "objType"
+  | "target"
+  | "diagnosis"
+  | "desc"
+  | "timeInfo"
+  | "staff"
+  | "pickup"
   | "action";
 
 type ColDef = {
@@ -210,16 +211,18 @@ type ColDef = {
 
 const ALL_COLS: ColDef[] = [
   { key: "id", label: "工单编号", width: 120, locked: true },
-  { key: "target", label: "牛舍/牛只", width: 200, locked: true },
-  { key: "status", label: "当前状态", width: 100 },
-  { key: "proposer", label: "提出人", width: 100 },
-  { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
-  { key: "reviewer", label: "诊断人", width: 100 },
-  { key: "reviewedAt", label: "诊断时间", width: 160, isTime: true },
-  { key: "executor", label: "执行人", width: 180 },
-  { key: "executedAt", label: "执行时间", width: 160, isTime: true },
-  { key: "action", label: "功能", width: 140, locked: true },
+  { key: "category", label: "诊疗属性", width: 110 },
+  { key: "status", label: "工单状态", width: 100 },
+  { key: "objType", label: "对象类型", width: 90 },
+  { key: "target", label: "对象信息", width: 180 },
+  { key: "diagnosis", label: "疾病结论", width: 140 },
+  { key: "desc", label: "具体描述", width: 240 },
+  { key: "timeInfo", label: "时间信息", width: 180 },
+  { key: "staff", label: "人员信息", width: 180 },
+  { key: "pickup", label: "领物信息", width: 110 },
+  { key: "action", label: "操作名称", width: 120, locked: true },
 ];
+
 
 type StatusKey = WorkStatus | "已终止";
 const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; tone: string }[] = [
@@ -508,7 +511,7 @@ export function WorkOrderPage({
     });
   }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir, deletedIds]);
 
-  const leftFrozenKeys: ColKey[] = ["id", "target"];
+  const leftFrozenKeys: ColKey[] = ["id"];
   const rightFrozenKeys: ColKey[] = ["action"];
   const middleCols = ALL_COLS.filter(
     (c) =>
@@ -581,42 +584,53 @@ export function WorkOrderPage({
           </span>
         );
       }
-      case "proposer":
-        return <span className="text-body-sm text-text-secondary">{o.proposer}</span>;
-      case "proposedAt":
-        return <span className="text-body-sm text-text-secondary tabular-nums">{o.createdAt}</span>;
-      case "reviewer":
-        return <span className="text-body-sm text-text-secondary">{o.reviewer ?? "—"}</span>;
-      case "reviewedAt":
+      case "category":
+        return <span className="text-body-sm text-text-secondary">{title}</span>;
+      case "objType": {
+        const isCow = o.target.trim().startsWith("#");
+        return <span className="tag tag-muted">{isCow ? "牛只" : "牛舍/群体"}</span>;
+      }
+      case "diagnosis":
         return (
-          <span className="text-body-sm text-text-secondary tabular-nums">
-            {o.reviewedAt ?? "—"}
+          <span className="text-body-sm text-text-secondary truncate" title={o.event}>
+            {o.event ?? "—"}
           </span>
         );
-      case "executor": {
-        const list = effectiveExecutors(o);
-        if (list.length === 0)
-          return <span className="text-body-sm text-text-tertiary">—</span>;
-        const shown = list.slice(0, 2);
-        const rest = list.length - shown.length;
+      case "desc":
+        return (
+          <span className="text-body-sm text-text-secondary truncate" title={o.desc}>
+            {o.desc || "—"}
+          </span>
+        );
+      case "timeInfo":
         return (
           <span
-            className="inline-flex items-center gap-1 max-w-full"
-            title={list.join("、")}
+            className="text-body-sm text-text-secondary tabular-nums truncate"
+            title={`提出 ${o.createdAt}${o.reviewedAt ? ` · 诊断 ${o.reviewedAt}` : ""}${o.executedAt ? ` · 执行 ${o.executedAt}` : ""}`}
           >
-            <span className="text-body-sm text-text-secondary truncate">
-              {shown.join("、")}
-            </span>
-            {rest > 0 && <span className="tag tag-muted shrink-0">+{rest}</span>}
+            {o.executedAt ?? o.reviewedAt ?? o.createdAt}
+          </span>
+        );
+      case "staff": {
+        const list = effectiveExecutors(o);
+        const text = list.length
+          ? `${o.proposer} → ${list.join("、")}`
+          : `${o.proposer} → 未指派`;
+        return (
+          <span className="text-body-sm text-text-secondary truncate" title={text}>
+            {text}
           </span>
         );
       }
-      case "executedAt":
+      case "pickup": {
+        const need = title === "疾病治疗" || title === "产后护理";
         return (
-          <span className="text-body-sm text-text-secondary tabular-nums">
-            {o.executedAt ?? "—"}
+          <span className={need ? "tag tag-info" : "tag tag-muted"}>
+            {need ? "需要领物" : "无需领物"}
           </span>
         );
+      }
+
       case "action": {
         return (
           <div className="inline-flex items-center gap-0.5">
@@ -628,14 +642,26 @@ export function WorkOrderPage({
             >
               查看
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-surface-subtle hover:text-[var(--state-danger)]"
-              onClick={() => setDeleteTarget(o)}
-            >
-              删除
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-text-tertiary hover:bg-surface-subtle hover:text-foreground"
+                >
+                  <MoreHorizontal className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32">
+                <DropdownMenuItem
+                  className="text-body-sm text-[var(--state-danger)] focus:text-[var(--state-danger)]"
+                  onClick={() => setDeleteTarget(o)}
+                >
+                  删除
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
           </div>
         );
       }
