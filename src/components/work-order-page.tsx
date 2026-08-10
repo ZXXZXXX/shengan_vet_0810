@@ -585,71 +585,6 @@ export function WorkOrderPage({
           </span>
         );
       case "action": {
-        const st = effectiveStatus(o);
-        const exec = effectiveExecutor(o);
-        // 终止：已通过诊断后、未完成前 → 执行中
-        const canTerminate = st === "执行中";
-        // 转派 / 释放：执行中且有执行人
-        const canTransfer = st === "执行中" && !!exec;
-        const canRelease = st === "执行中" && !!exec;
-        const hasMore = canTerminate || canTransfer || canRelease;
-        const MoreBtn = hasMore ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0 text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-                aria-label="更多操作"
-              >
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-32">
-              {canTerminate && (
-                <DropdownMenuItem
-                  className="text-[var(--state-danger)] focus:text-[var(--state-danger)]"
-                  onClick={() => openMoreAction("terminate", o)}
-                >
-                  <Ban className="h-3.5 w-3.5 mr-2" /> 终止
-                </DropdownMenuItem>
-              )}
-              {canTransfer && (
-                <DropdownMenuItem onClick={() => openMoreAction("transfer", o)}>
-                  <Repeat2 className="h-3.5 w-3.5 mr-2" /> 转派
-                </DropdownMenuItem>
-              )}
-              {canRelease && (
-                <DropdownMenuItem onClick={() => openMoreAction("release", o)}>
-                  <LogOut className="h-3.5 w-3.5 mr-2" /> 释放
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null;
-        if (canExamine(role) && o.status === "待诊断") {
-          return (
-            <div className="inline-flex items-center gap-0.5">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-                onClick={() => { setMode("view"); setDetail(o); }}
-              >
-                查看
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-                onClick={() => { setMode("process"); setDetail(o); }}
-              >
-                处理
-              </Button>
-              {MoreBtn}
-            </div>
-          );
-        }
         return (
           <div className="inline-flex items-center gap-0.5">
             <Button
@@ -660,10 +595,18 @@ export function WorkOrderPage({
             >
               查看
             </Button>
-            {MoreBtn}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-surface-subtle hover:text-[var(--state-danger)]"
+              onClick={() => setDeleteTarget(o)}
+            >
+              删除
+            </Button>
           </div>
         );
       }
+
     }
   };
 
