@@ -2076,7 +2076,10 @@ export function makeOrders(
     const executedAt = new Date(proposedAt.getTime() + 8 * 60 * 60 * 1000);
     const proposer = pick(proposersPool, i);
     const reviewer = pick(reviewersPool, i);
-    const executor = pick(executorsPool, i);
+    // 执行人可能多人（1~7 人）
+    const execCount = [1, 1, 2, 3, 5, 7, 4][i % 7];
+    const execList = Array.from({ length: execCount }, (_, k) => pick(executorsPool, i + k));
+    const executors = Array.from(new Set(execList));
     // 媒体附件：每条工单按索引轮换三种媒体组合，保证演示多样性
     const attachmentSets: WorkOrderAttachment[][] = [
       [
