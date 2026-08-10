@@ -253,91 +253,96 @@ function HomePage() {
         {/* Hero greeting — 浅色数据台 */}
         <Card className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-[0_18px_50px_-32px_color-mix(in_oklab,var(--brand)_60%,transparent)]">
           {/* 右侧插画 */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 select-none">
-            <img src={grasslandHero} alt="" aria-hidden className="h-full w-full object-cover opacity-45" />
-            <div className="absolute inset-0 bg-gradient-to-r from-card via-card/70 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-[38%] select-none">
+            <img src={grasslandHero} alt="" aria-hidden className="h-full w-full object-cover opacity-[0.18]" />
+            <div className="absolute inset-0 bg-gradient-to-r from-card via-card/85 to-card/40" />
           </div>
 
-          <div className="relative z-10 p-7 flex flex-col gap-6">
-            {/* 顶部元信息 */}
-            <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--brand-subtle)] text-[var(--brand)] text-caption font-medium">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
-                系统正常运行
-              </span>
-              <span className="inline-flex items-center gap-2 text-caption text-text-tertiary">
-                <span>2026/05/12 周二</span>
-                <span className="h-1 w-1 rounded-full bg-border" />
-                <span>1 号牧场</span>
-              </span>
-            </div>
-
-            {/* 问候 + 出勤 */}
-            <div className="flex items-end justify-between gap-8 flex-wrap">
-              <div className="space-y-1">
+          <div className="relative z-10 p-7 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_auto] gap-7">
+            {/* 左：问候 + 预警 */}
+            <div className="flex flex-col justify-between gap-6 min-w-0">
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--brand-subtle)] text-[var(--brand)] text-caption font-medium">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
+                    系统正常运行
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-caption text-text-tertiary">
+                    <span>2026/05/12 周二</span>
+                    <span className="h-1 w-1 rounded-full bg-border" />
+                    <span>1 号牧场</span>
+                  </span>
+                </div>
                 <h2 className="text-page-title font-medium text-text-primary">早上好，场长张磊</h2>
                 <p className="text-body-sm text-text-secondary">今日牧场整体运行平稳，请关注下方预警与出勤情况。</p>
               </div>
 
-              <div className="flex items-end gap-6">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {alertCounts.map((a, i) => {
+                  const tone = ["--state-danger", "--state-alert", "--brand"][i % 3];
+                  return (
+                    <button
+                      key={a.key}
+                      type="button"
+                      onClick={() => scrollToTopic("topic-alert")}
+                      className="group inline-flex items-center gap-2.5 rounded-full border border-border bg-card hover:border-[var(--brand)]/40 hover:bg-[var(--brand-subtle)] pl-2 pr-4 py-1.5 transition-colors"
+                    >
+                      <span
+                        className="inline-flex h-7 min-w-7 px-1.5 items-center justify-center rounded-full text-body-sm font-medium tabular-nums text-white"
+                        style={{ background: `var(${tone})` }}
+                      >
+                        {a.count}
+                      </span>
+                      <span className="text-body-sm text-text-primary whitespace-nowrap">{a.key}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 右：出勤面板 */}
+            <div className="rounded-xl border border-border bg-muted/40 backdrop-blur-sm p-5 min-w-[360px] flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <span className="text-body-sm font-medium text-text-primary">今日到岗</span>
+                <button
+                  type="button"
+                  onClick={() => setAttendanceOpen(true)}
+                  className="text-caption text-[var(--brand)] hover:underline"
+                >
+                  出勤明细
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: "上午场出勤", signed: 6, absent: 1, leave: 1 },
-                  { label: "下午场出勤", signed: 5, absent: 2, leave: 1 },
-                ].map((s, i) => (
-                  <div key={s.label} className="flex items-end gap-6">
-                    {i > 0 && <div className="w-px h-10 bg-border mb-1" />}
-                    <div className="space-y-2">
-                      <div className="text-caption text-text-tertiary">{s.label}</div>
-                      <div className="flex items-baseline gap-4">
-                        {[
-                          { n: s.signed, t: "已签", c: "text-text-primary" },
-                          { n: s.absent, t: "未签", c: "text-[var(--state-danger)]" },
-                          { n: s.leave, t: "请假", c: "text-[var(--state-alert)]" },
-                        ].map((m) => (
-                          <div key={m.t} className="flex flex-col items-start">
-                            <span className={`text-card-title font-medium tabular-nums leading-none ${m.c}`}>{m.n}</span>
-                            <span className="text-caption text-text-tertiary mt-1">{m.t}</span>
-                          </div>
-                        ))}
-                      </div>
+                  { label: "上午场", signed: 6, absent: 1, leave: 1 },
+                  { label: "下午场", signed: 5, absent: 2, leave: 1 },
+                ].map((s) => (
+                  <div key={s.label} className="rounded-lg bg-card border border-border/70 px-3.5 py-3 space-y-2.5">
+                    <div className="text-caption text-text-tertiary">{s.label}</div>
+                    <div className="flex items-baseline justify-between">
+                      {[
+                        { n: s.signed, t: "已签", c: "text-text-primary" },
+                        { n: s.absent, t: "未签", c: "text-[var(--state-danger)]" },
+                        { n: s.leave, t: "请假", c: "text-[var(--state-alert)]" },
+                      ].map((m) => (
+                        <div key={m.t} className="flex flex-col items-center">
+                          <span className={`text-section-title font-medium tabular-nums leading-none ${m.c}`}>{m.n}</span>
+                          <span className="text-caption text-text-tertiary mt-1.5">{m.t}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* 预警 + 操作 */}
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div className="flex items-center gap-3 flex-wrap">
-                {alertCounts.map((a) => (
-                  <button
-                    key={a.key}
-                    type="button"
-                    onClick={() => scrollToTopic("topic-alert")}
-                    className="group inline-flex items-center gap-3 rounded-xl border border-border bg-muted/60 hover:bg-[var(--brand-subtle)] hover:border-[var(--brand)]/30 px-3.5 py-2 transition-colors"
-                  >
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--state-danger)] text-card-title font-medium tabular-nums text-white">
-                      {a.count}
-                    </span>
-                    <span className="text-left">
-                      <span className="block text-body-sm text-text-primary">{a.key}</span>
-                      <span className="block text-caption text-text-tertiary">点击查看专题</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" className="h-9" onClick={() => setAttendanceOpen(true)}>
-                  出勤明细
-                </Button>
-                <Button className="h-9" onClick={() => scrollToTopic("topic-alert")}>
-                  查看预警详情
-                </Button>
-              </div>
+              <Button className="h-9 w-full" onClick={() => scrollToTopic("topic-alert")}>
+                查看预警详情
+              </Button>
             </div>
           </div>
         </Card>
+
 
 
         {/* 报表口径切换 */}
