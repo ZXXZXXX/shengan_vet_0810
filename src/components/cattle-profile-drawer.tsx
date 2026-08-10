@@ -223,16 +223,16 @@ export function CattleProfileDrawer({
 
             {/* 右：检查数据 */}
             <Panel
-              className="h-full min-w-0"
+              className="h-full min-w-0 flex flex-col"
               title="检查数据"
               icon={<ListChecks className="h-4 w-4 text-primary" />}
-              bodyClassName="px-4 py-2"
+              bodyClassName="px-4 py-2 flex-1 flex flex-col"
             >
-              <div>
+              <div className="flex flex-1 flex-col">
                 {EXAM_DATA.map((e) => (
                   <div
                     key={e.name}
-                    className="grid grid-cols-[1fr_auto_auto] items-baseline gap-3 py-[9px] border-b border-border/70 last:border-0"
+                    className="grid flex-1 grid-cols-[1fr_auto_auto] items-center gap-3 py-2 border-b border-border/70 last:border-0"
                   >
                     <span className="text-body-sm text-text-secondary truncate">{e.name}</span>
                     <span
@@ -245,6 +245,7 @@ export function CattleProfileDrawer({
                 ))}
               </div>
             </Panel>
+
           </div>
 
 
