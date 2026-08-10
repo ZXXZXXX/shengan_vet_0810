@@ -9,12 +9,7 @@ import {
   ChevronRight,
   ChevronDown,
   ArrowRight,
-  ArrowRightLeft,
-  Baby,
-  LogOut,
-  Stethoscope,
   FilePlus2,
-  ClipboardPlus,
   MessageSquareWarning,
   ListChecks,
 } from "lucide-react";
