@@ -77,11 +77,11 @@ const groups: NavGroup[] = [
     ],
   },
   {
-    title: "诊疗知识库",
+    title: "诊疗管理",
     icon: BookOpen,
     children: [
-      { title: "疾病知识库", url: "/knowledge/disease" },
-      { title: "症状知识库", url: "/knowledge/symptom" },
+      { title: "疾病管理", url: "/knowledge/disease" },
+      { title: "症状管理", url: "/knowledge/symptom" },
       { title: "处方管理", url: "/knowledge/prescription" },
     ],
   },
