@@ -124,17 +124,6 @@ export function CalvingSection() {
             <Donut data={difficulty} centerLabel="顺产率" centerValue="74.6%" unit=" 例" />
             <Legend data={difficulty} unit=" 例" />
           </div>
-          <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {difficulty.map((d) => (
-              <MiniStat
-                key={d.name}
-                label={`${d.name} ${((d.value / difficultTotal) * 100).toFixed(1)}%`}
-                value={String(d.value)}
-                unit="例"
-                tone={d.color}
-              />
-            ))}
-          </div>
         </div>
       )}
     </SectionCard>
