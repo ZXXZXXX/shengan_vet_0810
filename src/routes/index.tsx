@@ -258,89 +258,83 @@ function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-r from-card via-card/85 to-card/40" />
           </div>
 
-          <div className="relative z-10 p-7 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_auto] gap-7">
-            {/* 左：问候 + 预警 */}
-            <div className="flex flex-col justify-between gap-6 min-w-0">
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--brand-subtle)] text-[var(--brand)] text-caption font-medium">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
-                    系统正常运行
-                  </span>
-                  <span className="inline-flex items-center gap-2 text-caption text-text-tertiary">
-                    <span>2026/05/12 周二</span>
-                    <span className="h-1 w-1 rounded-full bg-border" />
-                    <span>1 号牧场</span>
-                  </span>
-                </div>
-                <h2 className="text-page-title font-medium text-text-primary">早上好，场长张磊</h2>
-                <p className="text-body-sm text-text-secondary">今日牧场整体运行平稳，请关注下方预警与出勤情况。</p>
+          <div className="relative z-10 px-6 py-5 flex flex-wrap items-center gap-x-8 gap-y-4">
+            {/* 问候 */}
+            <div className="min-w-0 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--brand-subtle)] text-[var(--brand)] text-caption font-medium">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
+                  系统正常运行
+                </span>
+                <span className="inline-flex items-center gap-2 text-caption text-text-tertiary">
+                  <span>2026/05/12 周二</span>
+                  <span className="h-1 w-1 rounded-full bg-border" />
+                  <span>1 号牧场</span>
+                </span>
               </div>
-
-              <div className="flex items-center gap-2.5 flex-wrap">
-                {alertCounts.map((a, i) => {
-                  const tone = ["--state-danger", "--state-alert", "--brand"][i % 3];
-                  return (
-                    <button
-                      key={a.key}
-                      type="button"
-                      onClick={() => scrollToTopic("topic-alert")}
-                      className="group inline-flex items-center gap-2.5 rounded-full border border-border bg-card hover:border-[var(--brand)]/40 hover:bg-[var(--brand-subtle)] pl-2 pr-4 py-1.5 transition-colors"
-                    >
-                      <span
-                        className="inline-flex h-7 min-w-7 px-1.5 items-center justify-center rounded-full text-body-sm font-medium tabular-nums text-white"
-                        style={{ background: `var(${tone})` }}
-                      >
-                        {a.count}
-                      </span>
-                      <span className="text-body-sm text-text-primary whitespace-nowrap">{a.key}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <h2 className="mt-1.5 text-section-title font-medium text-text-primary">早上好，场长张磊</h2>
+              <p className="text-caption text-text-secondary mt-0.5">今日牧场整体运行平稳</p>
             </div>
 
-            {/* 右：出勤面板 */}
-            <div className="rounded-xl border border-border bg-muted/40 backdrop-blur-sm p-5 min-w-[360px] flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <span className="text-body-sm font-medium text-text-primary">今日到岗</span>
-                <button
-                  type="button"
-                  onClick={() => setAttendanceOpen(true)}
-                  className="text-caption text-[var(--brand)] hover:underline"
-                >
-                  出勤明细
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { label: "上午场", signed: 6, absent: 1, leave: 1 },
-                  { label: "下午场", signed: 5, absent: 2, leave: 1 },
-                ].map((s) => (
-                  <div key={s.label} className="rounded-lg bg-card border border-border/70 px-3.5 py-3 space-y-2.5">
-                    <div className="text-caption text-text-tertiary">{s.label}</div>
-                    <div className="flex items-baseline justify-between">
-                      {[
-                        { n: s.signed, t: "已签", c: "text-text-primary" },
-                        { n: s.absent, t: "未签", c: "text-[var(--state-danger)]" },
-                        { n: s.leave, t: "请假", c: "text-[var(--state-alert)]" },
-                      ].map((m) => (
-                        <div key={m.t} className="flex flex-col items-center">
-                          <span className={`text-section-title font-medium tabular-nums leading-none ${m.c}`}>{m.n}</span>
-                          <span className="text-caption text-text-tertiary mt-1.5">{m.t}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <Button className="h-9 w-full" onClick={() => scrollToTopic("topic-alert")}>
+            {/* 预警胶囊 */}
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {alertCounts.map((a, i) => {
+                const tone = ["--state-danger", "--state-alert", "--brand"][i % 3];
+                return (
+                  <button
+                    key={a.key}
+                    type="button"
+                    onClick={() => scrollToTopic("topic-alert")}
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-card hover:border-[var(--brand)]/40 hover:bg-[var(--brand-subtle)] pl-1.5 pr-3.5 py-1 transition-colors"
+                  >
+                    <span
+                      className="inline-flex h-6 min-w-6 px-1.5 items-center justify-center rounded-full text-caption font-medium tabular-nums text-white"
+                      style={{ background: `var(${tone})` }}
+                    >
+                      {a.count}
+                    </span>
+                    <span className="text-body-sm text-text-primary whitespace-nowrap">{a.key}</span>
+                  </button>
+                );
+              })}
+              <Button className="h-8" onClick={() => scrollToTopic("topic-alert")}>
                 查看预警详情
               </Button>
             </div>
+
+            {/* 出勤 */}
+            <div className="ml-auto flex items-center gap-5 rounded-xl border border-border bg-muted/40 px-4 py-2.5">
+              {[
+                { label: "上午场", signed: 6, absent: 1, leave: 1 },
+                { label: "下午场", signed: 5, absent: 2, leave: 1 },
+              ].map((s, i) => (
+                <div key={s.label} className="flex items-center gap-5">
+                  {i > 0 && <div className="h-8 w-px bg-border" />}
+                  <div className="flex items-center gap-4">
+                    <span className="text-caption text-text-tertiary whitespace-nowrap">{s.label}</span>
+                    {[
+                      { n: s.signed, t: "已签", c: "text-text-primary" },
+                      { n: s.absent, t: "未签", c: "text-[var(--state-danger)]" },
+                      { n: s.leave, t: "请假", c: "text-[var(--state-alert)]" },
+                    ].map((m) => (
+                      <span key={m.t} className="flex items-baseline gap-1">
+                        <span className={`text-card-title font-medium tabular-nums ${m.c}`}>{m.n}</span>
+                        <span className="text-caption text-text-tertiary">{m.t}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setAttendanceOpen(true)}
+                className="text-caption text-[var(--brand)] hover:underline whitespace-nowrap"
+              >
+                出勤明细
+              </button>
+            </div>
           </div>
+
         </Card>
 
 
