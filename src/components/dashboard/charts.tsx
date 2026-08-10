@@ -110,22 +110,22 @@ export function Donut({
 export function Legend({ data, unit = "" }: { data: Slice[]; unit?: string }) {
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
   return (
-    <div className="mx-auto w-full max-w-[300px] flex flex-col gap-0.5">
+    <div className="w-full flex flex-wrap justify-center gap-x-4 gap-y-1.5">
       {data.map((s, i) => (
-        <div key={s.name} className="flex items-center gap-2 py-1">
+        <span key={s.name} className="inline-flex items-center gap-1.5">
           <span
             className="h-2 w-2 rounded-sm shrink-0"
             style={{ background: s.color ?? PALETTE[i % PALETTE.length] }}
           />
-          <span className="text-caption text-foreground flex-1 min-w-0 truncate">{s.name}</span>
+          <span className="text-caption text-foreground">{s.name}</span>
           <span className="text-caption text-text-secondary tabular-nums">
             {s.value.toLocaleString()}
             {unit}
           </span>
-          <span className="text-caption text-text-tertiary tabular-nums w-10 text-right">
+          <span className="text-caption text-text-tertiary tabular-nums">
             {((s.value / total) * 100).toFixed(1)}%
           </span>
-        </div>
+        </span>
       ))}
     </div>
   );
