@@ -286,7 +286,7 @@ function HomePage() {
                   查看预警详情 →
                 </button>
               </div>
-              <div className="mt-3 grid grid-cols-3 gap-2">
+              <div className="mt-3 grid grid-cols-3 gap-3">
                 {alertCounts.map((a, i) => {
                   const tone = ["--state-danger", "--state-alert", "--brand"][i % 3];
                   return (
@@ -294,23 +294,28 @@ function HomePage() {
                       key={a.key}
                       type="button"
                       onClick={() => scrollToTopic("topic-alert")}
-                      className="rounded-xl border border-border bg-surface-subtle px-3 py-2 text-left transition-colors hover:border-[var(--brand)]/40 hover:bg-[var(--brand-subtle)]"
-                      style={{ borderLeft: `3px solid var(${tone})` }}
+                      className="group relative overflow-hidden rounded-xl bg-surface-subtle px-3.5 py-2.5 pl-4 text-left transition-colors hover:bg-[var(--brand-subtle)]"
                     >
-                      <div className="text-caption text-text-tertiary whitespace-nowrap">{a.key}</div>
-                      <div className="mt-0.5 flex items-baseline gap-1">
+                      <span
+                        aria-hidden
+                        className="absolute inset-y-0 left-0 w-1 rounded-full"
+                        style={{ background: `var(${tone})` }}
+                      />
+                      <div className="text-body-sm text-text-secondary whitespace-nowrap">{a.key}</div>
+                      <div className="mt-1 flex items-baseline gap-1">
                         <span
-                          className="text-page-title font-medium tabular-nums"
+                          className="text-[28px] leading-none font-medium tabular-nums"
                           style={{ color: `var(${tone})` }}
                         >
                           {a.count}
                         </span>
-                        <span className="text-caption text-text-tertiary">项</span>
+                        <span className="text-body-sm text-text-tertiary">项</span>
                       </div>
                     </button>
                   );
                 })}
               </div>
+
             </div>
 
             {/* 3 · 出勤 */}
