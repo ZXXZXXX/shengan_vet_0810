@@ -1437,7 +1437,7 @@ export function WorkOrderPage({
             <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-1">
               <div className="text-caption text-text-tertiary">
                 {assignExecutor === "__none__"
-                  ? "未指定执行人，工单将进入未指派池，由首位响应者承接。"
+                  ? "未指定执行人，工单将进入未指派池，稍后再指派执行人。"
                   : `执行人：${assignExecutor}，提交后直接派发。`}
               </div>
             </div>
