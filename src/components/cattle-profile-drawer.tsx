@@ -430,7 +430,7 @@ const ALL_MEDS: MedRecord[] = [
 const TODAY = new Date("2026-05-29");
 
 function MedicationHistory() {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const { visible, recentCount, totalCount } = useMemo(() => {
     const cutoff = new Date(TODAY);
     cutoff.setDate(cutoff.getDate() - 20);
