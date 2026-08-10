@@ -106,7 +106,7 @@ export function WorkOrderSection() {
   const [tab, setTab] = useState(TAB_ALL);
   const [active, setActive] = useState<StatusKey | null>(null);
   const s = scopes[tab]!;
-  const rate = Math.round((s.status.done.value / s.total) * 100);
+  
   const slices = ORDER.map((k) => ({ name: s.status[k].name, value: s.status[k].value, color: s.status[k].color }));
   const cur = active ? s.status[active] : null;
 
