@@ -190,14 +190,15 @@ export type WorkOrder = {
 
 type ColKey =
   | "id"
-  | "target"
+  | "category"
   | "status"
-  | "proposer"
-  | "proposedAt"
-  | "reviewer"
-  | "reviewedAt"
-  | "executor"
-  | "executedAt"
+  | "objType"
+  | "target"
+  | "diagnosis"
+  | "desc"
+  | "timeInfo"
+  | "staff"
+  | "pickup"
   | "action";
 
 type ColDef = {
@@ -210,16 +211,18 @@ type ColDef = {
 
 const ALL_COLS: ColDef[] = [
   { key: "id", label: "工单编号", width: 120, locked: true },
-  { key: "target", label: "牛舍/牛只", width: 200, locked: true },
-  { key: "status", label: "当前状态", width: 100 },
-  { key: "proposer", label: "提出人", width: 100 },
-  { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
-  { key: "reviewer", label: "诊断人", width: 100 },
-  { key: "reviewedAt", label: "诊断时间", width: 160, isTime: true },
-  { key: "executor", label: "执行人", width: 180 },
-  { key: "executedAt", label: "执行时间", width: 160, isTime: true },
-  { key: "action", label: "功能", width: 140, locked: true },
+  { key: "category", label: "诊疗属性", width: 110 },
+  { key: "status", label: "工单状态", width: 100 },
+  { key: "objType", label: "对象类型", width: 90 },
+  { key: "target", label: "对象信息", width: 180 },
+  { key: "diagnosis", label: "疾病结论", width: 140 },
+  { key: "desc", label: "具体描述", width: 240 },
+  { key: "timeInfo", label: "时间信息", width: 180 },
+  { key: "staff", label: "人员信息", width: 180 },
+  { key: "pickup", label: "领物信息", width: 110 },
+  { key: "action", label: "操作名称", width: 120, locked: true },
 ];
+
 
 type StatusKey = WorkStatus | "已终止";
 const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; tone: string }[] = [
