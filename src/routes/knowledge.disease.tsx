@@ -584,8 +584,6 @@ function EditForm({ value, onChange }: { value: Disease; onChange: (v: Disease) 
 
   return (
     <>
-      <StatScopeCard metrics={diseaseStats(value.code)} />
-
       <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
         <div className="grid grid-cols-2 gap-3">
           <Field label="疾病编码" hint="系统自动生成,不可修改">
@@ -839,6 +837,8 @@ function DetailView({ value }: { value: Disease }) {
   const cat = t ? categoryByCode(t.categoryCode) : undefined;
   return (
     <>
+      <StatScopeCard metrics={diseaseStats(value.code)} />
+
       <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
         <KV label="疾病类型" value={t?.name ?? "—"} />
         <KV label="疾病名称" value={value.name} />
