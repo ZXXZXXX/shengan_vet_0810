@@ -459,6 +459,7 @@ export function WorkOrderPage({
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     const list = orders
+      .filter((o) => !deletedIds.includes(o.id))
       .filter((o) => inRange(o.createdAt, range))
       .filter((o) =>
         kw
