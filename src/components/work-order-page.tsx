@@ -181,6 +181,8 @@ export type WorkOrder = {
   reviewer?: string;
   reviewedAt?: string;
   executor?: string;
+  /** 执行人（可多人） */
+  executors?: string[];
   executedAt?: string;
   attachments?: WorkOrderAttachment[];
 };
