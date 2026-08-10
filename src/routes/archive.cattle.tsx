@@ -15,7 +15,7 @@ export const Route = createFileRoute("/archive/cattle")({
 });
 
 type Health = "健康" | "观察中" | "治疗中";
-type DeviceState = "正常" | "偏低" | "偏高" | "异常" | "离线" | "未佩戴";
+type DeviceState = "正常" | "异常" | "-";
 type Cow = {
   id: string;
   ear: string;
@@ -30,10 +30,10 @@ type Cow = {
   collar: DeviceState;
 };
 const cattle: Cow[] = [
-  { id: "C-2381", ear: "01-24-2381", breed: "荷斯坦", sex: "♀", birth: "2022-03-15", farm: "1 号牧场", barn: "3 号牛舍", health: "治疗中", milk: "偏低", earTemp: "偏高", collar: "正常" },
+  { id: "C-2381", ear: "01-24-2381", breed: "荷斯坦", sex: "♀", birth: "2022-03-15", farm: "1 号牧场", barn: "3 号牛舍", health: "治疗中", milk: "异常", earTemp: "异常", collar: "正常" },
   { id: "C-2380", ear: "01-24-2380", breed: "荷斯坦", sex: "♀", birth: "2021-11-08", farm: "1 号牧场", barn: "1 号牛舍", health: "健康", milk: "正常", earTemp: "正常", collar: "正常" },
-  { id: "C-2379", ear: "01-24-2379", breed: "荷斯坦", sex: "♀", birth: "2023-06-20", farm: "1 号牧场", barn: "犊牛舍 A", health: "健康", milk: "未佩戴", earTemp: "正常", collar: "未佩戴" },
-  { id: "C-2378", ear: "01-24-2378", breed: "西门塔尔", sex: "♂", birth: "2022-09-10", farm: "2 号牧场", barn: "2 号牛舍", health: "观察中", milk: "偏低", earTemp: "正常", collar: "离线" },
+  { id: "C-2379", ear: "01-24-2379", breed: "荷斯坦", sex: "♀", birth: "2023-06-20", farm: "1 号牧场", barn: "犊牛舍 A", health: "健康", milk: "-", earTemp: "正常", collar: "-" },
+  { id: "C-2378", ear: "01-24-2378", breed: "西门塔尔", sex: "♂", birth: "2022-09-10", farm: "2 号牧场", barn: "2 号牛舍", health: "观察中", milk: "异常", earTemp: "正常", collar: "异常" },
   { id: "C-2377", ear: "01-24-2377", breed: "荷斯坦", sex: "♀", birth: "2020-05-12", farm: "1 号牧场", barn: "3 号牛舍", health: "健康", milk: "正常", earTemp: "正常", collar: "正常" },
 ];
 
@@ -43,9 +43,8 @@ function healthTag(h: Health) {
 
 function stateTag(s: DeviceState) {
   if (s === "正常") return "tag tag-success";
-  if (s === "偏低" || s === "偏高" || s === "离线") return "tag tag-warning";
   if (s === "异常") return "tag tag-danger";
-  return "tag";
+  return "text-body-sm text-text-tertiary";
 }
 
 function ageLabelOf(birth: string) {
