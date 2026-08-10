@@ -56,7 +56,7 @@ export function ImmunizationRateCard() {
     plans.length === 0 ? 0 : plans.reduce((s, p) => s + p.days, 0) / plans.length;
 
   return (
-    <Card className="border-border bg-card rounded-2xl shadow-card p-6">
+    <Card className="border-border bg-card rounded-2xl shadow-card p-6 flex flex-col">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <div

@@ -430,12 +430,12 @@ function HomePage() {
         {showInternal && <DrugSection />}
 
         {/* 6 疫苗免疫专题 + 7 兽医工单专题 左右布局 */}
-        <div className={`grid grid-cols-1 gap-6 ${showInternal ? "xl:grid-cols-2" : ""}`}>
-          <div id="topic-vaccine" className="scroll-mt-24">
+        <div className={`grid grid-cols-1 gap-6 items-stretch ${showInternal ? "xl:grid-cols-2" : ""}`}>
+          <div id="topic-vaccine" className="scroll-mt-24 h-full [&>*]:h-full">
             <ImmunizationRateCard />
           </div>
           {showInternal && (
-            <div className="min-w-0">
+            <div className="min-w-0 h-full [&>*]:h-full">
               <WorkOrderSection />
             </div>
           )}
