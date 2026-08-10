@@ -42,12 +42,24 @@ export function SectionCard({
   );
 }
 
+function Tooltip({ x, y, children }: { x: number; y: number; children: ReactNode }) {
+  return (
+    <div
+      className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-card px-2.5 py-1.5 shadow-card whitespace-nowrap"
+      style={{ left: x, top: y - 8 }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export function Donut({
   data,
   size = 168,
   centerLabel,
   centerValue,
   centerUnit,
+  unit = "",
   onSliceClick,
 }: {
   data: Slice[];
@@ -55,9 +67,10 @@ export function Donut({
   centerLabel?: string;
   centerValue?: string;
   centerUnit?: string;
+  unit?: string;
   onSliceClick?: (slice: Slice, index: number) => void;
 }) {
-
+  const [hover, setHover] = useState<{ i: number; x: number; y: number } | null>(null);
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
   const r = size / 2 - 8;
   const inner = r * 0.62;
@@ -78,6 +91,7 @@ export function Donut({
       color: seg.color ?? PALETTE[i % PALETTE.length],
     };
   });
+  const hovered = hover ? data[hover.i] : null;
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -89,10 +103,14 @@ export function Donut({
             stroke="var(--bg-surface)"
             strokeWidth="1.5"
             onClick={onSliceClick ? () => onSliceClick(data[i]!, i) : undefined}
-            className={onSliceClick ? "cursor-pointer transition-opacity hover:opacity-80" : undefined}
+            onMouseMove={(e) => {
+              const box = e.currentTarget.ownerSVGElement!.getBoundingClientRect();
+              setHover({ i, x: e.clientX - box.left, y: e.clientY - box.top });
+            }}
+            onMouseLeave={() => setHover(null)}
+            className={`transition-opacity hover:opacity-80 ${onSliceClick ? "cursor-pointer" : ""}`}
           />
         ))}
-
       </svg>
       {(centerValue || centerLabel) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -103,12 +121,20 @@ export function Donut({
           {centerUnit && <span className="text-caption text-text-tertiary">{centerUnit}</span>}
         </div>
       )}
+      {hover && hovered && (
+        <Tooltip x={hover.x} y={hover.y}>
+          <div className="text-caption text-foreground">{hovered.name}</div>
+          <div className="text-caption text-text-secondary tabular-nums">
+            {hovered.value.toLocaleString()}
+            {unit} · {((hovered.value / total) * 100).toFixed(1)}%
+          </div>
+        </Tooltip>
+      )}
     </div>
   );
 }
 
-export function Legend({ data, unit = "" }: { data: Slice[]; unit?: string }) {
-  const total = data.reduce((s, d) => s + d.value, 0) || 1;
+export function Legend({ data }: { data: Slice[]; unit?: string }) {
   return (
     <div className="w-full flex flex-wrap justify-center gap-x-4 gap-y-1.5">
       {data.map((s, i) => (
@@ -118,13 +144,6 @@ export function Legend({ data, unit = "" }: { data: Slice[]; unit?: string }) {
             style={{ background: s.color ?? PALETTE[i % PALETTE.length] }}
           />
           <span className="text-caption text-foreground">{s.name}</span>
-          <span className="text-caption text-text-secondary tabular-nums">
-            {s.value.toLocaleString()}
-            {unit}
-          </span>
-          <span className="text-caption text-text-tertiary tabular-nums">
-            {((s.value / total) * 100).toFixed(1)}%
-          </span>
         </span>
       ))}
     </div>
