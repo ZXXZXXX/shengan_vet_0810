@@ -159,50 +159,54 @@ export function StackedBar({
   unit?: string;
   height?: number;
 }) {
+  const [hover, setHover] = useState<{ i: number; x: number; y: number } | null>(null);
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
+  const hovered = hover ? data[hover.i] : null;
   return (
     <div className="w-full">
-      <div
-        className="w-full flex overflow-hidden rounded-lg border border-border"
-        style={{ height }}
-      >
-        {data.map((d, i) => {
-          const pct = (d.value / total) * 100;
-          return (
-            <div
-              key={d.name}
-              title={`${d.name} ${d.value.toLocaleString()}${unit} ${pct.toFixed(1)}%`}
-              className="h-full flex items-center justify-center overflow-hidden"
-              style={{
-                width: `${pct}%`,
-                background: d.color ?? PALETTE[i % PALETTE.length],
-              }}
-            >
-              {pct >= 8 && (
-                <span className="text-caption tabular-nums text-white/95 px-1 truncate">
-                  {pct.toFixed(1)}%
-                </span>
-              )}
+      <div className="relative">
+        <div
+          className="w-full flex overflow-hidden rounded-lg border border-border"
+          style={{ height }}
+        >
+          {data.map((d, i) => {
+            const pct = (d.value / total) * 100;
+            return (
+              <div
+                key={d.name}
+                className="h-full flex items-center justify-center overflow-hidden transition-opacity hover:opacity-85"
+                style={{
+                  width: `${pct}%`,
+                  background: d.color ?? PALETTE[i % PALETTE.length],
+                }}
+                onMouseMove={(e) => {
+                  const box = e.currentTarget.parentElement!.getBoundingClientRect();
+                  setHover({ i, x: e.clientX - box.left, y: e.clientY - box.top });
+                }}
+                onMouseLeave={() => setHover(null)}
+              />
+            );
+          })}
+        </div>
+        {hover && hovered && (
+          <Tooltip x={hover.x} y={hover.y}>
+            <div className="text-caption text-foreground">{hovered.name}</div>
+            <div className="text-caption text-text-secondary tabular-nums">
+              {hovered.value.toLocaleString()}
+              {unit} · {((hovered.value / total) * 100).toFixed(1)}%
             </div>
-          );
-        })}
+          </Tooltip>
+        )}
       </div>
-      <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1.5">
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
         {data.map((d, i) => (
-          <div key={d.name} className="flex items-center gap-2 min-w-0">
+          <span key={d.name} className="inline-flex items-center gap-1.5">
             <span
               className="h-2 w-2 rounded-sm shrink-0"
               style={{ background: d.color ?? PALETTE[i % PALETTE.length] }}
             />
-            <span className="text-caption text-foreground truncate flex-1 min-w-0">{d.name}</span>
-            <span className="text-caption text-text-secondary tabular-nums shrink-0">
-              {d.value.toLocaleString()}
-              {unit}
-            </span>
-            <span className="text-caption text-text-tertiary tabular-nums shrink-0 w-11 text-right">
-              {((d.value / total) * 100).toFixed(1)}%
-            </span>
-          </div>
+            <span className="text-caption text-foreground">{d.name}</span>
+          </span>
         ))}
       </div>
     </div>
