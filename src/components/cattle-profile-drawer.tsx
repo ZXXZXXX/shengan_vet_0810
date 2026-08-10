@@ -81,6 +81,8 @@ export function CattleProfileDrawer({
 }) {
   const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves" | "events" | "orders">("diagnoses");
   const historyRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
 
   const [observed, setObserved] = useState(false);
 
