@@ -784,7 +784,7 @@ function EventHistory() {
                   <span className="font-mono text-body-sm text-primary">#{c.tag}</span>
                   <span className="tag tag-success">{c.status}</span>
                   {c.sex && <span className="tag tag-muted">{c.sex}</span>}
-                  <span className={`ml-auto tag ${c.keep === "留养" ? "tag-brand" : "tag-muted"}`}>{c.keep}</span>
+                  <span className={`ml-auto tag ${c.keep === "留养" ? "tag-brand" : "tag-pink"}`}>{c.keep}</span>
                 </div>
                 <div className="grid grid-cols-3 gap-x-4 gap-y-3">
                   <KV label="品种" value={c.breed} />
