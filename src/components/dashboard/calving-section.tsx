@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Baby, ChevronLeft } from "lucide-react";
-import { SectionCard, Donut, Legend, MiniStat, PeriodTabs } from "./charts";
+import { SectionCard, Donut, Legend, PeriodTabs } from "./charts";
 
 const aliveTotal = 170;
 const deadTotal = 9;
@@ -42,7 +42,6 @@ const TAB_WEIGHT = "体重分布";
 const VIEW_CALF = "犊牛情况";
 const VIEW_COW = "母牛情况";
 
-const difficultTotal = difficulty.reduce((s, d) => s + d.value, 0);
 
 export function CalvingSection() {
   const [view, setView] = useState(VIEW_CALF);
