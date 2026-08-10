@@ -271,11 +271,12 @@ export function LineTrend({
   const w = 640;
   const h = height;
   const padL = 42;
-  const padB = 28;
+  const padR = 28;
+  const padB = 30;
   const padT = 10;
   const maxV = Math.max(...series.flatMap((s) => s.points), 1);
   const nice = Math.ceil(maxV / 5) * 5 || 5;
-  const x = (i: number) => padL + (i * (w - padL - 8)) / Math.max(labels.length - 1, 1);
+  const x = (i: number) => padL + (i * (w - padL - padR)) / Math.max(labels.length - 1, 1);
   const y = (v: number) => padT + (1 - v / nice) * (h - padT - padB);
   return (
     <div className="w-full overflow-hidden">
@@ -285,7 +286,7 @@ export function LineTrend({
           <g key={t}>
             <line
               x1={padL}
-              x2={w - 8}
+              x2={w - padR}
               y1={padT + t * (h - padT - padB)}
               y2={padT + t * (h - padT - padB)}
               stroke="var(--border)"
@@ -340,9 +341,9 @@ export function LineTrend({
                 />
               )}
               <rect
-                x={x(i) - (w - padL - 8) / Math.max(labels.length - 1, 1) / 2}
+                x={x(i) - (w - padL - padR) / Math.max(labels.length - 1, 1) / 2}
                 y={padT}
-                width={(w - padL - 8) / Math.max(labels.length - 1, 1)}
+                width={(w - padL - padR) / Math.max(labels.length - 1, 1)}
                 height={h - padT - padB}
                 fill="transparent"
               />
@@ -352,7 +353,7 @@ export function LineTrend({
           <text
             key={l}
             x={x(i)}
-            y={h - 6}
+            y={h - 8}
             textAnchor="middle"
             fill={activeIndex === i ? "var(--brand)" : "var(--text-tertiary)"}
             fontSize={activeIndex === i ? 14 : 13}
