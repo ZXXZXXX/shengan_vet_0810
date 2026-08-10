@@ -203,17 +203,50 @@ function TrendIcon({ trend }: { trend: string }) {
 }
 
 
-function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
-  return (
-    <div>
-      <div className="text-caption text-white/75">{label}</div>
-      <div className="mt-0.5 flex items-baseline gap-1">
-        <span className="text-section-title tabular-nums text-white drop-shadow-sm">{value}</span>
-        {unit && <span className="text-caption text-white/75">{unit}</span>}
-      </div>
-    </div>
-  );
+type AttendStatus = "on" | "leave" | "absent";
+
+type AttendPerson = {
+  name: string;
+  role: string;
+  am: AttendStatus;
+  pm: AttendStatus;
+  amTime?: string;
+  pmTime?: string;
+};
+
+const SHIFTS = [
+  { key: "am" as const, label: "上午场" },
+  { key: "pm" as const, label: "下午场" },
+];
+
+const ATTENDANCE: AttendPerson[] = [
+  { name: "陈嘉明", role: "兽医", am: "on", pm: "on", amTime: "07:42", pmTime: "13:28" },
+  { name: "周乐言", role: "兽医", am: "on", pm: "leave", amTime: "07:55" },
+  { name: "赵一鸣", role: "兽医助理", am: "on", pm: "on", amTime: "07:38", pmTime: "13:20" },
+  { name: "孙静", role: "兽医助理", am: "on", pm: "on", amTime: "08:02", pmTime: "13:31" },
+  { name: "王海涛", role: "免疫员", am: "on", pm: "absent", amTime: "07:49" },
+  { name: "林晓峰", role: "修蹄员", am: "leave", pm: "on", pmTime: "13:15" },
+  { name: "李文博", role: "兽医助理", am: "leave", pm: "leave" },
+  { name: "郑楠", role: "免疫员", am: "absent", pm: "on", pmTime: "13:40" },
+  { name: "刘敏", role: "饲养员", am: "on", pm: "on", amTime: "07:30", pmTime: "13:10" },
+  { name: "吴桐", role: "饲养员", am: "absent", pm: "absent" },
+];
+
+function shiftStats(key: "am" | "pm") {
+  const list = ATTENDANCE.map((p) => (key === "am" ? p.am : p.pm));
+  return {
+    on: list.filter((s) => s === "on").length,
+    leave: list.filter((s) => s === "leave").length,
+    absent: list.filter((s) => s === "absent").length,
+  };
 }
+
+const attendMeta: Record<AttendStatus, { label: string; tone: string }> = {
+  on: { label: "已签到", tone: "var(--state-success)" },
+  leave: { label: "请假", tone: "var(--state-warning)" },
+  absent: { label: "未签到", tone: "var(--state-danger)" },
+};
+
 
 
 
