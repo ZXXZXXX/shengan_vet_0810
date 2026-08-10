@@ -270,8 +270,8 @@ export function LineTrend({
 }) {
   const w = 640;
   const h = height;
-  const padL = 34;
-  const padB = 22;
+  const padL = 42;
+  const padB = 28;
   const padT = 10;
   const maxV = Math.max(...series.flatMap((s) => s.points), 1);
   const nice = Math.ceil(maxV / 5) * 5 || 5;
@@ -293,10 +293,10 @@ export function LineTrend({
             />
             <text
               x={4}
-              y={padT + t * (h - padT - padB) + 4}
+              y={padT + t * (h - padT - padB) + 5}
               className="tabular-nums"
               fill="var(--text-tertiary)"
-              fontSize="10"
+              fontSize="13"
             >
               {Math.round(nice * (1 - t))}
             </text>
@@ -355,7 +355,8 @@ export function LineTrend({
             y={h - 6}
             textAnchor="middle"
             fill={activeIndex === i ? "var(--brand)" : "var(--text-tertiary)"}
-            fontSize="10"
+            fontSize={activeIndex === i ? 14 : 13}
+            fontWeight={activeIndex === i ? 600 : 400}
           >
             {l}
           </text>
@@ -364,7 +365,7 @@ export function LineTrend({
       </svg>
       <div className="mt-2 flex flex-wrap items-center gap-4">
         {series.map((s) => (
-          <span key={s.name} className="inline-flex items-center gap-1.5 text-caption text-text-secondary">
+          <span key={s.name} className="inline-flex items-center gap-1.5 text-body-sm text-text-secondary">
             <span className="h-1.5 w-4 rounded-full" style={{ background: s.color }} />
             {s.name}
             {unit && <span className="text-text-tertiary">（{unit}）</span>}
