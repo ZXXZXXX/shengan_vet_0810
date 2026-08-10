@@ -58,17 +58,18 @@ export function CalvingSection() {
       icon={<Baby className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={
         <div className="flex items-center gap-3 flex-wrap">
-          <PeriodTabs
-            value={view}
-            onChange={(v) => {
-              setView(v);
-              setDrill(false);
-            }}
-            options={[VIEW_CALF, VIEW_COW]}
-          />
           {view === VIEW_CALF && drill ? (
             <PeriodTabs value={tab} onChange={setTab} options={[TAB_PARITY, TAB_SEX, TAB_WEIGHT]} />
-          ) : null}
+          ) : (
+            <PeriodTabs
+              value={view}
+              onChange={(v) => {
+                setView(v);
+                setDrill(false);
+              }}
+              options={[VIEW_CALF, VIEW_COW]}
+            />
+          )}
         </div>
       }
     >
