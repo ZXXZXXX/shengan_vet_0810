@@ -281,6 +281,23 @@ export function LineTrend({
   return (
     <div className="w-full overflow-hidden">
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ height }}>
+        <defs>
+          <linearGradient id="trend-active-col" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--brand)" stopOpacity="0.02" />
+            <stop offset="100%" stopColor="var(--brand)" stopOpacity="0.16" />
+          </linearGradient>
+        </defs>
+        {activeIndex != null && activeIndex >= 0 && (
+          <rect
+            x={x(activeIndex) - (w - padL - padR) / Math.max(labels.length - 1, 1) / 2 + 6}
+            y={padT}
+            width={(w - padL - padR) / Math.max(labels.length - 1, 1) - 12}
+            height={h - padT - padB + 14}
+            rx={10}
+            fill="url(#trend-active-col)"
+          />
+        )}
+
 
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
           <g key={t}>
