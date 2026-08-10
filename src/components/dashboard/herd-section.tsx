@@ -33,7 +33,7 @@ export function HerdSection() {
       icon={<Beef className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={<PeriodTabs value={tab} onChange={setTab} options={[TAB_TYPE, TAB_HEALTH]} />}
     >
-      <div>
+      <div className="flex h-full flex-col justify-center">
         <div className="mb-3 flex items-baseline justify-between gap-3">
           <p className="text-body-sm text-text-secondary">
             {tab === TAB_TYPE ? "（至今日）类型分布" : "（本月）健康分布"}
