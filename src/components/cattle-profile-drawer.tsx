@@ -254,9 +254,10 @@ export function CattleProfileDrawer({
 
 
           {/* 历史记录：整宽贯穿 */}
-          <div ref={historyRef} className="scroll-mt-0">
+          <div ref={historyRef} className="min-h-[calc(100%-1px)]">
           <Panel title="历史记录" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="p-4 pt-0">
-            <div className="flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
+            <div className="sticky top-0 z-10 bg-card flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
+
               {[
                 { key: "orders" as const, label: "全部工单" },
                 { key: "diagnoses" as const, label: "诊断记录" },
