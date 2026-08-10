@@ -116,7 +116,7 @@ export function DrugSection() {
             </div>
             <p className="text-body-sm text-text-secondary mb-3">各类药品费用占比</p>
             <div className="flex flex-col items-center gap-4">
-              <Donut data={comp} size={148} centerLabel="合计" centerValue={total.toFixed(1)} centerUnit="万元" />
+              <Donut data={comp} size={148} centerLabel="合计" centerValue={total.toFixed(1)} centerUnit="万元" unit=" 万元" />
               <Legend data={comp} unit=" 万元" />
             </div>
           </div>
