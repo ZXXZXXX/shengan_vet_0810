@@ -286,7 +286,7 @@ function HomePage() {
                   查看预警详情 →
                 </button>
               </div>
-              <div className="mt-3 grid grid-cols-3 gap-2">
+              <div className="mt-3 grid grid-cols-3 gap-2.5">
                 {alertCounts.map((a, i) => {
                   const tone = ["--state-danger", "--state-alert", "--brand"][i % 3];
                   const Icon = [PackageMinus, Beef, Activity][i % 3];
@@ -295,35 +295,31 @@ function HomePage() {
                       key={a.key}
                       type="button"
                       onClick={() => scrollToTopic("topic-alert")}
-                      className="group flex items-center gap-2.5 rounded-xl border border-border bg-card px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--brand)_35%,transparent)] hover:shadow-card"
+                      className="group relative overflow-hidden rounded-xl px-3 py-3 text-left transition-all hover:-translate-y-0.5 hover:brightness-105"
+                      style={{
+                        background: `linear-gradient(140deg, color-mix(in oklab, var(${tone}) 92%, black 4%), color-mix(in oklab, var(${tone}) 72%, white 12%))`,
+                        boxShadow: `0 10px 22px -14px color-mix(in oklab, var(${tone}) 90%, transparent)`,
+                      }}
                     >
-                      <span
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-                        style={{
-                          background: `color-mix(in oklab, var(${tone}) 12%, transparent)`,
-                          color: `var(${tone})`,
-                        }}
-                      >
-                        <Icon className="h-4 w-4" strokeWidth={2} />
+                      <Icon
+                        aria-hidden
+                        className="pointer-events-none absolute -right-2 -bottom-2 h-12 w-12 text-white/20"
+                        strokeWidth={1.8}
+                      />
+                      <span className="relative block text-caption font-medium text-white/85 whitespace-nowrap">
+                        {a.key}
                       </span>
-                      <span className="min-w-0">
-                        <span className="block text-caption text-text-tertiary whitespace-nowrap">
-                          {a.key}
+                      <span className="relative mt-1 flex items-baseline gap-1">
+                        <span className="text-[30px] leading-none font-semibold tabular-nums text-white">
+                          {a.count}
                         </span>
-                        <span className="flex items-baseline gap-0.5">
-                          <span
-                            className="text-[20px] leading-tight font-semibold tabular-nums"
-                            style={{ color: `var(${tone})` }}
-                          >
-                            {a.count}
-                          </span>
-                          <span className="text-caption text-text-tertiary">项</span>
-                        </span>
+                        <span className="text-caption text-white/80">项</span>
                       </span>
                     </button>
                   );
                 })}
               </div>
+
 
 
             </div>
