@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity } from "lucide-react";
-import { SectionCard, Donut, Legend, BarList, MiniStat, PeriodTabs } from "./charts";
+import { SectionCard, Donut, Legend, BarList, PeriodTabs } from "./charts";
 
 const groupDist = [
   { name: "成母牛", value: 26, color: "var(--brand)" },
