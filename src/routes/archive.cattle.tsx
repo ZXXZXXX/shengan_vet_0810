@@ -107,29 +107,27 @@ function CattlePage() {
 
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
-            <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
+            <div className="grid grid-cols-7 gap-4 flex-1 min-w-0">
               <div>耳号</div>
               <div>品种</div>
               <div>年龄</div>
+              <div>类型</div>
+              <div>胎次</div>
               <div>所在牛舍</div>
               <div>当前状态</div>
-              <div>奶量状态</div>
-              <div>耳温状态</div>
-              <div>颈环状态</div>
             </div>
             <div className="w-[170px] text-right shrink-0">操作</div>
           </div>
           {cattle.map((c) => (
             <div key={c.id} className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
-              <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
+              <div className="grid grid-cols-7 gap-4 flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 text-body text-foreground truncate"><Beef className="h-3.5 w-3.5 text-primary shrink-0" />{c.ear}</div>
                 <div className="text-body-sm text-text-secondary truncate">{c.breed}</div>
                 <div className="text-body-sm text-text-secondary tabular-nums truncate">{ageLabelOf(c.birth)}</div>
+                <div className="text-body-sm text-text-secondary truncate">{c.type}</div>
+                <div className="text-body-sm text-text-secondary tabular-nums truncate">{c.parity > 0 ? `${c.parity} 胎` : "-"}</div>
                 <div className="text-body-sm text-text-secondary truncate">{c.barn}</div>
                 <div><span className={healthTag(c.health)}>{c.health}</span></div>
-                <div><span className={stateTag(c.milk)}>{c.milk}</span></div>
-                <div><span className={stateTag(c.earTemp)}>{c.earTemp}</span></div>
-                <div><span className={stateTag(c.collar)}>{c.collar}</span></div>
               </div>
               <div className="w-[170px] shrink-0 flex items-center justify-end gap-0.5">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground" onClick={() => openProfile(c)}>查看</Button>
