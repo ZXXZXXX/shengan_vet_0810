@@ -293,21 +293,24 @@ function HomePage() {
             </div>
             <div className="flex flex-col items-end gap-3">
               
-              <div className="flex items-center gap-2 flex-wrap justify-end">
+              <div className="flex items-center gap-2.5 flex-wrap justify-end">
                 {alertCounts.map((a) => (
                   <button
                     key={a.key}
                     type="button"
                     onClick={() => scrollToTopic("topic-alert")}
-                    className="inline-flex items-center gap-2 h-10 px-3.5 rounded-full bg-white/12 hover:bg-white/22 border border-white/25 backdrop-blur-sm text-white transition-colors"
+                    className="inline-flex items-center gap-2.5 h-12 pl-3.5 pr-4 rounded-xl bg-white/95 hover:bg-white shadow-[0_6px_20px_-8px_rgba(0,0,0,0.45)] transition-colors"
                   >
-                    <AlertTriangle className="h-3.5 w-3.5" />
-                    <span className="text-body-sm">{a.key}</span>
-                    <span className="text-card-title font-medium tabular-nums">{a.count}</span>
-                    <span className="text-caption text-white/75">项</span>
+                    <AlertTriangle className="h-4 w-4 text-[var(--state-warning)]" />
+                    <span className="text-body-sm text-text-secondary">{a.key}</span>
+                    <span className="text-page-title font-medium tabular-nums leading-none text-[var(--state-danger)]">
+                      {a.count}
+                    </span>
+                    <span className="text-caption text-text-tertiary">项</span>
                   </button>
                 ))}
               </div>
+
               <div className="flex items-center gap-2 justify-end">
                 <Button
                   variant="outline"
