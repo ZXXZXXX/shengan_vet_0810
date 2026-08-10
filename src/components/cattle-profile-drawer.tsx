@@ -598,3 +598,37 @@ function EventHistory() {
     </div>
   );
 }
+
+const ALL_ORDERS: {
+  id: string;
+  date: string;
+  attr: "初诊" | "复诊";
+  disease: string;
+  status: "已完成" | "执行中" | "待执行";
+  executor: string;
+}[] = [
+  { id: "WO-20260808-021", date: "2026-08-08", attr: "复诊", disease: "临床型乳房炎", status: "执行中", executor: "王兽医" },
+  { id: "WO-20260805-014", date: "2026-08-05", attr: "初诊", disease: "临床型乳房炎", status: "已完成", executor: "王兽医 / 李技术员" },
+  { id: "WO-20260730-018", date: "2026-07-30", attr: "初诊", disease: "产后护理（正常）", status: "已完成", executor: "李技术员" },
+  { id: "WO-20260712-006", date: "2026-07-12", attr: "初诊", disease: "转群检查", status: "已完成", executor: "张场长" },
+];
+
+function OrderHistory() {
+  return (
+    <div className="space-y-2">
+      <div className="text-caption text-text-tertiary mb-1">共 {ALL_ORDERS.length} 条</div>
+      {ALL_ORDERS.map((o) => (
+        <div key={o.id} className="rounded-xl border border-border bg-card p-3">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className={o.attr === "复诊" ? "tag tag-muted" : "tag tag-brand"}>{o.attr}</span>
+            <span className="font-mono text-caption text-text-secondary">{o.id}</span>
+            <span className="text-caption text-text-tertiary">· {o.date}</span>
+            <span className="ml-auto text-caption text-text-secondary">{o.status}</span>
+          </div>
+          <div className="text-body-sm text-foreground">{o.disease}</div>
+          <div className="text-caption text-text-tertiary mt-1">执行人 {o.executor}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
