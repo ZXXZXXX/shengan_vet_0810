@@ -677,6 +677,12 @@ function HomePage() {
               );
             })}
           </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={exportMonthlyAttendance}>
+              <ArrowDownToLine className="h-4 w-4" />
+              导出本月出勤明细
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
