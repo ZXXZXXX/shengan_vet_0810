@@ -14,38 +14,31 @@ export type ScopeMetric = {
   value: Record<Scope, string>;
 };
 
-/** 统计卡片：支持「本月 / 全部」维度切换 */
+/** 轻量统计行：两个字段 +「本月 / 全部」切换 */
 export function StatScopeCard({ metrics }: { metrics: ScopeMetric[] }) {
   const [scope, setScope] = useState<Scope>("month");
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="flex items-center justify-between">
-        <div className="text-body font-medium text-foreground">统计</div>
-        <div className="flex items-center gap-0.5 rounded-md border border-border bg-surface-subtle p-0.5">
-          {(["month", "all"] as Scope[]).map((k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => setScope(k)}
-              className={`h-6 px-2.5 rounded text-caption transition-colors ${
-                scope === k
-                  ? "bg-card text-primary shadow-sm"
-                  : "text-text-secondary hover:text-foreground"
-              }`}
-            >
-              {k === "month" ? "本月" : "全部"}
-            </button>
-          ))}
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-body-small">
+      {metrics.map((m) => (
+        <div key={m.label} className="flex items-center gap-1.5">
+          <span className="text-text-tertiary">{m.label}</span>
+          <span className="tabular-nums font-medium text-foreground">{m.value[scope]}</span>
         </div>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-3">
-        {metrics.map((m) => (
-          <div key={m.label} className="rounded-md bg-surface-subtle px-3 py-2.5">
-            <div className="text-caption text-text-tertiary">{m.label}</div>
-            <div className="mt-0.5 text-section-title tabular-nums text-foreground">
-              {m.value[scope]}
-            </div>
-          </div>
+      ))}
+      <div className="flex items-center gap-2 text-caption">
+        {(["month", "all"] as Scope[]).map((k) => (
+          <button
+            key={k}
+            type="button"
+            onClick={() => setScope(k)}
+            className={`transition-colors ${
+              scope === k
+                ? "text-primary font-medium"
+                : "text-text-tertiary hover:text-foreground"
+            }`}
+          >
+            {k === "month" ? "本月" : "全部"}
+          </button>
         ))}
       </div>
     </div>
