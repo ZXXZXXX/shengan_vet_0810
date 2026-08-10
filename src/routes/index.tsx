@@ -21,7 +21,7 @@ import { CalvingSection } from "@/components/dashboard/calving-section";
 import { CullingSection } from "@/components/dashboard/culling-section";
 import { DrugSection } from "@/components/dashboard/drug-section";
 import { WorkOrderSection } from "@/components/dashboard/workorder-section";
-import { AlertSection } from "@/components/dashboard/alert-section";
+import { AlertSection, alertCounts } from "@/components/dashboard/alert-section";
 import { OpsSection } from "@/components/dashboard/ops-section";
 
 import {
@@ -43,6 +43,8 @@ import {
   ArrowUpFromLine,
   PackageMinus,
   Activity,
+  AlertTriangle,
+
 } from "lucide-react";
 
 
@@ -294,14 +296,25 @@ function HomePage() {
                 <HeroStat label="完成工作" value="86%" />
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" className="h-10 px-4 text-body-sm font-normal bg-white/10 hover:bg-white/20 border-white/25 text-white backdrop-blur-sm">
-                待处理申请
-              </Button>
-              <Button className="h-10 px-4 text-body-sm font-normal bg-white text-primary hover:bg-white/90 shadow-lg">
-                今日待办 <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
-              </Button>
+            <div className="flex flex-col items-end gap-2">
+              <span className="text-caption text-white/80">预警提示 · 点击查看专题</span>
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                {alertCounts.map((a) => (
+                  <button
+                    key={a.key}
+                    type="button"
+                    onClick={() => scrollToTopic("topic-alert")}
+                    className="inline-flex items-center gap-2 h-10 px-3.5 rounded-full bg-white/12 hover:bg-white/22 border border-white/25 backdrop-blur-sm text-white transition-colors"
+                  >
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    <span className="text-body-sm">{a.key}</span>
+                    <span className="text-card-title font-medium tabular-nums">{a.count}</span>
+                    <span className="text-caption text-white/75">项</span>
+                  </button>
+                ))}
+              </div>
             </div>
+
           </div>
         </Card>
 
