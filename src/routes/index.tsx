@@ -250,92 +250,110 @@ function HomePage() {
     <>
       <AppHeader title="首页总览" breadcrumb={["首页"]} />
       <main className="flex-1 px-6 py-6 space-y-5">
-        {/* Hero greeting — 浅色数据台 */}
-        <Card className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-[0_18px_50px_-32px_color-mix(in_oklab,var(--brand)_60%,transparent)]">
-          {/* 右侧插画 */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-[38%] select-none">
-            <img src={grasslandHero} alt="" aria-hidden className="h-full w-full object-cover opacity-[0.18]" />
-            <div className="absolute inset-0 bg-gradient-to-r from-card via-card/85 to-card/40" />
-          </div>
-
-          <div className="relative z-10 px-6 py-5 flex flex-wrap items-center gap-x-8 gap-y-4">
-            {/* 问候 */}
-            <div className="min-w-0 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--brand-subtle)] text-[var(--brand)] text-caption font-medium">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
-                  系统正常运行
-                </span>
-                <span className="inline-flex items-center gap-2 text-caption text-text-tertiary">
-                  <span>2026/05/12 周二</span>
-                  <span className="h-1 w-1 rounded-full bg-border" />
-                  <span>1 号牧场</span>
-                </span>
-              </div>
-              <h2 className="mt-1.5 text-section-title font-medium text-text-primary">早上好，场长张磊</h2>
-              <p className="text-caption text-text-secondary mt-0.5">今日牧场整体运行平稳</p>
-            </div>
-
-            {/* 预警胶囊 */}
-            <div className="flex items-center gap-2.5 flex-wrap">
-              {alertCounts.map((a, i) => {
-                const tone = ["--state-danger", "--state-alert", "--brand"][i % 3];
-                return (
-                  <button
-                    key={a.key}
-                    type="button"
-                    onClick={() => scrollToTopic("topic-alert")}
-                    className="inline-flex items-center gap-2 rounded-full border border-border bg-card hover:border-[var(--brand)]/40 hover:bg-[var(--brand-subtle)] pl-1.5 pr-3.5 py-1 transition-colors"
-                  >
-                    <span
-                      className="inline-flex h-6 min-w-6 px-1.5 items-center justify-center rounded-full text-caption font-medium tabular-nums text-white"
-                      style={{ background: `var(${tone})` }}
-                    >
-                      {a.count}
-                    </span>
-                    <span className="text-body-sm text-text-primary whitespace-nowrap">{a.key}</span>
-                  </button>
-                );
-              })}
-              <Button className="h-8" onClick={() => scrollToTopic("topic-alert")}>
-                查看预警详情
-              </Button>
-            </div>
-
-            {/* 出勤 */}
-            <div className="ml-auto flex items-center gap-5 rounded-xl border border-border bg-muted/40 px-4 py-2.5">
-              {[
-                { label: "上午场", signed: 6, absent: 1, leave: 1 },
-                { label: "下午场", signed: 5, absent: 2, leave: 1 },
-              ].map((s, i) => (
-                <div key={s.label} className="flex items-center gap-5">
-                  {i > 0 && <div className="h-8 w-px bg-border" />}
-                  <div className="flex items-center gap-4">
-                    <span className="text-caption text-text-tertiary whitespace-nowrap">{s.label}</span>
-                    {[
-                      { n: s.signed, t: "已签", c: "text-text-primary" },
-                      { n: s.absent, t: "未签", c: "text-[var(--state-danger)]" },
-                      { n: s.leave, t: "请假", c: "text-[var(--state-alert)]" },
-                    ].map((m) => (
-                      <span key={m.t} className="flex items-baseline gap-1">
-                        <span className={`text-card-title font-medium tabular-nums ${m.c}`}>{m.n}</span>
-                        <span className="text-caption text-text-tertiary">{m.t}</span>
-                      </span>
-                    ))}
-                  </div>
+        {/* Hero greeting — 三分栏数据条 */}
+        <Card className="relative overflow-hidden rounded-2xl border border-border bg-card p-0 shadow-[0_18px_50px_-32px_color-mix(in_oklab,var(--brand)_60%,transparent)]">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(260px,1fr)_minmax(320px,1.2fr)_minmax(340px,1.3fr)] divide-y lg:divide-y-0 lg:divide-x divide-border">
+            {/* 1 · 问候 */}
+            <div className="relative overflow-hidden px-5 py-4">
+              <img
+                src={grasslandHero}
+                alt=""
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 right-0 h-full w-1/2 object-cover opacity-[0.14]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-card via-card/90 to-transparent" />
+              <div className="relative">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-subtle)] px-2 py-0.5 text-caption font-medium text-[var(--brand)]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
+                    系统正常运行
+                  </span>
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setAttendanceOpen(true)}
-                className="text-caption text-[var(--brand)] hover:underline whitespace-nowrap"
-              >
-                出勤明细
-              </button>
+                <h2 className="mt-2 text-page-title font-medium text-text-primary">早上好，场长张磊</h2>
+                <p className="mt-1 text-caption text-text-tertiary">2026/05/12 周二 · 1 号牧场</p>
+              </div>
+            </div>
+
+            {/* 2 · 预警 */}
+            <div className="flex flex-col justify-between px-5 py-4">
+              <div className="flex items-center justify-between">
+                <span className="text-caption text-text-tertiary">实时预警</span>
+                <button
+                  type="button"
+                  onClick={() => scrollToTopic("topic-alert")}
+                  className="text-caption text-[var(--brand)] hover:underline"
+                >
+                  查看预警详情 →
+                </button>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                {alertCounts.map((a, i) => {
+                  const tone = ["--state-danger", "--state-alert", "--brand"][i % 3];
+                  return (
+                    <button
+                      key={a.key}
+                      type="button"
+                      onClick={() => scrollToTopic("topic-alert")}
+                      className="rounded-xl border border-border bg-surface-subtle px-3 py-2 text-left transition-colors hover:border-[var(--brand)]/40 hover:bg-[var(--brand-subtle)]"
+                      style={{ borderLeft: `3px solid var(${tone})` }}
+                    >
+                      <div className="text-caption text-text-tertiary whitespace-nowrap">{a.key}</div>
+                      <div className="mt-0.5 flex items-baseline gap-1">
+                        <span
+                          className="text-page-title font-medium tabular-nums"
+                          style={{ color: `var(${tone})` }}
+                        >
+                          {a.count}
+                        </span>
+                        <span className="text-caption text-text-tertiary">项</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 3 · 出勤 */}
+            <div className="flex flex-col justify-between px-5 py-4">
+              <div className="flex items-center justify-between">
+                <span className="text-caption text-text-tertiary">今日到岗</span>
+                <button
+                  type="button"
+                  onClick={() => setAttendanceOpen(true)}
+                  className="text-caption text-[var(--brand)] hover:underline"
+                >
+                  出勤明细 →
+                </button>
+              </div>
+              <div className="mt-3 grid grid-cols-[auto_repeat(3,minmax(0,1fr))] items-center gap-x-3 gap-y-1.5">
+                <span />
+                {["已签", "未签", "请假"].map((t) => (
+                  <span key={t} className="text-center text-caption text-text-tertiary">
+                    {t}
+                  </span>
+                ))}
+                {[
+                  { label: "上午场", signed: 6, absent: 1, leave: 1 },
+                  { label: "下午场", signed: 5, absent: 2, leave: 1 },
+                ].map((s) => (
+                  <Fragment key={s.label}>
+                    <span className="text-caption text-text-secondary whitespace-nowrap">{s.label}</span>
+                    <span className="text-center text-card-title font-medium tabular-nums text-text-primary">
+                      {s.signed}
+                    </span>
+                    <span className="text-center text-card-title font-medium tabular-nums text-[var(--state-danger)]">
+                      {s.absent}
+                    </span>
+                    <span className="text-center text-card-title font-medium tabular-nums text-[var(--state-alert)]">
+                      {s.leave}
+                    </span>
+                  </Fragment>
+                ))}
+              </div>
             </div>
           </div>
-
         </Card>
+
 
 
 
