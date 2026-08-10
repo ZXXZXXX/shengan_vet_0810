@@ -14,6 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import grasslandHero from "@/assets/grassland-hero.png";
+import { SHIFT_STAFF } from "@/lib/assignee-store";
 import { ImmunizationRateCard } from "@/components/immunization-rate-card";
 import { DiseaseStatsSection } from "@/components/disease-stats-section";
 import { HerdSection } from "@/components/dashboard/herd-section";
@@ -212,6 +213,7 @@ function TrendIcon({ trend }: { trend: string }) {
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [attendanceOpen, setAttendanceOpen] = useState(false);
   const alertsRef = useRef<HTMLDivElement | null>(null);
 
   const [scope, setScope] = useState<ReportScope>("farm-in");
@@ -289,7 +291,7 @@ function HomePage() {
 
 
             </div>
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-end gap-3">
               
               <div className="flex items-center gap-2 flex-wrap justify-end">
                 {alertCounts.map((a) => (
@@ -306,7 +308,20 @@ function HomePage() {
                   </button>
                 ))}
               </div>
+              <div className="flex items-center gap-2 justify-end">
+                <Button
+                  variant="outline"
+                  className="h-9 bg-white/10 hover:bg-white/20 text-white border-white/30 hover:text-white"
+                  onClick={() => setAttendanceOpen(true)}
+                >
+                  出勤明细
+                </Button>
+                <Button className="h-9" onClick={() => scrollToTopic("topic-alert")}>
+                  查看预警详情
+                </Button>
+              </div>
             </div>
+
 
           </div>
         </Card>
@@ -544,6 +559,57 @@ function HomePage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* 出勤明细 */}
+      <Dialog open={attendanceOpen} onOpenChange={setAttendanceOpen}>
+        <DialogContent className="sm:max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle className="text-card-title">今日出勤明细</DialogTitle>
+            <DialogDescription className="text-body-sm text-text-secondary">
+              2026/05/12 · 1 号牧场
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+            {(["上午场", "下午场"] as const).map((shift, si) => {
+              const list = SHIFT_STAFF.map((s, i) =>
+                si === 1 && i === 1 ? { ...s, onShift: false, offReason: "absent" as const } : s
+              );
+              const groups = [
+                { key: "已签到", items: list.filter((s) => s.onShift) },
+                { key: "请假", items: list.filter((s) => !s.onShift && s.offReason === "leave") },
+                { key: "未签到", items: list.filter((s) => !s.onShift && s.offReason === "absent") },
+              ];
+              return (
+                <div key={shift} className="space-y-2">
+                  <div className="text-body font-medium">{shift}</div>
+                  {groups.map((g) => (
+                    <div key={g.key} className="flex gap-3">
+                      <div className="w-16 shrink-0 text-body-sm text-text-secondary">
+                        {g.key} {g.items.length}
+                      </div>
+                      <div className="flex-1 flex flex-wrap gap-1.5">
+                        {g.items.length === 0 ? (
+                          <span className="text-body-sm text-text-tertiary">—</span>
+                        ) : (
+                          g.items.map((s) => (
+                            <span
+                              key={s.id}
+                              className="text-body-sm px-2 py-0.5 rounded-md bg-muted text-text-primary"
+                            >
+                              {s.name}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
+
   );
 }
