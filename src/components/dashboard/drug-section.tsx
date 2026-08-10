@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pill, X } from "lucide-react";
+import { Pill } from "lucide-react";
 import { SectionCard, Donut, Legend, LineTrend, MiniStat, PeriodTabs } from "./charts";
 
 const PERIODS = ["近 1 年", "近 6 个月", "近 3 个月"];
