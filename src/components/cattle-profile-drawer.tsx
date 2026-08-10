@@ -69,7 +69,7 @@ export function CattleProfileDrawer({
   onOpenChange: (v: boolean) => void;
   cow: CattleProfile | null;
 }) {
-  const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves" | "events">("diagnoses");
+  const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves" | "events" | "orders">("diagnoses");
   const [observed, setObserved] = useState(false);
 
   if (!cow) return null;
@@ -218,41 +218,22 @@ export function CattleProfileDrawer({
               title="历史记录"
               icon={<ListChecks className="h-4 w-4 text-primary" />}
               bodyClassName="pt-0"
-              extra={
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    className="h-8 gap-1 text-body-sm font-normal text-text-secondary"
-                    onClick={() => toast.info(`查看 #${cow.ear} 的全部工单`)}
-                  >
-                    <ListChecks className="h-4 w-4" /> 全部工单
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-8 gap-1 text-body-sm font-normal"
-                    onClick={() => setTab("events")}
-                  >
-                    <FilePlus2 className="h-4 w-4 text-primary" /> 全部数据记录
-                    <ChevronRight className="h-4 w-4 text-text-tertiary" />
-                  </Button>
-                </div>
-              }
             >
-              <div className="flex items-center gap-6 border-b border-border -mx-4 px-4">
+              <div className="flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
                 {[
                   { key: "diagnoses" as const, label: "诊断记录" },
                   { key: "meds" as const, label: "用药记录" },
                   { key: "tests" as const, label: "检测记录" },
                   { key: "moves" as const, label: "转栏记录" },
                   { key: "events" as const, label: "事件记录" },
+                  { key: "orders" as const, label: "全部工单" },
                 ].map((t) => {
                   const active = tab === t.key;
                   return (
                     <button
                       key={t.key}
                       onClick={() => setTab(t.key)}
-                      className={`relative h-10 text-body-sm transition-colors ${
+                      className={`relative h-10 shrink-0 text-body-sm transition-colors ${
                         active ? "text-primary font-medium" : "text-text-secondary hover:text-foreground"
                       }`}
                     >
@@ -271,6 +252,8 @@ export function CattleProfileDrawer({
                   <TestHistory />
                 ) : tab === "events" ? (
                   <EventHistory />
+                ) : tab === "orders" ? (
+                  <OrderHistory />
                 ) : (
                   <MoveHistory />
                 )}
@@ -610,6 +593,40 @@ function EventHistory() {
               <span className="font-mono text-primary">{e.orderId ?? "-"}</span>
             </span>
           </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const ALL_ORDERS: {
+  id: string;
+  date: string;
+  attr: "初诊" | "复诊";
+  disease: string;
+  status: "已完成" | "执行中" | "待执行";
+  executor: string;
+}[] = [
+  { id: "WO-20260808-021", date: "2026-08-08", attr: "复诊", disease: "临床型乳房炎", status: "执行中", executor: "王兽医" },
+  { id: "WO-20260805-014", date: "2026-08-05", attr: "初诊", disease: "临床型乳房炎", status: "已完成", executor: "王兽医 / 李技术员" },
+  { id: "WO-20260730-018", date: "2026-07-30", attr: "初诊", disease: "产后护理（正常）", status: "已完成", executor: "李技术员" },
+  { id: "WO-20260712-006", date: "2026-07-12", attr: "初诊", disease: "转群检查", status: "已完成", executor: "张场长" },
+];
+
+function OrderHistory() {
+  return (
+    <div className="space-y-2">
+      <div className="text-caption text-text-tertiary mb-1">共 {ALL_ORDERS.length} 条</div>
+      {ALL_ORDERS.map((o) => (
+        <div key={o.id} className="rounded-xl border border-border bg-card p-3">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className={o.attr === "复诊" ? "tag tag-muted" : "tag tag-brand"}>{o.attr}</span>
+            <span className="font-mono text-caption text-text-secondary">{o.id}</span>
+            <span className="text-caption text-text-tertiary">· {o.date}</span>
+            <span className="ml-auto text-caption text-text-secondary">{o.status}</span>
+          </div>
+          <div className="text-body-sm text-foreground">{o.disease}</div>
+          <div className="text-caption text-text-tertiary mt-1">执行人 {o.executor}</div>
         </div>
       ))}
     </div>
