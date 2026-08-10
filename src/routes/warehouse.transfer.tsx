@@ -104,6 +104,7 @@ function TransferPage() {
         title="调拨转库"
         breadcrumb={["仓库管理", "调拨转库"]}
         statuses={statuses}
+        hideTabs
         events={data}
         searchPlaceholder="按调拨单号 / 物资 / 描述搜索"
         createLabel="新建调拨"
