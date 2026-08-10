@@ -54,7 +54,7 @@ export function CalvingSection() {
     <SectionCard
       id="topic-calving"
       title="产犊专题"
-      desc="\n"
+      desc={"\n"}
       icon={<Baby className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={
         <div className="flex items-center gap-3 flex-wrap">
