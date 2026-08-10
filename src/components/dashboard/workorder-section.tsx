@@ -106,7 +106,7 @@ export function WorkOrderSection() {
   const [tab, setTab] = useState(TAB_ALL);
   const [active, setActive] = useState<StatusKey | null>(null);
   const s = scopes[tab]!;
-  const rate = Math.round((s.status.done.value / s.total) * 100);
+  
   const slices = ORDER.map((k) => ({ name: s.status[k].name, value: s.status[k].value, color: s.status[k].color }));
   const cur = active ? s.status[active] : null;
 
@@ -128,9 +128,8 @@ export function WorkOrderSection() {
       }
     >
       <div className="h-full flex flex-col">
-        <div className="flex justify-end">
-          <span className="text-caption text-text-tertiary tabular-nums shrink-0">完成率 {rate}%</span>
-        </div>
+
+
 
 
         <div className="mt-4 flex-1 grid grid-cols-1 xl:grid-cols-2 gap-6 items-center">
