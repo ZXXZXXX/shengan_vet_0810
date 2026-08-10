@@ -84,6 +84,7 @@ function toProfile(c: Cow): CattleProfile {
 function CattlePage() {
   const [current, setCurrent] = useState<CattleProfile | null>(null);
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const openProfile = (c: Cow) => {
     setCurrent(toProfile(c));
     setOpen(true);
