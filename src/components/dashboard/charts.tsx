@@ -289,10 +289,11 @@ export function LineTrend({
         </defs>
         {activeIndex != null && activeIndex >= 0 && (() => {
           const step = (w - padL - padR) / Math.max(labels.length - 1, 1);
-          const cw = Math.min(step, (w - x(activeIndex)) * 2, x(activeIndex) * 2);
+          const cw = step;
+          const rx = Math.max(0, Math.min(w - cw, x(activeIndex) - cw / 2));
           return (
             <rect
-              x={x(activeIndex) - cw / 2}
+              x={rx}
               y={padT}
               width={cw}
               height={h - padT}
@@ -300,6 +301,7 @@ export function LineTrend({
             />
           );
         })()}
+
 
 
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
