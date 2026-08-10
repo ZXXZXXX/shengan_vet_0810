@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Beef,
   MapPin,
@@ -80,6 +80,8 @@ export function CattleProfileDrawer({
   cow: CattleProfile | null;
 }) {
   const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves" | "events" | "orders">("diagnoses");
+  const historyRef = useRef<HTMLDivElement>(null);
+
   const [observed, setObserved] = useState(false);
 
   if (!cow) return null;
@@ -250,6 +252,7 @@ export function CattleProfileDrawer({
 
 
           {/* 历史记录：整宽贯穿 */}
+          <div ref={historyRef} className="scroll-mt-0">
           <Panel title="历史记录" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="p-4 pt-0">
             <div className="flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
               {[
@@ -264,7 +267,10 @@ export function CattleProfileDrawer({
                 return (
                   <button
                     key={t.key}
-                    onClick={() => setTab(t.key)}
+                    onClick={() => {
+                      setTab(t.key);
+                      historyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
                     className={`relative h-11 shrink-0 text-body-sm transition-colors ${
                       active ? "text-primary font-medium" : "text-text-secondary hover:text-foreground"
                     }`}
@@ -275,6 +281,7 @@ export function CattleProfileDrawer({
                 );
               })}
             </div>
+
             <div className="pt-4">
               {tab === "meds" ? (
                 <MedicationHistory />
@@ -291,6 +298,8 @@ export function CattleProfileDrawer({
               )}
             </div>
           </Panel>
+          </div>
+
         </div>
       </SheetContent>
     </Sheet>
