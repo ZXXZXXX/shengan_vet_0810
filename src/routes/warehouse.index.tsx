@@ -7,15 +7,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine, ArrowLeftRight,
-
-  Download, MoreHorizontal, Pencil, Trash2,
+  Search, Filter, Plus, MoreHorizontal, Pencil, Trash2,
 } from "lucide-react";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/warehouse/")({
   head: () => ({ meta: [{ title: "库存管理 — 奇点智牧" }] }),
@@ -43,29 +39,6 @@ function statusTag(s: Status) {
   return "tag tag-danger";
 }
 
-function exportPurchaseList() {
-  const need = inventory.filter((i) => i.stock < i.min);
-  if (need.length === 0) {
-    toast.info("当前没有需要补货的物资");
-    return;
-  }
-  const headers = ["SKU", "物资名称", "分类", "当前库存", "安全库存", "建议采购数量", "单位", "库位", "效期"];
-  const rows = need.map((i) => [
-    i.sku, i.name, i.cat, i.stock, i.min, i.min - i.stock, i.unit, i.loc, i.expiry,
-  ]);
-  const csv = [headers, ...rows]
-    .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
-    .join("\n");
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `采购清单_${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  toast.success(`已导出 ${need.length} 项采购清单`);
-}
-
 function InventoryPage() {
   return (
     <>
@@ -84,29 +57,6 @@ function InventoryPage() {
             </Button>
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 gap-1.5 text-body-sm font-normal"
-              onClick={exportPurchaseList}
-            >
-              <Download className="h-3.5 w-3.5" /> 导出采购清单
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
-                  <ArrowLeftRight className="h-3.5 w-3.5" /> 出入库
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-32">
-                <DropdownMenuItem>
-                  <ArrowDownToLine className="h-3.5 w-3.5 mr-2" /> 入库
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <ArrowUpFromLine className="h-3.5 w-3.5 mr-2" /> 出库
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
             <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
               <Plus className="h-3.5 w-3.5" /> 新增类别
             </Button>
@@ -158,13 +108,6 @@ function InventoryPage() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-36">
-                    <DropdownMenuItem>
-                      <ArrowDownToLine className="h-3.5 w-3.5 mr-2" /> 入库
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <ArrowUpFromLine className="h-3.5 w-3.5 mr-2" /> 出库
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem>
                       <Pencil className="h-3.5 w-3.5 mr-2" /> 编辑信息
                     </DropdownMenuItem>
