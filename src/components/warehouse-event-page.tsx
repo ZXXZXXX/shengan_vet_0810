@@ -153,6 +153,7 @@ export function WarehouseEventPage<S extends string>({
   searchPlaceholder?: string;
   createLabel?: string;
   onCreate?: () => void;
+  hideTabs?: boolean;
   renderDetailActions?: (detail: WarehouseEvent<S>, close: () => void) => ReactNode;
   reviewStatus?: S;
   onReview?: (e: WarehouseEvent<S>, action: "approve" | "reject") => void;
@@ -184,7 +185,7 @@ export function WarehouseEventPage<S extends string>({
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     const list = events
-      .filter((o) => o.status === active)
+      .filter((o) => (hideTabs ? true : o.status === active))
       .filter((o) => inRange(o.operatedAt, range))
       .filter((o) =>
         kw
@@ -198,7 +199,7 @@ export function WarehouseEventPage<S extends string>({
       const vb = parseTime(b.operatedAt);
       return sortDir === "asc" ? va - vb : vb - va;
     });
-  }, [events, active, range, keyword, advOperator, sortDir]);
+  }, [events, active, range, keyword, advOperator, sortDir, hideTabs]);
 
   const leftFrozenKeys: ColKey[] = ["id"];
   const rightFrozenKeys: ColKey[] = ["action"];
@@ -332,6 +333,7 @@ export function WarehouseEventPage<S extends string>({
           </div>
         )}
 
+        {!hideTabs && (
         <div className="flex items-center gap-1 flex-wrap border-b border-border">
           {statuses.map((s) => {
             const isActive = active === s.key;
@@ -353,6 +355,7 @@ export function WarehouseEventPage<S extends string>({
             );
           })}
         </div>
+        )}
 
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
