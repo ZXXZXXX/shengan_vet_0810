@@ -34,18 +34,19 @@ export function HerdSection() {
       extra={<PeriodTabs value={tab} onChange={setTab} options={[TAB_TYPE, TAB_HEALTH]} />}
     >
       <div>
-        <p className="text-body-sm text-text-secondary mb-3">
-          {tab === TAB_TYPE ? "（至今日）类型分布" : "（本月）健康分布"}
-        </p>
-        <div className="flex flex-col items-center gap-4">
-          <Donut
-            data={tab === TAB_TYPE ? typeDist : healthDist}
-            centerLabel={tab === TAB_TYPE ? "存栏总数" : "在群总数"}
-            centerValue={(tab === TAB_TYPE ? total : healthTotal).toLocaleString()}
-            centerUnit="头"
-          />
-          <Legend data={tab === TAB_TYPE ? typeDist : healthDist} unit=" 头" />
+        <div className="mb-3 flex items-baseline justify-between gap-3">
+          <p className="text-body-sm text-text-secondary">
+            {tab === TAB_TYPE ? "（至今日）类型分布" : "（本月）健康分布"}
+          </p>
+          <p className="text-caption text-text-tertiary">
+            {tab === TAB_TYPE ? "存栏总数" : "在群总数"}{" "}
+            <span className="text-section-title tabular-nums text-foreground">
+              {(tab === TAB_TYPE ? total : healthTotal).toLocaleString()}
+            </span>{" "}
+            头
+          </p>
         </div>
+        <StackedBar data={tab === TAB_TYPE ? typeDist : healthDist} unit=" 头" />
       </div>
     </SectionCard>
   );
