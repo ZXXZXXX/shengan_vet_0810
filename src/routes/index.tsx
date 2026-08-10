@@ -203,50 +203,17 @@ function TrendIcon({ trend }: { trend: string }) {
 }
 
 
-type AttendStatus = "on" | "leave" | "absent";
-
-type AttendPerson = {
-  name: string;
-  role: string;
-  am: AttendStatus;
-  pm: AttendStatus;
-  amTime?: string;
-  pmTime?: string;
-};
-
-const SHIFTS = [
-  { key: "am" as const, label: "上午场" },
-  { key: "pm" as const, label: "下午场" },
-];
-
-const ATTENDANCE: AttendPerson[] = [
-  { name: "陈嘉明", role: "兽医", am: "on", pm: "on", amTime: "07:42", pmTime: "13:28" },
-  { name: "周乐言", role: "兽医", am: "on", pm: "leave", amTime: "07:55" },
-  { name: "赵一鸣", role: "兽医助理", am: "on", pm: "on", amTime: "07:38", pmTime: "13:20" },
-  { name: "孙静", role: "兽医助理", am: "on", pm: "on", amTime: "08:02", pmTime: "13:31" },
-  { name: "王海涛", role: "免疫员", am: "on", pm: "absent", amTime: "07:49" },
-  { name: "林晓峰", role: "修蹄员", am: "leave", pm: "on", pmTime: "13:15" },
-  { name: "李文博", role: "兽医助理", am: "leave", pm: "leave" },
-  { name: "郑楠", role: "免疫员", am: "absent", pm: "on", pmTime: "13:40" },
-  { name: "刘敏", role: "饲养员", am: "on", pm: "on", amTime: "07:30", pmTime: "13:10" },
-  { name: "吴桐", role: "饲养员", am: "absent", pm: "absent" },
-];
-
-function shiftStats(key: "am" | "pm") {
-  const list = ATTENDANCE.map((p) => (key === "am" ? p.am : p.pm));
-  return {
-    on: list.filter((s) => s === "on").length,
-    leave: list.filter((s) => s === "leave").length,
-    absent: list.filter((s) => s === "absent").length,
-  };
+function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
+  return (
+    <div>
+      <div className="text-caption text-white/75">{label}</div>
+      <div className="mt-0.5 flex items-baseline gap-1">
+        <span className="text-section-title tabular-nums text-white drop-shadow-sm">{value}</span>
+        {unit && <span className="text-caption text-white/75">{unit}</span>}
+      </div>
+    </div>
+  );
 }
-
-const attendMeta: Record<AttendStatus, { label: string; tone: string }> = {
-  on: { label: "已签到", tone: "var(--state-success)" },
-  leave: { label: "请假", tone: "var(--state-warning)" },
-  absent: { label: "未签到", tone: "var(--state-danger)" },
-};
-
 
 
 
@@ -255,9 +222,6 @@ function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const alertsRef = useRef<HTMLDivElement | null>(null);
-  const [attendanceOpen, setAttendanceOpen] = useState(false);
-  const [attendTab, setAttendTab] = useState<"am" | "pm">("am");
-
 
   const [scope, setScope] = useState<ReportScope>("farm-in");
   const showInternal = scope !== "farm-out";
@@ -321,36 +285,23 @@ function HomePage() {
                 <span className="text-white font-medium"> 37 项</span> 待办，请及时处理
               </p>
 
-              {/* Hero 内嵌 到岗情况 */}
+              {/* Hero 内嵌 KPI 缩略 */}
               <div className="mt-5 flex items-center gap-6 text-white/90">
-                {SHIFTS.map((s, i) => {
-                  const st = shiftStats(s.key);
-                  return (
-                    <div key={s.key} className="flex items-center gap-6">
-                      {i > 0 && <span className="h-8 w-px bg-white/25" />}
-                      <div>
-                        <div className="text-caption text-white/75">{s.label}到岗</div>
-                        <div className="mt-0.5 flex items-baseline gap-2">
-                          <span className="text-section-title tabular-nums text-white drop-shadow-sm">{st.on}</span>
-                          <span className="text-caption text-white/75">在岗</span>
-                          <span className="text-caption text-white/75 tabular-nums">请假 {st.leave}</span>
-                          <span className="text-caption text-white/75 tabular-nums">未签到 {st.absent}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                <HeroStat label="今日入栏" value="38" unit="头" />
+                <span className="h-8 w-px bg-white/25" />
+                <HeroStat label="健康预警" value="12" unit="起" />
+                <span className="h-8 w-px bg-white/25" />
+                <HeroStat label="完成工作" value="86%" />
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setAttendanceOpen(true)}
-                className="h-10 px-4 text-body-sm font-normal bg-white text-primary hover:bg-white/90 shadow-lg"
-              >
-                到岗明细 <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
+              <Button variant="outline" className="h-10 px-4 text-body-sm font-normal bg-white/10 hover:bg-white/20 border-white/25 text-white backdrop-blur-sm">
+                待处理申请
+              </Button>
+              <Button className="h-10 px-4 text-body-sm font-normal bg-white text-primary hover:bg-white/90 shadow-lg">
+                今日待办 <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
               </Button>
             </div>
-
           </div>
         </Card>
 
@@ -587,75 +538,6 @@ function HomePage() {
           )}
         </DialogContent>
       </Dialog>
-
-      <Dialog open={attendanceOpen} onOpenChange={setAttendanceOpen}>
-        <DialogContent className="sm:max-w-[560px]">
-          <DialogHeader>
-            <DialogTitle className="text-card-title">今日到岗明细</DialogTitle>
-            <DialogDescription className="text-body-sm text-text-secondary">
-              2026/05/12 · 1 号牧场 · 共 {ATTENDANCE.length} 人
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="inline-flex items-center rounded-full border border-border bg-surface-subtle p-0.5 w-fit">
-            {SHIFTS.map((s) => (
-              <button
-                key={s.key}
-                type="button"
-                onClick={() => setAttendTab(s.key)}
-                className={`h-8 px-4 rounded-full text-caption transition-colors ${
-                  attendTab === s.key ? "bg-card text-primary shadow-card" : "text-text-secondary"
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            {(["on", "leave", "absent"] as AttendStatus[]).map((k) => {
-              const st = shiftStats(attendTab);
-              const v = k === "on" ? st.on : k === "leave" ? st.leave : st.absent;
-              return (
-                <div
-                  key={k}
-                  className="rounded-xl px-3 py-2"
-                  style={{ background: `color-mix(in oklab, ${attendMeta[k].tone} 10%, transparent)` }}
-                >
-                  <div className="text-caption text-text-tertiary">{attendMeta[k].label}</div>
-                  <div className="text-section-title tabular-nums" style={{ color: attendMeta[k].tone }}>
-                    {v}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="max-h-[320px] overflow-y-auto rounded-xl border border-border divide-y divide-border">
-            {ATTENDANCE.map((p) => {
-              const status = attendTab === "am" ? p.am : p.pm;
-              const time = attendTab === "am" ? p.amTime : p.pmTime;
-              const meta = attendMeta[status];
-              return (
-                <div key={p.name} className="flex items-center gap-3 px-4 py-2.5">
-                  <div className="min-w-0 flex-1">
-                    <span className="text-body-sm text-foreground">{p.name}</span>
-                    <span className="ml-2 text-caption text-text-tertiary">{p.role}</span>
-                  </div>
-                  <span className="text-caption text-text-tertiary tabular-nums">{time ?? "—"}</span>
-                  <span
-                    className="inline-flex items-center h-[20px] px-1.5 rounded-md text-caption shrink-0"
-                    style={{ background: `color-mix(in oklab, ${meta.tone} 14%, transparent)`, color: meta.tone }}
-                  >
-                    {meta.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
-
   );
 }
