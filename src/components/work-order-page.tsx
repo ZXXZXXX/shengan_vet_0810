@@ -326,6 +326,9 @@ export function WorkOrderPage({
   const [actionReason, setActionReason] = useState("");
   const [newExecutor, setNewExecutor] = useState<string>("");
   const [confirmTerminate, setConfirmTerminate] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<WorkOrder | null>(null);
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
+
   const [overrides, setOverrides] = useState<Record<string, { status?: "已终止"; executor?: string | null }>>({});
   const effectiveStatus = (o: WorkOrder): WorkStatus | "已终止" =>
     overrides[o.id]?.status ?? o.status;
