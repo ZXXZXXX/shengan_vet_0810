@@ -137,24 +137,6 @@ export function CattleProfileDrawer({
               </div>
             </div>
 
-            <div className="shrink-0 flex items-center gap-2 pr-8">
-              <Button
-                variant="ghost"
-                className="h-9 gap-1.5 text-body-sm font-normal text-text-secondary"
-                onClick={() => toast.info(`查看 #${cow.ear} 的全部工单`)}
-              >
-                <ListChecks className="h-4 w-4" /> 全部工单
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="h-9 gap-1.5 text-body-sm font-normal"
-                onClick={() => setTab("events")}
-              >
-                <FilePlus2 className="h-4 w-4 text-primary" /> 全部事件记录
-                <ChevronRight className="h-4 w-4 text-text-tertiary" />
-              </Button>
-            </div>
 
           </div>
 
