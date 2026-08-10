@@ -97,10 +97,6 @@ function CattlePage() {
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
               <Input placeholder="搜索耳号 / 编号" className="h-9 w-56 pl-9 text-body-sm" />
             </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-              <Input placeholder="搜索所属牧场" className="h-9 w-48 pl-9 text-body-sm" />
-            </div>
             <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal"><SlidersHorizontal className="h-3.5 w-3.5" /> 精细筛选</Button>
           </div>
           <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
