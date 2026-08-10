@@ -56,14 +56,14 @@ function compositionFor(label: string, total: number) {
 
 export function DrugSection() {
   const [period, setPeriod] = useState(PERIODS[2]);
-  const [active, setActive] = useState<number | null>(trendData[PERIODS[2]].labels.length - 1);
+  const [active, setActive] = useState(trendData[PERIODS[2]].labels.length - 1);
   const t = trendData[period];
-  const idx = active !== null && active < t.labels.length ? active : null;
-  const label = idx !== null ? t.labels[idx] : null;
-  const total = idx !== null ? t.points[idx] : 0;
-  const herd = label ? (herdByMonth[label] ?? 4300) : 0;
-  const perHead = label ? (total * 10000) / herd : 0;
-  const comp = label ? compositionFor(label, total) : [];
+  const idx = Math.min(active, t.labels.length - 1);
+  const label = t.labels[idx];
+  const total = t.points[idx];
+  const herd = herdByMonth[label] ?? 4300;
+  const perHead = (total * 10000) / herd;
+  const comp = compositionFor(label, total);
 
   return (
     <SectionCard
