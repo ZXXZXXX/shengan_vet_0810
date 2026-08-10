@@ -37,7 +37,7 @@ export function SectionCard({
         </div>
         {extra}
       </div>
-      <div className="px-6 pb-6">{children}</div>
+      <div className="px-6 pb-6 flex-1">{children}</div>
     </Card>
   );
 }
