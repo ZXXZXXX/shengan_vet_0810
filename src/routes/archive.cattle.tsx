@@ -99,9 +99,14 @@ function CattlePage() {
             </div>
             <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal"><SlidersHorizontal className="h-3.5 w-3.5" /> 精细筛选</Button>
           </div>
-          <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
-            <Plus className="h-3.5 w-3.5" /> 新增牛只
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal" onClick={() => setImportOpen(true)}>
+              <Upload className="h-3.5 w-3.5" /> 导入检测结果
+            </Button>
+            <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
+              <Plus className="h-3.5 w-3.5" /> 新增牛只
+            </Button>
+          </div>
         </div>
 
         <Card className="border-border bg-card overflow-hidden">
