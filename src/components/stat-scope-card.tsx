@@ -19,21 +19,15 @@ export function StatScopeCard({ metrics }: { metrics: ScopeMetric[] }) {
   const [scope, setScope] = useState<Scope>("month");
   return (
     <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-body-small">
-      {metrics.map((m) => (
-        <div key={m.label} className="flex items-center gap-1.5">
-          <span className="text-text-tertiary">{m.label}</span>
-          <span className="tabular-nums font-medium text-foreground">{m.value[scope]}</span>
-        </div>
-      ))}
-      <div className="flex items-center gap-2 text-caption">
+      <div className="inline-flex items-center rounded-md border border-border bg-surface-subtle p-0.5 text-caption">
         {(["month", "all"] as Scope[]).map((k) => (
           <button
             key={k}
             type="button"
             onClick={() => setScope(k)}
-            className={`transition-colors ${
+            className={`h-6 px-2.5 rounded-[5px] transition-colors ${
               scope === k
-                ? "text-primary font-medium"
+                ? "bg-card text-primary font-medium shadow-sm"
                 : "text-text-tertiary hover:text-foreground"
             }`}
           >
@@ -41,6 +35,12 @@ export function StatScopeCard({ metrics }: { metrics: ScopeMetric[] }) {
           </button>
         ))}
       </div>
+      {metrics.map((m) => (
+        <div key={m.label} className="flex items-center gap-1.5">
+          <span className="text-text-tertiary">{m.label}</span>
+          <span className="tabular-nums font-medium text-foreground">{m.value[scope]}</span>
+        </div>
+      ))}
     </div>
   );
 }
