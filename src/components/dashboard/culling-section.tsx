@@ -27,8 +27,6 @@ const cullReasons = [
 export function CullingSection() {
   const [view, setView] = useState("死亡原因");
   const total = groupDist.reduce((s, d) => s + d.value, 0);
-  const deaths = deathReasons.reduce((s, d) => s + d.value, 0);
-  const culls = cullReasons.reduce((s, d) => s + d.value, 0);
   const isDeath = view === "死亡原因";
   return (
     <SectionCard
