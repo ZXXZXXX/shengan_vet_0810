@@ -315,11 +315,6 @@ export function WarehouseEventPage<S extends string>({
 
   const activeStatus = statuses.find((s) => s.key === active)!;
   const detailStatus = detail ? statuses.find((s) => s.key === detail.status) : null;
-  const gridCols = statuses.length === 2
-    ? "grid-cols-2"
-    : statuses.length === 3
-      ? "grid-cols-2 md:grid-cols-3"
-      : "grid-cols-2 md:grid-cols-4";
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -337,53 +332,23 @@ export function WarehouseEventPage<S extends string>({
           </div>
         )}
 
-        <div className={`grid ${gridCols} gap-4`}>
+        <div className="flex items-center gap-1 flex-wrap border-b border-border">
           {statuses.map((s) => {
             const isActive = active === s.key;
-            const toneColor: Record<string, string> = {
-              warning: "var(--state-warning)",
-              info: "var(--effect-ai-cyan)",
-              danger: "var(--state-danger)",
-              success: "var(--state-success)",
-              brand: "var(--brand)",
-            };
-            const numberColor: Record<string, string> = {
-              warning: "var(--text-primary)",
-              info: "var(--effect-ai-cyan)",
-              danger: "var(--state-danger)",
-              success: "#2F7A3A",
-              brand: "var(--brand)",
-            };
-            const c = toneColor[s.tone];
-            const nc = numberColor[s.tone];
             return (
-              <button key={s.key} onClick={() => setActive(s.key)} className="text-left transition-all">
-                <Card
-                  className={`p-4 rounded-2xl flex items-center justify-between gap-3 transition-all bg-card ${
-                    isActive
-                      ? "border-primary shadow-elevated ring-1 ring-primary"
-                      : "border-border hover:border-primary/40 hover:shadow-card"
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <div className="text-body-sm text-text-tertiary truncate">{s.label}</div>
-                    <div
-                      className="mt-1 tabular-nums font-semibold leading-none"
-                      style={{ fontSize: "26px", color: nc }}
-                    >
-                      {counts[s.key]}
-                    </div>
-                  </div>
-                  <div
-                    className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
-                    style={{
-                      background: `color-mix(in oklab, ${c} 14%, transparent)`,
-                      color: c,
-                    }}
-                  >
-                    <s.icon className="h-4 w-4" strokeWidth={2} />
-                  </div>
-                </Card>
+              <button
+                key={s.key}
+                onClick={() => setActive(s.key)}
+                className={`h-9 px-3 -mb-px border-b-2 text-body-sm transition-colors ${
+                  isActive
+                    ? "border-primary text-primary font-medium"
+                    : "border-transparent text-text-secondary hover:text-foreground"
+                }`}
+              >
+                {s.label}
+                <span className="ml-1.5 tabular-nums text-caption text-text-tertiary">
+                  {counts[s.key]}
+                </span>
               </button>
             );
           })}

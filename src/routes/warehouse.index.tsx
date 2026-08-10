@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine, ArrowLeftRight,
-  Package, Pill, Wheat, FlaskConical, TrendingDown, TrendingUp,
+
   Download, MoreHorizontal, Pencil, Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -21,13 +21,6 @@ export const Route = createFileRoute("/warehouse/")({
   head: () => ({ meta: [{ title: "库存管理 — 奇点智牧" }] }),
   component: InventoryPage,
 });
-
-const categories = [
-  { name: "饲料", value: 4280, unit: "袋", icon: Wheat, trend: -8, outbound: 1240 },
-  { name: "兽药", value: 1320, unit: "盒", icon: Pill, trend: 3, outbound: 386 },
-  { name: "试剂耗材", value: 860, unit: "件", icon: FlaskConical, trend: 12, outbound: 152 },
-  { name: "通用物资", value: 2150, unit: "件", icon: Package, trend: 1, outbound: 408 },
-];
 
 type Status = "物资正常" | "物资临期" | "余量紧张";
 type Item = {
@@ -78,34 +71,6 @@ function InventoryPage() {
     <>
       <AppHeader title="库存管理" breadcrumb={["仓库管理", "库存管理"]} />
       <main className="flex-1 px-6 py-6 space-y-4">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((c) => (
-            <Card key={c.name} className="border-border bg-card p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="h-10 w-10 rounded-md bg-brand-subtle flex items-center justify-center">
-                  <c.icon className="h-4 w-4 text-primary" strokeWidth={1.75} />
-                </div>
-                <div className={`flex items-center gap-1 text-caption ${
-                  c.trend < 0 ? "text-[var(--state-danger)]" : "text-[var(--core-brand)]"
-                }`}>
-                  {c.trend < 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
-                  <span className="tabular-nums">{c.trend > 0 ? "+" : ""}{c.trend}%</span>
-                </div>
-              </div>
-              <div className="text-body-sm text-text-tertiary">{c.name}</div>
-              <div className="flex items-baseline gap-1 mt-1">
-                <span className="text-page-title tabular-nums text-foreground">{c.value.toLocaleString()}</span>
-                <span className="text-caption text-text-tertiary">{c.unit}</span>
-              </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-                <span className="text-caption text-text-tertiary">本月累计出库</span>
-                <span className="text-body-sm font-medium tabular-nums text-foreground">
-                  {c.outbound.toLocaleString()} <span className="text-caption text-text-tertiary font-normal">{c.unit}</span>
-                </span>
-              </div>
-            </Card>
-          ))}
-        </div>
 
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
