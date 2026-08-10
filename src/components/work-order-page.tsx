@@ -457,7 +457,6 @@ export function WorkOrderPage({
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     const list = orders
-      .filter((o) => effectiveStatus(o) === active)
       .filter((o) => inRange(o.createdAt, range))
       .filter((o) =>
         kw
@@ -692,28 +691,6 @@ export function WorkOrderPage({
           </Button>
         </div>
 
-        <div className="flex items-center gap-1 flex-wrap border-b border-border">
-          {statusList.map((s) => {
-            const isActive = active === s.key;
-            return (
-              <button
-                key={s.key}
-                onClick={() => setActive(s.key)}
-                className={`h-9 px-3 -mb-px border-b-2 text-body-sm transition-colors ${
-                  isActive
-                    ? "border-primary text-primary font-medium"
-                    : "border-transparent text-text-secondary hover:text-foreground"
-                }`}
-              >
-                {s.label}
-                <span className="ml-1.5 tabular-nums text-caption text-text-tertiary">
-                  {counts[s.key]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
         <Card className="border-border bg-card overflow-hidden">
           {/* 顶部工具栏 */}
           <div className="flex items-center justify-between p-6 pb-4 flex-wrap gap-3">
@@ -894,7 +871,7 @@ export function WorkOrderPage({
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="px-6 py-12 text-center text-body-sm text-text-tertiary">
-                  暂无符合条件的{active}工单
+                  暂无符合条件的工单
                 </div>
               ) : (
                 filtered.map((o) => (

@@ -85,6 +85,7 @@ function DispensePage() {
       title="取药记录"
       breadcrumb={["仓库管理", "取药记录"]}
       statuses={statuses}
+      hideTabs
       events={records}
       searchPlaceholder="按记录号 / 药品 / 描述搜索"
     />
