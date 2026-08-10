@@ -593,12 +593,24 @@ export function WorkOrderPage({
             {o.reviewedAt ?? "—"}
           </span>
         );
-      case "executor":
+      case "executor": {
+        const list = effectiveExecutors(o);
+        if (list.length === 0)
+          return <span className="text-body-sm text-text-tertiary">—</span>;
+        const shown = list.slice(0, 2);
+        const rest = list.length - shown.length;
         return (
-          <span className="text-body-sm text-text-secondary">
-            {effectiveExecutor(o) ?? "—"}
+          <span
+            className="inline-flex items-center gap-1 max-w-full"
+            title={list.join("、")}
+          >
+            <span className="text-body-sm text-text-secondary truncate">
+              {shown.join("、")}
+            </span>
+            {rest > 0 && <span className="tag tag-muted shrink-0">+{rest}</span>}
           </span>
         );
+      }
       case "executedAt":
         return (
           <span className="text-body-sm text-text-secondary tabular-nums">
