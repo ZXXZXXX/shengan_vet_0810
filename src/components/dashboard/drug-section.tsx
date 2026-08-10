@@ -82,7 +82,7 @@ export function DrugSection() {
         />
       }
     >
-      <div className={`grid grid-cols-1 gap-6 ${label ? "xl:grid-cols-2" : ""}`}>
+      <div className={`grid grid-cols-1 gap-6 items-start ${label ? "xl:grid-cols-2" : ""}`}>
         <div>
           <p className="text-body-sm text-text-secondary mb-3">
             {period}用药总费用趋势
@@ -110,13 +110,13 @@ export function DrugSection() {
                 关闭
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="grid grid-cols-2 gap-3 mb-4">
               <MiniStat label="当月用药总费用" value={total.toFixed(1)} unit="万元" tone="var(--brand)" />
               <MiniStat label="当月头均用药费用" value={perHead.toFixed(1)} unit="元/头" />
             </div>
-            <p className="text-body-sm text-text-secondary mb-3">各类药品费用占比</p>
-            <div className="flex flex-col items-center gap-4">
-              <Donut data={comp} size={148} centerLabel="合计" centerValue={total.toFixed(1)} centerUnit="万元" unit=" 万元" />
+            <p className="text-body-sm text-text-secondary mb-2">各类药品费用占比</p>
+            <div className="flex flex-col items-center gap-3">
+              <Donut data={comp} size={120} centerLabel="合计" centerValue={total.toFixed(1)} centerUnit="万元" unit=" 万元" />
               <Legend data={comp} unit=" 万元" />
             </div>
           </div>
