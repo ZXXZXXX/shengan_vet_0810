@@ -1571,6 +1571,31 @@ export function WorkOrderPage({
         </DialogContent>
       </Dialog>
 
+      <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">确认删除该工单？</DialogTitle>
+          </DialogHeader>
+          <div className="text-body-sm text-text-secondary">
+            删除后工单 {deleteTarget?.id} 将从列表中移除，不可恢复。
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDeleteTarget(null)}>取消</Button>
+            <Button
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+              onClick={() => {
+                if (!deleteTarget) return;
+                setDeletedIds((ids) => [...ids, deleteTarget.id]);
+                toast.success("工单已删除");
+                setDeleteTarget(null);
+              }}
+            >
+              确认删除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </TooltipProvider>
   );
 }
