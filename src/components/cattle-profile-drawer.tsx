@@ -182,72 +182,71 @@ export function CattleProfileDrawer({
             </div>
           )}
 
-          <div className="grid grid-cols-[1fr_320px] gap-5 items-start">
+          {/* 外接设备：整宽 */}
+          <Panel title="外接设备" icon={<Watch className="h-4 w-4 text-primary" />} bodyClassName="p-3">
+            <div className="grid grid-cols-2 gap-3">
+              {DEVICES.map((d) => (
+                <div key={d.id} className="rounded-xl bg-muted/50 px-3 py-2.5 flex items-center gap-2.5">
+                  <span
+                    className={`h-8 w-8 rounded-lg inline-flex items-center justify-center shrink-0 ${
+                      d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
+                    }`}
+                  >
+                    <Radio className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-body-sm text-foreground truncate">{d.name}</div>
+                    <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
+                  </div>
+                  <span
+                    className={
+                      d.status === "异常" ? "tag tag-danger" : d.status === "正常" ? "tag tag-success" : "text-body-sm text-text-tertiary"
+                    }
+                  >
+                    {d.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+
+          <div className="grid grid-cols-2 gap-5 items-stretch">
             {/* 左：产奶数据 */}
-            <div className="min-w-0">
-              <Panel
-                title="近 7 日产奶数据"
-                icon={<Activity className="h-4 w-4 text-primary" />}
-                extra={<span className="text-caption text-text-tertiary">单位：kg / 班次</span>}
-              >
-                <MilkChart />
-              </Panel>
-            </div>
+            <Panel
+              className="h-full min-w-0"
+              title="近 7 日产奶数据"
+              icon={<Activity className="h-4 w-4 text-primary" />}
+              extra={<span className="text-caption text-text-tertiary">单位：kg / 班次</span>}
+            >
+              <MilkChart />
+            </Panel>
 
-            {/* 右：设备 + 检查 */}
-            <div className="space-y-5">
-              <Panel title="外接设备" icon={<Watch className="h-4 w-4 text-primary" />} bodyClassName="p-3">
-                <div className="space-y-2">
-                  {DEVICES.map((d) => (
-                    <div
-                      key={d.id}
-                      className="rounded-xl bg-muted/50 px-3 py-2.5 flex items-center gap-2.5"
+            {/* 右：检查数据 */}
+            <Panel
+              className="h-full min-w-0"
+              title="检查数据"
+              icon={<ListChecks className="h-4 w-4 text-primary" />}
+              bodyClassName="px-4 py-2"
+            >
+              <div>
+                {EXAM_DATA.map((e) => (
+                  <div
+                    key={e.name}
+                    className="grid grid-cols-[1fr_auto_auto] items-baseline gap-3 py-[9px] border-b border-border/70 last:border-0"
+                  >
+                    <span className="text-body-sm text-text-secondary truncate">{e.name}</span>
+                    <span
+                      className={`text-body-sm text-right ${e.abnormal ? "text-[#CF1322] font-medium" : "text-foreground font-medium"}`}
                     >
-                      <span
-                        className={`h-8 w-8 rounded-lg inline-flex items-center justify-center shrink-0 ${
-                          d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
-                        }`}
-                      >
-                        <Radio className="h-4 w-4" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-body-sm text-foreground truncate">{d.name}</div>
-                        <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
-                      </div>
-                      <span
-                        className={
-                          d.status === "异常" ? "tag tag-danger" : d.status === "正常" ? "tag tag-success" : "text-body-sm text-text-tertiary"
-                        }
-                      >
-                        {d.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </Panel>
-
-              <Panel title="检查数据" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="px-4 py-1">
-                <div>
-                  {EXAM_DATA.map((e) => (
-                    <div
-                      key={e.name}
-                      className="flex items-baseline justify-between gap-2 py-2.5 border-b border-border/70 last:border-0"
-                    >
-                      <span className="text-body-sm text-text-secondary shrink-0">{e.name}</span>
-                      <span className="min-w-0 text-right">
-                        <span
-                          className={`block text-body-sm truncate ${e.abnormal ? "text-[#CF1322] font-medium" : "text-foreground font-medium"}`}
-                        >
-                          {e.result}
-                        </span>
-                        <span className="block text-caption text-text-tertiary tabular-nums">{e.date}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </Panel>
-            </div>
+                      {e.result}
+                    </span>
+                    <span className="text-caption text-text-tertiary tabular-nums w-[86px] text-right">{e.date}</span>
+                  </div>
+                ))}
+              </div>
+            </Panel>
           </div>
+
 
           {/* 历史记录：整宽贯穿 */}
           <Panel title="历史记录" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="p-4 pt-0">
@@ -331,15 +330,18 @@ function Panel({
   extra,
   children,
   bodyClassName = "",
+  className = "",
 }: {
   title: string;
   icon?: React.ReactNode;
   extra?: React.ReactNode;
   children: React.ReactNode;
   bodyClassName?: string;
+  className?: string;
 }) {
   return (
-    <section className="rounded-xl border border-border bg-card shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+    <section className={`rounded-xl border border-border bg-card shadow-[0_1px_2px_rgba(16,24,40,0.04)] ${className}`}>
+
       <div className="flex items-center justify-between px-4 h-12 border-b border-border">
         <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
           {icon}
