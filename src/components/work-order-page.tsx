@@ -2111,7 +2111,8 @@ export function makeOrders(
       order.reviewedAt = fmt(reviewedAt);
     }
     if (status === "执行中" || status === "已完成") {
-      order.executor = executor;
+      order.executor = executors[0];
+      order.executors = executors;
       order.executedAt = fmt(executedAt);
     }
     return order;
