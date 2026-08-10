@@ -82,7 +82,7 @@ export function DrugSection() {
         />
       }
     >
-      <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_1fr] gap-6 items-stretch">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
         <div className="flex flex-col">
           <p className="text-body text-text-secondary mb-3">
             {period}用药总费用趋势
