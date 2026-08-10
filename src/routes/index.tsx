@@ -285,23 +285,36 @@ function HomePage() {
                 <span className="text-white font-medium"> 37 项</span> 待办，请及时处理
               </p>
 
-              {/* Hero 内嵌 KPI 缩略 */}
+              {/* Hero 内嵌 到岗情况 */}
               <div className="mt-5 flex items-center gap-6 text-white/90">
-                <HeroStat label="今日入栏" value="38" unit="头" />
-                <span className="h-8 w-px bg-white/25" />
-                <HeroStat label="健康预警" value="12" unit="起" />
-                <span className="h-8 w-px bg-white/25" />
-                <HeroStat label="完成工作" value="86%" />
+                {SHIFTS.map((s, i) => {
+                  const st = shiftStats(s.key);
+                  return (
+                    <div key={s.key} className="flex items-center gap-6">
+                      {i > 0 && <span className="h-8 w-px bg-white/25" />}
+                      <div>
+                        <div className="text-caption text-white/75">{s.label}到岗</div>
+                        <div className="mt-0.5 flex items-baseline gap-2">
+                          <span className="text-section-title tabular-nums text-white drop-shadow-sm">{st.on}</span>
+                          <span className="text-caption text-white/75">在岗</span>
+                          <span className="text-caption text-white/75 tabular-nums">请假 {st.leave}</span>
+                          <span className="text-caption text-white/75 tabular-nums">未签到 {st.absent}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" className="h-10 px-4 text-body-sm font-normal bg-white/10 hover:bg-white/20 border-white/25 text-white backdrop-blur-sm">
-                待处理申请
-              </Button>
-              <Button className="h-10 px-4 text-body-sm font-normal bg-white text-primary hover:bg-white/90 shadow-lg">
-                今日待办 <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
+              <Button
+                onClick={() => setAttendanceOpen(true)}
+                className="h-10 px-4 text-body-sm font-normal bg-white text-primary hover:bg-white/90 shadow-lg"
+              >
+                到岗明细 <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
               </Button>
             </div>
+
           </div>
         </Card>
 
