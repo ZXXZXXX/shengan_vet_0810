@@ -567,3 +567,45 @@ function MoveHistory() {
     </div>
   );
 }
+
+const ALL_EVENTS: {
+  id: string;
+  date: string;
+  type: "产犊记录" | "基础检查" | "转栏/转群" | "离场记录";
+  summary: string;
+  operator: string;
+  orderId?: string;
+}[] = [
+  { id: "EV-1041", date: "2026-08-08 09:20", type: "基础检查", summary: "体温 38.6℃ · 瘤胃蠕动正常 · 无异常", operator: "王兽医" },
+  { id: "EV-1032", date: "2026-07-30 06:10", type: "产犊记录", summary: "顺产母犊 1 头 · 初乳采集 5.2L（优质）", operator: "李技术员", orderId: "WO-20260730-018" },
+  { id: "EV-1019", date: "2026-07-12 15:40", type: "转栏/转群", summary: "A 区 3 舍 → B 区 1 舍 · 原因：产后转群", operator: "张场长", orderId: "WO-20260712-006" },
+  { id: "EV-0998", date: "2026-06-21 10:05", type: "基础检查", summary: "蹄部检查 · 左后蹄轻度磨损，建议观察", operator: "王兽医" },
+];
+
+function EventHistory() {
+  return (
+    <div className="space-y-2">
+      <div className="text-caption text-text-tertiary mb-1">共 {ALL_EVENTS.length} 条</div>
+      {ALL_EVENTS.map((e) => (
+        <div key={e.id} className="rounded-xl border border-border bg-card p-3">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="tag tag-brand">{e.type}</span>
+            <span className="font-mono text-caption text-text-secondary">{e.date}</span>
+            <span className="text-caption text-text-tertiary">· {e.operator}</span>
+          </div>
+          <div className="text-body-sm text-foreground">{e.summary}</div>
+          <div className="text-caption text-text-tertiary mt-1 flex items-center gap-3">
+            <span className="inline-flex items-center gap-1">
+              <span>编号</span>
+              <span className="font-mono text-foreground">{e.id}</span>
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span>工单</span>
+              <span className="font-mono text-primary">{e.orderId ?? "-"}</span>
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
