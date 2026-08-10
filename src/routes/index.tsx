@@ -205,17 +205,6 @@ function TrendIcon({ trend }: { trend: string }) {
 }
 
 
-function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
-  return (
-    <div>
-      <div className="text-caption text-white/75">{label}</div>
-      <div className="mt-0.5 flex items-baseline gap-1">
-        <span className="text-section-title tabular-nums text-white drop-shadow-sm">{value}</span>
-        {unit && <span className="text-caption text-white/75">{unit}</span>}
-      </div>
-    </div>
-  );
-}
 
 
 
@@ -287,14 +276,6 @@ function HomePage() {
                 <span className="text-white font-medium"> 37 项</span> 待办，请及时处理
               </p>
 
-              {/* Hero 内嵌 KPI 缩略 */}
-              <div className="mt-5 flex items-center gap-6 text-white/90">
-                <HeroStat label="今日入栏" value="38" unit="头" />
-                <span className="h-8 w-px bg-white/25" />
-                <HeroStat label="健康预警" value="12" unit="起" />
-                <span className="h-8 w-px bg-white/25" />
-                <HeroStat label="完成工作" value="86%" />
-              </div>
             </div>
             <div className="flex flex-col items-end gap-2">
               <span className="text-caption text-white/80">预警提示 · 点击查看专题</span>
