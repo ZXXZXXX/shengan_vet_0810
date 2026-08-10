@@ -205,17 +205,6 @@ function TrendIcon({ trend }: { trend: string }) {
 }
 
 
-function HeroStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
-  return (
-    <div>
-      <div className="text-caption text-white/75">{label}</div>
-      <div className="mt-0.5 flex items-baseline gap-1">
-        <span className="text-section-title tabular-nums text-white drop-shadow-sm">{value}</span>
-        {unit && <span className="text-caption text-white/75">{unit}</span>}
-      </div>
-    </div>
-  );
-}
 
 
 
