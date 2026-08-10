@@ -212,6 +212,7 @@ function TrendIcon({ trend }: { trend: string }) {
 function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [attendanceOpen, setAttendanceOpen] = useState(false);
   const alertsRef = useRef<HTMLDivElement | null>(null);
 
   const [scope, setScope] = useState<ReportScope>("farm-in");
