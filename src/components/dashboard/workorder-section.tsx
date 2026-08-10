@@ -161,14 +161,14 @@ export function WorkOrderSection() {
                     返回
                   </button>
                   <span className="text-body-sm text-text-secondary">
-                    （本月）{cur.name}工单分布 · {cur.value} 单
+                    {cur.name}工单分布 · {cur.value} 单
                   </span>
                 </div>
                 <BarList data={cur.byType.map((d) => ({ ...d, color: cur.color }))} unit=" 单" />
               </>
             ) : (
               <>
-                <p className="text-body-sm text-text-secondary mb-3">（本月）逾期工单分布</p>
+                <p className="text-body-sm text-text-secondary mb-3">逾期工单分布</p>
                 <BarList
                   data={s.status.overdue.byType.map((d) => ({ ...d, color: "var(--state-danger)" }))}
                   unit=" 单"
