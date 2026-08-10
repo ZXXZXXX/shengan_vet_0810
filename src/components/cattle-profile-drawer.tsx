@@ -603,46 +603,131 @@ function MoveHistory() {
   );
 }
 
-const ALL_EVENTS: {
-  id: string;
-  date: string;
-  type: "产犊记录";
-  summary: string;
-  operator: string;
-  orderId?: string;
-}[] = [
-  { id: "EV-1032", date: "2026-07-30 06:10", type: "产犊记录", summary: "顺产母犊 1 头 · 初乳采集 5.2L（优质）", operator: "李技术员", orderId: "WO-20260730-018" },
-  { id: "EV-0912", date: "2025-08-14 23:40", type: "产犊记录", summary: "顺产公犊 1 头 · 初乳采集 4.6L（合格）", operator: "李技术员", orderId: "WO-20250814-007" },
+/** 产犊记录：字段与小程序「记录产犊事件」表单完全一致，不额外增加字段 */
+type CalvingRecord = {
+  calvingTime: string;
+  difficulty: string;
+  injury: string;
+  colostrum: {
+    use: string;
+    quality: string;
+    code: string;
+    bag: string;
+    volume: string;
+    brix: string;
+  };
+  calves: {
+    status: string;
+    breed?: string;
+    sex?: string;
+    weight?: string;
+    colostrumCode?: string;
+    feedVolume?: string;
+    technician?: string;
+    keep?: string;
+    barn?: string;
+    reason?: string;
+  }[];
+};
+
+const ALL_EVENTS: CalvingRecord[] = [
+  {
+    calvingTime: "2026-07-30 06:10",
+    difficulty: "1 分（自然分娩）",
+    injury: "0 级（无损伤）",
+    colostrum: { use: "饲喂", quality: "优质", code: "CL-20260730-01", bag: "A-12", volume: "5.2 L", brix: "24.5%" },
+    calves: [
+      {
+        status: "活犊",
+        breed: "荷斯坦",
+        sex: "母",
+        weight: "41.5 kg",
+        colostrumCode: "CL-20260730-01",
+        feedVolume: "4.0 L",
+        technician: "李技术员",
+        keep: "留养",
+        barn: "犊牛舍 1 号",
+      },
+    ],
+  },
+  {
+    calvingTime: "2025-08-14 23:40",
+    difficulty: "2 分（轻度助产）",
+    injury: "1 级（轻度损伤）",
+    colostrum: { use: "冻存", quality: "合格", code: "CL-20250814-03", bag: "B-05", volume: "4.6 L", brix: "22.1%" },
+    calves: [
+      {
+        status: "活犊",
+        breed: "荷斯坦",
+        sex: "公",
+        weight: "44.0 kg",
+        colostrumCode: "CL-20250814-03",
+        feedVolume: "4.0 L",
+        technician: "李技术员",
+        keep: "不留养",
+        reason: "经济价值低",
+      },
+    ],
+  },
 ];
+
+function KV({ label, value }: { label: string; value?: string }) {
+  if (!value) return null;
+  return (
+    <div className="min-w-0">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="text-body-sm text-foreground truncate">{value}</div>
+    </div>
+  );
+}
 
 function EventHistory() {
   return (
-    <div className="space-y-2">
-      <div className="text-caption text-text-tertiary mb-1">共 {ALL_EVENTS.length} 条</div>
+    <div className="space-y-3">
+      <div className="text-caption text-text-tertiary">共 {ALL_EVENTS.length} 条</div>
       {ALL_EVENTS.map((e) => (
+        <div key={e.calvingTime} className="rounded-xl border border-border bg-card p-4 space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <KV label="产犊时间" value={e.calvingTime} />
+            <KV label="产犊难易度评分" value={e.difficulty} />
+            <KV label="产道损伤等级" value={e.injury} />
+          </div>
 
-        <div key={e.id} className="rounded-xl border border-border bg-card p-3">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="tag tag-brand">{e.type}</span>
-            <span className="font-mono text-caption text-text-secondary">{e.date}</span>
-            <span className="text-caption text-text-tertiary">· {e.operator}</span>
+          <div>
+            <div className="text-caption text-text-secondary font-medium mb-2">初乳采集</div>
+            <div className="grid grid-cols-3 gap-4">
+              <KV label="用途" value={e.colostrum.use} />
+              <KV label="初乳质量" value={e.colostrum.quality} />
+              <KV label="初乳编码" value={e.colostrum.code} />
+              <KV label="袋号" value={e.colostrum.bag} />
+              <KV label="初乳量" value={e.colostrum.volume} />
+              <KV label="白力度" value={e.colostrum.brix} />
+            </div>
           </div>
-          <div className="text-body-sm text-foreground">{e.summary}</div>
-          <div className="text-caption text-text-tertiary mt-1 flex items-center gap-3">
-            <span className="inline-flex items-center gap-1">
-              <span>编号</span>
-              <span className="font-mono text-foreground">{e.id}</span>
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span>工单</span>
-              <span className="font-mono text-primary">{e.orderId ?? "-"}</span>
-            </span>
-          </div>
+
+          {e.calves.map((c, i) => (
+            <div key={i}>
+              <div className="text-caption text-text-secondary font-medium mb-2">犊牛 {i + 1}</div>
+              <div className="grid grid-cols-3 gap-4">
+                <KV label="分娩状态" value={c.status} />
+                <KV label="品种" value={c.breed} />
+                <KV label="性别" value={c.sex} />
+                <KV label="犊牛体重" value={c.weight} />
+                <KV label="初乳编码" value={c.colostrumCode} />
+                <KV label="初乳饲喂量" value={c.feedVolume} />
+                <KV label="技术员" value={c.technician} />
+                <KV label="是否留养" value={c.keep} />
+                <KV label="转入牛舍" value={c.barn} />
+                <KV label="不留养原因" value={c.reason} />
+              </div>
+            </div>
+          ))}
         </div>
       ))}
     </div>
   );
 }
+
 
 const ALL_ORDERS: {
   id: string;
