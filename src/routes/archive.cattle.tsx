@@ -3,8 +3,9 @@ import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Beef, Plus, Search, SlidersHorizontal, MoreHorizontal, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Beef, Plus, Search, SlidersHorizontal, MoreHorizontal, Trash2, FilePlus2, Baby, Stethoscope, ArrowRightLeft, LogOut } from "lucide-react";
+import { toast } from "sonner";
 import { useState } from "react";
 import { CattleProfileDrawer, type CattleProfile } from "@/components/cattle-profile-drawer";
 
@@ -61,7 +62,7 @@ const healthToProfile: Record<Health, CattleProfile["health"]> = {
   治疗中: "治疗中",
 };
 
-function toProfile(c: (typeof cattle)[number]): CattleProfile {
+function toProfile(c: Cow): CattleProfile {
   const ageDays = Math.max(1, Math.round((Date.now() - new Date(c.birth).getTime()) / 86400000));
   return {
     ear: c.ear,
@@ -83,7 +84,7 @@ function toProfile(c: (typeof cattle)[number]): CattleProfile {
 function CattlePage() {
   const [current, setCurrent] = useState<CattleProfile | null>(null);
   const [open, setOpen] = useState(false);
-  const openProfile = (c: (typeof cattle)[number]) => {
+  const openProfile = (c: Cow) => {
     setCurrent(toProfile(c));
     setOpen(true);
   };
@@ -111,30 +112,30 @@ function CattlePage() {
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
-              <div>编号</div>
               <div>耳号</div>
               <div>品种</div>
-              <div>性别</div>
-              <div>出生日期</div>
-              <div>所属牧场</div>
+              <div>年龄</div>
               <div>所在牛舍</div>
-              <div>健康</div>
+              <div>当前状态</div>
+              <div>奶量状态</div>
+              <div>耳温状态</div>
+              <div>颈环状态</div>
             </div>
-            <div className="w-[140px] text-right shrink-0">功能</div>
+            <div className="w-[170px] text-right shrink-0">操作</div>
           </div>
           {cattle.map((c) => (
             <div key={c.id} className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
               <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
-                <div className="font-mono text-body text-foreground truncate">{c.id}</div>
                 <div className="flex items-center gap-1.5 text-body text-foreground truncate"><Beef className="h-3.5 w-3.5 text-primary shrink-0" />{c.ear}</div>
                 <div className="text-body-sm text-text-secondary truncate">{c.breed}</div>
-                <div className="text-body-sm text-text-secondary">{c.sex}</div>
-                <div className="text-body-sm text-text-secondary tabular-nums truncate">{c.birth}</div>
-                <div className="text-body-sm text-text-secondary truncate">{c.farm}</div>
+                <div className="text-body-sm text-text-secondary tabular-nums truncate">{ageLabelOf(c.birth)}</div>
                 <div className="text-body-sm text-text-secondary truncate">{c.barn}</div>
                 <div><span className={healthTag(c.health)}>{c.health}</span></div>
+                <div><span className={stateTag(c.milk)}>{c.milk}</span></div>
+                <div><span className={stateTag(c.earTemp)}>{c.earTemp}</span></div>
+                <div><span className={stateTag(c.collar)}>{c.collar}</span></div>
               </div>
-              <div className="w-[140px] shrink-0 flex items-center justify-end gap-0.5">
+              <div className="w-[170px] shrink-0 flex items-center justify-end gap-0.5">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground" onClick={() => openProfile(c)}>查看</Button>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button>
                 <DropdownMenu>
@@ -143,9 +144,31 @@ function CattlePage() {
                       <MoreHorizontal className="h-3.5 w-3.5" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-28">
-                    <DropdownMenuItem className="text-[var(--state-danger)] focus:text-[var(--state-danger)]">
-                      <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除
+                  <DropdownMenuContent align="end" className="w-40">
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <FilePlus2 className="h-3.5 w-3.5 mr-2" /> 记录事件
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="w-36">
+                        <DropdownMenuItem onClick={() => toast.info(`#${c.ear} 产犊记录`)}>
+                          <Baby className="h-3.5 w-3.5 mr-2" /> 产犊记录
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toast.info(`#${c.ear} 基础检查`)}>
+                          <Stethoscope className="h-3.5 w-3.5 mr-2" /> 基础检查
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toast.info(`#${c.ear} 转栏/转群`)}>
+                          <ArrowRightLeft className="h-3.5 w-3.5 mr-2" /> 转栏/转群
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toast.info(`#${c.ear} 离场记录`)}>
+                          <LogOut className="h-3.5 w-3.5 mr-2" /> 离场记录
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                    <DropdownMenuItem
+                      className="text-[var(--state-danger)] focus:text-[var(--state-danger)]"
+                      onClick={() => toast.success(`已删除 #${c.ear} 的档案`)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-2" /> 删除档案
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
