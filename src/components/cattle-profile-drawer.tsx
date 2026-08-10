@@ -592,14 +592,13 @@ function MoveHistory() {
 const ALL_EVENTS: {
   id: string;
   date: string;
-  type: "产犊记录" | "基础检查" | "离场记录";
+  type: "产犊记录";
   summary: string;
   operator: string;
   orderId?: string;
 }[] = [
-  { id: "EV-1041", date: "2026-08-08 09:20", type: "基础检查", summary: "体温 38.6℃ · 瘤胃蠕动正常 · 无异常", operator: "王兽医" },
   { id: "EV-1032", date: "2026-07-30 06:10", type: "产犊记录", summary: "顺产母犊 1 头 · 初乳采集 5.2L（优质）", operator: "李技术员", orderId: "WO-20260730-018" },
-  { id: "EV-0998", date: "2026-06-21 10:05", type: "基础检查", summary: "蹄部检查 · 左后蹄轻度磨损，建议观察", operator: "王兽医" },
+  { id: "EV-0912", date: "2025-08-14 23:40", type: "产犊记录", summary: "顺产公犊 1 头 · 初乳采集 4.6L（合格）", operator: "李技术员", orderId: "WO-20250814-007" },
 ];
 
 function EventHistory() {
@@ -607,6 +606,7 @@ function EventHistory() {
     <div className="space-y-2">
       <div className="text-caption text-text-tertiary mb-1">共 {ALL_EVENTS.length} 条</div>
       {ALL_EVENTS.map((e) => (
+
         <div key={e.id} className="rounded-xl border border-border bg-card p-3">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="tag tag-brand">{e.type}</span>
