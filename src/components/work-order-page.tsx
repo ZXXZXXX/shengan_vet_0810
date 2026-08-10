@@ -584,8 +584,14 @@ export function WorkOrderPage({
           </span>
         );
       }
-      case "category":
-        return <span className="text-body-sm text-text-secondary">{title}</span>;
+      case "category": {
+        const isReview = /复诊|复查/.test(`${o.desc ?? ""}${o.event ?? ""}`);
+        return (
+          <span className={isReview ? "tag tag-muted" : "tag tag-brand"}>
+            {isReview ? "复诊" : "初诊"}
+          </span>
+        );
+      }
       case "objType": {
         const isCow = o.target.trim().startsWith("#");
         return <span className="tag tag-muted">{isCow ? "牛只" : "牛舍/群体"}</span>;
