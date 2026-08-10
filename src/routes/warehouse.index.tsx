@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Search, Filter, Plus, ArrowDownToLine, ArrowUpFromLine, ArrowLeftRight,
-  Package, Pill, Wheat, FlaskConical, TrendingDown, TrendingUp,
+  Package,
   Download, MoreHorizontal, Pencil, Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -21,13 +21,6 @@ export const Route = createFileRoute("/warehouse/")({
   head: () => ({ meta: [{ title: "库存管理 — 奇点智牧" }] }),
   component: InventoryPage,
 });
-
-const categories = [
-  { name: "饲料", value: 4280, unit: "袋", icon: Wheat, trend: -8, outbound: 1240 },
-  { name: "兽药", value: 1320, unit: "盒", icon: Pill, trend: 3, outbound: 386 },
-  { name: "试剂耗材", value: 860, unit: "件", icon: FlaskConical, trend: 12, outbound: 152 },
-  { name: "通用物资", value: 2150, unit: "件", icon: Package, trend: 1, outbound: 408 },
-];
 
 type Status = "物资正常" | "物资临期" | "余量紧张";
 type Item = {
