@@ -89,35 +89,42 @@ export function ImmunizationRateCard() {
         <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: tone }} />
       </div>
 
-      {/* 各项疫苗计划 */}
-      <div className="mt-5 space-y-2">
+      {/* 各项疫苗计划 · 横向柱状图 */}
+      <div className="mt-5 space-y-3">
         {plans.map((p) => {
           const r = p.planned === 0 ? 0 : (p.done / p.planned) * 100;
           const t = toneOf(r);
           return (
-            <div key={p.id} className="rounded-xl border border-border px-4 py-3">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-body text-foreground">{p.name}</span>
-                <span className="flex items-center gap-3">
-                  <span className="text-caption text-text-tertiary tabular-nums inline-flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5" />
-                    {p.days} 天
-                  </span>
-                  <span className="text-caption text-text-tertiary tabular-nums">
-                    {p.done.toLocaleString()}/{p.planned.toLocaleString()}
-                  </span>
-                  <span className="text-body-sm font-medium tabular-nums" style={{ color: t }}>
-                    {r.toFixed(1)}%
-                  </span>
+            <div key={p.id} className="flex items-center gap-3">
+              <span className="text-body-sm text-foreground w-32 shrink-0 truncate" title={p.name}>
+                {p.name}
+              </span>
+              <span
+                className="relative flex-1 h-7 rounded-md bg-surface-subtle overflow-hidden"
+                title={`${p.done.toLocaleString()}/${p.planned.toLocaleString()}`}
+              >
+                <span
+                  className="absolute inset-y-0 left-0 rounded-md transition-all"
+                  style={{ width: `${Math.max(r, 2)}%`, background: t }}
+                />
+              </span>
+              <span className="shrink-0 flex items-center gap-3">
+                <span className="text-caption text-text-tertiary tabular-nums inline-flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5" />
+                  {p.days} 天
                 </span>
-              </div>
-              <div className="mt-2 h-1.5 rounded-full bg-surface-subtle overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${r}%`, background: t }} />
-              </div>
+                <span className="text-caption text-text-tertiary tabular-nums">
+                  {p.done.toLocaleString()}/{p.planned.toLocaleString()}
+                </span>
+                <span className="text-body-sm font-medium tabular-nums w-14 text-right" style={{ color: t }}>
+                  {r.toFixed(1)}%
+                </span>
+              </span>
             </div>
           );
         })}
       </div>
+
     </Card>
   );
 }
