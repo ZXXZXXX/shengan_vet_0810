@@ -145,7 +145,7 @@ export function WorkOrderSection() {
               onSliceClick={(_, i) => setActive(ORDER[i]!)}
             />
             <Legend data={slices} />
-            <p className="text-caption text-text-tertiary">点击扇形查看该状态各类工单</p>
+            
           </div>
 
           <div>
