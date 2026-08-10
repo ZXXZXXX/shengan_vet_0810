@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 
 export const PALETTE = [
