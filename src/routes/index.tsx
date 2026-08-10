@@ -587,6 +587,75 @@ function HomePage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={attendanceOpen} onOpenChange={setAttendanceOpen}>
+        <DialogContent className="sm:max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle className="text-card-title">今日到岗明细</DialogTitle>
+            <DialogDescription className="text-body-sm text-text-secondary">
+              2026/05/12 · 1 号牧场 · 共 {ATTENDANCE.length} 人
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="inline-flex items-center rounded-full border border-border bg-surface-subtle p-0.5 w-fit">
+            {SHIFTS.map((s) => (
+              <button
+                key={s.key}
+                type="button"
+                onClick={() => setAttendTab(s.key)}
+                className={`h-8 px-4 rounded-full text-caption transition-colors ${
+                  attendTab === s.key ? "bg-card text-primary shadow-card" : "text-text-secondary"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {(["on", "leave", "absent"] as AttendStatus[]).map((k) => {
+              const st = shiftStats(attendTab);
+              const v = k === "on" ? st.on : k === "leave" ? st.leave : st.absent;
+              return (
+                <div
+                  key={k}
+                  className="rounded-xl px-3 py-2"
+                  style={{ background: `color-mix(in oklab, ${attendMeta[k].tone} 10%, transparent)` }}
+                >
+                  <div className="text-caption text-text-tertiary">{attendMeta[k].label}</div>
+                  <div className="text-section-title tabular-nums" style={{ color: attendMeta[k].tone }}>
+                    {v}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="max-h-[320px] overflow-y-auto rounded-xl border border-border divide-y divide-border">
+            {ATTENDANCE.map((p) => {
+              const status = attendTab === "am" ? p.am : p.pm;
+              const time = attendTab === "am" ? p.amTime : p.pmTime;
+              const meta = attendMeta[status];
+              return (
+                <div key={p.name} className="flex items-center gap-3 px-4 py-2.5">
+                  <div className="min-w-0 flex-1">
+                    <span className="text-body-sm text-foreground">{p.name}</span>
+                    <span className="ml-2 text-caption text-text-tertiary">{p.role}</span>
+                  </div>
+                  <span className="text-caption text-text-tertiary tabular-nums">{time ?? "—"}</span>
+                  <span
+                    className="inline-flex items-center h-[20px] px-1.5 rounded-md text-caption shrink-0"
+                    style={{ background: `color-mix(in oklab, ${meta.tone} 14%, transparent)`, color: meta.tone }}
+                  >
+                    {meta.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
+
   );
 }
