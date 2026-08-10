@@ -9,12 +9,7 @@ import {
   ChevronRight,
   ChevronDown,
   ArrowRight,
-  ArrowRightLeft,
-  Baby,
-  LogOut,
-  Stethoscope,
   FilePlus2,
-  ClipboardPlus,
   MessageSquareWarning,
   ListChecks,
 } from "lucide-react";
@@ -74,7 +69,7 @@ export function CattleProfileDrawer({
   onOpenChange: (v: boolean) => void;
   cow: CattleProfile | null;
 }) {
-  const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves">("diagnoses");
+  const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves" | "events">("diagnoses");
   const [observed, setObserved] = useState(false);
 
   if (!cow) return null;
@@ -130,7 +125,6 @@ export function CattleProfileDrawer({
                       >
                         继续观察
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => toast.info("已跳转疾病上报流程")}>疾病上报</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
@@ -152,35 +146,16 @@ export function CattleProfileDrawer({
                 <ListChecks className="h-4 w-4" /> 全部工单
                 <ChevronRight className="h-4 w-4" />
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="h-9 gap-1.5 text-body-sm font-normal">
-                    <FilePlus2 className="h-4 w-4 text-primary" /> 记录事件
-                    <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-44">
-                  <DropdownMenuItem onClick={() => toast.info("产犊记录")}>
-                    <Baby className="h-3.5 w-3.5 mr-2" /> 产犊记录
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info("基础检查")}>
-                    <Stethoscope className="h-3.5 w-3.5 mr-2" /> 基础检查
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info("转栏/转群")}>
-                    <ArrowRightLeft className="h-3.5 w-3.5 mr-2" /> 转栏/转群
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info("离场记录")}>
-                    <LogOut className="h-3.5 w-3.5 mr-2" /> 离场记录
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
               <Button
-                className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                onClick={() => toast.info(`为 #${cow.ear} 发起疾病上报`)}
+                variant="outline"
+                className="h-9 gap-1.5 text-body-sm font-normal"
+                onClick={() => setTab("events")}
               >
-                <ClipboardPlus className="h-4 w-4" /> 疾病上报
+                <FilePlus2 className="h-4 w-4 text-primary" /> 全部事件记录
+                <ChevronRight className="h-4 w-4 text-text-tertiary" />
               </Button>
             </div>
+
           </div>
 
           {/* 基础信息：Web 端定义列表式栅格 */}
@@ -231,6 +206,7 @@ export function CattleProfileDrawer({
                     { key: "meds" as const, label: "用药记录" },
                     { key: "tests" as const, label: "检测记录" },
                     { key: "moves" as const, label: "转栏记录" },
+                    { key: "events" as const, label: "事件记录" },
                   ].map((t) => {
                     const active = tab === t.key;
                     return (
@@ -254,6 +230,8 @@ export function CattleProfileDrawer({
                     <DiagnosisHistory />
                   ) : tab === "tests" ? (
                     <TestHistory />
+                  ) : tab === "events" ? (
+                    <EventHistory />
                   ) : (
                     <MoveHistory />
                   )}
@@ -577,6 +555,48 @@ function MoveHistory() {
             <span className="inline-flex items-center gap-1">
               <span>工单</span>
               <span className="font-mono text-primary">{m.orderId ?? "-"}</span>
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const ALL_EVENTS: {
+  id: string;
+  date: string;
+  type: "产犊记录" | "基础检查" | "转栏/转群" | "离场记录";
+  summary: string;
+  operator: string;
+  orderId?: string;
+}[] = [
+  { id: "EV-1041", date: "2026-08-08 09:20", type: "基础检查", summary: "体温 38.6℃ · 瘤胃蠕动正常 · 无异常", operator: "王兽医" },
+  { id: "EV-1032", date: "2026-07-30 06:10", type: "产犊记录", summary: "顺产母犊 1 头 · 初乳采集 5.2L（优质）", operator: "李技术员", orderId: "WO-20260730-018" },
+  { id: "EV-1019", date: "2026-07-12 15:40", type: "转栏/转群", summary: "A 区 3 舍 → B 区 1 舍 · 原因：产后转群", operator: "张场长", orderId: "WO-20260712-006" },
+  { id: "EV-0998", date: "2026-06-21 10:05", type: "基础检查", summary: "蹄部检查 · 左后蹄轻度磨损，建议观察", operator: "王兽医" },
+];
+
+function EventHistory() {
+  return (
+    <div className="space-y-2">
+      <div className="text-caption text-text-tertiary mb-1">共 {ALL_EVENTS.length} 条</div>
+      {ALL_EVENTS.map((e) => (
+        <div key={e.id} className="rounded-xl border border-border bg-card p-3">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="tag tag-brand">{e.type}</span>
+            <span className="font-mono text-caption text-text-secondary">{e.date}</span>
+            <span className="text-caption text-text-tertiary">· {e.operator}</span>
+          </div>
+          <div className="text-body-sm text-foreground">{e.summary}</div>
+          <div className="text-caption text-text-tertiary mt-1 flex items-center gap-3">
+            <span className="inline-flex items-center gap-1">
+              <span>编号</span>
+              <span className="font-mono text-foreground">{e.id}</span>
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span>工单</span>
+              <span className="font-mono text-primary">{e.orderId ?? "-"}</span>
             </span>
           </div>
         </div>
