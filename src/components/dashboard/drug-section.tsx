@@ -82,7 +82,7 @@ export function DrugSection() {
         />
       }
     >
-      <div className={`grid grid-cols-1 gap-6 ${label ? "xl:grid-cols-2" : ""}`}>
+      <div className={`grid grid-cols-1 gap-6 items-start ${label ? "xl:grid-cols-2" : ""}`}>
         <div>
           <p className="text-body-sm text-text-secondary mb-3">
             {period}用药总费用趋势
