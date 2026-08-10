@@ -272,8 +272,13 @@ export function CattleProfileDrawer({
                     key={t.key}
                     onClick={() => {
                       setTab(t.key);
-                      historyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      const sc = scrollRef.current;
+                      const el = historyRef.current;
+                      if (sc && el) {
+                        sc.scrollTo({ top: el.offsetTop - sc.offsetTop, behavior: "smooth" });
+                      }
                     }}
+
                     className={`relative h-11 shrink-0 text-body-sm transition-colors ${
                       active ? "text-primary font-medium" : "text-text-secondary hover:text-foreground"
                     }`}
