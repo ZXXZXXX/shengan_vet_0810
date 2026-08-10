@@ -256,47 +256,51 @@ export function DiseaseStatsSection() {
             </p>
             <span className="text-caption text-text-tertiary">由高到低</span>
           </div>
-          <div className="mt-3 space-y-2">
+          <div className="mt-4 space-y-3">
             {ranked.map((o, i) => {
               const rate = incidence(o);
               const sums = rollupOrg(o);
               const isSel = selectedId === o.id;
               const drillable = !!o.children?.length;
+              const color = i === 0 ? "var(--state-danger)" : i === 1 ? "var(--state-warning)" : "var(--brand)";
               return (
                 <button
                   key={o.id}
                   type="button"
                   onClick={() => pick(o)}
-                  className={`w-full text-left rounded-xl border px-4 py-3 transition-all ${
-                    isSel ? "border-primary bg-[var(--sidebar-hover,var(--bg-surface-subtle))]" : "border-border hover:border-primary/40 hover:bg-surface-subtle"
-                  }`}
+                  className="group w-full text-left flex items-center gap-3"
+                  title={`${sums.cases}/${sums.herd.toLocaleString()}`}
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="flex items-center gap-2 min-w-0">
-                      <span className="text-caption tabular-nums text-text-tertiary w-4">{i + 1}</span>
-                      <span className="text-body text-foreground truncate">{o.name}</span>
-                    </span>
-                    <span className="flex items-center gap-2 shrink-0">
-                      <span className="text-caption text-text-tertiary tabular-nums">
-                        {sums.cases}/{sums.herd.toLocaleString()}
-                      </span>
-                      <span className="text-body-sm font-medium tabular-nums text-foreground">{rate.toFixed(2)}%</span>
-                      {drillable && <ChevronRight className="h-4 w-4 text-text-tertiary" />}
-                    </span>
-                  </div>
-                  <div className="mt-2 h-2 rounded-full bg-surface-subtle overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
+                  <span className="text-caption tabular-nums text-text-tertiary w-4 shrink-0">{i + 1}</span>
+                  <span
+                    className={`text-body truncate w-24 shrink-0 ${isSel ? "text-primary font-medium" : "text-foreground"}`}
+                  >
+                    {o.name}
+                  </span>
+                  <span className="relative flex-1 h-7 rounded-md bg-surface-subtle overflow-hidden">
+                    <span
+                      className="absolute inset-y-0 left-0 rounded-md transition-all group-hover:opacity-85"
                       style={{
-                        width: `${(rate / maxRate) * 100}%`,
-                        background: i === 0 ? "var(--state-danger)" : i === 1 ? "var(--state-warning)" : "var(--brand)",
+                        width: `${Math.max((rate / maxRate) * 100, 2)}%`,
+                        background: color,
+                        opacity: isSel ? 1 : 0.9,
                       }}
                     />
-                  </div>
+                  </span>
+                  <span className="shrink-0 flex items-center gap-2">
+                    <span className="text-caption text-text-tertiary tabular-nums">
+                      {sums.cases}/{sums.herd.toLocaleString()}
+                    </span>
+                    <span className="text-body-sm font-medium tabular-nums text-foreground w-14 text-right">
+                      {rate.toFixed(2)}%
+                    </span>
+                    {drillable && <ChevronRight className="h-4 w-4 text-text-tertiary" />}
+                  </span>
                 </button>
               );
             })}
           </div>
+
         </div>
 
         {/* 右：疾病构成 */}
