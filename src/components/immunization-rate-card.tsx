@@ -104,7 +104,9 @@ export function ImmunizationRateCard() {
             </div>
           );
         })}
+        </div>
       </div>
+
 
     </Card>
   );
