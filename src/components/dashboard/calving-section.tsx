@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Baby, ChevronLeft } from "lucide-react";
-import { SectionCard, Donut, Legend, MiniStat, PeriodTabs } from "./charts";
+import { SectionCard, Donut, Legend, PeriodTabs } from "./charts";
 
 const aliveTotal = 170;
 const deadTotal = 9;
@@ -42,7 +42,6 @@ const TAB_WEIGHT = "体重分布";
 const VIEW_CALF = "犊牛情况";
 const VIEW_COW = "母牛情况";
 
-const difficultTotal = difficulty.reduce((s, d) => s + d.value, 0);
 
 export function CalvingSection() {
   const [view, setView] = useState(VIEW_CALF);
@@ -123,17 +122,6 @@ export function CalvingSection() {
           <div className="flex flex-col items-center gap-4">
             <Donut data={difficulty} centerLabel="顺产率" centerValue="74.6%" unit=" 例" />
             <Legend data={difficulty} unit=" 例" />
-          </div>
-          <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {difficulty.map((d) => (
-              <MiniStat
-                key={d.name}
-                label={`${d.name} ${((d.value / difficultTotal) * 100).toFixed(1)}%`}
-                value={String(d.value)}
-                unit="例"
-                tone={d.color}
-              />
-            ))}
           </div>
         </div>
       )}
