@@ -86,7 +86,7 @@ export function CalvingSection() {
                 产犊成活与死亡分布
                 <span className="text-text-tertiary">／ 成活 {aliveTotal} 头</span>
               </button>
-              <div className="flex items-center gap-8 flex-wrap">
+              <div className="flex flex-col items-center gap-4">
                 <Donut
                   data={detail}
                   centerLabel="成活总数"
@@ -102,7 +102,7 @@ export function CalvingSection() {
                 （本月）产犊成活与死亡分布
                 <span className="text-caption text-text-tertiary ml-2">点击「成活」查看下钻</span>
               </p>
-              <div className="flex items-center gap-8 flex-wrap">
+              <div className="flex flex-col items-center gap-4">
                 <Donut
                   data={survival}
                   centerLabel="产犊总数"
@@ -134,7 +134,7 @@ export function CalvingSection() {
       ) : (
         <div>
           <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度分布</p>
-          <div className="flex items-center gap-8 flex-wrap">
+          <div className="flex flex-col items-center gap-4">
             <Donut data={difficulty} centerLabel="顺产率" centerValue="74.6%" />
             <Legend data={difficulty} unit=" 例" />
           </div>

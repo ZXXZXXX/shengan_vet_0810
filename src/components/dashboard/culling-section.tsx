@@ -41,7 +41,7 @@ export function CullingSection() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div>
           <p className="text-body-sm text-text-secondary mb-3">（本月）实际死淘分布</p>
-          <div className="flex items-center gap-6 flex-wrap">
+          <div className="flex flex-col items-center gap-4">
             <Donut data={groupDist} centerLabel="死淘合计" centerValue={String(total)} centerUnit="头" />
             <Legend data={groupDist} unit=" 头" />
           </div>
