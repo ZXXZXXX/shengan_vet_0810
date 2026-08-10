@@ -60,6 +60,16 @@ const DEVICES: Device[] = [
   { kind: "ear", id: "D-EAR-088", name: "耳温设备 · smaXtec", status: "异常" },
 ];
 
+// 检查数据：各检查项目最近一次结果
+const EXAM_DATA: { name: string; result: string; date: string; abnormal?: boolean }[] = [
+  { name: "尿液 PH 值", result: "8.2", date: "2026-08-08" },
+  { name: "酮病检测", result: "阳性（1.4 mmol/L）", date: "2026-08-07", abnormal: true },
+  { name: "孕检", result: "已孕 92 天", date: "2026-07-30" },
+  { name: "体温", result: "39.8 ℃", date: "2026-08-10", abnormal: true },
+  { name: "子宫分泌物", result: "清亮无异味", date: "2026-08-05" },
+];
+
+
 export function CattleProfileDrawer({
   open,
   onOpenChange,
