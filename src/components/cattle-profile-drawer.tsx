@@ -57,7 +57,7 @@ type Device = {
   kind: "collar" | "ear";
   id: string;
   name: string;
-  status: "正常" | "异常" | "离线";
+  status: "正常" | "异常" | "-";
 };
 
 const DEVICES: Device[] = [
@@ -280,7 +280,7 @@ export function CattleProfileDrawer({
                       </div>
                       <span
                         className={
-                          d.status === "异常" ? "tag tag-danger" : d.status === "离线" ? "tag tag-warning" : "tag tag-success"
+                          d.status === "异常" ? "tag tag-danger" : d.status === "正常" ? "tag tag-success" : "text-body-sm text-text-tertiary"
                         }
                       >
                         {d.status}
