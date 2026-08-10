@@ -271,10 +271,22 @@ function HomePage() {
               <h2 className="text-page-title font-medium drop-shadow-sm">
                 早上好，场长张磊
               </h2>
-              <p className="text-body text-white/85 mt-1.5">
-                今日整体运行稳定，<span className="text-white font-medium">4 项</span> 申请待诊断 ·
-                <span className="text-white font-medium"> 37 项</span> 待办，请及时处理
-              </p>
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-1.5">
+                {[
+                  { label: "上午场", signed: 6, absent: 1, leave: 1 },
+                  { label: "下午场", signed: 5, absent: 2, leave: 1 },
+                ].map((s) => (
+                  <div key={s.label} className="inline-flex items-center gap-2 text-body text-white/85">
+                    <span className="text-caption px-2 py-0.5 rounded-full bg-white/15 border border-white/20">{s.label}</span>
+                    <span>签到 <span className="text-white font-medium tabular-nums">{s.signed}</span></span>
+                    <span className="text-white/40">·</span>
+                    <span>未签到 <span className="text-white font-medium tabular-nums">{s.absent}</span></span>
+                    <span className="text-white/40">·</span>
+                    <span>请假 <span className="text-white font-medium tabular-nums">{s.leave}</span></span>
+                  </div>
+                ))}
+              </div>
+
 
             </div>
             <div className="flex flex-col items-end gap-2">
