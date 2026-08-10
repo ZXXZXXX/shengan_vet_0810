@@ -91,7 +91,7 @@ export function CalvingSection() {
                   data={detail}
                   centerLabel="成活总数"
                   centerValue={String(aliveTotal)}
-                  centerUnit="头"
+                  centerUnit="头" unit=" 头"
                 />
                 <Legend data={detail} unit=" 头" />
               </div>
@@ -107,7 +107,7 @@ export function CalvingSection() {
                   data={survival}
                   centerLabel="产犊总数"
                   centerValue={String(total)}
-                  centerUnit="头"
+                  centerUnit="头" unit=" 头"
                   onSliceClick={(s) => {
                     if (s.name === "成活") setDrill(true);
                   }}
@@ -135,7 +135,7 @@ export function CalvingSection() {
         <div>
           <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度分布</p>
           <div className="flex flex-col items-center gap-4">
-            <Donut data={difficulty} centerLabel="顺产率" centerValue="74.6%" />
+            <Donut data={difficulty} centerLabel="顺产率" centerValue="74.6%" unit=" 例" />
             <Legend data={difficulty} unit=" 例" />
           </div>
           <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
