@@ -37,7 +37,7 @@ export function HerdSection() {
         <p className="text-body-sm text-text-secondary mb-3">
           {tab === TAB_TYPE ? "（至今日）类型分布" : "（本月）健康分布"}
         </p>
-        <div className="flex items-center gap-8 flex-wrap">
+        <div className="flex flex-col items-center gap-4">
           <Donut
             data={tab === TAB_TYPE ? typeDist : healthDist}
             centerLabel={tab === TAB_TYPE ? "存栏总数" : "在群总数"}

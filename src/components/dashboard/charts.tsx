@@ -110,7 +110,7 @@ export function Donut({
 export function Legend({ data, unit = "" }: { data: Slice[]; unit?: string }) {
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
   return (
-    <div className="flex-1 min-w-[220px] grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+    <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
       {data.map((s, i) => (
         <div key={s.name} className="flex items-center gap-2 py-1.5">
           <span
