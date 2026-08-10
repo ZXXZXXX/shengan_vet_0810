@@ -48,6 +48,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { StatScopeCard, prescriptionStats } from "@/components/stat-scope-card";
 
 export const Route = createFileRoute("/knowledge/prescription")({
   head: () => ({ meta: [{ title: "处方管理 — 奇点智牧" }] }),
@@ -1550,6 +1551,8 @@ function PrescriptionView({ r }: { r: Rx }) {
         </div>
         {r.desc && <div className="text-body-sm text-text-secondary">{r.desc}</div>}
       </div>
+
+      <StatScopeCard metrics={prescriptionStats(r.code)} />
 
       <ViewGroup label="处方描述">
         <ViewRow label="处方疗程" value={`${r.duration} 天`} />

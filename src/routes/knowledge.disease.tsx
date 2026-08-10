@@ -41,6 +41,7 @@ import {
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { StatScopeCard, diseaseStats } from "@/components/stat-scope-card";
 
 export const Route = createFileRoute("/knowledge/disease")({
   head: () => ({ meta: [{ title: "疾病知识库 — 奇点智牧" }] }),
@@ -836,6 +837,8 @@ function DetailView({ value }: { value: Disease }) {
   const cat = t ? categoryByCode(t.categoryCode) : undefined;
   return (
     <>
+      <StatScopeCard metrics={diseaseStats(value.code)} />
+
       <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
         <KV label="疾病类型" value={t?.name ?? "—"} />
         <KV label="疾病名称" value={value.name} />
