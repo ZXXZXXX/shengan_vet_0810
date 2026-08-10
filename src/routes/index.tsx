@@ -289,7 +289,7 @@ function HomePage() {
 
 
             </div>
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-end gap-3">
               
               <div className="flex items-center gap-2 flex-wrap justify-end">
                 {alertCounts.map((a) => (
@@ -306,7 +306,20 @@ function HomePage() {
                   </button>
                 ))}
               </div>
+              <div className="flex items-center gap-2 justify-end">
+                <Button
+                  variant="outline"
+                  className="h-9 bg-white/10 hover:bg-white/20 text-white border-white/30 hover:text-white"
+                  onClick={() => setAttendanceOpen(true)}
+                >
+                  出勤明细
+                </Button>
+                <Button className="h-9" onClick={() => scrollToTopic("topic-alert")}>
+                  查看预警详情
+                </Button>
+              </div>
             </div>
+
 
           </div>
         </Card>
