@@ -218,41 +218,22 @@ export function CattleProfileDrawer({
               title="历史记录"
               icon={<ListChecks className="h-4 w-4 text-primary" />}
               bodyClassName="pt-0"
-              extra={
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    className="h-8 gap-1 text-body-sm font-normal text-text-secondary"
-                    onClick={() => toast.info(`查看 #${cow.ear} 的全部工单`)}
-                  >
-                    <ListChecks className="h-4 w-4" /> 全部工单
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-8 gap-1 text-body-sm font-normal"
-                    onClick={() => setTab("events")}
-                  >
-                    <FilePlus2 className="h-4 w-4 text-primary" /> 全部数据记录
-                    <ChevronRight className="h-4 w-4 text-text-tertiary" />
-                  </Button>
-                </div>
-              }
             >
-              <div className="flex items-center gap-6 border-b border-border -mx-4 px-4">
+              <div className="flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
                 {[
                   { key: "diagnoses" as const, label: "诊断记录" },
                   { key: "meds" as const, label: "用药记录" },
                   { key: "tests" as const, label: "检测记录" },
                   { key: "moves" as const, label: "转栏记录" },
                   { key: "events" as const, label: "事件记录" },
+                  { key: "orders" as const, label: "全部工单" },
                 ].map((t) => {
                   const active = tab === t.key;
                   return (
                     <button
                       key={t.key}
                       onClick={() => setTab(t.key)}
-                      className={`relative h-10 text-body-sm transition-colors ${
+                      className={`relative h-10 shrink-0 text-body-sm transition-colors ${
                         active ? "text-primary font-medium" : "text-text-secondary hover:text-foreground"
                       }`}
                     >
@@ -271,6 +252,8 @@ export function CattleProfileDrawer({
                   <TestHistory />
                 ) : tab === "events" ? (
                   <EventHistory />
+                ) : tab === "orders" ? (
+                  <OrderHistory />
                 ) : (
                   <MoveHistory />
                 )}
