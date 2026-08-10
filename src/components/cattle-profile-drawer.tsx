@@ -296,6 +296,8 @@ export function CattleProfileDrawer({
               )}
             </div>
           </Panel>
+          </div>
+
         </div>
       </SheetContent>
     </Sheet>
