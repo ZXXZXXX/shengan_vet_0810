@@ -412,13 +412,11 @@ function HomePage() {
           })}
         </div>
 
-        {/* 1 牛群专题 */}
-        <div className="w-full xl:max-w-[720px]">
+        {/* 1 牛群专题 + 2 产犊专题 */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
           <HerdSection />
+          <CalvingSection />
         </div>
-
-        {/* 2 产犊专题 */}
-        <CalvingSection />
 
         {/* 3 死淘专题 */}
         <CullingSection />
