@@ -101,77 +101,80 @@ export function CattleProfileDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-[920px] sm:max-w-[920px] p-0 flex flex-col gap-0 bg-[var(--bg-page,var(--background))]"
+        className="w-[960px] sm:max-w-[960px] p-0 flex flex-col gap-0 bg-[var(--bg-page,var(--background))]"
       >
-        {/* 头部：Web 风格标题栏 —— 白底、左标题右操作 */}
-        <header className="shrink-0 bg-card border-b border-border px-6 pt-5 pb-4">
-          <div className="flex items-start justify-between gap-6">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2.5">
-                <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
-                  <Beef className="h-[18px] w-[18px]" />
-                </span>
-                <h2 className="text-page-title text-foreground font-mono">#{cow.ear}</h2>
-                <span className={`h-6 px-2 rounded-md inline-flex items-center gap-1 text-caption font-medium ${healthCls}`}>
-                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                  {health}
-                </span>
-                {abnormal && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-6 px-2 text-caption font-normal gap-1">
-                        <MessageSquareWarning className="h-3.5 w-3.5" />
-                        异常反馈
-                        <ChevronDown className="h-3 w-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-36">
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setObserved(true);
-                          markAlertHandled(cow.ear);
-                          toast.success("已转为观察中，次日 00:00 自动解除");
-                        }}
-                      >
-                        继续观察
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-              <div className="mt-1.5 pl-[46px] inline-flex items-center gap-1.5 text-body-sm text-text-secondary">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
-                <span className="truncate">
-                  {cow.farm} / {cow.barn}
-                </span>
+        {/* 头部：品牌化身份区 */}
+        <header className="shrink-0 border-b border-border bg-card">
+          <div className="px-7 pt-6 pb-5 bg-[linear-gradient(180deg,var(--brand-subtle,#EFFBF1)_0%,transparent_100%)]">
+            <div className="flex items-start gap-4">
+              <span className="h-12 w-12 rounded-xl bg-card border border-border text-primary inline-flex items-center justify-center shrink-0 shadow-sm">
+                <Beef className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h2 className="text-page-title text-foreground font-mono leading-none">#{cow.ear}</h2>
+                  <span className={`h-6 px-2.5 rounded-full inline-flex items-center gap-1.5 text-caption font-medium ${healthCls}`}>
+                    <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                    {health}
+                  </span>
+                  {abnormal && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-6 px-2 rounded-full text-caption font-normal gap-1 bg-card">
+                          <MessageSquareWarning className="h-3.5 w-3.5" />
+                          异常反馈
+                          <ChevronDown className="h-3 w-3" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-36">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setObserved(true);
+                            markAlertHandled(cow.ear);
+                            toast.success("已转为观察中，次日 00:00 自动解除");
+                          }}
+                        >
+                          继续观察
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
+                <div className="mt-2 flex items-center gap-x-3 gap-y-1 flex-wrap text-body-sm text-text-secondary">
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-text-tertiary" />
+                    {cow.farm} / {cow.barn}
+                  </span>
+                  <span className="h-3 w-px bg-border" />
+                  <span>{cow.breed}</span>
+                  <span className="h-3 w-px bg-border" />
+                  <span>{cow.sex}</span>
+                  <span className="h-3 w-px bg-border" />
+                  <span>{cow.type}</span>
+                </div>
               </div>
             </div>
 
-
+            {/* 关键指标条 */}
+            <div className="mt-5 grid grid-cols-5 gap-3">
+              <Metric label={cow.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel.replace(/\s?(月龄|日龄)/, "")} unit={cow.ageDays > 90 ? "月" : "天"} />
+              <Metric label="泌乳天数" value={String(cow.lactationDays)} unit="天" />
+              <Metric label="怀孕天数" value={cow.pregnancyDays > 0 ? String(cow.pregnancyDays) : "—"} unit={cow.pregnancyDays > 0 ? "天" : ""} />
+              <Metric label="胎次" value={String(cow.parity)} unit="胎" />
+              <Metric
+                label="休药期"
+                value={cow.withdrawalDays > 0 ? String(cow.withdrawalDays) : "无"}
+                unit={cow.withdrawalDays > 0 ? "天" : ""}
+                tone={cow.withdrawalDays > 0 ? "danger" : "default"}
+              />
+            </div>
           </div>
-
-          {/* 基础信息：规格表式栅格 */}
-          <dl className="mt-4 grid grid-cols-4 rounded-lg border-t border-l border-border bg-card overflow-hidden">
-            <Field label="品种" value={cow.breed} />
-            <Field label="性别" value={cow.sex} />
-            <Field label="类别" value={cow.type} />
-            <Field label={cow.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
-            <Field label="泌乳天数" value={`${cow.lactationDays} 天`} />
-            <Field label="怀孕天数" value={cow.pregnancyDays > 0 ? `${cow.pregnancyDays} 天` : "—"} />
-            <Field label="胎次" value={`${cow.parity} 胎`} />
-            <Field
-              label="休药期"
-              value={cow.withdrawalDays > 0 ? `剩 ${cow.withdrawalDays} 天` : "无"}
-              tone={cow.withdrawalDays > 0 ? "danger" : "default"}
-            />
-          </dl>
-
         </header>
 
-        {/* 内容：左右分栏 */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        {/* 内容 */}
+        <div className="flex-1 overflow-y-auto px-7 py-6 space-y-5">
           {cow.withdrawalDays > 0 && (
-            <div className="mb-4 rounded-lg border border-[#FFA39E] bg-[#FFF1F0] px-3 py-2 flex items-center gap-2">
+            <div className="rounded-xl border border-[#FFCCC7] bg-[#FFF1F0] px-4 py-3 flex items-center gap-2.5">
               <Clock className="h-4 w-4 shrink-0 text-[#CF1322]" />
               <span className="text-body-sm text-[#CF1322]">
                 该牛只处于休药期，至 {cow.withdrawalUntil} 结束（剩 {cow.withdrawalDays} 天），期间产奶不可上市。
@@ -179,7 +182,7 @@ export function CattleProfileDrawer({
             </div>
           )}
 
-          <div className="grid grid-cols-[1fr_300px] gap-5 items-start">
+          <div className="grid grid-cols-[1fr_320px] gap-5 items-start">
             {/* 左：产奶数据 */}
             <div className="min-w-0">
               <Panel
@@ -191,14 +194,17 @@ export function CattleProfileDrawer({
               </Panel>
             </div>
 
-            {/* 右：外接设备 */}
+            {/* 右：设备 + 检查 */}
             <div className="space-y-5">
-              <Panel title="外接设备" icon={<Watch className="h-4 w-4 text-primary" />}>
+              <Panel title="外接设备" icon={<Watch className="h-4 w-4 text-primary" />} bodyClassName="p-3">
                 <div className="space-y-2">
                   {DEVICES.map((d) => (
-                    <div key={d.id} className="rounded-lg border border-border px-3 py-2.5 flex items-center gap-2.5">
+                    <div
+                      key={d.id}
+                      className="rounded-xl bg-muted/50 px-3 py-2.5 flex items-center gap-2.5"
+                    >
                       <span
-                        className={`h-8 w-8 rounded-md inline-flex items-center justify-center shrink-0 ${
+                        className={`h-8 w-8 rounded-lg inline-flex items-center justify-center shrink-0 ${
                           d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
                         }`}
                       >
@@ -220,100 +226,104 @@ export function CattleProfileDrawer({
                 </div>
               </Panel>
 
-              <Panel title="检查数据" icon={<ListChecks className="h-4 w-4 text-primary" />}>
-                <div className="space-y-1">
+              <Panel title="检查数据" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="px-4 py-1">
+                <div>
                   {EXAM_DATA.map((e) => (
                     <div
                       key={e.name}
-                      className="flex items-center justify-between gap-2 py-1.5 border-b border-border last:border-0"
+                      className="flex items-baseline justify-between gap-2 py-2.5 border-b border-border/70 last:border-0"
                     >
                       <span className="text-body-sm text-text-secondary shrink-0">{e.name}</span>
-                      <span className="min-w-0 flex items-center gap-2">
+                      <span className="min-w-0 text-right">
                         <span
-                          className={`text-body-sm truncate ${e.abnormal ? "text-[#CF1322] font-medium" : "text-foreground"}`}
+                          className={`block text-body-sm truncate ${e.abnormal ? "text-[#CF1322] font-medium" : "text-foreground font-medium"}`}
                         >
                           {e.result}
                         </span>
-                        <span className="text-caption text-text-tertiary tabular-nums shrink-0">{e.date}</span>
+                        <span className="block text-caption text-text-tertiary tabular-nums">{e.date}</span>
                       </span>
                     </div>
                   ))}
                 </div>
               </Panel>
             </div>
-
           </div>
 
           {/* 历史记录：整宽贯穿 */}
-          <div className="mt-5">
-            <Panel
-              title="历史记录"
-              icon={<ListChecks className="h-4 w-4 text-primary" />}
-              bodyClassName="pt-0"
-            >
-              <div className="flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
-                {[
-                  { key: "orders" as const, label: "全部工单" },
-                  { key: "diagnoses" as const, label: "诊断记录" },
-                  { key: "meds" as const, label: "用药记录" },
-                  { key: "tests" as const, label: "检测记录" },
-                  { key: "moves" as const, label: "转栏记录" },
-                  { key: "events" as const, label: "产犊记录" },
-                ].map((t) => {
-                  const active = tab === t.key;
-                  return (
-                    <button
-                      key={t.key}
-                      onClick={() => setTab(t.key)}
-                      className={`relative h-10 shrink-0 text-body-sm transition-colors ${
-                        active ? "text-primary font-medium" : "text-text-secondary hover:text-foreground"
-                      }`}
-                    >
-                      {t.label}
-                      {active && <span className="absolute left-0 right-0 bottom-0 h-[2px] rounded-full bg-primary" />}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="pt-4">
-                {tab === "meds" ? (
-                  <MedicationHistory />
-                ) : tab === "diagnoses" ? (
-                  <DiagnosisHistory />
-                ) : tab === "tests" ? (
-                  <TestHistory />
-                ) : tab === "events" ? (
-                  <EventHistory />
-                ) : tab === "orders" ? (
-                  <OrderHistory />
-                ) : (
-                  <MoveHistory />
-                )}
-              </div>
-            </Panel>
-          </div>
-
+          <Panel title="历史记录" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="p-4 pt-0">
+            <div className="flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
+              {[
+                { key: "orders" as const, label: "全部工单" },
+                { key: "diagnoses" as const, label: "诊断记录" },
+                { key: "meds" as const, label: "用药记录" },
+                { key: "tests" as const, label: "检测记录" },
+                { key: "moves" as const, label: "转栏记录" },
+                { key: "events" as const, label: "产犊记录" },
+              ].map((t) => {
+                const active = tab === t.key;
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => setTab(t.key)}
+                    className={`relative h-11 shrink-0 text-body-sm transition-colors ${
+                      active ? "text-primary font-medium" : "text-text-secondary hover:text-foreground"
+                    }`}
+                  >
+                    {t.label}
+                    {active && <span className="absolute left-0 right-0 bottom-0 h-[2px] rounded-full bg-primary" />}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="pt-4">
+              {tab === "meds" ? (
+                <MedicationHistory />
+              ) : tab === "diagnoses" ? (
+                <DiagnosisHistory />
+              ) : tab === "tests" ? (
+                <TestHistory />
+              ) : tab === "events" ? (
+                <EventHistory />
+              ) : tab === "orders" ? (
+                <OrderHistory />
+              ) : (
+                <MoveHistory />
+              )}
+            </div>
+          </Panel>
         </div>
       </SheetContent>
     </Sheet>
   );
 }
 
-function Field({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "danger" }) {
+function Metric({
+  label,
+  value,
+  unit,
+  tone = "default",
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  tone?: "default" | "danger";
+}) {
   return (
-    <div className="min-w-0 flex items-baseline gap-2 border-r border-b border-border px-4 py-2.5">
-      <dt className="text-caption text-text-tertiary shrink-0 w-[4.5em]">{label}</dt>
-      <dd
-        className={`text-body-sm truncate tabular-nums ${
-          tone === "danger" ? "text-[#CF1322] font-medium" : "text-foreground font-medium"
-        }`}
-      >
-        {value}
-      </dd>
+    <div className="rounded-xl border border-border bg-card px-3 py-2.5">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="mt-1 flex items-baseline gap-1">
+        <span
+          className={`text-[20px] leading-[26px] font-medium tabular-nums ${
+            tone === "danger" ? "text-[#CF1322]" : "text-foreground"
+          }`}
+        >
+          {value}
+        </span>
+        {unit && <span className="text-caption text-text-tertiary">{unit}</span>}
+      </div>
     </div>
   );
 }
-
 
 function Panel({
   title,
@@ -329,15 +339,15 @@ function Panel({
   bodyClassName?: string;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card">
-      <div className="flex items-center justify-between px-4 h-11 border-b border-border">
+    <section className="rounded-xl border border-border bg-card shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+      <div className="flex items-center justify-between px-4 h-12 border-b border-border">
         <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
           {icon}
           {title}
         </h3>
         {extra}
       </div>
-      <div className={`p-4 ${bodyClassName}`}>{children}</div>
+      <div className={bodyClassName || "p-4"}>{children}</div>
     </section>
   );
 }
