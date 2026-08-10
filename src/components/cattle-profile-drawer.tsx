@@ -257,7 +257,7 @@ export function CattleProfileDrawer({
                   { key: "meds" as const, label: "用药记录" },
                   { key: "tests" as const, label: "检测记录" },
                   { key: "moves" as const, label: "转栏记录" },
-                  { key: "events" as const, label: "事件记录" },
+                  { key: "events" as const, label: "产犊记录" },
                   { key: "orders" as const, label: "全部工单" },
                 ].map((t) => {
                   const active = tab === t.key;
