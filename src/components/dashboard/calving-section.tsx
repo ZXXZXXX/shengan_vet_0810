@@ -114,20 +114,6 @@ export function CalvingSection() {
                 />
                 <Legend data={survival} unit=" 头" />
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-3 max-w-md">
-                <MiniStat
-                  label={`成活率 ${((aliveTotal / total) * 100).toFixed(1)}%`}
-                  value={String(aliveTotal)}
-                  unit="头"
-                  tone="var(--brand)"
-                />
-                <MiniStat
-                  label={`死亡率 ${((deadTotal / total) * 100).toFixed(1)}%`}
-                  value={String(deadTotal)}
-                  unit="头"
-                  tone="var(--state-danger)"
-                />
-              </div>
             </>
           )}
         </div>
