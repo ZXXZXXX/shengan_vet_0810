@@ -130,7 +130,6 @@ export function CattleProfileDrawer({
                       >
                         继续观察
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => toast.info("已跳转疾病上报流程")}>疾病上报</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
@@ -152,35 +151,16 @@ export function CattleProfileDrawer({
                 <ListChecks className="h-4 w-4" /> 全部工单
                 <ChevronRight className="h-4 w-4" />
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="h-9 gap-1.5 text-body-sm font-normal">
-                    <FilePlus2 className="h-4 w-4 text-primary" /> 记录事件
-                    <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-44">
-                  <DropdownMenuItem onClick={() => toast.info("产犊记录")}>
-                    <Baby className="h-3.5 w-3.5 mr-2" /> 产犊记录
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info("基础检查")}>
-                    <Stethoscope className="h-3.5 w-3.5 mr-2" /> 基础检查
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info("转栏/转群")}>
-                    <ArrowRightLeft className="h-3.5 w-3.5 mr-2" /> 转栏/转群
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info("离场记录")}>
-                    <LogOut className="h-3.5 w-3.5 mr-2" /> 离场记录
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
               <Button
-                className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-                onClick={() => toast.info(`为 #${cow.ear} 发起疾病上报`)}
+                variant="outline"
+                className="h-9 gap-1.5 text-body-sm font-normal"
+                onClick={() => setTab("events")}
               >
-                <ClipboardPlus className="h-4 w-4" /> 疾病上报
+                <FilePlus2 className="h-4 w-4 text-primary" /> 全部事件记录
+                <ChevronRight className="h-4 w-4 text-text-tertiary" />
               </Button>
             </div>
+
           </div>
 
           {/* 基础信息：Web 端定义列表式栅格 */}
