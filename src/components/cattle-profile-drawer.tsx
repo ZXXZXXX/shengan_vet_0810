@@ -211,6 +211,7 @@ export function CattleProfileDrawer({
                     { key: "meds" as const, label: "用药记录" },
                     { key: "tests" as const, label: "检测记录" },
                     { key: "moves" as const, label: "转栏记录" },
+                    { key: "events" as const, label: "事件记录" },
                   ].map((t) => {
                     const active = tab === t.key;
                     return (
@@ -234,6 +235,8 @@ export function CattleProfileDrawer({
                     <DiagnosisHistory />
                   ) : tab === "tests" ? (
                     <TestHistory />
+                  ) : tab === "events" ? (
+                    <EventHistory />
                   ) : (
                     <MoveHistory />
                   )}
