@@ -74,7 +74,7 @@ export function CattleProfileDrawer({
   onOpenChange: (v: boolean) => void;
   cow: CattleProfile | null;
 }) {
-  const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves">("diagnoses");
+  const [tab, setTab] = useState<"diagnoses" | "meds" | "tests" | "moves" | "events">("diagnoses");
   const [observed, setObserved] = useState(false);
 
   if (!cow) return null;
