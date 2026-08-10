@@ -1,16 +1,13 @@
 import { useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UploadCloud, FileSpreadsheet, X, Download, CheckCircle2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 type Result = { total: number; success: number; failed: number };
 
-const ITEMS = ["尿液 PH 值", "酮病检测", "孕检", "体温", "子宫分泌物"];
 
 export function ImportExamResultsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
-  const [item, setItem] = useState(ITEMS[0]);
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const [importing, setImporting] = useState(false);
