@@ -286,35 +286,45 @@ function HomePage() {
                   查看预警详情 →
                 </button>
               </div>
-              <div className="mt-3 grid grid-cols-3 gap-3">
+              <div className="mt-3 grid grid-cols-3 gap-2">
                 {alertCounts.map((a, i) => {
                   const tone = ["--state-danger", "--state-alert", "--brand"][i % 3];
+                  const Icon = [PackageMinus, Beef, Activity][i % 3];
                   return (
                     <button
                       key={a.key}
                       type="button"
                       onClick={() => scrollToTopic("topic-alert")}
-                      className="group relative overflow-hidden rounded-xl bg-surface-subtle px-3.5 py-2.5 pl-4 text-left transition-colors hover:bg-[var(--brand-subtle)]"
+                      className="group flex items-center gap-2.5 rounded-xl border border-border bg-card px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--brand)_35%,transparent)] hover:shadow-card"
                     >
                       <span
-                        aria-hidden
-                        className="absolute inset-y-0 left-0 w-1 rounded-full"
-                        style={{ background: `var(${tone})` }}
-                      />
-                      <div className="text-body-sm text-text-secondary whitespace-nowrap">{a.key}</div>
-                      <div className="mt-1 flex items-baseline gap-1">
-                        <span
-                          className="text-[28px] leading-none font-medium tabular-nums"
-                          style={{ color: `var(${tone})` }}
-                        >
-                          {a.count}
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                        style={{
+                          background: `color-mix(in oklab, var(${tone}) 12%, transparent)`,
+                          color: `var(${tone})`,
+                        }}
+                      >
+                        <Icon className="h-4 w-4" strokeWidth={2} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-caption text-text-tertiary whitespace-nowrap">
+                          {a.key}
                         </span>
-                        <span className="text-body-sm text-text-tertiary">项</span>
-                      </div>
+                        <span className="flex items-baseline gap-0.5">
+                          <span
+                            className="text-[20px] leading-tight font-semibold tabular-nums"
+                            style={{ color: `var(${tone})` }}
+                          >
+                            {a.count}
+                          </span>
+                          <span className="text-caption text-text-tertiary">项</span>
+                        </span>
+                      </span>
                     </button>
                   );
                 })}
               </div>
+
 
             </div>
 
