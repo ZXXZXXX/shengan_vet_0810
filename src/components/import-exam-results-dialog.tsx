@@ -56,21 +56,8 @@ export function ImportExamResultsDialog({ open, onOpenChange }: { open: boolean;
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="space-y-1.5">
-            <div className="text-body-sm text-text-secondary">检测项目</div>
-            <Select value={item} onValueChange={setItem}>
-              <SelectTrigger className="h-9 text-body-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ITEMS.map((i) => (
-                  <SelectItem key={i} value={i} className="text-body-sm">
-                    {i}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+
+
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
