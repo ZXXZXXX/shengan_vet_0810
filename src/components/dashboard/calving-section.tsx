@@ -54,7 +54,7 @@ export function CalvingSection() {
     <SectionCard
       id="topic-calving"
       title="产犊专题"
-      desc={`本月产犊 ${total} 头`}
+      desc="\n"
       icon={<Baby className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={
         <div className="flex items-center gap-3 flex-wrap">
@@ -99,7 +99,7 @@ export function CalvingSection() {
             <>
               <p className="text-body-sm text-text-secondary mb-3">
                 （本月）产犊成活与死亡分布
-                <span className="text-caption text-text-tertiary ml-2">点击「成活」查看下钻</span>
+                <span className="text-caption text-text-tertiary ml-2"></span>
               </p>
               <div className="flex flex-col items-center gap-4">
                 <Donut
