@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Beef, Plus, Search, SlidersHorizontal, MoreHorizontal, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { CattleProfileDrawer, type CattleProfile } from "@/components/cattle-profile-drawer";
 
 export const Route = createFileRoute("/archive/cattle")({
   head: () => ({ meta: [{ title: "牛只信息 — 奇点智牧" }] }),
@@ -24,7 +26,38 @@ function healthTag(h: Health) {
   return h === "健康" ? "tag tag-success" : h === "观察中" ? "tag tag-warning" : "tag tag-danger";
 }
 
+const healthToProfile: Record<Health, CattleProfile["health"]> = {
+  健康: "健康",
+  观察中: "观察中",
+  治疗中: "治疗中",
+};
+
+function toProfile(c: (typeof cattle)[number]): CattleProfile {
+  const ageDays = Math.max(1, Math.round((Date.now() - new Date(c.birth).getTime()) / 86400000));
+  return {
+    ear: c.ear,
+    farm: c.farm,
+    barn: c.barn,
+    breed: c.breed,
+    sex: c.sex === "♀" ? "母" : "公",
+    type: c.barn.includes("犊牛") ? "犊牛" : "哺乳牛",
+    ageDays,
+    health: healthToProfile[c.health],
+    withdrawalDays: c.health === "治疗中" ? 3 : 0,
+    withdrawalUntil: "2026-08-13",
+    lactationDays: c.sex === "♀" ? 168 : 0,
+    pregnancyDays: c.health === "健康" && c.sex === "♀" ? 92 : 0,
+    parity: 3,
+  };
+}
+
 function CattlePage() {
+  const [current, setCurrent] = useState<CattleProfile | null>(null);
+  const [open, setOpen] = useState(false);
+  const openProfile = (c: (typeof cattle)[number]) => {
+    setCurrent(toProfile(c));
+    setOpen(true);
+  };
   return (
     <>
       <AppHeader title="牛只信息" breadcrumb={["基础档案", "牛只信息"]} />
@@ -73,7 +106,7 @@ function CattlePage() {
                 <div><span className={healthTag(c.health)}>{c.health}</span></div>
               </div>
               <div className="w-[140px] shrink-0 flex items-center justify-end gap-0.5">
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground">查看</Button>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground" onClick={() => openProfile(c)}>查看</Button>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary">编辑</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -92,6 +125,7 @@ function CattlePage() {
           ))}
         </Card>
       </main>
+      <CattleProfileDrawer open={open} onOpenChange={setOpen} cow={current} />
     </>
   );
 }
