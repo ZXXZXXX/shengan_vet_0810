@@ -128,10 +128,10 @@ export function WorkOrderSection() {
       }
     >
       <div className="h-full flex flex-col">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-          <span className="truncate text-body-sm text-text-secondary">（本月）{tab}状态分布</span>
+        <div className="flex justify-end">
           <span className="text-caption text-text-tertiary tabular-nums shrink-0">完成率 {rate}%</span>
         </div>
+
 
         <div className="mt-4 flex-1 grid grid-cols-1 xl:grid-cols-2 gap-6 items-center">
           <div className="flex flex-col items-center gap-3">
