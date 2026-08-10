@@ -317,11 +317,7 @@ function Panel({
 /* ---------------- 产奶趋势 ---------------- */
 function MilkChart() {
   const days = ["05-23", "05-24", "05-25", "05-26", "05-27", "05-28", "05-29"];
-  const shiftMeta = [
-    { name: "早班", color: "#00A14F" },
-    { name: "中班", color: "#FFB020" },
-    { name: "晚班", color: "#5B8FF9" },
-  ];
+  const shiftMeta = ["早班", "中班", "晚班"];
   const raw = [
     [12.1, 10.8, 9.5],
     [12.4, 11.0, 9.7],
@@ -331,60 +327,61 @@ function MilkChart() {
     [12.3, 10.7, 9.4],
     [12.6, 11.1, 9.8],
   ];
-  const series = shiftMeta.map((_, si) => raw.map((day) => day[si]));
-  const W = 320;
-  const H = 140;
-  const PAD_L = 24;
-  const PAD_R = 8;
-  const PAD_T = 8;
-  const PAD_B = 22;
-  const all = raw.flat();
-  const min = Math.floor(Math.min(...all) - 1);
-  const max = Math.ceil(Math.max(...all) + 1);
-  const xStep = (W - PAD_L - PAD_R) / (days.length - 1);
-  const yFor = (v: number) => PAD_T + (H - PAD_T - PAD_B) * (1 - (v - min) / (max - min));
-  const xFor = (i: number) => PAD_L + i * xStep;
+  const totals = raw.map((d) => d.reduce((a, b) => a + b, 0));
+  const avg = totals.reduce((a, b) => a + b, 0) / totals.length;
 
   return (
-    <div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[140px]">
-        {[0, 0.5, 1].map((t) => {
-          const y = PAD_T + (H - PAD_T - PAD_B) * t;
-          const v = (max - (max - min) * t).toFixed(0);
-          return (
-            <g key={t}>
-              <line x1={PAD_L} x2={W - PAD_R} y1={y} y2={y} stroke="var(--border)" strokeDasharray="2 3" />
-              <text x={0} y={y + 3} fontSize="9" fill="var(--text-tertiary)">
-                {v}
-              </text>
-            </g>
-          );
-        })}
-        {series.map((vals, si) => {
-          const d = vals.map((v, i) => `${i === 0 ? "M" : "L"}${xFor(i)},${yFor(v)}`).join(" ");
-          return (
-            <g key={si}>
-              <path d={d} fill="none" stroke={shiftMeta[si].color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-              {vals.map((v, i) => (
-                <circle key={i} cx={xFor(i)} cy={yFor(v)} r="2.2" fill={shiftMeta[si].color} />
-              ))}
-            </g>
-          );
-        })}
-        {days.map((d, di) => (
-          <text key={d} x={xFor(di)} y={H - 6} fontSize="9" fill="var(--text-tertiary)" textAnchor="middle">
-            {d.slice(3)}
-          </text>
-        ))}
-      </svg>
-      <div className="flex items-center justify-center gap-4 mt-1">
-        {shiftMeta.map((s) => (
-          <div key={s.name} className="inline-flex items-center gap-1 text-caption text-text-secondary">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: s.color }} />
-            {s.name}
-          </div>
-        ))}
-      </div>
+    <div className="overflow-x-auto">
+      <table className="w-full text-body-sm">
+        <thead>
+          <tr className="text-text-tertiary text-caption">
+            <th className="text-left font-normal py-2 pr-3">日期</th>
+            {shiftMeta.map((s) => (
+              <th key={s} className="text-right font-normal py-2 px-3">
+                {s}
+              </th>
+            ))}
+            <th className="text-right font-normal py-2 pl-3">日合计</th>
+            <th className="text-right font-normal py-2 pl-3">较均值</th>
+          </tr>
+        </thead>
+        <tbody>
+          {days.map((d, i) => {
+            const diff = totals[i] - avg;
+            return (
+              <tr key={d} className="border-t border-border">
+                <td className="py-2 pr-3 text-foreground">{d}</td>
+                {raw[i].map((v, si) => (
+                  <td key={si} className="py-2 px-3 text-right tabular-nums text-text-secondary">
+                    {v.toFixed(1)}
+                  </td>
+                ))}
+                <td className="py-2 pl-3 text-right tabular-nums font-medium text-foreground">
+                  {totals[i].toFixed(1)}
+                </td>
+                <td
+                  className={`py-2 pl-3 text-right tabular-nums ${
+                    diff >= 0 ? "text-primary" : "text-[#CF1322]"
+                  }`}
+                >
+                  {diff >= 0 ? "+" : ""}
+                  {diff.toFixed(1)}
+                </td>
+              </tr>
+            );
+          })}
+          <tr className="border-t border-border bg-muted/40">
+            <td className="py-2 pr-3 text-text-secondary">7 日均值</td>
+            {shiftMeta.map((_, si) => (
+              <td key={si} className="py-2 px-3 text-right tabular-nums text-text-secondary">
+                {(raw.reduce((a, d) => a + d[si], 0) / raw.length).toFixed(1)}
+              </td>
+            ))}
+            <td className="py-2 pl-3 text-right tabular-nums font-medium text-foreground">{avg.toFixed(1)}</td>
+            <td className="py-2 pl-3" />
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
