@@ -140,8 +140,8 @@ export function CattleProfileDrawer({
 
           </div>
 
-          {/* 基础信息：Web 端定义列表式栅格 */}
-          <dl className="mt-4 grid grid-cols-6 gap-x-4 gap-y-3 rounded-lg border border-border bg-[var(--surface-subtle,var(--muted))] px-4 py-3">
+          {/* 基础信息：规格表式栅格 */}
+          <dl className="mt-4 grid grid-cols-4 rounded-lg border-t border-l border-border bg-card overflow-hidden">
             <Field label="品种" value={cow.breed} />
             <Field label="性别" value={cow.sex} />
             <Field label="类别" value={cow.type} />
@@ -149,14 +149,13 @@ export function CattleProfileDrawer({
             <Field label="泌乳天数" value={`${cow.lactationDays} 天`} />
             <Field label="怀孕天数" value={cow.pregnancyDays > 0 ? `${cow.pregnancyDays} 天` : "—"} />
             <Field label="胎次" value={`${cow.parity} 胎`} />
-            <Field label="牧场" value={cow.farm} />
-            <Field label="牛舍" value={cow.barn} />
             <Field
               label="休药期"
               value={cow.withdrawalDays > 0 ? `剩 ${cow.withdrawalDays} 天` : "无"}
               tone={cow.withdrawalDays > 0 ? "danger" : "default"}
             />
           </dl>
+
         </header>
 
         {/* 内容：左右分栏 */}
