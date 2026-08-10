@@ -94,216 +94,247 @@ export function CattleProfileDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[520px] sm:max-w-[520px] p-0 flex flex-col gap-0">
-        {/* 头部 */}
-        <div className="bg-gradient-to-b from-primary to-[#00823F] px-6 pt-6 pb-5 text-primary-foreground relative overflow-hidden shrink-0">
-          <Beef className="absolute -right-6 -bottom-8 h-36 w-36 opacity-[0.08]" strokeWidth={1} />
-          <div className="relative flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="text-[26px] font-mono font-semibold leading-none tracking-tight">#{cow.ear}</div>
-              <div className="mt-2 inline-flex items-center gap-1 text-caption opacity-90">
-                <MapPin className="h-3 w-3 shrink-0" />
+      <SheetContent
+        side="right"
+        className="w-[920px] sm:max-w-[920px] p-0 flex flex-col gap-0 bg-[var(--bg-page,var(--background))]"
+      >
+        {/* 头部：Web 风格标题栏 —— 白底、左标题右操作 */}
+        <header className="shrink-0 bg-card border-b border-border px-6 pt-5 pb-4">
+          <div className="flex items-start justify-between gap-6">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5">
+                <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center shrink-0">
+                  <Beef className="h-[18px] w-[18px]" />
+                </span>
+                <h2 className="text-page-title text-foreground font-mono">#{cow.ear}</h2>
+                <span className={`h-6 px-2 rounded-md inline-flex items-center gap-1 text-caption font-medium ${healthCls}`}>
+                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                  {health}
+                </span>
+                {abnormal && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-6 px-2 text-caption font-normal gap-1">
+                        <MessageSquareWarning className="h-3.5 w-3.5" />
+                        异常反馈
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-36">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setObserved(true);
+                          markAlertHandled(cow.ear);
+                          toast.success("已转为观察中，次日 00:00 自动解除");
+                        }}
+                      >
+                        继续观察
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => toast.info("已跳转疾病上报流程")}>疾病上报</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
+              <div className="mt-1.5 pl-[46px] inline-flex items-center gap-1.5 text-body-sm text-text-secondary">
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
                 <span className="truncate">
-                  {cow.farm} · {cow.barn}
+                  {cow.farm} / {cow.barn}
                 </span>
               </div>
             </div>
-            <div className="shrink-0 inline-flex items-center gap-1.5">
-              <span className={`h-6 px-2 rounded-full inline-flex items-center gap-1 text-[11px] font-semibold ${healthCls}`}>
-                <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                {health}
-              </span>
-              {abnormal && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      aria-label="异常反馈"
-                      className="h-6 w-6 rounded-full bg-white/20 border border-white/25 inline-flex items-center justify-center"
-                    >
-                      <MessageSquareWarning className="h-3.5 w-3.5" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-36">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setObserved(true);
-                        markAlertHandled(cow.ear);
-                        toast.success("已转为观察中，次日 00:00 自动解除");
-                      }}
-                    >
-                      继续观察
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => toast.info("已跳转疾病上报流程")}>
-                      疾病上报
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+
+            <div className="shrink-0 flex items-center gap-2 pr-8">
+              <Button
+                variant="ghost"
+                className="h-9 gap-1.5 text-body-sm font-normal text-text-secondary"
+                onClick={() => toast.info(`查看 #${cow.ear} 的全部工单`)}
+              >
+                <ListChecks className="h-4 w-4" /> 全部工单
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="h-9 gap-1.5 text-body-sm font-normal">
+                    <FilePlus2 className="h-4 w-4 text-primary" /> 记录事件
+                    <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuItem onClick={() => toast.info("产犊记录")}>
+                    <Baby className="h-3.5 w-3.5 mr-2" /> 产犊记录
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toast.info("基础检查")}>
+                    <Stethoscope className="h-3.5 w-3.5 mr-2" /> 基础检查
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toast.info("转栏/转群")}>
+                    <ArrowRightLeft className="h-3.5 w-3.5 mr-2" /> 转栏/转群
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toast.info("离场记录")}>
+                    <LogOut className="h-3.5 w-3.5 mr-2" /> 离场记录
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button
+                className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
+                onClick={() => toast.info(`为 #${cow.ear} 发起疾病上报`)}
+              >
+                <ClipboardPlus className="h-4 w-4" /> 疾病上报
+              </Button>
             </div>
           </div>
 
-          <div className="relative mt-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 divide-y divide-white/10">
-            <div className="grid grid-cols-3 divide-x divide-white/10">
-              <HeaderInfo label="品种" value={cow.breed} />
-              <HeaderInfo label="类别" value={cow.type} />
-              <HeaderInfo label={cow.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
-            </div>
-            <div className="grid grid-cols-3 divide-x divide-white/10">
-              <HeaderInfo label="泌乳天数" value={`${cow.lactationDays} 天`} />
-              <HeaderInfo label="怀孕天数" value={cow.pregnancyDays > 0 ? `${cow.pregnancyDays} 天` : "—"} />
-              <HeaderInfo label="胎次" value={`${cow.parity} 胎`} />
-            </div>
-          </div>
+          {/* 基础信息：Web 端定义列表式栅格 */}
+          <dl className="mt-4 grid grid-cols-6 gap-x-4 gap-y-3 rounded-lg border border-border bg-[var(--surface-subtle,var(--muted))] px-4 py-3">
+            <Field label="品种" value={cow.breed} />
+            <Field label="性别" value={cow.sex} />
+            <Field label="类别" value={cow.type} />
+            <Field label={cow.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel} />
+            <Field label="泌乳天数" value={`${cow.lactationDays} 天`} />
+            <Field label="怀孕天数" value={cow.pregnancyDays > 0 ? `${cow.pregnancyDays} 天` : "—"} />
+            <Field label="胎次" value={`${cow.parity} 胎`} />
+            <Field label="牧场" value={cow.farm} />
+            <Field label="牛舍" value={cow.barn} />
+            <Field
+              label="休药期"
+              value={cow.withdrawalDays > 0 ? `剩 ${cow.withdrawalDays} 天` : "无"}
+              tone={cow.withdrawalDays > 0 ? "danger" : "default"}
+            />
+          </dl>
+        </header>
 
-          <button
-            type="button"
-            onClick={() => toast.info(`查看 #${cow.ear} 的全部工单`)}
-            className="relative mt-3 flex w-full items-center justify-center gap-1 h-9 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 text-body-sm font-medium"
-          >
-            <ListChecks className="h-4 w-4" />
-            查看全部工单
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* 内容 */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        {/* 内容：左右分栏 */}
+        <div className="flex-1 overflow-y-auto px-6 py-5">
           {cow.withdrawalDays > 0 && (
-            <div className="bg-[#FFF1F0] border border-[#FFA39E] rounded-lg px-3 py-2 flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#CF1322] min-w-0">
-                <Clock className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">休药期至 {cow.withdrawalUntil}</span>
-              </span>
-              <span className="ml-2 shrink-0 bg-[#FF4D4F] text-white text-caption px-1.5 py-0.5 rounded-full font-bold">
-                剩 {cow.withdrawalDays} 天
+            <div className="mb-4 rounded-lg border border-[#FFA39E] bg-[#FFF1F0] px-3 py-2 flex items-center gap-2">
+              <Clock className="h-4 w-4 shrink-0 text-[#CF1322]" />
+              <span className="text-body-sm text-[#CF1322]">
+                该牛只处于休药期，至 {cow.withdrawalUntil} 结束（剩 {cow.withdrawalDays} 天），期间产奶不可上市。
               </span>
             </div>
           )}
 
-          {/* 外接设备 */}
-          <section>
-            <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5 mb-2">
-              <Watch className="h-4 w-4 text-primary" /> 外接设备
-            </h3>
-            <div className="space-y-2">
-              {DEVICES.map((d) => (
-                <div key={d.id} className="rounded-xl bg-card border border-border p-3 flex items-center gap-2.5">
-                  <span
-                    className={`h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 ${
-                      d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
-                    }`}
-                  >
-                    <Radio className="h-4 w-4" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-body-sm text-foreground truncate">{d.name}</div>
-                    <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
-                  </div>
-                  <span className={d.status === "异常" ? "tag tag-danger" : d.status === "离线" ? "tag tag-warning" : "tag tag-success"}>
-                    {d.status}
-                  </span>
+          <div className="grid grid-cols-[1fr_300px] gap-5 items-start">
+            {/* 左：产奶趋势 + 历史记录 */}
+            <div className="space-y-5 min-w-0">
+              <Panel
+                title="近 7 日产奶趋势"
+                icon={<Activity className="h-4 w-4 text-primary" />}
+                extra={<span className="text-caption text-text-tertiary">单位：kg / 班次</span>}
+              >
+                <MilkChart />
+              </Panel>
+
+              <Panel title="历史记录" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="pt-0">
+                <div className="flex items-center gap-6 border-b border-border -mx-4 px-4">
+                  {[
+                    { key: "diagnoses" as const, label: "诊断记录" },
+                    { key: "meds" as const, label: "用药记录" },
+                    { key: "tests" as const, label: "检测记录" },
+                    { key: "moves" as const, label: "转栏记录" },
+                  ].map((t) => {
+                    const active = tab === t.key;
+                    return (
+                      <button
+                        key={t.key}
+                        onClick={() => setTab(t.key)}
+                        className={`relative h-10 text-body-sm transition-colors ${
+                          active ? "text-primary font-medium" : "text-text-secondary hover:text-foreground"
+                        }`}
+                      >
+                        {t.label}
+                        {active && <span className="absolute left-0 right-0 bottom-0 h-[2px] rounded-full bg-primary" />}
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
+                <div className="pt-4">
+                  {tab === "meds" ? (
+                    <MedicationHistory />
+                  ) : tab === "diagnoses" ? (
+                    <DiagnosisHistory />
+                  ) : tab === "tests" ? (
+                    <TestHistory />
+                  ) : (
+                    <MoveHistory />
+                  )}
+                </div>
+              </Panel>
             </div>
-          </section>
 
-          {/* 产奶数据 */}
-          <section>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
-                <Activity className="h-4 w-4 text-primary" /> 产奶数据
-              </h3>
-              <span className="text-caption text-text-tertiary">最近7天</span>
+            {/* 右：外接设备 */}
+            <div className="space-y-5">
+              <Panel title="外接设备" icon={<Watch className="h-4 w-4 text-primary" />}>
+                <div className="space-y-2">
+                  {DEVICES.map((d) => (
+                    <div key={d.id} className="rounded-lg border border-border px-3 py-2.5 flex items-center gap-2.5">
+                      <span
+                        className={`h-8 w-8 rounded-md inline-flex items-center justify-center shrink-0 ${
+                          d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
+                        }`}
+                      >
+                        <Radio className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-body-sm text-foreground truncate">{d.name}</div>
+                        <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
+                      </div>
+                      <span
+                        className={
+                          d.status === "异常" ? "tag tag-danger" : d.status === "离线" ? "tag tag-warning" : "tag tag-success"
+                        }
+                      >
+                        {d.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
             </div>
-            <div className="rounded-2xl bg-card border border-border p-4">
-              <MilkChart />
-            </div>
-          </section>
-
-          {/* Tabs */}
-          <section>
-            <div className="flex items-center gap-6 border-b border-border">
-              {[
-                { key: "diagnoses" as const, label: "诊断记录" },
-                { key: "meds" as const, label: "用药记录" },
-                { key: "tests" as const, label: "检测记录" },
-                { key: "moves" as const, label: "转栏记录" },
-              ].map((t) => {
-                const active = tab === t.key;
-                return (
-                  <button
-                    key={t.key}
-                    onClick={() => setTab(t.key)}
-                    className={`relative h-10 text-body-sm font-medium transition-colors ${
-                      active ? "text-foreground" : "text-text-tertiary"
-                    }`}
-                  >
-                    {t.label}
-                    {active && (
-                      <span className="absolute left-1/2 -translate-x-1/2 bottom-0 h-[2px] w-6 rounded-full bg-primary" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mt-3">
-              {tab === "meds" ? (
-                <MedicationHistory />
-              ) : tab === "diagnoses" ? (
-                <DiagnosisHistory />
-              ) : tab === "tests" ? (
-                <TestHistory />
-              ) : (
-                <MoveHistory />
-              )}
-            </div>
-          </section>
-        </div>
-
-        {/* 底部操作 */}
-        <div className="shrink-0 border-t border-border bg-card px-6 py-3 flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-10 gap-1.5 text-body-sm font-normal">
-                <FilePlus2 className="h-4 w-4 text-primary" /> 记录
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52">
-              <DropdownMenuItem onClick={() => toast.info("产犊记录")}>
-                <Baby className="h-3.5 w-3.5 mr-2" /> 产犊记录
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("基础检查")}>
-                <Stethoscope className="h-3.5 w-3.5 mr-2" /> 基础检查
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("转栏/转群")}>
-                <ArrowRightLeft className="h-3.5 w-3.5 mr-2" /> 转栏/转群
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("离场记录")}>
-                <LogOut className="h-3.5 w-3.5 mr-2" /> 离场记录
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button
-            className="flex-1 h-10 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground"
-            onClick={() => toast.info(`为 #${cow.ear} 发起疾病上报`)}
-          >
-            <ClipboardPlus className="h-4 w-4" /> 疾病上报
-          </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
   );
 }
 
-function HeaderInfo({ label, value }: { label: string; value: string }) {
+function Field({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "danger" }) {
   return (
-    <div className="min-w-0 px-3 py-2.5">
-      <div className="text-caption opacity-75">{label}</div>
-      <div className="text-body font-semibold truncate mt-1">{value}</div>
+    <div className="min-w-0">
+      <dt className="text-caption text-text-tertiary">{label}</dt>
+      <dd className={`text-body-sm mt-0.5 truncate ${tone === "danger" ? "text-[#CF1322] font-medium" : "text-foreground"}`}>
+        {value}
+      </dd>
     </div>
   );
 }
+
+function Panel({
+  title,
+  icon,
+  extra,
+  children,
+  bodyClassName = "",
+}: {
+  title: string;
+  icon?: React.ReactNode;
+  extra?: React.ReactNode;
+  children: React.ReactNode;
+  bodyClassName?: string;
+}) {
+  return (
+    <section className="rounded-lg border border-border bg-card">
+      <div className="flex items-center justify-between px-4 h-11 border-b border-border">
+        <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
+          {icon}
+          {title}
+        </h3>
+        {extra}
+      </div>
+      <div className={`p-4 ${bodyClassName}`}>{children}</div>
+    </section>
+  );
+}
+
 
 /* ---------------- 产奶趋势 ---------------- */
 function MilkChart() {
