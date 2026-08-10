@@ -287,16 +287,19 @@ export function LineTrend({
             <stop offset="100%" stopColor="var(--brand)" stopOpacity="0.16" />
           </linearGradient>
         </defs>
-        {activeIndex != null && activeIndex >= 0 && (
-          <rect
-            x={x(activeIndex) - (w - padL - padR) / Math.max(labels.length - 1, 1) / 2 + 6}
-            y={padT}
-            width={(w - padL - padR) / Math.max(labels.length - 1, 1) - 12}
-            height={h - padT - padB + 14}
-            rx={10}
-            fill="url(#trend-active-col)"
-          />
-        )}
+        {activeIndex != null && activeIndex >= 0 && (() => {
+          const step = (w - padL - padR) / Math.max(labels.length - 1, 1);
+          const cw = Math.min(step, (w - x(activeIndex)) * 2, x(activeIndex) * 2);
+          return (
+            <rect
+              x={x(activeIndex) - cw / 2}
+              y={padT}
+              width={cw}
+              height={h - padT}
+              fill="url(#trend-active-col)"
+            />
+          );
+        })()}
 
 
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
