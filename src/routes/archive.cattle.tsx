@@ -4,10 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Beef, Plus, Search, SlidersHorizontal, MoreHorizontal, Trash2, FilePlus2, Baby, Stethoscope, ArrowRightLeft, LogOut } from "lucide-react";
+import { Beef, Plus, Search, SlidersHorizontal, MoreHorizontal, Trash2, FilePlus2, Baby, Stethoscope, ArrowRightLeft, LogOut, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { CattleProfileDrawer, type CattleProfile } from "@/components/cattle-profile-drawer";
+import { ImportExamResultsDialog } from "@/components/import-exam-results-dialog";
 
 export const Route = createFileRoute("/archive/cattle")({
   head: () => ({ meta: [{ title: "牛只信息 — 奇点智牧" }] }),
@@ -83,6 +84,7 @@ function toProfile(c: Cow): CattleProfile {
 function CattlePage() {
   const [current, setCurrent] = useState<CattleProfile | null>(null);
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const openProfile = (c: Cow) => {
     setCurrent(toProfile(c));
     setOpen(true);
@@ -99,9 +101,14 @@ function CattlePage() {
             </div>
             <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal"><SlidersHorizontal className="h-3.5 w-3.5" /> 精细筛选</Button>
           </div>
-          <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
-            <Plus className="h-3.5 w-3.5" /> 新增牛只
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal" onClick={() => setImportOpen(true)}>
+              <Upload className="h-3.5 w-3.5" /> 导入检测结果
+            </Button>
+            <Button size="sm" className="h-9 gap-1.5 text-body-sm font-normal bg-primary hover:bg-[var(--brand-hover)] text-primary-foreground">
+              <Plus className="h-3.5 w-3.5" /> 新增牛只
+            </Button>
+          </div>
         </div>
 
         <Card className="border-border bg-card overflow-hidden">
@@ -173,6 +180,7 @@ function CattlePage() {
         </Card>
       </main>
       <CattleProfileDrawer open={open} onOpenChange={setOpen} cow={current} />
+      <ImportExamResultsDialog open={importOpen} onOpenChange={setImportOpen} />
     </>
   );
 }
