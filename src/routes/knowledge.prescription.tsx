@@ -1550,9 +1550,12 @@ function PrescriptionView({ r }: { r: Rx }) {
           当前应用于{r.category || "—"} {r.subType || "—"}（编号{r.code}）
         </div>
         {r.desc && <div className="text-body-sm text-text-secondary">{r.desc}</div>}
+        <div className="pt-2">
+          <StatScopeCard metrics={prescriptionStats(r.code)} />
+        </div>
       </div>
 
-      <StatScopeCard metrics={prescriptionStats(r.code)} />
+
 
       <ViewGroup label="处方描述">
         <ViewRow label="处方疗程" value={`${r.duration} 天`} />
