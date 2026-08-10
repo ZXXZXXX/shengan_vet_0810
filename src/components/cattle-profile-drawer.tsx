@@ -253,12 +253,12 @@ export function CattleProfileDrawer({
             >
               <div className="flex items-center gap-6 border-b border-border -mx-4 px-4 overflow-x-auto">
                 {[
+                  { key: "orders" as const, label: "全部工单" },
                   { key: "diagnoses" as const, label: "诊断记录" },
                   { key: "meds" as const, label: "用药记录" },
                   { key: "tests" as const, label: "检测记录" },
                   { key: "moves" as const, label: "转栏记录" },
                   { key: "events" as const, label: "产犊记录" },
-                  { key: "orders" as const, label: "全部工单" },
                 ].map((t) => {
                   const active = tab === t.key;
                   return (
