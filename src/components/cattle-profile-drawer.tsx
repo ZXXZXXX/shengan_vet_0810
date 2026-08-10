@@ -443,14 +443,10 @@ const ALL_MEDS: MedRecord[] = [
 const TODAY = new Date("2026-05-29");
 
 function MedicationHistory() {
-  const [expanded, setExpanded] = useState(true);
-  const { visible, recentCount, totalCount } = useMemo(() => {
-    const cutoff = new Date(TODAY);
-    cutoff.setDate(cutoff.getDate() - 20);
+  const { visible, totalCount } = useMemo(() => {
     const sorted = [...ALL_MEDS].sort((a, b) => (a.date < b.date ? 1 : -1));
-    const recent = sorted.filter((m) => new Date(m.date) >= cutoff);
-    return { visible: expanded ? sorted : recent, recentCount: recent.length, totalCount: sorted.length };
-  }, [expanded]);
+    return { visible: sorted, totalCount: sorted.length };
+  }, []);
   const groups = useMemo(() => {
     const map = new Map<string, MedRecord[]>();
     for (const m of visible) {
@@ -462,9 +458,8 @@ function MedicationHistory() {
 
   return (
     <div>
-      <div className="text-caption text-text-tertiary mb-2">
-        {expanded ? `全部 ${totalCount} 条` : `近 20 天 ${recentCount} 条`}
-      </div>
+      <div className="text-caption text-text-tertiary mb-2">全部 {totalCount} 条</div>
+
       <div className="relative pl-4">
         <span className="absolute left-[5px] top-1.5 bottom-1.5 w-px bg-border" />
         <div className="space-y-4">
@@ -488,17 +483,6 @@ function MedicationHistory() {
           ))}
         </div>
       </div>
-      {totalCount > recentCount && (
-        <div className="mt-3 flex justify-center">
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1"
-          >
-            {expanded ? "收起" : `展开全部 ${totalCount} 条`}
-            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
