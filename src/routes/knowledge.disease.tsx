@@ -41,6 +41,7 @@ import {
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { StatScopeCard, diseaseStats } from "@/components/stat-scope-card";
 
 export const Route = createFileRoute("/knowledge/disease")({
   head: () => ({ meta: [{ title: "疾病知识库 — 奇点智牧" }] }),
@@ -583,6 +584,8 @@ function EditForm({ value, onChange }: { value: Disease; onChange: (v: Disease) 
 
   return (
     <>
+      <StatScopeCard metrics={diseaseStats(value.code)} />
+
       <SectionCard title="基础信息" icon={<FileText className="h-4 w-4 text-primary" />}>
         <div className="grid grid-cols-2 gap-3">
           <Field label="疾病编码" hint="系统自动生成,不可修改">
