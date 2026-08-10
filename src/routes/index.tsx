@@ -278,7 +278,7 @@ function HomePage() {
 
             </div>
             <div className="flex flex-col items-end gap-2">
-              <span className="text-caption text-white/80">预警提示 · 点击查看专题</span>
+              
               <div className="flex items-center gap-2 flex-wrap justify-end">
                 {alertCounts.map((a) => (
                   <button
