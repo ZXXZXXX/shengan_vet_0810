@@ -69,7 +69,7 @@ export function DrugSection() {
     <SectionCard
       id="topic-drug"
       title="药品专题"
-      desc="本月头均用药费用 42.6 元"
+      desc="\n"
       icon={<Pill className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={
         <PeriodTabs
