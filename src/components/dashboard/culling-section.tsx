@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity } from "lucide-react";
-import { SectionCard, Donut, Legend, BarList, MiniStat, PeriodTabs } from "./charts";
+import { SectionCard, Donut, Legend, BarList, PeriodTabs } from "./charts";
 
 const groupDist = [
   { name: "成母牛", value: 26, color: "var(--brand)" },
@@ -27,8 +27,6 @@ const cullReasons = [
 export function CullingSection() {
   const [view, setView] = useState("死亡原因");
   const total = groupDist.reduce((s, d) => s + d.value, 0);
-  const deaths = deathReasons.reduce((s, d) => s + d.value, 0);
-  const culls = cullReasons.reduce((s, d) => s + d.value, 0);
   const isDeath = view === "死亡原因";
   return (
     <SectionCard
@@ -44,18 +42,6 @@ export function CullingSection() {
           <div className="flex flex-col items-center gap-4">
             <Donut data={groupDist} centerLabel="死淘合计" centerValue={String(total)} centerUnit="头" unit=" 头" />
             <Legend data={groupDist} unit=" 头" />
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <button type="button" onClick={() => setView("死亡原因")} className="text-left">
-              <div className={`rounded-xl transition-all ${isDeath ? "ring-2 ring-primary/40" : ""}`}>
-                <MiniStat label="死亡数" value={String(deaths)} unit="头" tone="var(--state-danger)" />
-              </div>
-            </button>
-            <button type="button" onClick={() => setView("淘汰原因")} className="text-left">
-              <div className={`rounded-xl transition-all ${!isDeath ? "ring-2 ring-primary/40" : ""}`}>
-                <MiniStat label="淘汰数" value={String(culls)} unit="头" tone="var(--state-warning)" />
-              </div>
-            </button>
           </div>
         </div>
         <div>
