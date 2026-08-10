@@ -21,7 +21,7 @@ import { CalvingSection } from "@/components/dashboard/calving-section";
 import { CullingSection } from "@/components/dashboard/culling-section";
 import { DrugSection } from "@/components/dashboard/drug-section";
 import { WorkOrderSection } from "@/components/dashboard/workorder-section";
-import { AlertSection } from "@/components/dashboard/alert-section";
+import { AlertSection, alertCounts } from "@/components/dashboard/alert-section";
 import { OpsSection } from "@/components/dashboard/ops-section";
 
 import {
