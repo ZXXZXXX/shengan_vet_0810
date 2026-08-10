@@ -181,6 +181,8 @@ export type WorkOrder = {
   reviewer?: string;
   reviewedAt?: string;
   executor?: string;
+  /** 执行人（可多人） */
+  executors?: string[];
   executedAt?: string;
   attachments?: WorkOrderAttachment[];
 };
@@ -214,8 +216,8 @@ const ALL_COLS: ColDef[] = [
   { key: "proposedAt", label: "提出时间", width: 160, isTime: true },
   { key: "reviewer", label: "诊断人", width: 100 },
   { key: "reviewedAt", label: "诊断时间", width: 160, isTime: true },
-  { key: "executor", label: "响应人", width: 100 },
-  { key: "executedAt", label: "响应时间", width: 160, isTime: true },
+  { key: "executor", label: "执行人", width: 180 },
+  { key: "executedAt", label: "执行时间", width: 160, isTime: true },
   { key: "action", label: "功能", width: 140, locked: true },
 ];
 
@@ -337,6 +339,14 @@ export function WorkOrderPage({
     if (ov && "executor" in ov) return ov.executor ?? undefined;
     return o.executor ?? o.who;
   };
+  /** 执行人列表（可多人） */
+  const effectiveExecutors = (o: WorkOrder): string[] => {
+    const ov = overrides[o.id];
+    if (ov && "executor" in ov) return ov.executor ? [ov.executor] : [];
+    if (o.executors?.length) return o.executors;
+    const single = o.executor ?? o.who;
+    return single ? [single] : [];
+  };
   const openMoreAction = (type: MoreActionType, o: WorkOrder) => {
     setActionReason("");
     setNewExecutor("");
@@ -452,7 +462,14 @@ export function WorkOrderPage({
     [orders],
   );
   const executors = useMemo(
-    () => Array.from(new Set(orders.map((o) => o.executor ?? o.who ?? "").filter(Boolean))),
+    () =>
+      Array.from(
+        new Set(
+          orders.flatMap((o) =>
+            o.executors?.length ? o.executors : [o.executor ?? o.who ?? ""],
+          ).filter(Boolean),
+        ),
+      ),
     [orders],
   );
 
@@ -470,7 +487,7 @@ export function WorkOrderPage({
       )
       .filter((o) => (advProposer === "all" ? true : o.proposer === advProposer))
       .filter((o) =>
-        advExecutor === "all" ? true : (o.executor ?? o.who) === advExecutor,
+        advExecutor === "all" ? true : effectiveExecutors(o).includes(advExecutor),
       );
 
     const key = sortKey;
@@ -576,12 +593,24 @@ export function WorkOrderPage({
             {o.reviewedAt ?? "—"}
           </span>
         );
-      case "executor":
+      case "executor": {
+        const list = effectiveExecutors(o);
+        if (list.length === 0)
+          return <span className="text-body-sm text-text-tertiary">—</span>;
+        const shown = list.slice(0, 2);
+        const rest = list.length - shown.length;
         return (
-          <span className="text-body-sm text-text-secondary">
-            {effectiveExecutor(o) ?? "—"}
+          <span
+            className="inline-flex items-center gap-1 max-w-full"
+            title={list.join("、")}
+          >
+            <span className="text-body-sm text-text-secondary truncate">
+              {shown.join("、")}
+            </span>
+            {rest > 0 && <span className="tag tag-muted shrink-0">+{rest}</span>}
           </span>
         );
+      }
       case "executedAt":
         return (
           <span className="text-body-sm text-text-secondary tabular-nums">
@@ -729,7 +758,7 @@ export function WorkOrderPage({
                 </Select>
               </div>
               <div>
-                <div className="text-caption text-text-tertiary mb-1.5">响应人</div>
+                <div className="text-caption text-text-tertiary mb-1.5">执行人</div>
                 <Select value={advExecutor} onValueChange={setAdvExecutor}>
                   <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -1251,10 +1280,13 @@ export function WorkOrderPage({
                 <section className="space-y-3">
                   <SectionHeader icon={<ClipboardList className="h-3.5 w-3.5" />} title="诊断与执行记录" />
                   <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
-                    <Field label="负责人" value={detail.executor ?? detail.who ?? "—"} />
+                    <Field
+                      label={`执行人${effectiveExecutors(detail).length > 1 ? `（${effectiveExecutors(detail).length} 人）` : ""}`}
+                      value={effectiveExecutors(detail).join("、") || "—"}
+                    />
                     <Field label="诊断人" value={detail.reviewer ?? "—"} />
                     <Field label="诊断时间" value={detail.reviewedAt ?? "—"} />
-                    <Field label="响应时间" value={detail.executedAt ?? "—"} />
+                    <Field label="执行时间" value={detail.executedAt ?? "—"} />
                   </div>
                 </section>
               )}
@@ -1405,7 +1437,7 @@ export function WorkOrderPage({
             <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-1">
               <div className="text-caption text-text-tertiary">
                 {assignExecutor === "__none__"
-                  ? "未指定执行人，工单将进入未指派池，由首位响应者承接。"
+                  ? "未指定执行人，工单将进入未指派池，稍后再指派执行人。"
                   : `执行人：${assignExecutor}，提交后直接派发。`}
               </div>
             </div>
@@ -2076,7 +2108,10 @@ export function makeOrders(
     const executedAt = new Date(proposedAt.getTime() + 8 * 60 * 60 * 1000);
     const proposer = pick(proposersPool, i);
     const reviewer = pick(reviewersPool, i);
-    const executor = pick(executorsPool, i);
+    // 执行人可能多人（1~7 人）
+    const execCount = [1, 1, 2, 3, 5, 7, 4][i % 7];
+    const execList = Array.from({ length: execCount }, (_, k) => pick(executorsPool, i + k));
+    const executors = Array.from(new Set(execList));
     // 媒体附件：每条工单按索引轮换三种媒体组合，保证演示多样性
     const attachmentSets: WorkOrderAttachment[][] = [
       [
@@ -2108,7 +2143,8 @@ export function makeOrders(
       order.reviewedAt = fmt(reviewedAt);
     }
     if (status === "执行中" || status === "已完成") {
-      order.executor = executor;
+      order.executor = executors[0];
+      order.executors = executors;
       order.executedAt = fmt(executedAt);
     }
     return order;
