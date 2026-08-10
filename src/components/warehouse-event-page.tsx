@@ -315,11 +315,6 @@ export function WarehouseEventPage<S extends string>({
 
   const activeStatus = statuses.find((s) => s.key === active)!;
   const detailStatus = detail ? statuses.find((s) => s.key === detail.status) : null;
-  const gridCols = statuses.length === 2
-    ? "grid-cols-2"
-    : statuses.length === 3
-      ? "grid-cols-2 md:grid-cols-3"
-      : "grid-cols-2 md:grid-cols-4";
 
   return (
     <TooltipProvider delayDuration={200}>
