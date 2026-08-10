@@ -141,6 +141,7 @@ export function WarehouseEventPage<S extends string>({
   searchPlaceholder = "按编号 / 物资 / 描述搜索",
   createLabel,
   onCreate,
+  hideTabs,
   renderDetailActions,
   reviewStatus,
   onReview,
