@@ -209,7 +209,29 @@ export function CattleProfileDrawer({
                   ))}
                 </div>
               </Panel>
+
+              <Panel title="检查数据" icon={<ListChecks className="h-4 w-4 text-primary" />}>
+                <div className="space-y-1">
+                  {EXAM_DATA.map((e) => (
+                    <div
+                      key={e.name}
+                      className="flex items-center justify-between gap-2 py-1.5 border-b border-border last:border-0"
+                    >
+                      <span className="text-body-sm text-text-secondary shrink-0">{e.name}</span>
+                      <span className="min-w-0 flex items-center gap-2">
+                        <span
+                          className={`text-body-sm truncate ${e.abnormal ? "text-[#CF1322] font-medium" : "text-foreground"}`}
+                        >
+                          {e.result}
+                        </span>
+                        <span className="text-caption text-text-tertiary tabular-nums shrink-0">{e.date}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
             </div>
+
           </div>
 
           {/* 历史记录：整宽贯穿 */}
