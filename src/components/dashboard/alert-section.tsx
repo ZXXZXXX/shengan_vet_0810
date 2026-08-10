@@ -33,8 +33,11 @@ const groups: { key: string; icon: typeof AlertTriangle; items: Item[] }[] = [
   },
 ];
 
+export const alertCounts = groups.map((g) => ({ key: g.key, count: g.items.length }));
+
 export function AlertSection() {
   const total = groups.reduce((s, g) => s + g.items.length, 0);
+
   return (
     <SectionCard
       id="topic-alert"
