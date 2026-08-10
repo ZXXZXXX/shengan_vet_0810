@@ -758,7 +758,7 @@ export function WorkOrderPage({
                 </Select>
               </div>
               <div>
-                <div className="text-caption text-text-tertiary mb-1.5">响应人</div>
+                <div className="text-caption text-text-tertiary mb-1.5">执行人</div>
                 <Select value={advExecutor} onValueChange={setAdvExecutor}>
                   <SelectTrigger className="h-9 text-body-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
