@@ -110,19 +110,19 @@ export function Donut({
 export function Legend({ data, unit = "" }: { data: Slice[]; unit?: string }) {
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
   return (
-    <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+    <div className="mx-auto w-full max-w-[300px] flex flex-col gap-0.5">
       {data.map((s, i) => (
-        <div key={s.name} className="flex items-center gap-2 py-1.5">
+        <div key={s.name} className="flex items-center gap-2 py-1">
           <span
-            className="h-2.5 w-2.5 rounded-sm shrink-0"
+            className="h-2 w-2 rounded-sm shrink-0"
             style={{ background: s.color ?? PALETTE[i % PALETTE.length] }}
           />
-          <span className="text-body-sm text-foreground flex-1 min-w-0 truncate">{s.name}</span>
-          <span className="text-body-sm text-text-secondary tabular-nums">
+          <span className="text-caption text-foreground flex-1 min-w-0 truncate">{s.name}</span>
+          <span className="text-caption text-text-secondary tabular-nums">
             {s.value.toLocaleString()}
             {unit}
           </span>
-          <span className="text-caption text-text-tertiary tabular-nums w-12 text-right">
+          <span className="text-caption text-text-tertiary tabular-nums w-10 text-right">
             {((s.value / total) * 100).toFixed(1)}%
           </span>
         </div>
