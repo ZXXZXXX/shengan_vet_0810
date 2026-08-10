@@ -4,10 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Beef, Plus, Search, SlidersHorizontal, MoreHorizontal, Trash2, FilePlus2, Baby, Stethoscope, ArrowRightLeft, LogOut } from "lucide-react";
+import { Beef, Plus, Search, SlidersHorizontal, MoreHorizontal, Trash2, FilePlus2, Baby, Stethoscope, ArrowRightLeft, LogOut, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { CattleProfileDrawer, type CattleProfile } from "@/components/cattle-profile-drawer";
+import { ImportExamResultsDialog } from "@/components/import-exam-results-dialog";
 
 export const Route = createFileRoute("/archive/cattle")({
   head: () => ({ meta: [{ title: "牛只信息 — 奇点智牧" }] }),
