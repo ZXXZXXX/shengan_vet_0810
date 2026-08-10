@@ -41,11 +41,6 @@ function healthTag(h: Health) {
   return h === "健康" ? "tag tag-success" : h === "观察中" ? "tag tag-warning" : "tag tag-danger";
 }
 
-function stateTag(s: DeviceState) {
-  if (s === "正常") return "tag tag-success";
-  if (s === "异常") return "tag tag-danger";
-  return "text-body-sm text-text-tertiary";
-}
 
 function ageLabelOf(birth: string) {
   const days = Math.max(1, Math.round((Date.now() - new Date(birth).getTime()) / 86400000));
