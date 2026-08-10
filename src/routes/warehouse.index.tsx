@@ -25,12 +25,12 @@ type Item = {
 };
 
 const inventory: Item[] = [
-  { sku: "FD-0021", name: "泌乳期精饲料", cat: "饲料", stock: 142, min: 200, unit: "袋", loc: "A-01", expiry: "2026-08", status: "余量紧张" },
-  { sku: "MD-0108", name: "乳房炎抗生素 5mg", cat: "兽药", stock: 86, min: 50, unit: "盒", loc: "C-12", expiry: "2026-11", status: "物资正常" },
-  { sku: "FD-0015", name: "犊牛代乳粉", cat: "饲料", stock: 28, min: 40, unit: "袋", loc: "A-04", expiry: "2026-07", status: "物资临期" },
-  { sku: "RG-0042", name: "体温检测试纸", cat: "试剂耗材", stock: 320, min: 100, unit: "盒", loc: "B-08", expiry: "2027-03", status: "物资正常" },
-  { sku: "MD-0214", name: "免疫疫苗 A 型", cat: "兽药", stock: 12, min: 30, unit: "支", loc: "C-02", expiry: "2026-06", status: "余量紧张" },
-  { sku: "GN-0073", name: "挤奶杯组配件", cat: "通用物资", stock: 56, min: 20, unit: "件", loc: "D-15", expiry: "—", status: "物资正常" },
+  { sku: "MD-0108", name: "乳房炎抗生素 5mg", cat: "抗生素", stock: 86, min: 50, unit: "盒", loc: "C-12", expiry: "2026-11", status: "物资正常" },
+  { sku: "MD-0214", name: "口蹄疫疫苗 A 型", cat: "疫苗", stock: 12, min: 30, unit: "支", loc: "C-02", expiry: "2026-06", status: "余量紧张" },
+  { sku: "MD-0306", name: "伊维菌素注射液", cat: "驱虫药", stock: 48, min: 20, unit: "瓶", loc: "C-05", expiry: "2026-07", status: "物资临期" },
+  { sku: "MD-0412", name: "复合维生素注射液", cat: "营养类", stock: 120, min: 60, unit: "支", loc: "C-08", expiry: "2027-02", status: "物资正常" },
+  { sku: "MD-0521", name: "戊二醛消毒液", cat: "消毒类", stock: 18, min: 30, unit: "L", loc: "C-16", expiry: "2026-12", status: "余量紧张" },
+  { sku: "MD-0633", name: "氟尼新葡甲胺注射液", cat: "解热镇痛", stock: 64, min: 25, unit: "瓶", loc: "C-09", expiry: "2026-10", status: "物资正常" },
 ];
 
 function statusTag(s: Status) {
@@ -49,9 +49,9 @@ function InventoryPage() {
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-tertiary" />
-              <Input placeholder="按 SKU / 物资名称搜索" className="h-9 w-72 pl-9 text-body-sm bg-card border-border" />
+              <Input placeholder="按 SKU / 药品名称搜索" className="h-9 w-72 pl-9 text-body-sm bg-card border-border" />
             </div>
-            <Button variant="outline" size="sm" className="h-9 text-body-sm font-normal">全部分类</Button>
+            <Button variant="outline" size="sm" className="h-9 text-body-sm font-normal">全部药品分类</Button>
             <Button variant="outline" size="sm" className="h-9 gap-1.5 text-body-sm font-normal">
               <Filter className="h-3.5 w-3.5" /> 筛选
             </Button>
@@ -66,7 +66,7 @@ function InventoryPage() {
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
             <div className="grid grid-cols-5 gap-4 flex-1 min-w-0">
-              <div>物资</div>
+              <div>药品</div>
               <div>库存</div>
               <div>库位</div>
               <div>效期</div>
