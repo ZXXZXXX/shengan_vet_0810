@@ -28,7 +28,7 @@ export function SectionCard({
   desc?: string;
 }) {
   return (
-    <Card id={id} className="border-border bg-card scroll-mt-24">
+    <Card id={id} className="border-border bg-card scroll-mt-24 h-full flex flex-col">
       <div className="p-6 pb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="flex min-w-0 items-center gap-2">
           {icon}
@@ -37,7 +37,7 @@ export function SectionCard({
         </div>
         {extra}
       </div>
-      <div className="px-6 pb-6">{children}</div>
+      <div className="px-6 pb-6 flex-1">{children}</div>
     </Card>
   );
 }

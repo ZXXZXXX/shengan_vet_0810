@@ -413,7 +413,7 @@ function HomePage() {
         </div>
 
         {/* 1 牛群专题 + 2 产犊专题 */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-stretch">
           <HerdSection />
           <CalvingSection />
         </div>
