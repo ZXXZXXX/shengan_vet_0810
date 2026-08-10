@@ -339,6 +339,14 @@ export function WorkOrderPage({
     if (ov && "executor" in ov) return ov.executor ?? undefined;
     return o.executor ?? o.who;
   };
+  /** 执行人列表（可多人） */
+  const effectiveExecutors = (o: WorkOrder): string[] => {
+    const ov = overrides[o.id];
+    if (ov && "executor" in ov) return ov.executor ? [ov.executor] : [];
+    if (o.executors?.length) return o.executors;
+    const single = o.executor ?? o.who;
+    return single ? [single] : [];
+  };
   const openMoreAction = (type: MoreActionType, o: WorkOrder) => {
     setActionReason("");
     setNewExecutor("");
