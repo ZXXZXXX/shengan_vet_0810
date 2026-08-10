@@ -1280,10 +1280,13 @@ export function WorkOrderPage({
                 <section className="space-y-3">
                   <SectionHeader icon={<ClipboardList className="h-3.5 w-3.5" />} title="诊断与执行记录" />
                   <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-border p-4 bg-surface-subtle">
-                    <Field label="负责人" value={detail.executor ?? detail.who ?? "—"} />
+                    <Field
+                      label={`执行人${effectiveExecutors(detail).length > 1 ? `（${effectiveExecutors(detail).length} 人）` : ""}`}
+                      value={effectiveExecutors(detail).join("、") || "—"}
+                    />
                     <Field label="诊断人" value={detail.reviewer ?? "—"} />
                     <Field label="诊断时间" value={detail.reviewedAt ?? "—"} />
-                    <Field label="响应时间" value={detail.executedAt ?? "—"} />
+                    <Field label="执行时间" value={detail.executedAt ?? "—"} />
                   </div>
                 </section>
               )}
