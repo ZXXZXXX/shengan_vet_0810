@@ -180,6 +180,7 @@ function CattlePage() {
         </Card>
       </main>
       <CattleProfileDrawer open={open} onOpenChange={setOpen} cow={current} />
+      <ImportExamResultsDialog open={importOpen} onOpenChange={setImportOpen} />
     </>
   );
 }
