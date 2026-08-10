@@ -93,7 +93,7 @@ export type ReviewConclusion = {
   conclusionNote: string;
 };
 
-type WorkStatus = "待诊断" | "待响应" | "执行中" | "已完成";
+type WorkStatus = "待诊断" | "执行中" | "已完成";
 
 export type MaterialItem = {
   id: string;
@@ -222,7 +222,6 @@ const ALL_COLS: ColDef[] = [
 type StatusKey = WorkStatus | "已终止";
 const statusList: { key: StatusKey; label: string; icon: typeof ClipboardList; tone: string }[] = [
   { key: "待诊断", label: "待诊断", icon: ClipboardList, tone: "warning" },
-  { key: "待响应", label: "待响应", icon: PlayCircle, tone: "pending" },
   { key: "执行中", label: "执行中", icon: PlayCircle, tone: "info" },
   
   { key: "已完成", label: "已完成", icon: CheckCircle2, tone: "success" },
@@ -588,11 +587,11 @@ export function WorkOrderPage({
       case "action": {
         const st = effectiveStatus(o);
         const exec = effectiveExecutor(o);
-        // 终止：已通过诊断后、未完成前 → 执行中 / 待响应
-        const canTerminate = st === "执行中" || st === "待响应";
-        // 转派 / 释放：已指定或已响应但未完成 → 有执行人且为 执行中/待响应
-        const canTransfer = (st === "执行中" || st === "待响应") && !!exec;
-        const canRelease = (st === "执行中" || st === "待响应") && !!exec;
+        // 终止：已通过诊断后、未完成前 → 执行中
+        const canTerminate = st === "执行中";
+        // 转派 / 释放：执行中且有执行人
+        const canTransfer = st === "执行中" && !!exec;
+        const canRelease = st === "执行中" && !!exec;
         const hasMore = canTerminate || canTransfer || canRelease;
         const MoreBtn = hasMore ? (
           <DropdownMenu>
@@ -1279,7 +1278,7 @@ export function WorkOrderPage({
                   <SectionHeader icon={<UserPlus className="h-3.5 w-3.5" />} title="指派执行人" hint="选填" />
                   <div className="rounded-md border border-border bg-card p-4">
                     <div className="text-caption text-text-tertiary mb-1.5">
-                      指派执行人 <span className="text-text-tertiary">（留空则进入待响应池）</span>
+                      指派执行人 <span className="text-text-tertiary">（留空则进入未指派池）</span>
                     </div>
                     <input
                       list="executor-options"
@@ -1459,7 +1458,7 @@ export function WorkOrderPage({
             <div className="rounded-md bg-surface-subtle border border-border p-3 space-y-1">
               <div className="text-caption text-text-tertiary">
                 {assignExecutor === "__none__"
-                  ? "未指定执行人，工单将进入待响应池，由首位响应者承接。"
+                  ? "未指定执行人，工单将进入未指派池，由首位响应者承接。"
                   : `执行人：${assignExecutor}，提交后直接派发。`}
               </div>
             </div>
@@ -1579,7 +1578,7 @@ export function WorkOrderPage({
                     ...m,
                     [moreAction.order.id]: { ...m[moreAction.order.id], executor: null },
                   }));
-                  toast.success("已释放，回到待响应池");
+                  toast.success("已释放，回到未指派池");
                 }
                 closeMoreAction();
               }}
@@ -2068,7 +2067,7 @@ function pick<T>(arr: T[], i: number): T { return arr[i % arr.length]; }
 
 /**
  * 生成 15 条 mock 工单：
- * - 状态按 [待诊断, 待响应, 执行中, 已完成] 循环
+ * - 状态按 [待诊断, 执行中, 已完成] 循环
  * - 提出时间从今天起向前递推（覆盖今天 / 7天 / 30天 / 更早）
  * - 工单编号 = 类型拼音首字母 + 月日 + 当日该类下序号（两位数字）
  */
@@ -2076,7 +2075,7 @@ export function makeOrders(
   prefix: string,
   events: { target: string; event: string; desc: string }[],
 ): WorkOrder[] {
-  const statuses: WorkStatus[] = ["待诊断", "待响应", "执行中", "已完成"];
+  const statuses: WorkStatus[] = ["待诊断", "执行中", "已完成"];
   const now = new Date();
   // 提出时间间隔（小时）：覆盖今天 / 7天 / 30天 / 更早
   const offsetsH = [2, 6, 20, 30, 52, 76, 100, 140, 200, 280, 360, 480, 600, 720, 840];
