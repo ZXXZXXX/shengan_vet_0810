@@ -250,73 +250,85 @@ function HomePage() {
     <>
       <AppHeader title="首页总览" breadcrumb={["首页"]} />
       <main className="flex-1 px-6 py-6 space-y-5">
-        {/* Hero greeting — 加强视觉冲击 */}
-        <Card className="relative border-0 overflow-hidden text-white shadow-[0_20px_60px_-30px_color-mix(in_oklab,var(--brand)_70%,transparent)]">
-          {/* 背景图 */}
-          <img
-            src={grasslandHero}
-            alt=""
-            aria-hidden
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+        {/* Hero greeting — 浅色数据台 */}
+        <Card className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-[0_18px_50px_-32px_color-mix(in_oklab,var(--brand)_60%,transparent)]">
+          {/* 右侧插画 */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 select-none">
+            <img src={grasslandHero} alt="" aria-hidden className="h-full w-full object-cover opacity-45" />
+            <div className="absolute inset-0 bg-gradient-to-r from-card via-card/70 to-transparent" />
+          </div>
 
+          <div className="relative z-10 p-7 flex flex-col gap-6">
+            {/* 顶部元信息 */}
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--brand-subtle)] text-[var(--brand)] text-caption font-medium">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
+                系统正常运行
+              </span>
+              <span className="inline-flex items-center gap-2 text-caption text-text-tertiary">
+                <span>2026/05/12 周二</span>
+                <span className="h-1 w-1 rounded-full bg-border" />
+                <span>1 号牧场</span>
+              </span>
+            </div>
 
-          <div className="relative p-7 flex items-center justify-between gap-6 flex-wrap">
-            <div className="max-w-[640px]">
-              <div className="inline-flex items-center gap-2 text-caption text-white/85 mb-2">
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--state-success)] shadow-[0_0_8px_var(--state-success)]" />
-                  系统正常
-                </span>
-                <span>2026/05/12 周二 · 1 号牧场</span>
+            {/* 问候 + 出勤 */}
+            <div className="flex items-end justify-between gap-8 flex-wrap">
+              <div className="space-y-1">
+                <h2 className="text-page-title font-medium text-text-primary">早上好，场长张磊</h2>
+                <p className="text-body-sm text-text-secondary">今日牧场整体运行平稳，请关注下方预警与出勤情况。</p>
               </div>
-              <h2 className="text-page-title font-medium drop-shadow-sm">
-                早上好，场长张磊
-              </h2>
-              <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-1.5">
+
+              <div className="flex items-end gap-6">
                 {[
-                  { label: "上午场", signed: 6, absent: 1, leave: 1 },
-                  { label: "下午场", signed: 5, absent: 2, leave: 1 },
-                ].map((s) => (
-                  <div key={s.label} className="inline-flex items-center gap-2 text-body text-white/85">
-                    <span className="text-caption px-2 py-0.5 rounded-full bg-white/15 border border-white/20">{s.label}</span>
-                    <span>签到 <span className="text-white font-medium tabular-nums">{s.signed}</span></span>
-                    <span className="text-white/40">·</span>
-                    <span>未签到 <span className="text-white font-medium tabular-nums">{s.absent}</span></span>
-                    <span className="text-white/40">·</span>
-                    <span>请假 <span className="text-white font-medium tabular-nums">{s.leave}</span></span>
+                  { label: "上午场出勤", signed: 6, absent: 1, leave: 1 },
+                  { label: "下午场出勤", signed: 5, absent: 2, leave: 1 },
+                ].map((s, i) => (
+                  <div key={s.label} className="flex items-end gap-6">
+                    {i > 0 && <div className="w-px h-10 bg-border mb-1" />}
+                    <div className="space-y-2">
+                      <div className="text-caption text-text-tertiary">{s.label}</div>
+                      <div className="flex items-baseline gap-4">
+                        {[
+                          { n: s.signed, t: "已签", c: "text-text-primary" },
+                          { n: s.absent, t: "未签", c: "text-[var(--state-danger)]" },
+                          { n: s.leave, t: "请假", c: "text-[var(--state-alert)]" },
+                        ].map((m) => (
+                          <div key={m.t} className="flex flex-col items-start">
+                            <span className={`text-card-title font-medium tabular-nums leading-none ${m.c}`}>{m.n}</span>
+                            <span className="text-caption text-text-tertiary mt-1">{m.t}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
-
-
             </div>
-            <div className="flex flex-col items-end gap-3">
-              
-              <div className="flex items-center gap-2.5 flex-wrap justify-end">
+
+            {/* 预警 + 操作 */}
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-3 flex-wrap">
                 {alertCounts.map((a) => (
                   <button
                     key={a.key}
                     type="button"
                     onClick={() => scrollToTopic("topic-alert")}
-                    className="inline-flex items-center gap-2.5 h-12 pl-3.5 pr-4 rounded-xl bg-white/95 hover:bg-white shadow-[0_6px_20px_-8px_rgba(0,0,0,0.45)] transition-colors"
+                    className="group inline-flex items-center gap-3 rounded-xl border border-border bg-muted/60 hover:bg-[var(--brand-subtle)] hover:border-[var(--brand)]/30 px-3.5 py-2 transition-colors"
                   >
-                    <AlertTriangle className="h-4 w-4 text-[var(--state-warning)]" />
-                    <span className="text-body-sm text-text-secondary">{a.key}</span>
-                    <span className="text-page-title font-medium tabular-nums leading-none text-[var(--state-danger)]">
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--state-danger)] text-card-title font-medium tabular-nums text-white">
                       {a.count}
                     </span>
-                    <span className="text-caption text-text-tertiary">项</span>
+                    <span className="text-left">
+                      <span className="block text-body-sm text-text-primary">{a.key}</span>
+                      <span className="block text-caption text-text-tertiary">点击查看专题</span>
+                    </span>
                   </button>
                 ))}
               </div>
 
-              <div className="flex items-center gap-2 justify-end">
-                <Button
-                  variant="outline"
-                  className="h-9 bg-white/10 hover:bg-white/20 text-white border-white/30 hover:text-white"
-                  onClick={() => setAttendanceOpen(true)}
-                >
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" className="h-9" onClick={() => setAttendanceOpen(true)}>
                   出勤明细
                 </Button>
                 <Button className="h-9" onClick={() => scrollToTopic("topic-alert")}>
@@ -324,10 +336,9 @@ function HomePage() {
                 </Button>
               </div>
             </div>
-
-
           </div>
         </Card>
+
 
         {/* 报表口径切换 */}
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
