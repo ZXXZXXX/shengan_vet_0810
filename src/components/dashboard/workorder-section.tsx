@@ -128,10 +128,10 @@ export function WorkOrderSection() {
       }
     >
       <div className="h-full flex flex-col">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-          <span className="truncate text-body-sm text-text-secondary">（本月）{tab}状态分布</span>
+        <div className="flex justify-end">
           <span className="text-caption text-text-tertiary tabular-nums shrink-0">完成率 {rate}%</span>
         </div>
+
 
         <div className="mt-4 flex-1 grid grid-cols-1 xl:grid-cols-2 gap-6 items-center">
           <div className="flex flex-col items-center gap-3">
@@ -145,7 +145,7 @@ export function WorkOrderSection() {
               onSliceClick={(_, i) => setActive(ORDER[i]!)}
             />
             <Legend data={slices} />
-            <p className="text-caption text-text-tertiary">点击扇形查看该状态各类工单</p>
+            
           </div>
 
           <div>
@@ -161,14 +161,14 @@ export function WorkOrderSection() {
                     返回
                   </button>
                   <span className="text-body-sm text-text-secondary">
-                    （本月）{cur.name}工单分布 · {cur.value} 单
+                    {cur.name}工单分布 · {cur.value} 单
                   </span>
                 </div>
                 <BarList data={cur.byType.map((d) => ({ ...d, color: cur.color }))} unit=" 单" />
               </>
             ) : (
               <>
-                <p className="text-body-sm text-text-secondary mb-3">（本月）逾期工单分布</p>
+                <p className="text-body-sm text-text-secondary mb-3">逾期工单分布</p>
                 <BarList
                   data={s.status.overdue.byType.map((d) => ({ ...d, color: "var(--state-danger)" }))}
                   unit=" 单"
