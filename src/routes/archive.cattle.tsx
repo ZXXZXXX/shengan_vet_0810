@@ -64,14 +64,14 @@ function toProfile(c: Cow): CattleProfile {
     barn: c.barn,
     breed: c.breed,
     sex: c.sex === "♀" ? "母" : "公",
-    type: c.barn.includes("犊牛") ? "犊牛" : "哺乳牛",
+    type: c.type,
     ageDays,
     health: healthToProfile[c.health],
     withdrawalDays: c.health === "治疗中" ? 3 : 0,
     withdrawalUntil: "2026-08-13",
     lactationDays: c.sex === "♀" ? 168 : 0,
     pregnancyDays: c.health === "健康" && c.sex === "♀" ? 92 : 0,
-    parity: 3,
+    parity: c.parity,
   };
 }
 
