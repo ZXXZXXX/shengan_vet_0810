@@ -692,59 +692,23 @@ export function WorkOrderPage({
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="flex items-center gap-1 flex-wrap border-b border-border">
           {statusList.map((s) => {
             const isActive = active === s.key;
-            const toneColor: Record<string, string> = {
-              warning: "var(--state-warning)",
-              pending: "var(--text-secondary)",
-              info: "var(--effect-ai-cyan)",
-              danger: "var(--state-danger)",
-              success: "var(--state-success)",
-              muted: "var(--text-tertiary)",
-            };
-            const numberColor: Record<string, string> = {
-              warning: "var(--text-primary)",
-              pending: "var(--text-primary)",
-              info: "var(--effect-ai-cyan)",
-              danger: "var(--state-danger)",
-              success: "#2F7A3A",
-              muted: "var(--text-tertiary)",
-            };
-            const c = toneColor[s.tone];
-            const nc = numberColor[s.tone];
             return (
               <button
                 key={s.key}
                 onClick={() => setActive(s.key)}
-                className="text-left transition-all"
+                className={`h-9 px-3 -mb-px border-b-2 text-body-sm transition-colors ${
+                  isActive
+                    ? "border-primary text-primary font-medium"
+                    : "border-transparent text-text-secondary hover:text-foreground"
+                }`}
               >
-                <Card
-                  className={`p-4 rounded-2xl flex items-center justify-between gap-3 transition-all bg-card ${
-                    isActive
-                      ? "border-primary shadow-elevated ring-1 ring-primary"
-                      : "border-border hover:border-primary/40 hover:shadow-card"
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <div className="text-body-sm text-text-tertiary truncate">{s.label}</div>
-                    <div
-                      className="mt-1 tabular-nums font-semibold leading-none"
-                      style={{ fontSize: "26px", color: nc }}
-                    >
-                      {counts[s.key]}
-                    </div>
-                  </div>
-                  <div
-                    className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
-                    style={{
-                      background: `color-mix(in oklab, ${c} 14%, transparent)`,
-                      color: c,
-                    }}
-                  >
-                    <s.icon className="h-4 w-4" strokeWidth={2} />
-                  </div>
-                </Card>
+                {s.label}
+                <span className="ml-1.5 tabular-nums text-caption text-text-tertiary">
+                  {counts[s.key]}
+                </span>
               </button>
             );
           })}
