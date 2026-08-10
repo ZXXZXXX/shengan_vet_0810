@@ -174,7 +174,7 @@ export function CattleProfileDrawer({
         </header>
 
         {/* 内容 */}
-        <div className="flex-1 overflow-y-auto px-7 py-6 space-y-5">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-7 py-6 space-y-5">
           {cow.withdrawalDays > 0 && (
             <div className="rounded-xl border border-[#FFCCC7] bg-[#FFF1F0] px-4 py-3 flex items-center gap-2.5">
               <Clock className="h-4 w-4 shrink-0 text-[#CF1322]" />
