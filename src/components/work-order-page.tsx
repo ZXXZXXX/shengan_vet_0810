@@ -489,7 +489,7 @@ export function WorkOrderPage({
             : parseTime(b.executedAt);
       return sortDir === "asc" ? va - vb : vb - va;
     });
-  }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir]);
+  }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir, deletedIds]);
 
   const leftFrozenKeys: ColKey[] = ["id", "target"];
   const rightFrozenKeys: ColKey[] = ["action"];
