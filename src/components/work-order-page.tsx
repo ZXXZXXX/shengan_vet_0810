@@ -584,42 +584,53 @@ export function WorkOrderPage({
           </span>
         );
       }
-      case "proposer":
-        return <span className="text-body-sm text-text-secondary">{o.proposer}</span>;
-      case "proposedAt":
-        return <span className="text-body-sm text-text-secondary tabular-nums">{o.createdAt}</span>;
-      case "reviewer":
-        return <span className="text-body-sm text-text-secondary">{o.reviewer ?? "—"}</span>;
-      case "reviewedAt":
+      case "category":
+        return <span className="text-body-sm text-text-secondary">{title}</span>;
+      case "objType": {
+        const isCow = o.target.trim().startsWith("#");
+        return <span className="tag tag-muted">{isCow ? "牛只" : "牛舍/群体"}</span>;
+      }
+      case "diagnosis":
         return (
-          <span className="text-body-sm text-text-secondary tabular-nums">
-            {o.reviewedAt ?? "—"}
+          <span className="text-body-sm text-text-secondary truncate" title={o.event}>
+            {o.event ?? "—"}
           </span>
         );
-      case "executor": {
-        const list = effectiveExecutors(o);
-        if (list.length === 0)
-          return <span className="text-body-sm text-text-tertiary">—</span>;
-        const shown = list.slice(0, 2);
-        const rest = list.length - shown.length;
+      case "desc":
+        return (
+          <span className="text-body-sm text-text-secondary truncate" title={o.desc}>
+            {o.desc || "—"}
+          </span>
+        );
+      case "timeInfo":
         return (
           <span
-            className="inline-flex items-center gap-1 max-w-full"
-            title={list.join("、")}
+            className="text-body-sm text-text-secondary tabular-nums truncate"
+            title={`提出 ${o.createdAt}${o.reviewedAt ? ` · 诊断 ${o.reviewedAt}` : ""}${o.executedAt ? ` · 执行 ${o.executedAt}` : ""}`}
           >
-            <span className="text-body-sm text-text-secondary truncate">
-              {shown.join("、")}
-            </span>
-            {rest > 0 && <span className="tag tag-muted shrink-0">+{rest}</span>}
+            {o.executedAt ?? o.reviewedAt ?? o.createdAt}
+          </span>
+        );
+      case "staff": {
+        const list = effectiveExecutors(o);
+        const text = list.length
+          ? `${o.proposer} → ${list.join("、")}`
+          : `${o.proposer} → 未指派`;
+        return (
+          <span className="text-body-sm text-text-secondary truncate" title={text}>
+            {text}
           </span>
         );
       }
-      case "executedAt":
+      case "pickup": {
+        const need = title === "疾病治疗" || title === "产后护理";
         return (
-          <span className="text-body-sm text-text-secondary tabular-nums">
-            {o.executedAt ?? "—"}
+          <span className={need ? "tag tag-info" : "tag tag-muted"}>
+            {need ? "需要领物" : "无需领物"}
           </span>
         );
+      }
+
       case "action": {
         return (
           <div className="inline-flex items-center gap-0.5">
