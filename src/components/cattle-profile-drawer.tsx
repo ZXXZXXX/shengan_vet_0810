@@ -483,17 +483,6 @@ function MedicationHistory() {
           ))}
         </div>
       </div>
-      {totalCount > recentCount && (
-        <div className="mt-3 flex justify-center">
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            className="h-8 px-4 rounded-full bg-primary/8 text-primary text-caption font-medium inline-flex items-center gap-1"
-          >
-            {expanded ? "收起" : `展开全部 ${totalCount} 条`}
-            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
