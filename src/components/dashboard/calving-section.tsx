@@ -83,7 +83,7 @@ export function CalvingSection() {
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
                 产犊成活与死亡分布
-                <span className="text-text-tertiary">／ 成活 {aliveTotal} 头</span>
+                <span className="text-text-tertiary">{"\n"}</span>
               </button>
               <div className="flex flex-col items-center gap-4">
                 <Donut
