@@ -286,14 +286,19 @@ export function CattleProfileDrawer({
 
 function Field({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "danger" }) {
   return (
-    <div className="min-w-0">
-      <dt className="text-caption text-text-tertiary">{label}</dt>
-      <dd className={`text-body-sm mt-0.5 truncate ${tone === "danger" ? "text-[#CF1322] font-medium" : "text-foreground"}`}>
+    <div className="min-w-0 flex items-baseline gap-2 border-r border-b border-border px-4 py-2.5">
+      <dt className="text-caption text-text-tertiary shrink-0 w-[4.5em]">{label}</dt>
+      <dd
+        className={`text-body-sm truncate tabular-nums ${
+          tone === "danger" ? "text-[#CF1322] font-medium" : "text-foreground font-medium"
+        }`}
+      >
         {value}
       </dd>
     </div>
   );
 }
+
 
 function Panel({
   title,
