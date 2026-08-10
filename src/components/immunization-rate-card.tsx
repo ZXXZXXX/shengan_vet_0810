@@ -88,12 +88,12 @@ export function ImmunizationRateCard() {
                 />
               </span>
               <span className="shrink-0 flex items-center gap-3">
-                <span className="text-caption text-text-tertiary tabular-nums inline-flex items-center gap-1">
-                  <CalendarDays className="h-3.5 w-3.5" />
+                <span className="w-16 text-caption text-text-tertiary tabular-nums inline-flex items-center gap-1">
+                  <CalendarDays className="h-3.5 w-3.5 shrink-0" />
                   {p.start}
                 </span>
-                <span className="text-caption text-text-tertiary tabular-nums inline-flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5" />
+                <span className="w-14 text-caption text-text-tertiary tabular-nums inline-flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
                   {p.days} 天
                 </span>
                 <span className="text-body-sm font-medium tabular-nums w-14 text-right" style={{ color: t }}>
