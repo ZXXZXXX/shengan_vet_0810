@@ -610,8 +610,12 @@ function MoveHistory() {
 /** 产犊记录：字段与小程序「记录产犊事件」表单完全一致，不额外增加字段 */
 type CalvingRecord = {
   calvingTime: string;
-  difficulty: string;
-  injury: string;
+  /** 产犊难易度评分 0-4 */
+  difficulty: number;
+  difficultyText: string;
+  /** 产道损伤等级 0-3 */
+  injury: number;
+  injuryText: string;
   colostrum: {
     use: string;
     quality: string;
@@ -621,6 +625,7 @@ type CalvingRecord = {
     brix: string;
   };
   calves: {
+    tag: string;
     status: string;
     breed?: string;
     sex?: string;
@@ -637,11 +642,14 @@ type CalvingRecord = {
 const ALL_EVENTS: CalvingRecord[] = [
   {
     calvingTime: "2026-07-30 06:10",
-    difficulty: "1 分（自然分娩）",
-    injury: "0 级（无损伤）",
+    difficulty: 1,
+    difficultyText: "自然分娩",
+    injury: 0,
+    injuryText: "无损伤",
     colostrum: { use: "饲喂", quality: "优质", code: "CL-20260730-01", bag: "A-12", volume: "5.2 L", brix: "24.5%" },
     calves: [
       {
+        tag: "01-26-0731",
         status: "活犊",
         breed: "荷斯坦",
         sex: "母",
@@ -656,11 +664,14 @@ const ALL_EVENTS: CalvingRecord[] = [
   },
   {
     calvingTime: "2025-08-14 23:40",
-    difficulty: "2 分（轻度助产）",
-    injury: "1 级（轻度损伤）",
+    difficulty: 2,
+    difficultyText: "轻度助产",
+    injury: 1,
+    injuryText: "轻度损伤",
     colostrum: { use: "冻存", quality: "合格", code: "CL-20250814-03", bag: "B-05", volume: "4.6 L", brix: "22.1%" },
     calves: [
       {
+        tag: "01-25-0815",
         status: "活犊",
         breed: "荷斯坦",
         sex: "公",
@@ -685,52 +696,122 @@ function KV({ label, value }: { label: string; value?: string }) {
   );
 }
 
+/** 与小程序评分选择器一致的圆点评分展示 */
+function ScorePips({
+  label,
+  min = 0,
+  max,
+  value,
+  text,
+  danger,
+}: {
+  label: string;
+  min?: number;
+  max: number;
+  value: number;
+  text?: string;
+  danger?: boolean;
+}) {
+  const items: number[] = [];
+  for (let i = min; i <= max; i++) items.push(i);
+  return (
+    <div className="min-w-0">
+      <div className="text-caption text-text-tertiary mb-1.5">{label}</div>
+      <div className="flex items-center gap-1.5">
+        {items.map((n) => {
+          const active = n === value;
+          return (
+            <span
+              key={n}
+              className={`h-7 w-7 shrink-0 rounded-full inline-flex items-center justify-center text-caption tabular-nums ${
+                active
+                  ? danger
+                    ? "bg-[#CF1322] text-white font-medium"
+                    : "bg-primary text-primary-foreground font-medium"
+                  : "border border-border bg-card text-text-tertiary"
+              }`}
+            >
+              {n}
+            </span>
+          );
+        })}
+        {text && <span className="ml-2 text-body-sm text-foreground truncate">{text}</span>}
+      </div>
+    </div>
+  );
+}
+
 function EventHistory() {
   return (
     <div className="space-y-3">
       <div className="text-caption text-text-tertiary">共 {ALL_EVENTS.length} 条</div>
       {ALL_EVENTS.map((e) => (
-        <div key={e.calvingTime} className="rounded-xl border border-border bg-card p-4 space-y-4">
-          <div className="grid grid-cols-3 gap-4">
+        <div key={e.calvingTime} className="rounded-xl border border-border bg-card overflow-hidden">
+          {/* 头部：产犊时间 + 评分图形 */}
+          <div className="px-4 py-3 bg-muted/40 border-b border-border flex flex-wrap items-end gap-x-8 gap-y-3">
             <KV label="产犊时间" value={e.calvingTime} />
-            <KV label="产犊难易度评分" value={e.difficulty} />
-            <KV label="产道损伤等级" value={e.injury} />
+            <ScorePips label="产犊难易度评分" max={4} value={e.difficulty} text={e.difficultyText} />
+            <ScorePips
+              label="产道损伤等级"
+              max={3}
+              value={e.injury}
+              text={e.injuryText}
+              danger={e.injury > 0}
+            />
           </div>
 
-          <div>
-            <div className="text-caption text-text-secondary font-medium mb-2">初乳采集</div>
-            <div className="grid grid-cols-3 gap-4">
-              <KV label="用途" value={e.colostrum.use} />
-              <KV label="初乳质量" value={e.colostrum.quality} />
-              <KV label="初乳编码" value={e.colostrum.code} />
-              <KV label="袋号" value={e.colostrum.bag} />
-              <KV label="初乳量" value={e.colostrum.volume} />
-              <KV label="白力度" value={e.colostrum.brix} />
-            </div>
-          </div>
-
-          {e.calves.map((c, i) => (
-            <div key={i}>
-              <div className="text-caption text-text-secondary font-medium mb-2">犊牛 {i + 1}</div>
-              <div className="grid grid-cols-3 gap-4">
-                <KV label="分娩状态" value={c.status} />
-                <KV label="品种" value={c.breed} />
-                <KV label="性别" value={c.sex} />
-                <KV label="犊牛体重" value={c.weight} />
-                <KV label="初乳编码" value={c.colostrumCode} />
-                <KV label="初乳饲喂量" value={c.feedVolume} />
-                <KV label="技术员" value={c.technician} />
-                <KV label="是否留养" value={c.keep} />
-                <KV label="转入牛舍" value={c.barn} />
-                <KV label="不留养原因" value={c.reason} />
+          <div className="p-4 space-y-3">
+            {/* 初乳采集 */}
+            <div className="rounded-xl border border-border bg-brand-subtle/40 p-3.5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-body-sm font-medium text-foreground">初乳采集</span>
+                <span className="tag tag-brand">{e.colostrum.quality}</span>
+                <span className="tag tag-muted">{e.colostrum.use}</span>
+                <span className="ml-auto font-mono text-caption text-text-secondary">{e.colostrum.code}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <StatBox label="初乳量" value={e.colostrum.volume} />
+                <StatBox label="白力度" value={e.colostrum.brix} />
+                <StatBox label="袋号" value={e.colostrum.bag} />
               </div>
             </div>
-          ))}
+
+            {/* 犊牛 */}
+            {e.calves.map((c, i) => (
+              <div key={i} className="rounded-xl border border-border p-3.5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-body-sm font-medium text-foreground">犊牛 {i + 1}</span>
+                  <span className="font-mono text-body-sm text-primary">#{c.tag}</span>
+                  <span className="tag tag-success">{c.status}</span>
+                  {c.sex && <span className="tag tag-muted">{c.sex}</span>}
+                  <span className={`ml-auto tag ${c.keep === "留养" ? "tag-brand" : "tag-muted"}`}>{c.keep}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-x-4 gap-y-3">
+                  <KV label="品种" value={c.breed} />
+                  <KV label="犊牛体重" value={c.weight} />
+                  <KV label="技术员" value={c.technician} />
+                  <KV label="初乳编码" value={c.colostrumCode} />
+                  <KV label="初乳饲喂量" value={c.feedVolume} />
+                  <KV label={c.keep === "留养" ? "转入牛舍" : "不留养原因"} value={c.barn ?? c.reason} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ))}
     </div>
   );
 }
+
+function StatBox({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-card border border-border px-3 py-2">
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="text-body-sm font-medium text-foreground tabular-nums">{value}</div>
+    </div>
+  );
+}
+
 
 
 const ALL_ORDERS: {
