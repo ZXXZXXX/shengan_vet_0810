@@ -462,7 +462,14 @@ export function WorkOrderPage({
     [orders],
   );
   const executors = useMemo(
-    () => Array.from(new Set(orders.map((o) => o.executor ?? o.who ?? "").filter(Boolean))),
+    () =>
+      Array.from(
+        new Set(
+          orders.flatMap((o) =>
+            o.executors?.length ? o.executors : [o.executor ?? o.who ?? ""],
+          ).filter(Boolean),
+        ),
+      ),
     [orders],
   );
 
@@ -480,7 +487,7 @@ export function WorkOrderPage({
       )
       .filter((o) => (advProposer === "all" ? true : o.proposer === advProposer))
       .filter((o) =>
-        advExecutor === "all" ? true : (o.executor ?? o.who) === advExecutor,
+        advExecutor === "all" ? true : effectiveExecutors(o).includes(advExecutor),
       );
 
     const key = sortKey;
