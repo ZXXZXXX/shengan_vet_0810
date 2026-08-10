@@ -326,6 +326,9 @@ export function WorkOrderPage({
   const [actionReason, setActionReason] = useState("");
   const [newExecutor, setNewExecutor] = useState<string>("");
   const [confirmTerminate, setConfirmTerminate] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<WorkOrder | null>(null);
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
+
   const [overrides, setOverrides] = useState<Record<string, { status?: "已终止"; executor?: string | null }>>({});
   const effectiveStatus = (o: WorkOrder): WorkStatus | "已终止" =>
     overrides[o.id]?.status ?? o.status;
@@ -456,6 +459,7 @@ export function WorkOrderPage({
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     const list = orders
+      .filter((o) => !deletedIds.includes(o.id))
       .filter((o) => inRange(o.createdAt, range))
       .filter((o) =>
         kw
@@ -485,7 +489,7 @@ export function WorkOrderPage({
             : parseTime(b.executedAt);
       return sortDir === "asc" ? va - vb : vb - va;
     });
-  }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir]);
+  }, [orders, active, range, keyword, advProposer, advExecutor, sortKey, sortDir, deletedIds]);
 
   const leftFrozenKeys: ColKey[] = ["id", "target"];
   const rightFrozenKeys: ColKey[] = ["action"];
@@ -585,71 +589,6 @@ export function WorkOrderPage({
           </span>
         );
       case "action": {
-        const st = effectiveStatus(o);
-        const exec = effectiveExecutor(o);
-        // 终止：已通过诊断后、未完成前 → 执行中
-        const canTerminate = st === "执行中";
-        // 转派 / 释放：执行中且有执行人
-        const canTransfer = st === "执行中" && !!exec;
-        const canRelease = st === "执行中" && !!exec;
-        const hasMore = canTerminate || canTransfer || canRelease;
-        const MoreBtn = hasMore ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0 text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-                aria-label="更多操作"
-              >
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-32">
-              {canTerminate && (
-                <DropdownMenuItem
-                  className="text-[var(--state-danger)] focus:text-[var(--state-danger)]"
-                  onClick={() => openMoreAction("terminate", o)}
-                >
-                  <Ban className="h-3.5 w-3.5 mr-2" /> 终止
-                </DropdownMenuItem>
-              )}
-              {canTransfer && (
-                <DropdownMenuItem onClick={() => openMoreAction("transfer", o)}>
-                  <Repeat2 className="h-3.5 w-3.5 mr-2" /> 转派
-                </DropdownMenuItem>
-              )}
-              {canRelease && (
-                <DropdownMenuItem onClick={() => openMoreAction("release", o)}>
-                  <LogOut className="h-3.5 w-3.5 mr-2" /> 释放
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null;
-        if (canExamine(role) && o.status === "待诊断") {
-          return (
-            <div className="inline-flex items-center gap-0.5">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground"
-                onClick={() => { setMode("view"); setDetail(o); }}
-              >
-                查看
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-body-sm font-normal text-primary hover:bg-brand-subtle hover:text-primary"
-                onClick={() => { setMode("process"); setDetail(o); }}
-              >
-                处理
-              </Button>
-              {MoreBtn}
-            </div>
-          );
-        }
         return (
           <div className="inline-flex items-center gap-0.5">
             <Button
@@ -660,10 +599,18 @@ export function WorkOrderPage({
             >
               查看
             </Button>
-            {MoreBtn}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-surface-subtle hover:text-[var(--state-danger)]"
+              onClick={() => setDeleteTarget(o)}
+            >
+              删除
+            </Button>
           </div>
         );
       }
+
     }
   };
 
@@ -1619,6 +1566,31 @@ export function WorkOrderPage({
               }}
             >
               确认终止
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-section-title">确认删除该工单？</DialogTitle>
+          </DialogHeader>
+          <div className="text-body-sm text-text-secondary">
+            删除后工单 {deleteTarget?.id} 将从列表中移除，不可恢复。
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDeleteTarget(null)}>取消</Button>
+            <Button
+              className="bg-[var(--state-danger)] hover:bg-[var(--state-danger)]/90 text-white"
+              onClick={() => {
+                if (!deleteTarget) return;
+                setDeletedIds((ids) => [...ids, deleteTarget.id]);
+                toast.success("工单已删除");
+                setDeleteTarget(null);
+              }}
+            >
+              确认删除
             </Button>
           </DialogFooter>
         </DialogContent>
