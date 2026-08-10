@@ -222,7 +222,7 @@ export function DiseaseStatsSection() {
             <BarChart3 className="h-4 w-4" strokeWidth={2} />
           </div>
           <h3 className="text-card-title text-foreground">疾病统计</h3>
-          <span className="tag tag-muted">哪里高发 · 主要是什么病</span>
+          <span className="tag tag-muted"></span>
         </div>
         <div className="flex items-center gap-1 text-body-sm flex-wrap">
           {path.map((n, i) => {
