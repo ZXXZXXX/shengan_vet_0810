@@ -560,14 +560,13 @@ function MoveHistory() {
 const ALL_EVENTS: {
   id: string;
   date: string;
-  type: "产犊记录" | "基础检查" | "转栏/转群" | "离场记录";
+  type: "产犊记录" | "基础检查" | "离场记录";
   summary: string;
   operator: string;
   orderId?: string;
 }[] = [
   { id: "EV-1041", date: "2026-08-08 09:20", type: "基础检查", summary: "体温 38.6℃ · 瘤胃蠕动正常 · 无异常", operator: "王兽医" },
   { id: "EV-1032", date: "2026-07-30 06:10", type: "产犊记录", summary: "顺产母犊 1 头 · 初乳采集 5.2L（优质）", operator: "李技术员", orderId: "WO-20260730-018" },
-  { id: "EV-1019", date: "2026-07-12 15:40", type: "转栏/转群", summary: "A 区 3 舍 → B 区 1 舍 · 原因：产后转群", operator: "张场长", orderId: "WO-20260712-006" },
   { id: "EV-0998", date: "2026-06-21 10:05", type: "基础检查", summary: "蹄部检查 · 左后蹄轻度磨损，建议观察", operator: "王兽医" },
 ];
 
