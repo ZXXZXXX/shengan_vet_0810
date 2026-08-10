@@ -1540,107 +1540,123 @@ function VariableDoseTable({
 function PrescriptionView({ r }: { r: Rx }) {
   const summary = r.summaryAuto ? buildSummary(r) : r.summary ?? "";
   return (
-    <div className="mt-4 space-y-4 text-body-sm">
-      <div className="rounded-lg border border-border p-4 space-y-1.5 bg-surface-subtle/50">
-        <div className="flex items-center gap-2">
+    <div className="mt-4 space-y-3 text-body-sm">
+      <div className="rounded-lg border border-border p-4 bg-surface-subtle/50">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="tag tag-brand">{RX_KIND_LABEL[r.kind]}</span>
+          <span className="text-section-title text-foreground">{r.name}</span>
+          <span className="text-caption text-text-tertiary">
+            应用于 {r.category || "—"} · {r.subType || "—"}（编号{r.code}）
+          </span>
         </div>
-        <div className="text-section-title text-foreground">{r.name}</div>
-        <div className="text-body-sm text-text-secondary">
-          当前应用于{r.category || "—"} {r.subType || "—"}（编号{r.code}）
-        </div>
-        {r.desc && <div className="text-body-sm text-text-secondary">{r.desc}</div>}
-        <div className="pt-2">
+        {r.desc && <div className="mt-1 text-body-sm text-text-secondary">{r.desc}</div>}
+        <div className="mt-2">
           <StatScopeCard metrics={prescriptionStats(r.code)} />
         </div>
       </div>
 
-
-
       <ViewGroup label="处方描述">
-        <ViewRow label="处方疗程" value={`${r.duration} 天`} />
-        <ViewRow label="处方摘要" value={summary || "—"} />
-        <ViewRow label="补充说明" value={r.extra || "—"} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
+          <ViewRow label="处方疗程" value={`${r.duration} 天`} />
+          <ViewRow label="补充说明" value={r.extra || "—"} />
+          <div className="md:col-span-2">
+            <ViewRow label="处方摘要" value={summary || "—"} />
+          </div>
+        </div>
       </ViewGroup>
 
       <ViewGroup label="处方详情">
         {r.drugs.length === 0 && r.tasks.length === 0 && (
           <div className="text-text-tertiary">—</div>
         )}
-        {r.drugs.map((d) => (
-          <div key={d.id} className="rounded-md border border-border bg-surface-subtle p-3">
-            <div className="flex items-center gap-1.5 text-body text-foreground">
-              <Pill className="h-3.5 w-3.5 text-primary" />
-              <span className="font-medium">
-                用药：{d.drugs.map((x) => `${x.name} ～${x.spec}`).join("；") || "—"}
-              </span>
-            </div>
-            <div className="mt-1 text-body-sm text-text-secondary space-y-0.5">
-              {d.drugType && <div>药品类型：{d.drugType}</div>}
-              <div>给药方式：{d.routes.join("、") || "—"}</div>
-              <div>用药天数：{d.days} 天</div>
-              <div>用药频次：{d.freq.n}天{d.freq.m}次</div>
-              <div>是否区分时间段：{d.slotOn ? "是" : "否"}</div>
-              <div>
-                每日时段：早上 = {d.slot.morning} 次；中午 = {d.slot.noon} 次；下午 = {d.slot.evening} 次
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+          {r.drugs.map((d) => (
+            <div key={d.id} className="rounded-md border border-border bg-surface-subtle p-3">
+              <div className="flex items-start gap-1.5 text-body text-foreground">
+                <Pill className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                <span className="font-medium">
+                  {d.drugs.map((x) => `${x.name} ～${x.spec}`).join("；") || "—"}
+                </span>
               </div>
-              <div>是否按变量计算：{d.variable ? "是" : "否"}</div>
-              {d.variable && d.variableKind && <div>计算变量：{VAR_LABEL[d.variableKind]}</div>}
-              <div>
-                具体剂量：
-                {d.variable
-                  ? d.varDose && d.varDose.length
-                    ? d.varDose.map((v) => `${v.option} → ${v.dose}/次`).join("；")
-                    : "—"
-                  : d.fixedDose || "—"}
-              </div>
-            </div>
-          </div>
-        ))}
-        {r.tasks.length === 0 ? (
-          r.drugs.length > 0 && (
-            <div className="rounded-md border border-border bg-surface-subtle p-3 text-body-sm text-text-secondary">
-              非用药：无
-            </div>
-          )
-        ) : (
-          r.tasks.map((t) => (
-            <div key={t.id} className="rounded-md border border-border bg-surface-subtle p-3">
-              <div className="flex items-center gap-1.5 text-body text-foreground">
-                <ClipboardList className="h-3.5 w-3.5 text-primary" />
-                <span className="font-medium">非用药：{t.name || "—"}</span>
-              </div>
-              <div className="mt-1 text-body-sm text-text-secondary space-y-0.5">
-                <div>任务类型：{t.type}</div>
-                <div>具体操作：{t.action || "—"}</div>
-                <div>记录方式：{t.record}</div>
-                <div>执行天数：{t.days} 天</div>
-                <div>执行频次：{t.freq.n}天{t.freq.m}次</div>
-                <div>是否区分时间段：{t.slotOn ? "是" : "否"}</div>
-                <div>
-                  每日时段：早上 = {t.slot.morning} 次；中午 = {t.slot.noon} 次；下午 = {t.slot.evening} 次
+              <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                {d.drugType && <KV k="药品类型" v={d.drugType} />}
+                <KV k="给药方式" v={d.routes.join("、") || "—"} />
+                <KV k="用药天数" v={`${d.days} 天`} />
+                <KV k="用药频次" v={`${d.freq.n}天${d.freq.m}次`} />
+                <KV k="区分时段" v={d.slotOn ? "是" : "否"} />
+                {d.slotOn && (
+                  <KV
+                    k="每日时段"
+                    v={`早 ${d.slot.morning} / 中 ${d.slot.noon} / 晚 ${d.slot.evening}`}
+                  />
+                )}
+                <KV k="变量计算" v={d.variable ? (d.variableKind ? VAR_LABEL[d.variableKind] : "是") : "否"} />
+                <div className="col-span-2">
+                  <KV
+                    k="具体剂量"
+                    v={
+                      d.variable
+                        ? d.varDose && d.varDose.length
+                          ? d.varDose.map((v) => `${v.option} → ${v.dose}/次`).join("；")
+                          : "—"
+                        : d.fixedDose || "—"
+                    }
+                  />
                 </div>
               </div>
             </div>
-          ))
-        )}
+          ))}
+          {r.tasks.length === 0
+            ? r.drugs.length > 0 && (
+                <div className="rounded-md border border-border bg-surface-subtle p-3 text-body-sm text-text-secondary">
+                  非用药：无
+                </div>
+              )
+            : r.tasks.map((t) => (
+                <div key={t.id} className="rounded-md border border-border bg-surface-subtle p-3">
+                  <div className="flex items-start gap-1.5 text-body text-foreground">
+                    <ClipboardList className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                    <span className="font-medium">{t.name || "—"}</span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                    <KV k="任务类型" v={t.type} />
+                    <KV k="记录方式" v={t.record} />
+                    <KV k="执行天数" v={`${t.days} 天`} />
+                    <KV k="执行频次" v={`${t.freq.n}天${t.freq.m}次`} />
+                    <KV k="区分时段" v={t.slotOn ? "是" : "否"} />
+                    {t.slotOn && (
+                      <KV
+                        k="每日时段"
+                        v={`早 ${t.slot.morning} / 中 ${t.slot.noon} / 晚 ${t.slot.evening}`}
+                      />
+                    )}
+                    <div className="col-span-2">
+                      <KV k="具体操作" v={t.action || "—"} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+        </div>
       </ViewGroup>
 
       <ViewGroup label="复查配置">
-        <ViewRow label="是否开启复查" value={r.review.on ? "是" : "否"} />
-        {r.review.on && (
-          <>
-            <ViewRow label="复查天数" value={`${r.review.days} 天`} />
-            <ViewRow label="复查频次" value={`${r.review.freq.n}天${r.review.freq.m}次`} />
-            <ViewRow label="是否区分时间段" value={r.review.slotOn ? "是" : "否"} />
-            <ViewRow
-              label="每日时段"
-              value={`早上 = ${r.review.slot.morning} 次；中午 = ${r.review.slot.noon} 次；下午 = ${r.review.slot.evening} 次`}
+        {!r.review.on ? (
+          <div className="text-text-secondary">未开启复查</div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-1.5">
+            <KV k="复查天数" v={`${r.review.days} 天`} />
+            <KV k="复查频次" v={`${r.review.freq.n}天${r.review.freq.m}次`} />
+            <KV k="区分时段" v={r.review.slotOn ? "是" : "否"} />
+            <KV
+              k="每日时段"
+              v={`早 ${r.review.slot.morning} / 中 ${r.review.slot.noon} / 晚 ${r.review.slot.evening}`}
             />
-            <ViewRow label="复查任务描述" value={r.review.desc} />
-            <ViewRow label="转栏信息填写" value={r.review.transferOn ? "是" : "否"} />
-            <ViewRow label="任务时限" value={r.review.deadline === "24h" ? "24 小时" : "48 小时"} />
-          </>
+            <KV k="转栏填写" v={r.review.transferOn ? "是" : "否"} />
+            <KV k="任务时限" v={r.review.deadline === "24h" ? "24 小时" : "48 小时"} />
+            <div className="col-span-2 md:col-span-3">
+              <KV k="任务描述" v={r.review.desc || "—"} />
+            </div>
+          </div>
         )}
       </ViewGroup>
 
@@ -1652,10 +1668,19 @@ function PrescriptionView({ r }: { r: Rx }) {
   );
 }
 
+function KV({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex items-start gap-2 min-w-0">
+      <span className="text-text-tertiary shrink-0">{k}</span>
+      <span className="text-foreground break-words min-w-0">{v || "—"}</span>
+    </div>
+  );
+}
+
 function ViewGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-2">
-      <div className="text-body-sm text-text-secondary">{label}</div>
+    <div className="rounded-lg border border-border p-4 space-y-2">
+      <div className="text-body-sm font-medium text-foreground">{label}</div>
       <div className="space-y-2">{children}</div>
     </div>
   );
@@ -1664,8 +1689,9 @@ function ViewGroup({ label, children }: { label: string; children: React.ReactNo
 function ViewRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-32 shrink-0 text-body-sm text-text-tertiary">{label}</div>
+      <div className="w-20 shrink-0 text-body-sm text-text-tertiary">{label}</div>
       <div className="flex-1 text-body-sm text-foreground break-words">{value || "—"}</div>
     </div>
   );
+
 }
