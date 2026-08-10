@@ -16,7 +16,6 @@ export const Route = createFileRoute("/archive/cattle")({
 });
 
 type Health = "健康" | "观察中" | "治疗中";
-type DeviceState = "正常" | "异常" | "-";
 type Cow = {
   id: string;
   ear: string;
@@ -25,28 +24,23 @@ type Cow = {
   birth: string;
   farm: string;
   barn: string;
+  type: string;
+  parity: number;
   health: Health;
-  milk: DeviceState;
-  earTemp: DeviceState;
-  collar: DeviceState;
 };
 const cattle: Cow[] = [
-  { id: "C-2381", ear: "01-24-2381", breed: "荷斯坦", sex: "♀", birth: "2022-03-15", farm: "1 号牧场", barn: "3 号牛舍", health: "治疗中", milk: "异常", earTemp: "异常", collar: "正常" },
-  { id: "C-2380", ear: "01-24-2380", breed: "荷斯坦", sex: "♀", birth: "2021-11-08", farm: "1 号牧场", barn: "1 号牛舍", health: "健康", milk: "正常", earTemp: "正常", collar: "正常" },
-  { id: "C-2379", ear: "01-24-2379", breed: "荷斯坦", sex: "♀", birth: "2023-06-20", farm: "1 号牧场", barn: "犊牛舍 A", health: "健康", milk: "-", earTemp: "正常", collar: "-" },
-  { id: "C-2378", ear: "01-24-2378", breed: "西门塔尔", sex: "♂", birth: "2022-09-10", farm: "2 号牧场", barn: "2 号牛舍", health: "观察中", milk: "异常", earTemp: "正常", collar: "异常" },
-  { id: "C-2377", ear: "01-24-2377", breed: "荷斯坦", sex: "♀", birth: "2020-05-12", farm: "1 号牧场", barn: "3 号牛舍", health: "健康", milk: "正常", earTemp: "正常", collar: "正常" },
+  { id: "C-2381", ear: "01-24-2381", breed: "荷斯坦", sex: "♀", birth: "2022-03-15", farm: "1 号牧场", barn: "3 号牛舍", type: "泌乳牛", parity: 3, health: "治疗中" },
+  { id: "C-2380", ear: "01-24-2380", breed: "荷斯坦", sex: "♀", birth: "2021-11-08", farm: "1 号牧场", barn: "1 号牛舍", type: "干奶牛", parity: 4, health: "健康" },
+  { id: "C-2379", ear: "01-24-2379", breed: "荷斯坦", sex: "♀", birth: "2023-06-20", farm: "1 号牧场", barn: "犊牛舍 A", type: "犊牛", parity: 0, health: "健康" },
+  { id: "C-2378", ear: "01-24-2378", breed: "西门塔尔", sex: "♂", birth: "2022-09-10", farm: "2 号牧场", barn: "2 号牛舍", type: "育成牛", parity: 0, health: "观察中" },
+  { id: "C-2377", ear: "01-24-2377", breed: "荷斯坦", sex: "♀", birth: "2020-05-12", farm: "1 号牧场", barn: "3 号牛舍", type: "泌乳牛", parity: 5, health: "健康" },
 ];
+
 
 function healthTag(h: Health) {
   return h === "健康" ? "tag tag-success" : h === "观察中" ? "tag tag-warning" : "tag tag-danger";
 }
 
-function stateTag(s: DeviceState) {
-  if (s === "正常") return "tag tag-success";
-  if (s === "异常") return "tag tag-danger";
-  return "text-body-sm text-text-tertiary";
-}
 
 function ageLabelOf(birth: string) {
   const days = Math.max(1, Math.round((Date.now() - new Date(birth).getTime()) / 86400000));
@@ -70,14 +64,14 @@ function toProfile(c: Cow): CattleProfile {
     barn: c.barn,
     breed: c.breed,
     sex: c.sex === "♀" ? "母" : "公",
-    type: c.barn.includes("犊牛") ? "犊牛" : "哺乳牛",
+    type: c.type,
     ageDays,
     health: healthToProfile[c.health],
     withdrawalDays: c.health === "治疗中" ? 3 : 0,
     withdrawalUntil: "2026-08-13",
     lactationDays: c.sex === "♀" ? 168 : 0,
     pregnancyDays: c.health === "健康" && c.sex === "♀" ? 92 : 0,
-    parity: 3,
+    parity: c.parity,
   };
 }
 
@@ -113,29 +107,27 @@ function CattlePage() {
 
         <Card className="border-border bg-card overflow-hidden">
           <div className="flex items-center gap-4 px-6 h-12 text-table-header text-text-secondary border-b border-border bg-surface-subtle">
-            <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
+            <div className="grid grid-cols-7 gap-4 flex-1 min-w-0">
               <div>耳号</div>
               <div>品种</div>
               <div>年龄</div>
+              <div>类型</div>
+              <div>胎次</div>
               <div>所在牛舍</div>
               <div>当前状态</div>
-              <div>奶量状态</div>
-              <div>耳温状态</div>
-              <div>颈环状态</div>
             </div>
             <div className="w-[170px] text-right shrink-0">操作</div>
           </div>
           {cattle.map((c) => (
             <div key={c.id} className="flex items-center gap-4 px-6 h-12 text-table-cell border-b border-border last:border-0 hover:bg-surface-subtle">
-              <div className="grid grid-cols-8 gap-4 flex-1 min-w-0">
+              <div className="grid grid-cols-7 gap-4 flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 text-body text-foreground truncate"><Beef className="h-3.5 w-3.5 text-primary shrink-0" />{c.ear}</div>
                 <div className="text-body-sm text-text-secondary truncate">{c.breed}</div>
                 <div className="text-body-sm text-text-secondary tabular-nums truncate">{ageLabelOf(c.birth)}</div>
+                <div className="text-body-sm text-text-secondary truncate">{c.type}</div>
+                <div className="text-body-sm text-text-secondary tabular-nums truncate">{c.parity > 0 ? `${c.parity} 胎` : "-"}</div>
                 <div className="text-body-sm text-text-secondary truncate">{c.barn}</div>
                 <div><span className={healthTag(c.health)}>{c.health}</span></div>
-                <div><span className={stateTag(c.milk)}>{c.milk}</span></div>
-                <div><span className={stateTag(c.earTemp)}>{c.earTemp}</span></div>
-                <div><span className={stateTag(c.collar)}>{c.collar}</span></div>
               </div>
               <div className="w-[170px] shrink-0 flex items-center justify-end gap-0.5">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-body-sm font-normal text-text-secondary hover:bg-surface-subtle hover:text-foreground" onClick={() => openProfile(c)}>查看</Button>
