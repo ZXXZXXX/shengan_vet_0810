@@ -14,17 +14,46 @@ export const Route = createFileRoute("/archive/cattle")({
 });
 
 type Health = "健康" | "观察中" | "治疗中";
-const cattle: { id: string; ear: string; breed: string; sex: string; birth: string; farm: string; barn: string; health: Health }[] = [
-  { id: "C-2381", ear: "01-24-2381", breed: "荷斯坦", sex: "♀", birth: "2022-03-15", farm: "1 号牧场", barn: "3 号牛舍", health: "治疗中" },
-  { id: "C-2380", ear: "01-24-2380", breed: "荷斯坦", sex: "♀", birth: "2021-11-08", farm: "1 号牧场", barn: "1 号牛舍", health: "健康" },
-  { id: "C-2379", ear: "01-24-2379", breed: "荷斯坦", sex: "♀", birth: "2023-06-20", farm: "1 号牧场", barn: "犊牛舍 A", health: "健康" },
-  { id: "C-2378", ear: "01-24-2378", breed: "西门塔尔", sex: "♂", birth: "2022-09-10", farm: "2 号牧场", barn: "2 号牛舍", health: "观察中" },
-  { id: "C-2377", ear: "01-24-2377", breed: "荷斯坦", sex: "♀", birth: "2020-05-12", farm: "1 号牧场", barn: "3 号牛舍", health: "健康" },
+type DeviceState = "正常" | "偏低" | "偏高" | "异常" | "离线" | "未佩戴";
+type Cow = {
+  id: string;
+  ear: string;
+  breed: string;
+  sex: string;
+  birth: string;
+  farm: string;
+  barn: string;
+  health: Health;
+  milk: DeviceState;
+  earTemp: DeviceState;
+  collar: DeviceState;
+};
+const cattle: Cow[] = [
+  { id: "C-2381", ear: "01-24-2381", breed: "荷斯坦", sex: "♀", birth: "2022-03-15", farm: "1 号牧场", barn: "3 号牛舍", health: "治疗中", milk: "偏低", earTemp: "偏高", collar: "正常" },
+  { id: "C-2380", ear: "01-24-2380", breed: "荷斯坦", sex: "♀", birth: "2021-11-08", farm: "1 号牧场", barn: "1 号牛舍", health: "健康", milk: "正常", earTemp: "正常", collar: "正常" },
+  { id: "C-2379", ear: "01-24-2379", breed: "荷斯坦", sex: "♀", birth: "2023-06-20", farm: "1 号牧场", barn: "犊牛舍 A", health: "健康", milk: "未佩戴", earTemp: "正常", collar: "未佩戴" },
+  { id: "C-2378", ear: "01-24-2378", breed: "西门塔尔", sex: "♂", birth: "2022-09-10", farm: "2 号牧场", barn: "2 号牛舍", health: "观察中", milk: "偏低", earTemp: "正常", collar: "离线" },
+  { id: "C-2377", ear: "01-24-2377", breed: "荷斯坦", sex: "♀", birth: "2020-05-12", farm: "1 号牧场", barn: "3 号牛舍", health: "健康", milk: "正常", earTemp: "正常", collar: "正常" },
 ];
 
 function healthTag(h: Health) {
   return h === "健康" ? "tag tag-success" : h === "观察中" ? "tag tag-warning" : "tag tag-danger";
 }
+
+function stateTag(s: DeviceState) {
+  if (s === "正常") return "tag tag-success";
+  if (s === "偏低" || s === "偏高" || s === "离线") return "tag tag-warning";
+  if (s === "异常") return "tag tag-danger";
+  return "tag";
+}
+
+function ageLabelOf(birth: string) {
+  const days = Math.max(1, Math.round((Date.now() - new Date(birth).getTime()) / 86400000));
+  if (days >= 730) return `${(days / 365).toFixed(1)} 岁`;
+  if (days > 90) return `${Math.floor(days / 30)} 月龄`;
+  return `${days} 日龄`;
+}
+
 
 const healthToProfile: Record<Health, CattleProfile["health"]> = {
   健康: "健康",
