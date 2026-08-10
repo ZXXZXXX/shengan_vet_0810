@@ -501,17 +501,21 @@ const ALL_DIAGNOSES: DiagnosisRecord[] = [
 function DiagnosisHistory() {
   return (
     <div>
-      <div className="text-caption text-text-tertiary mb-1">共 {ALL_DIAGNOSES.length} 条</div>
-      <div className="rounded-xl border border-border bg-card divide-y divide-border">
-        {ALL_DIAGNOSES.map((d) => (
-          <div key={d.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="shrink-0 font-mono text-caption text-text-secondary">{d.date}</span>
-              <span className="truncate text-body-sm text-foreground">{d.disease}</span>
+      <div className="text-caption text-text-tertiary mb-2">共 {ALL_DIAGNOSES.length} 条</div>
+      <div className="relative pl-4">
+        <span className="absolute left-[5px] top-1.5 bottom-1.5 w-px bg-border" />
+        <div className="space-y-4">
+          {ALL_DIAGNOSES.map((d) => (
+            <div key={d.id} className="relative">
+              <span className="absolute -left-4 top-1.5 h-[7px] w-[7px] rounded-full bg-primary ring-2 ring-background" />
+              <div className="font-mono text-caption text-text-secondary mb-1">{d.date}</div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="truncate text-body-sm text-foreground">{d.disease}</span>
+                <span className="shrink-0 text-caption text-text-tertiary">诊断人：{d.doctor}</span>
+              </div>
             </div>
-            <span className="shrink-0 text-caption text-text-secondary">{d.doctor}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
