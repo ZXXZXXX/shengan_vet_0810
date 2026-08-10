@@ -69,7 +69,7 @@ export function ImmunizationRateCard() {
       </div>
 
       {/* 各项疫苗计划 · 横向柱状图 */}
-      <div className="mt-4 flex-1 overflow-y-auto pr-1" style={{ maxHeight: 5 * 28 + 4 * 20 }}>
+      <div className="mt-4 flex-1 min-h-0 overflow-y-auto pr-1">
         <div className="flex flex-col gap-5 min-h-full justify-center">
         {plans.map((p) => {
           const r = p.planned === 0 ? 0 : (p.done / p.planned) * 100;
