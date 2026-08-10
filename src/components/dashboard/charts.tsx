@@ -289,7 +289,11 @@ export function LineTrend({
         </defs>
         {activeIndex != null && activeIndex >= 0 && (() => {
           const step = (w - padL - padR) / Math.max(labels.length - 1, 1);
-          const cw = Math.min(step, (w - x(activeIndex)) * 2, x(activeIndex) * 2);
+          // keep every highlight column the same width: use the narrowest one (edge points)
+          const cw = labels.reduce(
+            (m, _l, i) => Math.min(m, step, (w - x(i)) * 2, x(i) * 2),
+            step,
+          );
           return (
             <rect
               x={x(activeIndex) - cw / 2}
@@ -300,6 +304,7 @@ export function LineTrend({
             />
           );
         })()}
+
 
 
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
