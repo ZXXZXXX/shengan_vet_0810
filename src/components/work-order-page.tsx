@@ -642,14 +642,26 @@ export function WorkOrderPage({
             >
               查看
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-body-sm font-normal text-[var(--state-danger)] hover:bg-surface-subtle hover:text-[var(--state-danger)]"
-              onClick={() => setDeleteTarget(o)}
-            >
-              删除
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-text-tertiary hover:bg-surface-subtle hover:text-foreground"
+                >
+                  <MoreHorizontal className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32">
+                <DropdownMenuItem
+                  className="text-body-sm text-[var(--state-danger)] focus:text-[var(--state-danger)]"
+                  onClick={() => setDeleteTarget(o)}
+                >
+                  删除
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
           </div>
         );
       }
