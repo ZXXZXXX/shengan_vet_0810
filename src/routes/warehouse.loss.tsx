@@ -182,8 +182,7 @@ function LossPage() {
         statuses={statuses}
         events={data}
         searchPlaceholder="按损耗单号 / 物资 / 描述搜索"
-        createLabel="记录损耗"
-        onCreate={() => setOpen(true)}
+        hideTabs
       />
 
       <Sheet open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
