@@ -45,18 +45,6 @@ export function CullingSection() {
             <Donut data={groupDist} centerLabel="死淘合计" centerValue={String(total)} centerUnit="头" unit=" 头" />
             <Legend data={groupDist} unit=" 头" />
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <button type="button" onClick={() => setView("死亡原因")} className="text-left">
-              <div className={`rounded-xl transition-all ${isDeath ? "ring-2 ring-primary/40" : ""}`}>
-                <MiniStat label="死亡数" value={String(deaths)} unit="头" tone="var(--state-danger)" />
-              </div>
-            </button>
-            <button type="button" onClick={() => setView("淘汰原因")} className="text-left">
-              <div className={`rounded-xl transition-all ${!isDeath ? "ring-2 ring-primary/40" : ""}`}>
-                <MiniStat label="淘汰数" value={String(culls)} unit="头" tone="var(--state-warning)" />
-              </div>
-            </button>
-          </div>
         </div>
         <div>
           <p className="text-body-sm text-text-secondary mb-3">
