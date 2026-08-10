@@ -255,6 +255,9 @@ function HomePage() {
   const [activeRequest, setActiveRequest] = useState<PendingRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const alertsRef = useRef<HTMLDivElement | null>(null);
+  const [attendanceOpen, setAttendanceOpen] = useState(false);
+  const [attendTab, setAttendTab] = useState<"am" | "pm">("am");
+
 
   const [scope, setScope] = useState<ReportScope>("farm-in");
   const showInternal = scope !== "farm-out";
