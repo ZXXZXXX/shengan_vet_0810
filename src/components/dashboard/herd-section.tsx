@@ -29,7 +29,7 @@ export function HerdSection() {
     <SectionCard
       id="topic-herd"
       title="牛群专题"
-      desc="\n"
+      desc={"\n"}
       icon={<Beef className="h-4 w-4 text-primary" strokeWidth={1.75} />}
       extra={<PeriodTabs value={tab} onChange={setTab} options={[TAB_TYPE, TAB_HEALTH]} />}
     >
