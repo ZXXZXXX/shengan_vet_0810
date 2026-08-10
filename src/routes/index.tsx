@@ -226,6 +226,34 @@ function HomePage() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const exportMonthlyAttendance = () => {
+    const year = 2026;
+    const month = 5;
+    const days = new Date(year, month, 0).getDate();
+    const rows: string[][] = [["日期", "场次", "姓名", "工号", "状态"]];
+    const statusOf = (i: number, dayIdx: number, shiftIdx: number) => {
+      const s = SHIFT_STAFF[i];
+      if (!s.onShift) return s.offReason === "leave" ? "请假" : "未签到";
+      return (dayIdx * 3 + shiftIdx * 5 + i) % 17 === 0 ? "未签到" : "已签到";
+    };
+    for (let d = 1; d <= days; d++) {
+      const date = `${year}/${String(month).padStart(2, "0")}/${String(d).padStart(2, "0")}`;
+      (["上午场", "下午场"] as const).forEach((shift, si) => {
+        SHIFT_STAFF.forEach((s, i) => {
+          rows.push([date, shift, s.name, s.id.toUpperCase(), statusOf(i, d, si)]);
+        });
+      });
+    }
+    const csv = "\uFEFF" + rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `出勤明细_${year}-${String(month).padStart(2, "0")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("本月出勤明细已导出");
+  };
+
 
 
 
@@ -649,6 +677,12 @@ function HomePage() {
               );
             })}
           </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={exportMonthlyAttendance}>
+              <ArrowDownToLine className="h-4 w-4" />
+              导出本月出勤明细
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
