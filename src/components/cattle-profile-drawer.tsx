@@ -330,15 +330,18 @@ function Panel({
   extra,
   children,
   bodyClassName = "",
+  className = "",
 }: {
   title: string;
   icon?: React.ReactNode;
   extra?: React.ReactNode;
   children: React.ReactNode;
   bodyClassName?: string;
+  className?: string;
 }) {
   return (
-    <section className="rounded-xl border border-border bg-card shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+    <section className={`rounded-xl border border-border bg-card shadow-[0_1px_2px_rgba(16,24,40,0.04)] ${className}`}>
+
       <div className="flex items-center justify-between px-4 h-12 border-b border-border">
         <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
           {icon}
