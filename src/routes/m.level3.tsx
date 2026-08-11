@@ -278,7 +278,11 @@ function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean 
           ) : (
             <CircleDashed className="h-3.5 w-3.5" />
           )}
-          {allUsed ? "已使用" : `已用 ${usedCount}/${items.length}`}
+          {allUsed
+            ? "已使用"
+            : items.length <= 1
+              ? "未使用"
+              : `已用 ${usedCount}/${items.length}`}
         </span>
       </div>
 
@@ -403,7 +407,13 @@ function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean
           ) : (
             <CircleDashed className="h-3.5 w-3.5" />
           )}
-          {allUsed ? "已使用" : `已用 ${usedCount}/${items.length}`}
+          {(() => {
+            const total =
+              head.comboScope === "single" ? 1 : (head.comboCattleCount ?? items.length);
+            if (allUsed) return "已使用";
+            if (total <= 1) return "未使用";
+            return `已用 ${usedCount}/${total}`;
+          })()}
         </span>
       </div>
 
