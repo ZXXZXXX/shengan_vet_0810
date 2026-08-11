@@ -6,6 +6,24 @@ import morningStart from "@/assets/cow-_morning-start-work.svg.asset.json";
 import afternoonStart from "@/assets/cow-_afternoon-start-work.svg.asset.json";
 import leaveRest from "@/assets/cow-leave-rest.svg.asset.json";
 
+/** 上午问候语（≤12 字） */
+const MORNING_MOODS = [
+  "新的一天，从巡栏开始",
+  "早安，牛儿等你查栏",
+  "今天也要元气满满",
+  "阳光正好，慢慢来",
+  "先喝口水，再开工",
+];
+
+/** 下午问候语（≤12 字） */
+const AFTERNOON_MOODS = [
+  "下午别硬撑，稳着来",
+  "午后慢半拍也没关系",
+  "再走一圈，就快收工",
+  "喝口茶，接着加油",
+  "傍晚前把事收个尾",
+];
+
 type Props = {
   /** 当前时段预计工作项数 */
   count: number;
