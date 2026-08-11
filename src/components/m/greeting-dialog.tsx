@@ -99,7 +99,10 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
                 </span>
                 工作，准备好就开始吧！
               </div>
-              <div className="mt-3 rounded-2xl bg-surface-subtle px-3.5 py-2.5 text-caption text-text-tertiary leading-relaxed">
+              <div
+                className="mt-3 text-section-title text-primary leading-relaxed"
+                style={{ fontFamily: '"Ma Shan Zheng", "STKaiti", "KaiTi", cursive' }}
+              >
                 {mood}
               </div>
             </div>
