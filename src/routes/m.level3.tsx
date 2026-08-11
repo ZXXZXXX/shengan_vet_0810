@@ -417,9 +417,9 @@ function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean
           {(() => {
             const total =
               head.comboScope === "single" ? 1 : (head.comboCattleCount ?? items.length);
-            if (allUsed) return "已用完";
-            if (total <= 1) return "未用完";
-            return `已用 ${usedCount}/${total}`;
+            if (allUsed) return total <= 1 ? "已用 1 次" : `已用 ${total}/${total} 次`;
+            if (total <= 1) return "可用 1 次";
+            return `可用 ${Math.max(total - usedCount, 0)}/${total} 次`;
           })()}
         </span>
       </div>
