@@ -1069,14 +1069,14 @@ function DrugDetailRow({
         />
 
         {/* 剂量 */}
-        <div className="rounded-lg border border-border overflow-hidden">
-          <div className="flex items-center justify-between gap-2 px-3 h-10 border-b border-border bg-surface-subtle/30">
+        <div className="pt-3 border-t border-border/70 space-y-3">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="text-body-sm font-medium text-foreground">按变量计算剂量</span>
               <Switch checked={value.variable} onCheckedChange={(v) => onChange({ variable: v })} />
             </div>
             {value.variable && (
-              <div className="flex items-center gap-1.5 rounded-md bg-surface-subtle px-2 py-1">
+              <div className="flex items-center gap-1.5">
                 <span className="text-caption text-text-tertiary">计算变量</span>
                 <Select
                   value={value.variableKind ?? ""}
@@ -1087,7 +1087,7 @@ function DrugDetailRow({
                     })
                   }
                 >
-                  <SelectTrigger className="h-6 w-24 border-0 bg-transparent px-1 text-caption font-medium text-primary shadow-none focus:ring-0">
+                  <SelectTrigger className="h-7 w-24 border-0 bg-transparent px-1 text-caption font-medium text-primary shadow-none focus:ring-0">
                     <SelectValue placeholder="请选择" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1102,31 +1102,30 @@ function DrugDetailRow({
             )}
           </div>
 
-          <div className="p-3">
-            {value.variable ? (
-              <>
-                <VariableDoseTable
-                  varKind={value.variableKind}
-                  value={value.varDose ?? []}
-                  onChange={(varDose) => onChange({ varDose })}
-                />
-                <div className="mt-2 text-caption text-text-tertiary">每个变量区间对应一次剂量</div>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <span className="text-body-sm text-text-secondary shrink-0">
-                  具体剂量<span className="text-[var(--state-danger)] ml-0.5">*</span>
-                </span>
-                <Input
-                  value={value.fixedDose ?? ""}
-                  onChange={(e) => onChange({ fixedDose: e.target.value })}
-                  className="h-9 w-40 text-body-sm"
-                  placeholder="如 5ml/次"
-                />
-              </div>
-            )}
-          </div>
+          {value.variable ? (
+            <>
+              <VariableDoseTable
+                varKind={value.variableKind}
+                value={value.varDose ?? []}
+                onChange={(varDose) => onChange({ varDose })}
+              />
+              <div className="text-caption text-text-tertiary">每个变量区间对应一次剂量</div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-body-sm text-text-secondary shrink-0">
+                具体剂量<span className="text-[var(--state-danger)] ml-0.5">*</span>
+              </span>
+              <Input
+                value={value.fixedDose ?? ""}
+                onChange={(e) => onChange({ fixedDose: e.target.value })}
+                className="h-9 w-40 text-body-sm"
+                placeholder="如 5ml/次"
+              />
+            </div>
+          )}
         </div>
+
       </div>
     </div>
   );
@@ -1385,23 +1384,17 @@ function SlotSection({
 }) {
   const shown = on ? slot : defaultSlot(freqM);
   return (
-    <div className="rounded-lg border border-border overflow-hidden">
-      <div className="flex items-center justify-between gap-2 px-3 h-10 border-b border-border bg-surface-subtle/30">
+    <div className="pt-3 border-t border-border/70 space-y-2.5">
+      <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="text-body-sm font-medium text-foreground">区分时间段</span>
           <Switch checked={on} onCheckedChange={onToggle} />
         </div>
         <span className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</span>
       </div>
-      <div className="p-3 flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-4">
         {(["morning", "noon", "evening"] as const).map((k) => (
-          <div
-            key={k}
-            className={cn(
-              "flex items-center gap-2 rounded-md border border-border bg-surface-subtle/40 px-2.5 py-1.5",
-              !on && "opacity-60",
-            )}
-          >
+          <div key={k} className={cn("flex items-center gap-2", !on && "opacity-50")}>
             <span className="text-caption text-text-tertiary">
               {k === "morning" ? "早上" : k === "noon" ? "中午" : "下午"}
             </span>
@@ -1413,7 +1406,7 @@ function SlotSection({
                 const n = Number(e.target.value.replace(/\D/g, "") || 0);
                 onSlotChange({ ...slot, [k]: n });
               }}
-              className={cn("h-7 w-12 text-center text-body-sm bg-card", !on && "cursor-not-allowed")}
+              className={cn("h-8 w-12 text-center text-body-sm", !on && "cursor-not-allowed bg-surface-subtle")}
             />
             <span className="text-caption text-text-tertiary">次</span>
           </div>
@@ -1421,6 +1414,7 @@ function SlotSection({
       </div>
     </div>
   );
+
 }
 
 
@@ -1511,21 +1505,23 @@ function VariableDoseTable({
       {value.map((row, i) => (
         <div
           key={i}
-          className="group flex items-center gap-2 rounded-md border border-border bg-surface-subtle/40 px-2.5 py-1.5"
+          className="group flex items-center gap-2"
         >
+
           <Input
             value={row.option}
             onChange={(e) => update(i, { option: e.target.value })}
             placeholder={placeholder}
-            className="h-7 w-28 text-caption bg-card"
+            className="h-8 w-28 text-caption"
           />
-          <span className="h-4 w-px bg-border" />
+          <span className="text-caption text-text-tertiary">→</span>
           <Input
             value={row.dose}
             onChange={(e) => update(i, { dose: e.target.value })}
             placeholder="如 20ml"
-            className="h-7 w-20 text-caption bg-card text-primary font-medium"
+            className="h-8 w-20 text-caption text-primary font-medium"
           />
+
           <button
             type="button"
             onClick={() => remove(i)}
@@ -1539,8 +1535,9 @@ function VariableDoseTable({
       <button
         type="button"
         onClick={add}
-        className="inline-flex items-center gap-1 rounded-md border border-dashed border-primary/50 px-3 py-1.5 text-caption text-primary hover:bg-brand-subtle transition-colors"
+        className="inline-flex items-center gap-1 h-8 px-2 text-caption text-primary hover:underline"
       >
+
         <Plus className="h-3.5 w-3.5" /> 添加区间
       </button>
     </div>
