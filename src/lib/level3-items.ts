@@ -31,7 +31,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-8801-0231",
     name: "精制盐酸头孢噻呋注射液",
-    spec: "100ml:5g/瓶",
+    spec: "5% 100ml/瓶",
     batch: "B240517",
     manufacturer: "齐鲁动保",
     used: true,
@@ -44,7 +44,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-8801-0232",
     name: "精制盐酸头孢噻呋注射液",
-    spec: "100ml:5g/瓶",
+    spec: "5% 100ml/瓶",
     batch: "B240517",
     manufacturer: "齐鲁动保",
     used: false,
@@ -93,7 +93,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-8801-0240",
     name: "精制盐酸头孢噻呋注射液",
-    spec: "100ml:5g/瓶",
+    spec: "5% 100ml/瓶",
     batch: "B240517",
     manufacturer: "齐鲁动保",
     used: false,
@@ -166,7 +166,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-8801-0251",
     name: "精制盐酸头孢噻呋注射液",
-    spec: "100ml:5g/瓶",
+    spec: "5% 100ml/瓶",
     batch: "B240517",
     manufacturer: "齐鲁动保",
     used: false,
