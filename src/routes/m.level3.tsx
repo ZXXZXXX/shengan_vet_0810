@@ -217,11 +217,8 @@ function HolderChip({
 function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
-      <span
-        aria-hidden
-        className={`absolute left-0 top-0 bottom-0 w-1 ${i.used ? "bg-border" : "bg-primary"}`}
-      />
-      <div className="pl-2">
+      <div>
+
         <div className="flex items-start gap-2">
           <div className="min-w-0 flex-1">
             <div className="text-body-sm font-medium text-foreground truncate">{i.name}</div>
