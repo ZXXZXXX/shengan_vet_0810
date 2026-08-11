@@ -1575,14 +1575,14 @@ function VariableDoseTable({
             value={row.option}
             onChange={(e) => update(i, { option: e.target.value })}
             placeholder={placeholder}
-            className="h-8 w-28 text-caption"
+            className="h-9 w-28 text-body-sm"
           />
-          <span className="text-caption text-text-tertiary">→</span>
+          <span className="text-body-sm text-text-tertiary">→</span>
           <Input
             value={row.dose}
             onChange={(e) => update(i, { dose: e.target.value })}
             placeholder="如 20ml"
-            className="h-8 w-20 text-caption text-primary font-medium"
+            className="h-9 w-20 text-body-sm text-primary font-medium"
           />
 
           <button
@@ -1598,7 +1598,7 @@ function VariableDoseTable({
       <button
         type="button"
         onClick={add}
-        className="inline-flex items-center gap-1 h-8 px-2 text-caption text-primary hover:underline"
+        className="inline-flex items-center gap-1 h-9 px-2 text-body-sm text-primary hover:underline"
       >
 
         <Plus className="h-3.5 w-3.5" /> 添加区间
