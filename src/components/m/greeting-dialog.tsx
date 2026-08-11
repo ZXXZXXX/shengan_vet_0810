@@ -101,7 +101,7 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
               </div>
               <div
                 className="mt-3 text-page-title text-primary leading-snug"
-                style={{ fontFamily: '"Zhi Mang Xing", "STXingkai", "KaiTi", cursive' }}
+                style={{ fontFamily: '"HYWangFeiJieLanManTongNian", "汉呈王飞杰烂漫童年", "Long Cang", "Liu Jian Mao Cao", "STXingkai", "KaiTi", cursive' }}
               >
                 {mood}
               </div>
