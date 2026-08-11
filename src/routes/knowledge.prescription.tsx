@@ -1512,15 +1512,16 @@ function VariableDoseTable({
             value={row.option}
             onChange={(e) => update(i, { option: e.target.value })}
             placeholder={placeholder}
-            className="h-7 w-28 text-caption bg-card"
+            className="h-8 w-28 text-caption"
           />
-          <span className="h-4 w-px bg-border" />
+          <span className="text-caption text-text-tertiary">→</span>
           <Input
             value={row.dose}
             onChange={(e) => update(i, { dose: e.target.value })}
             placeholder="如 20ml"
-            className="h-7 w-20 text-caption bg-card text-primary font-medium"
+            className="h-8 w-20 text-caption text-primary font-medium"
           />
+
           <button
             type="button"
             onClick={() => remove(i)}
