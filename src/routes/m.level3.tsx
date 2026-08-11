@@ -424,9 +424,9 @@ function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean
           {(() => {
             const total =
               head.comboScope === "single" ? 1 : (head.comboCattleCount ?? items.length);
-            if (allUsed) return total <= 1 ? "已用 1 次" : `已用 ${total}/${total} 次`;
-            if (total <= 1) return "可用 1 次";
-            return `可用 ${Math.max(total - usedCount, 0)}/${total} 次`;
+            if (allUsed) return total <= 1 ? "已用 1 项" : `已用 ${total}/${total} 项`;
+            if (total <= 1) return "可用 1 项";
+            return `可用 ${Math.max(total - usedCount, 0)}/${total} 项`;
           })()}
         </span>
       </div>
