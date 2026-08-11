@@ -8,6 +8,8 @@ import {
   CheckCircle2,
   CircleDashed,
   User,
+  Pill,
+
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { L3_ITEMS, CURRENT_HOLDER, type L3Item } from "@/lib/level3-items";
@@ -219,40 +221,69 @@ function HolderChip({
 
 function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }) {
   return (
-    <div className={`relative overflow-hidden rounded-2xl border bg-card p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] ${i.used ? "border-border" : "border-primary/40"}`}>
-      <div>
-
-        <div className="flex items-start gap-2">
-          <div className="min-w-0 flex-1">
-            <div className="text-body-sm font-medium text-foreground truncate">{i.name}</div>
-            <div className="text-caption text-text-tertiary mt-0.5 truncate">
-              {i.spec}
-              {i.manufacturer ? ` · ${i.manufacturer}` : ""}
-              {i.batch ? ` · 批号 ${i.batch}` : ""}
-            </div>
-          </div>
-          <span
-            className={`shrink-0 inline-flex items-center gap-1 text-caption font-medium ${
-              i.used ? "text-text-tertiary" : "text-primary"
-            }`}
-          >
-            {i.used ? <CheckCircle2 className="h-3.5 w-3.5" /> : <CircleDashed className="h-3.5 w-3.5" />}
-            {i.used ? "已使用" : "未使用"}
-          </span>
+    <div
+      className="rounded-xl bg-card border p-3.5"
+      style={{ borderColor: i.used ? "hsl(var(--border))" : "#B8E0C2" }}
+    >
+      {/* 顶部：药品名称 + 使用状态 */}
+      <div className="flex items-center gap-2">
+        <Pill
+          className={`h-5 w-5 shrink-0 ${i.used ? "text-text-tertiary" : "text-primary"}`}
+        />
+        <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
+          {i.name}
         </div>
-
-        <div className="mt-2 flex items-center gap-2 text-caption">
-          <span className="text-text-tertiary font-mono truncate">{i.code}</span>
-          {showHolder && (
-            <span className="ml-auto shrink-0 inline-flex items-center gap-1 text-text-secondary">
-              <User className="h-3 w-3 text-text-tertiary" />
-              {i.holder}
-              {i.holderRole ? <span className="text-text-tertiary">· {i.holderRole}</span> : null}
-            </span>
+        <span
+          className={`shrink-0 inline-flex items-center gap-1 text-caption font-medium ${
+            i.used ? "text-text-tertiary" : "text-primary"
+          }`}
+        >
+          {i.used ? (
+            <CheckCircle2 className="h-3.5 w-3.5" />
+          ) : (
+            <CircleDashed className="h-3.5 w-3.5" />
           )}
+          {i.used ? "已使用" : "未使用"}
+        </span>
+      </div>
+
+      {/* 第二行：规格 + 领用人 */}
+      <div className="mt-2 flex items-center justify-between gap-2 text-caption">
+        <div className="text-text-tertiary truncate">
+          规格 <span className="text-text-secondary">{i.spec}</span>
+        </div>
+        {showHolder && (
+          <span className="shrink-0 inline-flex items-center gap-1 text-text-secondary">
+            <User className="h-3 w-3 text-text-tertiary" />
+            {i.holder}
+            {i.holderRole ? (
+              <span className="text-text-tertiary">· {i.holderRole}</span>
+            ) : null}
+          </span>
+        )}
+      </div>
+
+      {/* 虚线分隔 */}
+      <div className="my-3 border-t border-dashed border-border" />
+
+      {/* 明细：追溯码 / 厂商 · 批次 */}
+      <div className="space-y-2.5">
+        <div className="min-w-0">
+          <div className="text-caption text-text-secondary font-mono truncate">{i.code}</div>
+          <div className="text-caption mt-0.5">
+            <span className={i.used ? "text-text-tertiary" : "text-primary"}>
+              {i.manufacturer ?? "—"}
+            </span>
+            {i.batch && (
+              <>
+                <span className="mx-2 text-border">·</span>
+                <span className="text-text-tertiary font-mono">{i.batch}</span>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="mt-2.5 pt-2.5 border-t border-border/70 space-y-1.5">
+        <div className="space-y-1.5 pt-0.5">
           <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
             <Clock className="h-3 w-3 shrink-0" />
             领取
@@ -285,7 +316,7 @@ function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }
           </div>
         </div>
       </div>
-
     </div>
   );
 }
+
