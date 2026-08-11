@@ -245,10 +245,17 @@ function HolderChip({
 
 
 
+/** 从规格中解析单位名称，如 "100ml:5g / 瓶" → "瓶" */
+function specUnit(spec: string) {
+  const m = spec.split("/").pop()?.trim();
+  return m && m.length <= 3 ? m : "支";
+}
+
 function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean }) {
   const head = items[0];
   const allUsed = items.every((i) => i.used);
   const usedCount = items.filter((i) => i.used).length;
+  const unit = specUnit(head.spec);
   const cattle = Array.from(new Set(items.flatMap((i) => i.cattle ?? [])));
   const claimedAt = items.map((i) => i.claimedAt).sort()[0];
   const usedAt = items
@@ -280,11 +287,11 @@ function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean 
           )}
           {allUsed
             ? items.length <= 1
-              ? "已用 1 次"
-              : `已用 ${items.length}/${items.length} 次`
+              ? `已用 1 ${unit}`
+              : `已用 ${items.length}/${items.length} ${unit}`
             : items.length <= 1
-              ? "可用 1 次"
-              : `可用 ${items.length - usedCount}/${items.length} 次`}
+              ? `可用 1 ${unit}`
+              : `可用 ${items.length - usedCount}/${items.length} ${unit}`}
         </span>
       </div>
 
@@ -293,7 +300,7 @@ function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean 
         <div className="text-text-tertiary truncate">
           规格 <span className="text-text-secondary">{head.spec}</span>
           <span className="mx-2 text-border">·</span>
-          共 <span className="text-text-secondary">{items.length}</span> 支
+          共 <span className="text-text-secondary">{items.length}</span> {unit}
         </div>
         {showHolder && (
           <span className="shrink-0 inline-flex items-center gap-1 text-text-secondary">
@@ -417,9 +424,9 @@ function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean
           {(() => {
             const total =
               head.comboScope === "single" ? 1 : (head.comboCattleCount ?? items.length);
-            if (allUsed) return total <= 1 ? "已用 1 次" : `已用 ${total}/${total} 次`;
-            if (total <= 1) return "可用 1 次";
-            return `可用 ${Math.max(total - usedCount, 0)}/${total} 次`;
+            if (allUsed) return total <= 1 ? "已用 1 项" : `已用 ${total}/${total} 项`;
+            if (total <= 1) return "可用 1 项";
+            return `可用 ${Math.max(total - usedCount, 0)}/${total} 项`;
           })()}
         </span>
       </div>
