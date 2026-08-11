@@ -36,13 +36,8 @@ function Level3Page() {
   const [tab, setTab] = useState<"all" | "unused" | "used">("all");
   const [q, setQ] = useState("");
   const [holder, setHolder] = useState<string>("__all__");
-  // 避免 SSR/客户端时间差导致的水合不一致
-  const [now, setNow] = useState<number | null>(null);
-  useEffect(() => {
-    setNow(Date.now());
-    const t = setInterval(() => setNow(Date.now()), 60_000);
-    return () => clearInterval(t);
-  }, []);
+
+
 
   // 已使用的药品保留展示，不做自动清除；非全场视角只看自己的
   const items = useMemo(
