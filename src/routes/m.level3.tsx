@@ -29,6 +29,21 @@ export const Route = createFileRoute("/m/level3")({
   component: Level3Page,
 });
 
+/** 整卡状态口径：未使用 / 使用中 / 已使用 */
+function groupStatus(items: L3Item[], combo: boolean) {
+  const head = items[0];
+  const total = combo
+    ? head.comboScope === "single"
+      ? 1
+      : (head.comboCattleCount ?? items.length)
+    : items.length;
+  const usedCount = items.filter((i) => i.used).length;
+  const status: "unused" | "partial" | "used" =
+    usedCount === 0 ? "unused" : usedCount >= total ? "used" : "partial";
+  return { total, usedCount, status };
+}
+
+
 function Level3Page() {
   const navigate = useNavigate();
   const role = useRole();
