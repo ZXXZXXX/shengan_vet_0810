@@ -1541,43 +1541,45 @@ function VariableDoseTable({
     varKind === "weight" ? "如 400-600kg" : varKind === "quarter" ? "如 1-2 个" : "选项";
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-wrap gap-2">
       {value.map((row, i) => (
-        <div key={i} className="grid grid-cols-[1fr_1fr_32px] gap-2">
+        <div
+          key={i}
+          className="group flex items-center gap-2 rounded-md border border-border bg-surface-subtle/40 px-2.5 py-1.5"
+        >
           <Input
             value={row.option}
             onChange={(e) => update(i, { option: e.target.value })}
             placeholder={placeholder}
-            className="h-9 text-body-sm"
+            className="h-7 w-28 text-caption bg-card"
           />
+          <span className="h-4 w-px bg-border" />
           <Input
             value={row.dose}
             onChange={(e) => update(i, { dose: e.target.value })}
             placeholder="如 20ml"
-            className="h-9 text-body-sm"
+            className="h-7 w-20 text-caption bg-card text-primary font-medium"
           />
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
-            className="h-9 w-8 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
             onClick={() => remove(i)}
+            className="text-text-tertiary opacity-0 group-hover:opacity-100 hover:text-[var(--state-danger)] transition-opacity"
+            aria-label="删除该区间"
           >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
       ))}
-      <Button
+      <button
         type="button"
-        variant="outline"
-        size="sm"
-        className="h-8 gap-1 text-body-sm font-normal w-full"
         onClick={add}
+        className="inline-flex items-center gap-1 rounded-md border border-dashed border-primary/50 px-3 py-1.5 text-caption text-primary hover:bg-brand-subtle transition-colors"
       >
-        <Plus className="h-3.5 w-3.5" /> 增加一组
-      </Button>
+        <Plus className="h-3.5 w-3.5" /> 添加区间
+      </button>
     </div>
   );
+
 }
 
 // ---------- 详情视图 ----------
