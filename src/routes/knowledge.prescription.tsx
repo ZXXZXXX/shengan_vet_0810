@@ -1424,40 +1424,6 @@ function SlotSection({
 }
 
 
-function MultiSelectChips({
-  options,
-  value,
-  onChange,
-}: {
-  options: readonly string[];
-  value: string[];
-  onChange: (v: string[]) => void;
-}) {
-  const toggle = (o: string) =>
-    onChange(value.includes(o) ? value.filter((x) => x !== o) : [...value, o]);
-  return (
-    <div className="flex flex-wrap gap-1.5 rounded-md border border-input bg-white p-2 min-h-9">
-      {options.map((o) => {
-        const active = value.includes(o);
-        return (
-          <button
-            type="button"
-            key={o}
-            onClick={() => toggle(o)}
-            className={cn(
-              "h-7 px-2 rounded-full text-caption border transition-colors",
-              active
-                ? "bg-brand-subtle border-primary text-primary"
-                : "bg-white border-border text-text-secondary hover:border-primary/40",
-            )}
-          >
-            {o}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 function MultiDrugPicker({
   value,
