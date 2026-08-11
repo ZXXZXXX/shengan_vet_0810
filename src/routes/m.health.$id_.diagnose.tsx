@@ -94,7 +94,7 @@ const diseaseLibrary: Disease[] = [
       {
         id: "p1",
         name: "处方 1 · 青霉素钠 + 氟尼辛",
-        desc: "产后 10 天内；青霉素钠 2.2 万单位/kg，早晚各 1 次连用 3 天",
+        desc: "产后 10 天内；青霉素钠 2.2 万单位/kg，1 天 2 次连用 3 天",
         items: [
           { id: "r1", kind: "drug", name: "注射用青霉素钠（联治灵）", maker: "联治灵", spec: "2.4g / 瓶", use: "肌肉注射", dose: "2.4", doseUnit: "g", dosePer: "fixed", timesPerDay: "2", days: "3", isSpecialDrug: true },
           { id: "r2", kind: "drug", name: "氟尼辛葡甲胺（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉推注", dose: "4", doseUnit: "ml", dosePer: "100kg", timesPerDay: "1", days: "3" },
@@ -128,9 +128,9 @@ const diseaseLibrary: Disease[] = [
       {
         id: "p1",
         name: "处方 1 · 青霉素钠 + 氟尼辛",
-        desc: "产后 21-28 天；直肠按压排脓后用药。青霉素钠肌注早晚各 1 次连用 3 天；氟尼辛葡甲胺静注 1 天 1 次连用 3 天",
+        desc: "产后 21-28 天；直肠按压排脓后用药。青霉素钠肌注1 天 2 次连用 3 天；氟尼辛葡甲胺静注 1 天 1 次连用 3 天",
         items: [
-          { id: "r1", kind: "drug", name: "注射用青霉素钠（联治灵 400 万 / 远征 400 万 / 联治灵 1600 万）", maker: "联治灵 / 远征", spec: "2.4g / 瓶", use: "肌肉注射", dose: "2.4", doseUnit: "g", dosePer: "fixed", timesPerDay: "2", days: "3", isSpecialDrug: true, usageMethod: "早上下午各 1 次，连用 3 天", doseByWeight: "200–400kg=2.4g；400–600kg=4.8g；600–900kg=7.2g；≥900kg=9.6g" },
+          { id: "r1", kind: "drug", name: "注射用青霉素钠（联治灵 400 万 / 远征 400 万 / 联治灵 1600 万）", maker: "联治灵 / 远征", spec: "2.4g / 瓶", use: "肌肉注射", dose: "2.4", doseUnit: "g", dosePer: "fixed", timesPerDay: "2", days: "3", isSpecialDrug: true, usageMethod: "1 天 2 次，连用 3 天", doseByWeight: "200–400kg=2.4g；400–600kg=4.8g；600–900kg=7.2g；≥900kg=9.6g" },
           { id: "r2", kind: "drug", name: "氟尼辛葡甲胺注射液（福欣安）", maker: "礼蓝动保", spec: "100ml / 瓶", use: "静脉注射", dose: "20", doseUnit: "ml", dosePer: "fixed", timesPerDay: "1", days: "3", usageMethod: "1 天 1 次，连用 3 天", doseByWeight: "200–400kg=10ml；400–600kg=20ml；600–900kg=30ml；≥900kg=35ml" },
         ],
       },
