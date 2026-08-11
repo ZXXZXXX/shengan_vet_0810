@@ -57,7 +57,7 @@ const D = {
     manufacturer: "联治灵",
     use: "肌肉注射",
     dose: "2.2 万 IU / kg",
-    method: "早晚各 1 次，连用 3 天",
+    method: "1 天 2 次，连用 3 天",
     qty: "6 瓶",
     isPrescription: true,
     isSpecial: true,
@@ -251,7 +251,7 @@ const PLANS = {
     disease: "产后子宫炎",
     prescription: {
       name: "处方 1 · 青霉素钠 + 氟尼辛",
-      note: "产后 10 天内；青霉素钠 2.2 万 IU/kg，早晚各 1 次连用 3 天。",
+      note: "产后 10 天内；青霉素钠 2.2 万 IU/kg，1 天 2 次连用 3 天。",
     },
     drugs: [D.penicillin, D.flunixin],
     days: 3,
@@ -278,7 +278,7 @@ const PLANS = {
     disease: "子宫内膜炎",
     prescription: {
       name: "处方 1 · 青霉素钠 + 氟尼辛",
-      note: "产后 21-28 天；直肠按压排脓后用药。青霉素钠肌肉注射早晚各 1 次连用 3 天；氟尼辛葡甲胺静脉注射 1 天 1 次连用 3 天。",
+      note: "产后 21-28 天；直肠按压排脓后用药。青霉素钠肌肉注射 1 天 2 次连用 3 天；氟尼辛葡甲胺静脉注射 1 天 1 次连用 3 天。",
     },
     drugs: [
       {
@@ -287,7 +287,7 @@ const PLANS = {
         manufacturer: "联治灵",
         use: "肌肉注射",
         dose: "4.8g / 次",
-        method: "早上下午各 1 次，连用 3 天",
+        method: "1 天 2 次，连用 3 天",
         qty: "6 瓶",
         isPrescription: true,
         isSpecial: true,
