@@ -189,47 +189,31 @@ function Level3Page() {
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: string | number; tone?: "brand" }) {
-  return (
-    <div className="px-2 text-center">
-      <div
-        className={`text-section-title font-semibold tabular-nums ${
-          tone === "brand" ? "text-primary" : "text-foreground"
-        }`}
-      >
-        {value}
-      </div>
-      <div className="mt-0.5 text-caption text-text-tertiary">{label}</div>
-    </div>
-  );
-}
-
 function HolderChip({
   active,
   onClick,
   title,
-  sub,
+  count,
 }: {
   active: boolean;
   onClick: () => void;
   title: string;
-  sub: string;
+  count: number;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 px-3 py-1.5 rounded-lg border text-left ${
-        active ? "border-primary bg-brand-subtle" : "border-border bg-card"
+      className={`shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption transition-colors ${
+        active ? "bg-primary/10 text-primary font-medium" : "bg-secondary text-text-secondary"
       }`}
     >
-      <div className={`text-caption font-medium ${active ? "text-primary" : "text-foreground"}`}>
-        {title}
-      </div>
-      <div className="text-[11px] leading-4 text-text-tertiary tabular-nums">{sub}</div>
+      <span>{title}</span>
+      <span className="tabular-nums opacity-70">{count}</span>
     </button>
   );
 }
+
 
 function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }) {
   return (
