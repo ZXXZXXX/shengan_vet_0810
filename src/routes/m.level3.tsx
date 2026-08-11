@@ -251,7 +251,7 @@ function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }
   return (
     <div
       className="rounded-xl bg-card border p-3.5"
-      style={{ borderColor: i.used ? "hsl(var(--border))" : "#B8E0C2" }}
+      style={{ borderColor: i.used ? "#E8EAE9" : "#B8E0C2" }}
     >
       {/* 顶部：药品名称 + 使用状态 */}
       <div className="flex items-center gap-2">
