@@ -31,7 +31,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-8801-0231",
     name: "精制盐酸头孢噻呋注射液",
-    spec: "100ml:5g / 瓶",
+    spec: "100ml:5g/瓶",
     batch: "B240517",
     manufacturer: "齐鲁动保",
     used: true,
@@ -44,7 +44,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-8801-0232",
     name: "精制盐酸头孢噻呋注射液",
-    spec: "100ml:5g / 瓶",
+    spec: "100ml:5g/瓶",
     batch: "B240517",
     manufacturer: "齐鲁动保",
     used: false,
@@ -55,7 +55,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-6620-1187",
     name: "氟尼辛葡甲胺注射液",
-    spec: "100ml / 瓶",
+    spec: "100ml/瓶",
     batch: "B240603",
     manufacturer: "瑞普生物",
     used: true,
@@ -68,7 +68,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-4410-0902",
     name: "20% 葡萄糖注射液",
-    spec: "500ml / 瓶",
+    spec: "500ml/瓶",
     batch: "B240419",
     manufacturer: "华农动保",
     used: false,
@@ -79,7 +79,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-4410-0903",
     name: "复方氯化钠注射液",
-    spec: "500ml / 瓶",
+    spec: "500ml/瓶",
     batch: "B240422",
     manufacturer: "华农动保",
     used: true,
@@ -93,7 +93,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-8801-0240",
     name: "精制盐酸头孢噻呋注射液",
-    spec: "100ml:5g / 瓶",
+    spec: "100ml:5g/瓶",
     batch: "B240517",
     manufacturer: "齐鲁动保",
     used: false,
@@ -104,7 +104,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-3320-0455",
     name: "产后灌注剂",
-    spec: "100ml / 瓶",
+    spec: "100ml/瓶",
     batch: "B240708",
     manufacturer: "大华农",
     used: true,
@@ -117,7 +117,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-9912-0071",
     name: "口蹄疫双价灭活疫苗",
-    spec: "100ml / 瓶",
+    spec: "100ml/瓶",
     batch: "B240611",
     manufacturer: "中农威特",
     used: true,
@@ -130,7 +130,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-9912-0072",
     name: "口蹄疫双价灭活疫苗",
-    spec: "100ml / 瓶",
+    spec: "100ml/瓶",
     batch: "B240611",
     manufacturer: "中农威特",
     used: false,
@@ -141,7 +141,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-7701-0338",
     name: "硫酸铜溶液",
-    spec: "5L / 桶",
+    spec: "5L/桶",
     batch: "B240520",
     manufacturer: "华农动保",
     used: false,
@@ -152,7 +152,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-7701-0339",
     name: "水杨酸粉",
-    spec: "500g / 袋",
+    spec: "500g/袋",
     batch: "B240502",
     manufacturer: "瑞普生物",
     used: true,
@@ -166,7 +166,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-8801-0251",
     name: "精制盐酸头孢噻呋注射液",
-    spec: "100ml:5g / 瓶",
+    spec: "100ml:5g/瓶",
     batch: "B240517",
     manufacturer: "齐鲁动保",
     used: false,
@@ -179,7 +179,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-6620-1195",
     name: "氟尼辛葡甲胺注射液",
-    spec: "100ml / 瓶",
+    spec: "100ml/瓶",
     batch: "B240603",
     manufacturer: "瑞普生物",
     used: false,
@@ -192,7 +192,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-4410-0921",
     name: "复方氯化钠注射液",
-    spec: "500ml / 瓶",
+    spec: "500ml/瓶",
     batch: "B240422",
     manufacturer: "华农动保",
     used: false,
@@ -205,7 +205,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-3320-0461",
     name: "产后灌注剂",
-    spec: "100ml / 瓶",
+    spec: "100ml/瓶",
     batch: "B240708",
     manufacturer: "大华农",
     used: true,
@@ -221,7 +221,7 @@ export const L3_ITEMS: L3Item[] = [
   {
     code: "SN-4410-0930",
     name: "20% 葡萄糖注射液",
-    spec: "500ml / 瓶",
+    spec: "500ml/瓶",
     batch: "B240419",
     manufacturer: "华农动保",
     used: true,
