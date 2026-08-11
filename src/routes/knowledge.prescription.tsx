@@ -88,7 +88,7 @@ const VAR_LABEL: Record<VarKind, string> = {
 
 type DoseMap = { option: string; dose: string }[]; // 变量选项 → 剂量/次
 
-type DrugRef = { name: string; spec: string }; // 可替代药品
+type DrugRef = { name: string; spec: string; route?: Route1; dose?: string }; // 可替代药品（可单独设置用法与剂量）
 
 type DrugDetail = {
   id: string;
@@ -1126,7 +1126,57 @@ function DrugDetailRow({
           )}
         </div>
 
+        {/* 替代药品用法与剂量 */}
+        {value.drugs.length > 1 && (
+          <div className="pt-3 border-t border-border/70 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-body-sm font-medium text-foreground">替代药品用法与剂量</span>
+              <span className="text-caption text-text-tertiary">未填写时沿用主选药品的用法与剂量</span>
+            </div>
+            <div className="space-y-2">
+              {value.drugs.slice(1).map((d, i) => (
+                <div key={drugKey(d)} className="flex flex-wrap items-center gap-2">
+                  <div className="w-56 min-w-0">
+                    <div className="truncate text-body-sm text-foreground">{d.name}</div>
+                    <div className="truncate text-caption text-text-tertiary">{d.spec}</div>
+                  </div>
+                  <Select
+                    value={d.route ?? value.routes[0] ?? ""}
+                    onValueChange={(v) => {
+                      const next = value.drugs.slice();
+                      next[i + 1] = { ...d, route: v as Route1 };
+                      onChange({ drugs: next });
+                    }}
+                  >
+                    <SelectTrigger className="h-9 w-40 text-body-sm">
+                      <SelectValue placeholder="给药方式" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ROUTE_OPTS.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    value={d.dose ?? ""}
+                    onChange={(e) => {
+                      const next = value.drugs.slice();
+                      next[i + 1] = { ...d, dose: e.target.value };
+                      onChange({ drugs: next });
+                    }}
+                    className="h-9 w-40 text-body-sm"
+                    placeholder={value.variable ? "如 按体重区间" : value.fixedDose || "如 5ml/次"}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
+
     </div>
   );
 }
