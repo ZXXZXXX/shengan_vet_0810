@@ -94,25 +94,23 @@ function Level3Page() {
     });
   }, [statusItems, holder, q]);
 
-  /** 按组合用药分组：同一 comboId 合并为一张卡片 */
+  /** 分组：组合用药按 comboId 合并；单项药品按「药品 + 规格 + 领用人」合并为一张卡片 */
   const groups = useMemo(() => {
     const out: { key: string; items: L3Item[]; combo: boolean }[] = [];
     const idx = new Map<string, number>();
     list.forEach((i) => {
-      if (i.comboId) {
-        const at = idx.get(i.comboId);
-        if (at === undefined) {
-          idx.set(i.comboId, out.length);
-          out.push({ key: i.comboId, items: [i], combo: true });
-        } else {
-          out[at].items.push(i);
-        }
+      const key = i.comboId ? `combo:${i.comboId}` : `drug:${i.name}|${i.spec}|${i.holder}`;
+      const at = idx.get(key);
+      if (at === undefined) {
+        idx.set(key, out.length);
+        out.push({ key, items: [i], combo: !!i.comboId });
       } else {
-        out.push({ key: i.code, items: [i], combo: false });
+        out[at].items.push(i);
       }
     });
     return out;
   }, [list]);
+
 
 
   const tabs: { key: typeof tab; label: string }[] = [
@@ -208,7 +206,7 @@ function Level3Page() {
             g.combo ? (
               <ComboCard key={g.key} items={g.items} showHolder={farmView} />
             ) : (
-              <ItemCard key={g.key} item={g.items[0]} showHolder={farmView} />
+              <ItemCard key={g.key} items={g.items} showHolder={farmView} />
             ),
           )
         )}
@@ -247,45 +245,56 @@ function HolderChip({
 
 
 
-function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }) {
+function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean }) {
+  const head = items[0];
+  const allUsed = items.every((i) => i.used);
+  const usedCount = items.filter((i) => i.used).length;
+  const cattle = Array.from(new Set(items.flatMap((i) => i.cattle ?? [])));
+  const claimedAt = items.map((i) => i.claimedAt).sort()[0];
+  const usedAt = items
+    .map((i) => i.usedAt)
+    .filter(Boolean)
+    .sort()
+    .pop();
+
   return (
     <div
       className="rounded-xl bg-card border p-3.5"
-      style={{ borderColor: i.used ? "#E8EAE9" : "#B8E0C2" }}
+      style={{ borderColor: allUsed ? "#E8EAE9" : "#B8E0C2" }}
     >
       {/* 顶部：药品名称 + 使用状态 */}
       <div className="flex items-center gap-2">
-        <Pill
-          className={`h-5 w-5 shrink-0 ${i.used ? "text-text-tertiary" : "text-primary"}`}
-        />
+        <Pill className={`h-5 w-5 shrink-0 ${allUsed ? "text-text-tertiary" : "text-primary"}`} />
         <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
-          {i.name}
+          {head.name}
         </div>
         <span
           className={`shrink-0 inline-flex items-center gap-1 text-caption font-medium ${
-            i.used ? "text-text-tertiary" : "text-primary"
+            allUsed ? "text-text-tertiary" : "text-primary"
           }`}
         >
-          {i.used ? (
+          {allUsed ? (
             <CheckCircle2 className="h-3.5 w-3.5" />
           ) : (
             <CircleDashed className="h-3.5 w-3.5" />
           )}
-          {i.used ? "已使用" : "未使用"}
+          {allUsed ? "已使用" : `已用 ${usedCount}/${items.length}`}
         </span>
       </div>
 
-      {/* 第二行：规格 + 领用人 */}
+      {/* 第二行：规格 · 数量 + 领用人 */}
       <div className="mt-2 flex items-center justify-between gap-2 text-caption">
         <div className="text-text-tertiary truncate">
-          规格 <span className="text-text-secondary">{i.spec}</span>
+          规格 <span className="text-text-secondary">{head.spec}</span>
+          <span className="mx-2 text-border">·</span>
+          共 <span className="text-text-secondary">{items.length}</span> 支
         </div>
         {showHolder && (
           <span className="shrink-0 inline-flex items-center gap-1 text-text-secondary">
             <User className="h-3 w-3 text-text-tertiary" />
-            {i.holder}
-            {i.holderRole ? (
-              <span className="text-text-tertiary">· {i.holderRole}</span>
+            {head.holder}
+            {head.holderRole ? (
+              <span className="text-text-tertiary">· {head.holderRole}</span>
             ) : null}
           </span>
         )}
@@ -294,41 +303,43 @@ function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }
       {/* 虚线分隔 */}
       <div className="my-3 border-t border-dashed border-border" />
 
-      {/* 明细：追溯码 / 厂商 · 批次 */}
+      {/* 明细：每支药品的追溯码 / 厂商 · 批次 */}
       <div className="space-y-2.5">
-        <div className="min-w-0">
-          <div className="text-caption text-text-secondary font-mono truncate">{i.code}</div>
-          <div className="text-caption mt-0.5">
-            <span className={i.used ? "text-text-tertiary" : "text-primary"}>
-              {i.manufacturer ?? "—"}
-            </span>
-            {i.batch && (
-              <>
-                <span className="mx-2 text-border">·</span>
-                <span className="text-text-tertiary font-mono">{i.batch}</span>
-              </>
-            )}
+        {items.map((i) => (
+          <div key={i.code} className="min-w-0">
+            <div className="text-caption text-text-secondary font-mono truncate">{i.code}</div>
+            <div className="text-caption mt-0.5">
+              <span className={i.used ? "text-text-tertiary" : "text-primary"}>
+                {i.manufacturer ?? "—"}
+              </span>
+              {i.batch && (
+                <>
+                  <span className="mx-2 text-border">·</span>
+                  <span className="text-text-tertiary font-mono">{i.batch}</span>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        ))}
 
         <div className="space-y-1.5 pt-0.5">
           <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
             <Clock className="h-3 w-3 shrink-0" />
             领取
-            <span className="ml-auto tabular-nums text-text-secondary">{i.claimedAt}</span>
+            <span className="ml-auto tabular-nums text-text-secondary">{claimedAt}</span>
           </div>
           <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
             <CheckCircle2 className="h-3 w-3 shrink-0" />
             使用
-            <span className="ml-auto tabular-nums text-text-secondary">{i.usedAt ?? "—"}</span>
+            <span className="ml-auto tabular-nums text-text-secondary">{usedAt ?? "—"}</span>
           </div>
           <div className="flex items-start gap-1.5 text-caption text-text-tertiary">
             <Beef className="h-3 w-3 shrink-0 mt-0.5" />
             牛只
             <span className="ml-auto text-right">
-              {i.cattle && i.cattle.length > 0 ? (
+              {cattle.length > 0 ? (
                 <span className="inline-flex flex-wrap justify-end gap-1">
-                  {i.cattle.map((c) => (
+                  {cattle.map((c) => (
                     <span
                       key={c}
                       className="px-1.5 h-5 inline-flex items-center rounded-md bg-brand-subtle text-primary font-mono"
@@ -347,6 +358,7 @@ function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }
     </div>
   );
 }
+
 
 /** 组合用药卡片：结构与领药端保持一致（橙色系 + 双药丸图标 + 组内明细） */
 function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean }) {
