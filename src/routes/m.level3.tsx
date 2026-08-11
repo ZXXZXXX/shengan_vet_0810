@@ -206,7 +206,7 @@ function Level3Page() {
             g.combo ? (
               <ComboCard key={g.key} items={g.items} showHolder={farmView} />
             ) : (
-              <ItemCard key={g.key} item={g.items[0]} showHolder={farmView} />
+              <ItemCard key={g.key} items={g.items} showHolder={farmView} />
             ),
           )
         )}
