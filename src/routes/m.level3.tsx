@@ -115,8 +115,8 @@ function Level3Page() {
 
   const tabs: { key: typeof tab; label: string }[] = [
     { key: "all", label: `全部 ${items.length}` },
-    { key: "unused", label: `未使用 ${totalUnused}` },
-    { key: "used", label: `已使用 ${totalUsed}` },
+    { key: "unused", label: `未用完 ${totalUnused}` },
+    { key: "used", label: `已用完 ${totalUsed}` },
   ];
 
 
@@ -279,9 +279,9 @@ function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean 
             <CircleDashed className="h-3.5 w-3.5" />
           )}
           {allUsed
-            ? "已使用"
+            ? "已用完"
             : items.length <= 1
-              ? "未使用"
+              ? "未用完"
               : `已用 ${usedCount}/${items.length}`}
         </span>
       </div>
@@ -415,8 +415,8 @@ function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean
           {(() => {
             const total =
               head.comboScope === "single" ? 1 : (head.comboCattleCount ?? items.length);
-            if (allUsed) return "已使用";
-            if (total <= 1) return "未使用";
+            if (allUsed) return "已用完";
+            if (total <= 1) return "未用完";
             return `已用 ${usedCount}/${total}`;
           })()}
         </span>
