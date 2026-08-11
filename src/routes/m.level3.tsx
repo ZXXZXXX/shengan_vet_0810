@@ -348,3 +348,134 @@ function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }
   );
 }
 
+/** 组合用药卡片：结构与领药端保持一致（橙色系 + 双药丸图标 + 组内明细） */
+function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean }) {
+  const head = items[0];
+  const allUsed = items.every((i) => i.used);
+  const usedCount = items.filter((i) => i.used).length;
+  const names = Array.from(new Set(items.map((i) => i.name)));
+  const title = `用药组合：${names
+    .slice(0, 3)
+    .map((n) => (n.length > 3 ? `${n.slice(0, 3)}…` : n))
+    .join(" + ")}${names.length > 3 ? " + …" : ""}`;
+  const cattle = Array.from(new Set(items.flatMap((i) => i.cattle ?? [])));
+  const usedAt = items
+    .map((i) => i.usedAt)
+    .filter(Boolean)
+    .sort()
+    .pop();
+
+  return (
+    <div className="rounded-xl bg-card border p-3.5" style={{ borderColor: "#FFD2A8" }}>
+      {/* 顶部：组合名称 + 使用状态 */}
+      <div className="flex items-center gap-2">
+        <span className="inline-flex -space-x-1 shrink-0 text-[#E5751A]">
+          <Pill className="h-4 w-4" />
+          <Pill className="h-4 w-4" />
+        </span>
+        <div className="flex-1 min-w-0 text-body font-semibold text-foreground truncate">
+          {title}
+        </div>
+        <span
+          className={`shrink-0 inline-flex items-center gap-1 text-caption font-medium ${
+            allUsed ? "text-text-tertiary" : "text-[#E5751A]"
+          }`}
+        >
+          {allUsed ? (
+            <CheckCircle2 className="h-3.5 w-3.5" />
+          ) : (
+            <CircleDashed className="h-3.5 w-3.5" />
+          )}
+          {allUsed ? "已使用" : `已用 ${usedCount}/${items.length}`}
+        </span>
+      </div>
+
+      {/* 第二行：治疗牛只 / 组合项数 + 领用人 */}
+      <div className="mt-2 flex items-center justify-between gap-2 text-caption">
+        <div className="text-text-tertiary truncate">
+          {head.comboScope
+            ? `治疗牛只 ${head.comboScope === "single" ? 1 : (head.comboCattleCount ?? 1)} 头`
+            : `组合 ${items.length} 项`}
+          <span className="mx-2 text-border">·</span>
+          共 <span className="text-text-secondary">{items.length}</span> 项
+        </div>
+        {showHolder && (
+          <span className="shrink-0 inline-flex items-center gap-1 text-text-secondary">
+            <User className="h-3 w-3 text-text-tertiary" />
+            {head.holder}
+            {head.holderRole ? <span className="text-text-tertiary">· {head.holderRole}</span> : null}
+          </span>
+        )}
+      </div>
+
+      <div className="my-3 border-t border-dashed border-border" />
+
+      {/* 组内药品明细 */}
+      <div className="space-y-2.5">
+        {items.map((i) => (
+          <div key={i.code} className="min-w-0">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 min-w-0 text-caption text-foreground font-medium truncate">
+                {i.name}
+              </div>
+              <span
+                className={`shrink-0 text-caption ${
+                  i.used ? "text-text-tertiary" : "text-[#E5751A]"
+                }`}
+              >
+                {i.used ? "已使用" : "未使用"}
+              </span>
+            </div>
+            <div className="text-caption text-text-secondary font-mono truncate">{i.code}</div>
+            <div className="text-caption mt-0.5">
+              <span className={i.used ? "text-text-tertiary" : "text-[#E5751A]"}>
+                {i.manufacturer ?? "—"}
+              </span>
+              {i.batch && (
+                <>
+                  <span className="mx-2 text-border">·</span>
+                  <span className="text-text-tertiary font-mono">{i.batch}</span>
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+
+        <div className="space-y-1.5 pt-0.5">
+          <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+            <Clock className="h-3 w-3 shrink-0" />
+            领取
+            <span className="ml-auto tabular-nums text-text-secondary">{head.claimedAt}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+            <CheckCircle2 className="h-3 w-3 shrink-0" />
+            使用
+            <span className="ml-auto tabular-nums text-text-secondary">{usedAt ?? "—"}</span>
+          </div>
+          <div className="flex items-start gap-1.5 text-caption text-text-tertiary">
+            <Beef className="h-3 w-3 shrink-0 mt-0.5" />
+            牛只
+            <span className="ml-auto text-right">
+              {cattle.length > 0 ? (
+                <span className="inline-flex flex-wrap justify-end gap-1">
+                  {cattle.map((c) => (
+                    <span
+                      key={c}
+                      className="px-1.5 h-5 inline-flex items-center rounded-md bg-brand-subtle text-primary font-mono"
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </span>
+              ) : (
+                <span className="text-text-secondary">—</span>
+              )}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
