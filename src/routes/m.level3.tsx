@@ -423,13 +423,6 @@ function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean
               <div className="flex-1 min-w-0 text-caption text-foreground font-medium truncate">
                 {i.name}
               </div>
-              <span
-                className={`shrink-0 text-caption ${
-                  i.used ? "text-text-tertiary" : "text-[#E5751A]"
-                }`}
-              >
-                {i.used ? "已使用" : "未使用"}
-              </span>
             </div>
             <div className="text-caption text-text-secondary font-mono truncate">{i.code}</div>
             <div className="text-caption mt-0.5">
