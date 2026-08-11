@@ -124,18 +124,8 @@ function Level3Page() {
         </div>
       </header>
 
-      {/* 全场视角：库存与使用情况概览 */}
-      {farmView && (
-        <div className="px-4 pt-3">
-          <div className="rounded-xl border border-border bg-card p-3">
-            <div className="grid grid-cols-3 divide-x divide-border">
-              <Stat label="在库件数" value={scopedItems.length} />
-              <Stat label="未使用" value={unusedCount} tone="brand" />
-              <Stat label="使用率" value={`${usedRate}%`} />
-            </div>
-          </div>
-        </div>
-      )}
+
+
 
       <div className="px-4 pt-3 pb-3 space-y-2.5">
         <div className="relative">
@@ -150,13 +140,13 @@ function Level3Page() {
 
         {/* 全场视角：按领用人筛选 */}
         {farmView && (
-          <div className="-mx-4 px-4 overflow-x-auto">
-            <div className="flex gap-2 w-max pb-0.5">
+          <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
+            <div className="flex gap-1.5 w-max pb-0.5">
               <HolderChip
                 active={holder === "__all__"}
                 onClick={() => setHolder("__all__")}
                 title="全部人员"
-                sub={`${items.length} 件`}
+                count={items.length}
               />
               {holders.map((h) => (
                 <HolderChip
@@ -164,12 +154,13 @@ function Level3Page() {
                   active={holder === h.name}
                   onClick={() => setHolder(h.name)}
                   title={h.name}
-                  sub={`${h.unused} 未用 / ${h.total} 件`}
+                  count={h.total}
                 />
               ))}
             </div>
           </div>
         )}
+
 
         <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-caption">
           {tabs.map((t) => (
@@ -198,47 +189,31 @@ function Level3Page() {
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: string | number; tone?: "brand" }) {
-  return (
-    <div className="px-2 text-center">
-      <div
-        className={`text-section-title font-semibold tabular-nums ${
-          tone === "brand" ? "text-primary" : "text-foreground"
-        }`}
-      >
-        {value}
-      </div>
-      <div className="mt-0.5 text-caption text-text-tertiary">{label}</div>
-    </div>
-  );
-}
-
 function HolderChip({
   active,
   onClick,
   title,
-  sub,
+  count,
 }: {
   active: boolean;
   onClick: () => void;
   title: string;
-  sub: string;
+  count: number;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 px-3 py-1.5 rounded-lg border text-left ${
-        active ? "border-primary bg-brand-subtle" : "border-border bg-card"
+      className={`shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-caption transition-colors ${
+        active ? "bg-primary/10 text-primary font-medium" : "bg-secondary text-text-secondary"
       }`}
     >
-      <div className={`text-caption font-medium ${active ? "text-primary" : "text-foreground"}`}>
-        {title}
-      </div>
-      <div className="text-[11px] leading-4 text-text-tertiary tabular-nums">{sub}</div>
+      <span>{title}</span>
+      <span className="tabular-nums opacity-70">{count}</span>
     </button>
   );
 }
+
 
 function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }) {
   return (
