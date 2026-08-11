@@ -124,18 +124,8 @@ function Level3Page() {
         </div>
       </header>
 
-      {/* 全场视角：库存与使用情况概览 */}
-      {farmView && (
-        <div className="px-4 pt-3">
-          <div className="rounded-xl border border-border bg-card p-3">
-            <div className="grid grid-cols-3 divide-x divide-border">
-              <Stat label="在库件数" value={scopedItems.length} />
-              <Stat label="未使用" value={unusedCount} tone="brand" />
-              <Stat label="使用率" value={`${usedRate}%`} />
-            </div>
-          </div>
-        </div>
-      )}
+
+
 
       <div className="px-4 pt-3 pb-3 space-y-2.5">
         <div className="relative">
