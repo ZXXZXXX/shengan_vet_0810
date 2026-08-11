@@ -1727,9 +1727,10 @@ function ChecklistDay({
                         <div className="mt-1 flex items-center justify-between gap-3 text-caption">
                           <span className="text-text-tertiary">剂量 {it.doseText ?? "-"}</span>
                           {scanned && (
-                            <span className="font-mono text-primary font-medium truncate shrink-0">
-                              {it.batchNo ?? "-"}
+                            <span className="text-primary font-medium truncate shrink-0">
+                              批次编号：<span className="font-mono">{it.batchNo ?? "-"}</span>
                             </span>
+
                           )}
                         </div>
 
