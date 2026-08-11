@@ -46,28 +46,31 @@ function Level3Page() {
   );
 
 
-  /** 全场视角：按人员汇总 */
+  /** 状态 tab 计数：全部人员口径 */
+  const totalUnused = items.filter((i) => !i.used).length;
+  const totalUsed = items.length - totalUnused;
+
+  /** 当前状态下的药品（不受人员筛选影响），用于人员标签计数 */
+  const statusItems = useMemo(
+    () => items.filter((i) => (tab === "unused" ? !i.used : tab === "used" ? i.used : true)),
+    [items, tab],
+  );
+
+  /** 全场视角：按人员汇总（当前状态口径） */
   const holders = useMemo(() => {
-    const map = new Map<string, { name: string; role?: string; total: number; unused: number }>();
-    items.forEach((i) => {
-      const cur = map.get(i.holder) ?? { name: i.holder, role: i.holderRole, total: 0, unused: 0 };
+    const map = new Map<string, { name: string; role?: string; total: number }>();
+    statusItems.forEach((i) => {
+      const cur = map.get(i.holder) ?? { name: i.holder, role: i.holderRole, total: 0 };
       cur.total += 1;
-      if (!i.used) cur.unused += 1;
       map.set(i.holder, cur);
     });
-    return [...map.values()].sort((a, b) => b.unused - a.unused || b.total - a.total);
-  }, [items]);
-
-  const scopedItems = useMemo(
-    () => (holder === "__all__" ? items : items.filter((i) => i.holder === holder)),
-    [items, holder]
-  );
+    return [...map.values()].sort((a, b) => b.total - a.total);
+  }, [statusItems]);
 
   const list = useMemo(() => {
     const kw = q.trim().toLowerCase();
-    const filtered = scopedItems.filter((i) => {
-      if (tab === "unused" && i.used) return false;
-      if (tab === "used" && !i.used) return false;
+    const filtered = statusItems.filter((i) => {
+      if (holder !== "__all__" && i.holder !== holder) return false;
       if (!kw) return true;
       return (
         i.name.toLowerCase().includes(kw) ||
@@ -82,17 +85,14 @@ function Level3Page() {
       if (a.used) return (a.usedAt ?? "").localeCompare(b.usedAt ?? "");
       return a.claimedAt.localeCompare(b.claimedAt);
     });
-  }, [scopedItems, tab, q]);
-
-  const unusedCount = scopedItems.filter((i) => !i.used).length;
-  const usedCount = scopedItems.length - unusedCount;
-  const usedRate = scopedItems.length ? Math.round((usedCount / scopedItems.length) * 100) : 0;
+  }, [statusItems, holder, q]);
 
   const tabs: { key: typeof tab; label: string }[] = [
-    { key: "all", label: `全部 ${scopedItems.length}` },
-    { key: "unused", label: `未使用 ${unusedCount}` },
-    { key: "used", label: `已使用 ${usedCount}` },
+    { key: "all", label: `全部 ${items.length}` },
+    { key: "unused", label: `未使用 ${totalUnused}` },
+    { key: "used", label: `已使用 ${totalUsed}` },
   ];
+
 
   return (
     <MobileShell hideTabBar>
@@ -145,9 +145,6 @@ function Level3Page() {
               )}
             </button>
           ))}
-          <span className="ml-auto pb-2 text-caption text-text-tertiary tabular-nums">
-            使用率 {usedRate}%
-          </span>
         </div>
 
         {/* 全场视角：按领用人筛选 */}
@@ -158,7 +155,8 @@ function Level3Page() {
                 active={holder === "__all__"}
                 onClick={() => setHolder("__all__")}
                 title="全部人员"
-                count={items.length}
+                count={statusItems.length}
+
               />
               {holders.map((h) => (
                 <HolderChip
