@@ -1130,50 +1130,23 @@ function DrugDetailRow({
 
         {/* 替代药品用法与剂量 */}
         {value.drugs.length > 1 && (
-          <div className="pt-3 border-t border-border/70 space-y-3">
+          <div className="pt-3 border-t border-border/70 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-body font-medium text-foreground">替代药品用法与剂量</span>
-              <span className="text-caption text-text-tertiary">未填写时沿用主选药品的用法与剂量</span>
+              <span className="text-caption text-text-tertiary">默认沿用主选药品，可按需单独调整</span>
             </div>
-            <div className="space-y-2">
-              {value.drugs.slice(1).map((d, i) => (
-                <div key={drugKey(d)} className="flex flex-wrap items-center gap-2">
-                  <div className="w-56 min-w-0">
-                    <div className="truncate text-body-sm text-foreground">{d.name}</div>
-                    <div className="truncate text-caption text-text-tertiary">{d.spec}</div>
-                  </div>
-                  <Select
-                    value={d.route ?? value.routes[0] ?? ""}
-                    onValueChange={(v) => {
-                      const next = value.drugs.slice();
-                      next[i + 1] = { ...d, route: v as Route1 };
-                      onChange({ drugs: next });
-                    }}
-                  >
-                    <SelectTrigger className="h-9 w-40 text-body">
-                      <SelectValue placeholder="给药方式" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ROUTE_OPTS.map((o) => (
-                        <SelectItem key={o} value={o}>
-                          {o}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    value={d.dose ?? ""}
-                    onChange={(e) => {
-                      const next = value.drugs.slice();
-                      next[i + 1] = { ...d, dose: e.target.value };
-                      onChange({ drugs: next });
-                    }}
-                    className="h-9 w-40 text-body"
-                    placeholder={value.variable ? "如 按体重区间" : value.fixedDose || "如 5ml/次"}
-                  />
-                </div>
-              ))}
-            </div>
+            {value.drugs.slice(1).map((d, i) => (
+              <AltDrugEditor
+                key={drugKey(d)}
+                base={value}
+                drug={d}
+                onChange={(p) => {
+                  const next = value.drugs.slice();
+                  next[i + 1] = { ...d, ...p };
+                  onChange({ drugs: next });
+                }}
+              />
+            ))}
           </div>
         )}
 
