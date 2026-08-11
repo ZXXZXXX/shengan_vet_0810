@@ -445,13 +445,20 @@ function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean
       {/* 组内药品明细 */}
       <div className="space-y-2.5">
         {items.map((i) => (
-          <div key={i.code} className="min-w-0">
+          <div key={i.code} className={`min-w-0 ${i.used ? "line-through opacity-55" : ""}`}>
             <div className="flex items-center gap-2">
-              <div className="flex-1 min-w-0 text-caption text-foreground font-medium truncate">
+              <div
+                className={`flex-1 min-w-0 text-caption font-medium truncate ${i.used ? "text-text-tertiary" : "text-foreground"}`}
+              >
                 {i.name}
               </div>
             </div>
-            <div className="text-caption text-text-secondary font-mono truncate">{i.code}</div>
+            <div
+              className={`text-caption font-mono truncate ${i.used ? "text-text-tertiary" : "text-text-secondary"}`}
+            >
+              {i.code}
+            </div>
+
             <div className="text-caption mt-0.5">
               <span className={i.used ? "text-text-tertiary" : "text-[#E5751A]"}>
                 {i.manufacturer ?? "—"}
