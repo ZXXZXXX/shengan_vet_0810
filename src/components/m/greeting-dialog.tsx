@@ -157,20 +157,20 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
                   : "已记录本场请假，请安心休息。"}
               </div>
             </div>
-            <div className="p-5 pt-4 flex items-center gap-2.5">
-              <button
-                type="button"
-                onClick={() => setFeedback(null)}
-                className="h-12 px-5 rounded-2xl border border-border bg-card text-body-sm text-text-secondary active:scale-[0.98] transition-transform"
-              >
-                返回
-              </button>
+            <div className="p-5 pt-4 flex flex-col gap-2.5">
               <button
                 type="button"
                 onClick={close}
-                className="flex-1 h-12 rounded-2xl bg-primary text-primary-foreground text-body font-medium active:scale-[0.98] transition-transform"
+                className="w-full h-12 rounded-2xl bg-primary text-primary-foreground text-body font-medium active:scale-[0.98] transition-transform"
               >
                 好的
+              </button>
+              <button
+                type="button"
+                onClick={() => setFeedback(null)}
+                className="w-full h-12 rounded-2xl border border-border bg-card text-body-sm text-text-secondary active:scale-[0.98] transition-transform"
+              >
+                返回
               </button>
             </div>
           </div>
