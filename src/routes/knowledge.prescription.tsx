@@ -1472,44 +1472,67 @@ function MultiDrugPicker({
     if (isSelected(d)) onChange(value.filter((v) => drugKey(v) !== drugKey(d)));
     else onChange([...value, d]);
   };
+  const remove = (d: DrugRef) => onChange(value.filter((v) => drugKey(v) !== drugKey(d)));
+  const add = (d: DrugRef) => {
+    if (!isSelected(d)) onChange([...value, d]);
+    setOpen(false);
+  };
   return (
-    <>
+    <div className="flex flex-wrap items-center gap-2">
+      {value.map((d, i) => (
+        <span
+          key={drugKey(d)}
+          className="group inline-flex items-center gap-1.5 h-8 pl-2 pr-1.5 rounded-md border border-border bg-card text-body-sm"
+        >
+          <span
+            className={cn(
+              "inline-flex h-4 items-center rounded px-1 text-caption",
+              i === 0 ? "bg-brand-subtle text-primary" : "bg-surface-subtle text-text-tertiary",
+            )}
+          >
+            {i === 0 ? "主选" : "替代"}
+          </span>
+          <span className="text-foreground">{d.name}</span>
+          <span className="text-text-tertiary">{d.spec}</span>
+          <button
+            type="button"
+            onClick={() => remove(d)}
+            className="ml-0.5 inline-flex h-5 w-5 items-center justify-center rounded text-text-tertiary hover:bg-surface-subtle hover:text-[var(--state-danger)]"
+            aria-label={`移除 ${d.name}`}
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </span>
+      ))}
+
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             type="button"
             variant="outline"
-            className="w-full justify-between h-auto min-h-9 py-1.5 font-normal text-body-sm"
+            size="sm"
+            className="h-8 gap-1 border-dashed text-body-sm font-normal text-text-secondary"
           >
-            <div className="flex flex-wrap gap-1 flex-1 text-left">
-              {value.length === 0 && <span className="text-text-tertiary">搜索或选择药品（可多选）</span>}
-              {value.map((d) => (
-                <span
-                  key={drugKey(d)}
-                  className="inline-flex items-center gap-1 text-caption px-1.5 py-0.5 rounded bg-brand-subtle text-primary"
-                >
-                  {d.name} ～{d.spec}
-                </span>
-              ))}
-            </div>
-            <ChevronsUpDown className="h-3.5 w-3.5 opacity-50 shrink-0" />
+            <Plus className="h-3.5 w-3.5" />
+            {value.length === 0 ? "选择药品" : "添加替代药品"}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
+        <PopoverContent className="p-0 w-72" align="start">
           <Command>
             <CommandInput placeholder="输入药品名称搜索…" />
             <CommandList>
               <CommandEmpty>
                 <div className="px-2 py-3 text-body-sm text-text-tertiary">无匹配药品</div>
               </CommandEmpty>
-              <CommandGroup heading="药品档案">
+              <CommandGroup>
                 {DRUG_CATALOG.map((d) => {
                   const k = drugKey(d);
+                  const sel = isSelected(d);
                   return (
-                    <CommandItem key={k} value={k} onSelect={() => toggle(d)}>
-                      <Check className={cn("mr-2 h-3.5 w-3.5", isSelected(d) ? "opacity-100" : "opacity-0")} />
-                      <span>
-                        {d.name} <span className="text-text-tertiary">～{d.spec}</span>
+                    <CommandItem key={k} value={k} onSelect={() => (sel ? remove(d) : add(d))}>
+                      <Check className={cn("mr-2 h-3.5 w-3.5 text-primary", sel ? "opacity-100" : "opacity-0")} />
+                      <span className="truncate">
+                        {d.name} <span className="text-text-tertiary">{d.spec}</span>
                       </span>
                     </CommandItem>
                   );
@@ -1519,9 +1542,10 @@ function MultiDrugPicker({
           </Command>
         </PopoverContent>
       </Popover>
-    </>
+    </div>
   );
 }
+
 
 function VariableDoseTable({
   varKind,
