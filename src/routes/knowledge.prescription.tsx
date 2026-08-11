@@ -1516,10 +1516,16 @@ function MultiDrugPicker({
             {value.length === 0 ? "选择药品" : "添加替代药品"}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-72" align="start">
-          <Command>
-            <CommandInput placeholder="输入药品名称搜索…" />
-            <CommandList>
+        <PopoverContent className="w-72 p-1 overflow-hidden" align="start">
+          <Command className="overflow-visible">
+            <div className="p-1">
+              <CommandInput
+                placeholder="输入药品名称搜索…"
+                className="h-9 text-body-sm"
+              />
+            </div>
+            <CommandList className="max-h-64">
+
               <CommandEmpty>
                 <div className="px-2 py-3 text-body-sm text-text-tertiary">无匹配药品</div>
               </CommandEmpty>
