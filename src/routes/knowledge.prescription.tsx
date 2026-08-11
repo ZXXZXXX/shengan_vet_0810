@@ -1384,23 +1384,17 @@ function SlotSection({
 }) {
   const shown = on ? slot : defaultSlot(freqM);
   return (
-    <div className="rounded-lg border border-border overflow-hidden">
-      <div className="flex items-center justify-between gap-2 px-3 h-10 border-b border-border bg-surface-subtle/30">
+    <div className="pt-3 border-t border-border/70 space-y-2.5">
+      <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="text-body-sm font-medium text-foreground">区分时间段</span>
           <Switch checked={on} onCheckedChange={onToggle} />
         </div>
         <span className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</span>
       </div>
-      <div className="p-3 flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-4">
         {(["morning", "noon", "evening"] as const).map((k) => (
-          <div
-            key={k}
-            className={cn(
-              "flex items-center gap-2 rounded-md border border-border bg-surface-subtle/40 px-2.5 py-1.5",
-              !on && "opacity-60",
-            )}
-          >
+          <div key={k} className={cn("flex items-center gap-2", !on && "opacity-50")}>
             <span className="text-caption text-text-tertiary">
               {k === "morning" ? "早上" : k === "noon" ? "中午" : "下午"}
             </span>
@@ -1412,7 +1406,7 @@ function SlotSection({
                 const n = Number(e.target.value.replace(/\D/g, "") || 0);
                 onSlotChange({ ...slot, [k]: n });
               }}
-              className={cn("h-7 w-12 text-center text-body-sm bg-card", !on && "cursor-not-allowed")}
+              className={cn("h-8 w-12 text-center text-body-sm", !on && "cursor-not-allowed bg-surface-subtle")}
             />
             <span className="text-caption text-text-tertiary">次</span>
           </div>
@@ -1420,6 +1414,7 @@ function SlotSection({
       </div>
     </div>
   );
+
 }
 
 
