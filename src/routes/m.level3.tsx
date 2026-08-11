@@ -287,11 +287,11 @@ function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean 
           )}
           {allUsed
             ? items.length <= 1
-              ? "已用 1 次"
-              : `已用 ${items.length}/${items.length} 次`
+              ? `已用 1 ${unit}`
+              : `已用 ${items.length}/${items.length} ${unit}`
             : items.length <= 1
-              ? "可用 1 次"
-              : `可用 ${items.length - usedCount}/${items.length} 次`}
+              ? `可用 1 ${unit}`
+              : `可用 ${items.length - usedCount}/${items.length} ${unit}`}
         </span>
       </div>
 
@@ -300,7 +300,7 @@ function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean 
         <div className="text-text-tertiary truncate">
           规格 <span className="text-text-secondary">{head.spec}</span>
           <span className="mx-2 text-border">·</span>
-          共 <span className="text-text-secondary">{items.length}</span> 支
+          共 <span className="text-text-secondary">{items.length}</span> {unit}
         </div>
         {showHolder && (
           <span className="shrink-0 inline-flex items-center gap-1 text-text-secondary">
