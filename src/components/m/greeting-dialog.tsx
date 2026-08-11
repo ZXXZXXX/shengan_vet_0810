@@ -47,8 +47,8 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
     ? "linear-gradient(180deg,#F3FAEF 0%,#E7F6EA 100%)"
     : "linear-gradient(180deg,#FFF6EC 0%,#E9F6F0 100%)";
   const mood = isMorning
-    ? "新的一天，从一次巡栏开始 ☀️"
-    : "下午也别硬撑，节奏稳一点就好 🌤️";
+    ? MORNING_MOODS[moodIndex % MORNING_MOODS.length]
+    : AFTERNOON_MOODS[moodIndex % AFTERNOON_MOODS.length];
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/45 backdrop-blur-[2px] px-6 animate-in fade-in duration-200">
