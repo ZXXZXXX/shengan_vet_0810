@@ -39,12 +39,14 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
   const [open, setOpen] = useState(false);
   const [feedback, setFeedback] = useState<null | "work" | "leave">(null);
   const [isMorning, setIsMorning] = useState(true);
+  const [moodIndex, setMoodIndex] = useState(0);
 
   useEffect(() => {
     try {
       if (sessionStorage.getItem(storageKey)) return;
     } catch {}
     setIsMorning(new Date().getHours() < 12);
+    setMoodIndex(Math.floor(Math.random() * 5));
     setOpen(true);
   }, [storageKey]);
 
