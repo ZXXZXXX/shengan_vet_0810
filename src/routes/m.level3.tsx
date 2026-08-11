@@ -44,17 +44,12 @@ function Level3Page() {
     return () => clearInterval(t);
   }, []);
 
-  // 已使用的药品，领取时间超过 24 小时后自动清除；非全场视角只看自己的
-  const items = useMemo(() => {
-    const scoped = farmView ? L3_ITEMS : L3_ITEMS.filter((i) => i.holder === CURRENT_HOLDER);
-    if (now === null) return scoped;
-    return scoped.filter((i) => {
-      if (!i.used) return true;
-      const claimed = new Date(i.claimedAt.replace(/-/g, "/")).getTime();
-      if (Number.isNaN(claimed)) return true;
-      return now - claimed < 24 * 60 * 60 * 1000;
-    });
-  }, [now, farmView]);
+  // 已使用的药品保留展示，不做自动清除；非全场视角只看自己的
+  const items = useMemo(
+    () => (farmView ? L3_ITEMS : L3_ITEMS.filter((i) => i.holder === CURRENT_HOLDER)),
+    [farmView],
+  );
+
 
   /** 全场视角：按人员汇总 */
   const holders = useMemo(() => {
