@@ -201,11 +201,18 @@ function Level3Page() {
       </div>
 
       <div className="px-4 pb-6 space-y-2.5">
-        {list.length === 0 ? (
+        {groups.length === 0 ? (
           <div className="text-center py-12 text-body-sm text-text-tertiary">暂无药品</div>
         ) : (
-          list.map((i) => <ItemCard key={i.code} item={i} showHolder={farmView} />)
+          groups.map((g) =>
+            g.combo ? (
+              <ComboCard key={g.key} items={g.items} showHolder={farmView} />
+            ) : (
+              <ItemCard key={g.key} item={g.items[0]} showHolder={farmView} />
+            ),
+          )
         )}
+
       </div>
     </MobileShell>
   );
