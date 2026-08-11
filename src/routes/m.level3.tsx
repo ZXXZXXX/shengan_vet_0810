@@ -366,10 +366,15 @@ function ComboCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean
     .pop();
 
   return (
-    <div className="rounded-xl bg-card border p-3.5" style={{ borderColor: "#FFD2A8" }}>
+    <div
+      className="rounded-xl bg-card border p-3.5"
+      style={{ borderColor: allUsed ? "#E8EAE9" : "#FFD2A8" }}
+    >
       {/* 顶部：组合名称 + 使用状态 */}
       <div className="flex items-center gap-2">
-        <span className="inline-flex -space-x-1 shrink-0 text-[#E5751A]">
+        <span
+          className={`inline-flex -space-x-1 shrink-0 ${allUsed ? "text-text-tertiary" : "text-[#E5751A]"}`}
+        >
           <Pill className="h-4 w-4" />
           <Pill className="h-4 w-4" />
         </span>
