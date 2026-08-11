@@ -1069,14 +1069,14 @@ function DrugDetailRow({
         />
 
         {/* 剂量 */}
-        <div className="rounded-lg border border-border overflow-hidden">
-          <div className="flex items-center justify-between gap-2 px-3 h-10 border-b border-border bg-surface-subtle/30">
+        <div className="pt-3 border-t border-border/70 space-y-3">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="text-body-sm font-medium text-foreground">按变量计算剂量</span>
               <Switch checked={value.variable} onCheckedChange={(v) => onChange({ variable: v })} />
             </div>
             {value.variable && (
-              <div className="flex items-center gap-1.5 rounded-md bg-surface-subtle px-2 py-1">
+              <div className="flex items-center gap-1.5">
                 <span className="text-caption text-text-tertiary">计算变量</span>
                 <Select
                   value={value.variableKind ?? ""}
@@ -1087,7 +1087,7 @@ function DrugDetailRow({
                     })
                   }
                 >
-                  <SelectTrigger className="h-6 w-24 border-0 bg-transparent px-1 text-caption font-medium text-primary shadow-none focus:ring-0">
+                  <SelectTrigger className="h-7 w-24 border-0 bg-transparent px-1 text-caption font-medium text-primary shadow-none focus:ring-0">
                     <SelectValue placeholder="请选择" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1102,31 +1102,30 @@ function DrugDetailRow({
             )}
           </div>
 
-          <div className="p-3">
-            {value.variable ? (
-              <>
-                <VariableDoseTable
-                  varKind={value.variableKind}
-                  value={value.varDose ?? []}
-                  onChange={(varDose) => onChange({ varDose })}
-                />
-                <div className="mt-2 text-caption text-text-tertiary">每个变量区间对应一次剂量</div>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <span className="text-body-sm text-text-secondary shrink-0">
-                  具体剂量<span className="text-[var(--state-danger)] ml-0.5">*</span>
-                </span>
-                <Input
-                  value={value.fixedDose ?? ""}
-                  onChange={(e) => onChange({ fixedDose: e.target.value })}
-                  className="h-9 w-40 text-body-sm"
-                  placeholder="如 5ml/次"
-                />
-              </div>
-            )}
-          </div>
+          {value.variable ? (
+            <>
+              <VariableDoseTable
+                varKind={value.variableKind}
+                value={value.varDose ?? []}
+                onChange={(varDose) => onChange({ varDose })}
+              />
+              <div className="text-caption text-text-tertiary">每个变量区间对应一次剂量</div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-body-sm text-text-secondary shrink-0">
+                具体剂量<span className="text-[var(--state-danger)] ml-0.5">*</span>
+              </span>
+              <Input
+                value={value.fixedDose ?? ""}
+                onChange={(e) => onChange({ fixedDose: e.target.value })}
+                className="h-9 w-40 text-body-sm"
+                placeholder="如 5ml/次"
+              />
+            </div>
+          )}
         </div>
+
       </div>
     </div>
   );
