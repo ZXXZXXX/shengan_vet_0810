@@ -1724,14 +1724,15 @@ function ChecklistDay({
                         <div className="text-caption text-text-tertiary mt-1">
                           {metaLine || it.desc}
                         </div>
-                        <div className="mt-1 flex items-center gap-2 text-caption">
+                        <div className="mt-1 flex items-center justify-between gap-3 text-caption">
                           <span className="text-text-tertiary">剂量 {it.doseText ?? "-"}</span>
                           {scanned && (
-                            <span className="font-mono text-primary font-medium truncate">
+                            <span className="font-mono text-primary font-medium truncate shrink-0">
                               {it.batchNo ?? "-"}
                             </span>
                           )}
                         </div>
+
                       </div>
                       {interactive && scanned && (
                         <button
