@@ -87,7 +87,20 @@ const VAR_LABEL: Record<VarKind, string> = {
 
 type DoseMap = { option: string; dose: string }[]; // 变量选项 → 剂量/次
 
-type DrugRef = { name: string; spec: string; route?: Route1; dose?: string }; // 可替代药品（可单独设置用法与剂量）
+type DrugRef = {
+  name: string;
+  spec: string;
+  // 替代药品可单独设置与主选药品完全一致的字段（留空则沿用主选）
+  route?: Route1;
+  days?: number;
+  freq?: Freq;
+  slotOn?: boolean;
+  slot?: TimeSlot;
+  variable?: boolean;
+  variableKind?: VarKind;
+  dose?: string; // 固定剂量
+  varDose?: DoseMap;
+};
 
 type DrugDetail = {
   id: string;
@@ -1117,55 +1130,151 @@ function DrugDetailRow({
 
         {/* 替代药品用法与剂量 */}
         {value.drugs.length > 1 && (
-          <div className="pt-3 border-t border-border/70 space-y-3">
+          <div className="pt-3 border-t border-border/70 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-body font-medium text-foreground">替代药品用法与剂量</span>
-              <span className="text-caption text-text-tertiary">未填写时沿用主选药品的用法与剂量</span>
+              <span className="text-caption text-text-tertiary">默认沿用主选药品，可按需单独调整</span>
             </div>
-            <div className="space-y-2">
-              {value.drugs.slice(1).map((d, i) => (
-                <div key={drugKey(d)} className="flex flex-wrap items-center gap-2">
-                  <div className="w-56 min-w-0">
-                    <div className="truncate text-body-sm text-foreground">{d.name}</div>
-                    <div className="truncate text-caption text-text-tertiary">{d.spec}</div>
-                  </div>
-                  <Select
-                    value={d.route ?? value.routes[0] ?? ""}
-                    onValueChange={(v) => {
-                      const next = value.drugs.slice();
-                      next[i + 1] = { ...d, route: v as Route1 };
-                      onChange({ drugs: next });
-                    }}
-                  >
-                    <SelectTrigger className="h-9 w-40 text-body">
-                      <SelectValue placeholder="给药方式" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ROUTE_OPTS.map((o) => (
-                        <SelectItem key={o} value={o}>
-                          {o}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    value={d.dose ?? ""}
-                    onChange={(e) => {
-                      const next = value.drugs.slice();
-                      next[i + 1] = { ...d, dose: e.target.value };
-                      onChange({ drugs: next });
-                    }}
-                    className="h-9 w-40 text-body"
-                    placeholder={value.variable ? "如 按体重区间" : value.fixedDose || "如 5ml/次"}
-                  />
-                </div>
-              ))}
-            </div>
+            {value.drugs.slice(1).map((d, i) => (
+              <AltDrugEditor
+                key={drugKey(d)}
+                base={value}
+                drug={d}
+                onChange={(p) => {
+                  const next = value.drugs.slice();
+                  next[i + 1] = { ...d, ...p };
+                  onChange({ drugs: next });
+                }}
+              />
+            ))}
           </div>
         )}
 
       </div>
 
+    </div>
+  );
+}
+
+// ---------- 替代药品用法与剂量（字段与主选药品一致） ----------
+
+function AltDrugEditor({
+  base,
+  drug,
+  onChange,
+}: {
+  base: DrugDetail;
+  drug: DrugRef;
+  onChange: (p: Partial<DrugRef>) => void;
+}) {
+  const route = drug.route ?? base.routes[0] ?? "";
+  const days = drug.days ?? base.days;
+  const freq = drug.freq ?? base.freq;
+  const variable = drug.variable ?? base.variable;
+  const variableKind = drug.variableKind ?? base.variableKind;
+  const slotOn = drug.slotOn ?? base.slotOn;
+  const slot = drug.slot ?? base.slot;
+
+  return (
+    <div className="rounded-lg bg-surface-subtle/50 p-3 space-y-3">
+      <div className="flex items-baseline gap-2">
+        <span className="text-body-sm font-medium text-foreground">{drug.name}</span>
+        <span className="text-caption text-text-tertiary">{drug.spec}</span>
+      </div>
+
+      <div className="flex flex-wrap gap-x-4 gap-y-3">
+        <div className="w-56">
+          <Field label="推荐给药方式" required>
+            <Select value={route} onValueChange={(v) => onChange({ route: v as Route1 })}>
+              <SelectTrigger className="h-9 text-body">
+                <SelectValue placeholder="选择推荐给药方式" />
+              </SelectTrigger>
+              <SelectContent>
+                {ROUTE_OPTS.map((o) => (
+                  <SelectItem key={o} value={o}>
+                    {o}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+        <div className="w-28">
+          <Field label="用药天数" required>
+            <NumberInput value={days} onChange={(v) => onChange({ days: v })} suffix="天" />
+          </Field>
+        </div>
+        <div className="w-48">
+          <Field label="用药频次" required>
+            <FrequencyInput
+              value={freq}
+              onChange={(f) => onChange({ freq: f, slot: slotOn ? slot : defaultSlot(f.m) })}
+            />
+          </Field>
+        </div>
+      </div>
+
+      <SlotSection
+        on={slotOn}
+        slot={slot}
+        freqM={freq.m}
+        onToggle={(on) => onChange({ slotOn: on, slot: on ? slot : defaultSlot(freq.m) })}
+        onSlotChange={(s) => onChange({ slot: s })}
+      />
+
+      <div className="pt-3 border-t border-border/70 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-body font-medium text-foreground">按变量计算剂量</span>
+          <div className="flex items-center gap-2">
+            {variable && (
+              <>
+                <span className="text-caption text-text-tertiary">计算变量</span>
+                <Select
+                  value={variableKind ?? ""}
+                  onValueChange={(v) =>
+                    onChange({
+                      variableKind: v as VarKind,
+                      varDose: drug.varDose ?? [{ option: "", dose: "" }],
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-8 w-28 text-body-sm font-medium text-primary">
+                    <SelectValue placeholder="请选择" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(VAR_LABEL) as VarKind[]).map((k) => (
+                      <SelectItem key={k} value={k}>
+                        {VAR_LABEL[k]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
+            )}
+            <Switch checked={variable} onCheckedChange={(v) => onChange({ variable: v })} />
+          </div>
+        </div>
+
+        {variable ? (
+          <VariableDoseTable
+            varKind={variableKind}
+            value={drug.varDose ?? []}
+            onChange={(varDose) => onChange({ varDose })}
+          />
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="text-body-sm text-text-secondary shrink-0">
+              具体剂量<span className="text-[var(--state-danger)] ml-0.5">*</span>
+            </span>
+            <Input
+              value={drug.dose ?? ""}
+              onChange={(e) => onChange({ dose: e.target.value })}
+              className="h-9 w-40 text-body"
+              placeholder={base.fixedDose || "如 5ml/次"}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
