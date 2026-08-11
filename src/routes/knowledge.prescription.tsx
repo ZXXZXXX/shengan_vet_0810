@@ -1424,12 +1424,12 @@ function SlotSection({
   const shown = on ? slot : defaultSlot(freqM);
   return (
     <div className="pt-3 border-t border-border/70 space-y-2.5">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-body font-medium text-foreground">区分时间段</span>
-          <Switch checked={on} onCheckedChange={onToggle} />
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-body font-medium text-foreground">区分时间段</div>
+          <div className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</div>
         </div>
-        <span className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</span>
+        <Switch checked={on} onCheckedChange={onToggle} />
       </div>
       <div className="flex flex-wrap items-center gap-4">
         {(["morning", "noon", "evening"] as const).map((k) => (
