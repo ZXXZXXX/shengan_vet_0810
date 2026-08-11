@@ -35,7 +35,7 @@ function Level3Page() {
   // 兽医 / 场长 / 管理员：可查看全场所有人的三级库
   const farmView = role === "vet" || role === "manager" || role === "admin";
 
-  const [tab, setTab] = useState<"all" | "unused" | "used">("all");
+  const [tab, setTab] = useState<"all" | "unused" | "partial" | "used">("all");
   const [q, setQ] = useState("");
   const [holder, setHolder] = useState<string>("__all__");
 
