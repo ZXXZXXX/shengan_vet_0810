@@ -310,8 +310,12 @@ function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean 
       {/* 明细：每支药品的追溯码 / 厂商 · 批次 */}
       <div className="space-y-2.5">
         {items.map((i) => (
-          <div key={i.code} className="min-w-0">
-            <div className="text-caption text-text-secondary font-mono truncate">{i.code}</div>
+          <div key={i.code} className={`min-w-0 ${i.used ? "line-through opacity-55" : ""}`}>
+            <div
+              className={`text-caption font-mono truncate ${i.used ? "text-text-tertiary" : "text-text-secondary"}`}
+            >
+              {i.code}
+            </div>
             <div className="text-caption mt-0.5">
               <span className={i.used ? "text-text-tertiary" : "text-primary"}>
                 {i.manufacturer ?? "—"}
@@ -325,6 +329,7 @@ function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean 
             </div>
           </div>
         ))}
+
 
         <div className="space-y-1.5 pt-0.5">
           <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
