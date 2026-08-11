@@ -1013,7 +1013,7 @@ function DrugDetailRow({
         {/* 给药与疗程 */}
         <div className="flex flex-wrap gap-x-4 gap-y-3">
           <div className="w-56">
-            <Field label="给药方式（推荐 1 种）" required>
+            <Field label="推荐给药方式" required>
               <Select
                 value={value.routes[0] ?? ""}
                 onValueChange={(v) => onChange({ routes: [v as Route1] })}
