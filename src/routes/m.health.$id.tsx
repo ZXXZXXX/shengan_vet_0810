@@ -1100,6 +1100,11 @@ function buildDayItems(day: number, _tags: string[], _withTemp = false, plan?: W
       needMed: true,
       manufacturer: d.manufacturer,
       batchNo: `L2026${String(400 + idx).padStart(4, "0")}`,
+      spec: d.spec,
+      useWay: d.use,
+      freq: d.method.split(/[，,]/)[0],
+      doseText: d.dose,
+
     });
   });
   return items;
