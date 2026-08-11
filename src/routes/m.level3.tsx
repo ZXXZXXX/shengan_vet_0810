@@ -187,7 +187,7 @@ function Level3Page() {
                 active={holder === "__all__"}
                 onClick={() => setHolder("__all__")}
                 title="全部人员"
-                count={statusItems.length}
+                count={statusGroups.length}
 
               />
               {holders.map((h) => (
