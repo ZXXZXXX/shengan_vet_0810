@@ -1720,7 +1720,26 @@ function ChecklistDay({
                     <div className="flex items-start gap-2">
                       <Pill className={`h-4 w-4 shrink-0 mt-1 ${scanned ? "text-primary" : "text-text-tertiary"}`} />
                       <div className="min-w-0 flex-1">
-                        <div className="text-body text-foreground">{it.title}</div>
+                        <div className="flex items-start gap-3">
+                          <div className="min-w-0 flex-1 text-body text-foreground">{it.title}</div>
+                          {interactive && scanned && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setItems((arr) =>
+                                  arr.map((x) =>
+                                    x.id === it.id
+                                      ? { ...x, scanCode: undefined, manufacturer: undefined, batchNo: undefined }
+                                      : x,
+                                  ),
+                                )
+                              }
+                              className="shrink-0 text-caption text-text-tertiary active:text-primary py-0.5"
+                            >
+                              清除
+                            </button>
+                          )}
+                        </div>
                         <div className="text-caption text-text-tertiary mt-1">
                           {metaLine || it.desc}
                         </div>
@@ -1728,30 +1747,12 @@ function ChecklistDay({
                           <span className="text-text-tertiary">剂量 {it.doseText ?? "-"}</span>
                           {scanned && (
                             <span className="shrink-0 inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5">
-                              <span className="text-text-tertiary">批次</span>
+                              <span className="text-text-tertiary">批次号</span>
                               <span className="font-mono text-primary font-semibold tracking-wide">{it.batchNo ?? "-"}</span>
                             </span>
                           )}
                         </div>
-
                       </div>
-                      {interactive && scanned && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setItems((arr) =>
-                              arr.map((x) =>
-                                x.id === it.id
-                                  ? { ...x, scanCode: undefined, manufacturer: undefined, batchNo: undefined }
-                                  : x,
-                              ),
-                            )
-                          }
-                          className="shrink-0 self-start text-caption text-text-tertiary active:text-primary px-2 py-0.5 -mr-1.5 -mt-0.5"
-                        >
-                          清除
-                        </button>
-                      )}
                     </div>
                   </div>
                 );
