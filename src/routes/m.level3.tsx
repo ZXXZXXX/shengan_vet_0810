@@ -39,11 +39,16 @@ function Level3Page() {
 
 
 
-  // 已使用的药品保留展示，不做自动清除；非全场视角只看自己的
-  const items = useMemo(
-    () => (farmView ? L3_ITEMS : L3_ITEMS.filter((i) => i.holder === CURRENT_HOLDER)),
-    [farmView],
-  );
+  // 仅展示最近 7 天领取的药品；已使用的保留展示，不做自动清除；非全场视角只看自己的
+  const items = useMemo(() => {
+    const since = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const within7d = (i: L3Item) => {
+      const t = new Date(i.claimedAt.replace(" ", "T")).getTime();
+      return Number.isNaN(t) ? true : t >= since;
+    };
+    return L3_ITEMS.filter((i) => within7d(i) && (farmView || i.holder === CURRENT_HOLDER));
+  }, [farmView]);
+
 
 
   /** 状态 tab 计数：全部人员口径 */
