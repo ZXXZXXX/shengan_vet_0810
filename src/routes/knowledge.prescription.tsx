@@ -1385,38 +1385,44 @@ function SlotSection({
 }) {
   const shown = on ? slot : defaultSlot(freqM);
   return (
-    <div className="rounded-md bg-white border border-border p-3 space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="text-body-sm text-foreground">是否区分时间段</div>
-        <Switch checked={on} onCheckedChange={onToggle} />
+    <div className="rounded-lg border border-border overflow-hidden">
+      <div className="flex items-center justify-between gap-2 px-3 h-10 border-b border-border bg-surface-subtle/30">
+        <div className="flex items-center gap-2">
+          <span className="text-body-sm font-medium text-foreground">区分时间段</span>
+          <Switch checked={on} onCheckedChange={onToggle} />
+        </div>
+        <span className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</span>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="p-3 flex flex-wrap items-center gap-2">
         {(["morning", "noon", "evening"] as const).map((k) => (
-          <div key={k} className="space-y-1">
-            <div className="text-caption text-text-tertiary">
+          <div
+            key={k}
+            className={cn(
+              "flex items-center gap-2 rounded-md border border-border bg-surface-subtle/40 px-2.5 py-1.5",
+              !on && "opacity-60",
+            )}
+          >
+            <span className="text-caption text-text-tertiary">
               {k === "morning" ? "早上" : k === "noon" ? "中午" : "下午"}
-            </div>
-            <div className="relative">
-              <Input
-                value={String(shown[k] ?? 0)}
-                inputMode="numeric"
-                readOnly={!on}
-                onChange={(e) => {
-                  const n = Number(e.target.value.replace(/\D/g, "") || 0);
-                  onSlotChange({ ...slot, [k]: n });
-                }}
-                className={cn("h-8 pr-6 text-body-sm text-center", !on && "bg-surface-subtle")}
-              />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
-                次
-              </span>
-            </div>
+            </span>
+            <Input
+              value={String(shown[k] ?? 0)}
+              inputMode="numeric"
+              readOnly={!on}
+              onChange={(e) => {
+                const n = Number(e.target.value.replace(/\D/g, "") || 0);
+                onSlotChange({ ...slot, [k]: n });
+              }}
+              className={cn("h-7 w-12 text-center text-body-sm bg-card", !on && "cursor-not-allowed")}
+            />
+            <span className="text-caption text-text-tertiary">次</span>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
 
 function MultiSelectChips({
   options,
