@@ -6,6 +6,24 @@ import morningStart from "@/assets/cow-_morning-start-work.svg.asset.json";
 import afternoonStart from "@/assets/cow-_afternoon-start-work.svg.asset.json";
 import leaveRest from "@/assets/cow-leave-rest.svg.asset.json";
 
+/** 上午问候语（≤12 字） */
+const MORNING_MOODS = [
+  "新的一天，从巡栏开始",
+  "早安，牛儿等你查栏",
+  "今天也要元气满满",
+  "阳光正好，慢慢来",
+  "先喝口水，再开工",
+];
+
+/** 下午问候语（≤12 字） */
+const AFTERNOON_MOODS = [
+  "下午别硬撑，稳着来",
+  "午后慢半拍也没关系",
+  "再走一圈，就快收工",
+  "喝口茶，接着加油",
+  "傍晚前把事收个尾",
+];
+
 type Props = {
   /** 当前时段预计工作项数 */
   count: number;
@@ -21,12 +39,14 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
   const [open, setOpen] = useState(false);
   const [feedback, setFeedback] = useState<null | "work" | "leave">(null);
   const [isMorning, setIsMorning] = useState(true);
+  const [moodIndex, setMoodIndex] = useState(0);
 
   useEffect(() => {
     try {
       if (sessionStorage.getItem(storageKey)) return;
     } catch {}
     setIsMorning(new Date().getHours() < 12);
+    setMoodIndex(Math.floor(Math.random() * 5));
     setOpen(true);
   }, [storageKey]);
 
@@ -47,8 +67,8 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
     ? "linear-gradient(180deg,#F3FAEF 0%,#E7F6EA 100%)"
     : "linear-gradient(180deg,#FFF6EC 0%,#E9F6F0 100%)";
   const mood = isMorning
-    ? "新的一天，从一次巡栏开始 ☀️"
-    : "下午也别硬撑，节奏稳一点就好 🌤️";
+    ? MORNING_MOODS[moodIndex % MORNING_MOODS.length]
+    : AFTERNOON_MOODS[moodIndex % AFTERNOON_MOODS.length];
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/45 backdrop-blur-[2px] px-6 animate-in fade-in duration-200">
@@ -79,7 +99,10 @@ export function GreetingDialog({ count, storageKey = "mp:greeted" }: Props) {
                 </span>
                 工作，准备好就开始吧！
               </div>
-              <div className="mt-3 rounded-2xl bg-surface-subtle px-3.5 py-2.5 text-caption text-text-tertiary leading-relaxed">
+              <div
+                className="mt-3 text-section-title text-primary leading-relaxed"
+                style={{ fontFamily: '"Ma Shan Zheng", "STKaiti", "KaiTi", cursive' }}
+              >
                 {mood}
               </div>
             </div>
