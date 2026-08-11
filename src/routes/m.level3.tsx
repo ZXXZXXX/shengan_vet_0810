@@ -145,9 +145,6 @@ function Level3Page() {
               )}
             </button>
           ))}
-          <span className="ml-auto pb-2 text-caption text-text-tertiary tabular-nums">
-            使用率 {usedRate}%
-          </span>
         </div>
 
         {/* 全场视角：按领用人筛选 */}
