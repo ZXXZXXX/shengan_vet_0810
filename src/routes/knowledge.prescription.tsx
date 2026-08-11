@@ -1048,16 +1048,6 @@ function DrugDetailRow({
               />
             </Field>
           </div>
-          <div className="w-32">
-            <Field label="药品类型">
-              <Input
-                value={value.drugType ?? ""}
-                readOnly
-                tabIndex={-1}
-                className="h-9 text-body-sm bg-surface-subtle cursor-not-allowed"
-              />
-            </Field>
-          </div>
         </div>
 
         <SlotSection
