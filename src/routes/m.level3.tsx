@@ -216,7 +216,7 @@ function HolderChip({
 
 function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+    <div className={`relative overflow-hidden rounded-2xl border bg-card p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] ${i.used ? "border-border" : "border-primary/40"}`}>
       <div>
 
         <div className="flex items-start gap-2">
