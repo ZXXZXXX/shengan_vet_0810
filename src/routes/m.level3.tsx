@@ -53,71 +53,77 @@ function Level3Page() {
 
 
 
-  /** 状态 tab 计数：全部人员口径 */
-  const totalUnused = items.filter((i) => !i.used).length;
-  const totalUsed = items.length - totalUnused;
+  /** 关键词过滤后的全部药品 */
+  const searched = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    if (!kw) return items;
+    return items.filter(
+      (i) =>
+        i.name.toLowerCase().includes(kw) ||
+        i.code.toLowerCase().includes(kw) ||
+        i.holder.toLowerCase().includes(kw) ||
+        (i.cattle ?? []).some((c) => c.toLowerCase().includes(kw)),
+    );
+  }, [items, q]);
 
-  /** 当前状态下的药品（不受人员筛选影响），用于人员标签计数 */
-  const statusItems = useMemo(
-    () => items.filter((i) => (tab === "unused" ? !i.used : tab === "used" ? i.used : true)),
-    [items, tab],
+  /** 分组：组合用药按 comboId 合并；单项药品按「药品 + 规格 + 领用人」合并为一张卡片 */
+  const allGroups = useMemo(() => {
+    const out: { key: string; items: L3Item[]; combo: boolean }[] = [];
+    const idx = new Map<string, number>();
+    [...searched]
+      .sort((a, b) => {
+        if (a.used !== b.used) return a.used ? 1 : -1;
+        if (a.used) return (a.usedAt ?? "").localeCompare(b.usedAt ?? "");
+        return a.claimedAt.localeCompare(b.claimedAt);
+      })
+      .forEach((i) => {
+        const key = i.comboId ? `combo:${i.comboId}` : `drug:${i.name}|${i.spec}|${i.holder}`;
+        const at = idx.get(key);
+        if (at === undefined) {
+          idx.set(key, out.length);
+          out.push({ key, items: [i], combo: !!i.comboId });
+        } else {
+          out[at].items.push(i);
+        }
+      });
+    return out.map((g) => ({ ...g, status: groupStatus(g.items, g.combo).status }));
+  }, [searched]);
+
+  /** 状态 tab 计数（整卡口径） */
+  const totalUnused = allGroups.filter((g) => g.status === "unused").length;
+  const totalPartial = allGroups.filter((g) => g.status === "partial").length;
+  const totalUsed = allGroups.filter((g) => g.status === "used").length;
+
+  /** 当前状态下的卡片（不受人员筛选影响），用于人员标签计数 */
+  const statusGroups = useMemo(
+    () => allGroups.filter((g) => (tab === "all" ? true : g.status === tab)),
+    [allGroups, tab],
   );
 
   /** 全场视角：按人员汇总（当前状态口径） */
   const holders = useMemo(() => {
     const map = new Map<string, { name: string; role?: string; total: number }>();
-    statusItems.forEach((i) => {
-      const cur = map.get(i.holder) ?? { name: i.holder, role: i.holderRole, total: 0 };
+    statusGroups.forEach((g) => {
+      const h = g.items[0];
+      const cur = map.get(h.holder) ?? { name: h.holder, role: h.holderRole, total: 0 };
       cur.total += 1;
-      map.set(i.holder, cur);
+      map.set(h.holder, cur);
     });
     return [...map.values()].sort((a, b) => b.total - a.total);
-  }, [statusItems]);
+  }, [statusGroups]);
 
-  const list = useMemo(() => {
-    const kw = q.trim().toLowerCase();
-    const filtered = statusItems.filter((i) => {
-      if (holder !== "__all__" && i.holder !== holder) return false;
-      if (!kw) return true;
-      return (
-        i.name.toLowerCase().includes(kw) ||
-        i.code.toLowerCase().includes(kw) ||
-        i.holder.toLowerCase().includes(kw) ||
-        (i.cattle ?? []).some((c) => c.toLowerCase().includes(kw))
-      );
-    });
-    // 未使用在前（按领取时间），已使用在后（按使用时间）
-    return filtered.sort((a, b) => {
-      if (a.used !== b.used) return a.used ? 1 : -1;
-      if (a.used) return (a.usedAt ?? "").localeCompare(b.usedAt ?? "");
-      return a.claimedAt.localeCompare(b.claimedAt);
-    });
-  }, [statusItems, holder, q]);
-
-  /** 分组：组合用药按 comboId 合并；单项药品按「药品 + 规格 + 领用人」合并为一张卡片 */
-  const groups = useMemo(() => {
-    const out: { key: string; items: L3Item[]; combo: boolean }[] = [];
-    const idx = new Map<string, number>();
-    list.forEach((i) => {
-      const key = i.comboId ? `combo:${i.comboId}` : `drug:${i.name}|${i.spec}|${i.holder}`;
-      const at = idx.get(key);
-      if (at === undefined) {
-        idx.set(key, out.length);
-        out.push({ key, items: [i], combo: !!i.comboId });
-      } else {
-        out[at].items.push(i);
-      }
-    });
-    return out;
-  }, [list]);
-
-
+  const groups = useMemo(
+    () => statusGroups.filter((g) => holder === "__all__" || g.items[0].holder === holder),
+    [statusGroups, holder],
+  );
 
   const tabs: { key: typeof tab; label: string }[] = [
-    { key: "all", label: `全部 ${items.length}` },
+    { key: "all", label: `全部 ${allGroups.length}` },
     { key: "unused", label: `未使用 ${totalUnused}` },
+    { key: "partial", label: `使用中 ${totalPartial}` },
     { key: "used", label: `已使用 ${totalUsed}` },
   ];
+
 
 
   return (
