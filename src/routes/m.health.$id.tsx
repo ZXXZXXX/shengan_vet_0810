@@ -1059,7 +1059,16 @@ type ExecItem = {
   scanCode?: string;
   manufacturer?: string;
   batchNo?: string;
+  /** 规格，如 100ml / 瓶 */
+  spec?: string;
+  /** 给药方法，如 肌肉注射 */
+  useWay?: string;
+  /** 频次，如 1 天 1 次 */
+  freq?: string;
+  /** 单次剂量，如 33ml / 次 */
+  doseText?: string;
 };
+
 
 // 演示用：药品关联关系（例如同一组合包装/同处方关联领取）
 const DRUG_ASSOCIATIONS: Record<string, string[]> = {
