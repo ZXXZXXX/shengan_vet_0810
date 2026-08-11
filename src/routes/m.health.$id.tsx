@@ -1711,25 +1711,26 @@ function ChecklistDay({
 
               {medItems.map((it) => {
                 const scanned = Boolean(it.scanCode);
+                const metaLine = [it.spec, it.useWay, it.freq].filter(Boolean).join(" · ");
                 return (
                   <div
                     key={it.id}
-                    className={`rounded-xl border bg-card px-3 py-2.5 ${scanned ? "border-primary" : "border-border"}`}
+                    className={`rounded-xl border bg-card px-3.5 py-3 ${scanned ? "border-primary" : "border-border"}`}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1 flex items-start gap-1.5">
-                        <Pill className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <div className="min-w-0 flex-1">
-                          <div className="text-body text-foreground">{it.title}</div>
-                          <div className="mt-1 flex items-center gap-2 text-caption">
-                            <span className={scanned ? "text-primary font-medium" : "text-text-tertiary"}>
-                              {scanned ? (it.manufacturer ?? "-") : "-"}
+                    <div className="flex items-start gap-2">
+                      <Pill className={`h-4 w-4 shrink-0 mt-1 ${scanned ? "text-primary" : "text-text-tertiary"}`} />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-body text-foreground">{it.title}</div>
+                        <div className="text-caption text-text-tertiary mt-1">
+                          {metaLine || it.desc}
+                        </div>
+                        <div className="mt-1 flex items-center gap-2 text-caption">
+                          <span className="text-text-tertiary">剂量 {it.doseText ?? "-"}</span>
+                          {scanned && (
+                            <span className="font-mono text-primary font-medium truncate">
+                              {it.batchNo ?? "-"}
                             </span>
-                            <span className="text-text-tertiary">·</span>
-                            <span className={`font-mono ${scanned ? "text-text-secondary" : "text-text-tertiary"}`}>
-                              {scanned ? (it.batchNo ?? "-") : "-"}
-                            </span>
-                          </div>
+                          )}
                         </div>
                       </div>
                       {interactive && scanned && (
@@ -1744,18 +1745,16 @@ function ChecklistDay({
                               ),
                             )
                           }
-                          className="shrink-0 text-caption text-text-tertiary hover:text-primary px-2 py-1 -mr-1"
+                          className="shrink-0 self-start text-caption text-text-tertiary active:text-primary px-2 py-0.5 -mr-1.5 -mt-0.5"
                         >
                           清除
                         </button>
                       )}
                     </div>
-                    {it.desc && (
-                      <div className="text-caption text-text-tertiary mt-1">{it.desc}</div>
-                    )}
                   </div>
                 );
               })}
+
             </div>
           )}
 
