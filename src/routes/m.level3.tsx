@@ -245,10 +245,17 @@ function HolderChip({
 
 
 
+/** 从规格中解析单位名称，如 "100ml:5g / 瓶" → "瓶" */
+function specUnit(spec: string) {
+  const m = spec.split("/").pop()?.trim();
+  return m && m.length <= 3 ? m : "支";
+}
+
 function ItemCard({ items, showHolder }: { items: L3Item[]; showHolder: boolean }) {
   const head = items[0];
   const allUsed = items.every((i) => i.used);
   const usedCount = items.filter((i) => i.used).length;
+  const unit = specUnit(head.spec);
   const cattle = Array.from(new Set(items.flatMap((i) => i.cattle ?? [])));
   const claimedAt = items.map((i) => i.claimedAt).sort()[0];
   const usedAt = items
