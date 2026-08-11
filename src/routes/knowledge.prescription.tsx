@@ -979,120 +979,159 @@ function DrugDetailRow({
   onRemove: () => void;
 }) {
   return (
-    <div className="rounded-md border border-border bg-surface-subtle/50 p-3 space-y-2.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-body-sm text-text-secondary">
-          <Pill className="h-3.5 w-3.5 text-primary" />
-          用药 {index + 1}
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      {/* 卡片头 */}
+      <div className="flex items-center justify-between px-4 h-11 border-b border-border bg-surface-subtle/50">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-caption font-semibold tabular-nums">
+            {index + 1}
+          </span>
+          <span className="text-body-sm font-medium text-foreground">
+            用药明细 {String(index + 1).padStart(2, "0")}
+          </span>
         </div>
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-6 w-6 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
+          className="h-7 w-7 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
           onClick={onRemove}
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <Trash2 className="h-4 w-4" />
         </Button>
       </div>
 
-      <Field label="药品名称（若有可替代药品，可多选）" required hint="兽医执行时，可按实际库存从以上药品中选择合适的药品">
-        <MultiDrugPicker
-          value={value.drugs}
-          onChange={(drugs) => onChange({ drugs })}
+      <div className="p-4 space-y-4">
+        {/* 药品 */}
+        <Field
+          label="药品名称（若有可替代药品，可多选）"
+          required
+          hint="兽医执行时，可按实际库存从以上药品中选择合适的药品"
+        >
+          <MultiDrugPicker value={value.drugs} onChange={(drugs) => onChange({ drugs })} />
+        </Field>
+
+        {/* 给药与疗程 */}
+        <div className="flex flex-wrap gap-x-4 gap-y-3">
+          <div className="w-56">
+            <Field label="给药方式（推荐 1 种）" required>
+              <Select
+                value={value.routes[0] ?? ""}
+                onValueChange={(v) => onChange({ routes: [v as Route1] })}
+              >
+                <SelectTrigger className="h-9 text-body-sm">
+                  <SelectValue placeholder="选择推荐给药方式" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROUTE_OPTS.map((o) => (
+                    <SelectItem key={o} value={o}>
+                      {o}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
+          <div className="w-28">
+            <Field label="用药天数" required>
+              <NumberInput value={value.days} onChange={(days) => onChange({ days })} suffix="天" />
+            </Field>
+          </div>
+          <div className="w-48">
+            <Field label="用药频次" required>
+              <FrequencyInput
+                value={value.freq}
+                onChange={(freq) => {
+                  const slot = value.slotOn ? value.slot : defaultSlot(freq.m);
+                  onChange({ freq, slot });
+                }}
+              />
+            </Field>
+          </div>
+          <div className="w-32">
+            <Field label="药品类型">
+              <Input
+                value={value.drugType ?? ""}
+                readOnly
+                tabIndex={-1}
+                className="h-9 text-body-sm bg-surface-subtle cursor-not-allowed"
+              />
+            </Field>
+          </div>
+        </div>
+
+        <SlotSection
+          on={value.slotOn}
+          slot={value.slot}
+          freqM={value.freq.m}
+          onToggle={(on) => onChange({ slotOn: on, slot: on ? value.slot : defaultSlot(value.freq.m) })}
+          onSlotChange={(slot) => onChange({ slot })}
         />
-      </Field>
 
-      <div className="grid grid-cols-2 gap-2">
-        <Field label="药品类型">
-          <Input value={value.drugType ?? ""} readOnly className="h-9 text-body-sm bg-surface-subtle" />
-        </Field>
-        <Field label="给药方式" required>
-          <MultiSelectChips
-            options={ROUTE_OPTS}
-            value={value.routes}
-            onChange={(routes) => onChange({ routes: routes as Route1[] })}
-          />
-        </Field>
+        {/* 剂量 */}
+        <div className="rounded-lg border border-border overflow-hidden">
+          <div className="flex items-center justify-between gap-2 px-3 h-10 border-b border-border bg-surface-subtle/30">
+            <div className="flex items-center gap-2">
+              <span className="text-body-sm font-medium text-foreground">按变量计算剂量</span>
+              <Switch checked={value.variable} onCheckedChange={(v) => onChange({ variable: v })} />
+            </div>
+            {value.variable && (
+              <div className="flex items-center gap-1.5 rounded-md bg-surface-subtle px-2 py-1">
+                <span className="text-caption text-text-tertiary">计算变量</span>
+                <Select
+                  value={value.variableKind ?? ""}
+                  onValueChange={(v) =>
+                    onChange({
+                      variableKind: v as VarKind,
+                      varDose: value.varDose ?? [{ option: "", dose: "" }],
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-6 w-24 border-0 bg-transparent px-1 text-caption font-medium text-primary shadow-none focus:ring-0">
+                    <SelectValue placeholder="请选择" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(VAR_LABEL) as VarKind[]).map((k) => (
+                      <SelectItem key={k} value={k}>
+                        {VAR_LABEL[k]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
+          <div className="p-3">
+            {value.variable ? (
+              <>
+                <VariableDoseTable
+                  varKind={value.variableKind}
+                  value={value.varDose ?? []}
+                  onChange={(varDose) => onChange({ varDose })}
+                />
+                <div className="mt-2 text-caption text-text-tertiary">每个变量区间对应一次剂量</div>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-body-sm text-text-secondary shrink-0">
+                  具体剂量<span className="text-[var(--state-danger)] ml-0.5">*</span>
+                </span>
+                <Input
+                  value={value.fixedDose ?? ""}
+                  onChange={(e) => onChange({ fixedDose: e.target.value })}
+                  className="h-9 w-40 text-body-sm"
+                  placeholder="如 5ml/次"
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        <Field label="用药天数" required>
-          <NumberInput
-            value={value.days}
-            onChange={(days) => onChange({ days })}
-            suffix="天"
-          />
-        </Field>
-        <Field label="用药频次" required>
-          <FrequencyInput
-            value={value.freq}
-            onChange={(freq) => {
-              const slot = value.slotOn ? value.slot : defaultSlot(freq.m);
-              onChange({ freq, slot });
-            }}
-          />
-        </Field>
-      </div>
-
-      <SlotSection
-        on={value.slotOn}
-        slot={value.slot}
-        freqM={value.freq.m}
-        onToggle={(on) => onChange({ slotOn: on, slot: on ? value.slot : defaultSlot(value.freq.m) })}
-        onSlotChange={(slot) => onChange({ slot })}
-      />
-
-      <div className="flex items-center justify-between rounded-md bg-white border border-border px-3 py-2">
-        <div className="text-body-sm text-foreground">是否按变量计算</div>
-        <Switch checked={value.variable} onCheckedChange={(v) => onChange({ variable: v })} />
-      </div>
-
-      {value.variable ? (
-        <>
-          <Field label="计算变量" required>
-            <Select
-              value={value.variableKind ?? ""}
-              onValueChange={(v) =>
-                onChange({
-                  variableKind: v as VarKind,
-                  varDose: value.varDose ?? [{ option: "", dose: "" }],
-                })
-              }
-            >
-              <SelectTrigger className="h-9 text-body-sm">
-                <SelectValue placeholder="选择计算变量" />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(VAR_LABEL) as VarKind[]).map((k) => (
-                  <SelectItem key={k} value={k}>
-                    {VAR_LABEL[k]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field label="具体剂量" required hint="每个变量选项对应一次剂量">
-            <VariableDoseTable
-              varKind={value.variableKind}
-              value={value.varDose ?? []}
-              onChange={(varDose) => onChange({ varDose })}
-            />
-          </Field>
-        </>
-      ) : (
-        <Field label="具体剂量" required>
-          <Input
-            value={value.fixedDose ?? ""}
-            onChange={(e) => onChange({ fixedDose: e.target.value })}
-            className="h-9 text-body-sm"
-            placeholder="如 5ml/次"
-          />
-        </Field>
-      )}
     </div>
   );
 }
+
 
 // ---------- 非用药明细行 ----------
 
@@ -1346,32 +1385,37 @@ function SlotSection({
 }) {
   const shown = on ? slot : defaultSlot(freqM);
   return (
-    <div className="rounded-md bg-white border border-border p-3 space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="text-body-sm text-foreground">是否区分时间段</div>
-        <Switch checked={on} onCheckedChange={onToggle} />
+    <div className="rounded-lg border border-border overflow-hidden">
+      <div className="flex items-center justify-between gap-2 px-3 h-10 border-b border-border bg-surface-subtle/30">
+        <div className="flex items-center gap-2">
+          <span className="text-body-sm font-medium text-foreground">区分时间段</span>
+          <Switch checked={on} onCheckedChange={onToggle} />
+        </div>
+        <span className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</span>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="p-3 flex flex-wrap items-center gap-2">
         {(["morning", "noon", "evening"] as const).map((k) => (
-          <div key={k} className="space-y-1">
-            <div className="text-caption text-text-tertiary">
+          <div
+            key={k}
+            className={cn(
+              "flex items-center gap-2 rounded-md border border-border bg-surface-subtle/40 px-2.5 py-1.5",
+              !on && "opacity-60",
+            )}
+          >
+            <span className="text-caption text-text-tertiary">
               {k === "morning" ? "早上" : k === "noon" ? "中午" : "下午"}
-            </div>
-            <div className="relative">
-              <Input
-                value={String(shown[k] ?? 0)}
-                inputMode="numeric"
-                readOnly={!on}
-                onChange={(e) => {
-                  const n = Number(e.target.value.replace(/\D/g, "") || 0);
-                  onSlotChange({ ...slot, [k]: n });
-                }}
-                className={cn("h-8 pr-6 text-body-sm text-center", !on && "bg-surface-subtle")}
-              />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
-                次
-              </span>
-            </div>
+            </span>
+            <Input
+              value={String(shown[k] ?? 0)}
+              inputMode="numeric"
+              readOnly={!on}
+              onChange={(e) => {
+                const n = Number(e.target.value.replace(/\D/g, "") || 0);
+                onSlotChange({ ...slot, [k]: n });
+              }}
+              className={cn("h-7 w-12 text-center text-body-sm bg-card", !on && "cursor-not-allowed")}
+            />
+            <span className="text-caption text-text-tertiary">次</span>
           </div>
         ))}
       </div>
@@ -1379,40 +1423,7 @@ function SlotSection({
   );
 }
 
-function MultiSelectChips({
-  options,
-  value,
-  onChange,
-}: {
-  options: readonly string[];
-  value: string[];
-  onChange: (v: string[]) => void;
-}) {
-  const toggle = (o: string) =>
-    onChange(value.includes(o) ? value.filter((x) => x !== o) : [...value, o]);
-  return (
-    <div className="flex flex-wrap gap-1.5 rounded-md border border-input bg-white p-2 min-h-9">
-      {options.map((o) => {
-        const active = value.includes(o);
-        return (
-          <button
-            type="button"
-            key={o}
-            onClick={() => toggle(o)}
-            className={cn(
-              "h-7 px-2 rounded-full text-caption border transition-colors",
-              active
-                ? "bg-brand-subtle border-primary text-primary"
-                : "bg-white border-border text-text-secondary hover:border-primary/40",
-            )}
-          >
-            {o}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+
 
 function MultiDrugPicker({
   value,
@@ -1496,43 +1507,45 @@ function VariableDoseTable({
     varKind === "weight" ? "如 400-600kg" : varKind === "quarter" ? "如 1-2 个" : "选项";
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-wrap gap-2">
       {value.map((row, i) => (
-        <div key={i} className="grid grid-cols-[1fr_1fr_32px] gap-2">
+        <div
+          key={i}
+          className="group flex items-center gap-2 rounded-md border border-border bg-surface-subtle/40 px-2.5 py-1.5"
+        >
           <Input
             value={row.option}
             onChange={(e) => update(i, { option: e.target.value })}
             placeholder={placeholder}
-            className="h-9 text-body-sm"
+            className="h-7 w-28 text-caption bg-card"
           />
+          <span className="h-4 w-px bg-border" />
           <Input
             value={row.dose}
             onChange={(e) => update(i, { dose: e.target.value })}
             placeholder="如 20ml"
-            className="h-9 text-body-sm"
+            className="h-7 w-20 text-caption bg-card text-primary font-medium"
           />
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
-            className="h-9 w-8 p-0 text-text-tertiary hover:text-[var(--state-danger)]"
             onClick={() => remove(i)}
+            className="text-text-tertiary opacity-0 group-hover:opacity-100 hover:text-[var(--state-danger)] transition-opacity"
+            aria-label="删除该区间"
           >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
       ))}
-      <Button
+      <button
         type="button"
-        variant="outline"
-        size="sm"
-        className="h-8 gap-1 text-body-sm font-normal w-full"
         onClick={add}
+        className="inline-flex items-center gap-1 rounded-md border border-dashed border-primary/50 px-3 py-1.5 text-caption text-primary hover:bg-brand-subtle transition-colors"
       >
-        <Plus className="h-3.5 w-3.5" /> 增加一组
-      </Button>
+        <Plus className="h-3.5 w-3.5" /> 添加区间
+      </button>
     </div>
   );
+
 }
 
 // ---------- 详情视图 ----------
