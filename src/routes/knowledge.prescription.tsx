@@ -1535,8 +1535,9 @@ function VariableDoseTable({
       <button
         type="button"
         onClick={add}
-        className="inline-flex items-center gap-1 rounded-md border border-dashed border-primary/50 px-3 py-1.5 text-caption text-primary hover:bg-brand-subtle transition-colors"
+        className="inline-flex items-center gap-1 h-8 px-2 text-caption text-primary hover:underline"
       >
+
         <Plus className="h-3.5 w-3.5" /> 添加区间
       </button>
     </div>
