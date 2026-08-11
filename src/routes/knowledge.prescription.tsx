@@ -985,7 +985,7 @@ function DrugDetailRow({
           <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-caption font-semibold tabular-nums">
             {index + 1}
           </span>
-          <span className="text-body-sm font-medium text-foreground">
+          <span className="text-card-title text-foreground">
             用药明细 {String(index + 1).padStart(2, "0")}
           </span>
         </div>
@@ -1018,7 +1018,7 @@ function DrugDetailRow({
                 value={value.routes[0] ?? ""}
                 onValueChange={(v) => onChange({ routes: [v as Route1] })}
               >
-                <SelectTrigger className="h-9 text-body-sm">
+                <SelectTrigger className="h-9 text-body">
                   <SelectValue placeholder="选择推荐给药方式" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1061,7 +1061,7 @@ function DrugDetailRow({
         <div className="pt-3 border-t border-border/70 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-body-sm font-medium text-foreground">按变量计算剂量</span>
+              <span className="text-body font-medium text-foreground">按变量计算剂量</span>
               <Switch checked={value.variable} onCheckedChange={(v) => onChange({ variable: v })} />
             </div>
             {value.variable && (
@@ -1076,7 +1076,7 @@ function DrugDetailRow({
                     })
                   }
                 >
-                  <SelectTrigger className="h-7 w-24 border-0 bg-transparent px-1 text-caption font-medium text-primary shadow-none focus:ring-0">
+                  <SelectTrigger className="h-7 w-24 border-0 bg-transparent px-1 text-body-sm font-medium text-primary shadow-none focus:ring-0">
                     <SelectValue placeholder="请选择" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1108,7 +1108,7 @@ function DrugDetailRow({
               <Input
                 value={value.fixedDose ?? ""}
                 onChange={(e) => onChange({ fixedDose: e.target.value })}
-                className="h-9 w-40 text-body-sm"
+                className="h-9 w-40 text-body"
                 placeholder="如 5ml/次"
               />
             </div>
@@ -1119,7 +1119,7 @@ function DrugDetailRow({
         {value.drugs.length > 1 && (
           <div className="pt-3 border-t border-border/70 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-body-sm font-medium text-foreground">替代药品用法与剂量</span>
+              <span className="text-body font-medium text-foreground">替代药品用法与剂量</span>
               <span className="text-caption text-text-tertiary">未填写时沿用主选药品的用法与剂量</span>
             </div>
             <div className="space-y-2">
@@ -1137,7 +1137,7 @@ function DrugDetailRow({
                       onChange({ drugs: next });
                     }}
                   >
-                    <SelectTrigger className="h-9 w-40 text-body-sm">
+                    <SelectTrigger className="h-9 w-40 text-body">
                       <SelectValue placeholder="给药方式" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1155,7 +1155,7 @@ function DrugDetailRow({
                       next[i + 1] = { ...d, dose: e.target.value };
                       onChange({ drugs: next });
                     }}
-                    className="h-9 w-40 text-body-sm"
+                    className="h-9 w-40 text-body"
                     placeholder={value.variable ? "如 按体重区间" : value.fixedDose || "如 5ml/次"}
                   />
                 </div>
@@ -1369,7 +1369,7 @@ function NumberInput({
           const s = sanitizePositive(e.target.value);
           onChange(s ? Number(s) : 0);
         }}
-        className={cn("h-9 text-body-sm", suffix && "pr-8")}
+        className={cn("h-9 text-body", suffix && "pr-8")}
       />
       {suffix && (
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-caption text-text-tertiary pointer-events-none">
@@ -1382,7 +1382,7 @@ function NumberInput({
 
 function FrequencyInput({ value, onChange }: { value: Freq; onChange: (v: Freq) => void }) {
   return (
-    <div className="flex items-center gap-1 h-9 rounded-md border border-input bg-white px-2 text-body-sm">
+    <div className="flex items-center gap-1 h-9 rounded-md border border-input bg-white px-2 text-body">
       <span className="text-text-tertiary">每</span>
       <Input
         value={String(value.n || "")}
@@ -1426,7 +1426,7 @@ function SlotSection({
     <div className="pt-3 border-t border-border/70 space-y-2.5">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-body-sm font-medium text-foreground">区分时间段</span>
+          <span className="text-body font-medium text-foreground">区分时间段</span>
           <Switch checked={on} onCheckedChange={onToggle} />
         </div>
         <span className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</span>
@@ -1434,7 +1434,7 @@ function SlotSection({
       <div className="flex flex-wrap items-center gap-4">
         {(["morning", "noon", "evening"] as const).map((k) => (
           <div key={k} className={cn("flex items-center gap-2", !on && "opacity-50")}>
-            <span className="text-caption text-text-tertiary">
+            <span className="text-body-sm text-text-secondary">
               {k === "morning" ? "早上" : k === "noon" ? "中午" : "下午"}
             </span>
             <Input
@@ -1445,9 +1445,9 @@ function SlotSection({
                 const n = Number(e.target.value.replace(/\D/g, "") || 0);
                 onSlotChange({ ...slot, [k]: n });
               }}
-              className={cn("h-8 w-12 text-center text-body-sm", !on && "cursor-not-allowed bg-surface-subtle")}
+              className={cn("h-8 w-12 text-center text-body", !on && "cursor-not-allowed bg-surface-subtle")}
             />
-            <span className="text-caption text-text-tertiary">次</span>
+            <span className="text-body-sm text-text-tertiary">次</span>
           </div>
         ))}
       </div>
