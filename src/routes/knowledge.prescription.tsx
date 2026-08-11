@@ -1505,8 +1505,9 @@ function VariableDoseTable({
       {value.map((row, i) => (
         <div
           key={i}
-          className="group flex items-center gap-2 rounded-md border border-border bg-surface-subtle/40 px-2.5 py-1.5"
+          className="group flex items-center gap-2"
         >
+
           <Input
             value={row.option}
             onChange={(e) => update(i, { option: e.target.value })}
