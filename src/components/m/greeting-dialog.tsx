@@ -4,7 +4,7 @@ import morningGreeting from "@/assets/cow-morning-greeting.svg.asset.json";
 import afternoonGreeting from "@/assets/cow-afternoon-greeting.svg.asset.json";
 import morningStart from "@/assets/cow-_morning-start-work.svg.asset.json";
 import afternoonStart from "@/assets/cow-_afternoon-start-work.svg.asset.json";
-import leaveRest from "@/assets/cow-leave-rest.svg.asset.json";
+import leaveRest from "@/assets/cow-leave-rest-2.svg.asset.json";
 
 /** 上午问候语（≤12 字） */
 const MORNING_MOODS = [
