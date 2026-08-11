@@ -8,6 +8,8 @@ import {
   CheckCircle2,
   CircleDashed,
   User,
+  Pill,
+
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { L3_ITEMS, CURRENT_HOLDER, type L3Item } from "@/lib/level3-items";
