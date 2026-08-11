@@ -108,7 +108,7 @@ function Level3Page() {
           <h1 className="flex-1 text-body font-semibold text-foreground">
             三级库
             {farmView && (
-              <span className="ml-1.5 align-middle text-caption font-normal text-text-tertiary">全场</span>
+              <span className="ml-1.5 align-middle text-caption font-normal text-text-tertiary"></span>
             )}
           </h1>
         </div>
