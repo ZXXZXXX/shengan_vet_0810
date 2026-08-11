@@ -1059,36 +1059,36 @@ function DrugDetailRow({
 
         {/* 剂量 */}
         <div className="pt-3 border-t border-border/70 space-y-3">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-body font-medium text-foreground">按变量计算剂量</span>
             <div className="flex items-center gap-2">
-              <span className="text-body font-medium text-foreground">按变量计算剂量</span>
+              {value.variable && (
+                <>
+                  <span className="text-caption text-text-tertiary">计算变量</span>
+                  <Select
+                    value={value.variableKind ?? ""}
+                    onValueChange={(v) =>
+                      onChange({
+                        variableKind: v as VarKind,
+                        varDose: value.varDose ?? [{ option: "", dose: "" }],
+                      })
+                    }
+                  >
+                    <SelectTrigger className="h-8 w-28 text-body-sm font-medium text-primary">
+                      <SelectValue placeholder="请选择" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(VAR_LABEL) as VarKind[]).map((k) => (
+                        <SelectItem key={k} value={k}>
+                          {VAR_LABEL[k]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
               <Switch checked={value.variable} onCheckedChange={(v) => onChange({ variable: v })} />
             </div>
-            {value.variable && (
-              <div className="flex items-center gap-1.5">
-                <span className="text-caption text-text-tertiary">计算变量</span>
-                <Select
-                  value={value.variableKind ?? ""}
-                  onValueChange={(v) =>
-                    onChange({
-                      variableKind: v as VarKind,
-                      varDose: value.varDose ?? [{ option: "", dose: "" }],
-                    })
-                  }
-                >
-                  <SelectTrigger className="h-7 w-24 border-0 bg-transparent px-1 text-body-sm font-medium text-primary shadow-none focus:ring-0">
-                    <SelectValue placeholder="请选择" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(Object.keys(VAR_LABEL) as VarKind[]).map((k) => (
-                      <SelectItem key={k} value={k}>
-                        {VAR_LABEL[k]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
           </div>
 
           {value.variable ? (
@@ -1424,12 +1424,12 @@ function SlotSection({
   const shown = on ? slot : defaultSlot(freqM);
   return (
     <div className="pt-3 border-t border-border/70 space-y-2.5">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-body font-medium text-foreground">区分时间段</span>
-          <Switch checked={on} onCheckedChange={onToggle} />
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-body font-medium text-foreground">区分时间段</div>
+          <div className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</div>
         </div>
-        <span className="text-caption text-text-tertiary">开启后可分别设置早 / 中 / 下午的次数</span>
+        <Switch checked={on} onCheckedChange={onToggle} />
       </div>
       <div className="flex flex-wrap items-center gap-4">
         {(["morning", "noon", "evening"] as const).map((k) => (
