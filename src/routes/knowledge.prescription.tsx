@@ -88,7 +88,7 @@ const VAR_LABEL: Record<VarKind, string> = {
 
 type DoseMap = { option: string; dose: string }[]; // 变量选项 → 剂量/次
 
-type DrugRef = { name: string; spec: string }; // 可替代药品
+type DrugRef = { name: string; spec: string; route?: Route1; dose?: string }; // 可替代药品（可单独设置用法与剂量）
 
 type DrugDetail = {
   id: string;
