@@ -14,7 +14,14 @@ export type L3Item = {
   holder: string;
   /** 领用人岗位 */
   holderRole?: string;
+  /** 组合用药分组 ID（同一组合内的药品共用） */
+  comboId?: string;
+  /** 组合用药使用范围 */
+  comboScope?: "shared" | "single";
+  /** 共用于多头牛时的牛只数量 */
+  comboCattleCount?: number;
 };
+
 
 /** 当前登录人（个人三级库视角） */
 export const CURRENT_HOLDER = "李雨晴";
@@ -155,4 +162,77 @@ export const L3_ITEMS: L3Item[] = [
     holder: "陈立",
     holderRole: "修蹄工",
   },
+  // —— 组合用药（同一 comboId 为一组）——
+  {
+    code: "SN-8801-0251",
+    name: "精制盐酸头孢噻呋注射液",
+    spec: "100ml:5g / 瓶",
+    batch: "B240517",
+    manufacturer: "齐鲁动保",
+    used: false,
+    claimedAt: "2026-08-07 08:12",
+    holder: "李雨晴",
+    holderRole: "兽医助理",
+    comboId: "CB-20260807-01",
+    comboScope: "single",
+  },
+  {
+    code: "SN-6620-1195",
+    name: "氟尼辛葡甲胺注射液",
+    spec: "100ml / 瓶",
+    batch: "B240603",
+    manufacturer: "瑞普生物",
+    used: false,
+    claimedAt: "2026-08-07 08:12",
+    holder: "李雨晴",
+    holderRole: "兽医助理",
+    comboId: "CB-20260807-01",
+    comboScope: "single",
+  },
+  {
+    code: "SN-4410-0921",
+    name: "复方氯化钠注射液",
+    spec: "500ml / 瓶",
+    batch: "B240422",
+    manufacturer: "华农动保",
+    used: false,
+    claimedAt: "2026-08-07 08:12",
+    holder: "李雨晴",
+    holderRole: "兽医助理",
+    comboId: "CB-20260807-01",
+    comboScope: "single",
+  },
+  {
+    code: "SN-3320-0461",
+    name: "产后灌注剂",
+    spec: "100ml / 瓶",
+    batch: "B240708",
+    manufacturer: "大华农",
+    used: true,
+    claimedAt: "2026-08-07 07:20",
+    usedAt: "2026-08-07 10:05",
+    cattle: ["02-24-1180", "02-24-1192"],
+    holder: "王志强",
+    holderRole: "兽医助理",
+    comboId: "CB-20260807-02",
+    comboScope: "shared",
+    comboCattleCount: 2,
+  },
+  {
+    code: "SN-4410-0930",
+    name: "20% 葡萄糖注射液",
+    spec: "500ml / 瓶",
+    batch: "B240419",
+    manufacturer: "华农动保",
+    used: true,
+    claimedAt: "2026-08-07 07:20",
+    usedAt: "2026-08-07 10:05",
+    cattle: ["02-24-1180", "02-24-1192"],
+    holder: "王志强",
+    holderRole: "兽医助理",
+    comboId: "CB-20260807-02",
+    comboScope: "shared",
+    comboCattleCount: 2,
+  },
 ];
+
