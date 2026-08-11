@@ -94,25 +94,23 @@ function Level3Page() {
     });
   }, [statusItems, holder, q]);
 
-  /** 按组合用药分组：同一 comboId 合并为一张卡片 */
+  /** 分组：组合用药按 comboId 合并；单项药品按「药品 + 规格 + 领用人」合并为一张卡片 */
   const groups = useMemo(() => {
     const out: { key: string; items: L3Item[]; combo: boolean }[] = [];
     const idx = new Map<string, number>();
     list.forEach((i) => {
-      if (i.comboId) {
-        const at = idx.get(i.comboId);
-        if (at === undefined) {
-          idx.set(i.comboId, out.length);
-          out.push({ key: i.comboId, items: [i], combo: true });
-        } else {
-          out[at].items.push(i);
-        }
+      const key = i.comboId ? `combo:${i.comboId}` : `drug:${i.name}|${i.spec}|${i.holder}`;
+      const at = idx.get(key);
+      if (at === undefined) {
+        idx.set(key, out.length);
+        out.push({ key, items: [i], combo: !!i.comboId });
       } else {
-        out.push({ key: i.code, items: [i], combo: false });
+        out[at].items.push(i);
       }
     });
     return out;
   }, [list]);
+
 
 
   const tabs: { key: typeof tab; label: string }[] = [
