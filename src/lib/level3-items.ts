@@ -14,7 +14,14 @@ export type L3Item = {
   holder: string;
   /** 领用人岗位 */
   holderRole?: string;
+  /** 组合用药分组 ID（同一组合内的药品共用） */
+  comboId?: string;
+  /** 组合用药使用范围 */
+  comboScope?: "shared" | "single";
+  /** 共用于多头牛时的牛只数量 */
+  comboCattleCount?: number;
 };
+
 
 /** 当前登录人（个人三级库视角） */
 export const CURRENT_HOLDER = "李雨晴";
