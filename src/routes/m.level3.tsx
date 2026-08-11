@@ -216,69 +216,76 @@ function HolderChip({
 
 function ItemCard({ item: i, showHolder }: { item: L3Item; showHolder: boolean }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <div className="flex items-start gap-2">
-        <div className="min-w-0 flex-1">
-          <div className="text-body-sm font-medium text-foreground truncate">{i.name}</div>
-          <div className="text-caption text-text-tertiary mt-0.5 truncate">
-            {i.spec}
-            {i.manufacturer ? ` · ${i.manufacturer}` : ""}
-            {i.batch ? ` · 批号 ${i.batch}` : ""}
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+      <span
+        aria-hidden
+        className={`absolute left-0 top-0 bottom-0 w-1 ${i.used ? "bg-border" : "bg-primary"}`}
+      />
+      <div className="pl-2">
+        <div className="flex items-start gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="text-body-sm font-medium text-foreground truncate">{i.name}</div>
+            <div className="text-caption text-text-tertiary mt-0.5 truncate">
+              {i.spec}
+              {i.manufacturer ? ` · ${i.manufacturer}` : ""}
+              {i.batch ? ` · 批号 ${i.batch}` : ""}
+            </div>
+          </div>
+          <span
+            className={`shrink-0 inline-flex items-center gap-1 text-caption font-medium ${
+              i.used ? "text-text-tertiary" : "text-primary"
+            }`}
+          >
+            {i.used ? <CheckCircle2 className="h-3.5 w-3.5" /> : <CircleDashed className="h-3.5 w-3.5" />}
+            {i.used ? "已使用" : "未使用"}
+          </span>
+        </div>
+
+        <div className="mt-2 flex items-center gap-2 text-caption">
+          <span className="text-text-tertiary font-mono truncate">{i.code}</span>
+          {showHolder && (
+            <span className="ml-auto shrink-0 inline-flex items-center gap-1 text-text-secondary">
+              <User className="h-3 w-3 text-text-tertiary" />
+              {i.holder}
+              {i.holderRole ? <span className="text-text-tertiary">· {i.holderRole}</span> : null}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-2.5 pt-2.5 border-t border-border/70 space-y-1.5">
+          <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+            <Clock className="h-3 w-3 shrink-0" />
+            领取
+            <span className="ml-auto tabular-nums text-text-secondary">{i.claimedAt}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-caption text-text-tertiary">
+            <CheckCircle2 className="h-3 w-3 shrink-0" />
+            使用
+            <span className="ml-auto tabular-nums text-text-secondary">{i.usedAt ?? "—"}</span>
+          </div>
+          <div className="flex items-start gap-1.5 text-caption text-text-tertiary">
+            <Beef className="h-3 w-3 shrink-0 mt-0.5" />
+            牛只
+            <span className="ml-auto text-right">
+              {i.cattle && i.cattle.length > 0 ? (
+                <span className="inline-flex flex-wrap justify-end gap-1">
+                  {i.cattle.map((c) => (
+                    <span
+                      key={c}
+                      className="px-1.5 h-5 inline-flex items-center rounded-md bg-brand-subtle text-primary font-mono"
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </span>
+              ) : (
+                <span className="text-text-secondary">—</span>
+              )}
+            </span>
           </div>
         </div>
-        <span
-          className={`shrink-0 inline-flex items-center gap-1 h-6 px-2 rounded-full text-caption font-medium ${
-            i.used ? "bg-surface-subtle text-text-secondary" : "bg-brand-subtle text-primary"
-          }`}
-        >
-          {i.used ? <CheckCircle2 className="h-3 w-3" /> : <CircleDashed className="h-3 w-3" />}
-          {i.used ? "已使用" : "未使用"}
-        </span>
       </div>
 
-      <div className="mt-2 flex items-center gap-2">
-        <span className="text-caption text-text-tertiary font-mono truncate">{i.code}</span>
-        {showHolder && (
-          <span className="ml-auto shrink-0 inline-flex items-center gap-1 h-5 px-1.5 rounded bg-surface-subtle text-caption text-text-secondary">
-            <User className="h-3 w-3 text-text-tertiary" />
-            {i.holder}
-            {i.holderRole ? <span className="text-text-tertiary">· {i.holderRole}</span> : null}
-          </span>
-        )}
-      </div>
-
-      <div className="mt-2 pt-2 border-t border-border space-y-1.5">
-        <div className="flex items-center gap-1.5 text-caption text-text-secondary">
-          <Clock className="h-3 w-3 text-text-tertiary shrink-0" />
-          领取时间
-          <span className="ml-auto tabular-nums text-foreground">{i.claimedAt}</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-caption text-text-secondary">
-          <CheckCircle2 className="h-3 w-3 text-text-tertiary shrink-0" />
-          使用时间
-          <span className="ml-auto tabular-nums text-foreground">{i.usedAt ?? "—"}</span>
-        </div>
-        <div className="flex items-start gap-1.5 text-caption text-text-secondary">
-          <Beef className="h-3 w-3 text-text-tertiary shrink-0 mt-0.5" />
-          相关牛只
-          <span className="ml-auto text-right text-foreground">
-            {i.cattle && i.cattle.length > 0 ? (
-              <span className="inline-flex flex-wrap justify-end gap-1">
-                {i.cattle.map((c) => (
-                  <span
-                    key={c}
-                    className="px-1.5 h-5 inline-flex items-center rounded bg-surface-subtle font-mono"
-                  >
-                    {c}
-                  </span>
-                ))}
-              </span>
-            ) : (
-              "—"
-            )}
-          </span>
-        </div>
-      </div>
     </div>
   );
 }
