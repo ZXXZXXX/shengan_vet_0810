@@ -140,13 +140,13 @@ function Level3Page() {
 
         {/* 全场视角：按领用人筛选 */}
         {farmView && (
-          <div className="-mx-4 px-4 overflow-x-auto">
-            <div className="flex gap-2 w-max pb-0.5">
+          <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
+            <div className="flex gap-1.5 w-max pb-0.5">
               <HolderChip
                 active={holder === "__all__"}
                 onClick={() => setHolder("__all__")}
                 title="全部人员"
-                sub={`${items.length} 件`}
+                count={items.length}
               />
               {holders.map((h) => (
                 <HolderChip
@@ -154,12 +154,13 @@ function Level3Page() {
                   active={holder === h.name}
                   onClick={() => setHolder(h.name)}
                   title={h.name}
-                  sub={`${h.unused} 未用 / ${h.total} 件`}
+                  count={h.total}
                 />
               ))}
             </div>
           </div>
         )}
+
 
         <div className="inline-flex p-0.5 rounded-md bg-surface-subtle text-caption">
           {tabs.map((t) => (
