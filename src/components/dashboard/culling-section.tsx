@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity } from "lucide-react";
-import { SectionCard, Donut, Legend, BarList, PeriodTabs } from "./charts";
+import { SectionCard, StackedBar, BarList, PeriodTabs } from "./charts";
 import { scaleList, useDataLevel } from "@/lib/dashboard-view";
 
 const groupDist = [
