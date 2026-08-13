@@ -615,7 +615,7 @@ export function Radar({
   color?: string;
 }) {
   const c = size / 2;
-  const r = size / 2 - 34;
+  const r = size / 2 - 62;
   const n = Math.max(data.length, 3);
   const max = Math.max(...data.map((d) => d.value), 1);
   const pt = (i: number, ratio: number) => {
@@ -644,7 +644,7 @@ export function Radar({
         return <circle key={d.name} cx={px} cy={py} r="3.5" fill={color} />;
       })}
       {data.map((d, i) => {
-        const [lx, ly] = pt(i, 1.2);
+        const [lx, ly] = pt(i, 1.16);
         return (
           <text
             key={`l-${d.name}`}
