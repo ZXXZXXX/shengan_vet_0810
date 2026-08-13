@@ -328,7 +328,36 @@ export function CattleProfileDrawer({
   );
 }
 
-function Metric({
+/** 繁育与血统档案字段（mock，按耳号派生保持稳定） */
+function breedingFields(cow: CattleProfile): { label: string; value: string }[] {
+  const seed = Number(cow.ear.replace(/\D/g, "").slice(-4) || 0);
+  const pick = (n: number, mod: number, base = 0) => base + ((seed + n) % mod);
+  const dateAgo = (days: number) => {
+    const d = new Date(Date.now() - days * 86400000);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+  const female = cow.sex === "母" || cow.sex === "♀";
+  const lactating = female && cow.lactationDays > 0;
+  const bred = female && cow.pregnancyDays > 0;
+  const farmNo = cow.ear.slice(0, 2);
+  return [
+    { label: "出生体重", value: `${(38 + pick(1, 8)).toFixed(0)} kg` },
+    { label: "母号", value: `${farmNo}-${18 + pick(2, 5)}-${String(pick(3, 9999)).padStart(4, "0")}` },
+    { label: "父号", value: `USA-${1000000 + pick(4, 900000)}` },
+    { label: "入群来源", value: pick(5, 3) === 0 ? "本场出生" : pick(5, 3) === 1 ? "外购引进" : "牧场调入" },
+    { label: "产后天数", value: lactating ? `${cow.lactationDays} 天` : "—" },
+    { label: "配后天数", value: bred ? `${cow.pregnancyDays} 天` : "—" },
+    { label: "配次", value: female ? `${1 + pick(6, 4)} 次` : "—" },
+    { label: "流产天数", value: female && pick(7, 4) === 0 ? `${pick(8, 90, 10)} 天` : "—" },
+    { label: "产犊日期", value: cow.parity > 0 ? dateAgo(cow.lactationDays || 200) : "—" },
+    { label: "最近配种日期", value: bred ? dateAgo(cow.pregnancyDays) : "—" },
+    { label: "最近围产日期", value: cow.parity > 0 ? dateAgo((cow.lactationDays || 200) + 21) : "—" },
+    { label: "干奶日期", value: cow.parity > 0 ? dateAgo((cow.lactationDays || 200) + 60) : "—" },
+    { label: "最近流产日期", value: female && pick(7, 4) === 0 ? dateAgo(pick(9, 300, 60)) : "—" },
+  ];
+}
+
+
   label,
   value,
   unit,
