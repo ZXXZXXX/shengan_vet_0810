@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Beef } from "lucide-react";
-import { SectionCard, StackedBar, ColumnChart, PeriodTabs } from "./charts";
+import { SectionCard, StackedBar, PeriodTabs } from "./charts";
 import { scaleList, useDataLevel } from "@/lib/dashboard-view";
 
 const typeDist = [
@@ -51,11 +51,7 @@ export function HerdSection() {
           </p>
         </div>
         <div className="flex flex-1 flex-col justify-center">
-          {tab === TAB_TYPE ? (
-            <ColumnChart data={types} unit=" 头" height={200} />
-          ) : (
-            <StackedBar data={health} unit=" 头" />
-          )}
+          <StackedBar data={tab === TAB_TYPE ? types : health} unit=" 头" />
         </div>
       </div>
     </SectionCard>

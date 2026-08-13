@@ -110,27 +110,36 @@ function DonutChart({ data, onPick }: { data: DiseaseCat[]; onPick: (c: DiseaseC
   const cx = 100, cy = 100, R = 82, r = 52;
   let acc = 0;
   return (
-    <div className="w-full">
-      <div className="flex items-baseline justify-between gap-3 mb-3">
-        <span className="text-body-sm text-text-secondary">疾病大类构成</span>
-        <span className="text-caption text-text-tertiary">
-          发病例次{" "}
-          <span className="text-section-title tabular-nums text-foreground">{total.toLocaleString()}</span>
-        </span>
-      </div>
-      <div className="flex h-7 w-full overflow-hidden rounded-lg border border-border">
-        {data.map((c, i) => (
-          <button
-            key={c.name}
-            type="button"
-            title={`${c.name} ${totals[i]}`}
-            onClick={() => onPick(c)}
-            className="h-full transition-opacity hover:opacity-80"
-            style={{ width: `${(totals[i] / total) * 100}%`, background: c.color }}
-          />
-        ))}
-      </div>
-      <div className="mt-4 space-y-2">
+    <div className="flex items-center gap-6 flex-wrap">
+      <svg width="200" height="200" viewBox="0 0 200 200" className="shrink-0">
+        {data.map((c, i) => {
+          const v = totals[i];
+          const start = (acc / total) * Math.PI * 2 - Math.PI / 2;
+          acc += v;
+          const end = (acc / total) * Math.PI * 2 - Math.PI / 2;
+          const large = end - start > Math.PI ? 1 : 0;
+          const [x1, y1] = polar(cx, cy, R, start);
+          const [x2, y2] = polar(cx, cy, R, end);
+          const [x3, y3] = polar(cx, cy, r, end);
+          const [x4, y4] = polar(cx, cy, r, start);
+          return (
+            <path
+              key={c.name}
+              d={`M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${x3} ${y3} A ${r} ${r} 0 ${large} 0 ${x4} ${y4} Z`}
+              fill={c.color}
+              className="cursor-pointer transition-opacity hover:opacity-80"
+              onClick={() => onPick(c)}
+            />
+          );
+        })}
+        <text x={cx} y={cy - 4} textAnchor="middle" className="fill-foreground" style={{ fontSize: 22, fontWeight: 600 }}>
+          {total}
+        </text>
+        <text x={cx} y={cy + 16} textAnchor="middle" className="fill-[var(--text-tertiary)]" style={{ fontSize: 12 }}>
+          发病例次
+        </text>
+      </svg>
+      <div className="flex-1 min-w-[180px] space-y-2">
         {data.map((c, i) => (
           <button
             key={c.name}
@@ -149,7 +158,6 @@ function DonutChart({ data, onPick }: { data: DiseaseCat[]; onPick: (c: DiseaseC
         ))}
       </div>
     </div>
-
   );
 }
 
