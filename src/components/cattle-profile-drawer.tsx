@@ -90,7 +90,7 @@ export function CattleProfileDrawer({
 
   const health = observed ? "观察中" : cow.health;
   const abnormal = cow.health === "异常" || cow.health === "观察中" || observed;
-  const ageLabel = cow.ageDays > 90 ? `${Math.floor(cow.ageDays / 30)} 月龄` : `${cow.ageDays} 日龄`;
+
 
   const healthCls =
     health === "异常"
@@ -158,33 +158,27 @@ export function CattleProfileDrawer({
                 </div>
               </div>
             </div>
-
-            {/* 关键指标条 */}
-            <div className="mt-5 grid grid-cols-5 gap-3">
-              <Metric label={cow.ageDays > 90 ? "月龄" : "日龄"} value={ageLabel.replace(/\s?(月龄|日龄)/, "")} unit={cow.ageDays > 90 ? "月" : "天"} />
-              <Metric label="泌乳天数" value={String(cow.lactationDays)} unit="天" />
-              <Metric label="怀孕天数" value={cow.pregnancyDays > 0 ? String(cow.pregnancyDays) : "—"} unit={cow.pregnancyDays > 0 ? "天" : ""} />
-              <Metric label="胎次" value={String(cow.parity)} unit="胎" />
-              <Metric
-                label="休药期"
-                value={cow.withdrawalDays > 0 ? String(cow.withdrawalDays) : "无"}
-                unit={cow.withdrawalDays > 0 ? "天" : ""}
-                tone={cow.withdrawalDays > 0 ? "danger" : "default"}
-              />
-            </div>
           </div>
         </header>
 
         {/* 内容 */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-7 py-6 space-y-5">
-          {cow.withdrawalDays > 0 && (
-            <div className="rounded-xl border border-[#FFCCC7] bg-[#FFF1F0] px-4 py-3 flex items-center gap-2.5">
-              <Clock className="h-4 w-4 shrink-0 text-[#CF1322]" />
-              <span className="text-body-sm text-[#CF1322]">
-                该牛只处于休药期，至 {cow.withdrawalUntil} 结束（剩 {cow.withdrawalDays} 天），期间产奶不可上市。
-              </span>
-            </div>
-          )}
+          {/* 休药期：置顶状态条 */}
+          <div
+            className={`rounded-xl border px-4 py-3 flex items-center gap-2.5 ${
+              cow.withdrawalDays > 0
+                ? "border-[#FFCCC7] bg-[#FFF1F0]"
+                : "border-[#B7EB8F] bg-[#F6FFED]"
+            }`}
+          >
+            <Clock className={`h-4 w-4 shrink-0 ${cow.withdrawalDays > 0 ? "text-[#CF1322]" : "text-[#389E0D]"}`} />
+            <span className={`text-body-sm ${cow.withdrawalDays > 0 ? "text-[#CF1322]" : "text-[#389E0D]"}`}>
+              {cow.withdrawalDays > 0
+                ? `该牛只处于休药期，至 ${cow.withdrawalUntil} 结束（剩 ${cow.withdrawalDays} 天），期间产奶不可上市。`
+                : "该牛只未处于休药期，当前产奶可正常上市。"}
+            </span>
+          </div>
+
 
           {/* 繁育与血统档案 */}
           <Panel title="繁育与档案信息" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="p-4">
@@ -338,7 +332,12 @@ function breedingFields(cow: CattleProfile): { label: string; value: string }[] 
   const lactating = female && cow.lactationDays > 0;
   const bred = female && cow.pregnancyDays > 0;
   const farmNo = cow.ear.slice(0, 2);
+  const ageLabel = cow.ageDays > 90 ? `${Math.floor(cow.ageDays / 30)} 月龄` : `${cow.ageDays} 日龄`;
   return [
+    { label: cow.ageDays > 90 ? "月龄" : "日龄", value: ageLabel },
+    { label: "泌乳天数", value: lactating ? `${cow.lactationDays} 天` : "—" },
+    { label: "怀孕天数", value: bred ? `${cow.pregnancyDays} 天` : "—" },
+    { label: "胎次", value: `${cow.parity} 胎` },
     { label: "出生体重", value: `${(38 + pick(1, 8)).toFixed(0)} kg` },
     { label: "母号", value: `${farmNo}-${18 + pick(2, 5)}-${String(pick(3, 9999)).padStart(4, "0")}` },
     { label: "父号", value: `USA-${1000000 + pick(4, 900000)}` },
@@ -355,33 +354,6 @@ function breedingFields(cow: CattleProfile): { label: string; value: string }[] 
   ];
 }
 
-function Metric({
-  label,
-  value,
-  unit,
-  tone = "default",
-}: {
-  label: string;
-  value: string;
-  unit?: string;
-  tone?: "default" | "danger";
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card px-3 py-2.5">
-      <div className="text-caption text-text-tertiary">{label}</div>
-      <div className="mt-1 flex items-baseline gap-1">
-        <span
-          className={`text-[20px] leading-[26px] font-medium tabular-nums ${
-            tone === "danger" ? "text-[#CF1322]" : "text-foreground"
-          }`}
-        >
-          {value}
-        </span>
-        {unit && <span className="text-caption text-text-tertiary">{unit}</span>}
-      </div>
-    </div>
-  );
-}
 
 function Panel({
   title,
