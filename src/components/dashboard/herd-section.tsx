@@ -16,7 +16,7 @@ const healthDist = [
   { name: "健康", value: 3720, color: "var(--brand)" },
   { name: "治疗中", value: 186, color: "var(--state-warning)" },
   { name: "观察中（休药/过抗期）", value: 108, color: "var(--effect-ai-cyan)" },
-  { name: "数据异常", value: 46, color: "var(--state-danger)" },
+  { name: "异常", value: 46, color: "var(--state-danger)" },
 ];
 
 const TAB_TYPE = "类型分布";
