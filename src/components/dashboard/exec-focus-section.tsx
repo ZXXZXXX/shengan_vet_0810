@@ -73,8 +73,58 @@ const yuan = (n: number) => `${(n / 10000).toFixed(1)} 万`;
 
 /* ---------------- 组件 ---------------- */
 
-export function ExecFocusSection({ level }: { level: "region" | "group" }) {
+export function ExecFocusSection({ level }: { level: "farm" | "region" | "group" }) {
   const isGroup = level === "group";
+  const isFarm = level === "farm";
+  const singleFarm = FARMS[0];
+
+  if (isFarm) {
+    const perHead = singleFarm.drugFee / singleFarm.herd;
+    return (
+      <SectionCard
+        id="topic-exec"
+        title="牧场关键指标"
+        desc="外部视角 · 1 号牧场"
+        icon={<Crosshair className="h-4 w-4 text-primary" strokeWidth={1.75} />}
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <MiniStat label="（本月）死亡数" value={String(singleFarm.death)} unit="头" tone="var(--state-danger)" />
+          <MiniStat label="（本月）淘汰数" value={String(singleFarm.cull)} unit="头" tone="var(--state-warning)" />
+          <MiniStat label="发病率" value={`${singleFarm.sick}`} unit="%" tone="var(--state-danger)" />
+          <MiniStat label="治愈率" value={`${singleFarm.cure}`} unit="%" tone="var(--brand)" />
+          <MiniStat label="早产率" value={`${singleFarm.preterm}`} unit="%" tone="var(--state-warning)" />
+          <MiniStat label="平均诊疗天数" value={`${singleFarm.days}`} unit="天" tone="var(--effect-ai-cyan)" />
+          <MiniStat label="（本月）总药费" value={yuan(singleFarm.drugFee)} unit="元" tone="var(--effect-ai-purple)" />
+          <MiniStat label="单头牛药费" value={perHead.toFixed(1)} unit="元/头" tone="var(--effect-ai-purple)" />
+        </div>
+
+        <div className="mt-6">
+          <p className="text-body-sm text-text-secondary mb-3">产后淘汰率</p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[360px] text-body-sm">
+              <thead>
+                <tr className="text-caption text-text-tertiary">
+                  <th className="text-left font-normal py-2">牧场</th>
+                  <th className="text-right font-normal py-2">产后 0-30 天</th>
+                  <th className="text-right font-normal py-2">产后 0-60 天</th>
+                  <th className="text-right font-normal py-2">产后 0-90 天</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="py-2.5 text-foreground">{singleFarm.farm}</td>
+                  <td className="py-2.5 text-right tabular-nums text-text-secondary">{singleFarm.pp30} %</td>
+                  <td className="py-2.5 text-right tabular-nums text-text-secondary">{singleFarm.pp60} %</td>
+                  <td className="py-2.5 text-right tabular-nums text-foreground">{singleFarm.pp90} %</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </SectionCard>
+    );
+  }
+
   const scopeRows = isGroup ? FARMS : FARMS.filter((f) => f.region === "东北大区");
   const dims = isGroup ? ["区域维度", "牧场维度"] : ["牧场维度"];
   const [dim, setDim] = useState(dims[0]);

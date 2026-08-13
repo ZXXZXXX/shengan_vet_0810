@@ -517,7 +517,7 @@ function HomePage() {
         {/* 专题区：顺序由「看板视角设置」中的排序决定，半宽专题自动两两并排 */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
           {topicOrder.map((key) => {
-            if (key === "ops" && scope !== "region" && scope !== "group") return null;
+            if (key === "ops" && scope !== "region" && scope !== "group" && scope !== "farm-out") return null;
             const full = key === "drug" || key === "alert" || key === "ops";
             const node =
               key === "herd" ? (
@@ -546,8 +546,12 @@ function HomePage() {
                 <AlertSection />
               ) : (
                 <div className="space-y-6">
-                  <ExecFocusSection level={scope === "group" ? "group" : "region"} />
-                  <OpsSection level={scope === "group" ? "group" : "region"} />
+                  <ExecFocusSection
+                    level={scope === "group" ? "group" : scope === "region" ? "region" : "farm"}
+                  />
+                  {scope !== "farm-out" && (
+                    <OpsSection level={scope === "group" ? "group" : "region"} />
+                  )}
                 </div>
               );
 
