@@ -628,7 +628,7 @@ export function Radar({
       width={size + 170}
       height={size}
       viewBox={`-85 0 ${size + 170} ${size}`}
-      className="max-w-full"
+      className="max-w-full overflow-visible"
     >
       {[0.25, 0.5, 0.75, 1].map((t) => (
         <polygon
