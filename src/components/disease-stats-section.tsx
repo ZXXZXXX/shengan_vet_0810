@@ -267,63 +267,64 @@ export function DiseaseStatsSection() {
       </div>
 
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左：组织发病率排名 */}
-        <div>
-          <div className="flex items-center justify-between">
-            <p className="text-body-sm text-text-secondary">
-              {childrenAreRegions ? "各区域发病率排名" : "各牧场发病率排名"}
-            </p>
-            <span className="text-caption text-text-tertiary">由高到低</span>
-          </div>
-          <div className="mt-4 space-y-3">
-            {ranked.map((o, i) => {
-              const rate = incidence(o);
-              const sums = rollupOrg(o);
-              const isSel = selectedId === o.id;
-              const drillable = !!o.children?.length;
-              const color = i === 0 ? "var(--state-danger)" : i === 1 ? "var(--state-warning)" : "var(--brand)";
-              return (
-                <button
-                  key={o.id}
-                  type="button"
-                  onClick={() => pick(o)}
-                  className="group w-full text-left flex items-center gap-3"
-                  title={`${sums.cases}/${sums.herd.toLocaleString()}`}
-                >
-                  <span className="text-caption tabular-nums text-text-tertiary w-4 shrink-0">{i + 1}</span>
-                  <span
-                    className={`text-body truncate w-24 shrink-0 ${isSel ? "text-primary font-medium" : "text-foreground"}`}
+        {/* 左：组织发病率排名（多于一个组织时才展示） */}
+        {ranked.length > 1 && (
+          <div>
+            <div className="flex items-center justify-between">
+              <p className="text-body-sm text-text-secondary">
+                {childrenAreRegions ? "各区域发病率排名" : "各牧场发病率排名"}
+              </p>
+              <span className="text-caption text-text-tertiary">由高到低</span>
+            </div>
+            <div className="mt-4 space-y-3">
+              {ranked.map((o, i) => {
+                const rate = incidence(o);
+                const sums = rollupOrg(o);
+                const isSel = selectedId === o.id;
+                const drillable = !!o.children?.length;
+                const color = i === 0 ? "var(--state-danger)" : i === 1 ? "var(--state-warning)" : "var(--brand)";
+                return (
+                  <button
+                    key={o.id}
+                    type="button"
+                    onClick={() => pick(o)}
+                    className="group w-full text-left flex items-center gap-3"
+                    title={`${sums.cases}/${sums.herd.toLocaleString()}`}
                   >
-                    {o.name}
-                  </span>
-                  <span className="relative flex-1 h-7 rounded-md bg-surface-subtle overflow-hidden">
+                    <span className="text-caption tabular-nums text-text-tertiary w-4 shrink-0">{i + 1}</span>
                     <span
-                      className="absolute inset-y-0 left-0 rounded-md transition-all group-hover:opacity-85"
-                      style={{
-                        width: `${Math.max((rate / maxRate) * 100, 2)}%`,
-                        background: color,
-                        opacity: isSel ? 1 : 0.9,
-                      }}
-                    />
-                  </span>
-                  <span className="shrink-0 flex items-center gap-2">
-                    <span className="text-caption text-text-tertiary tabular-nums">
-                      {sums.cases}/{sums.herd.toLocaleString()}
+                      className={`text-body truncate w-24 shrink-0 ${isSel ? "text-primary font-medium" : "text-foreground"}`}
+                    >
+                      {o.name}
                     </span>
-                    <span className="text-body-sm font-medium tabular-nums text-foreground w-14 text-right">
-                      {rate.toFixed(2)}%
+                    <span className="relative flex-1 h-7 rounded-md bg-surface-subtle overflow-hidden">
+                      <span
+                        className="absolute inset-y-0 left-0 rounded-md transition-all group-hover:opacity-85"
+                        style={{
+                          width: `${Math.max((rate / maxRate) * 100, 2)}%`,
+                          background: color,
+                          opacity: isSel ? 1 : 0.9,
+                        }}
+                      />
                     </span>
-                    {drillable && <ChevronRight className="h-4 w-4 text-text-tertiary" />}
-                  </span>
-                </button>
-              );
-            })}
+                    <span className="shrink-0 flex items-center gap-2">
+                      <span className="text-caption text-text-tertiary tabular-nums">
+                        {sums.cases}/{sums.herd.toLocaleString()}
+                      </span>
+                      <span className="text-body-sm font-medium tabular-nums text-foreground w-14 text-right">
+                        {rate.toFixed(2)}%
+                      </span>
+                      {drillable && <ChevronRight className="h-4 w-4 text-text-tertiary" />}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-
-        </div>
+        )}
 
         {/* 右：疾病构成 */}
-        <div className="lg:border-l lg:border-border lg:pl-6">
+        <div className={`${ranked.length > 1 ? "lg:border-l lg:border-border lg:pl-6" : ""}`}>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <PieChart className="h-4 w-4 text-text-tertiary shrink-0" strokeWidth={1.75} />
@@ -342,7 +343,7 @@ export function DiseaseStatsSection() {
             {activeCat ? <CategoryBars cat={activeCat} /> : <DonutChart data={focusCats} onPick={(c) => setCat(c.name)} />}
           </div>
           <p className="mt-4 text-caption text-text-tertiary">
-            {selected ? "当前展示所选牧场的疾病构成，点击左侧同一项可取消选择" : "当前展示该范围整体疾病构成，点击左侧组织可下钻查看"}
+            {selected ? "当前展示所选牧场的疾病构成" : "当前展示该范围整体疾病构成"}
           </p>
         </div>
       </div>
