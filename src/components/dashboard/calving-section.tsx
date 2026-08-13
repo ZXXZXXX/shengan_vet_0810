@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Baby, ChevronLeft } from "lucide-react";
-import { SectionCard, Donut, Legend, PeriodTabs } from "./charts";
+import { SectionCard, Donut, Legend, PeriodTabs, ProgressRows, ProgressRing } from "./charts";
 import { scaleList, scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 const aliveTotal = 170;
@@ -91,15 +91,19 @@ export function CalvingSection() {
                 产犊成活与死亡分布
                 <span className="text-text-tertiary">{"\n"}</span>
               </button>
-              <div className="flex flex-col items-center gap-4">
-                <Donut
-                  data={detail}
-                  centerLabel="成活总数"
-                  centerValue={alive.toLocaleString()}
-                  centerUnit="头" unit=" 头"
-                />
-                <Legend data={detail} unit=" 头" />
-              </div>
+              {tab === TAB_WEIGHT ? (
+                <ProgressRows data={detail} unit=" 头" />
+              ) : (
+                <div className="flex flex-col items-center gap-4">
+                  <Donut
+                    data={detail}
+                    centerLabel="成活总数"
+                    centerValue={alive.toLocaleString()}
+                    centerUnit="头" unit=" 头"
+                  />
+                  <Legend data={detail} unit=" 头" />
+                </div>
+              )}
             </>
           ) : (
             <>
@@ -125,9 +129,11 @@ export function CalvingSection() {
       ) : (
         <div>
           <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度分布</p>
-          <div className="flex flex-col items-center gap-4">
-            <Donut data={difficultyData} centerLabel="顺产率" centerValue="74.6%" unit=" 例" />
-            <Legend data={difficultyData} unit=" 例" />
+          <div className="flex flex-col items-center gap-5 xl:flex-row xl:items-center xl:gap-8">
+            <ProgressRing value={74.6} label="顺产率" size={140} />
+            <div className="w-full flex-1">
+              <ProgressRows data={difficultyData} unit=" 例" />
+            </div>
           </div>
         </div>
       )}
