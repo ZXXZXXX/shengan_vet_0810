@@ -409,30 +409,13 @@ function HomePage() {
           <div className="min-w-0">
             <h3 className="text-section-title text-foreground">数据看板</h3>
             <p className="text-caption text-text-tertiary mt-0.5">
-              {scope === "farm-out"
-                ? "外部口径：不展示药品、工单与预警告警专题"
-                : scope === "region"
-                ? "区域（中心）口径：牧场数据上卷至区域级"
-                : scope === "group"
-                ? "集团高管口径：牧场数据上卷至区域级、集团级"
-                : "牧场级内部口径：全量专题"}
+              当前视角：{scopeOptions.find((o) => o.key === scope)?.label} ·{" "}
+              {scopeOptions.find((o) => o.key === scope)?.desc}
             </p>
           </div>
-          <div className="inline-flex items-center rounded-full border border-border bg-surface-subtle p-0.5 shrink-0">
-            {scopeOptions.map((o) => (
-              <button
-                key={o.key}
-                type="button"
-                onClick={() => setScope(o.key)}
-                className={`h-8 px-3 rounded-full text-caption transition-colors ${
-                  scope === o.key ? "bg-card text-primary shadow-card" : "text-text-secondary"
-                }`}
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
+          <ViewSettingsSheet />
         </div>
+
 
         {/* 数据指标卡 1-6 — 点击跳转至对应专题 */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
