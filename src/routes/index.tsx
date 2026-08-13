@@ -543,8 +543,12 @@ function HomePage() {
               ) : key === "alert" ? (
                 <AlertSection />
               ) : (
-                <OpsSection level={scope === "group" ? "group" : "region"} />
+                <div className="space-y-6">
+                  <ExecFocusSection level={scope === "group" ? "group" : "region"} />
+                  <OpsSection level={scope === "group" ? "group" : "region"} />
+                </div>
               );
+
             return (
               <div
                 key={key}
