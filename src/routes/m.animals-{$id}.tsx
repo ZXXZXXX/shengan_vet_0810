@@ -87,15 +87,18 @@ function AnimalDetailPage() {
   if (observing) a.health = "观察中";
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const startObserve = () => {
+  const [reasonOpen, setReasonOpen] = useState(false);
+  const startObserve = (reason: string) => {
     const d = new Date();
     d.setHours(24, 0, 0, 0); // 次日 00:00
     window.localStorage.setItem(obsKey, String(d.getTime()));
     setObserveUntil(d.getTime());
     markAlertHandled(a.id); // 异常排查任务当天从今日任务列表清除
+    setReasonOpen(false);
     setFeedbackOpen(false);
-    toast.success("已转为观察中，次日 00:00 自动解除");
+    toast.success(`已标记无需治疗 · ${reason}`);
   };
+
 
   // 记录 sheet
   const [recordOpen, setRecordOpen] = useState(false);
