@@ -17,6 +17,10 @@ import {
   BarChart3,
   X,
   Check,
+  CalendarDays,
+  Users,
+  ClipboardList,
+  FileText,
 } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
@@ -49,7 +53,16 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/stats")({
-  head: () => ({ meta: [{ title: "统计分析 — 奇点智牧" }] }),
+  head: () => ({
+    meta: [
+      { title: "统计分析 — 奇点智牧" },
+      { name: "description", content: "按时间、人员、疾病、处方、工单、产犊、药品等维度筛选统计牧场数据并导出报表。" },
+      { property: "og:title", content: "统计分析 — 奇点智牧" },
+      { property: "og:description", content: "多维度筛选牧场生产与兽医数据，一键导出报表。" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: StatsPage,
 });
 
@@ -107,22 +120,87 @@ const DATE_PRESETS = [
   { value: "custom", label: "自定义" },
 ];
 
+/** 维度取值字典 */
+const OPERATORS = ["王强", "李峰", "陈明", "赵霞", "周乐言"];
+const ROLE_OPTIONS = [
+  { value: "all", label: "全部角色" },
+  { value: "vet", label: "兽医" },
+  { value: "vet_assistant", label: "兽医助理" },
+  { value: "immunizer", label: "免疫员" },
+  { value: "hoof_trimmer", label: "修蹄员" },
+];
+const DISEASES = ["临床型乳房炎", "隐性乳房炎", "蹄叶炎", "腐蹄病", "子宫内膜炎", "胎衣不下", "支气管肺炎", "瘤胃酸中毒", "酮病"];
+const DISEASE_CATS = [
+  { value: "all", label: "全部病种类别" },
+  { value: "乳房疾病", label: "乳房疾病" },
+  { value: "肢蹄疾病", label: "肢蹄疾病" },
+  { value: "繁殖疾病", label: "繁殖疾病" },
+  { value: "呼吸道疾病", label: "呼吸道疾病" },
+  { value: "消化系统疾病", label: "消化系统疾病" },
+  { value: "代谢及其他", label: "代谢及其他" },
+];
+const PRESCRIPTIONS = ["乳房炎常规方案", "蹄病消炎方案", "产后正常", "产后高危", "干奶封闭方案", "呼吸道方案"];
+const DRUGS = ["精制盐酸头孢噻呋注射液", "氟尼新葡甲胺注射液", "复方氯化钠注射液", "20% 葡萄糖注射液", "产后灌注", "伊维菌素注射液"];
+const DRUG_ROUTES = [
+  { value: "all", label: "全部给药方式" },
+  { value: "肌内注射", label: "肌内注射" },
+  { value: "静脉注射", label: "静脉注射" },
+  { value: "灌注", label: "灌注" },
+  { value: "口服", label: "口服" },
+];
+const CALVING_TYPES = ["顺产", "轻度助产", "难产", "剖腹产"];
+const CALF_OUTCOMES = [
+  { value: "all", label: "全部犊牛结局" },
+  { value: "存活", label: "存活" },
+  { value: "死胎", label: "死胎" },
+  { value: "不留养", label: "不留养" },
+];
+
 type Filters = {
+  // 时间维度
   dateRange: string;
-  dateStart?: string;
-  dateEnd?: string;
+  dateStart: string;
+  dateEnd: string;
+  // 组织
   farm: string;
+  // 操作人员维度
+  operators: string[];
+  role: string;
+  // 疾病维度
+  diseases: string[];
+  diseaseCat: string;
+  // 处方维度
+  prescriptions: string[];
+  // 工单维度
   woTypes: WorkOrderType[];
   status: string;
+  // 产犊维度
+  calvingTypes: string[];
+  calfOutcome: string;
+  // 药品维度
+  drugs: string[];
+  drugRoute: string;
+  // 其它
   keyword: string;
   onlyAbnormal: boolean;
 };
 
 const DEFAULT_FILTERS: Filters = {
   dateRange: "30d",
+  dateStart: "",
+  dateEnd: "",
   farm: "all",
+  operators: [],
+  role: "all",
+  diseases: [],
+  diseaseCat: "all",
+  prescriptions: [],
   woTypes: [],
   status: "all",
+  calvingTypes: [],
+  calfOutcome: "all",
+  drugs: [],
+  drugRoute: "all",
   keyword: "",
   onlyAbnormal: false,
 };
@@ -151,6 +229,15 @@ const DEFAULT_TEMPLATES: Template[] = [
     usage: 128,
   },
   {
+    id: "t-mastitis",
+    name: "乳房炎病种分析",
+    desc: "近 30 天 · 乳房疾病类别",
+    icon: Stethoscope,
+    tone: "var(--effect-ai-purple)",
+    filters: { ...DEFAULT_FILTERS, dateRange: "30d", diseaseCat: "乳房疾病" },
+    usage: 74,
+  },
+  {
     id: "t-vaccine-month",
     name: "本月疫苗执行",
     desc: "本月已完成的疫苗免疫工单",
@@ -163,34 +250,48 @@ const DEFAULT_TEMPLATES: Template[] = [
   {
     id: "t-postpartum-highrisk",
     name: "产后高危跟进",
-    desc: "近 7 天产后护理 · 仅异常",
+    desc: "近 7 天 · 产后高危处方",
     icon: Baby,
     tone: "var(--effect-ai-purple)",
-    filters: { ...DEFAULT_FILTERS, dateRange: "7d", woTypes: ["postpartum"], onlyAbnormal: true },
+    filters: { ...DEFAULT_FILTERS, dateRange: "7d", woTypes: ["postpartum"], prescriptions: ["产后高危"] },
     usage: 62,
   },
   {
-    id: "t-hoof-90d",
-    name: "季度修蹄统计",
-    desc: "近 90 天修蹄工单执行情况",
-    icon: Scissors,
+    id: "t-calving-dystocia",
+    name: "难产产犊统计",
+    desc: "近 90 天 · 难产 / 剖腹产",
+    icon: Baby,
     tone: "var(--state-warning)",
-    filters: { ...DEFAULT_FILTERS, dateRange: "90d", woTypes: ["hoof"] },
-    usage: 41,
+    filters: { ...DEFAULT_FILTERS, dateRange: "90d", calvingTypes: ["难产", "剖腹产"] },
+    usage: 28,
   },
   {
-    id: "t-drying-month",
-    name: "本月干奶执行",
-    desc: "本月干奶工单 · 全部牧场",
-    icon: Droplet,
+    id: "t-drug-cef",
+    name: "头孢类用药统计",
+    desc: "近 30 天 · 肌内注射头孢噻呋",
+    icon: Pill,
     tone: "var(--state-success)",
-    filters: { ...DEFAULT_FILTERS, dateRange: "month", woTypes: ["drying"] },
-    usage: 35,
+    filters: {
+      ...DEFAULT_FILTERS,
+      dateRange: "30d",
+      drugs: ["精制盐酸头孢噻呋注射液"],
+      drugRoute: "肌内注射",
+    },
+    usage: 53,
+  },
+  {
+    id: "t-operator",
+    name: "人员工作量统计",
+    desc: "近 30 天 · 按操作人员查看",
+    icon: Users,
+    tone: "var(--brand)",
+    filters: { ...DEFAULT_FILTERS, dateRange: "30d", role: "vet" },
+    usage: 45,
   },
   {
     id: "t-pending-7d",
     name: "近 7 天未处理",
-    desc: "所有类型 · 待诊断 / 待执行",
+    desc: "所有类型 · 待诊断",
     icon: BarChart3,
     tone: "var(--destructive)",
     filters: { ...DEFAULT_FILTERS, dateRange: "7d", status: "pending" },
@@ -207,14 +308,40 @@ type Row = {
   type: WorkOrderType;
   status: string;
   reporter: string;
+  operator: string;
+  role: string;
+  disease: string;
+  diseaseCat: string;
+  prescription: string;
+  drug: string;
+  drugRoute: string;
+  calvingType: string;
+  calfOutcome: string;
   createdAt: string;
   detail: string;
 };
 
-const ROWS: Row[] = Array.from({ length: 26 }).map((_, i) => {
+const DISEASE_CAT_OF: Record<string, string> = {
+  临床型乳房炎: "乳房疾病",
+  隐性乳房炎: "乳房疾病",
+  蹄叶炎: "肢蹄疾病",
+  腐蹄病: "肢蹄疾病",
+  子宫内膜炎: "繁殖疾病",
+  胎衣不下: "繁殖疾病",
+  支气管肺炎: "呼吸道疾病",
+  瘤胃酸中毒: "消化系统疾病",
+  酮病: "代谢及其他",
+};
+
+const ROW_ROLES = ["vet", "vet_assistant", "immunizer", "hoof_trimmer"];
+const ROW_ROUTES = ["肌内注射", "静脉注射", "灌注", "口服"];
+
+const ROWS: Row[] = Array.from({ length: 36 }).map((_, i) => {
   const types: WorkOrderType[] = ["disease", "vaccine", "postpartum", "hoof", "drying", "deworm", "general"];
   const type = types[i % types.length];
   const statusList = ["pending", "executing", "done", "done", "done", "aborted"];
+  const disease = DISEASES[i % DISEASES.length];
+  const isCalving = type === "postpartum";
   return {
     id: `WO-2026-${String(1000 + i)}`,
     earTag: `C${String(20241000 + i * 17)}`,
@@ -223,6 +350,15 @@ const ROWS: Row[] = Array.from({ length: 26 }).map((_, i) => {
     type,
     status: statusList[i % statusList.length],
     reporter: ["王强", "李峰", "陈明", "赵霞"][i % 4],
+    operator: OPERATORS[i % OPERATORS.length],
+    role: ROW_ROLES[i % ROW_ROLES.length],
+    disease: type === "disease" || i % 3 === 0 ? disease : "—",
+    diseaseCat: type === "disease" || i % 3 === 0 ? DISEASE_CAT_OF[disease] : "—",
+    prescription: PRESCRIPTIONS[i % PRESCRIPTIONS.length],
+    drug: DRUGS[i % DRUGS.length],
+    drugRoute: ROW_ROUTES[i % ROW_ROUTES.length],
+    calvingType: isCalving ? CALVING_TYPES[i % CALVING_TYPES.length] : "—",
+    calfOutcome: isCalving ? ["存活", "存活", "死胎", "不留养"][i % 4] : "—",
     createdAt: `2026-07-${String(24 - (i % 24)).padStart(2, "0")}`,
     detail: {
       disease: "乳房炎 · 左前乳区红肿",
@@ -254,12 +390,17 @@ function StatsPage() {
   const [saveName, setSaveName] = useState("");
   const [saveDesc, setSaveDesc] = useState("");
 
-  const toggleWoType = (t: WorkOrderType) => {
-    setFilters((f) => ({
-      ...f,
-      woTypes: f.woTypes.includes(t) ? f.woTypes.filter((x) => x !== t) : [...f.woTypes, t],
-    }));
-  };
+  const set = <K extends keyof Filters>(k: K, v: Filters[K]) =>
+    setFilters((f) => ({ ...f, [k]: v }));
+
+  const toggleIn = <K extends keyof Filters>(k: K, v: string) =>
+    setFilters((f) => {
+      const list = f[k] as unknown as string[];
+      return {
+        ...f,
+        [k]: list.includes(v) ? list.filter((x) => x !== v) : [...list, v],
+      };
+    });
 
   const runFilter = (f: Filters, title = "筛选结果") => {
     setResultFilters(f);
@@ -297,6 +438,7 @@ function StatsPage() {
   };
 
   const filteredRows = useMemo(() => filterRows(ROWS, resultFilters), [resultFilters]);
+  const activeCount = countActive(filters);
 
   if (view === "result") {
     return (
@@ -304,24 +446,19 @@ function StatsPage() {
         <AppHeader title="统计分析" breadcrumb={["首页", "统计分析", resultTitle]} />
         <main className="flex-1 px-6 py-6 space-y-4 bg-white">
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setView("builder")}
-                className="h-9"
-              >
+            <div className="flex items-center gap-3 min-w-0">
+              <Button variant="outline" size="sm" onClick={() => setView("builder")} className="h-9 shrink-0">
                 <ArrowLeft className="h-3.5 w-3.5 mr-1" />
                 返回筛选
               </Button>
-              <div>
-                <div className="text-card-title font-medium text-foreground">{resultTitle}</div>
+              <div className="min-w-0">
+                <div className="text-card-title font-medium text-foreground truncate">{resultTitle}</div>
                 <div className="text-caption text-text-tertiary mt-0.5">
                   共 <span className="tabular-nums text-foreground font-medium">{filteredRows.length}</span> 条 · {describeFilters(resultFilters)}
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button
                 variant="outline"
                 size="sm"
@@ -348,7 +485,7 @@ function StatsPage() {
             </div>
           </div>
 
-          <Card className="border-border bg-white overflow-hidden">
+          <Card className="border-border bg-white overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-surface-subtle/60">
@@ -357,9 +494,12 @@ function StatsPage() {
                   <TableHead>牛只耳号</TableHead>
                   <TableHead>牧场 · 牛舍</TableHead>
                   <TableHead>状态</TableHead>
-                  <TableHead>上报人</TableHead>
+                  <TableHead>操作人员</TableHead>
+                  <TableHead>疾病</TableHead>
+                  <TableHead>处方</TableHead>
+                  <TableHead>药品 · 给药</TableHead>
+                  <TableHead>产犊</TableHead>
                   <TableHead>创建时间</TableHead>
-                  <TableHead>说明</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -370,30 +510,40 @@ function StatsPage() {
                     <TableRow key={r.id}>
                       <TableCell className="font-mono text-body-sm">{r.id}</TableCell>
                       <TableCell>
-                        <span className="inline-flex items-center gap-1.5 text-body-sm">
+                        <span className="inline-flex items-center gap-1.5 text-body-sm whitespace-nowrap">
                           <Icon className="h-3.5 w-3.5 text-text-tertiary" strokeWidth={1.75} />
                           {WO_TYPE_LABEL[r.type]}
                         </span>
                       </TableCell>
                       <TableCell className="font-mono text-body-sm">{r.earTag}</TableCell>
-                      <TableCell className="text-body-sm text-text-secondary">{r.farm} · {r.barn}</TableCell>
+                      <TableCell className="text-body-sm text-text-secondary whitespace-nowrap">{r.farm} · {r.barn}</TableCell>
                       <TableCell>
                         <span
-                          className="inline-flex items-center px-2 py-0.5 rounded-md text-caption"
+                          className="inline-flex items-center px-2 py-0.5 rounded-md text-caption whitespace-nowrap"
                           style={{ background: s.bg, color: s.color }}
                         >
                           {s.label}
                         </span>
                       </TableCell>
-                      <TableCell className="text-body-sm">{r.reporter}</TableCell>
-                      <TableCell className="text-body-sm text-text-secondary tabular-nums">{r.createdAt}</TableCell>
-                      <TableCell className="text-body-sm text-text-secondary max-w-[280px] truncate">{r.detail}</TableCell>
+                      <TableCell className="text-body-sm whitespace-nowrap">
+                        {r.operator}
+                        <span className="text-caption text-text-tertiary ml-1">
+                          {ROLE_OPTIONS.find((x) => x.value === r.role)?.label}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-body-sm text-text-secondary whitespace-nowrap">{r.disease}</TableCell>
+                      <TableCell className="text-body-sm text-text-secondary whitespace-nowrap">{r.prescription}</TableCell>
+                      <TableCell className="text-body-sm text-text-secondary whitespace-nowrap">{r.drug} · {r.drugRoute}</TableCell>
+                      <TableCell className="text-body-sm text-text-secondary whitespace-nowrap">
+                        {r.calvingType === "—" ? "—" : `${r.calvingType} · ${r.calfOutcome}`}
+                      </TableCell>
+                      <TableCell className="text-body-sm text-text-secondary tabular-nums whitespace-nowrap">{r.createdAt}</TableCell>
                     </TableRow>
                   );
                 })}
                 {filteredRows.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-10 text-text-tertiary">
+                    <TableCell colSpan={11} className="text-center py-10 text-text-tertiary">
                       当前筛选条件下暂无数据
                     </TableCell>
                   </TableRow>
@@ -412,105 +562,211 @@ function StatsPage() {
       <main className="flex-1 px-6 py-6 space-y-5 bg-white">
         {/* 高级筛选 */}
         <Card className="border-border bg-white p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-5 gap-4">
             <div>
               <div className="text-card-title font-medium text-foreground">高级筛选</div>
               <div className="text-caption text-text-tertiary mt-0.5">
-                选择时间、牧场、工单类型、状态等条件，可保存为模板复用
+                支持时间、操作人员、疾病、处方、工单、产犊、药品七个维度组合筛选，可保存为模板复用
               </div>
             </div>
-            {(filters.woTypes.length > 0 || filters.status !== "all" || filters.farm !== "all" || filters.onlyAbnormal || filters.keyword) && (
+            {activeCount > 0 && (
               <button
                 onClick={() => setFilters(DEFAULT_FILTERS)}
-                className="text-caption text-text-tertiary hover:text-foreground inline-flex items-center gap-1"
+                className="text-caption text-text-tertiary hover:text-foreground inline-flex items-center gap-1 shrink-0"
               >
-                <X className="h-3 w-3" /> 清空条件
+                <X className="h-3 w-3" /> 清空条件（{activeCount}）
               </button>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <FieldBlock label="时间范围">
-              <Select
-                value={filters.dateRange}
-                onValueChange={(v) => setFilters((f) => ({ ...f, dateRange: v }))}
-              >
-                <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {DATE_PRESETS.map((d) => (
-                    <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FieldBlock>
+          <div className="space-y-6">
+            {/* 时间维度 */}
+            <Dimension icon={CalendarDays} title="时间维度" tone="var(--brand)">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <FieldBlock label="时间范围">
+                  <Select value={filters.dateRange} onValueChange={(v) => set("dateRange", v)}>
+                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {DATE_PRESETS.map((d) => (
+                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldBlock>
+                {filters.dateRange === "custom" && (
+                  <>
+                    <FieldBlock label="开始日期">
+                      <Input type="date" value={filters.dateStart} onChange={(e) => set("dateStart", e.target.value)} className="h-9 bg-white" />
+                    </FieldBlock>
+                    <FieldBlock label="结束日期">
+                      <Input type="date" value={filters.dateEnd} onChange={(e) => set("dateEnd", e.target.value)} className="h-9 bg-white" />
+                    </FieldBlock>
+                  </>
+                )}
+                <FieldBlock label="牧场">
+                  <Select value={filters.farm} onValueChange={(v) => set("farm", v)}>
+                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {FARM_OPTIONS.map((d) => (
+                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldBlock>
+                <FieldBlock label="关键词（耳号 / 编号）">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                    <Input
+                      value={filters.keyword}
+                      onChange={(e) => set("keyword", e.target.value)}
+                      placeholder="输入关键词"
+                      className="h-9 pl-8 bg-white"
+                    />
+                  </div>
+                </FieldBlock>
+              </div>
+            </Dimension>
 
-            <FieldBlock label="牧场">
-              <Select
-                value={filters.farm}
-                onValueChange={(v) => setFilters((f) => ({ ...f, farm: v }))}
-              >
-                <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {FARM_OPTIONS.map((d) => (
-                    <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FieldBlock>
-
-            <FieldBlock label="工单状态">
-              <Select
-                value={filters.status}
-                onValueChange={(v) => setFilters((f) => ({ ...f, status: v }))}
-              >
-                <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((d) => (
-                    <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FieldBlock>
-
-            <FieldBlock label="关键词（耳号 / 编号）">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
-                <Input
-                  value={filters.keyword}
-                  onChange={(e) => setFilters((f) => ({ ...f, keyword: e.target.value }))}
-                  placeholder="输入关键词"
-                  className="h-9 pl-8 bg-white"
+            {/* 操作人员维度 */}
+            <Dimension icon={Users} title="操作人员维度" tone="var(--effect-ai-cyan)">
+              <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4">
+                <FieldBlock label="角色">
+                  <Select value={filters.role} onValueChange={(v) => set("role", v)}>
+                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {ROLE_OPTIONS.map((d) => (
+                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldBlock>
+                <ChipGroup
+                  label="操作人员（可多选）"
+                  options={OPERATORS}
+                  selected={filters.operators}
+                  onToggle={(v) => toggleIn("operators", v)}
                 />
               </div>
-            </FieldBlock>
+            </Dimension>
+
+            {/* 疾病维度 */}
+            <Dimension icon={Stethoscope} title="疾病维度" tone="var(--state-danger)">
+              <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4">
+                <FieldBlock label="病种类别">
+                  <Select value={filters.diseaseCat} onValueChange={(v) => set("diseaseCat", v)}>
+                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {DISEASE_CATS.map((d) => (
+                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldBlock>
+                <ChipGroup
+                  label="具体病种（可多选）"
+                  options={DISEASES}
+                  selected={filters.diseases}
+                  onToggle={(v) => toggleIn("diseases", v)}
+                />
+              </div>
+            </Dimension>
+
+            {/* 处方维度 */}
+            <Dimension icon={FileText} title="处方维度" tone="var(--effect-ai-purple)">
+              <ChipGroup
+                label="处方方案（可多选）"
+                options={PRESCRIPTIONS}
+                selected={filters.prescriptions}
+                onToggle={(v) => toggleIn("prescriptions", v)}
+              />
+            </Dimension>
+
+            {/* 工单维度 */}
+            <Dimension icon={ClipboardList} title="工单维度" tone="var(--state-warning)">
+              <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4">
+                <FieldBlock label="工单状态">
+                  <Select value={filters.status} onValueChange={(v) => set("status", v)}>
+                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {STATUS_OPTIONS.map((d) => (
+                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldBlock>
+                <div>
+                  <div className="text-body-sm text-text-secondary mb-2">工单类型（可多选）</div>
+                  <div className="flex flex-wrap gap-2">
+                    {(Object.keys(WO_TYPE_LABEL) as WorkOrderType[]).map((t) => {
+                      const active = filters.woTypes.includes(t);
+                      const Icon = WO_TYPE_ICON[t];
+                      return (
+                        <button
+                          key={t}
+                          onClick={() => toggleIn("woTypes", t)}
+                          className={`inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-body-sm border transition-colors ${
+                            active
+                              ? "border-primary bg-brand-subtle text-primary"
+                              : "border-border bg-white text-text-secondary hover:border-primary/40 hover:text-foreground"
+                          }`}
+                        >
+                          <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                          {WO_TYPE_LABEL[t]}
+                          {active && <Check className="h-3 w-3" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </Dimension>
+
+            {/* 产犊维度 */}
+            <Dimension icon={Baby} title="产犊维度" tone="var(--effect-ai-purple)">
+              <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4">
+                <FieldBlock label="犊牛结局">
+                  <Select value={filters.calfOutcome} onValueChange={(v) => set("calfOutcome", v)}>
+                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {CALF_OUTCOMES.map((d) => (
+                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldBlock>
+                <ChipGroup
+                  label="产犊方式（可多选）"
+                  options={CALVING_TYPES}
+                  selected={filters.calvingTypes}
+                  onToggle={(v) => toggleIn("calvingTypes", v)}
+                />
+              </div>
+            </Dimension>
+
+            {/* 药品维度 */}
+            <Dimension icon={Pill} title="药品维度" tone="var(--state-success)">
+              <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4">
+                <FieldBlock label="给药方式">
+                  <Select value={filters.drugRoute} onValueChange={(v) => set("drugRoute", v)}>
+                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {DRUG_ROUTES.map((d) => (
+                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldBlock>
+                <ChipGroup
+                  label="药品（可多选）"
+                  options={DRUGS}
+                  selected={filters.drugs}
+                  onToggle={(v) => toggleIn("drugs", v)}
+                />
+              </div>
+            </Dimension>
           </div>
 
-          <div className="mt-5">
-            <div className="text-body-sm text-text-secondary mb-2">工单类型（可多选）</div>
-            <div className="flex flex-wrap gap-2">
-              {(Object.keys(WO_TYPE_LABEL) as WorkOrderType[]).map((t) => {
-                const active = filters.woTypes.includes(t);
-                const Icon = WO_TYPE_ICON[t];
-                return (
-                  <button
-                    key={t}
-                    onClick={() => toggleWoType(t)}
-                    className={`inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-body-sm border transition-colors ${
-                      active
-                        ? "border-primary bg-brand-subtle text-primary"
-                        : "border-border bg-white text-text-secondary hover:border-primary/40 hover:text-foreground"
-                    }`}
-                  >
-                    <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-                    {WO_TYPE_LABEL[t]}
-                    {active && <Check className="h-3 w-3" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="mt-5 flex items-center gap-3 pt-5 border-t border-border">
+          <div className="mt-6 flex items-center gap-3 pt-5 border-t border-border flex-wrap">
             <Button
               className="h-10 px-5 bg-primary hover:bg-[var(--brand-hover)]"
               onClick={() => runFilter(filters, "自定义筛选结果")}
@@ -518,15 +774,11 @@ function StatsPage() {
               <Filter className="h-4 w-4 mr-1.5" />
               开始筛选
             </Button>
-            <Button
-              variant="outline"
-              className="h-10 px-5"
-              onClick={() => setSaveOpen(true)}
-            >
+            <Button variant="outline" className="h-10 px-5" onClick={() => setSaveOpen(true)}>
               <Save className="h-4 w-4 mr-1.5" />
               保存筛选模板
             </Button>
-            <div className="ml-auto text-caption text-text-tertiary">
+            <div className="ml-auto text-caption text-text-tertiary max-w-[60%] text-right">
               当前条件：{describeFilters(filters)}
             </div>
           </div>
@@ -658,20 +910,105 @@ function FieldBlock({ label, children }: { label: string; children: React.ReactN
   );
 }
 
+function Dimension({
+  icon: Icon,
+  title,
+  tone,
+  children,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  title: string;
+  tone: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <div className="flex items-center gap-2 mb-3">
+        <span
+          className="h-6 w-6 rounded-md inline-flex items-center justify-center shrink-0"
+          style={{ background: `color-mix(in oklab, ${tone} 14%, transparent)`, color: tone }}
+        >
+          <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+        </span>
+        <span className="text-body font-medium text-foreground">{title}</span>
+        <span className="flex-1 h-px bg-border" />
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function ChipGroup({
+  label,
+  options,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  options: string[];
+  selected: string[];
+  onToggle: (v: string) => void;
+}) {
+  return (
+    <div>
+      <div className="text-body-sm text-text-secondary mb-2">{label}</div>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => {
+          const active = selected.includes(o);
+          return (
+            <button
+              key={o}
+              onClick={() => onToggle(o)}
+              className={`inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-body-sm border transition-colors ${
+                active
+                  ? "border-primary bg-brand-subtle text-primary"
+                  : "border-border bg-white text-text-secondary hover:border-primary/40 hover:text-foreground"
+              }`}
+            >
+              {o}
+              {active && <Check className="h-3 w-3" />}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ============ util ============
+function countActive(f: Filters): number {
+  let n = 0;
+  if (f.farm !== "all") n++;
+  if (f.role !== "all") n++;
+  if (f.diseaseCat !== "all") n++;
+  if (f.status !== "all") n++;
+  if (f.calfOutcome !== "all") n++;
+  if (f.drugRoute !== "all") n++;
+  if (f.keyword) n++;
+  if (f.onlyAbnormal) n++;
+  n += f.operators.length + f.diseases.length + f.prescriptions.length + f.woTypes.length + f.calvingTypes.length + f.drugs.length;
+  return n;
+}
+
 function describeFilters(f: Filters): string {
   const parts: string[] = [];
-  parts.push(DATE_PRESETS.find((d) => d.value === f.dateRange)?.label || "");
-  parts.push(FARM_OPTIONS.find((d) => d.value === f.farm)?.label || "");
-  if (f.woTypes.length) {
-    parts.push(f.woTypes.map((t) => WO_TYPE_LABEL[t]).join("、"));
+  if (f.dateRange === "custom" && (f.dateStart || f.dateEnd)) {
+    parts.push(`${f.dateStart || "不限"} ~ ${f.dateEnd || "不限"}`);
   } else {
-    parts.push("全部工单类型");
+    parts.push(DATE_PRESETS.find((d) => d.value === f.dateRange)?.label || "");
   }
-  if (f.status !== "all") {
-    parts.push(STATUS_OPTIONS.find((s) => s.value === f.status)?.label || "");
-  }
-  if (f.onlyAbnormal) parts.push("仅异常");
+  parts.push(FARM_OPTIONS.find((d) => d.value === f.farm)?.label || "");
+  if (f.role !== "all") parts.push(ROLE_OPTIONS.find((d) => d.value === f.role)?.label || "");
+  if (f.operators.length) parts.push(`人员 ${f.operators.join("、")}`);
+  if (f.diseaseCat !== "all") parts.push(f.diseaseCat);
+  if (f.diseases.length) parts.push(`病种 ${f.diseases.join("、")}`);
+  if (f.prescriptions.length) parts.push(`处方 ${f.prescriptions.join("、")}`);
+  parts.push(f.woTypes.length ? f.woTypes.map((t) => WO_TYPE_LABEL[t]).join("、") : "全部工单类型");
+  if (f.status !== "all") parts.push(STATUS_OPTIONS.find((s) => s.value === f.status)?.label || "");
+  if (f.calvingTypes.length) parts.push(`产犊 ${f.calvingTypes.join("、")}`);
+  if (f.calfOutcome !== "all") parts.push(`犊牛${f.calfOutcome}`);
+  if (f.drugs.length) parts.push(`药品 ${f.drugs.join("、")}`);
+  if (f.drugRoute !== "all") parts.push(f.drugRoute);
   if (f.keyword) parts.push(`关键词「${f.keyword}」`);
   return parts.filter(Boolean).join(" · ");
 }
@@ -680,24 +1017,41 @@ function tagsFromFilters(f: Filters): string[] {
   const tags: string[] = [];
   tags.push(DATE_PRESETS.find((d) => d.value === f.dateRange)?.label || "");
   if (f.farm !== "all") tags.push(FARM_OPTIONS.find((d) => d.value === f.farm)?.label || "");
+  if (f.role !== "all") tags.push(ROLE_OPTIONS.find((d) => d.value === f.role)?.label || "");
+  if (f.diseaseCat !== "all") tags.push(f.diseaseCat);
+  if (f.diseases.length) tags.push(f.diseases.length === 1 ? f.diseases[0] : `病种 ${f.diseases.length} 项`);
+  if (f.prescriptions.length) tags.push(f.prescriptions.length === 1 ? f.prescriptions[0] : `处方 ${f.prescriptions.length} 项`);
   if (f.woTypes.length === 1) tags.push(WO_TYPE_LABEL[f.woTypes[0]]);
   else if (f.woTypes.length > 1) tags.push(`工单 ${f.woTypes.length} 类`);
   if (f.status !== "all") tags.push(STATUS_OPTIONS.find((s) => s.value === f.status)?.label || "");
-  if (f.onlyAbnormal) tags.push("仅异常");
+  if (f.calvingTypes.length) tags.push(f.calvingTypes.length === 1 ? f.calvingTypes[0] : `产犊 ${f.calvingTypes.length} 项`);
+  if (f.drugs.length) tags.push(f.drugs.length === 1 ? f.drugs[0] : `药品 ${f.drugs.length} 项`);
+  if (f.drugRoute !== "all") tags.push(f.drugRoute);
   return tags.filter(Boolean);
 }
 
 function filterRows(rows: Row[], f: Filters): Row[] {
+  const farmMap: Record<string, string> = {
+    f1: "内蒙古大牧场",
+    f2: "河北示范牧场",
+    f3: "山东华牧",
+  };
   return rows.filter((r) => {
     if (f.woTypes.length && !f.woTypes.includes(r.type)) return false;
     if (f.status !== "all" && r.status !== f.status) return false;
-    if (f.farm !== "all") {
-      const map: Record<string, string> = {
-        f1: "内蒙古大牧场",
-        f2: "河北示范牧场",
-        f3: "山东华牧",
-      };
-      if (r.farm !== map[f.farm]) return false;
+    if (f.farm !== "all" && r.farm !== farmMap[f.farm]) return false;
+    if (f.role !== "all" && r.role !== f.role) return false;
+    if (f.operators.length && !f.operators.includes(r.operator)) return false;
+    if (f.diseaseCat !== "all" && r.diseaseCat !== f.diseaseCat) return false;
+    if (f.diseases.length && !f.diseases.includes(r.disease)) return false;
+    if (f.prescriptions.length && !f.prescriptions.includes(r.prescription)) return false;
+    if (f.calvingTypes.length && !f.calvingTypes.includes(r.calvingType)) return false;
+    if (f.calfOutcome !== "all" && r.calfOutcome !== f.calfOutcome) return false;
+    if (f.drugs.length && !f.drugs.includes(r.drug)) return false;
+    if (f.drugRoute !== "all" && r.drugRoute !== f.drugRoute) return false;
+    if (f.dateRange === "custom") {
+      if (f.dateStart && r.createdAt < f.dateStart) return false;
+      if (f.dateEnd && r.createdAt > f.dateEnd) return false;
     }
     if (f.keyword) {
       const k = f.keyword.toLowerCase();
@@ -708,7 +1062,7 @@ function filterRows(rows: Row[], f: Filters): Row[] {
 }
 
 function downloadCsv(rows: Row[], filename: string) {
-  const header = ["工单编号", "类型", "耳号", "牧场", "牛舍", "状态", "上报人", "创建时间", "说明"];
+  const header = ["工单编号", "类型", "耳号", "牧场", "牛舍", "状态", "操作人员", "疾病", "病种类别", "处方", "药品", "给药方式", "产犊方式", "犊牛结局", "创建时间", "说明"];
   const body = rows.map((r) => [
     r.id,
     WO_TYPE_LABEL[r.type],
@@ -716,7 +1070,14 @@ function downloadCsv(rows: Row[], filename: string) {
     r.farm,
     r.barn,
     STATUS_TAG[r.status]?.label || r.status,
-    r.reporter,
+    r.operator,
+    r.disease,
+    r.diseaseCat,
+    r.prescription,
+    r.drug,
+    r.drugRoute,
+    r.calvingType,
+    r.calfOutcome,
     r.createdAt,
     r.detail.replace(/"/g, '""'),
   ]);
