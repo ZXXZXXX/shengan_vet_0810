@@ -485,6 +485,161 @@ function StatsPage() {
     return [...list].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite));
   }, [templates, query]);
 
+  const editingTemplate = templates.find((t) => t.id === editingId) ?? null;
+
+  const saveDialog = (
+    <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+      <DialogContent className="bg-white">
+        <DialogHeader>
+          <DialogTitle>保存为筛选模板</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-body-sm">模板名称</Label>
+            <Input
+              value={saveName}
+              onChange={(e) => setSaveName(e.target.value)}
+              placeholder="如：近 30 天疾病治疗"
+              className="mt-1.5 h-9 bg-white"
+            />
+          </div>
+          <div>
+            <Label className="text-body-sm">描述（可选）</Label>
+            <Input
+              value={saveDesc}
+              onChange={(e) => setSaveDesc(e.target.value)}
+              placeholder="简要说明模板用途"
+              className="mt-1.5 h-9 bg-white"
+            />
+          </div>
+          <div className="p-3 rounded-lg bg-surface-subtle border border-border">
+            <div className="text-caption text-text-tertiary mb-1">筛选条件</div>
+            <div className="text-body-sm text-foreground">{describeFilters(saveSource)}</div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setSaveOpen(false)}>取消</Button>
+          <Button className="bg-primary hover:bg-[var(--brand-hover)]" onClick={handleSaveTemplate}>
+            保存模板
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
+  if (view === "templates") {
+    return (
+      <>
+        <AppHeader title="统计分析" breadcrumb={["首页", "统计分析"]} />
+        <main className="flex-1 px-6 py-6 space-y-5 bg-white">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div className="text-card-title font-medium text-foreground">我的报表模板</div>
+              <div className="text-caption text-text-tertiary mt-0.5">
+                共 {templates.length} 个模板 · 支持时间、操作人员、疾病、处方、工单、产犊、药品多维度筛选
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="搜索模板名称 / 筛选条件"
+                  className="h-9 w-[260px] pl-8 bg-white"
+                />
+              </div>
+              <Button className="h-9 bg-primary hover:bg-[var(--brand-hover)]" onClick={() => openBuilder()}>
+                <Plus className="h-4 w-4 mr-1" />
+                新建筛选
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visibleTemplates.map((t) => (
+              <div
+                key={t.id}
+                className="group border border-border rounded-xl bg-white p-5 hover:border-primary/50 hover:shadow-[0_8px_24px_-16px_var(--brand)] transition-all flex flex-col"
+              >
+                <div className="flex items-start justify-between">
+                  <div
+                    className="h-10 w-10 rounded-lg flex items-center justify-center"
+                    style={{ background: `color-mix(in oklab, ${t.tone} 14%, transparent)`, color: t.tone }}
+                  >
+                    <t.icon className="h-4 w-4" strokeWidth={1.75} />
+                  </div>
+                  <div className="flex items-center gap-0.5 -mr-1.5">
+                    <button
+                      type="button"
+                      onClick={() => toggleFav(t.id)}
+                      className="h-7 w-7 inline-flex items-center justify-center rounded-md hover:bg-surface-subtle"
+                      aria-label="收藏"
+                    >
+                      <Star
+                        className={`h-3.5 w-3.5 ${
+                          t.favorite ? "fill-[var(--state-warning)] text-[var(--state-warning)]" : "text-text-tertiary"
+                        }`}
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeTemplate(t.id)}
+                      className="h-7 w-7 inline-flex items-center justify-center rounded-md hover:bg-surface-subtle"
+                      aria-label="删除模板"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-text-tertiary" />
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <div className="text-body font-medium text-foreground">{t.name}</div>
+                  <div className="text-caption text-text-tertiary mt-1 line-clamp-2 min-h-[36px]">{t.desc}</div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-1">
+                  {tagsFromFilters(t.filters).slice(0, 3).map((label) => (
+                    <Badge
+                      key={label}
+                      variant="secondary"
+                      className="rounded-md bg-surface-subtle text-text-secondary border-transparent font-normal"
+                    >
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="mt-4 pt-3 border-t border-border flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    className="h-8 flex-1 bg-primary hover:bg-[var(--brand-hover)]"
+                    onClick={() => runFilter(t.filters, t.name, "templates")}
+                  >
+                    查看结果
+                  </Button>
+                  <Button size="sm" variant="outline" className="h-8" onClick={() => openBuilder(t)}>
+                    <Pencil className="h-3.5 w-3.5 mr-1" />
+                    编辑
+                  </Button>
+                </div>
+              </div>
+            ))}
+            {visibleTemplates.length === 0 && (
+              <div className="col-span-full border border-dashed border-border rounded-xl py-16 text-center">
+                <div className="text-body-sm text-text-tertiary">没有匹配的模板</div>
+                <Button variant="outline" className="mt-3 h-9" onClick={() => openBuilder()}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  新建筛选
+                </Button>
+              </div>
+            )}
+          </div>
+        </main>
+        {saveDialog}
+      </>
+    );
+  }
+
+
+
 
   if (view === "result") {
     return (
