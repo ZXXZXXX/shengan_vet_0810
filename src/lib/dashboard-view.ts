@@ -46,11 +46,43 @@ export const defaultConfig: Record<ReportScope, TopicVisibility> = {
   group: base(),
 };
 
-type State = { scope: ReportScope; config: Record<ReportScope, TopicVisibility>; level: DataLevel };
+export type TopicOrder = TopicKey[];
+
+export const defaultOrder: TopicOrder = topicMeta.map((t) => t.key);
+
+export const defaultOrders: Record<ReportScope, TopicOrder> = {
+  "farm-in": [...defaultOrder],
+  "farm-out": [...defaultOrder],
+  region: [...defaultOrder],
+  group: [...defaultOrder],
+};
+
+/** 补全/去重，保证顺序数组始终包含全部专题 */
+function normalizeOrder(list?: TopicKey[]): TopicOrder {
+  const seen = new Set<TopicKey>();
+  const out: TopicKey[] = [];
+  (list ?? []).forEach((k) => {
+    if (defaultOrder.includes(k) && !seen.has(k)) {
+      seen.add(k);
+      out.push(k);
+    }
+  });
+  defaultOrder.forEach((k) => {
+    if (!seen.has(k)) out.push(k);
+  });
+  return out;
+}
+
+type State = {
+  scope: ReportScope;
+  config: Record<ReportScope, TopicVisibility>;
+  order: Record<ReportScope, TopicOrder>;
+  level: DataLevel;
+};
 
 const KEY = "pc:dashboard-view";
 const listeners = new Set<() => void>();
-let state: State = { scope: "farm-in", config: defaultConfig, level: "farm" };
+let state: State = { scope: "farm-in", config: defaultConfig, order: defaultOrders, level: "farm" };
 let loaded = false;
 
 function load(): State {
@@ -68,6 +100,12 @@ function load(): State {
           "farm-out": { ...defaultConfig["farm-out"], ...(parsed.config?.["farm-out"] ?? {}) },
           region: { ...defaultConfig.region, ...(parsed.config?.region ?? {}) },
           group: { ...defaultConfig.group, ...(parsed.config?.group ?? {}) },
+        },
+        order: {
+          "farm-in": normalizeOrder(parsed.order?.["farm-in"]),
+          "farm-out": normalizeOrder(parsed.order?.["farm-out"]),
+          region: normalizeOrder(parsed.order?.region),
+          group: normalizeOrder(parsed.order?.group),
         },
       };
     }
@@ -97,10 +135,32 @@ export function setTopicVisible(scope: ReportScope, topic: TopicKey, visible: bo
   persist();
 }
 
+/** 上移 / 下移某个专题 */
+export function moveTopic(scope: ReportScope, topic: TopicKey, dir: -1 | 1) {
+  load();
+  const list = [...normalizeOrder(state.order[scope])];
+  const i = list.indexOf(topic);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  state = { ...state, order: { ...state.order, [scope]: list } };
+  persist();
+}
+
 export function resetScopeConfig(scope: ReportScope) {
   load();
-  state = { ...state, config: { ...state.config, [scope]: { ...defaultConfig[scope] } } };
+  state = {
+    ...state,
+    config: { ...state.config, [scope]: { ...defaultConfig[scope] } },
+    order: { ...state.order, [scope]: [...defaultOrder] },
+  };
   persist();
+}
+
+/** 当前视角下、按用户排序后的可见专题 */
+export function useTopicOrder(): TopicKey[] {
+  const { scope, config, order } = useDashboardView();
+  return normalizeOrder(order?.[scope]).filter((k) => config[scope][k]);
 }
 
 export function useDashboardView(): State {
