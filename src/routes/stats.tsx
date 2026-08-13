@@ -763,23 +763,34 @@ function StatsPage() {
             </Table>
           </Card>
         </main>
+        {saveDialog}
       </>
     );
   }
 
   return (
     <>
-      <AppHeader title="统计分析" breadcrumb={["首页", "统计分析"]} />
+      <AppHeader
+        title="统计分析"
+        breadcrumb={["首页", "统计分析", editingTemplate ? editingTemplate.name : "新建筛选"]}
+      />
       <main className="flex-1 px-6 py-6 space-y-5 bg-white">
+        <Button variant="outline" size="sm" className="h-9" onClick={() => setView("templates")}>
+          <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+          返回模板
+        </Button>
         {/* 高级筛选 */}
         <Card className="border-border bg-white p-6">
           <div className="flex items-center justify-between mb-5 gap-4">
             <div>
-              <div className="text-card-title font-medium text-foreground">高级筛选</div>
+              <div className="text-card-title font-medium text-foreground">
+                {editingTemplate ? `编辑模板：${editingTemplate.name}` : "新建筛选"}
+              </div>
               <div className="text-caption text-text-tertiary mt-0.5">
                 支持时间、操作人员、疾病、处方、工单、产犊、药品七个维度组合筛选，可保存为模板复用
               </div>
             </div>
+
             {activeCount > 0 && (
               <button
                 onClick={() => setFilters(DEFAULT_FILTERS)}
