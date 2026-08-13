@@ -20,6 +20,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Building2,
 
   CalendarDays,
   Users,
@@ -108,12 +109,19 @@ const STATUS_OPTIONS = [
   { value: "aborted", label: "已终止" },
 ];
 
-const FARM_OPTIONS = [
-  { value: "all", label: "全部牧场" },
-  { value: "f1", label: "内蒙古大牧场" },
-  { value: "f2", label: "河北示范牧场" },
-  { value: "f3", label: "山东华牧" },
+
+const REGION_OF: Record<string, string> = {
+  内蒙古大牧场: "华北大区",
+  河北示范牧场: "华北大区",
+  山东华牧: "华东大区",
+};
+const REGION_OPTIONS = [
+  { value: "all", label: "全部区域" },
+  { value: "华北大区", label: "华北大区" },
+  { value: "华东大区", label: "华东大区" },
 ];
+const FARM_NAMES = ["内蒙古大牧场", "河北示范牧场", "山东华牧"];
+const BARN_NAMES = ["泌乳一舍", "泌乳二舍", "干奶舍", "犊牛舍"];
 
 const DATE_PRESETS = [
   { value: "today", label: "今日" },
@@ -165,8 +173,10 @@ type Filters = {
   dateRange: string;
   dateStart: string;
   dateEnd: string;
-  // 组织
-  farm: string;
+  // 牧场维度
+  region: string;
+  farms: string[];
+  barns: string[];
   // 操作人员维度
   operators: string[];
   role: string;
@@ -193,7 +203,9 @@ const DEFAULT_FILTERS: Filters = {
   dateRange: "30d",
   dateStart: "",
   dateEnd: "",
-  farm: "all",
+  region: "all",
+  farms: [],
+  barns: [],
   operators: [],
   role: "all",
   diseases: [],
@@ -843,16 +855,6 @@ function StatsPage() {
                     </FieldBlock>
                   </>
                 )}
-                <FieldBlock label="牧场">
-                  <Select value={filters.farm} onValueChange={(v) => set("farm", v)}>
-                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {FARM_OPTIONS.map((d) => (
-                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FieldBlock>
                 <FieldBlock label="关键词（耳号 / 编号）">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
@@ -864,6 +866,40 @@ function StatsPage() {
                     />
                   </div>
                 </FieldBlock>
+              </div>
+            </Dimension>
+
+            {/* 牧场维度 */}
+            <Dimension icon={Building2} title="牧场维度" tone="var(--effect-ai-purple)">
+              <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4">
+                <FieldBlock label="区域">
+                  <Select value={filters.region} onValueChange={(v) => set("region", v)}>
+                    <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {REGION_OPTIONS.map((d) => (
+                        <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldBlock>
+                <div className="space-y-4">
+                  <ChipGroup
+                    label="牧场（可多选）"
+                    options={
+                      filters.region === "all"
+                        ? FARM_NAMES
+                        : FARM_NAMES.filter((n) => REGION_OF[n] === filters.region)
+                    }
+                    selected={filters.farms}
+                    onToggle={(v) => toggleIn("farms", v)}
+                  />
+                  <ChipGroup
+                    label="牛舍（可多选）"
+                    options={BARN_NAMES}
+                    selected={filters.barns}
+                    onToggle={(v) => toggleIn("barns", v)}
+                  />
+                </div>
               </div>
             </Dimension>
 
@@ -1115,7 +1151,7 @@ function ChipGroup({
 // ============ util ============
 function countActive(f: Filters): number {
   let n = 0;
-  if (f.farm !== "all") n++;
+  if (f.region !== "all") n++;
   if (f.role !== "all") n++;
   if (f.diseaseCat !== "all") n++;
   if (f.status !== "all") n++;
@@ -1123,7 +1159,7 @@ function countActive(f: Filters): number {
   if (f.drugRoute !== "all") n++;
   if (f.keyword) n++;
   if (f.onlyAbnormal) n++;
-  n += f.operators.length + f.diseases.length + f.prescriptions.length + f.woTypes.length + f.calvingTypes.length + f.drugs.length;
+  n += f.farms.length + f.barns.length + f.operators.length + f.diseases.length + f.prescriptions.length + f.woTypes.length + f.calvingTypes.length + f.drugs.length;
   return n;
 }
 
@@ -1134,7 +1170,9 @@ function describeFilters(f: Filters): string {
   } else {
     parts.push(DATE_PRESETS.find((d) => d.value === f.dateRange)?.label || "");
   }
-  parts.push(FARM_OPTIONS.find((d) => d.value === f.farm)?.label || "");
+  if (f.region !== "all") parts.push(f.region);
+  parts.push(f.farms.length ? `牧场 ${f.farms.join("、")}` : "全部牧场");
+  if (f.barns.length) parts.push(`牛舍 ${f.barns.join("、")}`);
   if (f.role !== "all") parts.push(ROLE_OPTIONS.find((d) => d.value === f.role)?.label || "");
   if (f.operators.length) parts.push(`人员 ${f.operators.join("、")}`);
   if (f.diseaseCat !== "all") parts.push(f.diseaseCat);
@@ -1153,7 +1191,9 @@ function describeFilters(f: Filters): string {
 function tagsFromFilters(f: Filters): string[] {
   const tags: string[] = [];
   tags.push(DATE_PRESETS.find((d) => d.value === f.dateRange)?.label || "");
-  if (f.farm !== "all") tags.push(FARM_OPTIONS.find((d) => d.value === f.farm)?.label || "");
+  if (f.region !== "all") tags.push(f.region);
+  if (f.farms.length) tags.push(f.farms.length === 1 ? f.farms[0] : `牧场 ${f.farms.length} 个`);
+  if (f.barns.length) tags.push(f.barns.length === 1 ? f.barns[0] : `牛舍 ${f.barns.length} 个`);
   if (f.role !== "all") tags.push(ROLE_OPTIONS.find((d) => d.value === f.role)?.label || "");
   if (f.diseaseCat !== "all") tags.push(f.diseaseCat);
   if (f.diseases.length) tags.push(f.diseases.length === 1 ? f.diseases[0] : `病种 ${f.diseases.length} 项`);
@@ -1168,15 +1208,12 @@ function tagsFromFilters(f: Filters): string[] {
 }
 
 function filterRows(rows: Row[], f: Filters): Row[] {
-  const farmMap: Record<string, string> = {
-    f1: "内蒙古大牧场",
-    f2: "河北示范牧场",
-    f3: "山东华牧",
-  };
   return rows.filter((r) => {
     if (f.woTypes.length && !f.woTypes.includes(r.type)) return false;
     if (f.status !== "all" && r.status !== f.status) return false;
-    if (f.farm !== "all" && r.farm !== farmMap[f.farm]) return false;
+    if (f.region !== "all" && REGION_OF[r.farm] !== f.region) return false;
+    if (f.farms.length && !f.farms.includes(r.farm)) return false;
+    if (f.barns.length && !f.barns.includes(r.barn)) return false;
     if (f.role !== "all" && r.role !== f.role) return false;
     if (f.operators.length && !f.operators.includes(r.operator)) return false;
     if (f.diseaseCat !== "all" && r.diseaseCat !== f.diseaseCat) return false;
