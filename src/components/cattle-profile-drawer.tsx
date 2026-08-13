@@ -186,34 +186,6 @@ export function CattleProfileDrawer({
             </div>
           )}
 
-          {/* 外接设备：整宽 */}
-          <Panel title="外接设备" icon={<Watch className="h-4 w-4 text-primary" />} bodyClassName="p-3">
-            <div className="grid grid-cols-2 gap-3">
-              {DEVICES.map((d) => (
-                <div key={d.id} className="rounded-xl bg-muted/50 px-3 py-2.5 flex items-center gap-2.5">
-                  <span
-                    className={`h-8 w-8 rounded-lg inline-flex items-center justify-center shrink-0 ${
-                      d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
-                    }`}
-                  >
-                    <Radio className="h-4 w-4" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-body-sm text-foreground truncate">{d.name}</div>
-                    <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
-                  </div>
-                  <span
-                    className={
-                      d.status === "异常" ? "tag tag-danger" : d.status === "正常" ? "tag tag-success" : "text-body-sm text-text-tertiary"
-                    }
-                  >
-                    {d.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Panel>
-
           {/* 繁育与血统档案 */}
           <Panel title="繁育与档案信息" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="p-4">
             <div className="grid grid-cols-4 gap-x-6 gap-y-3">
@@ -225,8 +197,6 @@ export function CattleProfileDrawer({
               ))}
             </div>
           </Panel>
-
-
 
           <div className="grid grid-cols-2 gap-5 items-stretch">
             {/* 左：产奶数据 */}
@@ -263,8 +233,36 @@ export function CattleProfileDrawer({
                 ))}
               </div>
             </Panel>
-
           </div>
+
+          {/* 外接设备：整宽，置于产奶数据下方 */}
+          <Panel title="外接设备" icon={<Watch className="h-4 w-4 text-primary" />} bodyClassName="p-3">
+            <div className="grid grid-cols-2 gap-3">
+              {DEVICES.map((d) => (
+                <div key={d.id} className="rounded-xl bg-muted/50 px-3 py-2.5 flex items-center gap-2.5">
+                  <span
+                    className={`h-8 w-8 rounded-lg inline-flex items-center justify-center shrink-0 ${
+                      d.status === "异常" ? "bg-[#FFF1F0] text-[#CF1322]" : "bg-brand-subtle text-primary"
+                    }`}
+                  >
+                    <Radio className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-body-sm text-foreground truncate">{d.name}</div>
+                    <div className="text-caption text-text-tertiary font-mono">{d.id}</div>
+                  </div>
+                  <span
+                    className={
+                      d.status === "异常" ? "tag tag-danger" : d.status === "正常" ? "tag tag-success" : "text-body-sm text-text-tertiary"
+                    }
+                  >
+                    {d.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+
 
 
           {/* 历史记录：整宽贯穿 */}
