@@ -218,6 +218,7 @@ function HomePage() {
 
   const { scope, config } = useDashboardView();
   const vis = config[scope];
+  const topicOrder = useTopicOrder();
   const showInternal = scope !== "farm-out";
   const cardTopicByAnchor: Record<string, keyof typeof vis> = {
     "topic-herd": "herd",
