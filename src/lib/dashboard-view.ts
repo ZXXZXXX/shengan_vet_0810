@@ -46,11 +46,11 @@ export const defaultConfig: Record<ReportScope, TopicVisibility> = {
   group: base(),
 };
 
-type State = { scope: ReportScope; config: Record<ReportScope, TopicVisibility> };
+type State = { scope: ReportScope; config: Record<ReportScope, TopicVisibility>; level: DataLevel };
 
 const KEY = "pc:dashboard-view";
 const listeners = new Set<() => void>();
-let state: State = { scope: "farm-in", config: defaultConfig };
+let state: State = { scope: "farm-in", config: defaultConfig, level: "farm" };
 let loaded = false;
 
 function load(): State {
@@ -62,6 +62,7 @@ function load(): State {
       const parsed = JSON.parse(raw) as Partial<State>;
       state = {
         scope: parsed.scope ?? "farm-in",
+        level: parsed.level ?? "farm",
         config: {
           "farm-in": { ...defaultConfig["farm-in"], ...(parsed.config?.["farm-in"] ?? {}) },
           "farm-out": { ...defaultConfig["farm-out"], ...(parsed.config?.["farm-out"] ?? {}) },
@@ -130,16 +131,15 @@ export function levelsForScope(scope: ReportScope): DataLevel[] {
   return ["farm"];
 }
 
-let level: DataLevel = "farm";
-
 export function setDataLevel(next: DataLevel) {
-  level = next;
+  load();
+  state = { ...state, level: next };
   persist();
 }
 
 /** 当前生效层级与放大系数（专题内容与牧场级一致，仅统计口径上卷） */
 export function useDataLevel(): { level: DataLevel; factor: number; levels: DataLevel[] } {
-  const { scope } = useDashboardView();
+  const { scope, level } = useDashboardView();
   const levels = levelsForScope(scope);
   const current = levels.includes(level) ? level : levels[0];
   return { level: current, factor: levelMeta[current].factor, levels };
