@@ -266,7 +266,7 @@ export function DiseaseStatsSection() {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="mt-5 @container grid grid-cols-1 @2xl:grid-cols-2 gap-6">
         {/* 左：组织发病率排名（多于一个组织时才展示） */}
         {ranked.length > 1 && (
           <div>

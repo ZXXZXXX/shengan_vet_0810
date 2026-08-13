@@ -513,13 +513,19 @@ function HomePage() {
           </div>
         )}
 
-        {/* 3 死淘专题 */}
-        {vis.culling && <CullingSection />}
-
-        {/* 4 疾病专题 */}
-        {vis.disease && (
-          <div id="topic-disease" className="scroll-mt-24">
-            <DiseaseStatsSection />
+        {/* 3 死淘专题 + 4 疾病专题 */}
+        {(vis.culling || vis.disease) && (
+          <div className={`grid grid-cols-1 gap-6 items-stretch ${vis.culling && vis.disease ? "xl:grid-cols-2" : ""}`}>
+            {vis.culling && (
+              <div id="topic-culling" className="scroll-mt-24 h-full [&>*]:h-full">
+                <CullingSection />
+              </div>
+            )}
+            {vis.disease && (
+              <div id="topic-disease" className="scroll-mt-24 h-full [&>*]:h-full">
+                <DiseaseStatsSection />
+              </div>
+            )}
           </div>
         )}
 
