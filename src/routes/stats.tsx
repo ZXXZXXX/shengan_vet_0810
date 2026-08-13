@@ -17,6 +17,10 @@ import {
   BarChart3,
   X,
   Check,
+  Plus,
+  Pencil,
+  Trash2,
+
   CalendarDays,
   Users,
   ClipboardList,
