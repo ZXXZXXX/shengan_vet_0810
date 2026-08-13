@@ -216,11 +216,19 @@ function HomePage() {
   const [attendanceOpen, setAttendanceOpen] = useState(false);
   const alertsRef = useRef<HTMLDivElement | null>(null);
 
-  const [scope, setScope] = useState<ReportScope>("farm-in");
+  const { scope, config } = useDashboardView();
+  const vis = config[scope];
   const showInternal = scope !== "farm-out";
-  const visibleCards = metricCards.filter(
-    (c) => showInternal || (c.anchor !== "topic-drug" && c.anchor !== "topic-workorder")
-  );
+  const cardTopicByAnchor: Record<string, keyof typeof vis> = {
+    "topic-herd": "herd",
+    "topic-calving": "calving",
+    "topic-culling": "culling",
+    "topic-disease": "disease",
+    "topic-drug": "drug",
+    "topic-vaccine": "vaccine",
+  };
+  const visibleCards = metricCards.filter((c) => vis[cardTopicByAnchor[c.anchor]] !== false);
+
 
   const scrollToTopic = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
