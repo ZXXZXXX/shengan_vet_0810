@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Beef } from "lucide-react";
-import { SectionCard, StackedBar, PeriodTabs } from "./charts";
+import { SectionCard, Waffle, ProgressRows, PeriodTabs, PALETTE } from "./charts";
 import { scaleList, useDataLevel } from "@/lib/dashboard-view";
 
 const typeDist = [
@@ -25,7 +25,7 @@ const TAB_HEALTH = "健康分布";
 export function HerdSection() {
   const [tab, setTab] = useState(TAB_TYPE);
   const { factor } = useDataLevel();
-  const types = scaleList(typeDist, factor);
+  const types = scaleList(typeDist, factor).map((d, i) => ({ ...d, color: PALETTE[i % PALETTE.length] }));
   const health = scaleList(healthDist, factor);
   const total = types.reduce((s, d) => s + d.value, 0);
   const healthTotal = health.reduce((s, d) => s + d.value, 0);
@@ -38,7 +38,7 @@ export function HerdSection() {
       extra={<PeriodTabs value={tab} onChange={setTab} options={[TAB_TYPE, TAB_HEALTH]} />}
     >
       <div className="flex h-full flex-col">
-        <div className="mb-3 flex items-baseline justify-between gap-3">
+        <div className="mb-4 flex items-baseline justify-between gap-3">
           <p className="text-body-sm text-text-secondary">
             {tab === TAB_TYPE ? "（至今日）类型分布" : "（本月）健康分布"}
           </p>
@@ -51,11 +51,13 @@ export function HerdSection() {
           </p>
         </div>
         <div className="flex flex-1 flex-col justify-center">
-          <StackedBar data={tab === TAB_TYPE ? types : health} unit=" 头" />
+          {tab === TAB_TYPE ? (
+            <Waffle data={types} unit=" 头" />
+          ) : (
+            <ProgressRows data={health} unit=" 头" />
+          )}
         </div>
       </div>
     </SectionCard>
   );
 }
-
-
