@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, ChevronLeft, Home, BarChart3, PieChart } from "lucide-react";
+import { useDataLevel, type DataLevel } from "@/lib/dashboard-view";
+
 
 type DiseaseCat = { name: string; color: string; diseases: { name: string; count: number }[] };
 type Org = { id: string; name: string; herd: number; cases: number; cats?: DiseaseCat[]; children?: Org[] };
