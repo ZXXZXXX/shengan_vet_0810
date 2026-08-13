@@ -1,5 +1,5 @@
 import { Building2, Users, Beef, MapPin } from "lucide-react";
-import { SectionCard, BarList, MiniStat } from "./charts";
+import { SectionCard, Columns, MiniStat } from "./charts";
 
 const regionHerd = [
   { name: "东北大区", value: 2252 },
@@ -26,7 +26,7 @@ export function OpsSection({ level }: { level: "region" | "group" }) {
       {isGroup && (
         <div className="mt-6">
           <p className="text-body-sm text-text-secondary mb-3">各区域牛群规模</p>
-          <BarList data={regionHerd} unit=" 头" />
+          <Columns data={regionHerd} unit=" 头" height={180} />
         </div>
       )}
       <div className="mt-4 flex items-center gap-4 text-caption text-text-tertiary">
