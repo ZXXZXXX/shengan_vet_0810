@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Baby, ChevronLeft } from "lucide-react";
-import { SectionCard, Donut, Legend, PeriodTabs } from "./charts";
+import { SectionCard, StackedBar, BarList, PeriodTabs } from "./charts";
 import { scaleList, scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 const aliveTotal = 170;
@@ -89,45 +89,56 @@ export function CalvingSection() {
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
                 产犊成活与死亡分布
-                <span className="text-text-tertiary">{"\n"}</span>
               </button>
-              <div className="flex flex-col items-center gap-4">
-                <Donut
-                  data={detail}
-                  centerLabel="成活总数"
-                  centerValue={alive.toLocaleString()}
-                  centerUnit="头" unit=" 头"
-                />
-                <Legend data={detail} unit=" 头" />
+              <div className="mb-3 flex items-baseline justify-between gap-3">
+                <p className="text-body-sm text-text-secondary">成活犊牛{tab}</p>
+                <p className="text-caption text-text-tertiary">
+                  成活总数{" "}
+                  <span className="text-section-title tabular-nums text-foreground">
+                    {alive.toLocaleString()}
+                  </span>{" "}
+                  头
+                </p>
+              </div>
+              <StackedBar data={detail} unit=" 头" />
+              <div className="mt-5">
+                <BarList data={detail} unit=" 头" />
               </div>
             </>
           ) : (
             <>
-              <p className="text-body-sm text-text-secondary mb-3">
-                （本月）产犊成活与死亡分布
-                <span className="text-caption text-text-tertiary ml-2"></span>
-              </p>
-              <div className="flex flex-col items-center gap-4">
-                <Donut
-                  data={survivalData}
-                  centerLabel="产犊总数"
-                  centerValue={total.toLocaleString()}
-                  centerUnit="头" unit=" 头"
-                  onSliceClick={(s) => {
-                    if (s.name === "成活") setDrill(true);
-                  }}
-                />
-                <Legend data={survivalData} unit=" 头" />
+              <div className="mb-3 flex items-baseline justify-between gap-3">
+                <p className="text-body-sm text-text-secondary">（本月）产犊成活与死亡分布</p>
+                <p className="text-caption text-text-tertiary">
+                  产犊总数{" "}
+                  <span className="text-section-title tabular-nums text-foreground">
+                    {total.toLocaleString()}
+                  </span>{" "}
+                  头
+                </p>
               </div>
+              <StackedBar data={survivalData} unit=" 头" />
+              <button
+                type="button"
+                onClick={() => setDrill(true)}
+                className="mt-4 text-body-sm text-primary hover:underline"
+              >
+                查看成活犊牛明细 →
+              </button>
             </>
           )}
         </div>
       ) : (
         <div>
-          <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度分布</p>
-          <div className="flex flex-col items-center gap-4">
-            <Donut data={difficultyData} centerLabel="顺产率" centerValue="74.6%" unit=" 例" />
-            <Legend data={difficultyData} unit=" 例" />
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <p className="text-body-sm text-text-secondary">（本月）产犊难易度分布</p>
+            <p className="text-caption text-text-tertiary">
+              顺产率 <span className="text-section-title tabular-nums text-foreground">74.6%</span>
+            </p>
+          </div>
+          <StackedBar data={difficultyData} unit=" 例" />
+          <div className="mt-5">
+            <BarList data={difficultyData} unit=" 例" />
           </div>
         </div>
       )}
