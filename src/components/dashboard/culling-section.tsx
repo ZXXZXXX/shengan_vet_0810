@@ -59,7 +59,7 @@ export function CullingSection() {
           <div className="flex justify-center">
             <Radar
               data={reasons}
-              size={300}
+              size={240}
               unit=" 头"
               color={isDeath ? "var(--state-danger)" : PALETTE[3]}
             />

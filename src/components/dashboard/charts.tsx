@@ -615,7 +615,7 @@ export function Radar({
   color?: string;
 }) {
   const c = size / 2;
-  const r = size / 2 - 62;
+  const r = size / 2 - 30;
   const n = Math.max(data.length, 3);
   const max = Math.max(...data.map((d) => d.value), 1);
   const pt = (i: number, ratio: number) => {
@@ -624,7 +624,12 @@ export function Radar({
   };
   const poly = data.map((d, i) => pt(i, d.value / max).join(",")).join(" ");
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0">
+    <svg
+      width={size + 170}
+      height={size}
+      viewBox={`-85 0 ${size + 170} ${size}`}
+      className="max-w-full"
+    >
       {[0.25, 0.5, 0.75, 1].map((t) => (
         <polygon
           key={t}
