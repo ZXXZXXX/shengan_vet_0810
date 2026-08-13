@@ -24,6 +24,9 @@ import { DrugSection } from "@/components/dashboard/drug-section";
 import { WorkOrderSection } from "@/components/dashboard/workorder-section";
 import { AlertSection, alertCounts } from "@/components/dashboard/alert-section";
 import { OpsSection } from "@/components/dashboard/ops-section";
+import { ViewSettingsSheet } from "@/components/dashboard/view-settings-sheet";
+import { useDashboardView, scopeOptions } from "@/lib/dashboard-view";
+
 
 import {
   Inbox,
