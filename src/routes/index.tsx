@@ -473,7 +473,6 @@ function HomePage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-caption text-text-tertiary truncate">{k.topic}</p>
-                    <p className="text-body-sm text-text-secondary mt-0.5">{k.label}</p>
                   </div>
                   <div
                     className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
