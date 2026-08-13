@@ -625,8 +625,8 @@ export function Radar({
   const poly = data.map((d, i) => pt(i, d.value / max).join(",")).join(" ");
   return (
     <svg
-      width={size + 170}
-      height={size}
+      width={size}
+      height={(size * size) / (size + 170)}
       viewBox={`-85 0 ${size + 170} ${size}`}
       className="max-w-full overflow-visible"
     >
