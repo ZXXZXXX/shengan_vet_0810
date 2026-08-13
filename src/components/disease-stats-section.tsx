@@ -178,12 +178,27 @@ function CategoryBars({ cat }: { cat: DiseaseCat }) {
   );
 }
 
+function rootForLevel(level: DataLevel): Org {
+  if (level === "group") return ORG;
+  if (level === "region") return ORG.children![0]; // 东北大区
+  const farm = ORG.children![0].children![0]; // 1 号牧场
+  return { id: "farm-scope", name: farm.name, herd: 0, cases: 0, children: [farm] };
+}
+
 export function DiseaseStatsSection() {
-  const [path, setPath] = useState<Org[]>([ORG]);
+  const { level } = useDataLevel();
+  const root = useMemo(() => rootForLevel(level), [level]);
+  const [path, setPath] = useState<Org[]>([root]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [cat, setCat] = useState<string | null>(null);
 
-  const scope = path[path.length - 1];
+  useEffect(() => {
+    setPath([root]);
+    setSelectedId(null);
+    setCat(null);
+  }, [root]);
+
+  const scope = path[path.length - 1] ?? root;
   const children = scope.children ?? [];
   const ranked = useMemo(
     () => [...children].sort((a, b) => incidence(b) - incidence(a)),
@@ -194,6 +209,8 @@ export function DiseaseStatsSection() {
   const focusCats = useMemo(() => rollupCats(focus), [focus]);
   const activeCat = focusCats.find((c) => c.name === cat) ?? null;
   const maxRate = Math.max(...ranked.map((o) => incidence(o)), 0.01);
+  const childrenAreRegions = children.some((c) => c.children?.length);
+
 
   const goto = (i: number) => {
     setPath(path.slice(0, i + 1));
