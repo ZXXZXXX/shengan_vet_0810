@@ -109,12 +109,6 @@ const STATUS_OPTIONS = [
   { value: "aborted", label: "已终止" },
 ];
 
-const FARM_OPTIONS = [
-  { value: "all", label: "全部牧场" },
-  { value: "f1", label: "内蒙古大牧场" },
-  { value: "f2", label: "河北示范牧场" },
-  { value: "f3", label: "山东华牧" },
-];
 
 const REGION_OF: Record<string, string> = {
   内蒙古大牧场: "华北大区",
