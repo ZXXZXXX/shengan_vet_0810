@@ -17,6 +17,10 @@ import {
   BarChart3,
   X,
   Check,
+  Plus,
+  Pencil,
+  Trash2,
+
   CalendarDays,
   Users,
   ClipboardList,
@@ -383,12 +387,16 @@ const STATUS_TAG: Record<string, { label: string; bg: string; color: string }> =
 function StatsPage() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [templates, setTemplates] = useState<Template[]>(DEFAULT_TEMPLATES);
-  const [view, setView] = useState<"builder" | "result">("builder");
+  const [view, setView] = useState<"templates" | "builder" | "result">("templates");
   const [resultFilters, setResultFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [resultTitle, setResultTitle] = useState("筛选结果");
+  const [resultBack, setResultBack] = useState<"templates" | "builder">("templates");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [saveDesc, setSaveDesc] = useState("");
+  const [saveSource, setSaveSource] = useState<Filters>(DEFAULT_FILTERS);
 
   const set = <K extends keyof Filters>(k: K, v: Filters[K]) =>
     setFilters((f) => ({ ...f, [k]: v }));
@@ -402,10 +410,34 @@ function StatsPage() {
       };
     });
 
-  const runFilter = (f: Filters, title = "筛选结果") => {
+  const runFilter = (f: Filters, title = "筛选结果", from: "templates" | "builder" = "templates") => {
     setResultFilters(f);
     setResultTitle(title);
+    setResultBack(from);
     setView("result");
+  };
+
+  const openBuilder = (t?: Template) => {
+    setFilters(t ? { ...t.filters } : DEFAULT_FILTERS);
+    setEditingId(t?.id ?? null);
+    setView("builder");
+  };
+
+  const openSave = (source: Filters) => {
+    setSaveSource(source);
+    setSaveName("");
+    setSaveDesc("");
+    setSaveOpen(true);
+  };
+
+  const saveEdits = () => {
+    if (!editingId) return;
+    setTemplates((prev) =>
+      prev.map((t) => (t.id === editingId ? { ...t, filters: { ...filters }, desc: describeFilters(filters) } : t)),
+    );
+    toast.success("模板已更新");
+    setView("templates");
+    setEditingId(null);
   };
 
   const handleSaveTemplate = () => {
@@ -417,10 +449,10 @@ function StatsPage() {
       {
         id: `t-${Date.now()}`,
         name: saveName.trim(),
-        desc: saveDesc.trim() || describeFilters(filters),
+        desc: saveDesc.trim() || describeFilters(saveSource),
         icon: BarChart3,
         tone: "var(--brand)",
-        filters: { ...filters },
+        filters: { ...saveSource },
         usage: 0,
       },
       ...prev,
@@ -431,6 +463,11 @@ function StatsPage() {
     setSaveDesc("");
   };
 
+  const removeTemplate = (id: string) => {
+    setTemplates((prev) => prev.filter((t) => t.id !== id));
+    toast.success("模板已删除");
+  };
+
   const toggleFav = (id: string) => {
     setTemplates((prev) =>
       prev.map((t) => (t.id === id ? { ...t, favorite: !t.favorite } : t)),
@@ -439,6 +476,174 @@ function StatsPage() {
 
   const filteredRows = useMemo(() => filterRows(ROWS, resultFilters), [resultFilters]);
   const activeCount = countActive(filters);
+  const visibleTemplates = useMemo(() => {
+    const k = query.trim().toLowerCase();
+    const list = k
+      ? templates.filter(
+          (t) =>
+            t.name.toLowerCase().includes(k) ||
+            t.desc.toLowerCase().includes(k) ||
+            describeFilters(t.filters).toLowerCase().includes(k),
+        )
+      : templates;
+    return [...list].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite));
+  }, [templates, query]);
+
+  const editingTemplate = templates.find((t) => t.id === editingId) ?? null;
+
+  const saveDialog = (
+    <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+      <DialogContent className="bg-white">
+        <DialogHeader>
+          <DialogTitle>保存为筛选模板</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-body-sm">模板名称</Label>
+            <Input
+              value={saveName}
+              onChange={(e) => setSaveName(e.target.value)}
+              placeholder="如：近 30 天疾病治疗"
+              className="mt-1.5 h-9 bg-white"
+            />
+          </div>
+          <div>
+            <Label className="text-body-sm">描述（可选）</Label>
+            <Input
+              value={saveDesc}
+              onChange={(e) => setSaveDesc(e.target.value)}
+              placeholder="简要说明模板用途"
+              className="mt-1.5 h-9 bg-white"
+            />
+          </div>
+          <div className="p-3 rounded-lg bg-surface-subtle border border-border">
+            <div className="text-caption text-text-tertiary mb-1">筛选条件</div>
+            <div className="text-body-sm text-foreground">{describeFilters(saveSource)}</div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setSaveOpen(false)}>取消</Button>
+          <Button className="bg-primary hover:bg-[var(--brand-hover)]" onClick={handleSaveTemplate}>
+            保存模板
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
+  if (view === "templates") {
+    return (
+      <>
+        <AppHeader title="统计分析" breadcrumb={["首页", "统计分析"]} />
+        <main className="flex-1 px-6 py-6 space-y-5 bg-white">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div className="text-card-title font-medium text-foreground">我的报表模板</div>
+              <div className="text-caption text-text-tertiary mt-0.5">
+                共 {templates.length} 个模板 · 支持时间、操作人员、疾病、处方、工单、产犊、药品多维度筛选
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="搜索模板名称 / 筛选条件"
+                  className="h-9 w-[260px] pl-8 bg-white"
+                />
+              </div>
+              <Button className="h-9 bg-primary hover:bg-[var(--brand-hover)]" onClick={() => openBuilder()}>
+                <Plus className="h-4 w-4 mr-1" />
+                新建筛选
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visibleTemplates.map((t) => (
+              <div
+                key={t.id}
+                className="group border border-border rounded-xl bg-white p-5 hover:border-primary/50 hover:shadow-[0_8px_24px_-16px_var(--brand)] transition-all flex flex-col"
+              >
+                <div className="flex items-start justify-between">
+                  <div
+                    className="h-10 w-10 rounded-lg flex items-center justify-center"
+                    style={{ background: `color-mix(in oklab, ${t.tone} 14%, transparent)`, color: t.tone }}
+                  >
+                    <t.icon className="h-4 w-4" strokeWidth={1.75} />
+                  </div>
+                  <div className="flex items-center gap-0.5 -mr-1.5">
+                    <button
+                      type="button"
+                      onClick={() => toggleFav(t.id)}
+                      className="h-7 w-7 inline-flex items-center justify-center rounded-md hover:bg-surface-subtle"
+                      aria-label="收藏"
+                    >
+                      <Star
+                        className={`h-3.5 w-3.5 ${
+                          t.favorite ? "fill-[var(--state-warning)] text-[var(--state-warning)]" : "text-text-tertiary"
+                        }`}
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeTemplate(t.id)}
+                      className="h-7 w-7 inline-flex items-center justify-center rounded-md hover:bg-surface-subtle"
+                      aria-label="删除模板"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-text-tertiary" />
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <div className="text-body font-medium text-foreground">{t.name}</div>
+                  <div className="text-caption text-text-tertiary mt-1 line-clamp-2 min-h-[36px]">{t.desc}</div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-1">
+                  {tagsFromFilters(t.filters).slice(0, 3).map((label) => (
+                    <Badge
+                      key={label}
+                      variant="secondary"
+                      className="rounded-md bg-surface-subtle text-text-secondary border-transparent font-normal"
+                    >
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="mt-4 pt-3 border-t border-border flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    className="h-8 flex-1 bg-primary hover:bg-[var(--brand-hover)]"
+                    onClick={() => runFilter(t.filters, t.name, "templates")}
+                  >
+                    查看结果
+                  </Button>
+                  <Button size="sm" variant="outline" className="h-8" onClick={() => openBuilder(t)}>
+                    <Pencil className="h-3.5 w-3.5 mr-1" />
+                    编辑
+                  </Button>
+                </div>
+              </div>
+            ))}
+            {visibleTemplates.length === 0 && (
+              <div className="col-span-full border border-dashed border-border rounded-xl py-16 text-center">
+                <div className="text-body-sm text-text-tertiary">没有匹配的模板</div>
+                <Button variant="outline" className="mt-3 h-9" onClick={() => openBuilder()}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  新建筛选
+                </Button>
+              </div>
+            )}
+          </div>
+        </main>
+        {saveDialog}
+      </>
+    );
+  }
+
+
+
 
   if (view === "result") {
     return (
@@ -447,9 +652,9 @@ function StatsPage() {
         <main className="flex-1 px-6 py-6 space-y-4 bg-white">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3 min-w-0">
-              <Button variant="outline" size="sm" onClick={() => setView("builder")} className="h-9 shrink-0">
+              <Button variant="outline" size="sm" onClick={() => setView(resultBack)} className="h-9 shrink-0">
                 <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-                返回筛选
+                {resultBack === "templates" ? "返回模板" : "返回筛选"}
               </Button>
               <div className="min-w-0">
                 <div className="text-card-title font-medium text-foreground truncate">{resultTitle}</div>
@@ -465,11 +670,16 @@ function StatsPage() {
                 className="h-9"
                 onClick={() => {
                   setFilters(resultFilters);
+                  setEditingId(null);
                   setView("builder");
                 }}
               >
                 <Filter className="h-3.5 w-3.5 mr-1" />
-                再筛选
+                调整筛选
+              </Button>
+              <Button variant="outline" size="sm" className="h-9" onClick={() => openSave(resultFilters)}>
+                <Save className="h-3.5 w-3.5 mr-1" />
+                保存为模板
               </Button>
               <Button
                 size="sm"
@@ -480,9 +690,10 @@ function StatsPage() {
                 }}
               >
                 <Download className="h-3.5 w-3.5 mr-1" />
-                下载报表
+                导出数据
               </Button>
             </div>
+
           </div>
 
           <Card className="border-border bg-white overflow-x-auto">
@@ -552,23 +763,34 @@ function StatsPage() {
             </Table>
           </Card>
         </main>
+        {saveDialog}
       </>
     );
   }
 
   return (
     <>
-      <AppHeader title="统计分析" breadcrumb={["首页", "统计分析"]} />
+      <AppHeader
+        title="统计分析"
+        breadcrumb={["首页", "统计分析", editingTemplate ? editingTemplate.name : "新建筛选"]}
+      />
       <main className="flex-1 px-6 py-6 space-y-5 bg-white">
+        <Button variant="outline" size="sm" className="h-9" onClick={() => setView("templates")}>
+          <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+          返回模板
+        </Button>
         {/* 高级筛选 */}
         <Card className="border-border bg-white p-6">
           <div className="flex items-center justify-between mb-5 gap-4">
             <div>
-              <div className="text-card-title font-medium text-foreground">高级筛选</div>
+              <div className="text-card-title font-medium text-foreground">
+                {editingTemplate ? `编辑模板：${editingTemplate.name}` : "新建筛选"}
+              </div>
               <div className="text-caption text-text-tertiary mt-0.5">
                 支持时间、操作人员、疾病、处方、工单、产犊、药品七个维度组合筛选，可保存为模板复用
               </div>
             </div>
+
             {activeCount > 0 && (
               <button
                 onClick={() => setFilters(DEFAULT_FILTERS)}
@@ -769,136 +991,33 @@ function StatsPage() {
           <div className="mt-6 flex items-center gap-3 pt-5 border-t border-border flex-wrap">
             <Button
               className="h-10 px-5 bg-primary hover:bg-[var(--brand-hover)]"
-              onClick={() => runFilter(filters, "自定义筛选结果")}
+              onClick={() => runFilter(filters, editingTemplate ? editingTemplate.name : "自定义筛选结果", "builder")}
             >
               <Filter className="h-4 w-4 mr-1.5" />
-              开始筛选
+              查看筛选结果
             </Button>
-            <Button variant="outline" className="h-10 px-5" onClick={() => setSaveOpen(true)}>
-              <Save className="h-4 w-4 mr-1.5" />
-              保存筛选模板
-            </Button>
+            {editingId ? (
+              <Button variant="outline" className="h-10 px-5" onClick={saveEdits}>
+                <Save className="h-4 w-4 mr-1.5" />
+                保存模板修改
+              </Button>
+            ) : (
+              <Button variant="outline" className="h-10 px-5" onClick={() => openSave(filters)}>
+                <Save className="h-4 w-4 mr-1.5" />
+                保存为模板
+              </Button>
+            )}
             <div className="ml-auto text-caption text-text-tertiary max-w-[60%] text-right">
               当前条件：{describeFilters(filters)}
             </div>
           </div>
         </Card>
-
-        {/* 常用报表模板 */}
-        <div>
-          <div className="flex items-end justify-between mb-3">
-            <div>
-              <div className="text-card-title font-medium text-foreground">常用报表模板</div>
-              <div className="text-caption text-text-tertiary mt-0.5">
-                点击模板直接进入已筛选的列表页，可再次调整并下载
-              </div>
-            </div>
-            <div className="text-caption text-text-tertiary">共 {templates.length} 个模板</div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {templates.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => runFilter(t.filters, t.name)}
-                className="group text-left border border-border rounded-xl bg-white p-5 hover:border-primary/50 hover:shadow-[0_8px_24px_-16px_var(--brand)] transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div
-                    className="h-10 w-10 rounded-lg flex items-center justify-center"
-                    style={{
-                      background: `color-mix(in oklab, ${t.tone} 14%, transparent)`,
-                      color: t.tone,
-                    }}
-                  >
-                    <t.icon className="h-4 w-4" strokeWidth={1.75} />
-                  </div>
-                  <span
-                    role="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFav(t.id);
-                    }}
-                    className="h-7 w-7 -mr-1.5 inline-flex items-center justify-center rounded-md hover:bg-surface-subtle"
-                  >
-                    <Star
-                      className={`h-3.5 w-3.5 ${
-                        t.favorite ? "fill-[var(--state-warning)] text-[var(--state-warning)]" : "text-text-tertiary"
-                      }`}
-                    />
-                  </span>
-                </div>
-                <div className="mt-4">
-                  <div className="text-body font-medium text-foreground group-hover:text-primary transition-colors">
-                    {t.name}
-                  </div>
-                  <div className="text-caption text-text-tertiary mt-1 line-clamp-2 min-h-[36px]">
-                    {t.desc}
-                  </div>
-                </div>
-                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
-                  <div className="flex flex-wrap gap-1">
-                    {tagsFromFilters(t.filters).slice(0, 3).map((label) => (
-                      <Badge
-                        key={label}
-                        variant="secondary"
-                        className="rounded-md bg-surface-subtle text-text-secondary border-transparent font-normal"
-                      >
-                        {label}
-                      </Badge>
-                    ))}
-                  </div>
-                  {t.usage != null && (
-                    <span className="text-caption text-text-tertiary tabular-nums">使用 {t.usage}</span>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
       </main>
-
-      {/* 保存模板弹窗 */}
-      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
-        <DialogContent className="bg-white">
-          <DialogHeader>
-            <DialogTitle>保存为筛选模板</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label className="text-body-sm">模板名称</Label>
-              <Input
-                value={saveName}
-                onChange={(e) => setSaveName(e.target.value)}
-                placeholder="如：近 30 天疾病治疗"
-                className="mt-1.5 h-9 bg-white"
-              />
-            </div>
-            <div>
-              <Label className="text-body-sm">描述（可选）</Label>
-              <Input
-                value={saveDesc}
-                onChange={(e) => setSaveDesc(e.target.value)}
-                placeholder="简要说明模板用途"
-                className="mt-1.5 h-9 bg-white"
-              />
-            </div>
-            <div className="p-3 rounded-lg bg-surface-subtle border border-border">
-              <div className="text-caption text-text-tertiary mb-1">当前筛选条件</div>
-              <div className="text-body-sm text-foreground">{describeFilters(filters)}</div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSaveOpen(false)}>取消</Button>
-            <Button className="bg-primary hover:bg-[var(--brand-hover)]" onClick={handleSaveTemplate}>
-              保存模板
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {saveDialog}
     </>
   );
 }
+
 
 // ============ small components ============
 function FieldBlock({ label, children }: { label: string; children: React.ReactNode }) {
