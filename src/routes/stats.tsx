@@ -383,12 +383,16 @@ const STATUS_TAG: Record<string, { label: string; bg: string; color: string }> =
 function StatsPage() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [templates, setTemplates] = useState<Template[]>(DEFAULT_TEMPLATES);
-  const [view, setView] = useState<"builder" | "result">("builder");
+  const [view, setView] = useState<"templates" | "builder" | "result">("templates");
   const [resultFilters, setResultFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [resultTitle, setResultTitle] = useState("筛选结果");
+  const [resultBack, setResultBack] = useState<"templates" | "builder">("templates");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [saveDesc, setSaveDesc] = useState("");
+  const [saveSource, setSaveSource] = useState<Filters>(DEFAULT_FILTERS);
 
   const set = <K extends keyof Filters>(k: K, v: Filters[K]) =>
     setFilters((f) => ({ ...f, [k]: v }));
@@ -402,10 +406,34 @@ function StatsPage() {
       };
     });
 
-  const runFilter = (f: Filters, title = "筛选结果") => {
+  const runFilter = (f: Filters, title = "筛选结果", from: "templates" | "builder" = "templates") => {
     setResultFilters(f);
     setResultTitle(title);
+    setResultBack(from);
     setView("result");
+  };
+
+  const openBuilder = (t?: Template) => {
+    setFilters(t ? { ...t.filters } : DEFAULT_FILTERS);
+    setEditingId(t?.id ?? null);
+    setView("builder");
+  };
+
+  const openSave = (source: Filters) => {
+    setSaveSource(source);
+    setSaveName("");
+    setSaveDesc("");
+    setSaveOpen(true);
+  };
+
+  const saveEdits = () => {
+    if (!editingId) return;
+    setTemplates((prev) =>
+      prev.map((t) => (t.id === editingId ? { ...t, filters: { ...filters }, desc: describeFilters(filters) } : t)),
+    );
+    toast.success("模板已更新");
+    setView("templates");
+    setEditingId(null);
   };
 
   const handleSaveTemplate = () => {
@@ -417,10 +445,10 @@ function StatsPage() {
       {
         id: `t-${Date.now()}`,
         name: saveName.trim(),
-        desc: saveDesc.trim() || describeFilters(filters),
+        desc: saveDesc.trim() || describeFilters(saveSource),
         icon: BarChart3,
         tone: "var(--brand)",
-        filters: { ...filters },
+        filters: { ...saveSource },
         usage: 0,
       },
       ...prev,
@@ -431,6 +459,11 @@ function StatsPage() {
     setSaveDesc("");
   };
 
+  const removeTemplate = (id: string) => {
+    setTemplates((prev) => prev.filter((t) => t.id !== id));
+    toast.success("模板已删除");
+  };
+
   const toggleFav = (id: string) => {
     setTemplates((prev) =>
       prev.map((t) => (t.id === id ? { ...t, favorite: !t.favorite } : t)),
@@ -439,6 +472,19 @@ function StatsPage() {
 
   const filteredRows = useMemo(() => filterRows(ROWS, resultFilters), [resultFilters]);
   const activeCount = countActive(filters);
+  const visibleTemplates = useMemo(() => {
+    const k = query.trim().toLowerCase();
+    const list = k
+      ? templates.filter(
+          (t) =>
+            t.name.toLowerCase().includes(k) ||
+            t.desc.toLowerCase().includes(k) ||
+            describeFilters(t.filters).toLowerCase().includes(k),
+        )
+      : templates;
+    return [...list].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite));
+  }, [templates, query]);
+
 
   if (view === "result") {
     return (
