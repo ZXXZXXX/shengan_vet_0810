@@ -334,9 +334,7 @@ function breedingFields(cow: CattleProfile): { label: string; value: string }[] 
   const lactating = female && cow.lactationDays > 0;
   const bred = female && cow.pregnancyDays > 0;
   const farmNo = cow.ear.slice(0, 2);
-  const ageLabel = cow.ageDays > 90 ? `${Math.floor(cow.ageDays / 30)} 月龄` : `${cow.ageDays} 日龄`;
   return [
-    { label: cow.ageDays > 90 ? "月龄" : "日龄", value: ageLabel },
     { label: "泌乳天数", value: lactating ? `${cow.lactationDays} 天` : "—" },
     { label: "怀孕天数", value: bred ? `${cow.pregnancyDays} 天` : "—" },
     { label: "胎次", value: `${cow.parity} 胎` },
