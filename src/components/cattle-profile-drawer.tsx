@@ -817,15 +817,6 @@ function EventHistory() {
 }
 
 
-function StatBox({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-card border border-border px-3 py-2">
-      <div className="text-caption text-text-tertiary">{label}</div>
-      <div className="text-body-sm font-medium text-foreground tabular-nums">{value}</div>
-    </div>
-  );
-}
-
 
 
 const ALL_ORDERS: {
