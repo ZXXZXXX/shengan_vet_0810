@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Baby, ChevronLeft } from "lucide-react";
-import { SectionCard, Donut, Legend, PeriodTabs } from "./charts";
+import { SectionCard, StackedBar, BarList, PeriodTabs } from "./charts";
 import { scaleList, scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 const aliveTotal = 170;
