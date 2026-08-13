@@ -214,6 +214,20 @@ export function CattleProfileDrawer({
             </div>
           </Panel>
 
+          {/* 繁育与血统档案 */}
+          <Panel title="繁育与档案信息" icon={<ListChecks className="h-4 w-4 text-primary" />} bodyClassName="p-4">
+            <div className="grid grid-cols-4 gap-x-6 gap-y-3">
+              {breedingFields(cow).map((f) => (
+                <div key={f.label} className="flex items-baseline justify-between gap-3 border-b border-border/60 pb-2">
+                  <span className="text-body-sm text-text-tertiary shrink-0">{f.label}</span>
+                  <span className="text-body-sm text-foreground font-medium tabular-nums truncate">{f.value}</span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+
+
+
           <div className="grid grid-cols-2 gap-5 items-stretch">
             {/* 左：产奶数据 */}
             <Panel
