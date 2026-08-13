@@ -357,7 +357,7 @@ function breedingFields(cow: CattleProfile): { label: string; value: string }[] 
   ];
 }
 
-
+function Metric({
   label,
   value,
   unit,
