@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, ChevronLeft, Home, BarChart3, PieChart } from "lucide-react";
-import { Scatter } from "@/components/dashboard/charts";
 
 type DiseaseCat = { name: string; color: string; diseases: { name: string; count: number }[] };
 type Org = { id: string; name: string; herd: number; cases: number; cats?: DiseaseCat[]; children?: Org[] };
@@ -183,7 +182,6 @@ export function DiseaseStatsSection() {
   const [path, setPath] = useState<Org[]>([ORG]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [cat, setCat] = useState<string | null>(null);
-  const [mode, setMode] = useState<"rank" | "scatter">("rank");
 
   const scope = path[path.length - 1];
   const children = scope.children ?? [];
@@ -254,45 +252,10 @@ export function DiseaseStatsSection() {
         <div>
           <div className="flex items-center justify-between">
             <p className="text-body-sm text-text-secondary">
-              {scope.id === "group" ? "各区域发病情况" : "各牧场发病情况"}
+              {scope.id === "group" ? "各区域发病率排名" : "各牧场发病率排名"}
             </p>
-            <div className="inline-flex items-center rounded-full border border-border bg-surface-subtle p-0.5">
-              {([["rank", "排名图"], ["scatter", "散点图"]] as const).map(([k, label]) => (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={() => setMode(k)}
-                  className={`h-6 rounded-full px-2.5 text-caption transition-colors ${
-                    mode === k ? "bg-card text-primary shadow-card" : "text-text-secondary"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <span className="text-caption text-text-tertiary">由高到低</span>
           </div>
-          {mode === "scatter" ? (
-            <div className="mt-4">
-              <Scatter
-                points={ranked.map((o, i) => {
-                  const sums = rollupOrg(o);
-                  return {
-                    name: o.name,
-                    x: sums.herd,
-                    y: Number(incidence(o).toFixed(2)),
-                    color: i === 0 ? "var(--state-danger)" : i === 1 ? "var(--state-warning)" : "var(--brand)",
-                  };
-                })}
-                xLabel="存栏（头）"
-                yLabel="发病率（%）"
-                onPick={(p) => {
-                  const hit = ranked.find((o) => o.name === p.name);
-                  if (hit) pick(hit);
-                }}
-              />
-              <p className="mt-2 text-caption text-text-tertiary">横轴为存栏规模，纵轴为发病率，点击气泡可下钻或选中</p>
-            </div>
-          ) : (
           <div className="mt-4 space-y-3">
             {ranked.map((o, i) => {
               const rate = incidence(o);
@@ -337,7 +300,6 @@ export function DiseaseStatsSection() {
               );
             })}
           </div>
-          )}
 
         </div>
 

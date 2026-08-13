@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Pill } from "lucide-react";
-import { SectionCard, Donut, Legend, AreaTrend, MiniStat, PeriodTabs } from "./charts";
+import { SectionCard, Donut, Legend, LineTrend, MiniStat, PeriodTabs } from "./charts";
 import { useDataLevel } from "@/lib/dashboard-view";
 
 const PERIODS = ["近 1 年", "近 6 个月", "近 3 个月"];
@@ -92,7 +92,7 @@ export function DrugSection() {
             <span className="text-text-tertiary text-body-sm">（点击月份查看明细）</span>
           </p>
           <div className="flex-1 flex flex-col justify-center">
-            <AreaTrend
+            <LineTrend
               labels={t.labels}
               series={[{ name: "用药总费用", color: "var(--brand)", points: t.points }]}
               unit="万元"

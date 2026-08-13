@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity } from "lucide-react";
-import { SectionCard, Donut, Legend, Radar, PeriodTabs } from "./charts";
+import { SectionCard, Donut, Legend, BarList, PeriodTabs } from "./charts";
 import { scaleList, useDataLevel } from "@/lib/dashboard-view";
 
 const groupDist = [
@@ -52,7 +52,7 @@ export function CullingSection() {
           <p className="text-body-sm text-text-secondary mb-3">
             （本月）{isDeath ? "死亡原因占比" : "淘汰原因占比"}
           </p>
-          <Radar data={reasons} unit=" 头" color={isDeath ? "var(--state-danger)" : "var(--effect-ai-purple)"} size={260} />
+          <BarList data={reasons} unit=" 头" />
         </div>
       </div>
     </SectionCard>
