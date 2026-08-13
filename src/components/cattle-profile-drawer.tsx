@@ -154,6 +154,8 @@ export function CattleProfileDrawer({
                   <span className="h-3 w-px bg-border" />
                   <span>{cow.sex}</span>
                   <span className="h-3 w-px bg-border" />
+                  <span>{cow.ageDays > 90 ? `${Math.floor(cow.ageDays / 30)} 月龄` : `${cow.ageDays} 日龄`}</span>
+                  <span className="h-3 w-px bg-border" />
                   <span>{cow.type}</span>
                 </div>
               </div>
