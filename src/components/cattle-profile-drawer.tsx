@@ -773,33 +773,33 @@ function EventHistory() {
             />
           </div>
 
-          <div className="p-4 space-y-3">
+          <div className="p-4 space-y-4">
             {/* 初乳采集 */}
-            <div className="rounded-xl border border-border bg-brand-subtle/40 p-3.5">
-              <div className="flex items-center gap-2 mb-3">
+            <section>
+              <div className="flex items-center gap-2 mb-2.5">
                 <span className="text-body-sm font-medium text-foreground">初乳采集</span>
                 <span className="tag tag-brand">{e.colostrum.quality}</span>
                 <span className="tag tag-muted">{e.colostrum.use}</span>
                 <span className="ml-auto font-mono text-caption text-text-secondary">{e.colostrum.code}</span>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <StatBox label="初乳量" value={e.colostrum.volume} />
-                <StatBox label="白力度" value={e.colostrum.brix} />
-                <StatBox label="袋号" value={e.colostrum.bag} />
+                <KV label="初乳量" value={e.colostrum.volume} />
+                <KV label="白力度" value={e.colostrum.brix} />
+                <KV label="袋号" value={e.colostrum.bag} />
               </div>
-            </div>
+            </section>
 
             {/* 犊牛 */}
             {e.calves.map((c, i) => (
-              <div key={i} className="rounded-xl border border-border p-3.5">
-                <div className="flex items-center gap-2 mb-3">
+              <section key={i} className={i > 0 ? "pt-3 border-t border-border/70" : ""}>
+                <div className="flex items-center gap-2 mb-2.5">
                   <span className="text-body-sm font-medium text-foreground">犊牛 {i + 1}</span>
                   <span className="font-mono text-body-sm text-primary">#{c.tag}</span>
                   <span className="tag tag-success">{c.status}</span>
                   {c.sex && <span className="tag tag-muted">{c.sex}</span>}
                   <span className={`ml-auto tag ${c.keep === "留养" ? "tag-brand" : "tag-pink"}`}>{c.keep}</span>
                 </div>
-                <div className="grid grid-cols-3 gap-x-4 gap-y-3">
+                <div className="grid grid-cols-3 gap-x-4 gap-y-2">
                   <KV label="品种" value={c.breed} />
                   <KV label="犊牛体重" value={c.weight} />
                   <KV label="技术员" value={c.technician} />
@@ -807,7 +807,7 @@ function EventHistory() {
                   <KV label="初乳饲喂量" value={c.feedVolume} />
                   <KV label={c.keep === "留养" ? "转入牛舍" : "不留养原因"} value={c.barn ?? c.reason} />
                 </div>
-              </div>
+              </section>
             ))}
           </div>
         </div>
@@ -816,14 +816,6 @@ function EventHistory() {
   );
 }
 
-function StatBox({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-card border border-border px-3 py-2">
-      <div className="text-caption text-text-tertiary">{label}</div>
-      <div className="text-body-sm font-medium text-foreground tabular-nums">{value}</div>
-    </div>
-  );
-}
 
 
 
