@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity } from "lucide-react";
-import { SectionCard, Columns, Radar, PeriodTabs, PALETTE } from "./charts";
+import { SectionCard, Donut, Legend, BarList, PeriodTabs } from "./charts";
 import { scaleList, useDataLevel } from "@/lib/dashboard-view";
 
 const groupDist = [
@@ -41,31 +41,21 @@ export function CullingSection() {
       extra={<PeriodTabs value={view} onChange={setView} options={["死亡原因", "淘汰原因"]} />}
     >
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="flex flex-col">
-          <div className="mb-3 flex items-baseline justify-between gap-2">
-            <p className="text-body-sm text-text-secondary">（本月）实际死淘分布</p>
-            <p className="text-caption text-text-tertiary">
-              死淘合计 <span className="text-section-title tabular-nums text-foreground">{total}</span> 头
-            </p>
-          </div>
-          <div className="flex-1 flex items-end">
-            <Columns data={dist} unit=" 头" height={200} />
+        <div>
+          <p className="text-body-sm text-text-secondary mb-3">（本月）实际死淘分布</p>
+          <div className="flex flex-col items-center gap-4">
+            <Donut data={dist} centerLabel="死淘合计" centerValue={String(total)} centerUnit="头" unit=" 头" />
+            <Legend data={dist} unit=" 头" />
           </div>
         </div>
         <div>
           <p className="text-body-sm text-text-secondary mb-3">
-            （本月）{isDeath ? "死亡原因构成" : "淘汰原因构成"}
+            （本月）{isDeath ? "死亡原因占比" : "淘汰原因占比"}
           </p>
-          <div className="flex justify-center">
-            <Radar
-              data={reasons}
-              size={330}
-              unit=" 头"
-              color={isDeath ? "var(--state-danger)" : PALETTE[3]}
-            />
-          </div>
+          <BarList data={reasons} unit=" 头" />
         </div>
       </div>
     </SectionCard>
   );
 }
+

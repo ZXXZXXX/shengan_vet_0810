@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Baby, ChevronLeft, ChevronRight } from "lucide-react";
-import { SectionCard, Columns, Gauge, ProgressRows, PeriodTabs, Waffle } from "./charts";
+import { Baby, ChevronLeft } from "lucide-react";
+import { SectionCard, Donut, Legend, PeriodTabs } from "./charts";
 import { scaleList, scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 const aliveTotal = 170;
@@ -43,6 +43,7 @@ const TAB_WEIGHT = "体重分布";
 const VIEW_CALF = "犊牛情况";
 const VIEW_COW = "母牛情况";
 
+
 export function CalvingSection() {
   const [view, setView] = useState(VIEW_CALF);
   const [drill, setDrill] = useState(false);
@@ -52,13 +53,7 @@ export function CalvingSection() {
   const survivalData = scaleList(survival, factor);
   const difficultyData = scaleList(difficulty, factor);
   const total = alive + scaleValue(deadTotal, factor);
-  const rate = (alive / (total || 1)) * 100;
-  const detail = scaleList(
-    tab === TAB_PARITY ? parityDist : tab === TAB_SEX ? sexRatio : birthWeight,
-    factor,
-  );
-  const smoothRate =
-    (difficultyData[0]!.value / (difficultyData.reduce((s, d) => s + d.value, 0) || 1)) * 100;
+  const detail = scaleList(tab === TAB_PARITY ? parityDist : tab === TAB_SEX ? sexRatio : birthWeight, factor);
 
   return (
     <SectionCard
@@ -93,38 +88,36 @@ export function CalvingSection() {
                 className="mb-3 inline-flex items-center gap-1 text-body-sm text-text-secondary hover:text-primary transition-colors"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
-                返回成活与死亡分布
+                产犊成活与死亡分布
+                <span className="text-text-tertiary">{"\n"}</span>
               </button>
-              <p className="text-body-sm text-text-secondary mb-3">
-                成活犊牛 {alive.toLocaleString()} 头 · {tab}
-              </p>
-              {tab === TAB_WEIGHT ? (
-                <Columns data={detail} unit=" 头" height={200} />
-              ) : (
-                <Waffle data={detail} unit=" 头" />
-              )}
+              <div className="flex flex-col items-center gap-4">
+                <Donut
+                  data={detail}
+                  centerLabel="成活总数"
+                  centerValue={alive.toLocaleString()}
+                  centerUnit="头" unit=" 头"
+                />
+                <Legend data={detail} unit=" 头" />
+              </div>
             </>
           ) : (
             <>
-              <p className="text-body-sm text-text-secondary mb-3">（本月）产犊成活与死亡分布</p>
-              <div className="grid grid-cols-1 sm:grid-cols-[auto_minmax(0,1fr)] items-center gap-6">
-                <Gauge
-                  value={rate}
-                  valueText={`${rate.toFixed(1)}%`}
-                  label="犊牛成活率"
-                  size={190}
+              <p className="text-body-sm text-text-secondary mb-3">
+                （本月）产犊成活与死亡分布
+                <span className="text-caption text-text-tertiary ml-2"></span>
+              </p>
+              <div className="flex flex-col items-center gap-4">
+                <Donut
+                  data={survivalData}
+                  centerLabel="产犊总数"
+                  centerValue={total.toLocaleString()}
+                  centerUnit="头" unit=" 头"
+                  onSliceClick={(s) => {
+                    if (s.name === "成活") setDrill(true);
+                  }}
                 />
-                <div>
-                  <ProgressRows data={survivalData} unit=" 头" />
-                  <button
-                    type="button"
-                    onClick={() => setDrill(true)}
-                    className="mt-4 inline-flex items-center gap-1 text-body-sm text-primary hover:opacity-80"
-                  >
-                    查看成活犊牛明细
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </button>
-                </div>
+                <Legend data={survivalData} unit=" 头" />
               </div>
             </>
           )}
@@ -132,12 +125,14 @@ export function CalvingSection() {
       ) : (
         <div>
           <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度分布</p>
-          <div className="grid grid-cols-1 sm:grid-cols-[auto_minmax(0,1fr)] items-center gap-6">
-            <Gauge value={smoothRate} valueText={`${smoothRate.toFixed(1)}%`} label="顺产率" size={190} />
-            <ProgressRows data={difficultyData} unit=" 例" />
+          <div className="flex flex-col items-center gap-4">
+            <Donut data={difficultyData} centerLabel="顺产率" centerValue="74.6%" unit=" 例" />
+            <Legend data={difficultyData} unit=" 例" />
           </div>
         </div>
       )}
     </SectionCard>
   );
 }
+
+
