@@ -90,7 +90,7 @@ export function CattleProfileDrawer({
 
   const health = observed ? "观察中" : cow.health;
   const abnormal = cow.health === "异常" || cow.health === "观察中" || observed;
-  const ageLabel = cow.ageDays > 90 ? `${Math.floor(cow.ageDays / 30)} 月龄` : `${cow.ageDays} 日龄`;
+
 
   const healthCls =
     health === "异常"
