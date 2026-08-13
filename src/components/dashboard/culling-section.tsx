@@ -42,11 +42,17 @@ export function CullingSection() {
     >
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div>
-          <p className="text-body-sm text-text-secondary mb-3">（本月）实际死淘分布</p>
-          <div className="flex flex-col items-center gap-4">
-            <Donut data={dist} centerLabel="死淘合计" centerValue={String(total)} centerUnit="头" unit=" 头" />
-            <Legend data={dist} unit=" 头" />
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <p className="text-body-sm text-text-secondary">（本月）实际死淘分布</p>
+            <p className="text-caption text-text-tertiary">
+              死淘合计{" "}
+              <span className="text-section-title tabular-nums text-foreground">
+                {total.toLocaleString()}
+              </span>{" "}
+              头
+            </p>
           </div>
+          <StackedBar data={dist} unit=" 头" />
         </div>
         <div>
           <p className="text-body-sm text-text-secondary mb-3">
