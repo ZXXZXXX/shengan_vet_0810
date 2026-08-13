@@ -60,14 +60,8 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-type ReportScope = "farm-in" | "farm-out" | "region" | "group";
 
-const scopeOptions: { key: ReportScope; label: string }[] = [
-  { key: "farm-in", label: "牧场级·内部" },
-  { key: "farm-out", label: "牧场级·外部" },
-  { key: "region", label: "区域（中心）" },
-  { key: "group", label: "集团高管" },
-];
+
 
 type MetricCard = {
   label: string;
