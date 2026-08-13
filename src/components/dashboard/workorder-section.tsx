@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ClipboardList, ChevronLeft } from "lucide-react";
-import { SectionCard, BarList, Donut, Legend, PeriodTabs } from "./charts";
+import { SectionCard, Columns, Gauge, ProgressRows, PeriodTabs } from "./charts";
 import { scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 const TAB_ALL = "全部工单";
@@ -149,18 +149,33 @@ export function WorkOrderSection() {
 
 
         <div className="mt-4 flex-1 grid grid-cols-1 xl:grid-cols-2 gap-6 items-center">
-          <div className="flex flex-col items-center gap-3">
-            <Donut
-              data={slices}
-              size={168}
-              centerLabel="工单总量"
-              centerValue={s.total.toLocaleString()}
-              centerUnit="单"
-              unit=" 单"
-              onSliceClick={(_, i) => setActive(ORDER[i]!)}
+          <div className="flex flex-col items-center gap-4">
+            <Gauge
+              value={s.status.done.value}
+              max={s.total}
+              valueText={`${((s.status.done.value / (s.total || 1)) * 100).toFixed(1)}%`}
+              label={`工单完成率 · 总量 ${s.total.toLocaleString()} 单`}
+              size={200}
             />
-            <Legend data={slices} />
-            
+            <div className="w-full">
+              <ProgressRows data={slices} unit=" 单" />
+              <div className="mt-3 flex flex-wrap gap-2">
+                {ORDER.map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setActive(k)}
+                    className={`h-7 rounded-full border px-3 text-caption transition-colors ${
+                      active === k
+                        ? "border-primary text-primary bg-brand-subtle/40"
+                        : "border-border text-text-secondary hover:text-foreground"
+                    }`}
+                  >
+                    查看{s.status[k].name}明细
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div>
@@ -179,14 +194,15 @@ export function WorkOrderSection() {
                     {cur.name}工单分布 · {cur.value} 单
                   </span>
                 </div>
-                <BarList data={cur.byType.map((d) => ({ ...d, color: cur.color }))} unit=" 单" />
+                <Columns data={cur.byType.map((d) => ({ ...d, color: cur.color }))} unit=" 单" height={200} />
               </>
             ) : (
               <>
                 <p className="text-body-sm text-text-secondary mb-3">逾期工单分布</p>
-                <BarList
+                <Columns
                   data={s.status.overdue.byType.map((d) => ({ ...d, color: "var(--state-danger)" }))}
                   unit=" 单"
+                  height={200}
                 />
               </>
             )}
