@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ClipboardList, ChevronLeft } from "lucide-react";
 import { SectionCard, BarList, Donut, Legend, PeriodTabs } from "./charts";
+import { scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 const TAB_ALL = "全部工单";
 const TAB_UD = "派工单";
@@ -105,8 +106,23 @@ const ORDER: StatusKey[] = ["done", "doing", "overdue"];
 export function WorkOrderSection() {
   const [tab, setTab] = useState(TAB_ALL);
   const [active, setActive] = useState<StatusKey | null>(null);
-  const s = scopes[tab]!;
-  
+  const { factor } = useDataLevel();
+  const base = scopes[tab]!;
+  const s = {
+    ...base,
+    total: scaleValue(base.total, factor),
+    status: Object.fromEntries(
+      ORDER.map((k) => [
+        k,
+        {
+          ...base.status[k],
+          value: scaleValue(base.status[k].value, factor),
+          byType: base.status[k].byType.map((d) => ({ ...d, value: scaleValue(d.value, factor) })),
+        },
+      ]),
+    ) as typeof base.status,
+  };
+
   const slices = ORDER.map((k) => ({ name: s.status[k].name, value: s.status[k].value, color: s.status[k].color }));
   const cur = active ? s.status[active] : null;
 
@@ -138,7 +154,7 @@ export function WorkOrderSection() {
               data={slices}
               size={168}
               centerLabel="工单总量"
-              centerValue={String(s.total)}
+              centerValue={s.total.toLocaleString()}
               centerUnit="单"
               unit=" 单"
               onSliceClick={(_, i) => setActive(ORDER[i]!)}

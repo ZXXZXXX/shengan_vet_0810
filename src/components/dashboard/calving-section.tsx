@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Baby, ChevronLeft } from "lucide-react";
 import { SectionCard, Donut, Legend, PeriodTabs } from "./charts";
+import { scaleList, scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 const aliveTotal = 170;
 const deadTotal = 9;
@@ -47,8 +48,12 @@ export function CalvingSection() {
   const [view, setView] = useState(VIEW_CALF);
   const [drill, setDrill] = useState(false);
   const [tab, setTab] = useState(TAB_PARITY);
-  const total = aliveTotal + deadTotal;
-  const detail = tab === TAB_PARITY ? parityDist : tab === TAB_SEX ? sexRatio : birthWeight;
+  const { factor } = useDataLevel();
+  const alive = scaleValue(aliveTotal, factor);
+  const survivalData = scaleList(survival, factor);
+  const difficultyData = scaleList(difficulty, factor);
+  const total = alive + scaleValue(deadTotal, factor);
+  const detail = scaleList(tab === TAB_PARITY ? parityDist : tab === TAB_SEX ? sexRatio : birthWeight, factor);
 
   return (
     <SectionCard
@@ -90,7 +95,7 @@ export function CalvingSection() {
                 <Donut
                   data={detail}
                   centerLabel="成活总数"
-                  centerValue={String(aliveTotal)}
+                  centerValue={alive.toLocaleString()}
                   centerUnit="头" unit=" 头"
                 />
                 <Legend data={detail} unit=" 头" />
@@ -104,15 +109,15 @@ export function CalvingSection() {
               </p>
               <div className="flex flex-col items-center gap-4">
                 <Donut
-                  data={survival}
+                  data={survivalData}
                   centerLabel="产犊总数"
-                  centerValue={String(total)}
+                  centerValue={total.toLocaleString()}
                   centerUnit="头" unit=" 头"
                   onSliceClick={(s) => {
                     if (s.name === "成活") setDrill(true);
                   }}
                 />
-                <Legend data={survival} unit=" 头" />
+                <Legend data={survivalData} unit=" 头" />
               </div>
             </>
           )}
@@ -121,8 +126,8 @@ export function CalvingSection() {
         <div>
           <p className="text-body-sm text-text-secondary mb-3">（本月）产犊难易度分布</p>
           <div className="flex flex-col items-center gap-4">
-            <Donut data={difficulty} centerLabel="顺产率" centerValue="74.6%" unit=" 例" />
-            <Legend data={difficulty} unit=" 例" />
+            <Donut data={difficultyData} centerLabel="顺产率" centerValue="74.6%" unit=" 例" />
+            <Legend data={difficultyData} unit=" 例" />
           </div>
         </div>
       )}

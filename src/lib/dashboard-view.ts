@@ -46,11 +46,11 @@ export const defaultConfig: Record<ReportScope, TopicVisibility> = {
   group: base(),
 };
 
-type State = { scope: ReportScope; config: Record<ReportScope, TopicVisibility> };
+type State = { scope: ReportScope; config: Record<ReportScope, TopicVisibility>; level: DataLevel };
 
 const KEY = "pc:dashboard-view";
 const listeners = new Set<() => void>();
-let state: State = { scope: "farm-in", config: defaultConfig };
+let state: State = { scope: "farm-in", config: defaultConfig, level: "farm" };
 let loaded = false;
 
 function load(): State {
@@ -62,6 +62,7 @@ function load(): State {
       const parsed = JSON.parse(raw) as Partial<State>;
       state = {
         scope: parsed.scope ?? "farm-in",
+        level: parsed.level ?? "farm",
         config: {
           "farm-in": { ...defaultConfig["farm-in"], ...(parsed.config?.["farm-in"] ?? {}) },
           "farm-out": { ...defaultConfig["farm-out"], ...(parsed.config?.["farm-out"] ?? {}) },
@@ -111,4 +112,44 @@ export function useDashboardView(): State {
     () => load(),
     () => state,
   );
+}
+
+/* ---------- 数量级分层：集团级 > 区域级 > 牧场级 ---------- */
+
+export type DataLevel = "group" | "region" | "farm";
+
+export const levelMeta: Record<DataLevel, { label: string; short: string; factor: number; desc: string }> = {
+  group: { label: "集团级", short: "集团", factor: 6.2, desc: "6 个牧场 · 3 个区域合计" },
+  region: { label: "区域级", short: "区域", factor: 2.6, desc: "东北大区 2 个牧场合计" },
+  farm: { label: "牧场级", short: "牧场", factor: 1, desc: "1 号牧场" },
+};
+
+/** 各视角可用的层级（由高到低） */
+export function levelsForScope(scope: ReportScope): DataLevel[] {
+  if (scope === "group") return ["group", "region", "farm"];
+  if (scope === "region") return ["region", "farm"];
+  return ["farm"];
+}
+
+export function setDataLevel(next: DataLevel) {
+  load();
+  state = { ...state, level: next };
+  persist();
+}
+
+/** 当前生效层级与放大系数（专题内容与牧场级一致，仅统计口径上卷） */
+export function useDataLevel(): { level: DataLevel; factor: number; levels: DataLevel[] } {
+  const { scope, level } = useDashboardView();
+  const levels = levelsForScope(scope);
+  const current = levels.includes(level) ? level : levels[0];
+  return { level: current, factor: levelMeta[current].factor, levels };
+}
+
+export function scaleValue(n: number, factor: number, digits = 0) {
+  const v = n * factor;
+  return digits > 0 ? Number(v.toFixed(digits)) : Math.round(v);
+}
+
+export function scaleList<T extends { value: number }>(list: T[], factor: number, digits = 0): T[] {
+  return list.map((d) => ({ ...d, value: scaleValue(d.value, factor, digits) }));
 }

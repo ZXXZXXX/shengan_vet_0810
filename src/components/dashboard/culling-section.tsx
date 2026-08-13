@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Activity } from "lucide-react";
 import { SectionCard, Donut, Legend, BarList, PeriodTabs } from "./charts";
+import { scaleList, useDataLevel } from "@/lib/dashboard-view";
 
 const groupDist = [
   { name: "成母牛", value: 26, color: "var(--brand)" },
@@ -26,7 +27,10 @@ const cullReasons = [
 
 export function CullingSection() {
   const [view, setView] = useState("死亡原因");
-  const total = groupDist.reduce((s, d) => s + d.value, 0);
+  const { factor } = useDataLevel();
+  const dist = scaleList(groupDist, factor);
+  const reasons = scaleList(view === "死亡原因" ? deathReasons : cullReasons, factor);
+  const total = dist.reduce((s, d) => s + d.value, 0);
   const isDeath = view === "死亡原因";
   return (
     <SectionCard
@@ -40,15 +44,15 @@ export function CullingSection() {
         <div>
           <p className="text-body-sm text-text-secondary mb-3">（本月）实际死淘分布</p>
           <div className="flex flex-col items-center gap-4">
-            <Donut data={groupDist} centerLabel="死淘合计" centerValue={String(total)} centerUnit="头" unit=" 头" />
-            <Legend data={groupDist} unit=" 头" />
+            <Donut data={dist} centerLabel="死淘合计" centerValue={String(total)} centerUnit="头" unit=" 头" />
+            <Legend data={dist} unit=" 头" />
           </div>
         </div>
         <div>
           <p className="text-body-sm text-text-secondary mb-3">
             （本月）{isDeath ? "死亡原因占比" : "淘汰原因占比"}
           </p>
-          <BarList data={isDeath ? deathReasons : cullReasons} unit=" 头" />
+          <BarList data={reasons} unit=" 头" />
         </div>
       </div>
     </SectionCard>

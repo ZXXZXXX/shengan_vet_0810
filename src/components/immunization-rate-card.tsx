@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Syringe, Clock, CalendarDays } from "lucide-react";
 import { PeriodTabs } from "@/components/dashboard/charts";
+import { scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 type VaccinePlan = {
   id: string;
@@ -47,7 +48,12 @@ function toneOf(pct: number) {
 
 export function ImmunizationRateCard() {
   const [period, setPeriod] = useState("近1年");
-  const plans = PLANS[period] ?? [];
+  const { factor } = useDataLevel();
+  const plans = (PLANS[period] ?? []).map((p) => ({
+    ...p,
+    planned: scaleValue(p.planned, factor),
+    done: scaleValue(p.done, factor),
+  }));
 
 
   return (

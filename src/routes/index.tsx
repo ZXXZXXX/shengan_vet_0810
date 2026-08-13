@@ -25,7 +25,8 @@ import { WorkOrderSection } from "@/components/dashboard/workorder-section";
 import { AlertSection, alertCounts } from "@/components/dashboard/alert-section";
 import { OpsSection } from "@/components/dashboard/ops-section";
 import { ViewSettingsSheet } from "@/components/dashboard/view-settings-sheet";
-import { useDashboardView, scopeOptions } from "@/lib/dashboard-view";
+import { useDashboardView, scopeOptions, useDataLevel, levelMeta, scaleValue } from "@/lib/dashboard-view";
+import { LevelSwitch } from "@/components/dashboard/level-switch";
 
 
 import {
@@ -76,13 +77,15 @@ type MetricCard = {
   anchor: string;
   good: boolean;
   topic: string;
+  /** 绝对数量指标：随统计层级上卷；比率类指标不随层级变化 */
+  absolute?: boolean;
 };
 
 const metricCards: MetricCard[] = [
-  { topic: "牛群专题", label: "（至今日）存栏总数", value: "4,060", unit: "头", trend: "up", delta: "+38 头", icon: Beef, anchor: "topic-herd", good: true },
-  { topic: "产犊专题", label: "（本月）产犊数", value: "179", unit: "头", trend: "up", delta: "+12 头", icon: Baby, anchor: "topic-calving", good: true },
-  { topic: "死淘专题", label: "（本月）死淘数", value: "45", unit: "头", trend: "down", delta: "-6 头", icon: Activity, anchor: "topic-culling", good: true },
-  { topic: "疾病专题", label: "（本月）发病 / 治愈头次", value: "365 / 337", unit: "头次", trend: "down", delta: "-4.2 %", icon: Stethoscope, anchor: "topic-disease", good: true },
+  { topic: "牛群专题", label: "（至今日）存栏总数", value: "4060", unit: "头", trend: "up", delta: "+38 头", icon: Beef, anchor: "topic-herd", good: true, absolute: true },
+  { topic: "产犊专题", label: "（本月）产犊数", value: "179", unit: "头", trend: "up", delta: "+12 头", icon: Baby, anchor: "topic-calving", good: true, absolute: true },
+  { topic: "死淘专题", label: "（本月）死淘数", value: "45", unit: "头", trend: "down", delta: "-6 头", icon: Activity, anchor: "topic-culling", good: true, absolute: true },
+  { topic: "疾病专题", label: "（本月）发病 / 治愈头次", value: "365 / 337", unit: "头次", trend: "down", delta: "-4.2 %", icon: Stethoscope, anchor: "topic-disease", good: true, absolute: true },
   { topic: "药品专题", label: "（本月）头均用药费用", value: "42.6", unit: "元/头", trend: "up", delta: "+6.9 %", icon: Pill, anchor: "topic-drug", good: false },
   { topic: "疫苗免疫专题", label: "（最近一次）疫苗完成率", value: "93.1", unit: "%", trend: "up", delta: "+2.3 %", icon: Syringe, anchor: "topic-vaccine", good: true },
 ];
@@ -224,6 +227,14 @@ function HomePage() {
     "topic-drug": "drug",
     "topic-vaccine": "vaccine",
   };
+  const { factor, level, levels } = useDataLevel();
+  const scaleCardValue = (c: MetricCard) =>
+    c.absolute
+      ? c.value
+          .split("/")
+          .map((part) => scaleValue(Number(part.trim().replace(/,/g, "")), factor).toLocaleString())
+          .join(" / ")
+      : c.value;
   const visibleCards = metricCards.filter((c) => vis[cardTopicByAnchor[c.anchor]] !== false);
 
 
@@ -408,10 +419,14 @@ function HomePage() {
             <p className="text-caption text-text-tertiary mt-0.5">
               当前视角：{scopeOptions.find((o) => o.key === scope)?.label} ·{" "}
               {scopeOptions.find((o) => o.key === scope)?.desc}
+              {levels.length > 1 && <> · 统计口径：{levelMeta[level].label}</>}
             </p>
           </div>
           <ViewSettingsSheet />
         </div>
+
+        {/* 数量级分层：集团级 > 区域级 > 牧场级 */}
+        <LevelSwitch />
 
 
         {/* 数据指标卡 1-6 — 点击跳转至对应专题 */}
@@ -472,7 +487,7 @@ function HomePage() {
                 </div>
                 <div className="mt-2 flex items-baseline gap-1.5">
                   <span className="tabular-nums font-semibold leading-none text-foreground" style={{ fontSize: "26px" }}>
-                    {k.value}
+                    {scaleCardValue(k)}
                   </span>
                   <span className="text-body-sm text-text-tertiary">{k.unit}</span>
                 </div>

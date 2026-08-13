@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Beef } from "lucide-react";
 import { SectionCard, StackedBar, PeriodTabs } from "./charts";
+import { scaleList, useDataLevel } from "@/lib/dashboard-view";
 
 const typeDist = [
   { name: "泌乳牛", value: 2180 },
@@ -23,8 +24,11 @@ const TAB_HEALTH = "健康分布";
 
 export function HerdSection() {
   const [tab, setTab] = useState(TAB_TYPE);
-  const total = typeDist.reduce((s, d) => s + d.value, 0);
-  const healthTotal = healthDist.reduce((s, d) => s + d.value, 0);
+  const { factor } = useDataLevel();
+  const types = scaleList(typeDist, factor);
+  const health = scaleList(healthDist, factor);
+  const total = types.reduce((s, d) => s + d.value, 0);
+  const healthTotal = health.reduce((s, d) => s + d.value, 0);
   return (
     <SectionCard
       id="topic-herd"
@@ -47,7 +51,7 @@ export function HerdSection() {
           </p>
         </div>
         <div className="flex flex-1 flex-col justify-center">
-          <StackedBar data={tab === TAB_TYPE ? typeDist : healthDist} unit=" 头" />
+          <StackedBar data={tab === TAB_TYPE ? types : health} unit=" 头" />
         </div>
       </div>
     </SectionCard>
