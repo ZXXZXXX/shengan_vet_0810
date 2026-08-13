@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, ChevronLeft, Home, BarChart3, PieChart } from "lucide-react";
+import { useDataLevel, type DataLevel } from "@/lib/dashboard-view";
+
 
 type DiseaseCat = { name: string; color: string; diseases: { name: string; count: number }[] };
 type Org = { id: string; name: string; herd: number; cases: number; cats?: DiseaseCat[]; children?: Org[] };
@@ -178,12 +180,27 @@ function CategoryBars({ cat }: { cat: DiseaseCat }) {
   );
 }
 
+function rootForLevel(level: DataLevel): Org {
+  if (level === "group") return ORG;
+  if (level === "region") return ORG.children![0]; // 东北大区
+  const farm = ORG.children![0].children![0]; // 1 号牧场
+  return { id: "farm-scope", name: farm.name, herd: 0, cases: 0, children: [farm] };
+}
+
 export function DiseaseStatsSection() {
-  const [path, setPath] = useState<Org[]>([ORG]);
+  const { level } = useDataLevel();
+  const root = useMemo(() => rootForLevel(level), [level]);
+  const [path, setPath] = useState<Org[]>([root]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [cat, setCat] = useState<string | null>(null);
 
-  const scope = path[path.length - 1];
+  useEffect(() => {
+    setPath([root]);
+    setSelectedId(null);
+    setCat(null);
+  }, [root]);
+
+  const scope = path[path.length - 1] ?? root;
   const children = scope.children ?? [];
   const ranked = useMemo(
     () => [...children].sort((a, b) => incidence(b) - incidence(a)),
@@ -194,6 +211,8 @@ export function DiseaseStatsSection() {
   const focusCats = useMemo(() => rollupCats(focus), [focus]);
   const activeCat = focusCats.find((c) => c.name === cat) ?? null;
   const maxRate = Math.max(...ranked.map((o) => incidence(o)), 0.01);
+  const childrenAreRegions = children.some((c) => c.children?.length);
+
 
   const goto = (i: number) => {
     setPath(path.slice(0, i + 1));
@@ -252,7 +271,7 @@ export function DiseaseStatsSection() {
         <div>
           <div className="flex items-center justify-between">
             <p className="text-body-sm text-text-secondary">
-              {scope.id === "group" ? "各区域发病率排名" : "各牧场发病率排名"}
+              {childrenAreRegions ? "各区域发病率排名" : "各牧场发病率排名"}
             </p>
             <span className="text-caption text-text-tertiary">由高到低</span>
           </div>
