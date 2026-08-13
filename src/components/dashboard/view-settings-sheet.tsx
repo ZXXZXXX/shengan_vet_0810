@@ -92,7 +92,7 @@ export function ViewSettingsSheet() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-body-sm font-medium text-foreground">
-                专题显隐
+                专题显隐与排序
                 <span className="ml-1.5 text-caption text-text-tertiary">
                   已开启 {visibleCount}/{topicMeta.length}
                 </span>
@@ -107,18 +107,42 @@ export function ViewSettingsSheet() {
               </button>
             </div>
             <div className="rounded-xl border border-border bg-card divide-y divide-border">
-              {topicMeta.map((t) => (
-                <div key={t.key} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
-                  <span className="text-body-sm text-foreground">{t.label}</span>
-                  <Switch
-                    checked={current[t.key]}
-                    onCheckedChange={(v) => setTopicVisible(editScope, t.key, v)}
-                  />
+              {orderedTopics.map((t, i) => (
+                <div key={t.key} className="flex items-center justify-between gap-2 px-3.5 py-2.5">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <GripVertical className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
+                    <span className="truncate text-body-sm text-foreground">{t.label}</span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1">
+                    <button
+                      type="button"
+                      aria-label="上移"
+                      disabled={i === 0}
+                      onClick={() => moveTopic(editScope, t.key, -1)}
+                      className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-border text-text-secondary transition-colors hover:text-primary hover:border-primary/40 disabled:opacity-35 disabled:hover:text-text-secondary disabled:hover:border-border"
+                    >
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="下移"
+                      disabled={i === orderedTopics.length - 1}
+                      onClick={() => moveTopic(editScope, t.key, 1)}
+                      className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-border text-text-secondary transition-colors hover:text-primary hover:border-primary/40 disabled:opacity-35 disabled:hover:text-text-secondary disabled:hover:border-border"
+                    >
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    </button>
+                    <Switch
+                      className="ml-1"
+                      checked={current[t.key]}
+                      onCheckedChange={(v) => setTopicVisible(editScope, t.key, v)}
+                    />
+                  </span>
                 </div>
               ))}
             </div>
             <p className="mt-2 text-caption text-text-tertiary">
-              配置仅作用于「{scopeOptions.find((s) => s.key === editScope)?.label}」视角。
+              显隐与排序仅作用于「{scopeOptions.find((s) => s.key === editScope)?.label}」视角。
             </p>
           </div>
         </div>
