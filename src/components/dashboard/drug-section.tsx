@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pill } from "lucide-react";
 import { SectionCard, Donut, Legend, LineTrend, MiniStat, PeriodTabs } from "./charts";
+import { useDataLevel } from "@/lib/dashboard-view";
 
 const PERIODS = ["近 1 年", "近 6 个月", "近 3 个月"];
 
@@ -57,11 +58,13 @@ function compositionFor(label: string, total: number) {
 export function DrugSection() {
   const [period, setPeriod] = useState(PERIODS[2]);
   const [active, setActive] = useState(trendData[PERIODS[2]].labels.length - 1);
-  const t = trendData[period];
+  const { factor } = useDataLevel();
+  const raw = trendData[period];
+  const t = { labels: raw.labels, points: raw.points.map((p) => Number((p * factor).toFixed(1))) };
   const idx = Math.min(active, t.labels.length - 1);
   const label = t.labels[idx];
   const total = t.points[idx];
-  const herd = herdByMonth[label] ?? 4300;
+  const herd = Math.round((herdByMonth[label] ?? 4300) * factor);
   const perHead = (total * 10000) / herd;
   const comp = compositionFor(label, total);
 
