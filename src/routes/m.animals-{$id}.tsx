@@ -455,10 +455,10 @@ function AnimalDetailPage() {
             <div className="p-3 pt-0 grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={startObserve}
+                onClick={() => setReasonOpen(true)}
                 className="h-11 rounded-xl border border-border text-body-sm text-text-secondary bg-card active:bg-surface-subtle"
               >
-                继续观察
+                无需治疗
               </button>
               <button
                 type="button"
@@ -478,6 +478,44 @@ function AnimalDetailPage() {
           </div>
         </div>
       )}
+
+      {/* 无需治疗 · 原因选择 */}
+      {reasonOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center"
+          onClick={() => setReasonOpen(false)}
+        >
+          <div
+            className="w-full sm:max-w-[340px] bg-card rounded-t-2xl sm:rounded-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-5 pt-5 pb-3 text-center space-y-1">
+              <div className="text-section text-foreground">请选择无需治疗的原因</div>
+              <div className="text-caption text-text-tertiary">#{a.id}</div>
+            </div>
+            <div className="p-3 pt-0 space-y-2">
+              {["设备问题，数据有误", "牛只正常，无病症", "继续观察，暂不治疗"].map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => startObserve(r)}
+                  className="w-full h-11 rounded-xl border border-border bg-card text-body-sm text-foreground active:bg-surface-subtle"
+                >
+                  {r}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setReasonOpen(false)}
+                className="w-full h-11 rounded-xl text-body-sm text-text-tertiary active:bg-surface-subtle"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
 
     </MobileShell>
