@@ -455,3 +455,79 @@ export function PeriodTabs({
     </div>
   );
 }
+
+export function ColumnChart({
+  data,
+  unit = "",
+  height = 168,
+}: {
+  data: Slice[];
+  unit?: string;
+  height?: number;
+}) {
+  const max = Math.max(...data.map((d) => d.value), 1);
+  return (
+    <div className="w-full">
+      <div className="flex items-end gap-3" style={{ height }}>
+        {data.map((d, i) => (
+          <div key={d.name} className="flex-1 min-w-0 flex flex-col items-center justify-end gap-2">
+            <span className="text-body-sm tabular-nums text-foreground">
+              {d.value.toLocaleString()}
+              {unit}
+            </span>
+            <div
+              className="w-full max-w-[56px] rounded-t-md transition-all"
+              style={{
+                height: `${Math.max((d.value / max) * (height - 44), 4)}px`,
+                background: d.color ?? PALETTE[i % PALETTE.length],
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-2 flex gap-3 border-t border-border pt-2">
+        {data.map((d) => (
+          <span key={d.name} className="flex-1 min-w-0 text-center text-caption text-text-secondary truncate">
+            {d.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function GaugeArc({
+  value,
+  label,
+  sub,
+  size = 180,
+  color = "var(--brand)",
+}: {
+  value: number; // 0-100
+  label: string;
+  sub?: string;
+  size?: number;
+  color?: string;
+}) {
+  const r = size / 2 - 12;
+  const c = size / 2;
+  const start = Math.PI * 0.85;
+  const end = Math.PI * 2.15;
+  const p = (rad: number) => `${c + r * Math.cos(rad)} ${c + r * Math.sin(rad)}`;
+  const at = start + ((end - start) * Math.min(Math.max(value, 0), 100)) / 100;
+  const arc = (a: number, b: number) =>
+    `M ${p(a)} A ${r} ${r} 0 ${b - a > Math.PI ? 1 : 0} 1 ${p(b)}`;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size * 0.78 }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="absolute inset-0">
+        <path d={arc(start, end)} fill="none" stroke="var(--bg-surface-subtle)" strokeWidth="14" strokeLinecap="round" />
+        <path d={arc(start, at)} fill="none" stroke={color} strokeWidth="14" strokeLinecap="round" />
+      </svg>
+      <div className="absolute inset-x-0 top-[34%] flex flex-col items-center">
+        <span className="text-page-title tabular-nums text-foreground">{value.toFixed(1)}%</span>
+        <span className="text-caption text-text-tertiary mt-0.5">{label}</span>
+        {sub && <span className="text-caption text-text-tertiary">{sub}</span>}
+      </div>
+    </div>
+  );
+}
