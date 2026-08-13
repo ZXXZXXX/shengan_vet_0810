@@ -24,6 +24,9 @@ import { DrugSection } from "@/components/dashboard/drug-section";
 import { WorkOrderSection } from "@/components/dashboard/workorder-section";
 import { AlertSection, alertCounts } from "@/components/dashboard/alert-section";
 import { OpsSection } from "@/components/dashboard/ops-section";
+import { ViewSettingsSheet } from "@/components/dashboard/view-settings-sheet";
+import { useDashboardView, scopeOptions } from "@/lib/dashboard-view";
+
 
 import {
   Inbox,
@@ -60,14 +63,8 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-type ReportScope = "farm-in" | "farm-out" | "region" | "group";
 
-const scopeOptions: { key: ReportScope; label: string }[] = [
-  { key: "farm-in", label: "牧场级·内部" },
-  { key: "farm-out", label: "牧场级·外部" },
-  { key: "region", label: "区域（中心）" },
-  { key: "group", label: "集团高管" },
-];
+
 
 type MetricCard = {
   label: string;
@@ -216,11 +213,19 @@ function HomePage() {
   const [attendanceOpen, setAttendanceOpen] = useState(false);
   const alertsRef = useRef<HTMLDivElement | null>(null);
 
-  const [scope, setScope] = useState<ReportScope>("farm-in");
+  const { scope, config } = useDashboardView();
+  const vis = config[scope];
   const showInternal = scope !== "farm-out";
-  const visibleCards = metricCards.filter(
-    (c) => showInternal || (c.anchor !== "topic-drug" && c.anchor !== "topic-workorder")
-  );
+  const cardTopicByAnchor: Record<string, keyof typeof vis> = {
+    "topic-herd": "herd",
+    "topic-calving": "calving",
+    "topic-culling": "culling",
+    "topic-disease": "disease",
+    "topic-drug": "drug",
+    "topic-vaccine": "vaccine",
+  };
+  const visibleCards = metricCards.filter((c) => vis[cardTopicByAnchor[c.anchor]] !== false);
+
 
   const scrollToTopic = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -401,30 +406,13 @@ function HomePage() {
           <div className="min-w-0">
             <h3 className="text-section-title text-foreground">数据看板</h3>
             <p className="text-caption text-text-tertiary mt-0.5">
-              {scope === "farm-out"
-                ? "外部口径：不展示药品、工单与预警告警专题"
-                : scope === "region"
-                ? "区域（中心）口径：牧场数据上卷至区域级"
-                : scope === "group"
-                ? "集团高管口径：牧场数据上卷至区域级、集团级"
-                : "牧场级内部口径：全量专题"}
+              当前视角：{scopeOptions.find((o) => o.key === scope)?.label} ·{" "}
+              {scopeOptions.find((o) => o.key === scope)?.desc}
             </p>
           </div>
-          <div className="inline-flex items-center rounded-full border border-border bg-surface-subtle p-0.5 shrink-0">
-            {scopeOptions.map((o) => (
-              <button
-                key={o.key}
-                type="button"
-                onClick={() => setScope(o.key)}
-                className={`h-8 px-3 rounded-full text-caption transition-colors ${
-                  scope === o.key ? "bg-card text-primary shadow-card" : "text-text-secondary"
-                }`}
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
+          <ViewSettingsSheet />
         </div>
+
 
         {/* 数据指标卡 1-6 — 点击跳转至对应专题 */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
@@ -504,42 +492,51 @@ function HomePage() {
         </div>
 
         {/* 1 牛群专题 + 2 产犊专题 */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-stretch">
-          <HerdSection />
-          <CalvingSection />
-        </div>
+        {(vis.herd || vis.calving) && (
+          <div className={`grid grid-cols-1 gap-4 items-stretch ${vis.herd && vis.calving ? "xl:grid-cols-2" : ""}`}>
+            {vis.herd && <HerdSection />}
+            {vis.calving && <CalvingSection />}
+          </div>
+        )}
 
         {/* 3 死淘专题 */}
-        <CullingSection />
+        {vis.culling && <CullingSection />}
 
         {/* 4 疾病专题 */}
-        <div id="topic-disease" className="scroll-mt-24">
-          <DiseaseStatsSection />
-        </div>
+        {vis.disease && (
+          <div id="topic-disease" className="scroll-mt-24">
+            <DiseaseStatsSection />
+          </div>
+        )}
 
-        {/* 5 药品专题 — 外部口径不展示 */}
-        {showInternal && <DrugSection />}
+        {/* 5 药品专题 */}
+        {vis.drug && <DrugSection />}
 
         {/* 6 疫苗免疫专题 + 7 兽医工单专题 左右布局 */}
-        <div className={`grid grid-cols-1 gap-6 items-stretch ${showInternal ? "xl:grid-cols-2" : ""}`}>
-          <div id="topic-vaccine" className="scroll-mt-24 h-full [&>*]:h-full">
-            <ImmunizationRateCard />
+        {(vis.vaccine || vis.workorder) && (
+          <div className={`grid grid-cols-1 gap-6 items-stretch ${vis.vaccine && vis.workorder ? "xl:grid-cols-2" : ""}`}>
+            {vis.vaccine && (
+              <div id="topic-vaccine" className="scroll-mt-24 h-full [&>*]:h-full">
+                <ImmunizationRateCard />
+              </div>
+            )}
+            {vis.workorder && (
+              <div className="min-w-0 h-full [&>*]:h-full">
+                <WorkOrderSection />
+              </div>
+            )}
           </div>
-          {showInternal && (
-            <div className="min-w-0 h-full [&>*]:h-full">
-              <WorkOrderSection />
-            </div>
-          )}
-        </div>
+        )}
 
 
-        {/* 8 预警告警专题 — 外部口径不展示 */}
-        {showInternal && <AlertSection />}
+        {/* 8 预警告警专题 */}
+        {vis.alert && <AlertSection />}
 
         {/* 区域 / 集团运营统计 */}
-        {(scope === "region" || scope === "group") && (
+        {vis.ops && (scope === "region" || scope === "group") && (
           <OpsSection level={scope === "group" ? "group" : "region"} />
         )}
+
 
 
 
