@@ -219,6 +219,8 @@ type Template = {
   filters: Filters;
   favorite?: boolean;
   usage?: number;
+  creator: string;
+  createdAt: string;
 };
 
 const DEFAULT_TEMPLATES: Template[] = [
@@ -231,6 +233,8 @@ const DEFAULT_TEMPLATES: Template[] = [
     filters: { ...DEFAULT_FILTERS, dateRange: "30d", woTypes: ["disease"] },
     favorite: true,
     usage: 128,
+    creator: "张兽医",
+    createdAt: "2026-05-12 09:20",
   },
   {
     id: "t-mastitis",
@@ -240,6 +244,8 @@ const DEFAULT_TEMPLATES: Template[] = [
     tone: "var(--effect-ai-purple)",
     filters: { ...DEFAULT_FILTERS, dateRange: "30d", diseaseCat: "乳房疾病" },
     usage: 74,
+    creator: "李技术员",
+    createdAt: "2026-06-03 14:05",
   },
   {
     id: "t-vaccine-month",
@@ -250,6 +256,8 @@ const DEFAULT_TEMPLATES: Template[] = [
     filters: { ...DEFAULT_FILTERS, dateRange: "month", woTypes: ["vaccine"], status: "done" },
     favorite: true,
     usage: 96,
+    creator: "王场长",
+    createdAt: "2026-04-21 10:38",
   },
   {
     id: "t-postpartum-highrisk",
@@ -259,6 +267,8 @@ const DEFAULT_TEMPLATES: Template[] = [
     tone: "var(--effect-ai-purple)",
     filters: { ...DEFAULT_FILTERS, dateRange: "7d", woTypes: ["postpartum"], prescriptions: ["产后高危"] },
     usage: 62,
+    creator: "张兽医",
+    createdAt: "2026-06-18 16:12",
   },
   {
     id: "t-calving-dystocia",
@@ -268,6 +278,8 @@ const DEFAULT_TEMPLATES: Template[] = [
     tone: "var(--state-warning)",
     filters: { ...DEFAULT_FILTERS, dateRange: "90d", calvingTypes: ["难产", "剖腹产"] },
     usage: 28,
+    creator: "刘繁育员",
+    createdAt: "2026-03-09 08:47",
   },
   {
     id: "t-drug-cef",
@@ -282,6 +294,8 @@ const DEFAULT_TEMPLATES: Template[] = [
       drugRoute: "肌内注射",
     },
     usage: 53,
+    creator: "陈药师",
+    createdAt: "2026-05-27 11:30",
   },
   {
     id: "t-operator",
@@ -291,6 +305,8 @@ const DEFAULT_TEMPLATES: Template[] = [
     tone: "var(--brand)",
     filters: { ...DEFAULT_FILTERS, dateRange: "30d", role: "vet" },
     usage: 45,
+    creator: "王场长",
+    createdAt: "2026-07-02 15:55",
   },
   {
     id: "t-pending-7d",
@@ -300,6 +316,8 @@ const DEFAULT_TEMPLATES: Template[] = [
     tone: "var(--destructive)",
     filters: { ...DEFAULT_FILTERS, dateRange: "7d", status: "pending" },
     usage: 88,
+    creator: "李技术员",
+    createdAt: "2026-07-15 09:05",
   },
 ];
 
@@ -454,6 +472,8 @@ function StatsPage() {
         tone: "var(--brand)",
         filters: { ...saveSource },
         usage: 0,
+        creator: "当前用户",
+        createdAt: new Date().toLocaleString("zh-CN", { hour12: false }).replace(/\//g, "-"),
       },
       ...prev,
     ]);
@@ -566,14 +586,12 @@ function StatsPage() {
                 key={t.id}
                 className="group border border-border rounded-xl bg-white p-5 hover:border-primary/50 hover:shadow-[0_8px_24px_-16px_var(--brand)] transition-all flex flex-col"
               >
-                <div className="flex items-start justify-between">
-                  <div
-                    className="h-10 w-10 rounded-lg flex items-center justify-center"
-                    style={{ background: `color-mix(in oklab, ${t.tone} 14%, transparent)`, color: t.tone }}
-                  >
-                    <t.icon className="h-4 w-4" strokeWidth={1.75} />
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-body font-medium text-foreground truncate">{t.name}</div>
+                    <div className="text-caption text-text-tertiary mt-1 line-clamp-2 min-h-[36px]">{t.desc}</div>
                   </div>
-                  <div className="flex items-center gap-0.5 -mr-1.5">
+                  <div className="flex items-center gap-0.5 -mr-1.5 shrink-0">
                     <button
                       type="button"
                       onClick={() => toggleFav(t.id)}
@@ -596,10 +614,6 @@ function StatsPage() {
                     </button>
                   </div>
                 </div>
-                <div className="mt-4">
-                  <div className="text-body font-medium text-foreground">{t.name}</div>
-                  <div className="text-caption text-text-tertiary mt-1 line-clamp-2 min-h-[36px]">{t.desc}</div>
-                </div>
                 <div className="mt-3 flex flex-wrap gap-1">
                   {tagsFromFilters(t.filters).slice(0, 3).map((label) => (
                     <Badge
@@ -610,6 +624,10 @@ function StatsPage() {
                       {label}
                     </Badge>
                   ))}
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-text-tertiary">
+                  <span>创建人：{t.creator}</span>
+                  <span>创建时间：{t.createdAt}</span>
                 </div>
                 <div className="mt-4 pt-3 border-t border-border flex items-center gap-2">
                   <Button
