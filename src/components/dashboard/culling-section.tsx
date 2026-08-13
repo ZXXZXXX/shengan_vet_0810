@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity } from "lucide-react";
-import { SectionCard, StackedBar, BarList, PeriodTabs } from "./charts";
+import { SectionCard, ColumnChart, BarList, PeriodTabs } from "./charts";
 import { scaleList, useDataLevel } from "@/lib/dashboard-view";
 
 const groupDist = [
@@ -52,7 +52,7 @@ export function CullingSection() {
               头
             </p>
           </div>
-          <StackedBar data={dist} unit=" 头" />
+          <ColumnChart data={dist} unit=" 头" />
         </div>
         <div>
           <p className="text-body-sm text-text-secondary mb-3">
