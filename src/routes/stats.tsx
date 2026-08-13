@@ -493,9 +493,9 @@ function StatsPage() {
         <main className="flex-1 px-6 py-6 space-y-4 bg-white">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3 min-w-0">
-              <Button variant="outline" size="sm" onClick={() => setView("builder")} className="h-9 shrink-0">
+              <Button variant="outline" size="sm" onClick={() => setView(resultBack)} className="h-9 shrink-0">
                 <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-                返回筛选
+                {resultBack === "templates" ? "返回模板" : "返回筛选"}
               </Button>
               <div className="min-w-0">
                 <div className="text-card-title font-medium text-foreground truncate">{resultTitle}</div>
@@ -511,11 +511,16 @@ function StatsPage() {
                 className="h-9"
                 onClick={() => {
                   setFilters(resultFilters);
+                  setEditingId(null);
                   setView("builder");
                 }}
               >
                 <Filter className="h-3.5 w-3.5 mr-1" />
-                再筛选
+                调整筛选
+              </Button>
+              <Button variant="outline" size="sm" className="h-9" onClick={() => openSave(resultFilters)}>
+                <Save className="h-3.5 w-3.5 mr-1" />
+                保存为模板
               </Button>
               <Button
                 size="sm"
@@ -526,9 +531,10 @@ function StatsPage() {
                 }}
               >
                 <Download className="h-3.5 w-3.5 mr-1" />
-                下载报表
+                导出数据
               </Button>
             </div>
+
           </div>
 
           <Card className="border-border bg-white overflow-x-auto">
