@@ -236,7 +236,13 @@ function HomePage() {
           .map((part) => scaleValue(Number(part.trim().replace(/,/g, "")), factor).toLocaleString())
           .join(" / ")
       : c.value;
-  const visibleCards = metricCards.filter((c) => vis[cardTopicByAnchor[c.anchor]] !== false);
+  const visibleCards = metricCards
+    .filter((c) => vis[cardTopicByAnchor[c.anchor]] !== false)
+    .sort(
+      (a, b) =>
+        topicOrder.indexOf(cardTopicByAnchor[a.anchor]) -
+        topicOrder.indexOf(cardTopicByAnchor[b.anchor]),
+    );
 
 
   const scrollToTopic = (id: string) => {
