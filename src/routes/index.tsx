@@ -25,7 +25,7 @@ import { WorkOrderSection } from "@/components/dashboard/workorder-section";
 import { AlertSection, alertCounts } from "@/components/dashboard/alert-section";
 import { OpsSection } from "@/components/dashboard/ops-section";
 import { ViewSettingsSheet } from "@/components/dashboard/view-settings-sheet";
-import { useDashboardView, scopeOptions, useDataLevel, levelMeta, scaleValue } from "@/lib/dashboard-view";
+import { useDashboardView, useTopicOrder, scopeOptions, useDataLevel, levelMeta, scaleValue } from "@/lib/dashboard-view";
 import { LevelSwitch } from "@/components/dashboard/level-switch";
 
 
