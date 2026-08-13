@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Syringe, Clock, CalendarDays } from "lucide-react";
-import { PeriodTabs } from "@/components/dashboard/charts";
+import { PeriodTabs, GaugeArc } from "@/components/dashboard/charts";
 import { scaleValue, useDataLevel } from "@/lib/dashboard-view";
 
 type VaccinePlan = {
@@ -54,7 +54,9 @@ export function ImmunizationRateCard() {
     planned: scaleValue(p.planned, factor),
     done: scaleValue(p.done, factor),
   }));
-
+  const totalPlanned = plans.reduce((s2, p) => s2 + p.planned, 0);
+  const totalDone = plans.reduce((s2, p) => s2 + p.done, 0);
+  const overallRate = totalPlanned === 0 ? 0 : (totalDone / totalPlanned) * 100;
 
   return (
     <Card className="border-border bg-card rounded-2xl shadow-card p-6 flex flex-col">
@@ -74,8 +76,23 @@ export function ImmunizationRateCard() {
         <PeriodTabs value={period} onChange={setPeriod} options={["近1年", "近6个月", "近3个月"]} />
       </div>
 
+      {/* 整体完成率 · 半环仪表盘 */}
+      <div className="mt-4 flex items-center gap-6 flex-wrap">
+        <GaugeArc value={overallRate} label="整体免疫完成率" size={160} color={toneOf(overallRate)} />
+        <div className="flex-1 min-w-[160px] grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-border bg-surface-subtle px-4 py-3">
+            <div className="text-caption text-text-tertiary">计划接种</div>
+            <div className="mt-1 text-section-title tabular-nums text-foreground">{totalPlanned.toLocaleString()}</div>
+          </div>
+          <div className="rounded-xl border border-border bg-surface-subtle px-4 py-3">
+            <div className="text-caption text-text-tertiary">已接种</div>
+            <div className="mt-1 text-section-title tabular-nums text-foreground">{totalDone.toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+
       {/* 各项疫苗计划 · 横向柱状图 */}
-      <div className="mt-4 flex-1 min-h-0 overflow-y-auto pr-1">
+      <div className="mt-5 flex-1 min-h-0 overflow-y-auto pr-1">
         <div className="flex flex-col gap-5 min-h-full justify-center">
         {plans.map((p) => {
           const r = p.planned === 0 ? 0 : (p.done / p.planned) * 100;
