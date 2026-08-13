@@ -45,7 +45,9 @@ export function CullingSection() {
           <div className="mb-3 flex items-baseline justify-between gap-3">
             <p className="text-body-sm text-text-secondary">（本月）实际死淘分布</p>
             <p className="text-caption text-text-tertiary">
-              死淘合计{" "}
+              死淘率 <span className="text-section-title tabular-nums text-foreground">{((total / (4368 * factor)) * 100).toFixed(2)}%</span>
+              <span className="mx-2 text-border">|</span>
+              合计{" "}
               <span className="text-section-title tabular-nums text-foreground">
                 {total.toLocaleString()}
               </span>{" "}
