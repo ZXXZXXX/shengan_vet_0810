@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings2, Check, RotateCcw } from "lucide-react";
+import { Settings2, Check, RotateCcw, ChevronUp, ChevronDown, GripVertical } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -14,18 +14,24 @@ import {
   topicMeta,
   setScope,
   setTopicVisible,
+  moveTopic,
   resetScopeConfig,
   useDashboardView,
   type ReportScope,
+  type TopicKey,
 } from "@/lib/dashboard-view";
 
 export function ViewSettingsSheet() {
-  const { scope, config } = useDashboardView();
+  const { scope, config, order } = useDashboardView();
   const [open, setOpen] = useState(false);
   const [editScope, setEditScope] = useState<ReportScope>(scope);
 
   const current = config[editScope];
   const visibleCount = topicMeta.filter((t) => current[t.key]).length;
+  const orderedTopics = (order[editScope] ?? topicMeta.map((t) => t.key))
+    .map((k: TopicKey) => topicMeta.find((t) => t.key === k)!)
+    .filter(Boolean);
+
 
   return (
     <Sheet
