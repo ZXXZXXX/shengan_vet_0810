@@ -492,42 +492,51 @@ function HomePage() {
         </div>
 
         {/* 1 牛群专题 + 2 产犊专题 */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-stretch">
-          <HerdSection />
-          <CalvingSection />
-        </div>
+        {(vis.herd || vis.calving) && (
+          <div className={`grid grid-cols-1 gap-4 items-stretch ${vis.herd && vis.calving ? "xl:grid-cols-2" : ""}`}>
+            {vis.herd && <HerdSection />}
+            {vis.calving && <CalvingSection />}
+          </div>
+        )}
 
         {/* 3 死淘专题 */}
-        <CullingSection />
+        {vis.culling && <CullingSection />}
 
         {/* 4 疾病专题 */}
-        <div id="topic-disease" className="scroll-mt-24">
-          <DiseaseStatsSection />
-        </div>
+        {vis.disease && (
+          <div id="topic-disease" className="scroll-mt-24">
+            <DiseaseStatsSection />
+          </div>
+        )}
 
-        {/* 5 药品专题 — 外部口径不展示 */}
-        {showInternal && <DrugSection />}
+        {/* 5 药品专题 */}
+        {vis.drug && <DrugSection />}
 
         {/* 6 疫苗免疫专题 + 7 兽医工单专题 左右布局 */}
-        <div className={`grid grid-cols-1 gap-6 items-stretch ${showInternal ? "xl:grid-cols-2" : ""}`}>
-          <div id="topic-vaccine" className="scroll-mt-24 h-full [&>*]:h-full">
-            <ImmunizationRateCard />
+        {(vis.vaccine || vis.workorder) && (
+          <div className={`grid grid-cols-1 gap-6 items-stretch ${vis.vaccine && vis.workorder ? "xl:grid-cols-2" : ""}`}>
+            {vis.vaccine && (
+              <div id="topic-vaccine" className="scroll-mt-24 h-full [&>*]:h-full">
+                <ImmunizationRateCard />
+              </div>
+            )}
+            {vis.workorder && (
+              <div className="min-w-0 h-full [&>*]:h-full">
+                <WorkOrderSection />
+              </div>
+            )}
           </div>
-          {showInternal && (
-            <div className="min-w-0 h-full [&>*]:h-full">
-              <WorkOrderSection />
-            </div>
-          )}
-        </div>
+        )}
 
 
-        {/* 8 预警告警专题 — 外部口径不展示 */}
-        {showInternal && <AlertSection />}
+        {/* 8 预警告警专题 */}
+        {vis.alert && <AlertSection />}
 
         {/* 区域 / 集团运营统计 */}
-        {(scope === "region" || scope === "group") && (
+        {vis.ops && (scope === "region" || scope === "group") && (
           <OpsSection level={scope === "group" ? "group" : "region"} />
         )}
+
 
 
 
