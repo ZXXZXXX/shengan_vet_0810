@@ -354,33 +354,6 @@ function breedingFields(cow: CattleProfile): { label: string; value: string }[] 
   ];
 }
 
-function Metric({
-  label,
-  value,
-  unit,
-  tone = "default",
-}: {
-  label: string;
-  value: string;
-  unit?: string;
-  tone?: "default" | "danger";
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card px-3 py-2.5">
-      <div className="text-caption text-text-tertiary">{label}</div>
-      <div className="mt-1 flex items-baseline gap-1">
-        <span
-          className={`text-[20px] leading-[26px] font-medium tabular-nums ${
-            tone === "danger" ? "text-[#CF1322]" : "text-foreground"
-          }`}
-        >
-          {value}
-        </span>
-        {unit && <span className="text-caption text-text-tertiary">{unit}</span>}
-      </div>
-    </div>
-  );
-}
 
 function Panel({
   title,
