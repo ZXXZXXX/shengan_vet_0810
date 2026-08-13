@@ -271,7 +271,7 @@ export function DiseaseStatsSection() {
         <div>
           <div className="flex items-center justify-between">
             <p className="text-body-sm text-text-secondary">
-              {scope.id === "group" ? "各区域发病率排名" : "各牧场发病率排名"}
+              {childrenAreRegions ? "各区域发病率排名" : "各牧场发病率排名"}
             </p>
             <span className="text-caption text-text-tertiary">由高到低</span>
           </div>
