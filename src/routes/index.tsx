@@ -505,57 +505,49 @@ function HomePage() {
           })}
         </div>
 
-        {/* 1 牛群专题 + 2 产犊专题 */}
-        {(vis.herd || vis.calving) && (
-          <div className={`grid grid-cols-1 gap-4 items-stretch ${vis.herd && vis.calving ? "xl:grid-cols-2" : ""}`}>
-            {vis.herd && <HerdSection />}
-            {vis.calving && <CalvingSection />}
-          </div>
-        )}
-
-        {/* 3 死淘专题 + 4 疾病专题 */}
-        {(vis.culling || vis.disease) && (
-          <div className={`grid grid-cols-1 gap-6 items-stretch ${vis.culling && vis.disease ? "xl:grid-cols-2" : ""}`}>
-            {vis.culling && (
-              <div id="topic-culling" className="scroll-mt-24 h-full [&>*]:h-full">
-                <CullingSection />
+        {/* 专题区：顺序由「看板视角设置」中的排序决定，半宽专题自动两两并排 */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
+          {topicOrder.map((key) => {
+            if (key === "ops" && scope !== "region" && scope !== "group") return null;
+            const full = key === "drug" || key === "alert" || key === "ops";
+            const node =
+              key === "herd" ? (
+                <HerdSection />
+              ) : key === "calving" ? (
+                <CalvingSection />
+              ) : key === "culling" ? (
+                <div id="topic-culling" className="scroll-mt-24 h-full [&>*]:h-full">
+                  <CullingSection />
+                </div>
+              ) : key === "disease" ? (
+                <div id="topic-disease" className="scroll-mt-24 h-full [&>*]:h-full">
+                  <DiseaseStatsSection />
+                </div>
+              ) : key === "drug" ? (
+                <DrugSection />
+              ) : key === "vaccine" ? (
+                <div id="topic-vaccine" className="scroll-mt-24 h-full [&>*]:h-full">
+                  <ImmunizationRateCard />
+                </div>
+              ) : key === "workorder" ? (
+                <div className="min-w-0 h-full [&>*]:h-full">
+                  <WorkOrderSection />
+                </div>
+              ) : key === "alert" ? (
+                <AlertSection />
+              ) : (
+                <OpsSection level={scope === "group" ? "group" : "region"} />
+              );
+            return (
+              <div
+                key={key}
+                className={`min-w-0 h-full [&>*]:h-full ${full ? "xl:col-span-2" : ""}`}
+              >
+                {node}
               </div>
-            )}
-            {vis.disease && (
-              <div id="topic-disease" className="scroll-mt-24 h-full [&>*]:h-full">
-                <DiseaseStatsSection />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* 5 药品专题 */}
-        {vis.drug && <DrugSection />}
-
-        {/* 6 疫苗免疫专题 + 7 兽医工单专题 左右布局 */}
-        {(vis.vaccine || vis.workorder) && (
-          <div className={`grid grid-cols-1 gap-6 items-stretch ${vis.vaccine && vis.workorder ? "xl:grid-cols-2" : ""}`}>
-            {vis.vaccine && (
-              <div id="topic-vaccine" className="scroll-mt-24 h-full [&>*]:h-full">
-                <ImmunizationRateCard />
-              </div>
-            )}
-            {vis.workorder && (
-              <div className="min-w-0 h-full [&>*]:h-full">
-                <WorkOrderSection />
-              </div>
-            )}
-          </div>
-        )}
-
-
-        {/* 8 预警告警专题 */}
-        {vis.alert && <AlertSection />}
-
-        {/* 区域 / 集团运营统计 */}
-        {vis.ops && (scope === "region" || scope === "group") && (
-          <OpsSection level={scope === "group" ? "group" : "region"} />
-        )}
+            );
+          })}
+        </div>
 
 
 
