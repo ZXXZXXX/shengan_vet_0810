@@ -552,9 +552,12 @@ function AnimalDetailPage() {
                   key={r}
                   type="button"
                   onClick={() => {
-                    setPendingReason(r);
                     setReasonOpen(false);
-                    setEvidenceOpen(true);
+                    navigate({
+                      to: "/m/animals-{$id}/evidence",
+                      params: { id },
+                      search: { reason: r },
+                    });
                   }}
                   className="w-full h-12 rounded-xl border border-border bg-card text-body text-foreground active:bg-surface-subtle"
                 >
