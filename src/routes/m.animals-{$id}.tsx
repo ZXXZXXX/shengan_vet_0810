@@ -109,33 +109,6 @@ function AnimalDetailPage() {
   }, [evidenceKey]);
 
 
-  const startObserve = (reason: string, note: string, photos: string[]) => {
-    const d = new Date();
-    d.setHours(24, 0, 0, 0); // 次日 00:00
-    window.localStorage.setItem(obsKey, String(d.getTime()));
-    setObserveUntil(d.getTime());
-    markAlertHandled(a.id); // 异常排查任务当天从今日任务列表清除
-    const rec: EvidenceRecord = {
-      time: new Date().toLocaleString("zh-CN", { hour12: false }),
-      reason,
-      note,
-      photos,
-      operator: "张兽医",
-    };
-    const next = [rec, ...evidences];
-    setEvidences(next);
-    try {
-      window.localStorage.setItem(evidenceKey, JSON.stringify(next));
-    } catch {
-      /* ignore */
-    }
-    setEvidenceOpen(false);
-    setReasonOpen(false);
-    setFeedbackOpen(false);
-    setEvPhotos([]);
-    setEvNote("");
-    toast.success(`已留证并标记无需治疗 · ${reason}`);
-  };
 
 
 
