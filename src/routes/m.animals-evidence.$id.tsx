@@ -21,7 +21,6 @@ type EvidenceRecord = {
   reason: string;
   note: string;
   photos: string[];
-  operator: string;
 };
 
 function EvidencePage() {
@@ -50,7 +49,6 @@ function EvidencePage() {
       reason: selectedReason,
       note: trimmed,
       photos: evPhotos,
-      operator: "张兽医",
     };
 
     try {
@@ -157,10 +155,6 @@ function EvidencePage() {
             placeholder="如：现场查看采食反刍正常，颈环佩戴松动导致数据异常"
             className="w-full rounded-xl border border-border bg-card p-3 text-body-sm text-foreground outline-none focus:border-primary"
           />
-        </div>
-
-        <div className="rounded-xl bg-surface-subtle px-3 py-2 text-caption text-text-tertiary">
-          提交人：张兽医 · {new Date().toLocaleString("zh-CN", { hour12: false })}
         </div>
       </div>
 
