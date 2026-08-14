@@ -68,9 +68,6 @@ function EvidencePage() {
       <div className="px-4 pt-3 pb-28 space-y-5">
         <div className="space-y-1">
           <div className="text-section text-foreground">#{id} 无需治疗</div>
-          <div className="text-caption text-text-tertiary">
-            选择原因并拍照留证，信息将作为回溯追责依据
-          </div>
         </div>
 
         {/* 原因选择 */}
