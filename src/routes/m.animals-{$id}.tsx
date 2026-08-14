@@ -501,7 +501,10 @@ function AnimalDetailPage() {
             <div className="p-3 pt-0 grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => setReasonOpen(true)}
+                onClick={() => {
+                  setFeedbackOpen(false);
+                  navigate({ to: "/m/animals-{$id}/evidence", params: { id } });
+                }}
                 className="h-11 rounded-xl border border-border text-body-sm text-text-secondary bg-card active:bg-surface-subtle"
               >
                 无需治疗
@@ -525,56 +528,9 @@ function AnimalDetailPage() {
         </div>
       )}
 
-      {/* 无需治疗 · 原因选择（下拉抽屉） */}
-      {reasonOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
-          onClick={() => setReasonOpen(false)}
-        >
-          <div
-            className="w-full max-w-[440px] bg-card rounded-t-2xl pb-[calc(env(safe-area-inset-bottom)+16px)]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-4 h-12 flex items-center justify-center border-b border-border relative">
-              <div className="text-body font-medium text-foreground">请选择无需治疗的原因</div>
-              <button
-                type="button"
-                onClick={() => setReasonOpen(false)}
-                className="absolute right-2 h-8 w-8 inline-flex items-center justify-center text-text-tertiary"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="p-4 space-y-2">
-              <div className="text-center text-caption text-text-tertiary pb-1">#{a.id}</div>
-              {["设备问题，数据有误", "牛只正常，无病症", "继续观察，暂不治疗"].map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => {
-                    setReasonOpen(false);
-                    navigate({
-                      to: "/m/animals-{$id}/evidence",
-                      params: { id },
-                      search: { reason: r },
-                    });
-                  }}
-                  className="w-full h-12 rounded-xl border border-border bg-card text-body text-foreground active:bg-surface-subtle"
-                >
-                  {r}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setReasonOpen(false)}
-                className="w-full h-12 rounded-xl text-body text-text-tertiary active:bg-surface-subtle"
-              >
-                取消
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+    </MobileShell>
+  );
+}
 
 
     </MobileShell>
