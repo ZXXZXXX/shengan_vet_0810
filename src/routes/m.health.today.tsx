@@ -254,6 +254,14 @@ function TodayTasksPage() {
       return next;
     });
 
+  const toggleType = (type: string) =>
+    setSelectedTypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type);
+      else next.add(type);
+      return next;
+    });
+
   const toggle = (id: string) =>
     setSelected((prev) => {
       const next = new Set(prev);
@@ -261,6 +269,7 @@ function TodayTasksPage() {
       else next.add(id);
       return next;
     });
+
 
   const allSelected = tasks.length > 0 && selected.size === tasks.length;
   const toggleAll = () => {
