@@ -88,16 +88,60 @@ function AnimalDetailPage() {
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [reasonOpen, setReasonOpen] = useState(false);
-  const startObserve = (reason: string) => {
+
+  // 无需治疗 · 留证（业务回溯追责）
+  const evidenceKey = `cow-alert-evidence-${id}`;
+  type EvidenceRecord = {
+    time: string;
+    reason: string;
+    note: string;
+    photos: string[];
+    operator: string;
+  };
+  const [evidences, setEvidences] = useState<EvidenceRecord[]>([]);
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(evidenceKey);
+      if (raw) setEvidences(JSON.parse(raw) as EvidenceRecord[]);
+    } catch {
+      /* ignore */
+    }
+  }, [evidenceKey]);
+
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const [pendingReason, setPendingReason] = useState("");
+  const [evPhotos, setEvPhotos] = useState<string[]>([]);
+  const [evNote, setEvNote] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const startObserve = (reason: string, note: string, photos: string[]) => {
     const d = new Date();
     d.setHours(24, 0, 0, 0); // 次日 00:00
     window.localStorage.setItem(obsKey, String(d.getTime()));
     setObserveUntil(d.getTime());
     markAlertHandled(a.id); // 异常排查任务当天从今日任务列表清除
+    const rec: EvidenceRecord = {
+      time: new Date().toLocaleString("zh-CN", { hour12: false }),
+      reason,
+      note,
+      photos,
+      operator: "张兽医",
+    };
+    const next = [rec, ...evidences];
+    setEvidences(next);
+    try {
+      window.localStorage.setItem(evidenceKey, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+    setEvidenceOpen(false);
     setReasonOpen(false);
     setFeedbackOpen(false);
-    toast.success(`已标记无需治疗 · ${reason}`);
+    setEvPhotos([]);
+    setEvNote("");
+    toast.success(`已留证并标记无需治疗 · ${reason}`);
   };
+
 
 
   // 记录 sheet
@@ -231,6 +275,40 @@ function AnimalDetailPage() {
           </section>
         )}
 
+        {/* 异常排查留证记录 */}
+        {evidences.length > 0 && (
+          <section className="px-4 mt-4">
+            <div className="flex items-center gap-1.5 mb-2">
+              <MessageSquareWarning className="h-4 w-4 text-[#B8860B]" />
+              <span className="text-card-title text-foreground">异常排查留证</span>
+              <span className="text-caption text-text-tertiary">{evidences.length} 条</span>
+            </div>
+            <div className="space-y-2">
+              {evidences.map((ev, i) => (
+                <div key={i} className="rounded-xl border border-border bg-card p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-body-sm font-medium text-foreground truncate">无需治疗 · {ev.reason}</span>
+                    <span className="text-caption text-text-tertiary shrink-0">{ev.time}</span>
+                  </div>
+                  <div className="text-body-sm text-text-secondary">{ev.note}</div>
+                  {ev.photos.length > 0 && (
+                    <div className="flex gap-2">
+                      {ev.photos.map((p, k) => (
+                        <img
+                          key={k}
+                          src={p}
+                          alt={`留证照片 ${k + 1}`}
+                          className="h-14 w-14 rounded-lg object-cover bg-surface-subtle"
+                        />
+                      ))}
+                    </div>
+                  )}
+                  <div className="text-caption text-text-tertiary">提交人：{ev.operator}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
 
         {/* 外接设备 */}
@@ -498,7 +576,11 @@ function AnimalDetailPage() {
                 <button
                   key={r}
                   type="button"
-                  onClick={() => startObserve(r)}
+                  onClick={() => {
+                    setPendingReason(r);
+                    setReasonOpen(false);
+                    setEvidenceOpen(true);
+                  }}
                   className="w-full h-11 rounded-xl border border-border bg-card text-body-sm text-foreground active:bg-surface-subtle"
                 >
                   {r}
@@ -516,7 +598,98 @@ function AnimalDetailPage() {
         </div>
       )}
 
-
+      {/* 无需治疗 · 留证 */}
+      {evidenceOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center"
+          onClick={() => setEvidenceOpen(false)}
+        >
+          <div
+            className="w-full sm:max-w-[360px] bg-card rounded-t-2xl sm:rounded-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-5 pt-5 pb-3 space-y-1">
+              <div className="text-section text-foreground">留证材料</div>
+              <div className="text-caption text-text-tertiary">
+                #{a.id} · {pendingReason} · 留证信息将作为回溯追责依据
+              </div>
+            </div>
+            <div className="px-5 pb-3 space-y-3">
+              <div className="space-y-2">
+                <div className="text-caption text-text-secondary">现场照片（至少 1 张）</div>
+                <div className="grid grid-cols-4 gap-2">
+                  {evPhotos.map((p, i) => (
+                    <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-surface-subtle">
+                      <img src={p} alt={`留证照片 ${i + 1}`} className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setEvPhotos(evPhotos.filter((_, k) => k !== i))}
+                        className="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-black/60 text-white inline-flex items-center justify-center"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {evPhotos.length < 4 && (
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      className="aspect-square rounded-lg border border-dashed border-border text-text-tertiary inline-flex flex-col items-center justify-center gap-0.5 active:bg-surface-subtle"
+                    >
+                      <FilePlus2 className="h-4 w-4" />
+                      <span className="text-[11px]">添加</span>
+                    </button>
+                  )}
+                </div>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    const urls = files.slice(0, 4 - evPhotos.length).map((f) => URL.createObjectURL(f));
+                    setEvPhotos([...evPhotos, ...urls]);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <div className="text-caption text-text-secondary">现场说明（必填，不少于 5 字）</div>
+                <textarea
+                  value={evNote}
+                  onChange={(e) => setEvNote(e.target.value)}
+                  rows={3}
+                  placeholder="如：现场查看采食反刍正常，颈环佩戴松动导致数据异常"
+                  className="w-full rounded-xl border border-border bg-card p-3 text-body-sm text-foreground outline-none focus:border-primary"
+                />
+              </div>
+              <div className="rounded-xl bg-surface-subtle px-3 py-2 text-caption text-text-tertiary">
+                提交人：张兽医 · {new Date().toLocaleString("zh-CN", { hour12: false })}
+              </div>
+            </div>
+            <div className="p-3 pt-0 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setEvidenceOpen(false)}
+                className="h-11 rounded-xl border border-border text-body-sm text-text-secondary active:bg-surface-subtle"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                disabled={evPhotos.length === 0 || evNote.trim().length < 5}
+                onClick={() => startObserve(pendingReason, evNote.trim(), evPhotos)}
+                className="h-11 rounded-xl bg-primary text-primary-foreground text-body-sm font-medium disabled:opacity-40"
+              >
+                提交留证
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </MobileShell>
   );
