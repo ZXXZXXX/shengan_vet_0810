@@ -146,6 +146,9 @@ function TodayTasksPage() {
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [barnSheetOpen, setBarnSheetOpen] = useState(false);
   const [statusSheetOpen, setStatusSheetOpen] = useState(false);
+  const [typeSheetOpen, setTypeSheetOpen] = useState(false);
+  const [typeQuery, setTypeQuery] = useState("");
+
 
 
   const [barnQuery, setBarnQuery] = useState("");
@@ -429,48 +432,41 @@ function TodayTasksPage() {
           </button>
         )}
 
-        {/* 工单类型 */}
+        {/* 工单类型（下拉多选，避免横向长滚动） */}
         {showStatusTabs && allTypes.length > 0 && (
-          <>
-            {allTypes.map((type) => {
-              const meta = typeMeta[type] ?? typeMeta["疾病治疗"];
-              const Icon = meta.icon;
-              const cnt = tabTasks.filter((t) => t.type === type).length;
-              const sel = selectedTypes.has(type);
-              return (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => toggleType(type)}
-                  className={`shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm transition-colors ${
-                    sel
-                      ? "border-primary bg-brand-subtle text-primary"
-                      : "border-border bg-card text-text-secondary"
-                  }`}
-                >
-                  <Icon className={`h-3.5 w-3.5 shrink-0 ${meta.text}`} />
-                  <span>{type}</span>
-                  <span
-                    className={`text-caption tabular-nums ${
-                      sel ? "text-primary/70" : "text-text-tertiary"
-                    }`}
-                  >
-                    {cnt}
-                  </span>
-                </button>
-              );
-            })}
-            {selectedTypes.size > 0 && (
-              <button
-                type="button"
-                onClick={() => setSelectedTypes(new Set())}
-                className="shrink-0 h-8 px-2 text-caption text-primary"
+          <button
+            type="button"
+            onClick={() => setTypeSheetOpen(true)}
+            className={`shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm ${
+              selectedTypes.size > 0
+                ? "border-primary bg-brand-subtle text-primary"
+                : "border-border bg-card text-text-secondary"
+            }`}
+          >
+            <span className="truncate max-w-[10rem]">
+              {selectedTypes.size === 0
+                ? "全部类型"
+                : Array.from(selectedTypes).slice(0, 2).join("、") +
+                  (selectedTypes.size > 2 ? ` 等 ${selectedTypes.size} 项` : "")}
+            </span>
+            {selectedTypes.size > 0 ? (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedTypes(new Set());
+                }}
+                className="text-caption text-primary px-1"
               >
                 清除
-              </button>
+              </span>
+            ) : (
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
             )}
-          </>
+          </button>
         )}
+
 
         {/* 与我有关 */}
         <button
@@ -535,6 +531,89 @@ function TodayTasksPage() {
                 </button>
               );
             })}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={typeSheetOpen} onOpenChange={setTypeSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl p-0 max-h-[80vh] flex flex-col"
+        >
+          <SheetHeader className="px-4 pt-4 pb-2">
+            <SheetTitle className="text-section">工单类型</SheetTitle>
+          </SheetHeader>
+          <div className="px-4 pb-2">
+            <input
+              value={typeQuery}
+              onChange={(e) => setTypeQuery(e.target.value)}
+              placeholder="搜索工单类型"
+              className="w-full h-10 px-3 rounded-xl bg-surface-subtle text-body-sm outline-none"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 pb-2 space-y-2">
+            <button
+              type="button"
+              onClick={() => setSelectedTypes(new Set())}
+              className={`w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border transition-colors ${
+                selectedTypes.size === 0
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-card"
+              }`}
+            >
+              <span className="flex-1 text-left text-body text-foreground">全部类型</span>
+              <span
+                className={`h-5 w-5 rounded-md flex items-center justify-center border ${
+                  selectedTypes.size === 0
+                    ? "bg-primary border-primary"
+                    : "border-border bg-card"
+                }`}
+              >
+                {selectedTypes.size === 0 && (
+                  <Check className="h-3.5 w-3.5 text-primary-foreground" strokeWidth={3} />
+                )}
+              </span>
+            </button>
+            {allTypes
+              .filter((t) => t.includes(typeQuery.trim()))
+              .map((type) => {
+                const meta = typeMeta[type] ?? typeMeta["疾病治疗"];
+                const Icon = meta.icon;
+                const sel = selectedTypes.has(type);
+                const cnt = tabTasks.filter((t) => t.type === type).length;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => toggleType(type)}
+                    className={`w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border transition-colors ${
+                      sel ? "border-primary bg-primary/5" : "border-border bg-card"
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 shrink-0 ${meta.text}`} />
+                    <span className="flex-1 text-left text-body text-foreground">{type}</span>
+                    <span className="text-body-sm tabular-nums text-text-tertiary">{cnt}</span>
+                    <span
+                      className={`h-5 w-5 rounded-md flex items-center justify-center border ${
+                        sel ? "bg-primary border-primary" : "border-border bg-card"
+                      }`}
+                    >
+                      {sel && (
+                        <Check className="h-3.5 w-3.5 text-primary-foreground" strokeWidth={3} />
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
+          </div>
+          <div className="px-4 py-3 border-t border-border">
+            <button
+              type="button"
+              onClick={() => setTypeSheetOpen(false)}
+              className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-body font-medium"
+            >
+              确定
+            </button>
           </div>
         </SheetContent>
       </Sheet>
