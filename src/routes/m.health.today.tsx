@@ -9,12 +9,14 @@ import {
   X,
   Camera,
   Filter,
+  ListFilter,
   ChevronRight,
   ChevronDown,
   UserRound,
   UserCheck,
 
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { MobileShell } from "@/components/mobile-shell";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -148,8 +150,10 @@ function TodayTasksPage() {
   const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
   const [kindFilter, setKindFilter] = useState<TaskKind>("工单任务");
   const [selectedBarns, setSelectedBarns] = useState<Set<string>>(new Set());
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [barnSheetOpen, setBarnSheetOpen] = useState(false);
   const [statusSheetOpen, setStatusSheetOpen] = useState(false);
+
 
   const [barnQuery, setBarnQuery] = useState("");
   const [mineOnly, setMineOnly] = useState(false);
@@ -213,6 +217,13 @@ function TodayTasksPage() {
     return Array.from(s);
   }, [kindTasks]);
 
+  const allTypes = useMemo(() => {
+    const s = new Set<string>();
+    tabTasks.forEach((t) => s.add(t.type));
+    return Array.from(s);
+  }, [tabTasks]);
+
+
 
   const me = currentUserName(role);
   const mineCount = useMemo(
@@ -226,8 +237,11 @@ function TodayTasksPage() {
         ? tabTasks
         : tabTasks.filter((t) => selectedBarns.has(inferBarn(t)));
     if (mineOnly) list = list.filter((t) => assignees[t.id] === me);
+    if (selectedTypes.size > 0)
+      list = list.filter((t) => selectedTypes.has(t.type));
     return list;
-  }, [tabTasks, selectedBarns, mineOnly, assignees, me]);
+  }, [tabTasks, selectedBarns, mineOnly, assignees, me, selectedTypes]);
+
 
 
 
@@ -242,6 +256,14 @@ function TodayTasksPage() {
       return next;
     });
 
+  const toggleType = (type: string) =>
+    setSelectedTypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type);
+      else next.add(type);
+      return next;
+    });
+
   const toggle = (id: string) =>
     setSelected((prev) => {
       const next = new Set(prev);
@@ -249,6 +271,7 @@ function TodayTasksPage() {
       else next.add(id);
       return next;
     });
+
 
   const allSelected = tasks.length > 0 && selected.size === tasks.length;
   const toggleAll = () => {
@@ -332,8 +355,10 @@ function TodayTasksPage() {
                   setKindFilter(o.key);
                   setActiveTab("待执行");
                   setSelectedBarns(new Set());
+                  setSelectedTypes(new Set());
                   exitSelect();
                 }}
+
                 className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
                   active ? "text-primary font-medium" : "text-text-secondary"
                 }`}
@@ -429,8 +454,55 @@ function TodayTasksPage() {
 
       </div>
 
+      {/* 工单类型筛选 */}
+      {showStatusTabs && allTypes.length > 0 && (
+        <div className="px-4 pt-2 flex flex-wrap items-center gap-2">
+          <span className="text-body-sm text-text-tertiary inline-flex items-center gap-1">
+            <ListFilter className="h-3.5 w-3.5" />
+            工单类型
+          </span>
+          {allTypes.map((type) => {
+            const meta = typeMeta[type] ?? typeMeta["疾病治疗"];
+            const Icon = meta.icon;
+            const cnt = tabTasks.filter((t) => t.type === type).length;
+            const sel = selectedTypes.has(type);
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => toggleType(type)}
+                className={`h-8 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm transition-colors ${
+                  sel
+                    ? "border-primary bg-brand-subtle text-primary"
+                    : "border-border bg-card text-text-secondary"
+                }`}
+              >
+                <Icon className={`h-3.5 w-3.5 shrink-0 ${meta.text}`} />
+                <span>{type}</span>
+                <span
+                  className={`text-caption tabular-nums ${
+                    sel ? "text-primary/70" : "text-text-tertiary"
+                  }`}
+                >
+                  {cnt}
+                </span>
+              </button>
+            );
+          })}
+          {selectedTypes.size > 0 && (
+            <button
+              type="button"
+              onClick={() => setSelectedTypes(new Set())}
+              className="h-8 px-2 text-caption text-primary"
+            >
+              清除
+            </button>
+          )}
+        </div>
+      )}
 
       <Sheet open={statusSheetOpen} onOpenChange={setStatusSheetOpen}>
+
         <SheetContent side="bottom" className="rounded-t-2xl p-0">
           <SheetHeader className="px-4 pt-4 pb-2">
             <SheetTitle className="text-section">任务状态</SheetTitle>
@@ -446,9 +518,11 @@ function TodayTasksPage() {
                   onClick={() => {
                     setActiveTab(tb);
                     setSelectedBarns(new Set());
+                    setSelectedTypes(new Set());
                     exitSelect();
                     setStatusSheetOpen(false);
                   }}
+
                   className={`w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border transition-colors ${
                     sel ? "border-primary bg-primary/5" : "border-border bg-card"
                   }`}
