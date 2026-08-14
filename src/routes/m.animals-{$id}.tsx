@@ -87,7 +87,7 @@ function AnimalDetailPage() {
   if (observing) a.health = "观察中";
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [reasonOpen, setReasonOpen] = useState(false);
+
 
   // 无需治疗 · 留证（业务回溯追责）
   const evidenceKey = `cow-alert-evidence-${id}`;
