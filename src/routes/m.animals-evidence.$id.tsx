@@ -21,7 +21,6 @@ type EvidenceRecord = {
   reason: string;
   note: string;
   photos: string[];
-  operator: string;
 };
 
 function EvidencePage() {
