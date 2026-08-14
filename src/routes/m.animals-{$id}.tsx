@@ -88,16 +88,60 @@ function AnimalDetailPage() {
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [reasonOpen, setReasonOpen] = useState(false);
-  const startObserve = (reason: string) => {
+
+  // 无需治疗 · 留证（业务回溯追责）
+  const evidenceKey = `cow-alert-evidence-${id}`;
+  type EvidenceRecord = {
+    time: string;
+    reason: string;
+    note: string;
+    photos: string[];
+    operator: string;
+  };
+  const [evidences, setEvidences] = useState<EvidenceRecord[]>([]);
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(evidenceKey);
+      if (raw) setEvidences(JSON.parse(raw) as EvidenceRecord[]);
+    } catch {
+      /* ignore */
+    }
+  }, [evidenceKey]);
+
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const [pendingReason, setPendingReason] = useState("");
+  const [evPhotos, setEvPhotos] = useState<string[]>([]);
+  const [evNote, setEvNote] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const startObserve = (reason: string, note: string, photos: string[]) => {
     const d = new Date();
     d.setHours(24, 0, 0, 0); // 次日 00:00
     window.localStorage.setItem(obsKey, String(d.getTime()));
     setObserveUntil(d.getTime());
     markAlertHandled(a.id); // 异常排查任务当天从今日任务列表清除
+    const rec: EvidenceRecord = {
+      time: new Date().toLocaleString("zh-CN", { hour12: false }),
+      reason,
+      note,
+      photos,
+      operator: "张兽医",
+    };
+    const next = [rec, ...evidences];
+    setEvidences(next);
+    try {
+      window.localStorage.setItem(evidenceKey, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+    setEvidenceOpen(false);
     setReasonOpen(false);
     setFeedbackOpen(false);
-    toast.success(`已标记无需治疗 · ${reason}`);
+    setEvPhotos([]);
+    setEvNote("");
+    toast.success(`已留证并标记无需治疗 · ${reason}`);
   };
+
 
 
   // 记录 sheet
