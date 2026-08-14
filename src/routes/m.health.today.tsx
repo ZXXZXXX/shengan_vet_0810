@@ -469,9 +469,11 @@ function TodayTasksPage() {
                   onClick={() => {
                     setActiveTab(tb);
                     setSelectedBarns(new Set());
+                    setSelectedTypes(new Set());
                     exitSelect();
                     setStatusSheetOpen(false);
                   }}
+
                   className={`w-full min-h-12 px-4 py-3 flex items-center gap-3 rounded-xl border transition-colors ${
                     sel ? "border-primary bg-primary/5" : "border-border bg-card"
                   }`}
