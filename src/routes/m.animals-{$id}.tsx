@@ -108,11 +108,6 @@ function AnimalDetailPage() {
     }
   }, [evidenceKey]);
 
-  const [evidenceOpen, setEvidenceOpen] = useState(false);
-  const [pendingReason, setPendingReason] = useState("");
-  const [evPhotos, setEvPhotos] = useState<string[]>([]);
-  const [evNote, setEvNote] = useState("");
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const startObserve = (reason: string, note: string, photos: string[]) => {
     const d = new Date();
