@@ -220,43 +220,8 @@ function AnimalDetailPage() {
           </section>
         )}
 
-        {/* 异常排查留证记录 */}
-        {evidences.length > 0 && (
-          <section className="px-4 mt-4">
-            <div className="flex items-center gap-1.5 mb-2">
-              <MessageSquareWarning className="h-4 w-4 text-[#B8860B]" />
-              <span className="text-card-title text-foreground">异常排查留证</span>
-              <span className="text-caption text-text-tertiary">{evidences.length} 条</span>
-            </div>
-            <div className="space-y-2">
-              {evidences.map((ev, i) => (
-                <div key={i} className="rounded-xl border border-border bg-card p-3 space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-body-sm font-medium text-foreground truncate">无需治疗 · {ev.reason}</span>
-                    <span className="text-caption text-text-tertiary shrink-0">{ev.time}</span>
-                  </div>
-                  <div className="text-body-sm text-text-secondary">{ev.note}</div>
-                  {ev.photos.length > 0 && (
-                    <div className="flex gap-2">
-                      {ev.photos.map((p, k) => (
-                        <img
-                          key={k}
-                          src={p}
-                          alt={`留证照片 ${k + 1}`}
-                          className="h-14 w-14 rounded-lg object-cover bg-surface-subtle"
-                        />
-                      ))}
-                    </div>
-                  )}
-                  <div className="text-caption text-text-tertiary">提交人：{ev.operator}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-
         {/* 外接设备 */}
+
         <section className="px-4 mt-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-card-title text-foreground inline-flex items-center gap-1.5">
