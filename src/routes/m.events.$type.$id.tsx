@@ -583,16 +583,38 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                       placeholder={`如：${colCode}`}
                     />
                   </Field>
-                  <Field label="初乳饲喂量 (L)" required>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      value={c.feedAmount}
-                      onChange={(e) => updateCalf(idx, { feedAmount: e.target.value })}
-                      className={inputCls}
-                      placeholder="建议 ≥ 4L"
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="初乳饲喂量 (L)" required>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        value={c.feedAmount}
+                        onChange={(e) => updateCalf(idx, { feedAmount: e.target.value })}
+                        className={inputCls}
+                        placeholder="建议 ≥ 4L"
+                      />
+                    </Field>
+                    <Field label="初乳温度 (℃)" required>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        value={c.feedTemp}
+                        onChange={(e) => updateCalf(idx, { feedTemp: e.target.value })}
+                        className={inputCls}
+                        placeholder="建议 38~40℃"
+                      />
+                    </Field>
+                  </div>
+                  <Field label="饲喂照片">
+                    <MediaGrid
+                      items={c.feedMedia}
+                      setItems={(u) =>
+                        updateCalf(idx, { feedMedia: typeof u === "function" ? (u as any)(c.feedMedia) : u })
+                      }
+                      max={6}
                     />
                   </Field>
+
                   <Field label="技术员" required>
                     <button
                       type="button"
