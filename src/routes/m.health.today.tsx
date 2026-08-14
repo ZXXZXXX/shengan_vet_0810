@@ -9,7 +9,6 @@ import {
   X,
   Camera,
   Filter,
-  ListFilter,
   ChevronRight,
   ChevronDown,
   UserRound,
