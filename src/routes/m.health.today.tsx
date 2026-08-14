@@ -454,8 +454,55 @@ function TodayTasksPage() {
 
       </div>
 
+      {/* 工单类型筛选 */}
+      {showStatusTabs && allTypes.length > 0 && (
+        <div className="px-4 pt-2 flex flex-wrap items-center gap-2">
+          <span className="text-body-sm text-text-tertiary inline-flex items-center gap-1">
+            <ListFilter className="h-3.5 w-3.5" />
+            工单类型
+          </span>
+          {allTypes.map((type) => {
+            const meta = typeMeta[type] ?? typeMeta["疾病治疗"];
+            const Icon = meta.icon;
+            const cnt = tabTasks.filter((t) => t.type === type).length;
+            const sel = selectedTypes.has(type);
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => toggleType(type)}
+                className={`h-8 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm transition-colors ${
+                  sel
+                    ? "border-primary bg-brand-subtle text-primary"
+                    : "border-border bg-card text-text-secondary"
+                }`}
+              >
+                <Icon className={`h-3.5 w-3.5 shrink-0 ${meta.text}`} />
+                <span>{type}</span>
+                <span
+                  className={`text-caption tabular-nums ${
+                    sel ? "text-primary/70" : "text-text-tertiary"
+                  }`}
+                >
+                  {cnt}
+                </span>
+              </button>
+            );
+          })}
+          {selectedTypes.size > 0 && (
+            <button
+              type="button"
+              onClick={() => setSelectedTypes(new Set())}
+              className="h-8 px-2 text-caption text-primary"
+            >
+              清除
+            </button>
+          )}
+        </div>
+      )}
 
       <Sheet open={statusSheetOpen} onOpenChange={setStatusSheetOpen}>
+
         <SheetContent side="bottom" className="rounded-t-2xl p-0">
           <SheetHeader className="px-4 pt-4 pb-2">
             <SheetTitle className="text-section">任务状态</SheetTitle>
