@@ -379,7 +379,7 @@ export const typeMeta: Record<string, { icon: typeof Pill; bg: string; text: str
 
 
 // 疾病治疗工单的疾病名称 + 任务类型（用于统一卡片文案）
-export type TaskChip = "待诊断" | "待执行" | "待复查" | "待治愈";
+export type TaskChip = "待诊断" | "待执行" | "待复查" | "待治愈" | "已完成";
 export const diseaseTaskMeta: Record<string, { disease: string; task: TaskChip }> = {
   "WO-2381": { disease: "产道创伤", task: "待诊断" },
   "WO-2382": { disease: "疾病不详", task: "待诊断" },
@@ -403,6 +403,7 @@ export const taskChipStyle: Record<TaskChip, string> = {
   "待执行": "bg-[#E6F7FE] text-[#0EA5E9]",
   "待复查": "bg-[#E6F7FE] text-[#0EA5E9]",
   "待治愈": "bg-[#F3E8FF] text-[#9333EA]",
+  "已完成": "bg-[#EFFBF1] text-[#00A14F]",
 };
 
 // 卡片"具体内容"数据源
