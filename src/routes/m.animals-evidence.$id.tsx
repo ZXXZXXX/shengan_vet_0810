@@ -6,7 +6,7 @@ import { markAlertHandled } from "@/lib/alert-store";
 import { MobileShell } from "@/components/mobile-shell";
 
 export const Route = createFileRoute("/m/animals-evidence/$id")({
-  head: () => ({ meta: [{ title: "无需治疗留证 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "无需治疗原因 · 奇点智牧" }] }),
   component: EvidencePage,
 });
 
@@ -64,7 +64,7 @@ function EvidencePage() {
   };
 
   return (
-    <MobileShell title="无需治疗留证" back hideTabBar headerTone="brand">
+    <MobileShell title="无需治疗原因" back hideTabBar headerTone="brand">
       <div className="px-4 pt-3 pb-28 space-y-5">
         <div className="space-y-1">
           <div className="text-section text-foreground">#{id} 无需治疗</div>
