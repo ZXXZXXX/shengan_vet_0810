@@ -6,7 +6,7 @@ import { markAlertHandled } from "@/lib/alert-store";
 import { MobileShell } from "@/components/mobile-shell";
 
 export const Route = createFileRoute("/m/animals-evidence/$id")({
-  head: () => ({ meta: [{ title: "无需治疗留证 · 奇点智牧" }] }),
+  head: () => ({ meta: [{ title: "无需治疗原因 · 奇点智牧" }] }),
   component: EvidencePage,
 });
 
