@@ -89,24 +89,8 @@ function AnimalDetailPage() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
 
-  // 无需治疗 · 留证（业务回溯追责）
-  const evidenceKey = `cow-alert-evidence-${id}`;
-  type EvidenceRecord = {
-    time: string;
-    reason: string;
-    note: string;
-    photos: string[];
-    operator: string;
-  };
-  const [evidences, setEvidences] = useState<EvidenceRecord[]>([]);
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(evidenceKey);
-      if (raw) setEvidences(JSON.parse(raw) as EvidenceRecord[]);
-    } catch {
-      /* ignore */
-    }
-  }, [evidenceKey]);
+  const [recordOpen, setRecordOpen] = useState(false);
+
 
 
 
