@@ -250,6 +250,7 @@ type Calf = {
   birthDate: string;
   breed: string;
   sex: "母" | "公" | "";
+  rfid: string;
   status: "正常" | "死胎" | "";
   weight: string;
   keep: "留养" | "不留养" | "";
@@ -259,6 +260,8 @@ type Calf = {
   // 初乳饲喂记录
   feedCode: string;
   feedAmount: string;
+  feedTemp: string;
+  feedMedia: number[];
   feedTech: string;
 };
 
@@ -302,6 +305,7 @@ function newCalf(index: number): Calf {
     birthDate: new Date().toISOString().slice(0, 10),
     breed: "",
     sex: "",
+    rfid: "",
     status: "",
     weight: "",
     keep: "",
@@ -310,6 +314,8 @@ function newCalf(index: number): Calf {
     media: [],
     feedCode: "",
     feedAmount: "",
+    feedTemp: "",
+    feedMedia: [],
     feedTech: "",
   };
 
@@ -373,8 +379,11 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
         if (c.media.length === 0) return toast.error(`第 ${i + 1} 头犊牛不留养需上传照片或视频`);
         if (!c.reason.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛不留养原因`);
       }
+      if (!c.earTag.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛的耳号`);
+      if (c.sex === "母" && !c.rfid.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛的电子耳标编号`);
       if (!c.feedCode.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛的初乳编码`);
       if (!c.feedAmount) return toast.error(`请填写第 ${i + 1} 头犊牛的初乳饲喂量`);
+      if (!c.feedTemp) return toast.error(`请填写第 ${i + 1} 头犊牛的初乳温度`);
       if (!c.feedTech.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛的技术员`);
     }
 
@@ -489,9 +498,18 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
             </div>
 
             <div className="grid grid-cols-2 gap-x-3 gap-y-3 rounded-xl bg-muted/40 p-3">
-              <AutoField label="牛只耳号" value={c.earTag} mono />
+              <Field label="牛只耳号" required>
+                <input
+                  value={c.earTag}
+                  onChange={(e) => updateCalf(idx, { earTag: e.target.value })}
+                  className={`${inputCls} font-mono`}
+                  placeholder="请输入耳号"
+                />
+                <div className="text-caption text-text-tertiary mt-1">系统自动生成，耳标丢失/损坏可手动修改</div>
+              </Field>
               <AutoField label="出生日期" value={c.birthDate} />
             </div>
+
 
             <Field label="分娩状态" required>
               <div className="grid grid-cols-2 gap-2">
@@ -572,6 +590,19 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                   </Field>
                 </div>
 
+                {c.sex === "母" && (
+                  <Field label="电子耳标编号" required>
+                    <input
+                      value={c.rfid}
+                      onChange={(e) => updateCalf(idx, { rfid: e.target.value })}
+                      className={`${inputCls} font-mono`}
+                      placeholder="请输入或扫描电子耳标编号"
+                    />
+                  </Field>
+                )}
+
+
+
                 {/* ---- 初乳饲喂记录 ---- */}
                 <div className="pt-1 space-y-4">
                   
@@ -583,16 +614,38 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                       placeholder={`如：${colCode}`}
                     />
                   </Field>
-                  <Field label="初乳饲喂量 (L)" required>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      value={c.feedAmount}
-                      onChange={(e) => updateCalf(idx, { feedAmount: e.target.value })}
-                      className={inputCls}
-                      placeholder="建议 ≥ 4L"
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="初乳饲喂量 (L)" required>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        value={c.feedAmount}
+                        onChange={(e) => updateCalf(idx, { feedAmount: e.target.value })}
+                        className={inputCls}
+                        placeholder="建议 ≥ 4L"
+                      />
+                    </Field>
+                    <Field label="初乳温度 (℃)" required>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        value={c.feedTemp}
+                        onChange={(e) => updateCalf(idx, { feedTemp: e.target.value })}
+                        className={inputCls}
+                        placeholder="建议 38~40℃"
+                      />
+                    </Field>
+                  </div>
+                  <Field label="饲喂照片">
+                    <MediaGrid
+                      items={c.feedMedia}
+                      setItems={(u) =>
+                        updateCalf(idx, { feedMedia: typeof u === "function" ? (u as any)(c.feedMedia) : u })
+                      }
+                      max={6}
                     />
                   </Field>
+
                   <Field label="技术员" required>
                     <button
                       type="button"
