@@ -49,7 +49,6 @@ function EvidencePage() {
       reason: selectedReason,
       note: trimmed,
       photos: evPhotos,
-      operator: "张兽医",
     };
 
     try {
