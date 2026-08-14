@@ -668,17 +668,21 @@ function TodayTasksPage() {
             const meta = typeMeta[t.type] ?? typeMeta["疾病治疗"];
             const Icon = meta.icon;
             const checked = selected.has(t.id);
-            const chip: TaskChip | null =
-              isAlert
-                ? null
-                : isExam
-                  ? "待执行"
-                  : t.type === "疾病治疗"
-                    ? diseaseTaskMeta[t.id]?.task ?? null
-                    : "待执行";
+            const chip: TaskChip | null = isAlert
+              ? t.cattleId && handledAlerts.has(t.cattleId)
+                ? "已完成"
+                : "待执行"
+              : isExam
+                ? "待执行"
+                : t.type === "疾病治疗"
+                  ? diseaseTaskMeta[t.id]?.task ?? null
+                  : "待执行";
             const barn = inferBarn(t);
+            const alertHandled = isAlert && t.cattleId && handledAlerts.has(t.cattleId);
             const actionText = isAlert
-              ? "查看详情"
+              ? alertHandled
+                ? "查看记录"
+                : "查看详情"
               : isExam
                 ? "记录"
                 : activeTab === "待执行"
