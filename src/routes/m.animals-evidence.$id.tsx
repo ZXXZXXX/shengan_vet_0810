@@ -36,7 +36,7 @@ function EvidencePage() {
 
   const saveAndObserve = () => {
     const trimmed = evNote.trim();
-    if (!selectedReason || evPhotos.length === 0 || trimmed.length < 5) return;
+    if (!selectedReason || evPhotos.length === 0) return;
 
     const obsKey = `cow-observe-${id}`;
     const d = new Date();
@@ -147,7 +147,7 @@ function EvidencePage() {
 
         {/* 现场说明 */}
         <div className="space-y-1.5">
-          <div className="text-caption text-text-secondary">现场说明（必填，不少于 5 字）</div>
+          <div className="text-caption text-text-secondary">现场说明</div>
           <textarea
             value={evNote}
             onChange={(e) => setEvNote(e.target.value)}
@@ -170,7 +170,7 @@ function EvidencePage() {
           </button>
           <button
             type="button"
-            disabled={!selectedReason || evPhotos.length === 0 || evNote.trim().length < 5}
+            disabled={!selectedReason || evPhotos.length === 0}
             onClick={saveAndObserve}
             className="h-11 rounded-xl bg-primary text-primary-foreground text-body-sm font-medium disabled:opacity-40"
           >
