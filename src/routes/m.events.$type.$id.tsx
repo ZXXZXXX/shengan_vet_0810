@@ -250,6 +250,7 @@ type Calf = {
   birthDate: string;
   breed: string;
   sex: "母" | "公" | "";
+  rfid: string;
   status: "正常" | "死胎" | "";
   weight: string;
   keep: "留养" | "不留养" | "";
@@ -259,6 +260,8 @@ type Calf = {
   // 初乳饲喂记录
   feedCode: string;
   feedAmount: string;
+  feedTemp: string;
+  feedMedia: number[];
   feedTech: string;
 };
 
