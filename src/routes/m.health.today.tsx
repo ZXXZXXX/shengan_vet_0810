@@ -386,10 +386,10 @@ function TodayTasksPage() {
         <button
           type="button"
           onClick={() => {
-            setTypeQuery("");
             setBarnQuery("");
             setFilterSheetOpen(true);
           }}
+
           className={`h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm shrink-0 ${
             filterCount > 0
               ? "border-primary bg-brand-subtle text-primary"
