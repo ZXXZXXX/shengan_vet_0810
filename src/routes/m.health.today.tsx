@@ -146,6 +146,9 @@ function TodayTasksPage() {
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [barnSheetOpen, setBarnSheetOpen] = useState(false);
   const [statusSheetOpen, setStatusSheetOpen] = useState(false);
+  const [typeSheetOpen, setTypeSheetOpen] = useState(false);
+  const [typeQuery, setTypeQuery] = useState("");
+
 
 
   const [barnQuery, setBarnQuery] = useState("");
