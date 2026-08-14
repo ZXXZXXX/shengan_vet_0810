@@ -215,6 +215,13 @@ function TodayTasksPage() {
     return Array.from(s);
   }, [kindTasks]);
 
+  const allTypes = useMemo(() => {
+    const s = new Set<string>();
+    tabTasks.forEach((t) => s.add(t.type));
+    return Array.from(s);
+  }, [tabTasks]);
+
+
 
   const me = currentUserName(role);
   const mineCount = useMemo(
