@@ -6,9 +6,13 @@ import { markAlertHandled } from "@/lib/alert-store";
 import { MobileShell } from "@/components/mobile-shell";
 
 export const Route = createFileRoute("/m/animals-{$id}/evidence")({
+  validateSearch: (s: Record<string, unknown>): { reason?: string } => ({
+    reason: typeof s.reason === "string" ? s.reason : undefined,
+  }),
   head: () => ({ meta: [{ title: "异常排查留证 · 奇点智牧" }] }),
   component: EvidencePage,
 });
+
 
 type EvidenceRecord = {
   time: string;
