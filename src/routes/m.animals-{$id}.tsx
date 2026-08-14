@@ -528,6 +528,9 @@ function AnimalDetailPage() {
         </div>
       )}
 
+    </MobileShell>
+  );
+}
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
