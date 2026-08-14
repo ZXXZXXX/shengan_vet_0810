@@ -587,6 +587,19 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
                   </Field>
                 </div>
 
+                {c.sex === "母" && (
+                  <Field label="电子耳标编号" required>
+                    <input
+                      value={c.rfid}
+                      onChange={(e) => updateCalf(idx, { rfid: e.target.value })}
+                      className={`${inputCls} font-mono`}
+                      placeholder="请输入或扫描电子耳标编号"
+                    />
+                  </Field>
+                )}
+
+
+
                 {/* ---- 初乳饲喂记录 ---- */}
                 <div className="pt-1 space-y-4">
                   
