@@ -62,7 +62,7 @@ function EvidencePage() {
     }
 
     toast.success(`已留证并标记无需治疗 · ${pendingReason}`);
-    navigate({ to: "/m/animals/$id", params: { id } });
+    navigate({ to: "/m/animals-{$id}", params: { id } });
   };
 
   return (
@@ -138,7 +138,7 @@ function EvidencePage() {
         <div className="mx-auto max-w-[440px] grid grid-cols-2 gap-3">
           <button
             type="button"
-            onClick={() => navigate({ to: "/m/animals/$id", params: { id } })}
+            onClick={() => navigate({ to: "/m/animals-{$id}", params: { id } })}
             className="h-11 rounded-xl border border-border text-body-sm text-text-secondary active:bg-surface-subtle"
           >
             取消
