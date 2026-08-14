@@ -429,48 +429,41 @@ function TodayTasksPage() {
           </button>
         )}
 
-        {/* 工单类型 */}
+        {/* 工单类型（下拉多选，避免横向长滚动） */}
         {showStatusTabs && allTypes.length > 0 && (
-          <>
-            {allTypes.map((type) => {
-              const meta = typeMeta[type] ?? typeMeta["疾病治疗"];
-              const Icon = meta.icon;
-              const cnt = tabTasks.filter((t) => t.type === type).length;
-              const sel = selectedTypes.has(type);
-              return (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => toggleType(type)}
-                  className={`shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm transition-colors ${
-                    sel
-                      ? "border-primary bg-brand-subtle text-primary"
-                      : "border-border bg-card text-text-secondary"
-                  }`}
-                >
-                  <Icon className={`h-3.5 w-3.5 shrink-0 ${meta.text}`} />
-                  <span>{type}</span>
-                  <span
-                    className={`text-caption tabular-nums ${
-                      sel ? "text-primary/70" : "text-text-tertiary"
-                    }`}
-                  >
-                    {cnt}
-                  </span>
-                </button>
-              );
-            })}
-            {selectedTypes.size > 0 && (
-              <button
-                type="button"
-                onClick={() => setSelectedTypes(new Set())}
-                className="shrink-0 h-8 px-2 text-caption text-primary"
+          <button
+            type="button"
+            onClick={() => setTypeSheetOpen(true)}
+            className={`shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm ${
+              selectedTypes.size > 0
+                ? "border-primary bg-brand-subtle text-primary"
+                : "border-border bg-card text-text-secondary"
+            }`}
+          >
+            <span className="truncate max-w-[10rem]">
+              {selectedTypes.size === 0
+                ? "全部类型"
+                : Array.from(selectedTypes).slice(0, 2).join("、") +
+                  (selectedTypes.size > 2 ? ` 等 ${selectedTypes.size} 项` : "")}
+            </span>
+            {selectedTypes.size > 0 ? (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedTypes(new Set());
+                }}
+                className="text-caption text-primary px-1"
               >
                 清除
-              </button>
+              </span>
+            ) : (
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
             )}
-          </>
+          </button>
         )}
+
 
         {/* 与我有关 */}
         <button
