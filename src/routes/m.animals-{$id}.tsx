@@ -503,7 +503,7 @@ function AnimalDetailPage() {
                 type="button"
                 onClick={() => {
                   setFeedbackOpen(false);
-                  navigate({ to: "/m/animals-{$id}/evidence", params: { id } });
+                  navigate({ to: "/m/animals-evidence/$id", params: { id } });
                 }}
                 className="h-11 rounded-xl border border-border text-body-sm text-text-secondary bg-card active:bg-surface-subtle"
               >
