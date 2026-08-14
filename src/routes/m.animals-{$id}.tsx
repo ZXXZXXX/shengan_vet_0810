@@ -542,7 +542,11 @@ function AnimalDetailPage() {
                 <button
                   key={r}
                   type="button"
-                  onClick={() => startObserve(r)}
+                  onClick={() => {
+                    setPendingReason(r);
+                    setReasonOpen(false);
+                    setEvidenceOpen(true);
+                  }}
                   className="w-full h-11 rounded-xl border border-border bg-card text-body-sm text-foreground active:bg-surface-subtle"
                 >
                   {r}
