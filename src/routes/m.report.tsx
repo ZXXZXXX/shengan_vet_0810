@@ -123,6 +123,7 @@ function CowProfileCard({
   barn: string;
   onRemove?: () => void;
 }) {
+  const navigate = useNavigate();
   const p = useMemo(() => cowProfileOf(cowId), [cowId]);
   const items = [
     { label: "品种", value: p.breed },
@@ -133,7 +134,12 @@ function CowProfileCard({
     { label: "胎次", value: p.parity ? `${p.parity} 胎` : "—" },
   ];
   return (
-    <div className="rounded-2xl overflow-hidden shadow-sm border border-[color-mix(in_oklab,var(--brand)_25%,transparent)]">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => navigate({ to: "/m/animals-{$id}", params: { id: cowId } })}
+      className="rounded-2xl overflow-hidden shadow-sm border border-[color-mix(in_oklab,var(--brand)_25%,transparent)] active:scale-[0.99] transition-transform cursor-pointer"
+    >
       {/* 顶部：耳号 · 牛舍（品牌绿主视觉） */}
       <div className="bg-primary text-primary-foreground pl-4 pr-2 py-3 flex items-center gap-2">
         <div className="min-w-0 flex-1">
