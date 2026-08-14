@@ -156,6 +156,7 @@ function EvidencePage() {
             className="w-full rounded-xl border border-border bg-card p-3 text-body-sm text-foreground outline-none focus:border-primary"
           />
         </div>
+      </div>
 
       {/* 底部吸底提交 */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
