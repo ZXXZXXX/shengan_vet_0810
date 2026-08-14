@@ -101,7 +101,7 @@ function EvidencePage() {
 
         {/* 现场照片 */}
         <div className="space-y-2">
-          <div className="text-caption text-text-secondary">现场照片（至少 1 张）</div>
+          <div className="text-caption text-text-secondary">现场照片<span className="text-red-500">*</span></div>
           <div className="grid grid-cols-4 gap-2">
             {evPhotos.map((p, i) => (
               <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-surface-subtle">
