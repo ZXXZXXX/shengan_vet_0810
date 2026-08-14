@@ -78,7 +78,6 @@ import { Route as MMonthlyReportsIdRouteImport } from './routes/m.monthly-report
 import { Route as MHealthTodayRouteImport } from './routes/m.health.today'
 import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
-import { Route as MAnimalsChar123idChar125EvidenceRouteImport } from './routes/m.animals-{$id}.evidence'
 import { Route as MAnimalsOrdersIdRouteImport } from './routes/m.animals-orders.$id'
 import { Route as MAnimalsEvidenceIdRouteImport } from './routes/m.animals-evidence.$id'
 import { Route as MAnimalsDeviceIdRouteImport } from './routes/m.animals-device.$id'
@@ -438,12 +437,6 @@ const MBarnsIdRoute = MBarnsIdRouteImport.update({
   path: '/barns/$id',
   getParentRoute: () => MRoute,
 } as any)
-const MAnimalsChar123idChar125EvidenceRoute =
-  MAnimalsChar123idChar125EvidenceRouteImport.update({
-    id: '/evidence',
-    path: '/evidence',
-    getParentRoute: () => MAnimalsChar123idChar125Route,
-  } as any)
 const MAnimalsOrdersIdRoute = MAnimalsOrdersIdRouteImport.update({
   id: '/animals-orders/$id',
   path: '/animals-orders/$id',
@@ -527,7 +520,7 @@ export interface FileRoutesByFullPath {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/account-security': typeof MAccountSecurityRoute
-  '/m/animals-{$id}': typeof MAnimalsChar123idChar125RouteWithChildren
+  '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
@@ -573,7 +566,6 @@ export interface FileRoutesByFullPath {
   '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
   '/m/animals-evidence/$id': typeof MAnimalsEvidenceIdRoute
   '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
-  '/m/animals-{$id}/evidence': typeof MAnimalsChar123idChar125EvidenceRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
@@ -606,7 +598,7 @@ export interface FileRoutesByTo {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/account-security': typeof MAccountSecurityRoute
-  '/m/animals-{$id}': typeof MAnimalsChar123idChar125RouteWithChildren
+  '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
@@ -652,7 +644,6 @@ export interface FileRoutesByTo {
   '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
   '/m/animals-evidence/$id': typeof MAnimalsEvidenceIdRoute
   '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
-  '/m/animals-{$id}/evidence': typeof MAnimalsChar123idChar125EvidenceRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
@@ -691,7 +682,7 @@ export interface FileRoutesById {
   '/knowledge/prescription': typeof KnowledgePrescriptionRoute
   '/knowledge/symptom': typeof KnowledgeSymptomRoute
   '/m/account-security': typeof MAccountSecurityRoute
-  '/m/animals-{$id}': typeof MAnimalsChar123idChar125RouteWithChildren
+  '/m/animals-{$id}': typeof MAnimalsChar123idChar125Route
   '/m/drafts': typeof MDraftsRoute
   '/m/drug-report': typeof MDrugReportRoute
   '/m/empty-states': typeof MEmptyStatesRoute
@@ -737,7 +728,6 @@ export interface FileRoutesById {
   '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
   '/m/animals-evidence/$id': typeof MAnimalsEvidenceIdRoute
   '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
-  '/m/animals-{$id}/evidence': typeof MAnimalsChar123idChar125EvidenceRoute
   '/m/barns/$id': typeof MBarnsIdRoute
   '/m/health/$id': typeof MHealthIdRoute
   '/m/health/today': typeof MHealthTodayRoute
@@ -823,7 +813,6 @@ export interface FileRouteTypes {
     | '/m/animals-device/$id'
     | '/m/animals-evidence/$id'
     | '/m/animals-orders/$id'
-    | '/m/animals-{$id}/evidence'
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
@@ -902,7 +891,6 @@ export interface FileRouteTypes {
     | '/m/animals-device/$id'
     | '/m/animals-evidence/$id'
     | '/m/animals-orders/$id'
-    | '/m/animals-{$id}/evidence'
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
@@ -986,7 +974,6 @@ export interface FileRouteTypes {
     | '/m/animals-device/$id'
     | '/m/animals-evidence/$id'
     | '/m/animals-orders/$id'
-    | '/m/animals-{$id}/evidence'
     | '/m/barns/$id'
     | '/m/health/$id'
     | '/m/health/today'
@@ -1505,13 +1492,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MBarnsIdRouteImport
       parentRoute: typeof MRoute
     }
-    '/m/animals-{$id}/evidence': {
-      id: '/m/animals-{$id}/evidence'
-      path: '/evidence'
-      fullPath: '/m/animals-{$id}/evidence'
-      preLoaderRoute: typeof MAnimalsChar123idChar125EvidenceRouteImport
-      parentRoute: typeof MAnimalsChar123idChar125Route
-    }
     '/m/animals-orders/$id': {
       id: '/m/animals-orders/$id'
       path: '/animals-orders/$id'
@@ -1630,21 +1610,6 @@ const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
   KnowledgeRouteChildren,
 )
 
-interface MAnimalsChar123idChar125RouteChildren {
-  MAnimalsChar123idChar125EvidenceRoute: typeof MAnimalsChar123idChar125EvidenceRoute
-}
-
-const MAnimalsChar123idChar125RouteChildren: MAnimalsChar123idChar125RouteChildren =
-  {
-    MAnimalsChar123idChar125EvidenceRoute:
-      MAnimalsChar123idChar125EvidenceRoute,
-  }
-
-const MAnimalsChar123idChar125RouteWithChildren =
-  MAnimalsChar123idChar125Route._addFileChildren(
-    MAnimalsChar123idChar125RouteChildren,
-  )
-
 interface MMonthlyReportsRouteChildren {
   MMonthlyReportsIdRoute: typeof MMonthlyReportsIdRoute
 }
@@ -1659,7 +1624,7 @@ const MMonthlyReportsRouteWithChildren = MMonthlyReportsRoute._addFileChildren(
 
 interface MRouteChildren {
   MAccountSecurityRoute: typeof MAccountSecurityRoute
-  MAnimalsChar123idChar125Route: typeof MAnimalsChar123idChar125RouteWithChildren
+  MAnimalsChar123idChar125Route: typeof MAnimalsChar123idChar125Route
   MDraftsRoute: typeof MDraftsRoute
   MDrugReportRoute: typeof MDrugReportRoute
   MEmptyStatesRoute: typeof MEmptyStatesRoute
@@ -1702,7 +1667,7 @@ interface MRouteChildren {
 
 const MRouteChildren: MRouteChildren = {
   MAccountSecurityRoute: MAccountSecurityRoute,
-  MAnimalsChar123idChar125Route: MAnimalsChar123idChar125RouteWithChildren,
+  MAnimalsChar123idChar125Route: MAnimalsChar123idChar125Route,
   MDraftsRoute: MDraftsRoute,
   MDrugReportRoute: MDrugReportRoute,
   MEmptyStatesRoute: MEmptyStatesRoute,
