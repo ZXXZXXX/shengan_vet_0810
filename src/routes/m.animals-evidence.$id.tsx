@@ -157,11 +157,6 @@ function EvidencePage() {
           />
         </div>
 
-        <div className="rounded-xl bg-surface-subtle px-3 py-2 text-caption text-text-tertiary">
-          提交人：张兽医 · {new Date().toLocaleString("zh-CN", { hour12: false })}
-        </div>
-      </div>
-
       {/* 底部吸底提交 */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <div className="mx-auto max-w-[440px] grid grid-cols-2 gap-3">
