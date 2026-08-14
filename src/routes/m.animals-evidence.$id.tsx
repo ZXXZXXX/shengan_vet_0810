@@ -1,18 +1,20 @@
-import { createFileRoute, useParams, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useState, useRef } from "react";
-import { X, FilePlus2 } from "lucide-react";
+import { X, FilePlus2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { markAlertHandled } from "@/lib/alert-store";
 import { MobileShell } from "@/components/mobile-shell";
 
-export const Route = createFileRoute("/m/animals-{$id}/evidence")({
-  validateSearch: (s: Record<string, unknown>): { reason?: string } => ({
-    reason: typeof s.reason === "string" ? s.reason : undefined,
-  }),
-  head: () => ({ meta: [{ title: "异常排查留证 · 奇点智牧" }] }),
+export const Route = createFileRoute("/m/animals-evidence/$id")({
+  head: () => ({ meta: [{ title: "无需治疗留证 · 奇点智牧" }] }),
   component: EvidencePage,
 });
 
+const REASON_OPTIONS = [
+  "设备问题，数据有误",
+  "牛只正常，无病症",
+  "继续观察，暂不治疗",
+];
 
 type EvidenceRecord = {
   time: string;
@@ -23,12 +25,10 @@ type EvidenceRecord = {
 };
 
 function EvidencePage() {
-  const { id } = useParams({ from: "/m/animals-{$id}/evidence" });
+  const { id } = useParams({ from: "/m/animals-evidence/$id" });
   const navigate = useNavigate();
-  const { reason } = useSearch({ from: "/m/animals-{$id}/evidence" });
 
-  const pendingReason = typeof reason === "string" ? reason : "";
-
+  const [selectedReason, setSelectedReason] = useState<string>("");
   const [evPhotos, setEvPhotos] = useState<string[]>([]);
   const [evNote, setEvNote] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -37,7 +37,7 @@ function EvidencePage() {
 
   const saveAndObserve = () => {
     const trimmed = evNote.trim();
-    if (evPhotos.length === 0 || trimmed.length < 5) return;
+    if (!selectedReason || evPhotos.length === 0 || trimmed.length < 5) return;
 
     const obsKey = `cow-observe-${id}`;
     const d = new Date();
@@ -47,7 +47,7 @@ function EvidencePage() {
 
     const rec: EvidenceRecord = {
       time: new Date().toLocaleString("zh-CN", { hour12: false }),
-      reason: pendingReason,
+      reason: selectedReason,
       note: trimmed,
       photos: evPhotos,
       operator: "张兽医",
@@ -61,20 +61,50 @@ function EvidencePage() {
       /* ignore */
     }
 
-    toast.success(`已留证并标记无需治疗 · ${pendingReason}`);
+    toast.success(`已留证并标记无需治疗 · ${selectedReason}`);
     navigate({ to: "/m/animals-{$id}", params: { id } });
   };
 
   return (
-    <MobileShell title="留证材料" back hideTabBar headerTone="brand">
-      <div className="px-4 pt-3 pb-28 space-y-4">
+    <MobileShell title="无需治疗留证" back hideTabBar headerTone="brand">
+      <div className="px-4 pt-3 pb-28 space-y-5">
         <div className="space-y-1">
-          <div className="text-section text-foreground">留证材料</div>
+          <div className="text-section text-foreground">#{id} 无需治疗</div>
           <div className="text-caption text-text-tertiary">
-            #{id} · {pendingReason || "无需治疗"} · 留证信息将作为回溯追责依据
+            选择原因并拍照留证，信息将作为回溯追责依据
           </div>
         </div>
 
+        {/* 原因选择 */}
+        <div className="space-y-2">
+          <div className="text-caption text-text-secondary">请选择无需治疗的原因</div>
+          <div className="space-y-2">
+            {REASON_OPTIONS.map((r) => {
+              const active = selectedReason === r;
+              return (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setSelectedReason(r)}
+                  className={`w-full flex items-center justify-between rounded-xl border px-3 py-3 text-left transition-colors ${
+                    active
+                      ? "border-primary bg-brand-subtle text-primary"
+                      : "border-border bg-card text-foreground active:bg-surface-subtle"
+                  }`}
+                >
+                  <span className="text-body text-foreground">{r}</span>
+                  {active && (
+                    <span className="h-5 w-5 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center shrink-0">
+                      <Check className="h-3.5 w-3.5" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 现场照片 */}
         <div className="space-y-2">
           <div className="text-caption text-text-secondary">现场照片（至少 1 张）</div>
           <div className="grid grid-cols-4 gap-2">
@@ -117,6 +147,7 @@ function EvidencePage() {
           />
         </div>
 
+        {/* 现场说明 */}
         <div className="space-y-1.5">
           <div className="text-caption text-text-secondary">现场说明（必填，不少于 5 字）</div>
           <textarea
@@ -145,7 +176,7 @@ function EvidencePage() {
           </button>
           <button
             type="button"
-            disabled={evPhotos.length === 0 || evNote.trim().length < 5}
+            disabled={!selectedReason || evPhotos.length === 0 || evNote.trim().length < 5}
             onClick={saveAndObserve}
             className="h-11 rounded-xl bg-primary text-primary-foreground text-body-sm font-medium disabled:opacity-40"
           >
