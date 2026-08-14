@@ -139,13 +139,7 @@ function TodayTasksPage() {
     sync();
     return subscribeAlerts(sync);
   }, []);
-  const allTasks = useMemo(
-    () =>
-      getRoleAllTasks(role).filter(
-        (t) => !(t.kind === "异常排查" && t.cattleId && handledAlerts.has(t.cattleId)),
-      ),
-    [role, handledAlerts],
-  );
+  const allTasks = useMemo(() => getRoleAllTasks(role), [role]);
 
   const [activeTab, setActiveTab] = useState<StatusTab>("待执行");
   const [kindFilter, setKindFilter] = useState<TaskKind>("工单任务");
