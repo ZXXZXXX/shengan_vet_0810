@@ -379,8 +379,11 @@ function CalvingForm({ id, onDone }: { id: string; onDone: () => void }) {
         if (c.media.length === 0) return toast.error(`第 ${i + 1} 头犊牛不留养需上传照片或视频`);
         if (!c.reason.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛不留养原因`);
       }
+      if (!c.earTag.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛的耳号`);
+      if (c.sex === "母" && !c.rfid.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛的电子耳标编号`);
       if (!c.feedCode.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛的初乳编码`);
       if (!c.feedAmount) return toast.error(`请填写第 ${i + 1} 头犊牛的初乳饲喂量`);
+      if (!c.feedTemp) return toast.error(`请填写第 ${i + 1} 头犊牛的初乳温度`);
       if (!c.feedTech.trim()) return toast.error(`请填写第 ${i + 1} 头犊牛的技术员`);
     }
 
