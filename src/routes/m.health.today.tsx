@@ -374,55 +374,53 @@ function TodayTasksPage() {
         </div>
       </div>
 
-      {/* 筛选条：牛舍 + 与我有关 + 状态（单行） */}
-      <div className="px-4 pt-3 flex items-center gap-2">
+      {/* 筛选条：单条水平滚动 */}
+      <div className="px-4 pt-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
+        {/* 牛舍 */}
         {allBarns.length > 0 && (
-
-
-            <button
-              type="button"
-              onClick={() => {
-                setBarnQuery("");
-                setBarnSheetOpen(true);
-              }}
-              className={`h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm flex-1 min-w-0 ${
-                selectedBarns.size > 0
-                  ? "border-primary bg-brand-subtle text-primary"
-                  : "border-border bg-card text-text-secondary"
-              }`}
-            >
-              <Filter className="h-4 w-4 shrink-0" />
-              <span className="flex-1 text-left truncate">
-                {selectedBarns.size === 0
-                  ? "全部牛舍"
-                  : Array.from(selectedBarns).slice(0, 2).join("、") +
-                    (selectedBarns.size > 2
-                      ? ` 等 ${selectedBarns.size} 个`
-                      : "")}
+          <button
+            type="button"
+            onClick={() => {
+              setBarnQuery("");
+              setBarnSheetOpen(true);
+            }}
+            className={`h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm shrink-0 ${
+              selectedBarns.size > 0
+                ? "border-primary bg-brand-subtle text-primary"
+                : "border-border bg-card text-text-secondary"
+            }`}
+          >
+            <Filter className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              {selectedBarns.size === 0
+                ? "全部牛舍"
+                : Array.from(selectedBarns).slice(0, 2).join("、") +
+                  (selectedBarns.size > 2 ? ` 等 ${selectedBarns.size} 个` : "")}
+            </span>
+            {selectedBarns.size > 0 ? (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedBarns(new Set());
+                }}
+                className="text-caption text-primary px-1"
+              >
+                清除
               </span>
-              {selectedBarns.size > 0 ? (
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedBarns(new Set());
-                  }}
-                  className="text-caption text-primary px-1"
-                >
-                  清除
-                </span>
-              ) : (
-                <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
-              )}
+            ) : (
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
+            )}
           </button>
         )}
 
+        {/* 状态（仅工单任务） */}
         {showStatusTabs && (
           <button
             type="button"
             onClick={() => setStatusSheetOpen(true)}
-            className="shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border border-primary bg-brand-subtle text-primary text-body-sm max-w-[40%]"
+            className="shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border border-primary bg-brand-subtle text-primary text-body-sm"
           >
             <span className="truncate">{activeTab}</span>
             <span className="text-caption tabular-nums text-primary/70">
@@ -432,6 +430,50 @@ function TodayTasksPage() {
           </button>
         )}
 
+        {/* 工单类型 */}
+        {showStatusTabs && allTypes.length > 0 && (
+          <>
+            {allTypes.map((type) => {
+              const meta = typeMeta[type] ?? typeMeta["疾病治疗"];
+              const Icon = meta.icon;
+              const cnt = tabTasks.filter((t) => t.type === type).length;
+              const sel = selectedTypes.has(type);
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => toggleType(type)}
+                  className={`shrink-0 h-9 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm transition-colors ${
+                    sel
+                      ? "border-primary bg-brand-subtle text-primary"
+                      : "border-border bg-card text-text-secondary"
+                  }`}
+                >
+                  <Icon className={`h-3.5 w-3.5 shrink-0 ${meta.text}`} />
+                  <span>{type}</span>
+                  <span
+                    className={`text-caption tabular-nums ${
+                      sel ? "text-primary/70" : "text-text-tertiary"
+                    }`}
+                  >
+                    {cnt}
+                  </span>
+                </button>
+              );
+            })}
+            {selectedTypes.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedTypes(new Set())}
+                className="shrink-0 h-8 px-2 text-caption text-primary"
+              >
+                清除
+              </button>
+            )}
+          </>
+        )}
+
+        {/* 与我有关 */}
         <button
           type="button"
           onClick={() => setMineOnly((v) => !v)}
@@ -445,55 +487,7 @@ function TodayTasksPage() {
           <UserCheck className="h-4 w-4 shrink-0" />
           <span className="text-caption tabular-nums opacity-70">{mineCount}</span>
         </button>
-
       </div>
-
-      {/* 工单类型筛选 */}
-      {showStatusTabs && allTypes.length > 0 && (
-        <div className="px-4 pt-2 flex flex-wrap items-center gap-2">
-          <span className="text-body-sm text-text-tertiary inline-flex items-center gap-1">
-            <ListFilter className="h-3.5 w-3.5" />
-            工单类型
-          </span>
-          {allTypes.map((type) => {
-            const meta = typeMeta[type] ?? typeMeta["疾病治疗"];
-            const Icon = meta.icon;
-            const cnt = tabTasks.filter((t) => t.type === type).length;
-            const sel = selectedTypes.has(type);
-            return (
-              <button
-                key={type}
-                type="button"
-                onClick={() => toggleType(type)}
-                className={`h-8 px-3 inline-flex items-center gap-1.5 rounded-full border text-body-sm transition-colors ${
-                  sel
-                    ? "border-primary bg-brand-subtle text-primary"
-                    : "border-border bg-card text-text-secondary"
-                }`}
-              >
-                <Icon className={`h-3.5 w-3.5 shrink-0 ${meta.text}`} />
-                <span>{type}</span>
-                <span
-                  className={`text-caption tabular-nums ${
-                    sel ? "text-primary/70" : "text-text-tertiary"
-                  }`}
-                >
-                  {cnt}
-                </span>
-              </button>
-            );
-          })}
-          {selectedTypes.size > 0 && (
-            <button
-              type="button"
-              onClick={() => setSelectedTypes(new Set())}
-              className="h-8 px-2 text-caption text-primary"
-            >
-              清除
-            </button>
-          )}
-        </div>
-      )}
 
       <Sheet open={statusSheetOpen} onOpenChange={setStatusSheetOpen}>
 
