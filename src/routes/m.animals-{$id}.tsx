@@ -96,13 +96,6 @@ function AnimalDetailPage() {
 
 
 
-  // 记录 sheet
-  const [recordOpen, setRecordOpen] = useState(false);
-
-
-
-
-
   const [tab, setTab] = useState<"diagnoses" | "meds" | "moves" | "tests">("diagnoses");
 
   const ageLabel = a.ageDays > 90 ? `${Math.floor(a.ageDays / 30)} 月龄` : `${a.ageDays} 日龄`;
