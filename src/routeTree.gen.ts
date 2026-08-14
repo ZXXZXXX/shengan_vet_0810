@@ -80,6 +80,7 @@ import { Route as MHealthIdRouteImport } from './routes/m.health.$id'
 import { Route as MBarnsIdRouteImport } from './routes/m.barns.$id'
 import { Route as MAnimalsChar123idChar125EvidenceRouteImport } from './routes/m.animals-{$id}.evidence'
 import { Route as MAnimalsOrdersIdRouteImport } from './routes/m.animals-orders.$id'
+import { Route as MAnimalsEvidenceIdRouteImport } from './routes/m.animals-evidence.$id'
 import { Route as MAnimalsDeviceIdRouteImport } from './routes/m.animals-device.$id'
 import { Route as MHealthTodayPickupRouteImport } from './routes/m.health.today_.pickup'
 import { Route as MHealthTodayBatchRouteImport } from './routes/m.health.today_.batch'
@@ -448,6 +449,11 @@ const MAnimalsOrdersIdRoute = MAnimalsOrdersIdRouteImport.update({
   path: '/animals-orders/$id',
   getParentRoute: () => MRoute,
 } as any)
+const MAnimalsEvidenceIdRoute = MAnimalsEvidenceIdRouteImport.update({
+  id: '/animals-evidence/$id',
+  path: '/animals-evidence/$id',
+  getParentRoute: () => MRoute,
+} as any)
 const MAnimalsDeviceIdRoute = MAnimalsDeviceIdRouteImport.update({
   id: '/animals-device/$id',
   path: '/animals-device/$id',
@@ -565,6 +571,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
+  '/m/animals-evidence/$id': typeof MAnimalsEvidenceIdRoute
   '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
   '/m/animals-{$id}/evidence': typeof MAnimalsChar123idChar125EvidenceRoute
   '/m/barns/$id': typeof MBarnsIdRoute
@@ -643,6 +650,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsIndexRoute
   '/warehouse': typeof WarehouseIndexRoute
   '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
+  '/m/animals-evidence/$id': typeof MAnimalsEvidenceIdRoute
   '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
   '/m/animals-{$id}/evidence': typeof MAnimalsChar123idChar125EvidenceRoute
   '/m/barns/$id': typeof MBarnsIdRoute
@@ -727,6 +735,7 @@ export interface FileRoutesById {
   '/settings/': typeof SettingsIndexRoute
   '/warehouse/': typeof WarehouseIndexRoute
   '/m/animals-device/$id': typeof MAnimalsDeviceIdRoute
+  '/m/animals-evidence/$id': typeof MAnimalsEvidenceIdRoute
   '/m/animals-orders/$id': typeof MAnimalsOrdersIdRoute
   '/m/animals-{$id}/evidence': typeof MAnimalsChar123idChar125EvidenceRoute
   '/m/barns/$id': typeof MBarnsIdRoute
@@ -812,6 +821,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/warehouse/'
     | '/m/animals-device/$id'
+    | '/m/animals-evidence/$id'
     | '/m/animals-orders/$id'
     | '/m/animals-{$id}/evidence'
     | '/m/barns/$id'
@@ -890,6 +900,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/warehouse'
     | '/m/animals-device/$id'
+    | '/m/animals-evidence/$id'
     | '/m/animals-orders/$id'
     | '/m/animals-{$id}/evidence'
     | '/m/barns/$id'
@@ -973,6 +984,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/warehouse/'
     | '/m/animals-device/$id'
+    | '/m/animals-evidence/$id'
     | '/m/animals-orders/$id'
     | '/m/animals-{$id}/evidence'
     | '/m/barns/$id'
@@ -1507,6 +1519,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MAnimalsOrdersIdRouteImport
       parentRoute: typeof MRoute
     }
+    '/m/animals-evidence/$id': {
+      id: '/m/animals-evidence/$id'
+      path: '/animals-evidence/$id'
+      fullPath: '/m/animals-evidence/$id'
+      preLoaderRoute: typeof MAnimalsEvidenceIdRouteImport
+      parentRoute: typeof MRoute
+    }
     '/m/animals-device/$id': {
       id: '/m/animals-device/$id'
       path: '/animals-device/$id'
@@ -1663,6 +1682,7 @@ interface MRouteChildren {
   MSearchRoute: typeof MSearchRoute
   MIndexRoute: typeof MIndexRoute
   MAnimalsDeviceIdRoute: typeof MAnimalsDeviceIdRoute
+  MAnimalsEvidenceIdRoute: typeof MAnimalsEvidenceIdRoute
   MAnimalsOrdersIdRoute: typeof MAnimalsOrdersIdRoute
   MBarnsIdRoute: typeof MBarnsIdRoute
   MHealthIdRoute: typeof MHealthIdRoute
@@ -1705,6 +1725,7 @@ const MRouteChildren: MRouteChildren = {
   MSearchRoute: MSearchRoute,
   MIndexRoute: MIndexRoute,
   MAnimalsDeviceIdRoute: MAnimalsDeviceIdRoute,
+  MAnimalsEvidenceIdRoute: MAnimalsEvidenceIdRoute,
   MAnimalsOrdersIdRoute: MAnimalsOrdersIdRoute,
   MBarnsIdRoute: MBarnsIdRoute,
   MHealthIdRoute: MHealthIdRoute,
