@@ -305,6 +305,7 @@ function newCalf(index: number): Calf {
     birthDate: new Date().toISOString().slice(0, 10),
     breed: "",
     sex: "",
+    rfid: "",
     status: "",
     weight: "",
     keep: "",
@@ -313,6 +314,8 @@ function newCalf(index: number): Calf {
     media: [],
     feedCode: "",
     feedAmount: "",
+    feedTemp: "",
+    feedMedia: [],
     feedTech: "",
   };
 
