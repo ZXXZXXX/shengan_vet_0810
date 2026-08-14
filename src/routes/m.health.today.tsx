@@ -235,8 +235,11 @@ function TodayTasksPage() {
         ? tabTasks
         : tabTasks.filter((t) => selectedBarns.has(inferBarn(t)));
     if (mineOnly) list = list.filter((t) => assignees[t.id] === me);
+    if (selectedTypes.size > 0)
+      list = list.filter((t) => selectedTypes.has(t.type));
     return list;
-  }, [tabTasks, selectedBarns, mineOnly, assignees, me]);
+  }, [tabTasks, selectedBarns, mineOnly, assignees, me, selectedTypes]);
+
 
 
 
