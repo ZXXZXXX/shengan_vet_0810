@@ -353,8 +353,10 @@ function TodayTasksPage() {
                   setKindFilter(o.key);
                   setActiveTab("待执行");
                   setSelectedBarns(new Set());
+                  setSelectedTypes(new Set());
                   exitSelect();
                 }}
+
                 className={`relative flex-1 h-11 inline-flex items-center justify-center gap-1 text-body-sm ${
                   active ? "text-primary font-medium" : "text-text-secondary"
                 }`}
