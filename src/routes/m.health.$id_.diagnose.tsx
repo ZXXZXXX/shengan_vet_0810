@@ -2030,13 +2030,15 @@ function DrugEditor({
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-end" onClick={onCancel}>
       <div
-        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl p-4 space-y-4 h-[75vh] max-h-[75vh] overflow-y-auto"
+        className="w-full max-w-[440px] mx-auto bg-card rounded-t-2xl h-[75vh] max-h-[75vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-section-title text-foreground">
-          {isTherapy ? "编辑治疗手段" : "编辑药品"}
+        <div className="px-4 pt-4 pb-2 shrink-0">
+          <div className="text-section-title text-foreground">
+            {isTherapy ? "编辑治疗手段" : "编辑药品"}
+          </div>
         </div>
-
+        <div className="flex-1 overflow-y-auto px-4 space-y-4">
         {isTherapy ? (
           <>
             {/* 治疗手段类型 */}
