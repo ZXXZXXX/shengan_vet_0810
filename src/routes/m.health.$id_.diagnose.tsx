@@ -2302,20 +2302,22 @@ function DrugEditor({
             </label>
           </>
         )}
-
-        <div className="flex gap-2 pt-2">
-          <button
-            onClick={onCancel}
-            className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
-          >
-            取消
-          </button>
-          <button
-            onClick={onSave}
-            className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
-          >
-            保存
-          </button>
+        </div>
+        <div className="px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] border-t border-border shrink-0 bg-card">
+          <div className="flex gap-2">
+            <button
+              onClick={onCancel}
+              className="flex-1 h-10 rounded-lg border border-border text-body-sm text-text-secondary"
+            >
+              取消
+            </button>
+            <button
+              onClick={onSave}
+              className="flex-1 h-10 rounded-lg bg-primary text-primary-foreground text-body-sm"
+            >
+              保存
+            </button>
+          </div>
         </div>
       </div>
     </div>
