@@ -26,8 +26,25 @@ export type L3Item = {
 /** 当前登录人（个人三级库视角） */
 export const CURRENT_HOLDER = "李雨晴";
 
-/** 演示数据：三级库（个人库）中的药品 */
-export const L3_ITEMS: L3Item[] = [
+/** 演示数据基准日（数据中最新的领用日），运行时会整体平移到「今天」 */
+const DEMO_BASE_DATE = "2026-08-07";
+
+/** 把演示数据里的固定日期平移到最近几天，保证始终落在「近 7 天」窗口内 */
+function shiftDemoDate(s: string): string {
+  const [d, t = ""] = s.split(" ");
+  const base = new Date(`${DEMO_BASE_DATE}T00:00:00`).getTime();
+  const cur = new Date(`${d}T00:00:00`).getTime();
+  if (Number.isNaN(base) || Number.isNaN(cur)) return s;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const shifted = new Date(today.getTime() + (cur - base));
+  const p = (n: number) => String(n).padStart(2, "0");
+  const day = `${shifted.getFullYear()}-${p(shifted.getMonth() + 1)}-${p(shifted.getDate())}`;
+  return t ? `${day} ${t}` : day;
+}
+
+const RAW_L3_ITEMS: L3Item[] = [
+
   {
     code: "SN-8801-0231",
     name: "精制盐酸头孢噻呋注射液",
