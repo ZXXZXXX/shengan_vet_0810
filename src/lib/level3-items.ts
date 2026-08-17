@@ -253,3 +253,10 @@ const RAW_L3_ITEMS: L3Item[] = [
   },
 ];
 
+
+/** 演示数据：三级库（个人库）中的药品（日期已平移到最近几天） */
+export const L3_ITEMS: L3Item[] = RAW_L3_ITEMS.map((i) => ({
+  ...i,
+  claimedAt: shiftDemoDate(i.claimedAt),
+  usedAt: i.usedAt ? shiftDemoDate(i.usedAt) : undefined,
+}));
