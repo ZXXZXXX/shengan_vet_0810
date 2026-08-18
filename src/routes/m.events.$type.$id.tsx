@@ -891,13 +891,16 @@ function LeaveForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [detail, setDetail] = useState("");
   const [price, setPrice] = useState("");
   const [note, setNote] = useState("");
+  const [media, setMedia] = useState<number[]>([]);
 
   const submit = () => {
     if (!date) return toast.error("请选择离场日期");
     if (!detail) return toast.error("请填写离场原因/详情");
+    if (media.length === 0) return toast.error("请上传或拍摄现场照片 / 视频");
     toast.success("离场记录已保存");
     onDone();
   };
+
 
   const reasons = ["淘汰", "死亡", "出售", "转场"] as const;
 
