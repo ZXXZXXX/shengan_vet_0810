@@ -224,7 +224,7 @@ function MHomePage() {
                 <span className="h-9 w-9 rounded-lg bg-brand-subtle text-primary inline-flex items-center justify-center">
                   <Stethoscope className="h-4 w-4" />
                 </span>
-                <div className="mt-2 text-body font-medium text-foreground">疾病上报</div>
+                <div className="mt-2 text-body font-medium text-foreground">健康上报</div>
                 <div className="text-caption text-text-tertiary mt-0.5">疾病、修蹄、产后等</div>
               </Link>
               <Link
