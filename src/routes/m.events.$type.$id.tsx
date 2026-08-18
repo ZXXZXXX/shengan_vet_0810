@@ -951,7 +951,18 @@ function LeaveForm({ id, onDone }: { id: string; onDone: () => void }) {
               <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} className={inputCls} />
             </Field>
           )}
+          <div>
+            <MediaGrid
+              items={media}
+              setItems={setMedia}
+              max={9}
+              required
+              caption="现场照片 / 视频"
+              helper="离场事件需上传或拍摄现场材料，用于业务回溯追责"
+            />
+          </div>
           <Field label="备注">
+
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
