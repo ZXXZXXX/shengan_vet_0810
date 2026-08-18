@@ -20,10 +20,12 @@ import {
   ListChecks,
   Stethoscope,
   MessageSquareWarning,
+  Image as ImageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { markAlertHandled } from "@/lib/alert-store";
 import { MobileShell } from "@/components/mobile-shell";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 
 
