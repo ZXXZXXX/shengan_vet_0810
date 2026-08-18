@@ -199,14 +199,14 @@ function BarnDetailPage() {
         </section>
       </div>
 
-      {/* 底部固定：疾病上报入口（带牛舍） */}
+      {/* 底部固定：健康上报入口（带牛舍） */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] bg-card border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <Link
           to="/m/report"
           search={{ barn: barn.name, lock: 1 } as never}
           className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-body inline-flex items-center justify-center gap-1.5"
         >
-          <ClipboardPlus className="h-4 w-4" /> 疾病上报
+          <ClipboardPlus className="h-4 w-4" /> 健康上报
         </Link>
       </div>
     </MobileShell>
