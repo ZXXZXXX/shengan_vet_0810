@@ -20,10 +20,12 @@ import {
   ListChecks,
   Stethoscope,
   MessageSquareWarning,
+  Image as ImageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { markAlertHandled } from "@/lib/alert-store";
 import { MobileShell } from "@/components/mobile-shell";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 
 
@@ -788,15 +790,26 @@ function DiagnosisHistory() {
   );
 }
 
-type TestRecord = { id: string; date: string; item: string; conclusion: "阴性" | "阳性" | "合格" | "不合格"; submitter: string };
+type TestRecord = {
+  id: string;
+  date: string;
+  item: string;
+  conclusion: "阴性" | "阳性" | "合格" | "不合格";
+  submitter: string;
+  submitterOrg?: string;
+  submitTime?: string;
+  attachments?: number;
+};
 const ALL_TESTS: TestRecord[] = [
-  { id: "T-0620", date: "2026-06-20", item: "生鲜乳体细胞检测", conclusion: "合格", submitter: "李雨晴" },
-  { id: "T-0605", date: "2026-06-05", item: "布病抗体筛查", conclusion: "阴性", submitter: "周凯" },
-  { id: "T-0512", date: "2026-05-12", item: "结核病检测", conclusion: "阴性", submitter: "王场长" },
-  { id: "T-0418", date: "2026-04-18", item: "乳房炎病原培养", conclusion: "阳性", submitter: "李雨晴" },
+  { id: "T-0620", date: "2026-06-20", item: "生鲜乳体细胞检测", conclusion: "合格", submitter: "李雨晴", submitterOrg: "牧场自有实验室", submitTime: "2026-06-20 09:42", attachments: 3 },
+  { id: "T-0605", date: "2026-06-05", item: "布病抗体筛查", conclusion: "阴性", submitter: "周凯", submitterOrg: "第三方检测机构", submitTime: "2026-06-05 14:20", attachments: 2 },
+  { id: "T-0512", date: "2026-05-12", item: "结核病检测", conclusion: "阴性", submitter: "王场长", submitterOrg: "牧场自有实验室", submitTime: "2026-05-12 10:05", attachments: 0 },
+  { id: "T-0418", date: "2026-04-18", item: "乳房炎病原培养", conclusion: "阳性", submitter: "李雨晴", submitterOrg: "牧场自有实验室", submitTime: "2026-04-18 16:31", attachments: 4 },
 ];
 
 function TestHistory() {
+  const [active, setActive] = useState<TestRecord | null>(null);
+
   if (ALL_TESTS.length === 0) {
     return (
       <div className="rounded-xl border border-border bg-card p-6 text-center text-caption text-text-tertiary">
@@ -813,7 +826,12 @@ function TestHistory() {
       <div className="text-caption text-text-tertiary mb-1">共 {ALL_TESTS.length} 条</div>
       <div className="rounded-xl border border-border bg-card divide-y divide-border">
         {ALL_TESTS.map((t) => (
-          <div key={t.id} className="px-3 py-2.5">
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setActive(t)}
+            className="w-full px-3 py-2.5 text-left active:bg-surface-subtle"
+          >
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <span className="shrink-0 font-mono text-caption text-text-secondary">{t.date}</span>
@@ -823,10 +841,65 @@ function TestHistory() {
                 {t.conclusion}
               </span>
             </div>
-            <div className="mt-1 text-caption text-text-tertiary">提交人 {t.submitter}</div>
-          </div>
+            <div className="mt-1 flex items-center gap-2 text-caption text-text-tertiary">
+              <span>提交人 {t.submitter}</span>
+              {!!t.attachments && (
+                <span className="inline-flex items-center gap-0.5">
+                  <ImageIcon className="h-3 w-3" /> {t.attachments}
+                </span>
+              )}
+            </div>
+          </button>
         ))}
       </div>
+
+      <Sheet open={!!active} onOpenChange={(o) => !o && setActive(null)}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[85vh] overflow-y-auto">
+          <SheetHeader className="px-4 pt-4 pb-2 text-left">
+            <SheetTitle className="text-section">检测结果详情</SheetTitle>
+          </SheetHeader>
+          {active && (
+            <div className="px-4 pb-[calc(env(safe-area-inset-bottom)+20px)] space-y-4">
+              <DetailRow label="检测项目" value={active.item} />
+              <DetailRow label="最终结论" value={active.conclusion} />
+              <DetailRow
+                label="结论提交人"
+                value={active.submitterOrg ? `${active.submitter}（${active.submitterOrg}）` : active.submitter}
+              />
+              <DetailRow label="结论提交时间" value={active.submitTime ?? active.date} />
+              <div>
+                <div className="text-caption text-text-tertiary mb-2">检测详情</div>
+                {active.attachments ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {Array.from({ length: active.attachments }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="aspect-square rounded-xl bg-gradient-to-br from-surface-subtle to-border border border-border inline-flex items-center justify-center text-text-tertiary"
+                      >
+                        <ImageIcon className="h-6 w-6" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-border bg-card p-4 text-center text-caption text-text-tertiary">
+                    暂无附件
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-caption text-text-tertiary">{label}</div>
+      <div className="mt-0.5 text-body text-foreground">{value}</div>
+    </div>
+  );
+}
+
