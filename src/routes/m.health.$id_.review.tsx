@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { TransferBarnControl } from "@/components/m/transfer-barn-control";
+import { MediaGrid } from "@/components/m/media-grid";
 import { ConfirmTransferDialog } from "@/components/m/confirm-transfer-dialog";
 import { getOrderEarTagLabel } from "@/lib/work-order-cattle";
 import { useRole } from "@/lib/mobile-role";
@@ -42,6 +43,7 @@ function ReviewPage() {
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [abandonReason, setAbandonReason] = useState("");
   const [abandonOther, setAbandonOther] = useState("");
+  const [media, setMedia] = useState<number[]>([]);
   const [needTransfer, setNeedTransfer] = useState(false);
   const [transferTo, setTransferTo] = useState("");
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
@@ -196,6 +198,14 @@ function ReviewPage() {
             </div>
           )}
 
+          {/* 现场材料 */}
+          {verdict && (
+            <div className="rounded-xl bg-card border border-border p-4">
+              <div className="text-caption text-text-tertiary mb-2">现场材料</div>
+              <MediaGrid items={media} setItems={setMedia} max={9} />
+            </div>
+          )}
+
           {/* 转栏 */}
           {verdict && verdict !== "revisit" && (
             <TransferBarnControl
@@ -205,6 +215,7 @@ function ReviewPage() {
               onValueChange={setTransferTo}
             />
           )}
+
         </div>
       </div>
 
