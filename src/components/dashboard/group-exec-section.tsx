@@ -1,0 +1,549 @@
+import { useMemo, useState } from "react";
+import { BarChart3, Layers, Download, ChevronLeft, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
+import { SectionCard, PeriodTabs } from "./charts";
+
+/* ---------------- 数据：牧场为最小口径 ---------------- */
+
+export type GroupFarm = {
+  farm: string;
+  base: string;
+  region: string;
+  herd: number;
+  death: number;
+  cull: number;
+  /** 产后 0-30 / 0-60 / 0-90 天淘汰率 % */
+  pp30: number;
+  pp60: number;
+  pp90: number;
+  /** 产后各区间淘汰头数 */
+  pp30n: number;
+  pp60n: number;
+  pp90n: number;
+  sick: number;
+  cure: number;
+  perHead: number; // 单头牛药费 元
+  drugFee: number; // 药费总支出 元
+  budgetDelta: number; // 预算偏差 %（负=节约）
+};
+
+export const GROUP_FARMS: GroupFarm[] = [
+  { farm: "1号牧场", base: "齐齐哈尔基地", region: "东北大区", herd: 5200, death: 8, cull: 24, pp30: 1.8, pp60: 2.9, pp90: 3.6, pp30n: 18, pp60n: 29, pp90n: 36, sick: 6.2, cure: 95.1, perHead: 29.4, drugFee: 153_000, budgetDelta: -12 },
+  { farm: "2号牧场", base: "大庆基地", region: "东北大区", herd: 4800, death: 11, cull: 27, pp30: 2.4, pp60: 3.6, pp90: 4.5, pp30n: 22, pp60n: 33, pp90n: 41, sick: 7.5, cure: 93.0, perHead: 34.1, drugFee: 164_000, budgetDelta: -5 },
+  { farm: "3号牧场", base: "绥化基地", region: "东北大区", herd: 4500, death: 13, cull: 33, pp30: 2.9, pp60: 4.2, pp90: 5.3, pp30n: 25, pp60n: 36, pp90n: 46, sick: 8.8, cure: 92.4, perHead: 39.5, drugFee: 178_000, budgetDelta: 0 },
+  { farm: "1号牧场", base: "武威基地", region: "西北大区", herd: 4100, death: 16, cull: 40, pp30: 3.5, pp60: 5.1, pp90: 6.4, pp30n: 28, pp60n: 41, pp90n: 51, sick: 9.8, cure: 91.2, perHead: 48.0, drugFee: 197_000, budgetDelta: 8 },
+  { farm: "2号牧场", base: "金昌基地", region: "西北大区", herd: 3600, death: 14, cull: 35, pp30: 3.1, pp60: 4.7, pp90: 5.9, pp30n: 23, pp60n: 35, pp90n: 44, sick: 9.1, cure: 91.9, perHead: 44.2, drugFee: 159_000, budgetDelta: 3 },
+  { farm: "2号牧场", base: "张家口基地", region: "华北大区", herd: 3900, death: 24, cull: 48, pp30: 5.4, pp60: 7.2, pp90: 8.6, pp30n: 42, pp60n: 56, pp90n: 67, sick: 12.4, cure: 87.5, perHead: 54.2, drugFee: 211_000, budgetDelta: 28 },
+  { farm: "1号牧场", base: "保定基地", region: "华北大区", herd: 3400, death: 15, cull: 36, pp30: 3.8, pp60: 5.4, pp90: 6.7, pp30n: 26, pp60n: 37, pp90n: 46, sick: 10.2, cure: 90.4, perHead: 46.8, drugFee: 159_000, budgetDelta: 11 },
+];
+
+type Row = {
+  key: string;
+  sub: string;
+  herd: number;
+  death: number;
+  cull: number;
+  pp30: number;
+  pp60: number;
+  pp90: number;
+  pp30n: number;
+  pp60n: number;
+  pp90n: number;
+  sick: number;
+  cure: number;
+  perHead: number;
+  drugFee: number;
+  budgetDelta: number;
+};
+
+function agg(key: string, sub: string, rows: GroupFarm[]): Row {
+  const herd = rows.reduce((s, r) => s + r.herd, 0) || 1;
+  const w = (p: (r: GroupFarm) => number) =>
+    Number((rows.reduce((s, r) => s + p(r) * r.herd, 0) / herd).toFixed(1));
+  const sum = (p: (r: GroupFarm) => number) => rows.reduce((s, r) => s + p(r), 0);
+  return {
+    key,
+    sub,
+    herd,
+    death: sum((r) => r.death),
+    cull: sum((r) => r.cull),
+    pp30: w((r) => r.pp30),
+    pp60: w((r) => r.pp60),
+    pp90: w((r) => r.pp90),
+    pp30n: sum((r) => r.pp30n),
+    pp60n: sum((r) => r.pp60n),
+    pp90n: sum((r) => r.pp90n),
+    sick: w((r) => r.sick),
+    cure: w((r) => r.cure),
+    perHead: Number((sum((r) => r.drugFee) / herd).toFixed(1)),
+    drugFee: sum((r) => r.drugFee),
+    budgetDelta: w((r) => r.budgetDelta),
+  };
+}
+
+const REGIONS = Array.from(new Set(GROUP_FARMS.map((f) => f.region)));
+const regionRows = REGIONS.map((rg) =>
+  agg(rg, `${GROUP_FARMS.filter((f) => f.region === rg).length} 个牧场`, GROUP_FARMS.filter((f) => f.region === rg)),
+);
+const farmRows = GROUP_FARMS.map((f) => agg(`${f.region} · ${f.farm}`, f.base, [f]));
+
+const wan = (n: number) => `${(n / 10000).toFixed(1)} 万`;
+
+/* ---------------- 二、产后淘汰率排名（分组柱形 + 下钻） ---------------- */
+
+const BUCKETS = [
+  { key: "pp30", n: "pp30n", label: "0-30 天", color: "var(--brand)" },
+  { key: "pp60", n: "pp60n", label: "0-60 天", color: "var(--effect-ai-cyan)" },
+  { key: "pp90", n: "pp90n", label: "0-90 天", color: "var(--state-warning)" },
+] as const;
+
+function GroupedBars({
+  rows,
+  onPick,
+}: {
+  rows: Row[];
+  onPick?: (r: Row) => void;
+}) {
+  const max = Math.max(...rows.flatMap((r) => [r.pp30, r.pp60, r.pp90]), 1);
+  const H = 200;
+  return (
+    <div className="w-full overflow-x-auto">
+      <div className="min-w-[520px]">
+        <div className="flex items-end gap-6" style={{ height: H }}>
+          {rows.map((r) => (
+            <button
+              key={r.key}
+              type="button"
+              onClick={() => onPick?.(r)}
+              className={`flex-1 min-w-0 h-full flex items-end justify-center gap-2 rounded-lg px-2 transition-colors ${
+                onPick ? "hover:bg-surface-subtle cursor-pointer" : "cursor-default"
+              }`}
+            >
+              {BUCKETS.map((b) => {
+                const rate = r[b.key] as number;
+                const cnt = r[b.n] as number;
+                return (
+                  <div key={b.key} className="flex-1 max-w-[46px] flex flex-col items-center justify-end gap-1">
+                    <span className="text-caption tabular-nums text-foreground whitespace-nowrap">{rate}%</span>
+                    <span className="text-caption tabular-nums text-text-tertiary whitespace-nowrap">{cnt} 头</span>
+                    <div
+                      className="w-full rounded-t-md"
+                      style={{ height: `${Math.max((rate / max) * (H - 64), 4)}px`, background: b.color }}
+                    />
+                  </div>
+                );
+              })}
+            </button>
+          ))}
+        </div>
+        <div className="mt-2 flex gap-6 border-t border-border pt-2">
+          {rows.map((r) => (
+            <div key={r.key} className="flex-1 min-w-0 text-center">
+              <div className="text-body-sm text-foreground truncate">{r.key}</div>
+              <div className="text-caption text-text-tertiary truncate">{r.sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PostpartumRankSection() {
+  const [region, setRegion] = useState<string | null>(null);
+  const rows = useMemo(() => {
+    const list = region
+      ? GROUP_FARMS.filter((f) => f.region === region).map((f) => agg(f.farm, f.base, [f]))
+      : [...regionRows];
+    return list.sort((a, b) => b.pp90 - a.pp90);
+  }, [region]);
+
+  return (
+    <SectionCard
+      id="topic-pp-rank"
+      title="产后淘汰率排名"
+      desc={region ? `${region} · 牧场排名` : "区域排名"}
+      icon={<BarChart3 className="h-4 w-4 text-primary" strokeWidth={1.75} />}
+      extra={
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3">
+            {BUCKETS.map((b) => (
+              <span key={b.key} className="inline-flex items-center gap-1.5 text-caption text-text-secondary">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: b.color }} />
+                {b.label}
+              </span>
+            ))}
+          </div>
+          {region && (
+            <button
+              type="button"
+              onClick={() => setRegion(null)}
+              className="inline-flex items-center gap-1 text-caption text-primary hover:underline"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+              返回区域
+            </button>
+          )}
+        </div>
+      }
+    >
+      <p className="text-body-sm text-text-secondary mb-4">
+        {region ? "该区域下各牧场产后淘汰率对比" : "点击某区域可下钻查看该区域下所有牧场排名"}
+      </p>
+      <GroupedBars rows={rows} onPick={region ? undefined : (r) => setRegion(r.key)} />
+    </SectionCard>
+  );
+}
+
+/* ---------------- 三、药费趋势（柱形 + 折线组合） ---------------- */
+
+const MONTHS = ["6月", "7月", "8月", "9月", "10月", "11月", "12月", "1月", "2月", "3月", "4月", "5月"];
+const TOTAL_FEE = [96.4, 101.2, 108.6, 99.3, 94.8, 102.5, 118.7, 124.3, 106.1, 98.7, 105.4, 112.8]; // 万元
+const PER_HEAD = [31.2, 32.5, 34.8, 31.9, 30.4, 32.8, 37.6, 39.2, 34.1, 31.6, 33.7, 36.1]; // 元/头
+
+function DrugComboChart() {
+  const [hover, setHover] = useState<number | null>(null);
+  const W = 900;
+  const H = 260;
+  const padL = 56;
+  const padR = 56;
+  const padT = 16;
+  const padB = 32;
+  const iw = W - padL - padR;
+  const ih = H - padT - padB;
+  const maxBar = Math.max(...TOTAL_FEE) * 1.15;
+  const maxLine = Math.max(...PER_HEAD) * 1.25;
+  const minLine = Math.min(...PER_HEAD) * 0.7;
+  const step = iw / MONTHS.length;
+  const bw = Math.min(30, step * 0.5);
+  const cx = (i: number) => padL + step * i + step / 2;
+  const ly = (v: number) => padT + ih - ((v - minLine) / (maxLine - minLine)) * ih;
+  const path = PER_HEAD.map((v, i) => `${i === 0 ? "M" : "L"} ${cx(i)} ${ly(v)}`).join(" ");
+
+  return (
+    <div className="w-full overflow-x-auto">
+      <div className="relative min-w-[720px]">
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }}>
+          {[0, 0.25, 0.5, 0.75, 1].map((t) => (
+            <line
+              key={t}
+              x1={padL}
+              x2={W - padR}
+              y1={padT + ih * t}
+              y2={padT + ih * t}
+              stroke="var(--border)"
+              strokeWidth="1"
+            />
+          ))}
+          {MONTHS.map((m, i) => {
+            const h = (TOTAL_FEE[i] / maxBar) * ih;
+            const active = hover === i;
+            return (
+              <g key={m}>
+                <rect
+                  x={cx(i) - bw / 2}
+                  y={padT + ih - h}
+                  width={bw}
+                  height={h}
+                  rx={4}
+                  fill="var(--brand)"
+                  opacity={hover === null || active ? 0.9 : 0.35}
+                />
+                <rect
+                  x={padL + step * i}
+                  y={padT}
+                  width={step}
+                  height={ih}
+                  fill="transparent"
+                  onMouseEnter={() => setHover(i)}
+                  onMouseLeave={() => setHover(null)}
+                />
+                <text x={cx(i)} y={H - 10} textAnchor="middle" className="text-caption" fill="var(--text-tertiary)" fontSize="11">
+                  {m}
+                </text>
+              </g>
+            );
+          })}
+          <path d={path} fill="none" stroke="var(--effect-ai-purple)" strokeWidth="2.5" strokeLinejoin="round" />
+          {PER_HEAD.map((v, i) => (
+            <circle key={i} cx={cx(i)} cy={ly(v)} r={hover === i ? 5 : 3.5} fill="var(--effect-ai-purple)" />
+          ))}
+          <text x={padL - 8} y={padT + 4} textAnchor="end" fontSize="11" fill="var(--text-tertiary)">
+            万元
+          </text>
+          <text x={W - padR + 8} y={padT + 4} fontSize="11" fill="var(--text-tertiary)">
+            元/头
+          </text>
+        </svg>
+        {hover !== null && (
+          <div
+            className="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-card px-3 py-2 shadow-card whitespace-nowrap"
+            style={{ left: `${((cx(hover) / W) * 100).toFixed(2)}%`, top: 24 }}
+          >
+            <div className="text-caption text-text-tertiary">{MONTHS[hover]}</div>
+            <div className="text-body-sm text-foreground tabular-nums">总药费 {TOTAL_FEE[hover]} 万元</div>
+            <div className="text-body-sm tabular-nums" style={{ color: "var(--effect-ai-purple)" }}>
+              单头药费 {PER_HEAD[hover]} 元/头
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DrugTrendSection() {
+  return (
+    <SectionCard
+      id="topic-drug-trend"
+      title="药费支出趋势"
+      desc="近 1 年"
+      icon={<BarChart3 className="h-4 w-4 text-primary" strokeWidth={1.75} />}
+      extra={
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 text-caption text-text-secondary">
+            <span className="h-2.5 w-2.5 rounded-sm" style={{ background: "var(--brand)" }} />
+            总药费支出
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-caption text-text-secondary">
+            <span className="h-0.5 w-4 rounded-full" style={{ background: "var(--effect-ai-purple)" }} />
+            单头药费
+          </span>
+        </div>
+      }
+    >
+      <DrugComboChart />
+    </SectionCard>
+  );
+}
+
+/* ---------------- 四、全景指标对标排行 ---------------- */
+
+type Grade = { label: string; tone: string };
+function gradeOf(r: Row): Grade {
+  if (r.pp30 <= 2.0 && r.perHead <= 32) return { label: "标杆领跑", tone: "var(--state-success)" };
+  if (r.pp30 >= 5 || r.budgetDelta >= 25) return { label: "重点督导", tone: "var(--state-danger)" };
+  if (r.budgetDelta > 5) return { label: "成本预警", tone: "var(--state-warning)" };
+  if (r.pp30 <= 2.6) return { label: "良好", tone: "var(--state-success)" };
+  return { label: "达标", tone: "var(--text-secondary)" };
+}
+
+const DIMS = ["牧场排名", "区域汇总排名"];
+
+function PanoramaSection() {
+  const [dim, setDim] = useState(DIMS[0]);
+  const rows = useMemo(
+    () => [...(dim === DIMS[0] ? farmRows : regionRows)].sort((a, b) => a.pp30 - b.pp30),
+    [dim],
+  );
+
+  const exportCsv = () => {
+    const head = [
+      "排名",
+      dim === DIMS[0] ? "区域/牧场" : "区域",
+      "基地",
+      "存栏数",
+      "死亡数",
+      "淘汰数",
+      "产后0-30d淘汰率(%)",
+      "发病率(%)",
+      "治愈率(%)",
+      "单头牛药费(元)",
+      "药费总支出(元)",
+      "预算偏差(%)",
+      "综合评级",
+    ];
+    const body = rows.map((r, i) => [
+      i + 1,
+      r.key,
+      r.sub,
+      r.herd,
+      r.death,
+      r.cull,
+      r.pp30,
+      r.sick,
+      r.cure,
+      r.perHead,
+      r.drugFee,
+      r.budgetDelta,
+      gradeOf(r).label,
+    ]);
+    const csv =
+      "\uFEFF" + [head, ...body].map((line) => line.map((c) => `"${c}"`).join(",")).join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `全景指标对标排行_${dim}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("报表已导出");
+  };
+
+  return (
+    <SectionCard
+      id="topic-panorama"
+      title="区域 & 牧场全景指标对标排行"
+      icon={<Layers className="h-4 w-4 text-primary" strokeWidth={1.75} />}
+      extra={
+        <div className="flex items-center gap-3">
+          <PeriodTabs value={dim} onChange={setDim} options={DIMS} />
+          <button
+            type="button"
+            onClick={exportCsv}
+            className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full border border-border bg-card text-caption text-text-secondary hover:text-foreground"
+          >
+            <Download className="h-3.5 w-3.5" />
+            导出报表
+          </button>
+        </div>
+      }
+    >
+      <p className="text-body-sm text-text-secondary mb-4">
+        支持按死淘、药费超支额、产后淘汰率横向对比下属牧场运营质量
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[1040px] text-body-sm">
+          <thead>
+            <tr className="text-caption text-text-tertiary">
+              <th className="text-left font-normal py-2 w-12">排名</th>
+              <th className="text-left font-normal py-2">{dim === DIMS[0] ? "区域 / 牧场名称" : "区域名称"}</th>
+              <th className="text-right font-normal py-2">存栏数</th>
+              <th className="text-right font-normal py-2">死淘总数 (死亡/淘汰)</th>
+              <th className="text-right font-normal py-2">产后0-30d淘汰率</th>
+              <th className="text-right font-normal py-2">发病率 / 治愈率</th>
+              <th className="text-right font-normal py-2">单头牛药费</th>
+              <th className="text-right font-normal py-2">药费总支出 (预算偏差)</th>
+              <th className="text-right font-normal py-2">综合评级</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => {
+              const g = gradeOf(r);
+              const risky = r.pp30 >= 5;
+              const over = r.budgetDelta > 5;
+              return (
+                <tr key={r.key} className="border-t border-border">
+                  <td className="py-3">
+                    <span
+                      className="inline-flex h-6 w-6 items-center justify-center rounded-full text-caption tabular-nums"
+                      style={
+                        i < 3
+                          ? {
+                              background: "color-mix(in oklab, var(--state-warning) 16%, transparent)",
+                              color: "#A35A00",
+                            }
+                          : { background: "var(--bg-surface-subtle)", color: "var(--text-tertiary)" }
+                      }
+                    >
+                      {i + 1}
+                    </span>
+                  </td>
+                  <td className="py-3">
+                    <div className="text-foreground">{r.key}</div>
+                    <div className="text-caption text-text-tertiary">{r.sub}</div>
+                  </td>
+                  <td className="py-3 text-right tabular-nums text-text-secondary">
+                    {r.herd.toLocaleString()} 头
+                  </td>
+                  <td className="py-3 text-right tabular-nums">
+                    <div className="text-foreground">{r.death + r.cull} 头</div>
+                    <div className="text-caption text-text-tertiary">
+                      ({r.death} / {r.cull})
+                    </div>
+                  </td>
+                  <td className="py-3 text-right tabular-nums">
+                    <span
+                      className="inline-flex items-center gap-1"
+                      style={{
+                        color: risky
+                          ? "var(--state-danger)"
+                          : r.pp30 >= 3
+                          ? "var(--state-warning)"
+                          : "var(--state-success)",
+                      }}
+                    >
+                      {r.pp30}%
+                      {risky && <AlertTriangle className="h-3.5 w-3.5" />}
+                    </span>
+                  </td>
+                  <td className="py-3 text-right tabular-nums text-text-secondary">
+                    {r.sick}% /{" "}
+                    <span style={{ color: r.cure >= 90 ? "var(--state-success)" : "var(--state-danger)" }}>
+                      {r.cure}%
+                    </span>
+                  </td>
+                  <td
+                    className="py-3 text-right tabular-nums"
+                    style={{ color: r.perHead >= 48 ? "var(--state-danger)" : r.perHead >= 40 ? "var(--state-warning)" : "var(--foreground)" }}
+                  >
+                    ￥{r.perHead} /头
+                  </td>
+                  <td className="py-3 text-right tabular-nums">
+                    <span className="text-foreground">￥{wan(r.drugFee)}</span>{" "}
+                    <span
+                      className="ml-1 inline-flex items-center h-[20px] px-1.5 rounded-md text-caption"
+                      style={{
+                        background: over
+                          ? "color-mix(in oklab, var(--state-danger) 12%, transparent)"
+                          : r.budgetDelta < 0
+                          ? "color-mix(in oklab, var(--state-success) 14%, transparent)"
+                          : "var(--bg-surface-subtle)",
+                        color: over
+                          ? "var(--state-danger)"
+                          : r.budgetDelta < 0
+                          ? "var(--state-success)"
+                          : "var(--text-secondary)",
+                      }}
+                    >
+                      {r.budgetDelta > 0 ? `+${r.budgetDelta}% 超支` : r.budgetDelta < 0 ? `${r.budgetDelta}% 节约` : "持平预算"}
+                    </span>
+                  </td>
+                  <td className="py-3 text-right">
+                    <span
+                      className="inline-flex items-center h-[22px] px-2 rounded-md text-caption"
+                      style={{
+                        background: `color-mix(in oklab, ${g.tone} 12%, transparent)`,
+                        color: g.tone,
+                      }}
+                    >
+                      {g.label}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </SectionCard>
+  );
+}
+
+/* ---------------- 集团视角总装 ---------------- */
+
+export function GroupExecSection() {
+  return (
+    <div className="space-y-6">
+      <PostpartumRankSection />
+      <DrugTrendSection />
+      <PanoramaSection />
+    </div>
+  );
+}
+
+/** 集团视角指标卡数据 */
+export const groupMetrics = (() => {
+  const t = agg("集团合计", "", GROUP_FARMS);
+  return {
+    herd: t.herd,
+    calving: 1186,
+    preterm: 47,
+    deathCull: t.death + t.cull,
+    death: t.death,
+    cull: t.cull,
+    sick: 812,
+    cured: 742,
+    days: 4.4,
+    drugFee: t.drugFee,
+  };
+})();
